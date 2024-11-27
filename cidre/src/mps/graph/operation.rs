@@ -1,4 +1,4 @@
-use crate::{define_obj_type, mps::graph, ns, objc};
+use crate::{arc, define_obj_type, mps::graph, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "MPSGraphOperation")]
@@ -7,18 +7,18 @@ define_obj_type!(
 
 impl Op {
     #[objc::msg_send(inputTensors)]
-    pub fn input_tensors(&self) -> &ns::Array<graph::Tensor>;
+    pub fn input_tensors(&self) -> arc::R<ns::Array<graph::Tensor>>;
 
     #[objc::msg_send(outputTensors)]
-    pub fn output_tensors(&self) -> &ns::Array<graph::Tensor>;
+    pub fn output_tensors(&self) -> arc::R<ns::Array<graph::Tensor>>;
 
     #[objc::msg_send(controlDependencies)]
-    pub fn control_deps(&self) -> &ns::Array<Self>;
+    pub fn control_deps(&self) -> arc::R<ns::Array<Self>>;
 
     /// Graph on which the operation is defined
     #[objc::msg_send(graph)]
-    pub fn graph(&self) -> &graph::Graph;
+    pub fn graph(&self) -> arc::R<graph::Graph>;
 
     #[objc::msg_send(name)]
-    pub fn name(&self) -> &ns::String;
+    pub fn name(&self) -> arc::R<ns::String>;
 }

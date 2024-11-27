@@ -7,7 +7,7 @@ define_obj_type!(
 
 impl Classification {
     #[objc::msg_send(identifier)]
-    pub fn id(&self) -> &ns::String;
+    pub fn id(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(confidence)]
     pub fn confidence(&self) -> f64;
@@ -21,13 +21,13 @@ define_obj_type!(
 
 impl ClassificationResult {
     #[objc::msg_send(classifications)]
-    pub fn classifications(&self) -> &ns::Array<Classification>;
+    pub fn classifications(&self) -> arc::R<ns::Array<Classification>>;
 
     #[objc::msg_send(timeRange)]
     pub fn time_range(&self) -> cm::TimeRange;
 
     #[objc::msg_send(classificationForIdentifier:)]
-    pub fn classification_for_id<'a>(&'a self, id: &ns::String) -> Option<&'a Classification>;
+    pub fn classification_for_id(&self, id: &ns::String) -> Option<arc::R<Classification>>;
 }
 
 extern "C" {

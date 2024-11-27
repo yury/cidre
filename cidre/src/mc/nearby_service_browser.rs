@@ -48,10 +48,10 @@ impl NearbyServiceBrowser {
     pub fn set_delegate<D: Delegate>(&mut self, val: Option<&D>);
 
     #[objc::msg_send(myPeerID)]
-    pub fn my_peer_id(&self) -> &mc::PeerId;
+    pub fn my_peer_id(&self) -> arc::R<mc::PeerId>;
 
     #[objc::msg_send(serviceType)]
-    pub fn service_type(&self) -> &ns::String;
+    pub fn service_type(&self) -> arc::R<ns::String>;
 }
 
 #[objc::protocol(MCNearbyServiceBrowserDelegate)]
@@ -95,8 +95,8 @@ mod tests {
         let peer = mc::PeerId::with_display_name(name).unwrap();
         let service = ns::str!(c"cidre-txtchat");
         let browser = mc::NearbyServiceBrowser::with_peer(&peer, &service).unwrap();
-        assert_eq!(browser.service_type(), service);
-        assert_eq!(browser.my_peer_id(), &peer);
+        assert_eq!(&browser.service_type(), service);
+        assert_eq!(&browser.my_peer_id(), &peer);
 
         assert!(browser.delegate().is_none());
     }

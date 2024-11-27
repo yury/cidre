@@ -14,7 +14,7 @@ impl WebView {
     pub fn set_nav_delegate<D: wk::NavigationDelegate>(&mut self, val: Option<&D>);
 
     #[objc::msg_send(title)]
-    pub fn title(&self) -> &ns::String;
+    pub fn title(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(isInspectable)]
     pub fn is_inpectable(&self) -> bool;

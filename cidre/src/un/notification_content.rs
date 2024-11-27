@@ -40,15 +40,15 @@ impl NotificationContent {
 
     #[cfg(not(target_os = "tvos"))]
     #[objc::msg_send(body)]
-    pub fn body(&self) -> &ns::String;
+    pub fn body(&self) -> arc::R<ns::String>;
 
     #[cfg(not(target_os = "tvos"))]
     #[objc::msg_send(categoryIdentifier)]
-    pub fn category_id(&self) -> &ns::String;
+    pub fn category_id(&self) -> arc::R<ns::String>;
 
     #[cfg(not(any(target_os = "tvos", target_os = "macos")))]
     #[objc::msg_send(launchImageName)]
-    pub fn launch_image_name(&self) -> &ns::String;
+    pub fn launch_image_name(&self) -> arc::R<ns::String>;
 
     #[cfg(not(target_os = "tvos"))]
     #[objc::msg_send(sound)]
@@ -56,22 +56,22 @@ impl NotificationContent {
 
     #[cfg(not(target_os = "tvos"))]
     #[objc::msg_send(subtitle)]
-    pub fn subtitle(&self) -> &ns::String;
+    pub fn subtitle(&self) -> arc::R<ns::String>;
 
     #[cfg(not(target_os = "tvos"))]
     #[objc::msg_send(threadIdentifier)]
-    pub fn thread_id(&self) -> &ns::String;
+    pub fn thread_id(&self) -> arc::R<ns::String>;
 
     #[cfg(not(target_os = "tvos"))]
     #[objc::msg_send(title)]
-    pub fn title(&self) -> &ns::String;
+    pub fn title(&self) -> arc::R<ns::String>;
 
     #[cfg(not(target_os = "tvos"))]
     #[objc::msg_send(userInfo)]
-    pub fn user_info(&self) -> &ns::Dictionary<ns::Id, ns::Id>;
+    pub fn user_info(&self) -> arc::R<ns::Dictionary<ns::Id, ns::Id>>;
 
     #[objc::msg_send(targetContentIdentifier)]
-    pub fn target_content_id(&self) -> Option<&ns::String>;
+    pub fn target_content_id(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(interruptionLevel)]
     pub fn interruption_level(&self) -> un::NotificationInterruptionLevel;

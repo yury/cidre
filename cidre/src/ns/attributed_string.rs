@@ -176,7 +176,7 @@ impl AttrString {
     /// the attributed string object. If you want to maintain a snapshot of this as
     /// you manipulate the returned string, you should make a copy of the appropriate substring.
     #[objc::msg_send(string)]
-    pub fn string(&self) -> &ns::String;
+    pub fn string(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(length)]
     pub fn len(&self) -> usize;
@@ -358,7 +358,7 @@ mod tests {
         let str = ns::String::with_str("Hello");
         let astr = ns::AttrString::with_string(&str);
 
-        assert_eq!(astr.string(), &str);
+        assert_eq!(&astr.string(), &str);
         let attrs = astr.attrs_at(0, None).unwrap();
         assert!(attrs.is_empty());
 

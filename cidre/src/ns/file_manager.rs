@@ -216,7 +216,7 @@ impl FileManager {
     }
 
     #[objc::msg_send(currentDirectoryPath)]
-    pub fn current_dir_path(&self) -> &ns::String;
+    pub fn current_dir_path(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(changeCurrentDirectoryPath:)]
     pub fn change_current_dir_path(&mut self, path: &ns::String) -> bool;

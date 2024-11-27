@@ -423,6 +423,6 @@ mod tests {
         let attr_str = ns::AttrString::with_string(&str);
         let ut = av::SpeechUtterance::with_attr_string(&attr_str);
         assert_eq!(&ut.speech_string(), str);
-        assert_eq!(ut.speech_attr_string().unwrap().string(), str);
+        assert_eq!(&ut.speech_attr_string().unwrap().string(), str);
     }
 }

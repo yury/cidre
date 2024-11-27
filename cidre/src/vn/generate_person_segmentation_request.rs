@@ -32,7 +32,7 @@ impl GenPersonSegmentationRequest {
     pub fn set_output_pixel_format(&mut self, value: os::Type);
 
     #[objc::msg_send(results)]
-    pub fn results(&self) -> Option<&ns::Array<vn::PixelBufObservation>>;
+    pub fn results(&self) -> Option<arc::R<ns::Array<vn::PixelBufObservation>>>;
 
     #[objc::msg_send(supportedOutputPixelFormatsAndReturnError:)]
     #[api::available(
@@ -53,8 +53,8 @@ impl GenPersonSegmentationRequest {
         tvos = 18.0,
         visionos = 2.0
     )]
-    pub fn supported_output_pixel_formats<'ear>(
-    ) -> Result<arc::R<ns::Array<ns::Number>>, &'ear ns::Error> {
+    pub fn supported_output_pixel_formats<'ear>() -> ns::Result<'ear, arc::R<ns::Array<ns::Number>>>
+    {
         ns::if_none(|err| unsafe { Self::supported_output_pixel_formats_err(err) })
     }
 }

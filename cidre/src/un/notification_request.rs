@@ -1,4 +1,4 @@
-use crate::{define_cls, define_obj_type, ns, objc};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "UNNotificationRequest")]
@@ -9,7 +9,7 @@ impl NotificationRequest {
     define_cls!(UN_NOTIFICATION_REQUEST);
 
     #[objc::msg_send(identifier)]
-    pub fn id(&self) -> &ns::String;
+    pub fn id(&self) -> arc::R<ns::String>;
 }
 
 extern "C" {
