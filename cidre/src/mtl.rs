@@ -251,7 +251,9 @@ pub use compute_pass::SampleBufAttachDescArray as ComputePassSampleBufAttachDesc
 
 mod counters;
 pub use counters::Counter;
+pub use counters::CounterResultStageUtilization;
 pub use counters::CounterResultStatistic;
+pub use counters::CounterResultTimestamp;
 pub use counters::CounterSampleBuf;
 pub use counters::CounterSet;
 pub use counters::Desc as CounterSampleBufDesc;

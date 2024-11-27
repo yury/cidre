@@ -15,8 +15,31 @@ impl CounterSampleBuf {
 
     #[objc::msg_send(sampleCount)]
     pub fn sample_count(&self) -> usize;
+
+    #[objc::msg_send(resolveCounterRange:)]
+    pub fn resolve_counter_range(&self, range: ns::Range) -> Option<arc::R<ns::Data>>;
 }
 
+/// A timestamp value from a GPU at a particular point in time during an operation,
+/// typically at the beginning or ending of a render stage.
+#[doc(alias = "MTLCounterResultTimestamp")]
+#[derive(Debug)]
+#[repr(C)]
+pub struct CounterResultTimestamp(pub u64);
+
+#[doc(alias = "MTLCounterResultStageUtilization")]
+#[derive(Debug)]
+#[repr(C)]
+pub struct CounterResultStageUtilization {
+    pub total_cycles: u64,
+    pub vertex_cycles: u64,
+    pub tessellation_cycles: u64,
+    pub post_tessellation_vertex_cycles: u64,
+    pub fragment_cycles: u64,
+    pub render_target_cycles: u64,
+}
+
+#[doc(alias = "MTLCounterResultStatistic")]
 #[derive(Debug)]
 #[repr(C)]
 pub struct CounterResultStatistic {
@@ -30,15 +53,21 @@ pub struct CounterResultStatistic {
     pub compute_kernel_invocations: u64,
 }
 
-define_obj_type!(pub Counter(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLCounter")]
+    pub Counter(ns::Id)
+);
 
 impl Counter {
     /// The name of a GPU’s counter instance.
     #[objc::msg_send(name)]
-    pub fn name(&self) -> &ns::String;
+    pub fn name(&self) -> arc::R<ns::String>;
 }
 
-define_obj_type!(pub CounterSet(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLCounterSet")]
+    pub CounterSet(ns::Id)
+);
 
 impl CounterSet {
     /// The name of the GPU’s counter set instance.
@@ -46,7 +75,7 @@ impl CounterSet {
     pub fn name(&self) -> &ns::String;
 
     #[objc::msg_send(counters)]
-    pub fn counters(&self) -> &ns::Array<Counter>;
+    pub fn counters(&self) -> arc::R<ns::Array<Counter>>;
 }
 
 define_obj_type!(
@@ -66,7 +95,7 @@ impl Desc {
     pub fn sample_count(&self) -> usize;
 
     #[objc::msg_send(setSampleCount:)]
-    pub fn set_sample_count(&mut self, value: usize);
+    pub fn set_sample_count(&mut self, val: usize);
 }
 
 #[link(name = "mtl", kind = "static")]
