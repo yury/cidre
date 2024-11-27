@@ -1,12 +1,15 @@
-use crate::{define_obj_type, mlc, ns, objc};
+use crate::{arc, define_obj_type, mlc, ns, objc};
 
-define_obj_type!(pub Layer(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MLCLayer")]
+    pub Layer(ns::Id)
+);
 impl Layer {
     #[objc::msg_send(layerID)]
     pub fn layer_id(&self) -> usize;
 
     #[objc::msg_send(label)]
-    pub fn label(&self) -> &ns::String;
+    pub fn label(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(setLabel:)]
     pub fn set_label(&mut self, val: &ns::String);

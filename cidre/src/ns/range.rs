@@ -10,13 +10,13 @@ pub struct Range {
 
 impl Range {
     #[inline]
-    pub fn new(loc: ns::UInteger, len: ns::UInteger) -> Self {
+    pub const fn new(loc: ns::UInteger, len: ns::UInteger) -> Self {
         Self { loc, len }
     }
 
     #[doc(alias = "NSMaxRange")]
     #[inline]
-    pub fn max(&self) -> ns::UInteger {
+    pub const fn max(&self) -> ns::UInteger {
         self.loc + self.len
     }
 
@@ -46,7 +46,7 @@ impl Range {
     /// ```
     #[doc(alias = "NSLocationInRange")]
     #[inline]
-    pub fn loc_in_range(location: ns::UInteger, range: &Self) -> bool {
+    pub const fn loc_in_range(location: ns::UInteger, range: &Self) -> bool {
         location >= range.loc && (location - range.loc) < range.len
     }
 
@@ -58,7 +58,7 @@ impl Range {
     /// assert!(!a.contains(10));
     /// ```
     #[inline]
-    pub fn contains(&self, location: ns::UInteger) -> bool {
+    pub const fn contains(&self, location: ns::UInteger) -> bool {
         Range::loc_in_range(location, self)
     }
 }

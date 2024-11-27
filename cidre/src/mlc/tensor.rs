@@ -11,13 +11,13 @@ impl Tensor {
     pub fn tensor_id(&self) -> usize;
 
     #[objc::msg_send(descriptor)]
-    pub fn desc(&self) -> &mlc::TensorDesc;
+    pub fn desc(&self) -> arc::R<mlc::TensorDesc>;
 
     #[objc::msg_send(data)]
-    pub fn data(&self) -> Option<&ns::Data>;
+    pub fn data(&self) -> Option<arc::R<ns::Data>>;
 
     #[objc::msg_send(label)]
-    pub fn label(&self) -> &ns::String;
+    pub fn label(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(setLabel:)]
     pub fn set_label(&mut self, val: &ns::String);
