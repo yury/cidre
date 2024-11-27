@@ -32,14 +32,10 @@ define_obj_type!(
 
 impl SampleBufAttachDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn obj_at(&self, attachment_index: usize) -> arc::R<SampleBufAttachDesc>;
+    pub fn get(&self, attachment_index: usize) -> arc::R<SampleBufAttachDesc>;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_obj_at(
-        &mut self,
-        val: Option<&SampleBufAttachDesc>,
-        attachment_index: usize,
-    ) -> arc::R<SampleBufAttachDesc>;
+    pub fn set(&mut self, val: Option<&SampleBufAttachDesc>, attachment_index: usize);
 }
 
 define_obj_type!(
@@ -68,7 +64,7 @@ mod tests {
     fn basics() {
         let bpd = mtl::BlitPassDesc::new();
         let attaches = bpd.sample_buf_attaches();
-        let mut attach = attaches.obj_at(0);
+        let mut attach = attaches.get(0);
         attach.set_start_of_encoder_sample_index(0);
         assert!(attach.sample_buffer().is_none());
     }

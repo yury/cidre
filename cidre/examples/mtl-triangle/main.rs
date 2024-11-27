@@ -71,7 +71,9 @@ fn main() {
         let mut desc = mtl::RenderPipelineDesc::new().with_fns(&vertex_fn, &fragment_fn);
 
         desc.set_raster_sample_count(4);
-        desc.color_attaches()[0].set_pixel_format(mtl::PixelFormat::Rgba8UNorm);
+        desc.color_attaches()
+            .get(0)
+            .set_pixel_format(mtl::PixelFormat::Rgba8UNorm);
 
         let render_ps = device.new_render_ps(&desc).unwrap();
 
@@ -81,7 +83,7 @@ fn main() {
         let rgba_texture = device.new_texture(&render_texture_desc).unwrap();
 
         let render_pass_desc = mtl::RenderPassDesc::new();
-        let ca = &mut render_pass_desc.color_attaches()[0];
+        let mut ca = render_pass_desc.color_attaches().get(0);
         ca.set_clear_color(mtl::ClearColor::red());
         ca.set_load_action(mtl::LoadAction::Clear);
         ca.set_store_action(mtl::StoreAction::Store);

@@ -30,27 +30,10 @@ define_obj_type!(
 
 impl PipelineBufDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn obj_at(&self, index: usize) -> &PipelineBufDesc;
-
-    #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn obj_mut_at(&mut self, index: usize) -> &mut PipelineBufDesc;
+    pub fn get(&self, index: usize) -> arc::R<PipelineBufDesc>;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_obj_at(&mut self, val: Option<&PipelineBufDesc>, at_index: usize);
-}
-
-impl std::ops::Index<usize> for PipelineBufDescArray {
-    type Output = PipelineBufDesc;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        self.obj_at(index)
-    }
-}
-
-impl std::ops::IndexMut<usize> for PipelineBufDescArray {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        self.obj_mut_at(index)
-    }
+    pub fn set(&mut self, val: Option<&PipelineBufDesc>, at_index: usize);
 }
 
 #[link(name = "mtl", kind = "static")]

@@ -201,32 +201,10 @@ define_obj_type!(
 
 impl ColorAttachDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn ar_get_at(&self, index: usize) -> &ColorAttachDesc;
-
-    #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_at(&self, index: usize) -> arc::R<ColorAttachDesc>;
-
-    #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn ar_get_mut_at(&mut self, index: usize) -> &mut ColorAttachDesc;
+    pub fn get(&self, index: usize) -> arc::R<ColorAttachDesc>;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_at(&mut self, object: Option<&ColorAttachDesc>, index: usize);
-}
-
-impl std::ops::Index<usize> for ColorAttachDescArray {
-    type Output = ColorAttachDesc;
-
-    #[inline]
-    fn index(&self, index: usize) -> &Self::Output {
-        self.ar_get_at(index)
-    }
-}
-
-impl std::ops::IndexMut<usize> for ColorAttachDescArray {
-    #[inline]
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        self.ar_get_mut_at(index)
-    }
+    pub fn set(&mut self, object: Option<&ColorAttachDesc>, index: usize);
 }
 
 define_obj_type!(pub AttachDesc(ns::Id));

@@ -1,5 +1,3 @@
-use std::ops::{Index, IndexMut};
-
 use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
 use super::{argument::Arg, Fn, PixelFormat};
@@ -167,7 +165,11 @@ impl Reflection {
     pub fn tile_args(&self) -> Option<&ns::Array<Arg>>;
 }
 
-define_obj_type!(pub Desc(ns::Id), MTL_RENDER_PIPELINE_DESCRIPTOR);
+define_obj_type!(
+   #[doc(alias = "MTLRenderPipelineDescriptor")]
+   pub Desc(ns::Id),
+   MTL_RENDER_PIPELINE_DESCRIPTOR
+);
 
 impl arc::R<Desc> {
     #[inline]
@@ -237,17 +239,24 @@ impl Desc {
     pub fn support_icbs(&self) -> bool;
 
     #[objc::msg_send(setSupportIndirectCommandBuffers:)]
-    pub fn set_support_icbs(&self, val: bool);
+    pub fn set_support_icbs(&mut self, val: bool);
 }
+
 #[link(name = "mtl", kind = "static")]
 extern "C" {
     static MTL_RENDER_PIPELINE_DESCRIPTOR: &'static objc::Class<Desc>;
     static MTL_TILE_RENDER_PIPELINE_DESCRIPTOR: &'static objc::Class<TileRenderPipelineDesc>;
 }
 
-define_obj_type!(pub FnsDesc(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLRenderPipelineFunctionsDescriptor")]
+    pub FnsDesc(ns::Id)
+);
 
-define_obj_type!(pub State(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLRenderPipelineState")]
+    pub State(ns::Id)
+);
 
 impl State {
     define_mtl!(gpu_res_id);
@@ -271,49 +280,23 @@ impl State {
     pub fn support_indirect_cmd_bufs(&self) -> bool;
 }
 
-define_obj_type!(pub ColorAttachDescArray(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLRenderPipelineColorAttachmentDescriptorArray")]
+    pub ColorAttachDescArray(ns::Id)
+);
 
 impl ColorAttachDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn ar_get_at(&self, index: usize) -> &ColorAttachDesc;
-
-    #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_at(&self, index: usize) -> arc::R<ColorAttachDesc>;
-
-    #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn ar_get_mut_at(&mut self, index: usize) -> &mut ColorAttachDesc;
+    pub fn get(&self, index: usize) -> arc::R<ColorAttachDesc>;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
-    pub fn set_object_at(&mut self, object: Option<&ColorAttachDesc>, index: usize);
-
-    #[inline]
-    pub fn set_at(&mut self, index: usize, val: &ColorAttachDesc) {
-        self.set_object_at(Some(val), index);
-    }
-
-    #[inline]
-    pub fn reset_at(&mut self, index: usize) {
-        self.set_object_at(None, index)
-    }
+    pub fn set(&mut self, object: Option<&ColorAttachDesc>, index: usize);
 }
 
-impl Index<usize> for ColorAttachDescArray {
-    type Output = ColorAttachDesc;
-
-    #[inline]
-    fn index(&self, index: usize) -> &Self::Output {
-        self.ar_get_at(index)
-    }
-}
-
-impl IndexMut<usize> for ColorAttachDescArray {
-    #[inline]
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        self.ar_get_mut_at(index)
-    }
-}
-
-define_obj_type!(pub TileRenderPipelineColorAttachDesc(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLTileRenderPipelineColorAttachmentDescriptor")]
+    pub TileRenderPipelineColorAttachDesc(ns::Id)
+);
 
 impl TileRenderPipelineColorAttachDesc {
     #[objc::msg_send(pixelFormat)]
@@ -323,30 +306,17 @@ impl TileRenderPipelineColorAttachDesc {
     pub fn set_pixel_format(&mut self, val: mtl::PixelFormat);
 }
 
-define_obj_type!(pub TileRenderPipelineColorAttachDescArray(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLTileRenderPipelineColorAttachmentDescriptorArray")]
+    pub TileRenderPipelineColorAttachDescArray(ns::Id)
+);
 
 impl TileRenderPipelineColorAttachDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn obj_at(&self, index: usize) -> &TileRenderPipelineColorAttachDesc;
+    pub fn get(&self, index: usize) -> arc::R<TileRenderPipelineColorAttachDesc>;
 
-    #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn obj_at_mut(&mut self, index: usize) -> &mut TileRenderPipelineColorAttachDesc;
-}
-
-impl std::ops::Index<usize> for TileRenderPipelineColorAttachDescArray {
-    type Output = TileRenderPipelineColorAttachDesc;
-
-    #[inline]
-    fn index(&self, index: usize) -> &Self::Output {
-        self.obj_at(index)
-    }
-}
-
-impl std::ops::IndexMut<usize> for TileRenderPipelineColorAttachDescArray {
-    #[inline]
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        self.obj_at_mut(index)
-    }
+    #[objc::msg_send(setObject:atIndexedSubscript:)]
+    pub fn set(&mut self, val: Option<&TileRenderPipelineColorAttachDesc>, index: usize);
 }
 
 impl arc::R<TileRenderPipelineDesc> {
@@ -373,7 +343,7 @@ impl TileRenderPipelineDesc {
     pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(tileFunction)]
-    pub fn tile_fn(&self) -> &mtl::Fn;
+    pub fn tile_fn(&self) -> arc::R<mtl::Fn>;
 
     #[objc::msg_send(setTileFunction:)]
     pub fn set_tile_fn(&mut self, val: &mtl::Fn);
@@ -385,10 +355,7 @@ impl TileRenderPipelineDesc {
     pub fn set_raster_sample_count(&mut self, val: usize);
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attaches(&self) -> &TileRenderPipelineColorAttachDescArray;
-
-    #[objc::msg_send(colorAttachments)]
-    pub fn color_attaches_mut(&mut self) -> &mut TileRenderPipelineColorAttachDescArray;
+    pub fn color_attaches(&self) -> arc::R<TileRenderPipelineColorAttachDescArray>;
 
     #[objc::msg_send(threadgroupSizeMatchesTileSize)]
     pub fn threadgroup_size_matches_tile_size(&self) -> bool;
@@ -397,13 +364,13 @@ impl TileRenderPipelineDesc {
     pub fn set_threadgroup_size_matches_tile_size(&mut self, val: bool);
 
     #[objc::msg_send(tileBuffers)]
-    pub fn tile_bufs(&self) -> &mtl::PipelineBufDescArray;
-
-    #[objc::msg_send(tileBuffers)]
-    pub fn tile_bufs_mut(&mut self) -> &mut mtl::PipelineBufDescArray;
+    pub fn tile_bufs(&self) -> arc::R<mtl::PipelineBufDescArray>;
 }
 
-define_obj_type!(pub MeshRenderPipelineDesc(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLMeshRenderPipelineDescriptor")]
+    pub MeshRenderPipelineDesc(ns::Id)
+);
 
 impl MeshRenderPipelineDesc {
     define_mtl!(reset, set_label);
@@ -417,7 +384,7 @@ impl MeshRenderPipelineDesc {
     /// how many threadgroups of the mesh stage to run.
     /// The default value is None.
     #[objc::msg_send(objectFunction)]
-    pub fn object_fn(&self) -> Option<&Fn>;
+    pub fn object_fn(&self) -> Option<arc::R<Fn>>;
 
     #[objc::msg_send(setObjectFunction:)]
     pub fn set_object_fn(&mut self, val: Option<&Fn>);
@@ -425,7 +392,7 @@ impl MeshRenderPipelineDesc {
     /// Shader function responsible for exporting a chunk of geometry per threadgroup for the rasterizer.
     /// The default value is None.
     #[objc::msg_send(meshFunction)]
-    pub fn mesh_fn(&self) -> Option<&Fn>;
+    pub fn mesh_fn(&self) -> Option<arc::R<Fn>>;
 
     #[objc::msg_send(setMeshFunction:)]
     pub fn set_mesh_fn(&mut self, val: Option<&Fn>);
@@ -435,7 +402,7 @@ impl MeshRenderPipelineDesc {
     /// The default value is None. To create a pipeline, you must either set fragment_fn to Some,
     /// or set_rasterization_enabled to false.
     #[objc::msg_send(fragmentFunction)]
-    pub fn fragment_fn(&self) -> Option<&Fn>;
+    pub fn fragment_fn(&self) -> Option<arc::R<Fn>>;
 
     #[objc::msg_send(setFragmentFunction:)]
     pub fn set_fragment_fn(&mut self, val: Option<&Fn>);
@@ -479,24 +446,15 @@ impl MeshRenderPipelineDesc {
     /// Provide mutability information on the buffers used by obj_fn.
     /// Specifying these values is optional; it may be used to optimize the shader code.
     #[objc::msg_send(objectBuffers)]
-    pub fn obj_bufs(&self) -> &mtl::PipelineBufDescArray;
-
-    #[objc::msg_send(objectBuffers)]
-    pub fn obj_bufs_mut(&mut self) -> &mut mtl::PipelineBufDescArray;
+    pub fn obj_bufs(&self) -> arc::R<mtl::PipelineBufDescArray>;
 
     /// Specifying these values is optional; it may be used to optimize the shader code.
     #[objc::msg_send(meshBuffers)]
-    pub fn mesh_bufs(&self) -> &mtl::PipelineBufDescArray;
-
-    #[objc::msg_send(meshBuffers)]
-    pub fn mesh_bufs_mut(&mut self) -> &mut mtl::PipelineBufDescArray;
+    pub fn mesh_bufs(&self) -> arc::R<mtl::PipelineBufDescArray>;
 
     /// Specifying these values is optional; it may be used to optimize the shader code.
     #[objc::msg_send(fragmentBuffers)]
-    pub fn fragment_bufs(&self) -> &mtl::PipelineBufDescArray;
-
-    #[objc::msg_send(fragmentBuffers)]
-    pub fn fragment_bufs_mut(&mut self) -> &mut mtl::PipelineBufDescArray;
+    pub fn fragment_bufs(&self) -> arc::R<mtl::PipelineBufDescArray>;
 
     /// The number of samples per fragment of the render pass in which this pipeline will be used.
     #[objc::msg_send(rasterSampleCount)]
@@ -538,10 +496,7 @@ impl MeshRenderPipelineDesc {
     pub fn set_max_vertex_amplification_count(&mut self, val: usize);
 
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attaches(&self) -> &mtl::RenderPipelineColorAttachDescArray;
-
-    #[objc::msg_send(colorAttachments)]
-    pub fn color_attaches_mut(&mut self) -> &mut mtl::RenderPipelineColorAttachDescArray;
+    pub fn color_attaches(&self) -> arc::R<mtl::RenderPipelineColorAttachDescArray>;
 
     /// The pixel format of the depth attachment of the render pass in which this pipeline will be used.
     /// The default value is mtl::PixelFormat::Invalid; indicating no depth attachment will be used.
