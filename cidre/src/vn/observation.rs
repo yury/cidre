@@ -13,7 +13,7 @@ define_obj_type!(
 impl RecognizedText {
     /// The top candidate for recognized text.
     #[objc::msg_send(string)]
-    pub fn string(&self) -> &ns::String;
+    pub fn string(&self) -> arc::R<ns::String>;
 
     /// A normalized confidence score for the text recognition result.
     #[objc::msg_send(confidence)]
@@ -29,7 +29,7 @@ impl RecognizedText {
     pub fn bounding_box_for_range<'ear>(
         &self,
         range: ns::Range,
-    ) -> Result<arc::R<vn::RectangleObservation>, &'ear ns::Error> {
+    ) -> ns::Result<'ear, arc::R<vn::RectangleObservation>> {
         ns::if_none(|err| unsafe { self.bounding_box_for_range_err(range, err) })
     }
 }
@@ -37,7 +37,7 @@ impl RecognizedText {
 impl Observation {
     /// The unique identifier assigned to an observation.
     #[objc::msg_send(uuid)]
-    pub fn uuid(&self) -> &ns::Uuid;
+    pub fn uuid(&self) -> arc::R<ns::Uuid>;
 
     /// The level of confidence normalized to [0, 1] where 1 is most confident
     ///
@@ -61,7 +61,7 @@ impl DetectedObjectObservation {
     pub fn bounding_box(&self) -> cg::Rect;
 
     #[objc::msg_send(globalSegmentationMask)]
-    pub fn global_segmentation_mask(&self) -> Option<&vn::PixelBufObservation>;
+    pub fn global_segmentation_mask(&self) -> Option<arc::R<vn::PixelBufObservation>>;
 }
 
 define_obj_type!(pub FaceObservation(DetectedObjectObservation));
@@ -70,7 +70,7 @@ impl FaceObservation {
     /// The face landmarks populated by the vn::DetectFaceLandmarksRequest.
     /// This is set to nil if only a vn::DetectFaceRectanglesRequest was performed.
     #[objc::msg_send(landmarks)]
-    pub fn landmarks(&self) -> Option<&vn::FaceLandmarks2d>;
+    pub fn landmarks(&self) -> Option<arc::R<vn::FaceLandmarks2d>>;
 
     /// The capture quality of the face as a normalized value between 0.0 and 1.0
     /// that can be used to compare the quality of the face in terms of it capture
@@ -79,35 +79,35 @@ impl FaceObservation {
     #[doc(alias = "faceCaptureQuality")]
     #[inline]
     #[objc::msg_send(faceCaptureQuality)]
-    pub fn face_capture_quality(&self) -> Option<&ns::Number>;
+    pub fn face_capture_quality(&self) -> Option<arc::R<ns::Number>>;
 
     /// Face roll angle populated by vn::DetectFaceRectanglesRequest.
     /// The roll is reported in radians, positive angle corresponds
     /// to counterclockwise direction, range [-Pi, Pi). None value indicates
     /// that the roll angle hasn't been computed
     #[objc::msg_send(roll)]
-    pub fn roll(&self) -> Option<&ns::Number>;
+    pub fn roll(&self) -> Option<arc::R<ns::Number>>;
 
     /// Face yaw angle populated by vn::DetectFaceRectanglesRequest.
     /// The yaw is reported in radians, positive angle corresponds to
     /// counterclockwise direction, range [-Pi/2, Pi/2]. None value indicates
     /// that the yaw angle hasn't been computed
     #[objc::msg_send(yaw)]
-    pub fn yaw(&self) -> Option<&ns::Number>;
+    pub fn yaw(&self) -> Option<arc::R<ns::Number>>;
 
     /// Face pitch angle populated by VNDetectFaceRectanglesRequest.
     /// The pitch is reported in radians, positive angle corresponds
     /// to nodding head down direction, range [-Pi/2, Pi/2]. None value indicates
     /// that the pitch angle hasn't been computed
     #[objc::msg_send(pitch)]
-    pub fn pitch(&self) -> Option<&ns::Number>;
+    pub fn pitch(&self) -> Option<arc::R<ns::Number>>;
 }
 
 define_obj_type!(pub ClassificationObservation(Observation));
 
 impl ClassificationObservation {
     #[objc::msg_send(identifier)]
-    pub fn id(&self) -> &ns::String;
+    pub fn id(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(hasPrecisionRecallCurve)]
     pub fn has_precision_recall_curve(&self) -> bool;
@@ -123,14 +123,14 @@ define_obj_type!(pub RecognizedObjectObservation(DetectedObjectObservation));
 
 impl RecognizedObjectObservation {
     #[objc::msg_send(lables)]
-    pub fn labels(&self) -> &ns::Array<vn::ClassificationObservation>;
+    pub fn labels(&self) -> arc::R<ns::Array<vn::ClassificationObservation>>;
 }
 
 define_obj_type!(pub CoreMLFeatureValueObservation(Observation));
 
 impl CoreMLFeatureValueObservation {
     #[objc::msg_send(featureName)]
-    pub fn feature_name(&self) -> &ns::String;
+    pub fn feature_name(&self) -> arc::R<ns::String>;
 }
 
 define_obj_type!(pub RectangleObservation(DetectedObjectObservation));
@@ -146,7 +146,7 @@ impl TextObservation {
     /// the vn::DetectTextRectanglesRequest reportCharacterBoxes property to true,
     /// this property will be non-nil (but may still be empty, depending on the detection results)
     #[objc::msg_send(characterBoxes)]
-    pub fn character_boxes(&self) -> Option<&ns::Array<RectangleObservation>>;
+    pub fn character_boxes(&self) -> Option<arc::R<ns::Array<RectangleObservation>>>;
 }
 
 define_obj_type!(
@@ -156,7 +156,7 @@ define_obj_type!(
 
 impl RecognizedTextObservation {
     #[objc::msg_send(topCandidates:)]
-    pub fn top_candidates(&self, max: usize) -> &ns::Array<RecognizedText>;
+    pub fn top_candidates(&self, max: usize) -> arc::R<ns::Array<RecognizedText>>;
 }
 
 define_obj_type!(
@@ -169,7 +169,7 @@ impl PixelBufObservation {
     pub fn pixel_buffer(&self) -> &cv::PixelBuf;
 
     #[objc::msg_send(featureName)]
-    pub fn feature_name(&self) -> Option<&ns::String>;
+    pub fn feature_name(&self) -> Option<arc::R<ns::String>>;
 }
 
 define_obj_type!(
@@ -233,7 +233,7 @@ impl InstanceMaskObservation {
     pub fn generate_mask_for_instances<'ear>(
         &self,
         instances: &ns::IndexSet,
-    ) -> Result<arc::Retained<cv::PixelBuf>, &'ear ns::Error> {
+    ) -> ns::Result<'ear, arc::Retained<cv::PixelBuf>> {
         ns::if_none(|err| unsafe { self.generate_mask_for_instances_err(instances, err) })
     }
 
@@ -253,7 +253,7 @@ impl InstanceMaskObservation {
         instances: &ns::IndexSet,
         request_handler: &vn::ImageRequestHandler,
         crop_result: bool,
-    ) -> Result<arc::Retained<cv::PixelBuf>, &'ear ns::Error> {
+    ) -> ns::Result<'ear, arc::Retained<cv::PixelBuf>> {
         ns::if_none(|err| unsafe {
             self.generate_masked_image_for_instances_cropped_err(
                 instances,
@@ -278,7 +278,7 @@ impl InstanceMaskObservation {
         &self,
         instances: &ns::IndexSet,
         request_handler: &vn::ImageRequestHandler,
-    ) -> Result<arc::Retained<cv::PixelBuf>, &'ear ns::Error> {
+    ) -> ns::Result<'ear, arc::Retained<cv::PixelBuf>> {
         ns::if_none(|err| unsafe {
             self.generate_scaled_mask_for_instances_err(instances, request_handler, err)
         })
@@ -292,7 +292,7 @@ define_obj_type!(
 
 impl SaliencyImageObservation {
     #[objc::msg_send(salientObjects)]
-    pub fn salient_objs(&self) -> Option<&ns::Array<RectangleObservation>>;
+    pub fn salient_objs(&self) -> Option<arc::R<ns::Array<RectangleObservation>>>;
 }
 
 define_obj_type!(
@@ -308,7 +308,7 @@ impl FeaturePrintObservation {
     pub fn element_count(&self) -> usize;
 
     #[objc::msg_send(data)]
-    pub fn data(&self) -> &ns::Data;
+    pub fn data(&self) -> arc::R<ns::Data>;
 
     pub fn vec_of<T: Sized>(&self) -> Vec<T> {
         let count = self.element_count();
@@ -349,7 +349,7 @@ impl FeaturePrintObservation {
     /// Shorter distances indicate greater similarity between feature prints.
     #[doc(alias = "computeDistance:toFeaturePrintObservation:error:")]
     #[inline]
-    pub fn distance_to<'ear>(&self, to: &FeaturePrintObservation) -> Result<f32, &'ear ns::Error> {
+    pub fn distance_to<'ear>(&self, to: &FeaturePrintObservation) -> ns::Result<'ear, f32> {
         let mut distance = 0f32;
         let mut error = None;
         unsafe {

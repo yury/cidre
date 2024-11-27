@@ -87,13 +87,13 @@ impl Voice {
     pub fn current_lang_code() -> arc::R<ns::String>;
 
     #[objc::msg_send(language)]
-    pub fn lang(&self) -> Option<&ns::String>;
+    pub fn lang(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(identifier)]
-    pub fn id(&self) -> &ns::String;
+    pub fn id(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(name)]
-    pub fn name(&self) -> &ns::String;
+    pub fn name(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(quality)]
     pub fn quality(&self) -> VoiceQuality;
@@ -102,7 +102,7 @@ impl Voice {
     pub fn gender(&self) -> VoiceGender;
 
     #[objc::msg_send(audioFileSettings)]
-    pub fn audio_file_settings(&self) -> Option<&ns::Dictionary<ns::String, ns::Id>>;
+    pub fn audio_file_settings(&self) -> Option<arc::R<ns::Dictionary<ns::String, ns::Id>>>;
 
     #[objc::msg_send(voiceWithLanguage:)]
     pub fn with_lang(lang_code: Option<&ns::String>) -> Option<arc::R<Self>>;
@@ -157,16 +157,16 @@ impl Utterance {
     }
 
     #[objc::msg_send(voice)]
-    pub fn voice(&self) -> Option<&Voice>;
+    pub fn voice(&self) -> Option<arc::R<Voice>>;
 
     #[objc::msg_send(setVoice:)]
     pub fn set_voice(&mut self, val: Option<&Voice>);
 
     #[objc::msg_send(speechString)]
-    pub fn speech_string(&self) -> &ns::String;
+    pub fn speech_string(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(attributedSpeechString)]
-    pub fn speech_attr_string(&self) -> Option<&ns::AttrString>;
+    pub fn speech_attr_string(&self) -> Option<arc::R<ns::AttrString>>;
 
     #[objc::msg_send(rate)]
     pub fn rate(&self) -> f32;
@@ -398,8 +398,8 @@ mod tests {
 
         let v1 = &av::SpeechSynthesisVoice::voices()[0];
 
-        let _v = av::SpeechSynthesisVoice::with_id(v1.id()).unwrap();
-        let _v = av::SpeechSynthesisVoice::with_lang(v1.lang()).unwrap();
+        let _v = av::SpeechSynthesisVoice::with_id(&v1.id()).unwrap();
+        let _v = av::SpeechSynthesisVoice::with_lang(Some(&v1.lang().unwrap())).unwrap();
     }
 
     #[tokio::test]
@@ -417,12 +417,12 @@ mod tests {
         let str = ns::str!(c"Hello");
 
         let ut = av::SpeechUtterance::with_string(str);
-        assert_eq!(ut.speech_string(), str);
+        assert_eq!(&ut.speech_string(), str);
         assert!(ut.speech_attr_string().is_none());
 
         let attr_str = ns::AttrString::with_string(&str);
         let ut = av::SpeechUtterance::with_attr_string(&attr_str);
-        assert_eq!(ut.speech_string(), str);
+        assert_eq!(&ut.speech_string(), str);
         assert_eq!(ut.speech_attr_string().unwrap().string(), str);
     }
 }

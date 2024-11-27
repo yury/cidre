@@ -72,7 +72,7 @@ define_obj_type!(
 impl CounterSet {
     /// The name of the GPU’s counter set instance.
     #[objc::msg_send(name)]
-    pub fn name(&self) -> &ns::String;
+    pub fn name(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(counters)]
     pub fn counters(&self) -> arc::R<ns::Array<Counter>>;

@@ -1,4 +1,4 @@
-use crate::{api, cm, define_obj_type, ns, objc};
+use crate::{api, arc, cm, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "AVCaptureReactionType")]
@@ -69,7 +69,7 @@ impl ReactionType {
     #[doc(alias = "AVCaptureReactionSystemImageNameForType")]
     #[inline]
     #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
-    pub fn sys_image_name(&self) -> &ns::String {
+    pub fn sys_image_name(&self) -> arc::R<ns::String> {
         unsafe { AVCaptureReactionSystemImageNameForType(self) }
     }
 }
@@ -102,7 +102,7 @@ extern "C" {
     static AVCaptureReactionTypeLasers: &'static ReactionType;
 
     #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
-    fn AVCaptureReactionSystemImageNameForType(reacton_type: &ReactionType) -> &ns::String;
+    fn AVCaptureReactionSystemImageNameForType(reacton_type: &ReactionType) -> arc::R<ns::String>;
 }
 
 define_obj_type!(
@@ -135,9 +135,9 @@ mod tests {
     #[test]
     fn basics() {
         let name = av::CaptureReactionType::thumbs_up().sys_image_name();
-        assert_eq!(name, "hand.thumbsup.fill");
+        assert_eq!(name.as_ref(), "hand.thumbsup.fill");
 
         let name = av::CaptureReactionType::thumbs_down().sys_image_name();
-        assert_eq!(name, "hand.thumbsdown.fill");
+        assert_eq!(name.as_ref(), "hand.thumbsdown.fill");
     }
 }

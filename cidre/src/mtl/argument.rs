@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, ns, objc};
 
 #[doc(alias = "MTLDataType")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -186,5 +186,5 @@ define_obj_type!(pub Arg(ns::Id));
 
 impl Arg {
     #[objc::msg_send(name)]
-    pub fn name(&self) -> &ns::String;
+    pub fn name(&self) -> arc::R<ns::String>;
 }
