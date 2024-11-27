@@ -113,6 +113,12 @@ macro_rules! accessors {
 #[repr(C)]
 pub struct Simd<T, const LANES: usize, const N: usize>([T; LANES]);
 
+impl<T: Default + Copy, const LANES: usize, const N: usize> Default for Simd<T, LANES, N> {
+    fn default() -> Self {
+        Self([T::default(); LANES])
+    }
+}
+
 impl<T: PartialEq, const LANES: usize, const N: usize> PartialEq for Simd<T, LANES, N> {
     fn eq(&self, other: &Self) -> bool {
         for i in 0..N {
