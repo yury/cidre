@@ -24,7 +24,7 @@ impl Device {
     pub fn with_gpus(gpus: &ns::Array<mtl::Device>) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(gpuDevices)]
-    pub fn gpus(&self) -> &ns::Array<mtl::Device>;
+    pub fn gpus(&self) -> arc::R<ns::Array<mtl::Device>>;
 
     #[objc::msg_send(type)]
     pub fn device_type(&self) -> mlc::DeviceType;

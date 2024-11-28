@@ -80,13 +80,13 @@ impl Location {
     pub fn speed_accuracy(&self) -> cl::LocationSpeedAccuracy;
 
     #[objc::msg_send(timestamp)]
-    pub fn timestamp(&self) -> &ns::Date;
+    pub fn timestamp(&self) -> arc::R<ns::Date>;
 
     #[objc::msg_send(floor)]
-    pub fn floor(&self) -> Option<&cl::Floor>;
+    pub fn floor(&self) -> Option<arc::R<cl::Floor>>;
 
     #[objc::msg_send(sourceInformation)]
-    pub fn src_info(&self) -> Option<&cl::LocationSrcInfo>;
+    pub fn src_info(&self) -> Option<arc::R<cl::LocationSrcInfo>>;
 
     #[objc::msg_send(distanceFromLocation:)]
     pub fn distance_from_location(&self, location: &cl::Location) -> cl::LocationDistance;

@@ -1,6 +1,6 @@
 use std::{ffi::c_void, intrinsics::transmute};
 
-use crate::{define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, ns, objc};
 
 use super::objc_runtime::ExceptionName;
 
@@ -152,13 +152,13 @@ impl Exception {
     }
 
     #[objc::msg_send(name)]
-    pub fn name(&self) -> &ns::ExceptionName;
+    pub fn name(&self) -> arc::R<ns::ExceptionName>;
 
     #[objc::msg_send(reason)]
-    pub fn reason(&self) -> Option<&ns::String>;
+    pub fn reason(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(userInfo)]
-    pub fn user_info(&self) -> Option<&ns::Dictionary<ns::Id, ns::Id>>;
+    pub fn user_info(&self) -> Option<arc::R<ns::Dictionary<ns::Id, ns::Id>>>;
 }
 
 impl std::fmt::Display for Exception {

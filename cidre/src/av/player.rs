@@ -88,7 +88,7 @@ impl Player {
     /// to no longer be able to play items.
     /// If the receiver's status is not Status::Failed, the value of this property is nil.
     #[objc::msg_send(error)]
-    pub fn error(&self) -> Option<&ns::Error>;
+    pub fn error(&self) -> Option<arc::R<ns::Error>>;
 }
 
 define_obj_type!(

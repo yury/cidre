@@ -1831,7 +1831,7 @@ impl Format {
 /// # Determining Supported Media Formats
 impl Format {
     #[objc::msg_send(mediaType)]
-    pub fn media_type(&self) -> &av::MediaType;
+    pub fn media_type(&self) -> arc::R<av::MediaType>;
 
     #[objc::msg_send(formatDescription)]
     pub fn format_desc(&self) -> &cm::FormatDesc;
@@ -1841,7 +1841,7 @@ impl Format {
 impl Format {
     /// The list of capture output subclasses not allowed for capture with this format, if any.
     #[objc::msg_send(unsupportedCaptureOutputClasses)]
-    pub fn unsupported_capture_output_classes(&self) -> &ns::Array<objc::Class<ns::Id>>;
+    pub fn unsupported_capture_output_classes(&self) -> arc::R<ns::Array<objc::Class<ns::Id>>>;
 }
 
 /// # Determining Video Capture Support

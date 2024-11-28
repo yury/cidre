@@ -53,7 +53,7 @@ async fn main() {
     //     });
     // }
     let format = input.input_format_for_bus(0);
-    let mut analysis = sn::AudioStreamAnalyzer::with_format(format);
+    let mut analysis = sn::AudioStreamAnalyzer::with_format(&format);
 
     let obs = ResultsObs::new();
     let req = sn::ClassifySoundRequest::v1().unwrap();

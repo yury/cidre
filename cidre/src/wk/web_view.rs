@@ -23,7 +23,7 @@ impl WebView {
     pub fn set_inpectable(&self, val: bool);
 
     #[objc::msg_send(URL)]
-    pub fn url(&self) -> Option<&ns::Url>;
+    pub fn url(&self) -> Option<arc::R<ns::Url>>;
 
     #[objc::msg_send(isLoading)]
     pub fn is_loading(&self) -> bool;

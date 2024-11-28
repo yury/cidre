@@ -126,19 +126,19 @@ impl Task {
     pub fn state(&self) -> TaskState;
 
     #[objc::msg_send(error)]
-    pub fn error(&self) -> Option<&ns::Error>;
+    pub fn error(&self) -> Option<arc::R<ns::Error>>;
 
     #[objc::msg_send(taskIdentifier)]
     pub fn task_id(&self) -> ns::UInteger;
 
     #[objc::msg_send(originalRequest)]
-    pub fn original_request(&self) -> Option<&ns::UrlRequest>;
+    pub fn original_request(&self) -> Option<arc::R<ns::UrlRequest>>;
 
     #[objc::msg_send(currentRequest)]
-    pub fn current_request(&self) -> Option<&ns::UrlRequest>;
+    pub fn current_request(&self) -> Option<arc::R<ns::UrlRequest>>;
 
     #[objc::msg_send(response)]
-    pub fn response(&self) -> Option<&ns::UrlResponse>;
+    pub fn response(&self) -> Option<arc::R<ns::UrlResponse>>;
 
     #[objc::msg_send(priority)]
     pub fn priority(&self) -> f32;
@@ -262,10 +262,10 @@ impl WebSocketMessage {
     }
 
     #[objc::msg_send(data)]
-    pub fn data(&self) -> Option<&ns::Data>;
+    pub fn data(&self) -> Option<arc::R<ns::Data>>;
 
     #[objc::msg_send(string)]
-    pub fn string(&self) -> Option<&ns::String>;
+    pub fn string(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(type)]
     pub fn type_(&self) -> WebSocketMessageType;

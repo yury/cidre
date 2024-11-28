@@ -73,7 +73,7 @@ impl Error {
     pub fn code(&self) -> ns::Integer;
 
     #[objc::msg_send(domain)]
-    pub fn domain(&self) -> &ns::ErrorDomain;
+    pub fn domain(&self) -> arc::R<ns::ErrorDomain>;
 
     #[inline]
     pub fn with_domain(

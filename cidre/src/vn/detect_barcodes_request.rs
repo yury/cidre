@@ -11,10 +11,10 @@ impl DetectBarcodesRequest {
     pub const REVISION_3: usize = 3;
 
     #[objc::msg_send(results)]
-    pub fn results(&self) -> Option<&ns::Array<vn::BarcodeObservation>>;
+    pub fn results(&self) -> Option<arc::R<ns::Array<vn::BarcodeObservation>>>;
 
     #[objc::msg_send(symbologies)]
-    pub fn symbologies(&self) -> &ns::Array<vn::BarcodeSymbology>;
+    pub fn symbologies(&self) -> arc::R<ns::Array<vn::BarcodeSymbology>>;
 
     #[objc::msg_send(setSymbologies:)]
     pub fn set_symbologies(&mut self, value: &ns::Array<vn::BarcodeSymbology>);

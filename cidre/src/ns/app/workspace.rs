@@ -9,10 +9,10 @@ impl Workspace {
     define_cls!(NS_WORKSPACE);
 
     #[objc::msg_send(sharedWorkspace)]
-    pub fn shared() -> &'static mut Self;
+    pub fn shared() -> arc::R<Self>;
 
     #[objc::msg_send(notificationCenter)]
-    pub fn notification_center(&self) -> &ns::NotificationCenter;
+    pub fn notification_center(&self) -> arc::R<ns::NotificationCenter>;
 }
 
 #[doc(alias = "NSWorkspaceAuthorizationType")]

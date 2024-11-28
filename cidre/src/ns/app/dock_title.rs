@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "NSDockTile")]
@@ -10,10 +10,7 @@ impl DockTile {
     pub fn size(&self) -> ns::Size;
 
     #[objc::msg_send(contentView)]
-    pub fn content_view(&self) -> Option<&ns::View>;
-
-    #[objc::msg_send(contentView)]
-    pub fn content_view_mut(&mut self) -> Option<&mut ns::View>;
+    pub fn content_view(&self) -> Option<arc::R<ns::View>>;
 
     #[objc::msg_send(setContentView:)]
     pub fn set_content_view(&mut self, val: Option<&ns::View>);
@@ -28,11 +25,11 @@ impl DockTile {
     pub fn set_shows_app_badge(&mut self, val: bool);
 
     #[objc::msg_send(badgeLabel)]
-    pub fn badge_label(&self) -> Option<&ns::String>;
+    pub fn badge_label(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(setBadgeLabel:)]
     pub fn set_badge_label(&mut self, val: Option<&ns::String>);
 
     #[objc::msg_send(owner)]
-    pub fn owner(&self) -> &ns::Id;
+    pub fn owner(&self) -> arc::R<ns::Id>;
 }

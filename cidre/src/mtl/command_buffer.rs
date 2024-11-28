@@ -172,7 +172,7 @@ impl CmdBuf {
     /// If an error occurred during execution, the ns::Error may contain more details
     /// about the problem.
     #[objc::msg_send(error)]
-    pub fn error(&self) -> Option<&ns::Error>;
+    pub fn error(&self) -> Option<arc::R<ns::Error>>;
 
     /// The host time in seconds that GPU starts executing this command buffer.
     /// Returns zero if it has not started. This usually can be called in command buffer completion handler.

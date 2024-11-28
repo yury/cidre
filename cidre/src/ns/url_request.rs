@@ -83,7 +83,7 @@ impl UrlRequest {
     }
 
     #[objc::msg_send(URL)]
-    pub fn url(&self) -> Option<&ns::Url>;
+    pub fn url(&self) -> Option<arc::R<ns::Url>>;
 
     #[objc::msg_send(cachePolicy)]
     pub fn cache_policy(&self) -> CachePolicy;
@@ -113,16 +113,16 @@ impl UrlRequest {
     pub fn requires_dns_sec_validation(&self) -> bool;
 
     #[objc::msg_send(HTTPMethod)]
-    pub fn http_method(&self) -> Option<&ns::String>;
+    pub fn http_method(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(allHTTPHeaderFields)]
-    pub fn all_http_header_fields(&self) -> Option<&ns::Dictionary<ns::String, ns::String>>;
+    pub fn all_http_header_fields(&self) -> Option<arc::R<ns::Dictionary<ns::String, ns::String>>>;
 
     #[objc::msg_send(valueForHTTPHeaderField:)]
-    pub fn value_for_http_header_field<'a>(&'a self, field: &ns::String) -> Option<&'a ns::String>;
+    pub fn value_for_http_header_field(&self, field: &ns::String) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(HTTPBody)]
-    pub fn http_body(&self) -> Option<&ns::Data>;
+    pub fn http_body(&self) -> Option<arc::R<ns::Data>>;
 
     #[objc::msg_send(mutableCopy)]
     pub fn copy_mut(&self) -> arc::R<UrlRequestMut>;

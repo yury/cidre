@@ -12,7 +12,7 @@ define_obj_type!(pub CaptureDesc(ns::Id), MTL_CAPTURE_DESCRIPTOR);
 
 impl CaptureDesc {
     #[objc::msg_send(captureObject)]
-    pub fn capture_object(&self) -> Option<&ns::Id>;
+    pub fn capture_object(&self) -> Option<arc::R<ns::Id>>;
 
     #[objc::msg_send(setCaptureObject:)]
     pub fn set_capture_object(&mut self, val: &ns::Id);
@@ -24,7 +24,7 @@ impl CaptureDesc {
     pub fn set_dst(&self, val: CaptureDst);
 
     #[objc::msg_send(outputURL)]
-    pub fn output_url(&self) -> Option<&ns::Url>;
+    pub fn output_url(&self) -> Option<arc::R<ns::Url>>;
 
     #[objc::msg_send(setOutputURL:)]
     pub fn set_output_url(&mut self, val: Option<&ns::Url>);

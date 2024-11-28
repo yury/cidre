@@ -1,4 +1,4 @@
-use crate::{define_cls, define_obj_type, ns, objc};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 #[doc(alias = "UIDeviceOrientation")]
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
@@ -132,19 +132,19 @@ impl Device {
     pub fn set_battery_monitoring_enabled(&self, val: bool);
 
     #[objc::msg_send(identifierForVendor)]
-    pub fn id_for_vendor(&self) -> Option<&ns::Uuid>;
+    pub fn id_for_vendor(&self) -> Option<arc::R<ns::Uuid>>;
 
     #[objc::msg_send(model)]
-    pub fn model(&self) -> &ns::String;
+    pub fn model(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(systemName)]
-    pub fn system_name(&self) -> &ns::String;
+    pub fn system_name(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(name)]
-    pub fn name(&self) -> &ns::String;
+    pub fn name(&self) -> arc::R<ns::String>;
 
     #[objc::msg_send(systemVersion)]
-    pub fn system_version(&self) -> &ns::String;
+    pub fn system_version(&self) -> arc::R<ns::String>;
 
     /// Returns current device orientation. This will return Orientation::Unknown
     /// unless device orientation notifications are being generated.

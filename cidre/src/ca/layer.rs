@@ -111,7 +111,7 @@ impl Layer {
     pub fn insert_sublayer_at(&mut self, layer: &Self, index: u32);
 
     #[objc::msg_send(name)]
-    pub fn name(&self) -> Option<&ns::String>;
+    pub fn name(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(setName:)]
     pub fn set_name(&mut self, val: Option<&ns::String>);
@@ -141,10 +141,10 @@ impl Layer {
     pub fn remove_animation_for_key(&mut self, key: &ns::String);
 
     #[objc::msg_send(animationKeys)]
-    pub fn animation_keys(&self) -> Option<&ns::Array<ns::String>>;
+    pub fn animation_keys(&self) -> Option<arc::R<ns::Array<ns::String>>>;
 
     #[objc::msg_send(contents)]
-    pub fn contents(&self) -> Option<&Id>;
+    pub fn contents(&self) -> Option<arc::R<Id>>;
 
     #[objc::msg_send(setContents:)]
     pub fn set_ns_contents(&mut self, contents: Option<&ns::Id>);

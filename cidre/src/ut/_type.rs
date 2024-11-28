@@ -56,7 +56,7 @@ impl Type {
     pub fn is_subtype_of_type(&self, other: &Self) -> bool;
 
     #[objc::msg_send(supertypes)]
-    pub fn supertypes(&self) -> &ns::Set<Self>;
+    pub fn supertypes(&self) -> arc::R<ns::Set<Self>>;
 }
 
 #[link(name = "ut", kind = "static")]

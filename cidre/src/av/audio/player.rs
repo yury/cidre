@@ -145,7 +145,7 @@ impl Player {
     pub fn set_number_of_loops(&mut self, val: isize);
 
     #[objc::msg_send(settings)]
-    pub fn settings(&self) -> &ns::Dictionary<ns::String, ns::Id>;
+    pub fn settings(&self) -> arc::R<ns::Dictionary<ns::String, ns::Id>>;
 
     #[objc::msg_send(format)]
     pub fn format(&self) -> arc::R<av::AudioFormat>;

@@ -9,7 +9,7 @@ impl DetectDocumentSegmentationRequest {
     pub const REVISION_1: usize = 1;
 
     #[objc::msg_send(results)]
-    pub fn results(&self) -> Option<&ns::Array<vn::RectangleObservation>>;
+    pub fn results(&self) -> Option<arc::R<ns::Array<vn::RectangleObservation>>>;
 }
 
 #[link(name = "vn", kind = "static")]

@@ -47,7 +47,7 @@ impl Session {
     pub fn remaining_complication_user_info_transfers(&self) -> usize;
 
     #[objc::msg_send(watchDirectoryURL)]
-    pub fn watch_directory_url(&self) -> Option<&ns::Url>;
+    pub fn watch_directory_url(&self) -> Option<arc::R<ns::Url>>;
 
     #[objc::msg_send(isCompanionAppInstalled)]
     pub fn is_companion_app_installed(&self) -> bool;

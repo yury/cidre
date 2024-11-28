@@ -421,17 +421,17 @@ impl Connection {
     }
 
     #[objc::msg_send(inputPorts)]
-    pub fn input_ports(&self) -> &ns::Array<av::CaptureInputPort>;
+    pub fn input_ports(&self) -> arc::R<ns::Array<av::CaptureInputPort>>;
 
     #[objc::msg_send(output)]
-    pub fn output(&self) -> Option<&av::CaptureOutput>;
+    pub fn output(&self) -> Option<arc::R<av::CaptureOutput>>;
 
     #[objc::msg_send(videoPreviewLayer)]
-    pub fn video_preview_layer(&self) -> Option<&av::CaptureVideoPreviewLayer>;
+    pub fn video_preview_layer(&self) -> Option<arc::R<av::CaptureVideoPreviewLayer>>;
 
     /// An array of audio channels that the connection provides.
     #[objc::msg_send(audioChannels)]
-    pub fn audio_channels(&self) -> &ns::Array<AudioChannel>;
+    pub fn audio_channels(&self) -> arc::R<ns::Array<AudioChannel>>;
 
     #[objc::msg_send(isEnabled)]
     pub fn is_enabled(&self) -> bool;

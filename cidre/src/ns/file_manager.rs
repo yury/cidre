@@ -557,16 +557,16 @@ impl<K: objc::Obj, V: objc::Obj> ns::Dictionary<K, V> {
     pub fn file_size(&self) -> usize;
 
     #[objc::msg_send(file_type)]
-    pub fn file_type(&self) -> Option<&ns::String>;
+    pub fn file_type(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(file_type)]
     pub fn file_posix_permissions(&self) -> ns::UInteger;
 
     #[objc::msg_send(fileOwnerAccountName)]
-    pub fn file_owner_account_name(&self) -> Option<&ns::String>;
+    pub fn file_owner_account_name(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(fileGroupOwnerAccountName)]
-    pub fn file_group_owner_account_name(&self) -> Option<&ns::String>;
+    pub fn file_group_owner_account_name(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(fileSystemNumber)]
     pub fn file_system_number(&self) -> ns::Integer;
@@ -590,16 +590,16 @@ impl<K: objc::Obj, V: objc::Obj> ns::Dictionary<K, V> {
     pub fn file_is_append_only(&self) -> bool;
 
     #[objc::msg_send(fileModificationDate)]
-    pub fn file_modification_date(&self) -> Option<&ns::Date>;
+    pub fn file_modification_date(&self) -> Option<arc::R<ns::Date>>;
 
     #[objc::msg_send(fileCreationDate)]
-    pub fn file_creation_date(&self) -> Option<&ns::Date>;
+    pub fn file_creation_date(&self) -> Option<arc::R<ns::Date>>;
 
     #[objc::msg_send(fileOwnerAccountID)]
-    pub fn file_owner_account_id(&self) -> Option<&ns::Number>;
+    pub fn file_owner_account_id(&self) -> Option<arc::R<ns::Number>>;
 
     #[objc::msg_send(fileGroupOwnerAccountID)]
-    pub fn file_group_owner_account_id(&self) -> Option<&ns::Number>;
+    pub fn file_group_owner_account_id(&self) -> Option<arc::R<ns::Number>>;
 }
 
 #[cfg(test)]

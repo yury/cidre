@@ -10,7 +10,7 @@ impl NDArray {
     pub fn default_allocator() -> arc::R<NDArrayAllocator>;
 
     #[objc::msg_send(label)]
-    pub fn label(&self) -> Option<&ns::String>;
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(setLabel:)]
     pub fn set_label(&mut self, value: Option<&ns::String>);

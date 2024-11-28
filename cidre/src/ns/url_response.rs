@@ -44,7 +44,7 @@ impl UrlResponse {
     }
 
     #[objc::msg_send(URL)]
-    pub fn url(&self) -> Option<&ns::Url>;
+    pub fn url(&self) -> Option<arc::R<ns::Url>>;
 }
 
 #[link(name = "ns", kind = "static")]

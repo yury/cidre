@@ -71,31 +71,31 @@ impl Connection {
     }
 
     #[objc::msg_send(serviceName)]
-    pub fn service_name(&self) -> Option<&ns::String>;
+    pub fn service_name(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(endpoint)]
-    pub fn endpoint(&self) -> Option<&ListenerEndpoint>;
+    pub fn endpoint(&self) -> Option<arc::R<ListenerEndpoint>>;
 
     #[objc::msg_send(exportedInterface)]
-    pub fn exported_iface(&self) -> Option<&Iface>;
+    pub fn exported_iface(&self) -> Option<arc::R<Iface>>;
 
     #[objc::msg_send(setExportedInterface:)]
     pub fn set_exported_iface(&mut self, val: Option<&Iface>);
 
     #[objc::msg_send(exportedObject)]
-    pub fn exported_object(&self) -> Option<&ns::Id>;
+    pub fn exported_object(&self) -> Option<arc::R<ns::Id>>;
 
     #[objc::msg_send(setExportedObject:)]
     pub fn set_exported_object(&mut self, val: Option<&ns::Id>);
 
     #[objc::msg_send(remoteObjectInterface)]
-    pub fn remote_object_iface(&self) -> Option<&Iface>;
+    pub fn remote_object_iface(&self) -> Option<arc::R<Iface>>;
 
     #[objc::msg_send(setRemoteObjectInterface:)]
-    pub fn set_remote_object_iface(&mut self, val: Option<&Iface>);
+    pub fn set_remote_object_iface(&mut self, val: Option<arc::R<Iface>>);
 
     #[objc::msg_send(remoteObjectProxy)]
-    pub fn remote_object_proxy(&self) -> Option<&ns::Id>;
+    pub fn remote_object_proxy(&self) -> Option<arc::R<ns::Id>>;
 
     #[objc::msg_send(setRemoteObjectProxy:)]
     pub fn set_remote_object_proxy(&mut self, val: Option<&ns::Id>);
@@ -158,7 +158,7 @@ impl Iface {
     pub fn interface_with_protocol(protocol: &ns::Id) -> arc::R<Self>;
 
     #[objc::msg_send(protocol)]
-    pub fn protocol(&self) -> &ns::Id;
+    pub fn protocol(&self) -> arc::R<ns::Id>;
 
     #[objc::msg_send(setProtocol:)]
     pub fn set_protocol(&mut self, val: &ns::Id);

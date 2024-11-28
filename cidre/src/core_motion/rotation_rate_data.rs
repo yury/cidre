@@ -1,4 +1,4 @@
-use crate::{core_motion as cm, define_obj_type, ns, objc};
+use crate::{arc, core_motion as cm, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "CMRotationRateData")]
@@ -17,5 +17,5 @@ define_obj_type!(
 
 impl RecordedRotationRateData {
     #[objc::msg_send(startDate)]
-    pub fn start_date(&self) -> &ns::Date;
+    pub fn start_date(&self) -> arc::R<ns::Date>;
 }

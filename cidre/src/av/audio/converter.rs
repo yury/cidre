@@ -79,7 +79,7 @@ impl Converter {
 
     /// When encoding, an AVEncoderBitRateStrategyKey value constant as defined in AVAudioSettings.h. Returns nil if not encoding.
     #[objc::msg_send(bitRateStrategy)]
-    pub fn bit_rate_strategy(&self) -> Option<&ns::String>;
+    pub fn bit_rate_strategy(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(setBitRateStrategy:)]
     pub fn set_bit_rate_strategy(&self, value: Option<&ns::String>);
@@ -92,27 +92,27 @@ impl Converter {
     /// When encoding, an NSArray of NSNumber of all bit rates provided by the codec.
     /// Returns None if not encoding.
     #[objc::msg_send(availableEncodeBitRates)]
-    pub fn available_encode_bit_rates(&self) -> Option<&ns::Array<ns::Number>>;
+    pub fn available_encode_bit_rates(&self) -> Option<arc::R<ns::Array<ns::Number>>>;
 
     /// When encoding, an cf::Array of cf::Number of bit rates that can be applied based on the current formats and settings.
     /// Returns None if not encoding.
     #[objc::msg_send(applicableEncodeBitRates)]
-    pub fn applicable_encode_bit_rates(&self) -> Option<&ns::Array<ns::Number>>;
+    pub fn applicable_encode_bit_rates(&self) -> Option<arc::R<ns::Array<ns::Number>>>;
 
     /// When encoding, an NSArray of NSNumber of all output sample rates provided by the codec.
     /// Returns None if not encoding.
     #[objc::msg_send(availableEncodeSampleRates)]
-    pub fn available_encode_sample_rates(&self) -> Option<&ns::Array<ns::Number>>;
+    pub fn available_encode_sample_rates(&self) -> Option<arc::R<ns::Array<ns::Number>>>;
 
     /// When encoding, an cf::Array of cf::Number of output sample rates that can be applied based on the current formats and settings.
     /// Returns None if not encoding.
     #[objc::msg_send(applicableEncodeSampleRates)]
-    pub fn applicable_encode_sample_rates(&self) -> Option<&ns::Array<ns::Number>>;
+    pub fn applicable_encode_sample_rates(&self) -> Option<arc::R<ns::Array<ns::Number>>>;
 
     /// When encoding, an cf::Array of cf::Number of all output channel layout tags provided by the codec.
     /// Returns None if not encoding
     #[objc::msg_send(availableEncodeChannelLayoutTags)]
-    pub fn available_encode_channel_layout_tags(&self) -> Option<&ns::Array<ns::Number>>;
+    pub fn available_encode_channel_layout_tags(&self) -> Option<arc::R<ns::Array<ns::Number>>>;
 
     #[objc::msg_send(convertToBuffer:fromBuffer:error:)]
     pub unsafe fn convert_to_buf_from_buf_err<'ear>(

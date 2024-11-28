@@ -26,7 +26,7 @@ impl GenImageFeaturePrintRequest {
     }
 
     #[objc::msg_send(results)]
-    pub fn results(&self) -> Option<&ns::Array<vn::FeaturePrintObservation>>;
+    pub fn results(&self) -> Option<arc::R<ns::Array<vn::FeaturePrintObservation>>>;
 
     #[objc::msg_send(imageCropAndScaleOption)]
     pub fn image_crop_and_scale_option(&self) -> vn::ImageCropAndScaleOpt;

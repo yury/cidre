@@ -16,7 +16,7 @@ impl ClassifyImageRequest {
     pub const REVISION_2: usize = 2;
 
     #[objc::msg_send(results)]
-    pub fn results(&self) -> Option<&ns::Array<vn::ClassificationObservation>>;
+    pub fn results(&self) -> Option<arc::R<ns::Array<vn::ClassificationObservation>>>;
 
     #[objc::msg_send(supportedIdentifiersAndReturnError:)]
     pub unsafe fn supported_ids_and_return_err<'ear>(

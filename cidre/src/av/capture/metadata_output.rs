@@ -37,7 +37,7 @@ impl MetadataOutput {
     );
 
     #[objc::msg_send(availableMetadataObjectTypes)]
-    pub fn available_metadata_obj_types(&self) -> &ns::Array<av::MetadataObjType>;
+    pub fn available_metadata_obj_types(&self) -> arc::R<ns::Array<av::MetadataObjType>>;
 
     #[objc::msg_send(rectOfInterest)]
     pub fn rect_of_interest(&self) -> cg::Rect;

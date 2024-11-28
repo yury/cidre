@@ -72,7 +72,7 @@ impl FnStitchingFnNode {
     pub fn set_name(&mut self, val: &ns::String);
 
     #[objc::msg_send(arguments)]
-    pub fn args(&self) -> &ns::Array<FnStitchingNode>;
+    pub fn args(&self) -> arc::R<ns::Array<FnStitchingNode>>;
 
     #[objc::msg_send(setArguments:)]
     pub fn set_args(&mut self, val: &ns::Array<FnStitchingNode>);

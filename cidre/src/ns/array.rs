@@ -370,8 +370,6 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use std::panic::catch_unwind;
-
     use crate::{ns, objc::Obj};
 
     #[test]

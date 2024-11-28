@@ -1,4 +1,4 @@
-use crate::{av, blocks, define_obj_type, ns, objc};
+use crate::{arc, av, blocks, define_obj_type, ns, objc};
 
 define_obj_type!(pub Node(ns::Id));
 
@@ -9,14 +9,14 @@ impl Node {
     pub fn reset(&self);
 
     #[objc::msg_send(inputFormatForBus:)]
-    pub fn input_format_for_bus(&self, bus: av::AudioNodeBus) -> &av::AudioFormat;
+    pub fn input_format_for_bus(&self, bus: av::AudioNodeBus) -> arc::R<av::AudioFormat>;
 
     /// Gets the name of the input bus you specify.
     #[objc::msg_send(nameForInputBus:)]
-    pub fn name_for_input_bus(&self, bus: av::AudioNodeBus) -> Option<&ns::String>;
+    pub fn name_for_input_bus(&self, bus: av::AudioNodeBus) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(engine)]
-    pub fn engine(&self) -> Option<&av::audio::Engine>;
+    pub fn engine(&self) -> Option<arc::R<av::audio::Engine>>;
 
     /// The node's number of input busses.
     #[objc::msg_send(numberOfInputs)]

@@ -81,7 +81,7 @@ impl NotificationContent {
 
     #[cfg(not(target_os = "tvos"))]
     #[objc::msg_send(filterCriteria)]
-    pub fn filter_criteria(&self) -> Option<&ns::String>;
+    pub fn filter_criteria(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(contentByUpdatingWithProvider:error:)]
     pub unsafe fn with_updating_with_provider_err<'ear, P: NotificationContentProviding>(

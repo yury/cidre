@@ -32,7 +32,7 @@ impl RecognizeTextRequest {
     pub const REVISION_3: usize = 3;
 
     #[objc::msg_send(results)]
-    pub fn results(&self) -> Option<&ns::Array<vn::RecognizedTextObservation>>;
+    pub fn results(&self) -> Option<arc::R<ns::Array<vn::RecognizedTextObservation>>>;
 }
 
 #[link(name = "vn", kind = "static")]

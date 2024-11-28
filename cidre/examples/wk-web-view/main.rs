@@ -83,7 +83,7 @@ static mut NAV_DELEGATE: Option<arc::R<NavD>> = None;
 impl AppD {
     fn run() {
         let appd = Self::new();
-        let app = ns::App::shared();
+        let mut app = ns::App::shared();
         app.set_delegate(Some(appd.as_ref()));
         app.run();
     }

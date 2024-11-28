@@ -25,7 +25,7 @@ impl RecognizeAnimalsRequest {
     pub const REVISION_2: usize = 2;
 
     #[objc::msg_send(results)]
-    pub fn results(&self) -> Option<&ns::Array<vn::RecognizedObjectObservation>>;
+    pub fn results(&self) -> Option<arc::R<ns::Array<vn::RecognizedObjectObservation>>>;
 
     pub fn supported_ids(&self) -> Result<arc::R<ns::Array<AnimalId>>, &ns::Error> {
         unsafe {

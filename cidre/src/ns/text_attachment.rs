@@ -41,13 +41,13 @@ impl TextAttachment {
     pub fn set_bounds(&mut self, val: cg::Rect);
 
     #[objc::msg_send(fileType)]
-    pub fn file_fype(&self) -> Option<&ns::String>;
+    pub fn file_fype(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(setFileType:)]
     pub fn set_file_type(&mut self, val: Option<&ns::String>);
 
     #[objc::msg_send(image)]
-    pub fn image(&self) -> Option<&Image>;
+    pub fn image(&self) -> Option<arc::R<Image>>;
 
     #[objc::msg_send(setImage:)]
     pub fn set_image(&mut self, val: Option<&Image>);

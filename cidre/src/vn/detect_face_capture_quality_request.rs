@@ -10,7 +10,7 @@ impl DetectFaceCaptureQualityRequest {
     pub const REVISION_2: usize = 2;
 
     #[objc::msg_send(results)]
-    pub fn results(&self) -> Option<&ns::Array<vn::FaceObservation>>;
+    pub fn results(&self) -> Option<arc::R<ns::Array<vn::FaceObservation>>>;
 }
 
 #[link(name = "vn", kind = "static")]

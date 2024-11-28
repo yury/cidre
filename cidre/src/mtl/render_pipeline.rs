@@ -156,13 +156,13 @@ define_obj_type!(pub Reflection(ns::Id));
 
 impl Reflection {
     #[objc::msg_send(vertexArguments)]
-    pub fn vertex_args(&self) -> Option<&ns::Array<Arg>>;
+    pub fn vertex_args(&self) -> Option<arc::R<ns::Array<Arg>>>;
 
     #[objc::msg_send(fragmentArguments)]
-    pub fn fragment_args(&self) -> Option<&ns::Array<Arg>>;
+    pub fn fragment_args(&self) -> Option<arc::R<ns::Array<Arg>>>;
 
     #[objc::msg_send(tileArguments)]
-    pub fn tile_args(&self) -> Option<&ns::Array<Arg>>;
+    pub fn tile_args(&self) -> Option<arc::R<ns::Array<Arg>>>;
 }
 
 define_obj_type!(

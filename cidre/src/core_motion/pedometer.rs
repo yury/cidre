@@ -9,33 +9,33 @@ unsafe impl Send for PedometerData {}
 
 impl PedometerData {
     #[objc::msg_send(startDate)]
-    pub fn start_date(&self) -> &ns::Date;
+    pub fn start_date(&self) -> arc::R<ns::Date>;
 
     #[objc::msg_send(endDate)]
-    pub fn end_date(&self) -> &ns::Date;
+    pub fn end_date(&self) -> arc::R<ns::Date>;
 
     #[objc::msg_send(numberOfSteps)]
-    pub fn number_of_steps(&self) -> &ns::Number;
+    pub fn number_of_steps(&self) -> arc::R<ns::Number>;
 
     #[objc::msg_send(distance)]
-    pub fn distance(&self) -> Option<&ns::Number>;
+    pub fn distance(&self) -> Option<arc::R<ns::Number>>;
 
     #[objc::msg_send(floorsAscended)]
-    pub fn floors_ascended(&self) -> Option<&ns::Number>;
+    pub fn floors_ascended(&self) -> Option<arc::R<ns::Number>>;
 
     /// Approximate number of floors descended by way of stairs. Value is nil
     /// on unsupported platforms.
     #[objc::msg_send(floorsDescended)]
-    pub fn floors_descended(&self) -> Option<&ns::Number>;
+    pub fn floors_descended(&self) -> Option<arc::R<ns::Number>>;
 
     #[objc::msg_send(currentPace)]
-    pub fn current_pace(&self) -> Option<&ns::Number>;
+    pub fn current_pace(&self) -> Option<arc::R<ns::Number>>;
 
     #[objc::msg_send(currentCadence)]
-    pub fn current_cadence(&self) -> Option<&ns::Number>;
+    pub fn current_cadence(&self) -> Option<arc::R<ns::Number>>;
 
     #[objc::msg_send(averageActivePace)]
-    pub fn avg_active_pace(&self) -> Option<&ns::Number>;
+    pub fn avg_active_pace(&self) -> Option<arc::R<ns::Number>>;
 }
 
 /// Events describing the transitions of pedestrian activity.
@@ -54,7 +54,7 @@ define_obj_type!(
 
 impl PedometerEvent {
     #[objc::msg_send(date)]
-    pub fn date(&self) -> &ns::Date;
+    pub fn date(&self) -> arc::R<ns::Date>;
 
     #[objc::msg_send(type)]
     pub fn type_(&self) -> PedometerEventType;

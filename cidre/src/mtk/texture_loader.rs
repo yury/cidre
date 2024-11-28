@@ -342,7 +342,7 @@ mod tests {
         let err = loader
             .new_texture_with_url(&url, None)
             .expect_err("Should be err");
-        assert_eq!(err.domain(), ns::ErrorDomain::texture_loader());
+        assert_eq!(&err.domain(), ns::ErrorDomain::texture_loader());
         let user_info = err.user_info();
         let _error = user_info.get(mtk::TextureLoader::error_key()).unwrap();
     }

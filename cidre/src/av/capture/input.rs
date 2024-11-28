@@ -36,7 +36,7 @@ pub enum MultichannelAudioMode {
 
 impl Input {
     #[objc::msg_send(ports)]
-    pub fn ports(&self) -> &ns::Array<Port>;
+    pub fn ports(&self) -> arc::R<ns::Array<Port>>;
 }
 
 impl arc::A<DeviceInput> {

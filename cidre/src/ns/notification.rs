@@ -39,13 +39,13 @@ impl Notification {
     define_cls!(NS_NOTIFICATION);
 
     #[objc::msg_send(name)]
-    pub fn name(&self) -> &ns::NotificationName;
+    pub fn name(&self) -> arc::R<ns::NotificationName>;
 
     #[objc::msg_send(object)]
-    pub fn id(&self) -> Option<&ns::Id>;
+    pub fn id(&self) -> Option<arc::R<ns::Id>>;
 
     #[objc::msg_send(userInfo)]
-    pub fn user_info(&self) -> Option<&ns::Dictionary<ns::Id, ns::Id>>;
+    pub fn user_info(&self) -> Option<arc::R<ns::Dictionary<ns::Id, ns::Id>>>;
 
     pub fn with_name(
         name: &ns::NotificationName,
@@ -158,7 +158,7 @@ mod tests {
         let mut block = blocks::SyncBlock::new1(move |note: &ns::Notification| {
             println!("{note:?}");
             let expected_name = ns::String::with_str("test");
-            assert!(expected_name.is_equal(note.name()));
+            assert!(expected_name.is_equal(&note.name()));
             let mut guard = block_counter.lock().unwrap();
             *guard += 1;
         });

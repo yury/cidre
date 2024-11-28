@@ -9,7 +9,7 @@ impl GenObjectnessBasedSaliencyImageRequest {
     pub const REVISION_1: usize = 1;
 
     #[objc::msg_send(results)]
-    pub fn results(&self) -> Option<&ns::Array<vn::SaliencyImageObservation>>;
+    pub fn results(&self) -> Option<arc::R<ns::Array<vn::SaliencyImageObservation>>>;
 }
 
 #[link(name = "vn", kind = "static")]
