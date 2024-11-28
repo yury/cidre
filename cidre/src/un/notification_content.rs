@@ -36,7 +36,7 @@ impl NotificationContent {
     pub fn copy_mut(&self) -> arc::Retained<NotificationContentMut>;
 
     #[objc::msg_send(badge)]
-    pub fn badge(&self) -> Option<&ns::Number>;
+    pub fn badge(&self) -> Option<arc::R<ns::Number>>;
 
     #[cfg(not(target_os = "tvos"))]
     #[objc::msg_send(body)]
@@ -52,7 +52,7 @@ impl NotificationContent {
 
     #[cfg(not(target_os = "tvos"))]
     #[objc::msg_send(sound)]
-    pub fn sound(&self) -> Option<&un::NotificationSound>;
+    pub fn sound(&self) -> Option<arc::R<un::NotificationSound>>;
 
     #[cfg(not(target_os = "tvos"))]
     #[objc::msg_send(subtitle)]

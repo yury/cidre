@@ -137,6 +137,7 @@ impl av::AssetWriterDelegateImpl for WriterDelegate {
                     .unwrap()
                     .track_reports()
                     .get(0)
+                    .unwrap()
                     .duration()
                     .as_secs();
                 ctx.write_segment(segment_data.as_slice(), duration);
@@ -200,7 +201,7 @@ async fn main() {
     let queue = dispatch::Queue::serial_with_ar_pool();
 
     let content = sc::ShareableContent::current().await.expect("content");
-    let display = content.displays().get(0);
+    let display = content.displays().get(0).unwrap();
     let mut cfg = sc::StreamCfg::new();
     cfg.set_minimum_frame_interval(cm::Time::new(1, FPS));
     cfg.set_width(display.width() as usize * 2);

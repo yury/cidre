@@ -436,7 +436,7 @@ mod tests {
         let lib = device.new_lib_with_src_blocking(src, None).unwrap();
         let names = lib.fn_names();
         assert_eq!(1, names.len());
-        let n = names.get(0);
+        let n = names.get(0).unwrap();
 
         let expected_name = ns::str!(c"function_a");
 

@@ -359,6 +359,6 @@ mod tests {
 
         assert_eq!(1, textures.len());
         assert!(err.is_some());
-        assert!(textures.get(0).is_none());
+        assert!(textures.get(0).unwrap().is_none());
     }
 }

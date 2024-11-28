@@ -94,10 +94,7 @@ impl UnitEq {
     }
 
     #[objc::msg_send(bands)]
-    pub fn bands(&self) -> &ns::Array<FilterParameters>;
-
-    #[objc::msg_send(bands)]
-    pub fn bands_mut(&mut self) -> &mut ns::Array<FilterParameters>;
+    pub fn bands(&self) -> arc::R<ns::Array<FilterParameters>>;
 
     #[objc::msg_send(globalGain)]
     pub fn global_gain(&self) -> f32;
@@ -117,10 +114,10 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut equ = audio::UnitEq::with_bands(10);
+        let equ = audio::UnitEq::with_bands(10);
 
-        let bands = equ.bands_mut();
-        bands.get(0).set_gain(10.0);
+        let bands = equ.bands();
+        bands.get(0).unwrap().set_gain(10.0);
         assert_eq!(bands.len(), 10);
         assert_eq!(equ.global_gain(), 0.0);
     }

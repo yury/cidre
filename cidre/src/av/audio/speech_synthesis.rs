@@ -396,7 +396,7 @@ mod tests {
 
         assert!(av::SpeechSynthesisVoice::voices().len() > 0);
 
-        let v1 = &av::SpeechSynthesisVoice::voices().get(0);
+        let v1 = &av::SpeechSynthesisVoice::voices().get(0).unwrap();
 
         let _v = av::SpeechSynthesisVoice::with_id(&v1.id()).unwrap();
         let _v = av::SpeechSynthesisVoice::with_lang(Some(&v1.lang().unwrap())).unwrap();

@@ -61,7 +61,8 @@ async fn reader_and_output(
         .await
         .unwrap();
 
-    let mut track_output = av::AssetReaderTrackOutput::with_track(&tracks.get(0), None).unwrap();
+    let mut track_output =
+        av::AssetReaderTrackOutput::with_track(&tracks.get(0).unwrap(), None).unwrap();
     track_output.set_always_copies_sample_data(false);
 
     asset_reader.add_output(&track_output).unwrap();

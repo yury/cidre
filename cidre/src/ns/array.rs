@@ -106,7 +106,11 @@ impl<T: objc::Obj> Array<T> {
     }
 
     #[objc::msg_send(objectAtIndex:)]
-    pub fn get(&self, index: usize) -> arc::R<T>;
+    pub unsafe fn get_throws(&self, index: usize) -> arc::R<T>;
+
+    pub fn get<'ear>(&self, index: usize) -> ns::ExResult<arc::R<T>> {
+        unsafe { ns::try_catch(|| self.get_throws(index)) }
+    }
 }
 
 impl<T: objc::Obj> arc::A<ArrayMut<T>> {
@@ -366,6 +370,8 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
+    use std::panic::catch_unwind;
+
     use crate::{ns, objc::Obj};
 
     #[test]
@@ -385,7 +391,7 @@ mod tests {
         let arr: &[&ns::Number] = &[&one];
         let arr = ns::Array::from_slice(arr);
         assert_eq!(1, arr.len());
-        assert_eq!(5, arr.get(0).as_i32());
+        assert_eq!(5, arr.first().unwrap().as_i32());
 
         let mut k = 0;
         for i in arr.iter() {
@@ -409,5 +415,11 @@ mod tests {
         mut_copy.remove(10).expect_err("should be exception");
         mut_copy.clear();
         assert!(mut_copy.is_empty());
+    }
+
+    #[test]
+    fn exception() {
+        let arr = ns::Array::<ns::Number>::new();
+        arr.get(0).expect_err("Should be exception");
     }
 }

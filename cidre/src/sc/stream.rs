@@ -750,7 +750,7 @@ mod tests {
     async fn start_fails() {
         let q = dispatch::Queue::serial_with_ar_pool();
         let content = sc::ShareableContent::current().await.expect("content");
-        let display = content.displays().get(0);
+        let display = content.displays().get(0).unwrap();
         let mut cfg = sc::StreamCfg::new();
         cfg.set_width(display.width() as usize * 2);
         cfg.set_height(display.height() as usize * 2);
