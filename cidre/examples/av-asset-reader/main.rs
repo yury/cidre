@@ -19,7 +19,8 @@ async fn main() {
         //&[cv::PixelFormat::_32_BGRA.to_cf_number().as_type_ref()],
     );
 
-    let mut output = av::AssetReaderTrackOutput::with_track(&tracks[0], Some(&options)).unwrap();
+    let mut output =
+        av::AssetReaderTrackOutput::with_track(&tracks.get(0), Some(&options)).unwrap();
     // let mut output = av::AssetReaderTrackOutput::with_track(&tracks[0], None).unwrap();
     output.set_always_copies_sample_data(false);
 
@@ -105,7 +106,7 @@ async fn main() {
             // }
             if let Some(results) = features.results() {
                 if !results.is_empty() {
-                    let res = &results[0];
+                    let res = results.get(0);
                     feature_prints.push(res.vec_f32());
 
                     // if let Some(prev) = prev_frame_featurs.as_ref() {

@@ -359,8 +359,6 @@ mod tests {
 
         assert_eq!(1, textures.len());
         assert!(err.is_some());
-        assert!(textures[0].is_none());
-        let texture = textures[0].texture();
-        assert!(texture.is_none());
+        assert!(textures.get(0).is_none());
     }
 }

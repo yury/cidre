@@ -120,7 +120,7 @@ mod tests {
         let mut equ = audio::UnitEq::with_bands(10);
 
         let bands = equ.bands_mut();
-        bands[0].set_gain(10.0);
+        bands.get(0).set_gain(10.0);
         assert_eq!(bands.len(), 10);
         assert_eq!(equ.global_gain(), 0.0);
     }

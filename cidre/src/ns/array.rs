@@ -1,7 +1,7 @@
 use std::{
     marker::PhantomData,
     mem::{transmute, MaybeUninit},
-    ops::{Deref, Index, IndexMut},
+    ops::Deref,
 };
 
 use crate::{arc, define_cls, ns, objc};
@@ -104,21 +104,9 @@ impl<T: objc::Obj> Array<T> {
     pub fn iter(&self) -> ns::FEIterator<Self, T> {
         ns::FastEnumeration::iter(self)
     }
-}
-
-impl<T: objc::Obj> Index<usize> for Array<T> {
-    type Output = T;
 
     #[objc::msg_send(objectAtIndex:)]
-    fn index(&self, index: usize) -> &Self::Output;
-}
-
-impl<T: objc::Obj> IndexMut<usize> for Array<T>
-where
-    T: objc::Obj,
-{
-    #[objc::msg_send(objectAtIndex:)]
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output;
+    pub fn get(&self, index: usize) -> arc::R<T>;
 }
 
 impl<T: objc::Obj> arc::A<ArrayMut<T>> {
@@ -397,7 +385,7 @@ mod tests {
         let arr: &[&ns::Number] = &[&one];
         let arr = ns::Array::from_slice(arr);
         assert_eq!(1, arr.len());
-        assert_eq!(5, arr[0].as_i32());
+        assert_eq!(5, arr.get(0).as_i32());
 
         let mut k = 0;
         for i in arr.iter() {
