@@ -1768,7 +1768,7 @@ impl Device {
     }
 
     #[cfg(feature = "async")]
-    pub async fn request_access_for_media_type<'ar>(
+    pub async fn request_access_for_media_type(
         media_type: &av::MediaType,
     ) -> Result<bool, arc::R<ns::Exception>> {
         let (future, mut block) = blocks::comp1();
