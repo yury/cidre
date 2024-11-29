@@ -1,4 +1,4 @@
-use crate::{av, define_obj_type, ns, objc};
+use crate::{arc, av, define_obj_type, ns, objc};
 
 #[objc::protocol(AVStereoMixing)]
 pub trait StereoMixing {
@@ -13,7 +13,7 @@ define_obj_type!(pub MixingDestination(ns::Id));
 
 impl MixingDestination {
     #[objc::msg_send(connectionPoint)]
-    pub fn connection_point(&self) -> &av::audio::ConnectionPoint;
+    pub fn connection_point(&self) -> arc::R<av::audio::ConnectionPoint>;
 }
 impl av::audio::StereoMixing for MixingDestination {}
 impl av::audio::Mixing for MixingDestination {}
@@ -25,7 +25,7 @@ pub trait Mixing: StereoMixing {
         &self,
         mixer: av::AudioNode,
         bus: av::AudioNodeBus,
-    ) -> Option<&av::audio::MixingDestination>;
+    ) -> Option<arc::R<av::audio::MixingDestination>>;
 
     #[objc::msg_send(volume)]
     fn volume(&self) -> f32;

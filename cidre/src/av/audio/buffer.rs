@@ -15,7 +15,7 @@ define_obj_type!(
 /// A buffer of audio data, with a format.
 impl Buf {
     #[objc::msg_send(format)]
-    pub fn format(&self) -> &Format;
+    pub fn format(&self) -> arc::R<Format>;
 
     #[cfg(feature = "at")]
     #[objc::msg_send(audioBufferList)]

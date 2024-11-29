@@ -9,7 +9,7 @@ impl DisplayLayer {
     pub fn set_control_timebase(&self, value: Option<&cm::Timebase>);
 
     #[objc::msg_send(videoGravity)]
-    pub fn video_gravity(&self) -> &av::LayerVideoGravity;
+    pub fn video_gravity(&self) -> arc::R<av::LayerVideoGravity>;
 
     #[objc::msg_send(setVideoGravity:)]
     pub fn set_video_gravity(&mut self, value: &av::LayerVideoGravity);
@@ -31,7 +31,7 @@ impl DisplayLayer {
     pub fn output_obscured_due_to_insufficient_external_protection(&self) -> bool;
 
     #[objc::msg_send(sampleBufferRenderer)]
-    pub fn sample_buf_renderer(&self) -> &av::SampleBufVideoRenderer;
+    pub fn sample_buf_renderer(&self) -> arc::R<av::SampleBufVideoRenderer>;
 }
 
 #[link(name = "ca", kind = "static")]
