@@ -142,7 +142,7 @@ pub use audio::IoNodeInputBlock as AudioIoNodeInputBlock;
 pub use audio::MixerNode as AudioMixerNode;
 pub use audio::Node as AudioNode;
 pub use audio::NodeBus as AudioNodeBus;
-pub use audio::NodeCompletionHandler as AudioNodeCompletionHandler;
+pub use audio::NodeCh as AudioNodeCompletionHandler;
 pub use audio::OutputNode as AudioOutputNode;
 pub use audio::PacketCount as AudioPacketCount;
 pub use audio::PcmBuf as AudioPcmBuf;

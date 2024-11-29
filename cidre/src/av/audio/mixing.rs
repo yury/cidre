@@ -11,15 +11,16 @@ pub trait StereoMixing {
 
 define_obj_type!(
     #[doc(alias = "AVAudioMixingDestination")]
-    pub MixingDestination(ns::Id)
+    pub MixingDst(ns::Id)
 );
 
-impl MixingDestination {
+impl MixingDst {
     #[objc::msg_send(connectionPoint)]
     pub fn connection_point(&self) -> arc::R<av::audio::ConnectionPoint>;
 }
-impl av::audio::StereoMixing for MixingDestination {}
-impl av::audio::Mixing for MixingDestination {}
+
+impl av::audio::StereoMixing for MixingDst {}
+impl av::audio::Mixing for MixingDst {}
 
 #[objc::protocol(AVAudioMixing)]
 pub trait Mixing: StereoMixing {
@@ -28,7 +29,7 @@ pub trait Mixing: StereoMixing {
         &self,
         mixer: av::AudioNode,
         bus: av::AudioNodeBus,
-    ) -> Option<arc::R<av::audio::MixingDestination>>;
+    ) -> Option<arc::R<av::audio::MixingDst>>;
 
     #[objc::msg_send(volume)]
     fn volume(&self) -> f32;

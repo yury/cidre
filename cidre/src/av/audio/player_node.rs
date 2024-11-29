@@ -37,15 +37,20 @@ define_obj_type!(
 );
 
 impl PlayerNode {
-    /// Schedule playing samples from an [`av::AudioPCMBuf`].
+    /// Schedule playing samples from an [`av::AudioPcmBuf`].
     ///
     /// Schedules the buffer to be played following any previously scheduled commands.
     #[objc::msg_send(scheduleBuffer:completionHandler:)]
     pub fn schedule_buf_ch_block(
         &mut self,
         buffer: &av::AudioPcmBuf,
-        handler: Option<&mut audio::NodeCompletionHandler<blocks::Esc>>,
+        handler: Option<&mut audio::NodeCh<blocks::Esc>>,
     );
+
+    pub fn schedule_buf_ch(&mut self, buffer: &av::AudioPcmBuf, handler: impl FnMut() + 'static) {
+        let mut block = blocks::EscBlock::new0(handler);
+        self.schedule_buf_ch_block(buffer, Some(&mut block));
+    }
 
     pub async fn schedule_buf(&mut self, buffer: &av::AudioPcmBuf) {
         let (future, mut block) = blocks::comp0();
@@ -72,13 +77,13 @@ impl PlayerNode {
     pub fn volume(&self) -> f32;
 
     #[objc::msg_send(setVolume:)]
-    pub fn set_volume(&self, val: f32);
+    pub fn set_volume(&mut self, val: f32);
 
     #[objc::msg_send(pan)]
     pub fn pan(&self) -> f32;
 
     #[objc::msg_send(setPan:)]
-    pub fn set_pan(&self, val: f32);
+    pub fn set_pan(&mut self, val: f32);
 }
 
 #[link(name = "av", kind = "static")]

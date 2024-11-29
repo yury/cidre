@@ -13,7 +13,7 @@ pub use types::ChannelCount;
 pub use types::FrameCount;
 pub use types::FramePos;
 pub use types::NodeBus;
-pub use types::NodeCompletionHandler;
+pub use types::NodeCh;
 pub use types::PacketCount;
 pub use types::Point3d;
 pub use types::Vector3d;
@@ -36,7 +36,7 @@ pub use mixer_node::MixerNode;
 
 mod mixing;
 pub use mixing::Mixing;
-pub use mixing::MixingDestination;
+pub use mixing::MixingDst;
 pub use mixing::StereoMixing;
 
 mod time;

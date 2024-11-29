@@ -1,15 +1,26 @@
 use crate::blocks;
 
+#[doc(alias = "AVAudioFramePosition")]
 pub type FramePos = i64;
+
+#[doc(alias = "AVAudioFrameCount")]
 pub type FrameCount = u32;
+
+#[doc(alias = "AVAudioPacketCount")]
 pub type PacketCount = u32;
+
 #[doc(alias = "AVAudioChannelCount")]
 pub type ChannelCount = u32;
+
+/// AVAudioNode objects potentially have multiple input and/or output busses.
+/// AVAudioNodeBus represents a bus as a zero-based index.
+#[doc(alias = "AVAudioNodeBus")]
 pub type NodeBus = usize;
 
-pub type NodeCompletionHandler<Attr> = blocks::Block<fn(), Attr>;
+#[doc(alias = "AVAudioNodeCompletionHandler")]
+pub type NodeCh<Attr> = blocks::Block<fn(), Attr>;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 #[repr(C)]
 pub struct Point3d {
     pub x: f32,
@@ -19,14 +30,14 @@ pub struct Point3d {
 
 pub type Vector3d = Point3d;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 #[repr(C)]
 pub struct Vector3dOrientation {
     pub forward: Vector3d,
     pub up: Vector3d,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 #[repr(C)]
 pub struct Angular3dOrientation {
     pub yaw: f32,
