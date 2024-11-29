@@ -347,7 +347,7 @@ mod tests {
 
         let mut pcm_buf = av::audio::PcmBuf::with_format(&format, 1024).unwrap();
 
-        pcm_buf.set_frame_length(1024).unwrap();
+        pcm_buf.set_frame_len(1024).unwrap();
 
         engine.start().expect("Failed to start engine");
         assert!(engine.is_running());
@@ -369,7 +369,7 @@ mod tests {
         let status = engine.render_offline(1024, &mut pcm_buf).unwrap();
 
         assert_eq!(status, av::audio::EngineManualRenderingStatus::Success);
-        assert_eq!(pcm_buf.frame_length(), 1024);
+        assert_eq!(pcm_buf.frame_len(), 1024);
         assert_eq!(engine.manual_rendering_sample_time(), 1024);
     }
 }

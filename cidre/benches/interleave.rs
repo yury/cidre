@@ -54,10 +54,10 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     let mut pcm_b = av::AudioPcmBuf::with_format(&to_fmt, N as u32).unwrap();
 
     pcm_a
-        .set_frame_length(N as u32)
+        .set_frame_len(N as u32)
         .expect("Failed to set frame length on buf a");
     pcm_b
-        .set_frame_length(N as u32)
+        .set_frame_len(N as u32)
         .expect("Failed to set frame length on buf b");
 
     let converter = av::AudioConverter::with_formats(&from_fmt, &to_fmt).unwrap();

@@ -37,7 +37,7 @@ define_obj_type!(
 );
 
 impl PlayerNode {
-    /// Schedule playing samples from an [`av::AudioPcmBuf`].
+    /// Schedule playing samples from an [`av::AudioPCMBuf`].
     ///
     /// Schedules the buffer to be played following any previously scheduled commands.
     #[objc::msg_send(scheduleBuffer:completionHandler:)]

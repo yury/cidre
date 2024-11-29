@@ -75,13 +75,13 @@ impl PcmBuf {
     /// and vice versa. Note that in the case of deinterleaved formats, mDataByteSize will refers
     /// the size of one channel's worth of audio samples.
     #[objc::msg_send(frameLength)]
-    pub fn frame_length(&self) -> FrameCount;
+    pub fn frame_len(&self) -> FrameCount;
 
     #[objc::msg_send(setFrameLength:)]
-    pub fn set_frame_length_throws<'ear>(&mut self, value: FrameCount);
+    pub fn set_frame_len_throws<'ear>(&mut self, value: FrameCount);
 
-    pub fn set_frame_length<'ear>(&mut self, value: FrameCount) -> ns::ExResult<'ear> {
-        ns::try_catch(|| self.set_frame_length_throws(value))
+    pub fn set_frame_len<'ear>(&mut self, value: FrameCount) -> ns::ExResult<'ear> {
+        ns::try_catch(|| self.set_frame_len_throws(value))
     }
 
     /// The buffer's number of interleaved channels.
@@ -145,7 +145,7 @@ fn pcm_slice_at<T>(buf: &PcmBuf, ptr: *const *const T, index: usize) -> Option<&
         return None;
     }
 
-    let len = buf.frame_length() as usize;
+    let len = buf.frame_len() as usize;
     let stride = buf.stride() as usize;
     if stride > 1 {
         // if stride is not 1 it is interleaved, single buf
@@ -165,7 +165,7 @@ fn pcm_slice_at_mut<T>(buf: &mut PcmBuf, ptr: *const *mut T, index: usize) -> Op
         return None;
     }
 
-    let len = buf.frame_length() as usize;
+    let len = buf.frame_len() as usize;
     let stride = buf.stride() as usize;
     if stride > 1 {
         // interleaved, single buf
@@ -286,7 +286,7 @@ mod tests {
                 .unwrap();
         let cap = 1024;
         let mut buf = av::AudioPcmBuf::with_format(&format, cap).unwrap();
-        buf.set_frame_length(cap).unwrap();
+        buf.set_frame_len(cap).unwrap();
         let data = buf.data_f32();
         let (n, cap) = if format.is_interleaved() {
             (1, channel_count * cap)
@@ -308,8 +308,8 @@ mod tests {
                 .unwrap();
         let cap = 1024;
         let mut buf = av::AudioPcmBuf::with_format(&format, cap).unwrap();
-        let _err = buf.set_frame_length(1025).expect_err("Should fail");
-        buf.set_frame_length(1024)
+        let _err = buf.set_frame_len(1025).expect_err("Should fail");
+        buf.set_frame_len(1024)
             .expect("Failed to set max cap frame len");
     }
 }
