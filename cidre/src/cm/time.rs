@@ -287,7 +287,7 @@ impl Time {
     }
 
     #[inline]
-    pub fn zero() -> Time {
+    pub const fn zero() -> Time {
         unsafe { kCMTimeZero }
     }
 
