@@ -1,4 +1,4 @@
-use crate::{api, arc, av, define_cls, define_obj_type, ns, objc};
+use crate::{api, arc, av, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "AVPictureInPictureController")]
@@ -22,7 +22,7 @@ impl arc::A<PipController> {
 
 impl PipController {
     #[api::available(macos = 10.15, ios = 9.0, tvos = 15.0, visionos = 1.0)]
-    define_cls!(AV_PICTURE_IN_PICTURE_CONTROLLER);
+    crate::define_cls!(AV_PICTURE_IN_PICTURE_CONTROLLER);
 
     #[objc::msg_send(isPictureInPictureSupported)]
     pub fn is_pip_supported() -> bool;
@@ -107,7 +107,7 @@ impl arc::A<PipControllerContentSrc> {
 
 impl PipControllerContentSrc {
     #[api::available(macos = 10.15, ios = 9.0, tvos = 14.0, visionos = 1.0)]
-    define_cls!(AV_PICTURE_IN_PICTURE_CONTROLLER_CONTENT_SRC);
+    crate::define_cls!(AV_PICTURE_IN_PICTURE_CONTROLLER_CONTENT_SRC);
 
     #[api::available(macos = 10.15, ios = 9.0, tvos = 14.0, visionos = 1.0)]
     pub fn with_player_layer(player_layer: &av::PlayerLayer) -> arc::R<Self> {

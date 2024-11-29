@@ -1072,7 +1072,7 @@ impl Versions {
         }
         if let Some(v) = self.visionos {
             vec.push(format!(
-                "all(target_os=\"visionos\", feature=\"vision_{}_{}\")",
+                "all(target_os=\"visionos\", feature=\"visionos_{}_{}\")",
                 v.0, v.1
             ));
         }
@@ -1121,7 +1121,7 @@ impl Versions {
         }
         if let Some(v) = self.visionos {
             vec.push(format!(
-                "all(target_os=\"visionos\", not(feature=\"vision_{}_{}\"))",
+                "all(target_os=\"visionos\", not(feature=\"visionos_{}_{}\"))",
                 v.0, v.1
             ));
         }
@@ -1157,7 +1157,7 @@ impl Versions {
             vec.push(format!("watchos_{}_{}", v.0, v.1));
         }
         if let Some(v) = self.visionos {
-            vec.push(format!("vision_{}_{}", v.0, v.1));
+            vec.push(format!("visionos_{}_{}", v.0, v.1));
         }
         if let Some(v) = self.maccatalyst {
             vec.push(format!("maccatalyst_{}_{}", v.0, v.1));
@@ -1188,7 +1188,7 @@ impl Versions {
             vec.push(format!("watchos_{}_{}", v.0, v.1));
         }
         if let Some(v) = self.visionos {
-            vec.push(format!("vision_{}_{}", v.0, v.1));
+            vec.push(format!("visionos_{}_{}", v.0, v.1));
         }
         if let Some(v) = self.maccatalyst {
             vec.push(format!("maccatalyst_{}_{}", v.0, v.1));
