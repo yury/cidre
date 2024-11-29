@@ -9,7 +9,10 @@ pub trait StereoMixing {
     fn set_pan(&mut self, value: f32);
 }
 
-define_obj_type!(pub MixingDestination(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVAudioMixingDestination")]
+    pub MixingDestination(ns::Id)
+);
 
 impl MixingDestination {
     #[objc::msg_send(connectionPoint)]
@@ -31,5 +34,5 @@ pub trait Mixing: StereoMixing {
     fn volume(&self) -> f32;
 
     #[objc::msg_send(setVolume:)]
-    fn set_volume(&self, value: f32);
+    fn set_volume(&mut self, value: f32);
 }
