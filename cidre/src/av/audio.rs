@@ -16,8 +16,8 @@ pub use types::NodeBus;
 pub use types::NodeCh;
 pub use types::PacketCount;
 pub use types::Point3d;
-pub use types::Vector3d;
-pub use types::Vector3dOrientation;
+pub use types::Vec3d;
+pub use types::Vec3dOrientation;
 
 mod node;
 pub use node::Node;

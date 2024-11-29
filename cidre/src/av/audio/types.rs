@@ -28,13 +28,15 @@ pub struct Point3d {
     pub z: f32,
 }
 
-pub type Vector3d = Point3d;
+#[doc(alias = "AVAudio3DVector")]
+pub type Vec3d = Point3d;
 
+#[doc(alias = "AVAudio3DVectorOrientation")]
 #[derive(Copy, Clone, Debug, PartialEq)]
 #[repr(C)]
-pub struct Vector3dOrientation {
-    pub forward: Vector3d,
-    pub up: Vector3d,
+pub struct Vec3dOrientation {
+    pub forward: Vec3d,
+    pub up: Vec3d,
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
