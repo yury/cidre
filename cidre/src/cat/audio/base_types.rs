@@ -404,6 +404,10 @@ impl Format {
     #[doc(alias = "kAudioFormatOpus")]
     pub const OPUS: Self = Self(u32::from_be_bytes(*b"opus"));
 
+    /// Apple Positional Audio Codec, has no flags.
+    #[doc(alias = "kAudioFormatAPAC")]
+    pub const APAC: Self = Self(u32::from_be_bytes(*b"apac"));
+
     #[cfg(feature = "ns")]
     pub fn to_ns_number(self) -> &'static ns::Number {
         ns::Number::tagged_i32(self.0 as _)
@@ -1630,14 +1634,31 @@ pub struct FormatListItem {
 pub struct Mpeg4Object(pub c_long);
 
 impl Mpeg4Object {
+    #[doc(alias = "kMPEG4Object_AAC_Main")]
     pub const AAC_MAIN: Self = Self(1);
+
+    #[doc(alias = "kMPEG4Object_AAC_LC")]
     pub const AAC_LC: Self = Self(2);
+
+    #[doc(alias = "kMPEG4Object_AAC_SSR")]
     pub const AAC_SSR: Self = Self(3);
+
+    #[doc(alias = "kMPEG4Object_AAC_LTP")]
     pub const AAC_LTP: Self = Self(4);
+
+    #[doc(alias = "kMPEG4Object_AAC_SBR")]
     pub const AAC_SBR: Self = Self(5);
+
+    #[doc(alias = "kMPEG4Object_AAC_Scalable")]
     pub const AAC_SCALABLE: Self = Self(6);
+
+    #[doc(alias = "kMPEG4Object_TwinVQ")]
     pub const TWIN_VQ: Self = Self(7);
+
+    #[doc(alias = "kMPEG4Object_CELP")]
     pub const CELP: Self = Self(8);
+
+    #[doc(alias = "kMPEG4Object_HVXC")]
     pub const HVXC: Self = Self(9);
 }
 
