@@ -528,7 +528,7 @@ impl Session {
     }
 }
 
-#[link(name = "AVAudio", kind = "framework")]
+#[link(name = "AVFAudio", kind = "framework")]
 #[api::weak]
 extern "C" {
     static AVAudioSessionInterruptionNotification: &'static ns::NotificationName;
