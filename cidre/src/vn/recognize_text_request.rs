@@ -117,7 +117,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::vn;
+    use crate::{ns, vn};
 
     #[test]
     fn basics() {
@@ -134,5 +134,13 @@ mod tests {
         assert!(request.automatically_detects_lang());
 
         assert!(request.custom_words().is_empty());
+
+        // test if api throws...
+
+        request.set_min_text_height(-10.0);
+        assert_eq!(request.min_text_height(), -10.0);
+
+        request.set_recognition_langs(&ns::Array::new());
+        assert!(request.recognition_langs().is_empty());
     }
 }
