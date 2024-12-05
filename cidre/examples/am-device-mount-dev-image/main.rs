@@ -9,7 +9,7 @@ mod macos {
 
     const DEVICE_ID: &str = "00008120-000168A20210C01E";
 
-    extern "C" fn callback(info: &NotificationInfo, _context: *mut c_void) {
+    extern "C" fn _callback(info: &NotificationInfo, _context: *mut c_void) {
         match info.safe() {
             am::device::discovery::SafeInfo::Attached(device) => {
                 let id = device.id().to_string();

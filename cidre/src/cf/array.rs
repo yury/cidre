@@ -1,4 +1,7 @@
-use crate::{arc, cf, define_cf_type};
+use crate::{
+    arc::{self, Retain},
+    cf, define_cf_type,
+};
 
 use super::{Allocator, Index, String, Type, TypeId};
 use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData};
@@ -182,7 +185,7 @@ where
 #[repr(transparent)]
 pub struct ArrayOfMut<T>(ArrayMut, PhantomData<T>);
 
-impl<T> ArrayOfMut<T> {
+impl<T: Retain> ArrayOfMut<T> {
     #[inline]
     pub fn new() -> arc::R<ArrayOfMut<T>> {
         Self::with_capacity(0)

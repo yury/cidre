@@ -337,28 +337,4 @@ mod tests {
             assert!(!vals.is_empty());
         }
     }
-
-    // #[test]
-    // fn basics_identities() {
-    //     let query = cf::DictionaryOf::with_keys_values(
-    //         &[
-    //             sec::class_key(),
-    //             sec::match_keys::limit(),
-    //             sec::match_keys::subject_whole_string(),
-    //         ],
-    //         &[
-    //             sec::class::certificate().as_type_ref(),
-    //             sec::match_limit::all(),
-    //             cf::str!(c"Apple Worldwide Developer Relations Certification Authority"),
-    //             // cf::str!(c"Apple Root CA"),
-    //         ],
-    //     );
-    //     let ids = sec::item_matching(&query).unwrap();
-    //     ids.show();
-    //     assert_eq!(ids.get_type_id(), cf::Array::type_id());
-    //     // let ids: arc::R<cf::ArrayOf<sec::Identity>> = unsafe { std::mem::transmute(ids) };
-    //     // for id in ids.iter() {
-    //     //     id.show();
-    //     // }
-    // }
 }
