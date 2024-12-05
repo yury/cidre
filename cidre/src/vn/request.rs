@@ -74,6 +74,22 @@ impl DetectHorizonRequest {
     pub fn results(&self) -> Option<arc::R<ns::Array<vn::HorizonObservation>>>;
 }
 
+#[doc(alias = "VNRequestProgressHandler")]
+pub type RequestProgressHandler =
+    blocks::EscBlock<fn(request: &Request, fraction_completed: f64, error: Option<&ns::Error>)>;
+
+#[objc::protocol(VNRequestProgressProviding)]
+pub trait RequestProgressProviding: objc::Obj {
+    #[objc::msg_send(progressHandler)]
+    fn progress_handler(&self) -> Option<arc::R<RequestProgressHandler>>;
+
+    #[objc::msg_send(setProgressHandler:)]
+    fn set_progress_handler(&mut self, handler: &mut RequestProgressHandler);
+
+    #[objc::msg_send(indeterminate)]
+    fn indeterminate(&self) -> bool;
+}
+
 #[link(name = "vn", kind = "static")]
 extern "C" {
     static VN_DETECT_HORIZON_REQUEST: &'static objc::Class<DetectHorizonRequest>;

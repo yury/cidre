@@ -12,6 +12,8 @@ define_obj_type!(
     VN_RECOGNIZE_TEXT_REQUEST
 );
 
+impl vn::RequestProgressProviding for RecognizeTextRequest {}
+
 impl RecognizeTextRequest {
     /// only supports English
     pub const REVISION_1: usize = 1;
@@ -117,7 +119,7 @@ extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{ns, vn};
+    use crate::{ns, vn, vn::RequestProgressProviding};
 
     #[test]
     fn basics() {
@@ -134,6 +136,9 @@ mod tests {
         assert!(request.automatically_detects_lang());
 
         assert!(request.custom_words().is_empty());
+
+        assert!(request.progress_handler().is_none());
+        assert!(!request.indeterminate());
 
         // test if api throws...
 

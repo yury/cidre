@@ -16,6 +16,9 @@ pub use request::DetectHorizonRequest;
 pub use request::ImageBasedRequest;
 pub use request::Request;
 pub use request::RequestCh;
+pub use request::RequestProgressHandler;
+pub use request::RequestProgressProviding;
+pub use request::RequestProgressProvidingImpl;
 
 mod request_handler;
 pub use request_handler::ImageRequestHandler;
