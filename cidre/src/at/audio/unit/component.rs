@@ -1532,6 +1532,7 @@ mod tests {
         println!("{:?}", player.sample_rate(au::Scope::OUTPUT));
     }
 
+    #[cfg(target_os = "macos")]
     #[test]
     fn effect() {
         let desc = audio::ComponentDesc {

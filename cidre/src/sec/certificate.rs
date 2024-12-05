@@ -19,6 +19,7 @@ impl sec::Cert {
         unsafe { SecCertificateCreateWithData(None, data) }
     }
 
+    /// the DER representation of an X.509 certificate.
     #[doc(alias = "SecCertificateCopyData")]
     pub fn data(&self) -> arc::R<cf::Data> {
         unsafe { SecCertificateCopyData(self) }

@@ -26,7 +26,7 @@ extern "C-unwind" {
     fn CGDirectDisplayCopyCurrentMetalDevice(display: Id) -> Option<arc::R<mtl::Device>>;
 }
 
-#[cfg(test)]
+#[cfg(all(test, target_os = "macos"))]
 mod tests {
     use super::{direct_display_current_mtl_device, main_display_id};
 

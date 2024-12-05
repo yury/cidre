@@ -349,7 +349,7 @@ extern "C" {
     static NS_MUTABLE_ATTRIBUTED_STRING: &'static objc::Class<AttrStringMut>;
 }
 
-#[cfg(test)]
+#[cfg(all(test, target_os = "macos"))]
 mod tests {
     use crate::{ns, objc::Obj};
 

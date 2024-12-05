@@ -338,7 +338,7 @@ extern "C-unwind" {
     fn AudioOutputUnitStop(unit: &mut audio::Unit) -> os::Status;
 }
 
-#[cfg(test)]
+#[cfg(all(test, target_os = "macos"))]
 mod tests {
 
     use std::ffi::c_void;

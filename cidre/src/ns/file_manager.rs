@@ -664,6 +664,7 @@ mod tests {
         assert!(!fm.file_exists_at_path(parent));
     }
 
+    #[cfg(target_os = "macos")]
     #[test]
     pub fn list_mounts() {
         let keys = ns::Array::from_slice(&[
