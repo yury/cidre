@@ -54,6 +54,26 @@ impl ScreenshotManager {
         Self::capture_image_ch(filter, cfg, Some(&mut block));
         future.await
     }
+
+    /// Returns an image containing the contents of the rectangle in points, specified in display space
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(captureImageInRect:completionHandler:)]
+    #[api::available(macos = 15.2)]
+    pub fn capture_image_in_rect_ch(
+        rect: cg::Rect,
+        handler: Option<&mut blocks::ResultCompletionHandler<cg::Image>>,
+    );
+
+    /// Returns an image containing the contents of the rectangle in points, specified in display space
+    #[cfg(all(feature = "blocks", feature = "async"))]
+    #[api::available(macos = 15.2)]
+    pub async fn capture_image_in_rect(
+        rect: cg::Rect,
+    ) -> Result<arc::R<cg::Image>, arc::R<ns::Error>> {
+        let (future, mut block) = blocks::result();
+        Self::capture_image_in_rect_ch(rect, Some(&mut block));
+        future.await
+    }
 }
 
 #[link(name = "sc", kind = "static")]

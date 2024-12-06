@@ -544,6 +544,21 @@ impl ContentFilter {
     #[objc::msg_send(setIncludeMenuBar:)]
     #[api::available(macos = 14.2)]
     pub fn set_include_menu_bar(&mut self, val: bool);
+
+    /// sc::Displays that are included in the content filter
+    #[objc::msg_send(includedDisplays)]
+    #[api::available(macos = 15.2)]
+    pub fn included_displays(&self) -> arc::R<ns::Array<sc::Display>>;
+
+    /// Applications that are included in the content filter
+    #[objc::msg_send(includedApplications)]
+    #[api::available(macos = 15.2)]
+    pub fn included_apps(&self) -> arc::R<ns::Array<sc::RunningApp>>;
+
+    /// Windows that are included in the content filter
+    #[objc::msg_send(includedWindows)]
+    #[api::available(macos = 15.2)]
+    pub fn included_windows(&self) -> arc::R<ns::Array<sc::Window>>;
 }
 
 define_obj_type!(
