@@ -8,7 +8,7 @@ use crate::io;
 pub type PixelBuf = cv::ImageBuf;
 
 pub type ReleaseCallback =
-    extern "C" fn(releaseRefCon: *mut c_void, baseAddress: *const *const c_void);
+    extern "C" fn(release_ref_con: *mut c_void, base_address: *const *const c_void);
 
 impl PixelBuf {
     #[inline]
@@ -87,7 +87,8 @@ impl PixelBuf {
         unsafe { r.to_result_unchecked(pixel_buffer_out) }
     }
 
-    pub fn new_with_bytes(
+    #[doc(alias = "CVPixelBufferCreateWithBytes")]
+    pub fn with_bytes(
         width: usize,
         height: usize,
         base_address: *mut c_void,
@@ -99,7 +100,7 @@ impl PixelBuf {
     ) -> Result<arc::R<PixelBuf>, cv::Return> {
         let mut pixel_buf_out = None;
 
-        let r = Self::create_with_bytes(
+        let r = Self::create_with_bytes_in(
             width,
             height,
             pixel_format_type,
@@ -134,7 +135,8 @@ impl PixelBuf {
         }
     }
 
-    pub fn create_with_bytes(
+    #[doc(alias = "CVPixelBufferCreateWithBytes")]
+    pub fn create_with_bytes_in(
         width: usize,
         height: usize,
         pixel_format_type: cv::PixelFormat,

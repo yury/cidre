@@ -13,12 +13,6 @@ define_cf_type!(
     Buf(cf::Type)
 );
 
-impl Drop for Buf {
-    fn drop(&mut self) {
-        unsafe { CVBufferRelease(self) }
-    }
-}
-
 impl Buf {
     #[inline]
     pub fn attach<'a>(
@@ -33,7 +27,7 @@ impl Buf {
     pub fn set_attach(&mut self, key: &cf::String, val: &cf::Type, attachment_mode: AttachMode) {
         unsafe { CVBufferSetAttachment(self, key, val, attachment_mode) }
     }
-    
+
     #[inline]
     pub fn remove_attach(&mut self, key: &cf::String) {
         unsafe { CVBufferRemoveAttachment(self, key) }
@@ -131,7 +125,6 @@ extern "C-unwind" {
         value: &cf::Type,
         attachment_mode: AttachMode,
     );
-    pub fn CVBufferRelease(buffer: &mut Buf);
     fn CVBufferRemoveAttachment(buffer: &mut Buf, key: &cf::String);
     fn CVBufferRemoveAllAttachments(buffer: &mut Buf);
     fn CVBufferSetAttachments(
