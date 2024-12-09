@@ -1,9 +1,14 @@
+use std::ffi::c_void;
+
 use crate::{arc, cf, cv, define_opts, four_cc_to_str, os};
 
 #[cfg(feature = "io")]
 use crate::io;
 
 pub type PixelBuf = cv::ImageBuf;
+
+pub type ReleaseCallback =
+    extern "C" fn(releaseRefCon: *mut c_void, baseAddress: *const *const c_void);
 
 impl PixelBuf {
     #[inline]
@@ -82,6 +87,33 @@ impl PixelBuf {
         unsafe { r.to_result_unchecked(pixel_buffer_out) }
     }
 
+    pub fn new_with_bytes(
+        width: usize,
+        height: usize,
+        base_address: *mut c_void,
+        bytes_per_row: usize,
+        release_callback: ReleaseCallback,
+        release_ref_con: *mut c_void,
+        pixel_format_type: cv::PixelFormat,
+        pixel_buffer_attributes: Option<&cf::Dictionary>,
+    ) -> Result<arc::R<PixelBuf>, cv::Return> {
+        let mut pixel_buf_out = None;
+
+        let r = Self::create_with_bytes(
+            width,
+            height,
+            pixel_format_type,
+            base_address,
+            bytes_per_row,
+            release_callback,
+            release_ref_con,
+            pixel_buffer_attributes,
+            &mut pixel_buf_out,
+            None,
+        );
+        unsafe { r.to_result_unchecked(pixel_buf_out) }
+    }
+
     pub fn create_in(
         width: usize,
         height: usize,
@@ -96,6 +128,34 @@ impl PixelBuf {
                 width,
                 height,
                 pixel_format_type,
+                pixel_buf_attrs,
+                pixel_buf_out,
+            )
+        }
+    }
+
+    pub fn create_with_bytes(
+        width: usize,
+        height: usize,
+        pixel_format_type: cv::PixelFormat,
+        base_address: *mut c_void,
+        bytes_per_row: usize,
+        release_callback: ReleaseCallback,
+        release_ref_con: *mut c_void,
+        pixel_buf_attrs: Option<&cf::Dictionary>,
+        pixel_buf_out: *mut Option<arc::R<PixelBuf>>,
+        allocator: Option<&cf::Allocator>,
+    ) -> cv::Return {
+        unsafe {
+            CVPixelBufferCreateWithBytes(
+                allocator,
+                width,
+                height,
+                pixel_format_type,
+                base_address,
+                bytes_per_row,
+                release_callback,
+                release_ref_con,
                 pixel_buf_attrs,
                 pixel_buf_out,
             )
@@ -574,6 +634,19 @@ extern "C-unwind" {
         width: usize,
         height: usize,
         pixel_format_type: PixelFormat,
+        pixel_buffer_attributes: Option<&cf::Dictionary>,
+        pixel_buffer_out: *mut Option<arc::R<PixelBuf>>,
+    ) -> cv::Return;
+
+    fn CVPixelBufferCreateWithBytes(
+        allocator: Option<&cf::Allocator>,
+        width: usize,
+        height: usize,
+        pixel_format_type: PixelFormat,
+        base_address: *mut c_void,
+        bytes_per_row: usize,
+        releaseCallback: ReleaseCallback,
+        releaseRefCon: *mut c_void,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
         pixel_buffer_out: *mut Option<arc::R<PixelBuf>>,
     ) -> cv::Return;
