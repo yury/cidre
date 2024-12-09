@@ -1,19 +1,72 @@
-use crate::{
-    arc, ca, cf, cg, define_obj_type, define_opts,
-    ns::{self, Id},
-    objc,
-};
+use crate::{api, arc, ca, cf, cg, define_obj_type, define_opts, ns, objc};
 
-define_obj_type!(pub ContentsGravity(ns::String));
-define_obj_type!(pub ContentsFormat(ns::String));
+define_obj_type!(
+    #[doc(alias = "CALayerContentsGravity")]
+    pub ContentsGravity(ns::String)
+);
+
+define_obj_type!(
+    #[doc(alias = "CALayerContentsFormat")]
+    pub ContentsFormat(ns::String)
+);
+
 define_obj_type!(
     #[doc(alias = "CALayerContentsFilter")]
     pub ContentsFilter(ns::String)
 );
+
 define_obj_type!(
     #[doc(alias = "CALayerCornerCurve")]
     pub CornerCurve(ns::String)
 );
+
+define_obj_type!(
+    /// Options that control when to tone map ca::Layer contents and
+    /// ca::MetalLayer drawables. Defaults to
+    #[doc(alias = "CALayer.ToneMapMode")]
+    #[doc(alias = "CAToneMapMode")]
+    pub ToneMapMode(ns::String)
+);
+
+impl ToneMapMode {
+    /// Let the OS decide whether to tone map.
+    #[api::available(
+        macos = 15.0,
+        maccatalyst = 18.0,
+        ios = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn automatic() -> &'static Self {
+        unsafe { CAToneMapModeAutomatic }
+    }
+
+    /// Never tone map contents.
+    #[api::available(
+        macos = 15.0,
+        maccatalyst = 18.0,
+        ios = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn never() -> &'static Self {
+        unsafe { CAToneMapModeNever }
+    }
+
+    /// Tone map whenever supported by the OS. This includes
+    /// PQ, HLG and extended-range contents for ca::Layer
+    /// and ca::MetalLayers.
+    #[api::available(
+        macos = 15.0,
+        maccatalyst = 18.0,
+        ios = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn if_supported() -> &'static Self {
+        unsafe { CAToneMapModeIfSupported }
+    }
+}
 
 define_opts!(
     #[doc(alias = "CAAutoresizingMask")]
@@ -144,13 +197,63 @@ impl Layer {
     pub fn animation_keys(&self) -> Option<arc::R<ns::Array<ns::String>>>;
 
     #[objc::msg_send(contents)]
-    pub fn contents(&self) -> Option<arc::R<Id>>;
+    pub fn contents(&self) -> Option<arc::R<ns::Id>>;
 
     #[objc::msg_send(setContents:)]
     pub fn set_ns_contents(&mut self, contents: Option<&ns::Id>);
 
     #[objc::msg_send(setContents:)]
     pub fn set_cf_contents(&mut self, contents: Option<&cf::Type>);
+
+    #[objc::msg_send(contentsRect)]
+    pub fn contents_rect(&self) -> cg::Rect;
+
+    #[objc::msg_send(setContentsRect:)]
+    pub fn set_contents_rect(&mut self, val: cg::Rect);
+
+    #[objc::msg_send(contentsGravity)]
+    pub fn contents_gravity(&self) -> arc::R<ContentsGravity>;
+
+    #[objc::msg_send(setContentsGravity:)]
+    pub fn set_contents_gravity(&mut self, val: &ContentsGravity);
+
+    #[objc::msg_send(contentsScale)]
+    pub fn contents_scale(&self) -> cg::Float;
+
+    #[objc::msg_send(setContentsScale:)]
+    pub fn set_contents_scale(&mut self, val: cg::Float);
+
+    #[objc::msg_send(contentsCenter)]
+    pub fn contents_center(&self) -> cg::Rect;
+
+    #[objc::msg_send(setContentsCenter:)]
+    pub fn set_contents_center(&mut self, val: cg::Rect);
+
+    #[objc::msg_send(contentsFormat)]
+    pub fn contents_format(&self) -> arc::R<ContentsFormat>;
+
+    #[objc::msg_send(setContentsFormat:)]
+    pub fn set_contents_format(&mut self, val: &ContentsFormat);
+
+    #[objc::msg_send(toneMapMode)]
+    #[api::available(
+        macos = 15.0,
+        maccatalyst = 18.0,
+        ios = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn tone_map_mode(&self) -> arc::R<ToneMapMode>;
+
+    #[objc::msg_send(setToneMapMode:)]
+    #[api::available(
+        macos = 15.0,
+        maccatalyst = 18.0,
+        ios = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    pub fn set_tone_map_mode(&mut self, val: &ToneMapMode);
 
     #[objc::msg_send(wantsExtendedDynamicRangeContent)]
     pub fn wants_extended_dynamic_range_content(&self) -> bool;
@@ -162,4 +265,35 @@ impl Layer {
 #[link(name = "ca", kind = "static")]
 extern "C" {
     static CA_LAYER: &'static objc::Class<Layer>;
+}
+
+#[link(name = "QuartzCore", kind = "framework")]
+#[api::weak]
+extern "C" {
+    #[api::available(
+        macos = 15.0,
+        maccatalyst = 18.0,
+        ios = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    static CAToneMapModeAutomatic: &'static ToneMapMode;
+
+    #[api::available(
+        macos = 15.0,
+        maccatalyst = 18.0,
+        ios = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    static CAToneMapModeNever: &'static ToneMapMode;
+
+    #[api::available(
+        macos = 15.0,
+        maccatalyst = 18.0,
+        ios = 18.0,
+        tvos = 18.0,
+        visionos = 2.0
+    )]
+    static CAToneMapModeIfSupported: &'static ToneMapMode;
 }

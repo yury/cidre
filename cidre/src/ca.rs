@@ -28,6 +28,7 @@ pub use layer::CornerCurve as LayerCornerCurve;
 pub use layer::CornerMask;
 pub use layer::EdgeAntialiasingMask;
 pub use layer::Layer;
+pub use layer::ToneMapMode;
 
 #[cfg(feature = "mtl")]
 mod metal_layer;
