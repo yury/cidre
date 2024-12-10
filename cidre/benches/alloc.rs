@@ -58,6 +58,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         })
     });
 
+    #[cfg(target_arch = "aarch64")]
     c.bench_function("alloc_with_ar_claim", |b| {
         b.iter(|| {
             ar_pool(|| {

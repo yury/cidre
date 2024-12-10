@@ -127,6 +127,8 @@ impl Number {
         arc::rar_retain(Self::with_i64_ar(value))
     }
 
+    // for benches
+    #[cfg(target_arch = "aarch64")]
     #[inline]
     pub fn with_i64_ar_claim(value: i64) -> arc::R<Self> {
         Self::with_i64_ar(value);

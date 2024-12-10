@@ -38,7 +38,7 @@ impl Boolean {
     /// assert_eq!(true, f.value());
     /// ```
     #[inline]
-    pub fn value_true() -> &'static Boolean {
+    pub const fn value_true() -> &'static Boolean {
         unsafe { kCFBooleanTrue }
     }
 
@@ -49,7 +49,7 @@ impl Boolean {
     /// assert_eq!(false, f.value());
     /// ```
     #[inline]
-    pub fn value_false() -> &'static Boolean {
+    pub const fn value_false() -> &'static Boolean {
         unsafe { kCFBooleanFalse }
     }
 
