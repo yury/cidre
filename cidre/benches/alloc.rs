@@ -58,6 +58,14 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         })
     });
 
+    c.bench_function("alloc_with_ar_claim", |b| {
+        b.iter(|| {
+            ar_pool(|| {
+                ns::Number::with_i64_ar_claim(num);
+            })
+        })
+    });
+
     c.bench_function("alloc_tagged_ar_retain", |b| {
         b.iter(|| {
             ar_pool(|| {

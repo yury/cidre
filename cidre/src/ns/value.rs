@@ -127,6 +127,12 @@ impl Number {
         arc::rar_retain(Self::with_i64_ar(value))
     }
 
+    #[inline]
+    pub fn with_i64_ar_claim(value: i64) -> arc::R<Self> {
+        Self::with_i64_ar(value);
+        unsafe { std::mem::transmute(arc::rar_claim_value::<Self>()) }
+    }
+
     #[objc::msg_send(numberWithLongLong:)]
     pub fn with_i64_ar(value: i64) -> arc::Rar<Self>;
 

@@ -203,6 +203,16 @@ pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
     }
 }
 
+/// Accept a value returned through a +0 autoreleasing convention for use at +1,
+/// without a NOP in the caller on ARM64.
+#[doc(alias = "objc_claimAutoreleasedReturnValue")]
+#[cfg(target_arch = "aarch64")]
+#[cfg(feature = "objc")]
+#[inline]
+pub fn rar_claim_value<T: objc::Obj>() -> Option<R<T>> {
+    unsafe { std::mem::transmute(objc::objc_claimAutoreleasedReturnValue()) }
+}
+
 #[cfg(target_arch = "x86_64")]
 #[cfg(feature = "objc")]
 #[inline]

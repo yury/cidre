@@ -236,6 +236,7 @@ extern "C-unwind" {
     fn objc_autorelease<'ar>(id: &mut Id) -> &'ar mut Id;
 
     pub fn objc_retainAutoreleasedReturnValue<'ar>(obj: Option<&Id>) -> Option<arc::R<Id>>;
+    pub fn objc_claimAutoreleasedReturnValue() -> Option<arc::R<Id>>;
     pub fn objc_autoreleaseReturnValue<'ar>(obj: Option<&Id>) -> Option<&'ar Id>;
 
     pub fn object_getIndexedIvars(obj: *const c_void) -> *mut c_void;
