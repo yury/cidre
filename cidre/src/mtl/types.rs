@@ -1,5 +1,7 @@
 use crate::ns;
 
+/// A set of dimensions to declare the size of an object, such as an image, texture, threadgroup, or grid.
+#[doc(alias = "MTLSize")]
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
 pub struct Size {
@@ -10,7 +12,16 @@ pub struct Size {
 
 impl Size {
     #[inline]
-    pub fn _2d(width: usize, height: usize) -> Self {
+    pub const fn _1d(width: usize) -> Self {
+        Self {
+            width,
+            height: 1,
+            depth: 1,
+        }
+    }
+
+    #[inline]
+    pub const fn _2d(width: usize, height: usize) -> Self {
         Self {
             width,
             height,
@@ -19,6 +30,8 @@ impl Size {
     }
 }
 
+/// Identify a pixel in an image. MTLOrigin is ususally used as the upper-left corner of a region of a texture.
+#[doc(alias = "MTLOrigin")]
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
 pub struct Origin {
@@ -29,8 +42,8 @@ pub struct Origin {
 
 impl Origin {
     #[inline]
-    pub fn zero() -> Self {
-        Self::default()
+    pub const fn zero() -> Self {
+        Self { x: 0, y: 0, z: 0 }
     }
 }
 
@@ -42,6 +55,7 @@ pub struct ResId {
     _impl: usize,
 }
 
+/// Identify a region in an image or texture.
 #[doc(alias = "MTLRegion")]
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
@@ -51,32 +65,34 @@ pub struct Region {
 }
 
 impl Region {
+    #[doc(alias = "MTLRegionMake1D")]
     #[inline]
-    pub fn new_1d(x: usize, width: usize) -> Self {
+    pub const fn new_1d(x: usize, width: usize) -> Self {
         Self {
             origin: Origin { x, y: 0, z: 0 },
-            size: Size {
-                width,
-                height: 1,
-                depth: 1,
-            },
+            size: Size::_1d(width),
         }
     }
 
+    #[doc(alias = "MTLRegionMake2D")]
     #[inline]
-    pub fn new_2d(x: usize, y: usize, width: usize, height: usize) -> Self {
+    pub const fn new_2d(x: usize, y: usize, width: usize, height: usize) -> Self {
         Self {
             origin: Origin { x, y, z: 0 },
-            size: Size {
-                width,
-                height,
-                depth: 1,
-            },
+            size: Size::_2d(width, height),
         }
     }
 
+    #[doc(alias = "MTLRegionMake3D")]
     #[inline]
-    pub fn new_3d(x: usize, y: usize, z: usize, width: usize, height: usize, depth: usize) -> Self {
+    pub const fn new_3d(
+        x: usize,
+        y: usize,
+        z: usize,
+        width: usize,
+        height: usize,
+        depth: usize,
+    ) -> Self {
         Self {
             origin: Origin { x, y, z },
             size: Size {
