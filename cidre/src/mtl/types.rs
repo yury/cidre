@@ -42,6 +42,7 @@ pub struct ResId {
     _impl: usize,
 }
 
+#[doc(alias = "MTLRegion")]
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
 pub struct Region {
@@ -53,13 +54,11 @@ impl Region {
     #[inline]
     pub fn new_1d(x: usize, width: usize) -> Self {
         Self {
-            origin: Origin {
-                x,
-                ..Default::default()
-            },
+            origin: Origin { x, y: 0, z: 0 },
             size: Size {
                 width,
-                ..Default::default()
+                height: 1,
+                depth: 1,
             },
         }
     }
@@ -71,7 +70,7 @@ impl Region {
             size: Size {
                 width,
                 height,
-                depth: 0,
+                depth: 1,
             },
         }
     }
