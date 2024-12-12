@@ -310,7 +310,7 @@ macro_rules! cfstr {
     ($f:literal) => {{
         #[link(name = "CoreFoundation", kind = "framework")]
         extern "C" {
-            static __CFConstantStringClassReference: $crate::objc::Class<$crate::ns::Id>;
+            static __CFConstantStringClassReference: std::ffi::c_void;
         }
         // #[link_section = "__TEXT,__cstring,cstring_literals"]
         const VALUE: &std::ffi::CStr = $f;
@@ -473,7 +473,7 @@ extern "C-unwind" {
 
 #[repr(C)]
 pub struct ConstStr {
-    pub isa: &'static crate::objc::Class<ns::Id>,
+    pub isa: &'static std::ffi::c_void,
     pub info: u32,
     pub ptr: *const i8,
     pub len: usize,

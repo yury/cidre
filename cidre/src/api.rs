@@ -89,9 +89,11 @@ impl<T> DlSym<T> {
 
 unsafe impl<T> Sync for DlSym<T> {}
 
+#[cfg(feature = "ns")]
 use crate::ns;
 
 #[inline]
+#[cfg(feature = "ns")]
 pub fn macos_available(_ver: &str) -> bool {
     #[cfg(not(target_os = "macos"))]
     return false;
@@ -100,6 +102,7 @@ pub fn macos_available(_ver: &str) -> bool {
 }
 
 #[inline]
+#[cfg(feature = "ns")]
 pub fn ios_available(_ver: &str) -> bool {
     #[cfg(not(target_os = "ios"))]
     return false;
@@ -108,6 +111,7 @@ pub fn ios_available(_ver: &str) -> bool {
 }
 
 #[inline]
+#[cfg(feature = "ns")]
 pub fn tvos_available(_ver: &str) -> bool {
     #[cfg(not(target_os = "tvos"))]
     return false;
@@ -116,6 +120,7 @@ pub fn tvos_available(_ver: &str) -> bool {
 }
 
 #[inline]
+#[cfg(feature = "ns")]
 pub fn watchos_available(_ver: &str) -> bool {
     #[cfg(not(target_os = "watchos"))]
     return false;
@@ -124,6 +129,7 @@ pub fn watchos_available(_ver: &str) -> bool {
 }
 
 #[inline]
+#[cfg(feature = "ns")]
 pub fn visionos_available(_ver: &str) -> bool {
     #[cfg(not(target_os = "visionos"))]
     return false;
@@ -132,6 +138,7 @@ pub fn visionos_available(_ver: &str) -> bool {
 }
 
 #[inline]
+#[cfg(feature = "ns")]
 pub fn maccatalyst_available(_ver: &str) -> bool {
     #[cfg(not(all(target_os = "ios", target_abi = "macabi")))]
     return false;
@@ -215,7 +222,9 @@ macro_rules! version {
         $( || $crate::api::version!(visionos = $visionos_ver))?
     };
 }
+#[cfg(feature = "ns")]
 pub use cidre_macros::api_available as available;
+#[cfg(feature = "ns")]
 pub use cidre_macros::api_weak as weak;
 pub use version;
 

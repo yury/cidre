@@ -191,7 +191,7 @@ static void av_initializer(void)
         AV_CAPTURE_SLIDER = NSClassFromString(@"AVCaptureSlider");
         AV_CAPTURE_INDEX_PICKER = NSClassFromString(@"AVCaptureIndexPicker");
         
-        AV_ASSET_IMAGE_GENERATOR =  [AVAssetImageGenerator class];
+        AV_ASSET_IMAGE_GENERATOR =  NSClassFromString(@"AVAssetImageGenerator");
         
         AV_EXTERNAL_STORAGE_DEVICE = NSClassFromString(@"AVExternalStorageDevice");
         AV_EXTERNAL_STORAGE_DEVICE_DISCOVERY_SESSION = NSClassFromString(@" AVExternalStorageDeviceDiscoverySession");
