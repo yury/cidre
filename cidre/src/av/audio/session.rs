@@ -453,7 +453,10 @@ impl Session {
     /// Set the preferred form of audio injection into another app's input stream
     #[objc::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
     pub fn set_preferred_mic_injection_mode<'ear>(&mut self, val: MicInjectionMode) -> ns::Result {
-        ns::if_false(|err| unsafe { self.set_preferred_mic_injection_mode_err(val, err) })
+        let if_false =
+            ns::if_false(|err| unsafe { self.set_preferred_mic_injection_mode_err(val, err) });
+        let if_false = if_false;
+        if_false
     }
 
     #[objc::msg_send(preferredMicrophoneInjectionMode)]
@@ -463,6 +466,47 @@ impl Session {
     #[objc::msg_send(isMicrophoneInjectionAvailable)]
     #[api::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
     pub fn is_mic_injection_available(&self) -> bool;
+
+    #[objc::msg_send(setPrefersEchoCancelledInput:error:)]
+    #[api::available(ios = 18.2, maccatalyst = 18.2)]
+    pub unsafe fn set_prefers_echo_cancelled_input_err<'ear>(
+        &mut self,
+        val: bool,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    /// Set a preference to enable echo cancelled input on supported hardware
+    ///
+    /// Applications might want to record the built-in microphone's input while also playing audio out via the built-in speaker.
+    /// Enabling echo cancelled input is useful when the application needs the input signal to be clear of any echoes
+    /// from the audio playing out of the built-in speaker.
+    ///
+    /// Audio sessions using Voice Processor don't need this option as echo cancellation is implicitly applied for those routes.
+    /// The Voice Processor solution is tuned for voice signals, unlike this option, which is tuned for better capture
+    /// of wider range of audio signals in the presence of built-in speaker echo.
+    ///
+    /// This option is valid only when used with AVAudioSessionCategoryPlayAndRecord and AVAudioSessionModeDefault and is only available
+    /// on certain 2024 or later iPhone models. Support can be queried using property `isEchoCancelledInputAvailable`.
+    /// Other recording sessions might be interrupted if this option is not compatible with sessions that are already recording.
+    ///
+    /// After an audio session goes active, `isEchoCancelledInputEnabled` property can be queried to check if the option was honored.
+    /// Note that the enabled state may change after route changes, e.g. if user plugs in a headset, that route might not support echo cancellation.
+    #[api::available(ios = 18.2, maccatalyst = 18.2)]
+    pub fn set_prefers_echo_cancelled_input(&mut self, val: bool) -> ns::Result {
+        ns::if_false(|err| unsafe { self.set_prefers_echo_cancelled_input_err(val, err) })
+    }
+
+    #[objc::msg_send(prefersEchoCancelledInput)]
+    #[api::available(ios = 18.2, maccatalyst = 18.2)]
+    pub fn prefers_echo_cancelled_input(&self) -> bool;
+
+    #[objc::msg_send(isEchoCancelledInputEnabled)]
+    #[api::available(ios = 18.2, maccatalyst = 18.2)]
+    pub fn is_echo_cancelled_input_enabled(&self) -> bool;
+
+    #[objc::msg_send(isEchoCancelledInputAvailable)]
+    #[api::available(ios = 18.2, maccatalyst = 18.2)]
+    pub fn is_echo_cancelled_input_available(&self) -> bool;
 }
 
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
