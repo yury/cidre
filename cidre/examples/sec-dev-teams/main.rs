@@ -5,18 +5,19 @@ mod macos {
     use cidre::{arc, cf, sec};
 
     pub(crate) fn main() {
+        let policy = sec::Policy::with_props(sec::Policy::apple_code_signing(), None).unwrap();
         let now = cf::Date::new();
         let query = cf::DictionaryOf::with_keys_values(
             &[
                 sec::class_key(),
                 sec::match_keys::limit(),
-                sec::match_keys::subject_starts_with(),
+                sec::match_keys::policy(),
                 sec::match_keys::valid_on_date(),
             ],
             &[
                 sec::class::certificate().as_type_ref(),
                 sec::match_limit::all(),
-                cf::str!(c"Apple Development:"),
+                &policy,
                 &now,
             ],
         );
