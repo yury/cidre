@@ -65,6 +65,8 @@ pub use font::Glyph;
 pub use font::Index as FontIndex;
 
 mod path;
+
+#[cfg(feature = "blocks")]
 pub use path::ApplyBlock as PathApplyBlock;
 pub use path::Element as PathElement;
 pub use path::ElementType as PathElementType;

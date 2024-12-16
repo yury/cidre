@@ -1,4 +1,7 @@
-use crate::{arc, define_cls, define_obj_type, dispatch, ns, objc};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "dispatch")]
+use crate::dispatch;
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
@@ -145,9 +148,11 @@ impl OpQueue {
     #[objc::msg_send(cancelAllOperations)]
     pub fn cancel_all_ops(&mut self);
 
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(underlyingQueue)]
     pub fn underlying_queue(&self) -> Option<arc::R<dispatch::Queue>>;
 
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(setUnderlyingQueue:)]
     pub fn set_underlying_queue(&mut self, val: Option<&dispatch::Queue>);
 

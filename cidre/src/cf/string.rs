@@ -1,7 +1,8 @@
 use core::fmt;
 use std::{
-    borrow::Cow,
+    borrow::{Borrow, Cow},
     ffi::{c_char, CStr},
+    hash::Hash,
     str::from_utf8_unchecked,
 };
 
@@ -526,6 +527,33 @@ impl AsRef<cf::String> for cf::String {
 impl AsRef<cf::String> for cf::StringMut {
     fn as_ref(&self) -> &cf::String {
         self
+    }
+}
+
+impl Borrow<cf::Type> for &cf::String {
+    fn borrow(&self) -> &cf::Type {
+        self.as_type_ref()
+    }
+}
+
+impl Borrow<cf::Type> for cf::String {
+    fn borrow(&self) -> &cf::Type {
+        self.as_type_ref()
+    }
+}
+
+impl std::cmp::PartialEq for cf::String {
+    fn eq(&self, other: &Self) -> bool {
+        self.as_type_ref().eq(other)
+    }
+}
+
+impl std::cmp::Eq for cf::String {}
+
+impl std::hash::Hash for cf::String {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        let hash = self.as_type_ref().hash();
+        state.write_usize(hash)
     }
 }
 

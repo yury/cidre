@@ -23,6 +23,7 @@ pub use queue::QosClass;
 pub use queue::Queue;
 
 pub mod data;
+#[cfg(feature = "blocks")]
 pub use data::Applier as DataApplier;
 pub use data::Data;
 

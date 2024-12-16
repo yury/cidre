@@ -540,6 +540,18 @@ where
 #[repr(transparent)]
 pub struct DictionaryOfMut<K, V>(DictionaryMut, marker::PhantomData<(K, V)>);
 
+impl<K, V> std::ops::Deref for DictionaryOfMut<K, V>
+where
+    K: arc::Retain,
+    V: arc::Retain,
+{
+    type Target = DictionaryOf<K, V>;
+
+    fn deref(&self) -> &Self::Target {
+        unsafe { transmute(self) }
+    }
+}
+
 impl<K, V> DictionaryOfMut<K, V>
 where
     K: arc::Retain,
@@ -581,6 +593,10 @@ where
             transmute(dict)
         }
     }
+
+    pub fn copy_mut(&self) -> Option<arc::R<DictionaryOfMut<K, V>>> {
+        unsafe { transmute(CFDictionaryCreateMutableCopy(None, 0, &self.0)) }
+    }
 }
 
 impl<K, V> arc::Release for DictionaryOfMut<K, V>
@@ -614,6 +630,12 @@ extern "C-unwind" {
         value_callbacks: Option<&ValueCbs>,
     ) -> Option<arc::R<DictionaryMut>>;
 
+    fn CFDictionaryCreateMutableCopy(
+        allocator: Option<&cf::Allocator>,
+        capacity: cf::Index,
+        the_dict: &Dictionary,
+    ) -> Option<arc::R<DictionaryMut>>;
+
     fn CFDictionaryAddValue(the_dict: &mut DictionaryMut, key: *const c_void, value: *const c_void);
     fn CFDictionarySetValue(the_dict: &mut DictionaryMut, key: *const c_void, value: *const c_void);
     fn CFDictionaryReplaceValue(
@@ -623,4 +645,5 @@ extern "C-unwind" {
     );
     fn CFDictionaryRemoveValue(the_dict: &mut DictionaryMut, key: *const c_void);
     fn CFDictionaryRemoveAllValues(the_dict: &mut DictionaryMut);
+
 }

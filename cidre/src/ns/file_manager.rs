@@ -1,4 +1,7 @@
-use crate::{arc, blocks, define_cls, define_obj_type, define_opts, ns, objc, os};
+use crate::{arc, define_cls, define_obj_type, define_opts, ns, objc, os};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 define_obj_type!(
     #[doc(alias = "NSFileAttributeKey")]
@@ -294,6 +297,7 @@ impl FileManager {
         options: ns::VolumeEnumOpts,
     ) -> arc::R<ns::Array<ns::Url>>;
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(unmountVolumeAtURL:options:completionHandler:)]
     pub fn unmount_volume_at_url_ch_block(
         &self,

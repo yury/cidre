@@ -365,6 +365,7 @@ extern "C" {
 
     #[cfg(feature = "blocks")]
     fn dispatch_sync(queue: &Queue, block: &mut dispatch::Block<blocks::NoEsc>);
+    #[cfg(feature = "blocks")]
     fn dispatch_async(queue: &Queue, block: &mut dispatch::Block);
 
     fn dispatch_async_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);

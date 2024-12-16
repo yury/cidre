@@ -128,6 +128,20 @@ impl Type {
     }
 }
 
+impl std::cmp::PartialEq for Type {
+    fn eq(&self, other: &Self) -> bool {
+        self.equal(other)
+    }
+}
+
+impl std::cmp::Eq for Type {}
+
+impl std::hash::Hash for Type {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        state.write_usize(self.hash());
+    }
+}
+
 impl Debug for Type {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let desc = self.desc();

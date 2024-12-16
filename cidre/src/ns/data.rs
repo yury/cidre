@@ -1,6 +1,9 @@
 use std::ptr::{slice_from_raw_parts, slice_from_raw_parts_mut};
 
-use crate::{arc, blocks, cf, define_obj_type, define_opts, ns, objc};
+use crate::{arc, cf, define_obj_type, define_opts, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 define_opts!(
     #[doc(alias = "NSDataReadingOptions")]
@@ -164,6 +167,7 @@ impl Data {
 }
 
 /// NSExtendedData
+#[cfg(feature = "blocks")]
 impl Data {
     #[objc::msg_send(enumerateByteRangesUsingBlock:)]
     pub fn enumerate_byte_ranges_using_block(

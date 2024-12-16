@@ -6,6 +6,7 @@ use crate::{arc, define_obj_type, dispatch, ns};
 use crate::blocks;
 
 #[doc(alias = "dispatch_data_applier_t")]
+#[cfg(feature = "blocks")]
 pub type Applier<Attr> = blocks::Block<fn(&dispatch::Data, usize, *const u8, usize) -> bool, Attr>;
 
 define_obj_type!(
@@ -74,17 +75,20 @@ impl Data {
     }
 
     #[doc(alias = "dispatch_data_create")]
+    #[cfg(feature = "blocks")]
     #[inline]
     pub fn copy_from_slice(data: &[u8]) -> arc::R<Self> {
         unsafe { dispatch_data_create(data.as_ptr(), data.len(), None, None) }
     }
 
+    #[cfg(feature = "blocks")]
     #[inline]
     pub fn from_static(bytes: &'static [u8]) -> arc::R<Self> {
         let mut b = blocks::StaticBlock::new0(destructor_noop);
         unsafe { dispatch_data_create(bytes.as_ptr(), bytes.len(), None, Some(b.as_esc_mut())) }
     }
 
+    #[cfg(feature = "blocks")]
     #[inline]
     pub fn with_bytes_no_copy(
         bytes: *const u8,
@@ -107,18 +111,21 @@ impl Data {
 }
 extern "C" fn destructor_noop(_ctx: *const c_void) {}
 
+#[cfg(feature = "blocks")]
 impl From<&'static [u8]> for arc::R<Data> {
     fn from(slice: &'static [u8]) -> arc::R<Data> {
         Data::from_static(slice)
     }
 }
 
+#[cfg(feature = "blocks")]
 impl From<&'static str> for arc::R<Data> {
     fn from(slice: &'static str) -> arc::R<Data> {
         Data::from_static(slice.as_bytes())
     }
 }
 
+#[cfg(feature = "blocks")]
 impl From<Vec<u8>> for arc::R<Data> {
     fn from(val: Vec<u8>) -> arc::R<Data> {
         let len = val.len();
@@ -135,6 +142,7 @@ impl From<Vec<u8>> for arc::R<Data> {
     }
 }
 
+#[cfg(feature = "blocks")]
 impl From<Box<[u8]>> for arc::R<Data> {
     fn from(val: Box<[u8]>) -> arc::R<Data> {
         let len = val.len();
@@ -155,6 +163,7 @@ impl From<Box<[u8]>> for arc::R<Data> {
 extern "C" {
     static _dispatch_data_empty: Data;
 
+    #[cfg(feature = "blocks")]
     fn dispatch_data_create(
         buffer: *const u8,
         size: usize,
