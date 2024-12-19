@@ -23,7 +23,10 @@ pub trait VideoDataOutputSampleBufDelegate: objc::Obj {
     );
 }
 
-define_obj_type!(pub VideoDataOutput(Output), AV_CAPTURE_VIDEO_DATA_OUTPUT);
+define_obj_type!(
+    #[doc(alias = "AVCaptureVideoDataOuput")]
+    pub VideoDataOutput(Output), AV_CAPTURE_VIDEO_DATA_OUTPUT
+);
 
 impl VideoDataOutput {
     #[objc::msg_send(setSampleBufferDelegate:queue:)]

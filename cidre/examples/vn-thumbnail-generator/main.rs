@@ -71,7 +71,7 @@ fn calc_top_frames<'ear>(
             let distance = feature_print.distance_to(&frame.observation)?;
             if distance < SIMILARITY_THRESHOLD {
                 // Replace the frame if the new frame has a higher score.
-                if &new_frame.score > &frame.score {
+                if new_frame.score > frame.score {
                     frames[i] = new_frame.clone();
                 }
                 is_similar = true;
