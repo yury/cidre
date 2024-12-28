@@ -35,12 +35,12 @@ Run tests on your iPhone or iPad.
 3. Run `cargo box devices` to find out your DEVICE_ID
 4. Create `.box` file with contents:
 ```
-BOX_ORG_ID = unique org id, for instance org.cidre
-DEVELOPMENT_TEAM = team id from steep 2
+BOX_ORG_ID = unique org id, for instance org.cidre (it may be reserved already)
+DEVELOPMENT_TEAM = team id from step 2
 DEVICE_ID = device id from step 3
 ```
-5. Run `cargo t --target aarch64-apple-ios`
-6. Run `cargo r --target aarch64-apple-ios --example`
+5. Run `cargo t --target aarch64-apple-ios` (make sure you have connected and unlocked device)
+6. Run `cargo r --target aarch64-apple-ios --example device-formats`
 
 ### Versioning (API Availability)
 

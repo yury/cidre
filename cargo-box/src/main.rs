@@ -31,8 +31,8 @@ enum Cmd {
 fn main() {
     // Handle different args from different calls:
     //
-    // cargo-box -> cargo-bx (no extra box)
-    // cargo box -> cargo-bx bx (extra box)
+    // cargo-box -> cargo-box (no extra box)
+    // cargo box -> cargo-box bx (extra box)
     let mut args: Vec<_> = env::args().collect();
     if args.get(1).map(|v| v == "box") == Some(true) {
         args.remove(1);
