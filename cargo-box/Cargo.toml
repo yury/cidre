@@ -1,0 +1,15 @@
+[package]
+name = "cargo-box"
+version = "0.1.0"
+edition = "2021"
+description = "iOS runner"
+license = "MIT"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+serde = { version = "1.0.215", features = ["derive"] }
+serde_json = "1.0.133"
+cargo_toml = "0.21"
+dotenv = "0.15.0"
+
+cidre = { path = "../cidre", default-features = false, features = ["ns", "cg", "cf", "sec"] }

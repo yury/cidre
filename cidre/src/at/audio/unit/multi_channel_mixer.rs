@@ -362,8 +362,14 @@ mod tests {
         assert!(!mixer.is_input_enabled(0).unwrap());
 
         // default volumes are zero
+        #[cfg(target_os = "macos")]
         assert_eq!(0.0f32, mixer.input_volume(0).unwrap());
+        #[cfg(target_os = "ios")]
+        assert_eq!(1.0f32, mixer.input_volume(0).unwrap());
+        #[cfg(target_os = "macos")]
         assert_eq!(0.0f32, mixer.output_volume().unwrap());
+        #[cfg(target_os = "ios")]
+        assert_eq!(1.0f32, mixer.output_volume().unwrap());
 
         // metering is not enabled by default, so we can't access params
         assert_eq!(false, mixer.is_input_metering_enabled(0).unwrap());

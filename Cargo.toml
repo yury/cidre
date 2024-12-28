@@ -6,6 +6,10 @@ members = [
   "cidre-macros",
 ]
 
+exclude = [
+  "cargo-box"
+]
+
 # [profile.dev]
 # opt-level = 1
 

@@ -1,12 +1,6 @@
-/target
-
-
-# Added by cargo
-#
-# already existing elements were commented out
-
 xcuserdata
 
 /target
 .DS_Store
+.box
 Cargo.lock

@@ -245,10 +245,21 @@ mod tests {
         assert!(SHOULD_BE_FOUND.get_var().unwrap().len() > 0);
     }
 
+    #[cfg(target_os = "macos")]
     #[test]
     fn version() {
         assert!(api::macos_available("13.0"));
         assert!(api::macos_available("13.1.1"));
+        assert!(api::version!(macos = 13.0, ios = 14.0));
+        assert!(!api::version!(visionos = 1.0));
+        assert!(!api::version!(macos = 20.0));
+    }
+
+    #[cfg(target_os = "ios")]
+    #[test]
+    fn version() {
+        assert!(api::ios_available("18.0"));
+        assert!(api::ios_available("18.2"));
         assert!(api::version!(macos = 13.0, ios = 14.0));
         assert!(!api::version!(visionos = 1.0));
         assert!(!api::version!(macos = 20.0));

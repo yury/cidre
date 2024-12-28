@@ -299,6 +299,7 @@ pub mod return_data {
     }
 }
 
+#[cfg(target_os = "macos")]
 #[cfg(test)]
 mod tests {
     use crate::{arc, cf, sec};

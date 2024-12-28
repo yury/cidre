@@ -1450,6 +1450,7 @@ impl audio::Component {
 
 #[cfg(test)]
 mod tests {
+    #[cfg(target_os = "macos")]
     use std::{f32::consts::PI, ffi::c_void};
 
     use au::Element;
