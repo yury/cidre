@@ -10,4 +10,4 @@ cargo b --target aarch64-apple-darwin
 cargo b --target x86_64-apple-darwin
 # cargo +nightly b -Zbuild-std --target aarch64-apple-visionos
 # cargo +nightly b -Zbuild-std --target aarch64-apple-visionos-sim
-
+cargo install --path ./cargo-box
