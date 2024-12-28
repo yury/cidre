@@ -32,7 +32,7 @@ fn main() {
     // Handle different args from different calls:
     //
     // cargo-box -> cargo-box (no extra box)
-    // cargo box -> cargo-box bx (extra box)
+    // cargo box -> cargo-box box (extra box)
     let mut args: Vec<_> = env::args().collect();
     if args.get(1).map(|v| v == "box") == Some(true) {
         args.remove(1);
@@ -59,7 +59,7 @@ mod runner {
 
     use clap::Parser;
 
-    use crate::macos::{device_ctl, xcode};
+    use crate::{device_ctl, xcode};
 
     #[derive(Parser, Debug)]
     pub(crate) struct Args {
@@ -69,7 +69,6 @@ mod runner {
     }
 
     pub(crate) fn run(args: Args) {
-        // println!("{args:?}");
         assert!(args.args.len() > 2);
         let binary = &args.args[2];
         let path = Path::new(binary);
@@ -253,7 +252,6 @@ mod runner {
         target.push(&format!("{name}.app"));
 
         let box_org_id = std::env::var("BOX_ORG_ID").unwrap();
-
         let device_id = std::env::var("DEVICE_ID").unwrap();
 
         device_ctl::install_app(&device_id, target.to_str().unwrap());
@@ -343,9 +341,8 @@ mod teams {
 }
 
 mod cargo {
-    use std::{env, path::PathBuf};
-
     use cargo_toml::{Manifest, Workspace};
+    use std::{env, path::PathBuf};
 
     pub(crate) fn manifests() -> Option<(PathBuf, Vec<Manifest>, Option<Workspace>)> {
         let mut path = root()?.join("Cargo.toml");
@@ -364,7 +361,6 @@ mod cargo {
                 }
                 Some((path, vec, Some(ws)))
             } else {
-                // println!("workspace: {:?}", res.workspace);
                 Some((path, vec![res], None))
             }
         } else {
@@ -397,7 +393,7 @@ mod xcode {
 
     use cargo_toml::{Manifest, Product};
 
-    use crate::macos::cargo;
+    use crate::cargo;
 
     pub(crate) fn build(project: &str, platform: &str, conf: &str, target: &str) {
         std::process::Command::new("xcodebuild")
