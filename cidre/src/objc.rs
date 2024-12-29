@@ -1,4 +1,8 @@
-#[cfg(all(target_arch = "aarch64", not(feature = "classic-objc-retain-release")))]
+#[cfg(all(
+    target_arch = "aarch64",
+    not(target_pointer_width = "32"),
+    not(feature = "classic-objc-retain-release")
+))]
 use std::arch::asm;
 use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull};
 
@@ -103,7 +107,11 @@ pub trait Obj: Sized + arc::Retain {
 
     #[inline]
     unsafe fn release(id: &mut Self) {
-        #[cfg(all(target_arch = "aarch64", not(feature = "classic-objc-retain-release")))]
+        #[cfg(all(
+            target_arch = "aarch64",
+            target_pointer_width = "64",
+            not(feature = "classic-objc-retain-release")
+        ))]
         {
             asm!(
                 "bl _objc_release_{x}",
@@ -114,7 +122,11 @@ pub trait Obj: Sized + arc::Retain {
             );
         }
 
-        #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
+        #[cfg(any(
+            target_arch = "x86_64",
+            target_pointer_width = "32",
+            feature = "classic-objc-retain-release"
+        ))]
         {
             objc_release(transmute(id));
         }
@@ -225,7 +237,11 @@ pub unsafe fn sel_reg_name(str: *const i8) -> &'static Sel {
 extern "C-unwind" {
     #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
     pub fn objc_retain<'a>(obj: &Id) -> &'a Id;
-    #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
+    #[cfg(any(
+        target_arch = "x86_64",
+        target_pointer_width = "32",
+        feature = "classic-objc-retain-release"
+    ))]
     fn objc_release(obj: &mut Id);
 
     // fn objc_msgSend();
