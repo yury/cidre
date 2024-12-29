@@ -304,12 +304,16 @@ fn main() {
         }
     }
 
+    if sdk != "appletvos" && sdk != "appletvsimulator" {
+        add_xc_target_args_from_features(&mut xc_target_args, &["core_motion"]);
+    }
+
     if sdk != "appletvos"
         && sdk != "appletvsimulator"
         && sdk != "watchos"
         && sdk != "watchsimulator"
     {
-        add_xc_target_args_from_features(&mut xc_target_args, &["wk", "core_motion"]);
+        add_xc_target_args_from_features(&mut xc_target_args, &["wk"]);
     }
 
     if [
