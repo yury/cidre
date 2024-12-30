@@ -322,6 +322,8 @@ fn main() {
         "maccatalyst",
         "appletvos",
         "appletvsimulator",
+        "watchos",
+        "watchosimulator",
         "visionos",
         "visionsimulator",
     ]

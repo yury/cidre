@@ -1,6 +1,6 @@
 use crate::{arc, cg, define_obj_type, ns, objc};
 
-#[cfg(any(target_os = "ios", target_os = "tvos"))]
+#[cfg(any(target_os = "ios", target_os = "tvos", target_os = "watchos"))]
 #[cfg(feature = "ui")]
 use crate::ui::Image;
 
@@ -81,7 +81,7 @@ extern "C" {
     static NS_TEXT_ATTACHMENT: &'static objc::Class<TextAttachment>;
 }
 
-#[cfg(any(target_os = "ios", target_os = "tvos"))]
+#[cfg(any(target_os = "ios", target_os = "tvos", target_os = "watchos"))]
 #[cfg(feature = "ui")]
 extern "C" {
     static NS_TEXT_ATTACHMENT: &'static objc::Class<TextAttachment>;

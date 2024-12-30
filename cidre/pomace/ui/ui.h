@@ -25,11 +25,11 @@ static void ui_initializer(void)
     if (!initialized) {
         initialized = 1;
         
-        UI_DEVICE = [UIDevice class];
-        UI_VIEW = [UIView class];
+        UI_DEVICE = NSClassFromString(@"UIDevice");//[UIDevice class];
+        UI_VIEW = NSClassFromString(@"UIView");//[UIView class];
         UI_COLOR = [UIColor class];
-        UI_RESPONDER = [UIResponder class];
-        UI_VIEW_CONTROLLER = [UIViewController class];
+        UI_RESPONDER = NSClassFromString(@"UIResponder");//[UIResponder class];
+        UI_VIEW_CONTROLLER = NSClassFromString(@"UIViewController");//[UIViewController class];
         UI_IMAGE = [UIImage class];
         
         NS_TEXT_ATTACHMENT = [NSTextAttachment class];

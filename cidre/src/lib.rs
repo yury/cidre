@@ -150,6 +150,7 @@ pub mod cat;
         target_os = "ios",
         all(target_os = "ios", target_abi = "macabi",),
         target_os = "tvos",
+        target_os = "watchos",
         target_os = "visionos"
     ),
     feature = "ui"

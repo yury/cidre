@@ -128,7 +128,7 @@ extern "C" {
     static NSWritingDirectionAttributeName: &'static AttrStringKey;
 }
 
-#[cfg(any(target_os = "ios", target_os = "tvos"))]
+#[cfg(any(target_os = "ios", target_os = "tvos", target_os = "watchos"))]
 #[link(name = "UIKit", kind = "framework")]
 extern "C" {
     static NSFontAttributeName: &'static AttrStringKey;
