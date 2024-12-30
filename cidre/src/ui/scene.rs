@@ -1,4 +1,4 @@
-use crate::{arc, define_cls, define_obj_type, ns, objc, ui};
+use crate::{define_cls, define_obj_type, ns, objc, ui};
 
 define_obj_type!(
     pub Scene(ui::Responder)

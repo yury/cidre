@@ -10,7 +10,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 Class UI_DEVICE;
+Class UI_APPLICATION;
 Class UI_VIEW;
+Class UI_WINDOW;
 Class UI_SCENE;
 Class UI_SCENE_CONFIGURATION;
 Class UI_COLOR;
@@ -32,8 +34,10 @@ static void ui_initializer(void)
         UI_VIEW = NSClassFromString(@"UIView");
         UI_SCENE_CONFIGURATION = NSClassFromString(@"UISceneConfiguration");
         UI_COLOR = [UIColor class];
-        UI_RESPONDER = NSClassFromString(@"UIResponder");//[UIResponder class];
-        UI_VIEW_CONTROLLER = NSClassFromString(@"UIViewController");//[UIViewController class];
+        UI_RESPONDER = NSClassFromString(@"UIResponder");
+        UI_VIEW_CONTROLLER = NSClassFromString(@"UIViewController");
+        UI_APPLICATION = NSClassFromString(@"UIApplication");
+        UI_WINDOW = NSClassFromString(@"UIWindow");
         UI_IMAGE = [UIImage class];
         
         NS_TEXT_ATTACHMENT = [NSTextAttachment class];
