@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 Class UI_DEVICE;
 Class UI_VIEW;
+Class UI_SCENE;
+Class UI_SCENE_CONFIGURATION;
 Class UI_COLOR;
 Class UI_RESPONDER;
 Class UI_VIEW_CONTROLLER;
@@ -25,8 +27,10 @@ static void ui_initializer(void)
     if (!initialized) {
         initialized = 1;
         
-        UI_DEVICE = NSClassFromString(@"UIDevice");//[UIDevice class];
-        UI_VIEW = NSClassFromString(@"UIView");//[UIView class];
+        UI_DEVICE = NSClassFromString(@"UIDevice");
+        UI_SCENE = NSClassFromString(@"UIScene");
+        UI_VIEW = NSClassFromString(@"UIView");
+        UI_SCENE_CONFIGURATION = NSClassFromString(@"UISceneConfiguration");
         UI_COLOR = [UIColor class];
         UI_RESPONDER = NSClassFromString(@"UIResponder");//[UIResponder class];
         UI_VIEW_CONTROLLER = NSClassFromString(@"UIViewController");//[UIViewController class];
