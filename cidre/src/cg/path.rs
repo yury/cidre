@@ -314,8 +314,15 @@ impl PathMut {
         unsafe { CGPathMoveToPoint(self, m, x, y) }
     }
 
+    #[cfg(target_pointer_width = "64")]
     #[inline]
     pub fn move_to<F: Into<f64>>(&mut self, x: F, y: F) {
+        self.move_to_point(None, x.into(), y.into())
+    }
+
+    #[cfg(target_pointer_width = "32")]
+    #[inline]
+    pub fn move_to<F: Into<f32>>(&mut self, x: F, y: F) {
         self.move_to_point(None, x.into(), y.into())
     }
 
@@ -324,8 +331,15 @@ impl PathMut {
         unsafe { CGPathAddLineToPoint(self, m, x, y) }
     }
 
+    #[cfg(target_pointer_width = "64")]
     #[inline]
     pub fn line_to<F: Into<f64>>(&mut self, x: F, y: F) {
+        self.line_to_point(None, x.into(), y.into())
+    }
+
+    #[cfg(target_pointer_width = "32")]
+    #[inline]
+    pub fn line_to<F: Into<f32>>(&mut self, x: F, y: F) {
         self.line_to_point(None, x.into(), y.into())
     }
 
@@ -341,8 +355,15 @@ impl PathMut {
         unsafe { CGPathAddQuadCurveToPoint(self, m, cpx, cpy, x, y) }
     }
 
+    #[cfg(target_pointer_width = "64")]
     #[inline]
     pub fn quad_to<F: Into<f64>>(&mut self, cpx: F, cpy: F, x: F, y: F) {
+        self.quad_curve_to_point(None, cpx.into(), cpy.into(), x.into(), y.into())
+    }
+
+    #[cfg(target_pointer_width = "32")]
+    #[inline]
+    pub fn quad_to<F: Into<f32>>(&mut self, cpx: F, cpy: F, x: F, y: F) {
         self.quad_curve_to_point(None, cpx.into(), cpy.into(), x.into(), y.into())
     }
 
@@ -360,8 +381,23 @@ impl PathMut {
         unsafe { CGPathAddCurveToPoint(self, m, cp1x, cp1y, cp2x, cp2y, x, y) }
     }
 
+    #[cfg(target_pointer_width = "64")]
     #[inline]
     pub fn curve_to<F: Into<f64>>(&mut self, cp1x: F, cp1y: F, cp2x: F, cp2y: F, x: F, y: F) {
+        self.curve_to_point(
+            None,
+            cp1x.into(),
+            cp1y.into(),
+            cp2x.into(),
+            cp2y.into(),
+            x.into(),
+            y.into(),
+        )
+    }
+
+    #[cfg(target_pointer_width = "32")]
+    #[inline]
+    pub fn curve_to<F: Into<f32>>(&mut self, cp1x: F, cp1y: F, cp2x: F, cp2y: F, x: F, y: F) {
         self.curve_to_point(
             None,
             cp1x.into(),
@@ -438,8 +474,22 @@ impl PathMut {
         unsafe { CGPathAddArcToPoint(self, m, x1, y1, x2, y2, radius) }
     }
 
+    #[cfg(target_pointer_width = "64")]
     #[inline]
     pub fn arc_to<F: Into<f64>>(&mut self, x1: F, y1: F, x2: F, y2: F, radius: F) {
+        self.arc_to_point(
+            None,
+            x1.into(),
+            y1.into(),
+            x2.into(),
+            y2.into(),
+            radius.into(),
+        )
+    }
+
+    #[cfg(target_pointer_width = "32")]
+    #[inline]
+    pub fn arc_to<F: Into<f32>>(&mut self, x1: F, y1: F, x2: F, y2: F, radius: F) {
         self.arc_to_point(
             None,
             x1.into(),

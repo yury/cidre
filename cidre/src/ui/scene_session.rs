@@ -1,4 +1,8 @@
-use crate::{arc, define_cls, define_obj_type, ns, objc, ui};
+use crate::{
+    arc, define_cls, define_obj_type, ns,
+    objc::{self, Obj},
+    ui,
+};
 
 define_obj_type!(
     #[doc(alias = "UISceneConfiguration")]
@@ -10,7 +14,7 @@ impl arc::A<SceneCfg> {
     pub fn init_with_name_role(
         self,
         name: Option<&ns::String>,
-        session_role: ui::SceneSessionRole,
+        session_role: &ui::SceneSessionRole,
     ) -> arc::R<SceneCfg>;
 }
 
@@ -19,7 +23,7 @@ impl SceneCfg {
 
     pub fn with_name_role(
         name: Option<&ns::String>,
-        session_role: ui::SceneSessionRole,
+        session_role: &ui::SceneSessionRole,
     ) -> arc::R<Self> {
         Self::alloc().init_with_name_role(name, session_role)
     }
@@ -37,7 +41,7 @@ impl SceneCfg {
     pub fn delegate_class(&self) -> Option<&ns::Class<ns::Id>>;
 
     #[objc::msg_send(setDelegateClass:)]
-    pub fn set_delegate_class(&mut self, val: Option<&ns::Class<ns::Id>>);
+    pub fn set_delegate_class<T: Obj>(&mut self, val: Option<&ns::Class<T>>);
 
     #[objc::msg_send(userInfo)]
     pub fn user_info(&self) -> Option<&ns::Dictionary<ns::String, ns::Id>>;
@@ -50,6 +54,9 @@ define_obj_type!(
 impl SceneSession {
     #[objc::msg_send(scene)]
     pub fn scene(&self) -> Option<&ui::Scene>;
+
+    #[objc::msg_send(role)]
+    pub fn role(&self) -> &ui::SceneSessionRole;
 }
 
 extern "C" {

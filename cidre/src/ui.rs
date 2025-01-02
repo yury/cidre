@@ -40,6 +40,7 @@ mod scene;
 pub use scene::AnySceneDelegate;
 pub use scene::Scene;
 pub use scene::SceneDelegate;
+pub use scene::SceneDelegateImpl;
 
 mod scene_session;
 pub use scene_session::SceneCfg;
@@ -57,6 +58,7 @@ pub fn app_main(
     principal_class_name: Option<&crate::ns::String>,
     delegate_class_name: Option<&crate::ns::String>,
 ) -> std::ffi::c_int {
+    // TODO: pass original args
     unsafe {
         UIApplicationMain(
             0,

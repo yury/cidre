@@ -3,12 +3,12 @@ use crate::cg;
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
 pub struct AffineTransform {
-    pub a: f64,
-    pub b: f64,
-    pub c: f64,
-    pub d: f64,
-    pub tx: f64,
-    pub ty: f64,
+    pub a: cg::Float,
+    pub b: cg::Float,
+    pub c: cg::Float,
+    pub d: cg::Float,
+    pub tx: cg::Float,
+    pub ty: cg::Float,
 }
 
 /*                      |--------------------------- Components ------------------------|
