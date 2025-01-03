@@ -1,5 +1,6 @@
 use crate::{arc, define_obj_type, ns, objc};
 
+#[doc(alias = "NSTimeInterval")]
 pub type TimeInterval = f64;
 
 pub const TIME_INTERVAL_SINCE_1970: TimeInterval = 978307200.0f64;

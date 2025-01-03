@@ -31,7 +31,67 @@ impl<T: Obj> Class<T> {
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct ClassInstExtra<T: Obj, I: Sized>(Class<T>, PhantomData<I>);
-pub const NS_OBJECT_SIZE: usize = 8;
+
+impl<T: Obj, I: Sized> std::ops::Deref for ClassInstExtra<T, I> {
+    type Target = Class<T>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+// class_getInstanceSize([NSObject class]);
+pub const NS_OBJECT_SIZE: usize = std::mem::size_of::<usize>();
+
+#[macro_export]
+macro_rules! init_with_default {
+    ($NewType:ty, $InnerType:ty) => {{
+        trait A {
+            fn init_fn(&self) -> Option<extern "C" fn()>;
+        }
+
+        struct B<T: ?Sized>(core::marker::PhantomData<T>);
+
+        impl<T: ?Sized> core::ops::Deref for B<T> {
+            type Target = ();
+            fn deref(&self) -> &Self::Target {
+                &()
+            }
+        }
+
+        impl<T: ?Sized> A for B<T>
+        where
+            T: Default,
+        {
+            fn init_fn(&self) -> Option<extern "C" fn()> {
+                extern "C" fn impl_init<T: Default>(
+                    s: &mut $NewType,
+                    _sel: Option<$crate::objc::Sel>,
+                ) -> $crate::arc::R<$NewType> {
+                    unsafe {
+                        let ptr: *mut u8 = std::mem::transmute(s);
+                        let d_ptr: *mut std::mem::ManuallyDrop<T> =
+                            ptr.add($crate::objc::NS_OBJECT_SIZE) as _;
+                        *d_ptr = std::mem::ManuallyDrop::new(T::default());
+
+                        std::mem::transmute(ptr)
+                    }
+                }
+
+                let ptr = unsafe { std::mem::transmute(impl_init::<T> as *const u8) };
+                Some(ptr)
+            }
+        }
+
+        impl A for () {
+            fn init_fn(&self) -> Option<extern "C" fn()> {
+                None
+            }
+        }
+
+        B::<$InnerType>(core::marker::PhantomData).init_fn()
+    }};
+}
 
 impl<T: Obj, I: Sized> ClassInstExtra<T, I> {
     #[inline]
@@ -51,6 +111,12 @@ impl<T: Obj, I: Sized> ClassInstExtra<T, I> {
 
             std::mem::transmute(ptr)
         }
+    }
+}
+
+impl<T: Obj, I: Sized + Default> ClassInstExtra<T, I> {
+    pub fn new(&self) -> arc::R<T> {
+        unsafe { self.alloc_init(Default::default()).unwrap_unchecked() }
     }
 }
 
@@ -264,6 +330,13 @@ extern "C-unwind" {
         types: *const u8,
     ) -> bool;
 
+    pub fn class_replaceMethod(
+        cls: &Class<Id>,
+        name: &Sel,
+        imp: extern "C" fn(),
+        types: *const u8,
+    ) -> Option<extern "C" fn()>;
+
     pub fn objc_allocateClassPair(
         super_cls: &Class<Id>,
         name: *const u8,
@@ -403,6 +476,14 @@ macro_rules! define_obj_type {
                 $(<Self as $TraitImpl>::cls_add_methods(cls);)*
                 $(<Self as $TraitImpl>::cls_add_protocol(cls);)*
 
+                if let Some(init_fn_ptr) = $crate::init_with_default!($NewType, $InnerType) {
+                    unsafe {
+                        let sel = $crate::objc::sel_reg_name(c"init".as_ptr() as _);
+                        let imp: extern "C" fn() = init_fn_ptr;
+                        $crate::objc::class_addMethod(cls, sel, imp, std::ptr::null());
+                    }
+                }
+
                 if std::mem::needs_drop::<$InnerType>() {
                     extern "C" fn impl_dealloc(s: &mut $NewType, _sel: Option<$crate::objc::Sel>) {
                         let ptr = s.inner_mut() as *mut _;
@@ -476,7 +557,7 @@ macro_rules! define_obj_type {
 
             #[allow(dead_code)]
             pub fn new() -> $crate::arc::R<Self> {
-                unsafe { Self::cls().alloc_init(()).unwrap_unchecked() }
+                unsafe { Self::cls().new() }
             }
         }
     };

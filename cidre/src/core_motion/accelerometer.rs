@@ -1,5 +1,6 @@
 use crate::{core_motion as cm, define_obj_type, objc};
 
+#[doc(alias = "CMAcceleration")]
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
 pub struct Acceleration {

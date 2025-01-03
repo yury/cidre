@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, objc, ui};
+use crate::{arc, define_obj_type, ns, objc, ui};
 
 #[objc::protocol(UIApplication)]
 pub trait AppDelegate {
@@ -22,6 +22,10 @@ pub trait AppDelegate {
     #[objc::optional]
     #[objc::msg_send(setWindow:)]
     fn set_window(&mut self, val: Option<&ui::Window>);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationDidBecomeActive:)]
+    fn app_did_become_active(&mut self, app: &App);
 }
 
 define_obj_type!(
@@ -29,7 +33,28 @@ define_obj_type!(
     UI_APPLICATION
 );
 
-impl App {}
+define_obj_type!(
+    pub AnyAppDelegate(ns::Id)
+);
+
+impl AppDelegate for AnyAppDelegate {}
+
+impl App {
+    #[objc::msg_send(delegate)]
+    pub fn delegate(&self) -> Option<&AnyAppDelegate>;
+
+    #[objc::msg_send(delegate)]
+    pub fn delegate_mut(&self) -> Option<&mut AnyAppDelegate>;
+
+    #[objc::msg_send(setDelegate:)]
+    pub fn set_delegate(&mut self, val: Option<&AnyAppDelegate>);
+
+    #[objc::msg_send(sharedApplication)]
+    pub fn shared() -> &'static Self;
+
+    #[objc::msg_send(sharedApplication)]
+    pub fn shared_mut() -> &'static mut Self;
+}
 
 extern "C" {
     static UI_APPLICATION: &'static objc::Class<App>;
