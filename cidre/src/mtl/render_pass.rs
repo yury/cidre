@@ -140,16 +140,22 @@ define_obj_type!(
 
 impl Desc {
     #[objc::msg_send(colorAttachments)]
-    pub fn color_attaches(&self) -> arc::R<ColorAttachDescArray>;
+    pub fn color_attaches(&self) -> &ColorAttachDescArray;
+
+    #[objc::msg_send(colorAttachments)]
+    pub fn color_attaches_mut(&mut self) -> &mut ColorAttachDescArray;
 
     #[objc::msg_send(depthAttachment)]
-    pub fn depth_attach(&self) -> arc::R<DepthAttachDesc>;
+    pub fn depth_attach(&self) -> &DepthAttachDesc;
+
+    #[objc::msg_send(depthAttachment)]
+    pub fn depth_attach_mut(&mut self) -> &mut DepthAttachDesc;
 
     #[objc::msg_send(setDepthAttachment:)]
     pub fn set_depth_attach(&mut self, val: Option<&DepthAttachDesc>);
 
     #[objc::msg_send(stencilAttachment)]
-    pub fn stencil_attach(&self) -> arc::R<StencilAttachDesc>;
+    pub fn stencil_attach(&self) -> &StencilAttachDesc;
 
     #[objc::msg_send(setStencilAttachment:)]
     pub fn set_stencil_attach_option(&mut self, val: Option<&StencilAttachDesc>);
@@ -194,6 +200,20 @@ impl Desc {
     pub fn set_imageblock_sample_len(&self, val: usize);
 }
 
+impl std::ops::Index<usize> for ColorAttachDescArray {
+    type Output = ColorAttachDesc;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        self.get(index)
+    }
+}
+
+impl std::ops::IndexMut<usize> for ColorAttachDescArray {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        self.get_mut(index)
+    }
+}
+
 define_obj_type!(
     #[doc(alias = "MTLRenderPassColorAttachmentDescriptorArray")]
     pub ColorAttachDescArray(ns::Id)
@@ -201,16 +221,29 @@ define_obj_type!(
 
 impl ColorAttachDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get(&self, index: usize) -> arc::R<ColorAttachDesc>;
+    pub fn get(&self, index: usize) -> &ColorAttachDesc;
+
+    #[objc::msg_send(objectAtIndexedSubscript:)]
+    pub fn get_mut(&mut self, index: usize) -> &mut ColorAttachDesc;
+
+    #[objc::msg_send(objectAtIndexedSubscript:)]
+    pub fn get_at(&self, index: usize) -> arc::R<ColorAttachDesc>;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
     pub fn set(&mut self, object: Option<&ColorAttachDesc>, index: usize);
 }
 
-define_obj_type!(pub AttachDesc(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLRenderPassAttachmentDescriptor")]
+    pub AttachDesc(ns::Id)
+);
+
 impl AttachDesc {
     #[objc::msg_send(texture)]
-    pub fn texture(&self) -> Option<arc::R<mtl::Texture>>;
+    pub fn texture(&self) -> Option<&mtl::Texture>;
+
+    #[objc::msg_send(texture)]
+    pub fn texture_mut(&mut self) -> Option<&mut mtl::Texture>;
 
     #[objc::msg_send(setTexture:)]
     pub fn set_texture(&mut self, val: Option<&mtl::Texture>);
@@ -234,7 +267,7 @@ impl AttachDesc {
     pub fn set_depth_plane(&mut self, val: usize);
 
     #[objc::msg_send(resolveTexture)]
-    pub fn resolve_texture(&self) -> Option<arc::R<mtl::Texture>>;
+    pub fn resolve_texture(&self) -> Option<&mtl::Texture>;
 
     #[objc::msg_send(setResolveTexture:)]
     pub fn set_resolve_texture(&mut self, val: Option<&mtl::Texture>);

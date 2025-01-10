@@ -1,3 +1,5 @@
+# [build]
+# target = "arm64_32-apple-watchos"
 
 [target.aarch64-apple-ios]
 runner = "cargo-box runner"

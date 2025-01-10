@@ -32,8 +32,8 @@ CURRENT_PROJECT_VERSION = 1
 PRODUCT_NAME = box
 PRODUCT_DISPLAY_NAME = $(PRODUCT_NAME)
 
-
 INFOPLIST_KEY_NSCameraUsageDescription = Testing Camera
+// INFOPLIST_KEY_NSMotionUsageDescription = Testing Motion
 
 BOX_ID = box
 BOX_ORG_ID = org.cidre
