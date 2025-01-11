@@ -55,6 +55,18 @@ impl PixelBuf {
         unsafe { CVPixelBufferGetHeightOfPlane(self, plane_index) }
     }
 
+    #[doc(alias = "CVPixelBufferGetBaseAddressOfPlane")]
+    #[inline]
+    pub fn plane_base_address(&self, plane_index: usize) -> *const u8 {
+        unsafe { CVPixelBufferGetBaseAddressOfPlane(self, plane_index) }
+    }
+
+    #[doc(alias = "CVPixelBufferGetBytesPerRowOfPlane")]
+    #[inline]
+    pub fn plane_bytes_per_row(&self, plane_index: usize) -> usize {
+        unsafe { CVPixelBufferGetBytesPerRowOfPlane(self, plane_index) }
+    }
+
     /// ```
     /// use cidre::{cv, cg};
     ///
@@ -659,6 +671,8 @@ extern "C-unwind" {
     fn CVPixelBufferGetPlaneCount(pixel_buffer: &PixelBuf) -> usize;
     fn CVPixelBufferGetWidthOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> usize;
     fn CVPixelBufferGetHeightOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> usize;
+    fn CVPixelBufferGetBaseAddressOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> *const u8;
+    fn CVPixelBufferGetBytesPerRowOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> usize;
 
     fn CVPixelBufferLockBaseAddress(pixel_buffer: &PixelBuf, lock_flags: LockFlags) -> cv::Return;
     fn CVPixelBufferUnlockBaseAddress(pixel_buffer: &PixelBuf, lock_flags: LockFlags)

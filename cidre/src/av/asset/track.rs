@@ -48,6 +48,12 @@ impl Track {
     pub fn has_media_characterisitc(&self, val: av::MediaCharacteristic) -> bool;
 }
 
+/// AVAssetTrackPropertiesForTemporalInformation
+impl Track {
+    #[objc::msg_send(timeRange)]
+    pub fn time_range(&self) -> cm::TimeRange;
+}
+
 /// AVAssetTrackPropertiesForVisualCharacteristic
 impl Track {
     #[objc::msg_send(naturalSize)]
