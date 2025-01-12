@@ -212,6 +212,22 @@ impl Obj {
         self.cf_prop(&PropSelector::NAME.global_addr())
     }
 
+    pub fn model_name(&self) -> os::Result<arc::R<cf::String>> {
+        self.cf_prop(&PropSelector::MODEL_NAME.global_addr())
+    }
+
+    pub fn manufacturer(&self) -> os::Result<arc::R<cf::String>> {
+        self.cf_prop(&PropSelector::MANUFACTURER.global_addr())
+    }
+
+    pub fn serial_number(&self) -> os::Result<arc::R<cf::String>> {
+        self.cf_prop(&PropSelector::SERIAL_NUMBER.global_addr())
+    }
+
+    pub fn firmware_version(&self) -> os::Result<arc::R<cf::String>> {
+        self.cf_prop(&PropSelector::FIRMWARE_VERSION.global_addr())
+    }
+
     pub fn class(&self) -> os::Result<Class> {
         self.prop(&PropSelector::CLASS.global_addr())
     }
@@ -1266,8 +1282,14 @@ impl AggregateDevice {
         os::result_init(|ptr| unsafe { AudioHardwareCreateAggregateDevice(desc, ptr) })
     }
 
+    #[doc(alias = "kAudioAggregateDevicePropertyComposition")]
     pub fn composition(&self) -> os::Result<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> {
         self.cf_prop(&PropSelector::AGGREGATE_DEVICE_COMPOSITION.global_addr())
+    }
+
+    #[doc(alias = "kAudioAggregateDevicePropertyFullSubDeviceList")]
+    pub fn full_sub_device_list(&self) -> os::Result<arc::R<cf::ArrayOf<cf::String>>> {
+        self.cf_prop(&PropSelector::AGGREGATE_DEVICE_FULL_SUB_DEVICE_LIST.global_addr())
     }
 }
 
