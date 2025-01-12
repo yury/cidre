@@ -1263,11 +1263,7 @@ pub mod aggregate_device_keys {
 
 impl AggregateDevice {
     pub fn with_desc(desc: &cf::DictionaryOf<cf::String, cf::Type>) -> os::Result<Self> {
-        let mut res = std::mem::MaybeUninit::uninit();
-        unsafe {
-            AudioHardwareCreateAggregateDevice(desc, res.as_mut_ptr()).result()?;
-            Ok(res.assume_init())
-        }
+        os::result_init(|ptr| unsafe { AudioHardwareCreateAggregateDevice(desc, ptr) })
     }
 
     pub fn composition(&self) -> os::Result<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> {
