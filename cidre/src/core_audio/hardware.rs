@@ -392,6 +392,52 @@ impl PropSelector {
     pub const HARDWARE_TRANSLATE_PID_TO_PROCESS_OBJ: Self = Self(u32::from_be_bytes(*b"id2p"));
 }
 
+/// AudioAggregateDevice Properties
+impl PropSelector {
+    /// A CFArray of CFStrings that contain the UIDs of all the devices, active or
+    /// inactive, contained in the AudioAggregateDevice. The order of the items in
+    /// the array is significant and is used to determine the order of the streams
+    /// of the AudioAggregateDevice. The caller is responsible for releasing the
+    /// returned CFObject.
+    #[doc(alias = "kAudioAggregateDevicePropertyFullSubDeviceList")]
+    pub const AGGREGATE_DEVICE_FULL_SUB_DEVICE_LIST: Self = Self(u32::from_be_bytes(*b"grup"));
+
+    /// An array of AudioObjectIDs for all the active sub-devices in the aggregate
+    /// device.
+    #[doc(alias = "kAudioAggregateDevicePropertyActiveSubDeviceList")]
+    pub const AGGREGATE_DEVICE_ACTIVE_SUB_DEVICE_LIST: Self = Self(u32::from_be_bytes(*b"agrp"));
+
+    /// A CFDictionary that describes the composition of the AudioAggregateDevice.
+    /// The keys for this CFDicitionary are defined in the AudioAggregateDevice
+    /// Constants section. The caller is responsible for releasing the returned CFObject.
+    #[doc(alias = "kAudioAggregateDevicePropertyComposition")]
+    pub const AGGREGATE_DEVICE_COMPOSITION: Self = Self(u32::from_be_bytes(*b"acom"));
+
+    /// A CFString that contains the UID for the AudioDevice that is currently
+    /// serving as the time base of the aggregate device. The caller is
+    /// responsible for releasing the returned CFObject.
+    #[doc(alias = "kAudioAggregateDevicePropertyMainSubDevice")]
+    pub const AGGREGATE_DEVICE_MAIN_SUB_DEVICE: Self = Self(u32::from_be_bytes(*b"amst"));
+
+    /// A CFString that contains the UID for the AudioClockDevice that is currently
+    /// serving as the time base of the aggregate device. If the aggregate
+    /// device includes both a main audio device and a clock device, the clock
+    /// device will control the time base. Setting this property will enable
+    /// drift correction for all subdevices in the aggregate device. The caller is
+    /// responsible for releasing the returned CFObject.
+    #[doc(alias = "kAudioAggregateDevicePropertyClockDevice")]
+    pub const AGGREGATE_DEVICE_CLOCK_DEVICE: Self = Self(u32::from_be_bytes(*b"apcd"));
+
+    /// A CFArray of CFStrings that contain the UUIDs of all the tap objects in the
+    /// contained in the AudioAggregateDevice.
+    #[doc(alias = "kAudioAggregateDevicePropertyTapList")]
+    pub const AGGREGATE_DEVICE_TAP_LIST: Self = Self(u32::from_be_bytes(*b"tap#"));
+
+    /// An array of AudioObjectIDs for all the active sub-taps in the aggregate device.
+    #[doc(alias = "kAudioAggregateDevicePropertySubTapList")]
+    pub const AGGREGATE_DEVICE_SUB_TAP_LIST: Self = Self(u32::from_be_bytes(*b"atap"));
+}
+
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct Device(pub Obj);
@@ -1222,6 +1268,10 @@ impl AggregateDevice {
             AudioHardwareCreateAggregateDevice(desc, res.as_mut_ptr()).result()?;
             Ok(res.assume_init())
         }
+    }
+
+    pub fn composition(&self) -> os::Result<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> {
+        self.cf_prop(&PropSelector::AGGREGATE_DEVICE_COMPOSITION.global_addr())
     }
 }
 
