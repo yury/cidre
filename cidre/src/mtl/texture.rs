@@ -91,10 +91,10 @@ define_obj_type!(
 
 impl SharedTextureHandle {
     #[objc::msg_send(device)]
-    pub fn device(&self) -> arc::R<mtl::Device>;
+    pub fn device(&self) -> &mtl::Device;
 
     #[objc::msg_send(label)]
-    pub fn label(&self) -> Option<arc::R<ns::String>>;
+    pub fn label(&self) -> Option<&ns::String>;
 }
 
 define_opts!(
@@ -273,7 +273,7 @@ impl Texture {
     /// The texture this texture view was created from, or [`None`] if this is not
     /// a texture view or it was not created from a texture.
     #[objc::msg_send(parentTexture)]
-    pub fn parent_texture(&self) -> Option<arc::R<Texture>>;
+    pub fn parent_texture(&self) -> Option<&Texture>;
 
     #[objc::msg_send(newTextureViewWithPixelFormat:)]
     pub fn new_texture_view_with_pixel_format(
@@ -284,7 +284,7 @@ impl Texture {
     /// The buffer this texture view was created from, or [`None`] if this is not a texture
     /// view or it was not created from a buffer.
     #[objc::msg_send(buffer)]
-    pub fn buf(&self) -> Option<arc::R<mtl::Buf>>;
+    pub fn buf(&self) -> Option<&mtl::Buf>;
 
     /// The offset of the buffer this texture view was created from, or 0 if this is not a texture view.
     #[objc::msg_send(bufferOffset)]
