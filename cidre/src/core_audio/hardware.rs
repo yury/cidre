@@ -489,10 +489,9 @@ impl Device {
         };
         let mut size = self.prop_size(&addr)?;
         let mut res = AudioBufListN::new(size as _);
-        let obj = Obj(self.0 .0);
         unsafe {
             AudioObjectGetPropertyData(
-                obj,
+                self.0,
                 &addr,
                 0,
                 std::ptr::null(),
@@ -519,10 +518,9 @@ impl Device {
         client_data: Option<&mut T>,
     ) -> os::Result<DeviceIoProcId> {
         let mut res = None;
-        let obj = Obj(self.0 .0);
         unsafe {
             AudioDeviceCreateIOProcID(
-                obj,
+                self.0,
                 std::mem::transmute(proc),
                 std::mem::transmute(client_data),
                 &mut res,
@@ -1291,6 +1289,37 @@ impl AggregateDevice {
     pub fn full_sub_device_list(&self) -> os::Result<arc::R<cf::ArrayOf<cf::String>>> {
         self.cf_prop(&PropSelector::AGGREGATE_DEVICE_FULL_SUB_DEVICE_LIST.global_addr())
     }
+
+    #[doc(alias = "kAudioAggregateDevicePropertyMainSubDevice")]
+    pub fn main_sub_device(&self) -> os::Result<arc::R<cf::String>> {
+        self.cf_prop(&PropSelector::AGGREGATE_DEVICE_MAIN_SUB_DEVICE.global_addr())
+    }
+
+    #[doc(alias = "kAudioAggregateDevicePropertyMainSubDevice")]
+    pub fn set_main_sub_device(&mut self, val: arc::R<cf::String>) -> os::Result {
+        self.set_prop(
+            &PropSelector::AGGREGATE_DEVICE_MAIN_SUB_DEVICE.global_addr(),
+            &val,
+        )
+    }
+
+    #[doc(alias = "kAudioAggregateDevicePropertyFullSubDeviceList")]
+    pub fn set_full_sub_device_list(&mut self, val: arc::R<cf::ArrayOf<cf::String>>) -> os::Result {
+        self.set_prop(
+            &PropSelector::AGGREGATE_DEVICE_FULL_SUB_DEVICE_LIST.global_addr(),
+            &val,
+        )
+    }
+
+    #[doc(alias = "kAudioAggregateDevicePropertyTapList")]
+    pub fn tap_list(&self) -> os::Result<arc::R<cf::ArrayOf<cf::String>>> {
+        self.cf_prop(&PropSelector::AGGREGATE_DEVICE_TAP_LIST.global_addr())
+    }
+
+    #[doc(alias = "kAudioAggregateDevicePropertyTapList")]
+    pub fn set_tap_list(&mut self, val: arc::R<cf::ArrayOf<cf::String>>) -> os::Result {
+        self.set_prop(&PropSelector::AGGREGATE_DEVICE_TAP_LIST.global_addr(), &val)
+    }
 }
 
 impl Drop for AggregateDevice {
@@ -1401,6 +1430,7 @@ extern "C-unwind" {
 
 #[cfg(test)]
 mod tests {
+
     use crate::{
         cat, cf,
         core_audio::{
@@ -1456,9 +1486,30 @@ mod tests {
                 &uuid,
             ],
         );
-        let agg_device = AggregateDevice::with_desc(&dict).unwrap();
+        let mut agg_device = AggregateDevice::with_desc(&dict).unwrap();
         assert_eq!(agg_device.class().unwrap(), Class::AGGREGATE_DEVICE);
         assert_eq!(agg_device.base_class().unwrap(), Class::DEVICE);
+
+        let taps = agg_device.tap_list().unwrap();
+        assert!(taps.get_type_id() == cf::Array::type_id());
+        agg_device.set_tap_list(taps.clone()).unwrap();
+        agg_device.set_tap_list(cf::ArrayOf::new()).unwrap();
+
+        let sub_devices = agg_device.full_sub_device_list().unwrap();
+        assert!(sub_devices.get_type_id() == cf::Array::type_id());
+        agg_device.set_full_sub_device_list(sub_devices).unwrap();
+
+        let main_sub_device = agg_device.main_sub_device().unwrap();
+        assert!(main_sub_device.is_empty());
+
+        let device = System::default_output_device().unwrap();
+        let device_uid = device.uid().unwrap();
+
+        agg_device.set_main_sub_device(device_uid.clone()).unwrap();
+
+        // not is list of sub devices
+        let main_sub_device = agg_device.main_sub_device().unwrap();
+        assert!(main_sub_device.is_empty());
 
         extern "C" fn proc(
             _device: Device,
