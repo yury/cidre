@@ -147,6 +147,18 @@ impl<T> arc::Retain for ArrayOf<T> {
     }
 }
 
+impl<T: arc::Retain> AsRef<Self> for arc::R<ArrayOf<T>> {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
+impl<T: arc::Retain> AsRef<arc::R<ArrayOf<T>>> for arc::R<ArrayOfMut<T>> {
+    fn as_ref(&self) -> &arc::R<ArrayOf<T>> {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
 pub struct ArrayOfIterator<'a, T> {
     array: &'a Array,
     index: usize,
@@ -215,6 +227,11 @@ impl<T: Retain> ArrayOfMut<T> {
     #[inline]
     pub fn push(&mut self, val: &T) {
         self.0.push(unsafe { transmute(val) });
+    }
+
+    #[inline]
+    pub fn copy(&self) -> Option<arc::R<ArrayOf<T>>> {
+        unsafe { std::mem::transmute(self.0.copy()) }
     }
 }
 

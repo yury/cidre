@@ -1358,6 +1358,17 @@ impl AggregateDevice {
         self.cf_prop(&PropSelector::AGGREGATE_DEVICE_COMPOSITION.global_addr())
     }
 
+    #[doc(alias = "kAudioAggregateDevicePropertyComposition")]
+    pub fn set_composition(
+        &mut self,
+        val: arc::R<cf::DictionaryOf<cf::String, cf::Type>>,
+    ) -> os::Result {
+        self.set_prop(
+            &PropSelector::AGGREGATE_DEVICE_COMPOSITION.global_addr(),
+            &val,
+        )
+    }
+
     #[doc(alias = "kAudioAggregateDevicePropertyFullSubDeviceList")]
     pub fn full_sub_device_list(&self) -> os::Result<arc::R<cf::ArrayOf<cf::String>>> {
         self.cf_prop(&PropSelector::AGGREGATE_DEVICE_FULL_SUB_DEVICE_LIST.global_addr())
@@ -1377,10 +1388,13 @@ impl AggregateDevice {
     }
 
     #[doc(alias = "kAudioAggregateDevicePropertyFullSubDeviceList")]
-    pub fn set_full_sub_device_list(&mut self, val: arc::R<cf::ArrayOf<cf::String>>) -> os::Result {
+    pub fn set_full_sub_device_list<V>(&mut self, val: V) -> os::Result
+    where
+        V: AsRef<arc::R<cf::ArrayOf<cf::String>>>,
+    {
         self.set_prop(
             &PropSelector::AGGREGATE_DEVICE_FULL_SUB_DEVICE_LIST.global_addr(),
-            &val,
+            val.as_ref(),
         )
     }
 
@@ -1580,9 +1594,22 @@ mod tests {
 
         agg_device.set_main_sub_device(device_uid.clone()).unwrap();
 
-        // not is list of sub devices
+        // not is list of sub devices so it should be empty
         let main_sub_device = agg_device.main_sub_device().unwrap();
         assert!(main_sub_device.is_empty());
+
+        let composition = agg_device.composition().unwrap();
+        agg_device.set_composition(composition).unwrap();
+
+        // add subdevice
+        let sub_devices = agg_device.full_sub_device_list().unwrap();
+        let mut sub_devices = sub_devices.copy_mut().unwrap();
+        sub_devices.push(&device_uid);
+        agg_device.set_full_sub_device_list(sub_devices).unwrap();
+
+        // now we should have main sub device
+        let main_sub_device = agg_device.main_sub_device().unwrap();
+        assert_eq!(&main_sub_device, &device_uid);
 
         extern "C" fn proc(
             _device: Device,
