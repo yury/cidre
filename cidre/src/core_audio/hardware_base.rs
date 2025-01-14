@@ -1,4 +1,7 @@
-use crate::four_cc_to_str;
+use crate::{
+    at::audio::{StreamBasicDesc, ValueRange},
+    four_cc_to_str,
+};
 
 #[doc(alias = "AudioDeviceID")]
 #[doc(alias = "AudioObjectID")]
@@ -673,4 +676,68 @@ impl PropSelector {
     /// should be used.
     #[doc(alias = "kAudioDevicePropertyPreferredChannelLayout")]
     pub const DEVICE_PREFERRED_CHANNEL_LAYOUT: Self = Self(u32::from_be_bytes(*b"srnd"));
+}
+
+#[doc(alias = "AudioStreamRangedDescription")]
+#[derive(Debug, PartialEq, Clone, Copy)]
+#[repr(C)]
+pub struct StreamRangedDesc {
+    pub format: StreamBasicDesc,
+    pub sample_rate_range: ValueRange,
+}
+
+/// AudioObjectPropertySelector values provided by the AudioStream class.
+impl PropSelector {
+    /// A u32 where a non-zero value indicates that the stream is enabled and
+    /// doing IO.
+    #[doc(alias = "kAudioStreamPropertyIsActive")]
+    pub const STREAM_IS_ACTIVE: Self = Self(u32::from_be_bytes(*b"sact"));
+
+    /// A u32 where a value of 0 means that this AudioStream is an output stream
+    /// and a value of 1 means that it is an input stream.
+    #[doc(alias = "kAudioStreamPropertyDirection")]
+    pub const STREAM_DIRECTION: Self = Self(u32::from_be_bytes(*b"sdir"));
+
+    /// A u32 whose value describes the general kind of functionality attached
+    /// to the AudioStream.
+    #[doc(alias = "kAudioStreamPropertyTerminalType")]
+    pub const STREAM_TERMINAL_TYPE: Self = Self(u32::from_be_bytes(*b"term"));
+
+    /// A u32 that specifies the first element in the owning device that
+    /// corresponds to element one of this stream.
+    #[doc(alias = "kAudioStreamPropertyStartingChannel")]
+    pub const STREAM_STARTING_CHANNEL: Self = Self(u32::from_be_bytes(*b"schn"));
+
+    /// A u32 containing the number of frames of latency in the AudioStream. Note
+    /// that the owning AudioDevice may have additional latency so it should be
+    /// queried as well. If both the device and the stream say they have latency,
+    /// then the total latency for the stream is the device latency summed with the
+    /// stream latency.
+    #[doc(alias = "kAudioStreamPropertyLatency")]
+    pub const STREAM_LATENCY: Self = Self::DEVICE_LATENCY;
+
+    /// An AudioStreamBasicDescription that describes the current data format for
+    /// the AudioStream. The virtual format refers to the data format in which all
+    /// IOProcs for the owning AudioDevice will perform IO transactions.
+    #[doc(alias = "kAudioStreamPropertyVirtualFormat")]
+    pub const STREAM_VIRTUAL_FORMAT: Self = Self(u32::from_be_bytes(*b"sfmt"));
+
+    /// An array of AudioStreamRangedDescriptions that describe the available data
+    /// formats for the AudioStream. The virtual format refers to the data format in
+    /// which all IOProcs for the owning AudioDevice will perform IO transactions.
+    #[doc(alias = "kAudioStreamPropertyAvailableVirtualFormats")]
+    pub const STREAM_AVAILABLE_VIRTUAL_FORMATS: Self = Self(u32::from_be_bytes(*b"sfma"));
+
+    /// An AudioStreamBasicDescription that describes the current data format for
+    /// the AudioStream. The physical format refers to the data format in which the
+    /// hardware for the owning AudioDevice performs its IO transactions.
+    #[doc(alias = "kAudioStreamPropertyPhysicalFormat")]
+    pub const STREAM_PHYSICAL_FORMAT: Self = Self(u32::from_be_bytes(*b"pft "));
+
+    /// An array of AudioStreamRangedDescriptions that describe the available data
+    /// formats for the AudioStream. The physical format refers to the data format
+    /// in which the hardware for the owning AudioDevice performs its IO
+    /// transactions.
+    #[doc(alias = "kAudioStreamPropertyAvailablePhysicalFormats")]
+    pub const STREAM_AVAILABLE_PHYSICAL_FORMATS: Self = Self(u32::from_be_bytes(*b"pfta"));
 }

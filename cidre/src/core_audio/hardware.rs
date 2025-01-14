@@ -3,13 +3,16 @@ use std::ffi::c_void;
 use crate::{
     arc,
     at::AudioBufListN,
-    cat, cf,
+    cat::{self, AudioBasicStreamDesc},
+    cf,
     core_audio::{Class, Obj, PropAddr, PropElement, PropScope, PropSelector},
     os, sys,
 };
 
 #[cfg(all(feature = "blocks", feature = "dispatch"))]
 use crate::{blocks, dispatch};
+
+use super::StreamRangedDesc;
 
 #[doc(alias = "AudioObjectPropertyListenerProc")]
 pub type PropListenerFn<T = c_void> = extern "C-unwind" fn(
@@ -509,6 +512,10 @@ impl Device {
 
     pub fn output_stream_cfg(&self) -> os::Result<AudioBufListN> {
         self.stream_cfg(PropScope::OUTPUT)
+    }
+
+    pub fn streams(&self) -> os::Result<Vec<Stream>> {
+        self.prop_vec(&PropSelector::DEVICE_STREAMS.global_addr())
     }
 
     #[doc(alias = "AudioDeviceCreateIOProcID")]
@@ -1133,6 +1140,72 @@ impl AsRef<Device> for AggregateDevice {
     }
 }
 
+#[doc(alias = "AudioStream")]
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct Stream(pub Obj);
+
+impl std::ops::Deref for Stream {
+    type Target = Obj;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for Stream {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl Stream {
+    /// A bool  value indicates that the stream is enabled and
+    /// doing IO.
+    #[doc(alias = "kAudioStreamPropertyIsActive")]
+    pub fn is_active(&self) -> os::Result<bool> {
+        let res: u32 = self.prop(&PropSelector::STREAM_IS_ACTIVE.global_addr())?;
+        Ok(res != 0)
+    }
+
+    /// A u32 where a value of 0 means that this AudioStream is an output stream
+    /// and a value of 1 means that it is an input stream.
+    #[doc(alias = "kAudioStreamPropertyDirection")]
+    pub fn direction(&self) -> os::Result<u32> {
+        self.prop(&PropSelector::STREAM_DIRECTION.global_addr())
+    }
+
+    /// An AudioStreamBasicDescription that describes the current data format for
+    /// the AudioStream. The virtual format refers to the data format in which all
+    /// IOProcs for the owning AudioDevice will perform IO transactions.
+    #[doc(alias = "kAudioStreamPropertyVirtualFormat")]
+    pub fn virtual_format(&self) -> os::Result<AudioBasicStreamDesc> {
+        self.prop(&PropSelector::STREAM_VIRTUAL_FORMAT.global_addr())
+    }
+
+    #[doc(alias = "kAudioStreamPropertyAvailableVirtualFormats")]
+    pub fn available_virtual_formats(&self) -> os::Result<Vec<StreamRangedDesc>> {
+        self.prop_vec(&PropSelector::STREAM_AVAILABLE_VIRTUAL_FORMATS.global_addr())
+    }
+
+    /// An AudioStreamBasicDescription that describes the current data format for
+    /// the AudioStream. The physical format refers to the data format in which the
+    /// hardware for the owning AudioDevice performs its IO transactions.
+    #[doc(alias = "kAudioStreamPropertyPhysicalFormat")]
+    pub fn physical_format(&self) -> os::Result<AudioBasicStreamDesc> {
+        self.prop(&PropSelector::STREAM_PHYSICAL_FORMAT.global_addr())
+    }
+
+    /// An array of AudioStreamRangedDescriptions that describe the available data
+    /// formats for the AudioStream. The physical format refers to the data format
+    /// in which the hardware for the owning AudioDevice performs its IO
+    /// transactions.
+    #[doc(alias = "kAudioStreamPropertyAvailablePhysicalFormats")]
+    pub fn available_physical_formats(&self) -> os::Result<Vec<StreamRangedDesc>> {
+        self.prop_vec(&PropSelector::STREAM_AVAILABLE_PHYSICAL_FORMATS.global_addr())
+    }
+}
+
 pub struct StartedDevice<D: AsRef<Device>> {
     device: D,
     proc_id: Option<DeviceIoProcId>,
@@ -1553,5 +1626,23 @@ mod tests {
     fn system() {
         assert_eq!(System::OBJ.class().unwrap(), Class::SYSTEM);
         assert!(System::OBJ.base_class().is_err());
+    }
+
+    #[test]
+    fn streams() {
+        let input_device = System::default_input_device().unwrap();
+        let streams = input_device.streams().unwrap();
+        assert!(!streams.is_empty());
+        let stream = &streams[0];
+        assert_eq!(stream.direction(), Ok(1));
+        assert_eq!(stream.is_active(), Ok(true));
+        let format = stream.virtual_format().unwrap();
+        println!("format {:?}", format);
+        let format = stream.physical_format().unwrap();
+        println!("format {:?}", format);
+        let formats = stream.available_virtual_formats().unwrap();
+        assert!(!formats.is_empty());
+        let formats = stream.available_physical_formats().unwrap();
+        assert!(!formats.is_empty());
     }
 }
