@@ -2,17 +2,18 @@ use std::ffi::c_void;
 
 use crate::{
     arc,
-    at::AudioBufListN,
+    at::{audio::ValueRange, AudioBufListN},
     cat::{self, AudioBasicStreamDesc},
     cf,
-    core_audio::{Class, Obj, PropAddr, PropElement, PropScope, PropSelector},
+    core_audio::{
+        Class, DeviceTransportType, Obj, PropAddr, PropElement, PropScope, PropSelector,
+        StreamRangedDesc, StreamTerminalType,
+    },
     os, sys,
 };
 
 #[cfg(all(feature = "blocks", feature = "dispatch"))]
 use crate::{blocks, dispatch};
-
-use super::StreamRangedDesc;
 
 #[doc(alias = "AudioObjectPropertyListenerProc")]
 pub type PropListenerFn<T = c_void> = extern "C-unwind" fn(
@@ -80,7 +81,7 @@ impl Obj {
 
     pub fn bool_prop(&self, address: &PropAddr) -> os::Result<bool> {
         let res: u32 = self.prop(address)?;
-        Ok(res == 1)
+        Ok(res != 0)
     }
 
     #[doc(alias = "AudioObjectGetPropertyData")]
@@ -362,6 +363,15 @@ impl System {
     pub fn default_output_device() -> os::Result<Device> {
         Self::OBJ.prop(&PropSelector::HARDWARE_DEFAULT_OUTPUT_DEVICE.global_addr())
     }
+
+    pub fn default_sys_output_device() -> os::Result<Device> {
+        Self::OBJ.prop(&PropSelector::HARDWARE_DEFAULT_SYS_OUTPUT_DEVICE.global_addr())
+    }
+
+    #[doc(alias = "kAudioHardwarePropertyClockDeviceList")]
+    pub fn clock_device_list() -> os::Result<Vec<Clock>> {
+        Self::OBJ.prop_vec(&PropSelector::HARDWARE_CLOCK_DEVICE_LIST.global_addr())
+    }
 }
 
 /// AudioSystemObject Properties
@@ -409,6 +419,11 @@ impl PropSelector {
     /// as the value of the property.
     #[doc(alias = "kAudioHardwarePropertyTranslatePIDToProcessObject")]
     pub const HARDWARE_TRANSLATE_PID_TO_PROCESS_OBJ: Self = Self(u32::from_be_bytes(*b"id2p"));
+
+    /// An array of AudioObjectIDs that represent all the AudioClockDevice objects
+    /// currently provided by the system.
+    #[doc(alias = "kAudioHardwarePropertyClockDeviceList")]
+    pub const HARDWARE_CLOCK_DEVICE_LIST: Self = Self(u32::from_be_bytes(*b"clk#"));
 }
 
 /// AudioAggregateDevice Properties
@@ -484,6 +499,17 @@ impl Device {
         self.prop(&PropSelector::DEVICE_NOMINAL_SAMPLE_RATE.global_addr())
     }
 
+    pub fn set_nominal_sample_rate(&mut self, val: f64) -> os::Result {
+        self.set_prop(
+            &PropSelector::DEVICE_NOMINAL_SAMPLE_RATE.global_addr(),
+            &val,
+        )
+    }
+
+    pub fn available_nominal_sample_rates(&self) -> os::Result<Vec<ValueRange>> {
+        self.prop_vec(&PropSelector::DEVICE_AVAILABLE_NOMINAL_SAMPLE_RATES.global_addr())
+    }
+
     pub fn stream_cfg(&self, scope: PropScope) -> os::Result<AudioBufListN> {
         let addr = PropAddr {
             selector: PropSelector::DEVICE_STREAM_CFG,
@@ -516,6 +542,10 @@ impl Device {
 
     pub fn streams(&self) -> os::Result<Vec<Stream>> {
         self.prop_vec(&PropSelector::DEVICE_STREAMS.global_addr())
+    }
+
+    pub fn transport_type(&self) -> os::Result<DeviceTransportType> {
+        self.prop(&PropSelector::DEVICE_TRANSPORT_TYPE.global_addr())
     }
 
     #[doc(alias = "AudioDeviceCreateIOProcID")]
@@ -1160,12 +1190,11 @@ impl std::ops::DerefMut for Stream {
 }
 
 impl Stream {
-    /// A bool  value indicates that the stream is enabled and
+    /// A bool value indicates that the stream is enabled and
     /// doing IO.
     #[doc(alias = "kAudioStreamPropertyIsActive")]
     pub fn is_active(&self) -> os::Result<bool> {
-        let res: u32 = self.prop(&PropSelector::STREAM_IS_ACTIVE.global_addr())?;
-        Ok(res != 0)
+        self.bool_prop(&PropSelector::STREAM_IS_ACTIVE.global_addr())
     }
 
     /// A u32 where a value of 0 means that this AudioStream is an output stream
@@ -1173,6 +1202,11 @@ impl Stream {
     #[doc(alias = "kAudioStreamPropertyDirection")]
     pub fn direction(&self) -> os::Result<u32> {
         self.prop(&PropSelector::STREAM_DIRECTION.global_addr())
+    }
+
+    #[doc(alias = "kAudioStreamPropertyTerminalType")]
+    pub fn terminal_type(&self) -> os::Result<StreamTerminalType> {
+        self.prop(&PropSelector::STREAM_TERMINAL_TYPE.global_addr())
     }
 
     /// An AudioStreamBasicDescription that describes the current data format for
@@ -1203,6 +1237,11 @@ impl Stream {
     #[doc(alias = "kAudioStreamPropertyAvailablePhysicalFormats")]
     pub fn available_physical_formats(&self) -> os::Result<Vec<StreamRangedDesc>> {
         self.prop_vec(&PropSelector::STREAM_AVAILABLE_PHYSICAL_FORMATS.global_addr())
+    }
+
+    #[doc(alias = "kAudioStreamPropertyLatency")]
+    pub fn latency(&self) -> os::Result<u32> {
+        self.prop(&PropSelector::STREAM_LATENCY.global_addr())
     }
 }
 
@@ -1420,6 +1459,52 @@ impl Drop for AggregateDevice {
     }
 }
 
+#[doc(alias = "AudioClockDevice")]
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct Clock(pub Obj);
+
+impl std::ops::Deref for Clock {
+    type Target = Obj;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for Clock {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl Clock {
+    #[doc(alias = "kAudioClockDevicePropertyDeviceUID")]
+    pub fn uid(&self) -> os::Result<arc::R<cf::String>> {
+        self.cf_prop(&PropSelector::CLOCK_DEVICE_UID.global_addr())
+    }
+
+    #[doc(alias = "kAudioClockDevicePropertyNominalSampleRate")]
+    pub fn nominal_sample_rate(&self) -> os::Result<f64> {
+        self.prop(&PropSelector::CLOCK_DEVICE_NOMINAL_SAMPLE_RATE.global_addr())
+    }
+
+    #[doc(alias = "kAudioClockDevicePropertyAvailableNominalSampleRates")]
+    pub fn available_nominal_sample_rates(&self) -> os::Result<Vec<ValueRange>> {
+        self.prop_vec(&PropSelector::CLOCK_DEVICE_AVAILABLE_NOMINAL_SAMPLE_RATES.global_addr())
+    }
+
+    #[doc(alias = "kAudioClockDevicePropertyDeviceIsRunning")]
+    pub fn is_running(&self) -> os::Result<bool> {
+        self.bool_prop(&PropSelector::CLOCK_DEVICE_IS_RUNNING.global_addr())
+    }
+
+    #[doc(alias = "kAudioClockDevicePropertyDeviceIsAlive")]
+    pub fn is_alive(&self) -> os::Result<bool> {
+        self.bool_prop(&PropSelector::CLOCK_DEVICE_IS_ALIVE.global_addr())
+    }
+}
+
 #[link(name = "CoreAudio", kind = "framework")]
 extern "C-unwind" {
 
@@ -1521,8 +1606,8 @@ mod tests {
     use crate::{
         cat, cf,
         core_audio::{
-            aggregate_device_keys as agg_keys, AggregateDevice, Class, Device, Obj, Process,
-            PropAddr, PropElement, PropScope, PropSelector, System, TapDesc,
+            aggregate_device_keys as agg_keys, AggregateDevice, Class, Device, DeviceTransportType,
+            Obj, Process, PropAddr, PropElement, PropScope, PropSelector, System, TapDesc,
         },
         ns, os,
     };
@@ -1576,6 +1661,10 @@ mod tests {
         let mut agg_device = AggregateDevice::with_desc(&dict).unwrap();
         assert_eq!(agg_device.class().unwrap(), Class::AGGREGATE_DEVICE);
         assert_eq!(agg_device.base_class().unwrap(), Class::DEVICE);
+        assert_eq!(
+            agg_device.transport_type().unwrap(),
+            DeviceTransportType::AGGREGATE
+        );
 
         let taps = agg_device.tap_list().unwrap();
         assert!(taps.get_type_id() == cf::Array::type_id());
@@ -1624,6 +1713,11 @@ mod tests {
         }
 
         let _proc_id = agg_device.create_io_proc_id(proc, None).unwrap();
+
+        let streams = agg_device.streams().unwrap();
+        println!("streams {streams:?}");
+        let asbd = streams[0].virtual_format().unwrap();
+        println!("asbd {asbd:?}");
     }
 
     #[test]
@@ -1661,8 +1755,12 @@ mod tests {
         let streams = input_device.streams().unwrap();
         assert!(!streams.is_empty());
         let stream = &streams[0];
+        assert_eq!(stream.class().unwrap(), Class::STREAM);
+        assert_eq!(stream.base_class().unwrap(), Class::OBJECT);
+
         assert_eq!(stream.direction(), Ok(1));
         assert_eq!(stream.is_active(), Ok(true));
+        println!("terminal_type {:?}", stream.terminal_type().unwrap());
         let format = stream.virtual_format().unwrap();
         println!("format {:?}", format);
         let format = stream.physical_format().unwrap();
@@ -1671,5 +1769,27 @@ mod tests {
         assert!(!formats.is_empty());
         let formats = stream.available_physical_formats().unwrap();
         assert!(!formats.is_empty());
+
+        for s in streams.iter() {
+            println!("terminal: {:?}", s.terminal_type().unwrap());
+        }
+    }
+
+    #[test]
+    fn clock() {
+        let clocks = System::clock_device_list().unwrap();
+        for c in clocks {
+            assert_eq!(Class::CLOCK, c.class().unwrap());
+            assert_eq!(Class::OBJECT, c.base_class().unwrap());
+            c.name().unwrap();
+            c.uid().unwrap();
+            c.nominal_sample_rate().unwrap();
+            println!("name {:?}", c.name());
+            println!("uid {:?}", c.uid().unwrap());
+            println!("sr {:?}", c.nominal_sample_rate().unwrap());
+            println!("asr {:?}", c.available_nominal_sample_rates().unwrap());
+            println!("running {:?}", c.is_running().unwrap());
+            println!("alive {:?}", c.is_alive().unwrap());
+        }
     }
 }

@@ -3,7 +3,6 @@ use crate::{
     four_cc_to_str,
 };
 
-#[doc(alias = "AudioDeviceID")]
 #[doc(alias = "AudioObjectID")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
@@ -208,6 +207,10 @@ impl Class {
     /// The AudioClassId that identifies the AudioStream class.
     #[doc(alias = "kAudioStreamClassID")]
     pub const STREAM: Self = Self(u32::from_be_bytes(*b"astr"));
+
+    /// The AudioClassId that identifies the Clock class.
+    #[doc(alias = "kAudioClockDeviceClassID")]
+    pub const CLOCK: Self = Self(u32::from_be_bytes(*b"aclk"));
 
     /// The AudioClassId that identifies the AudioControl class.
     #[doc(alias = "kAudioControlClassID")]
@@ -490,56 +493,86 @@ impl PropSelector {
     pub const BOX_CLOCK_DEVICE_LIST: Self = Self(u32::from_be_bytes(*b"bcl#"));
 }
 
+/// Transport Type IDs
+#[doc(alias = "AudioDeviceTransportType")]
+#[derive(Eq, PartialEq, Copy, Clone)]
 pub struct DeviceTransportType(pub u32);
 
 impl DeviceTransportType {
+    /// The transport type ID returned when a device doesn't provide a transport type.
     #[doc(alias = "kAudioDeviceTransportTypeUnknown")]
     pub const UNKNOWN: Self = Self(0);
 
+    /// The transport type ID for AudioDevices built into the system.
     #[doc(alias = "kAudioDeviceTransportTypeBuiltIn")]
     pub const BUILT_IN: Self = Self(u32::from_be_bytes(*b"bltn"));
 
+    /// The transport type ID for aggregate devices.
     #[doc(alias = "kAudioDeviceTransportTypeAggregate")]
     pub const AGGREGATE: Self = Self(u32::from_be_bytes(*b"grup"));
 
+    /// The transport type ID for AudioDevices that don't correspond to real audio hardware.
     #[doc(alias = "kAudioDeviceTransportTypeVirtual")]
     pub const VIRTUAL: Self = Self(u32::from_be_bytes(*b"virt"));
 
+    /// The transport type ID for AudioDevices connected via the PCI bus.
     #[doc(alias = "kAudioDeviceTransportTypePCI")]
     pub const PCI: Self = Self(u32::from_be_bytes(*b"pci "));
 
+    /// The transport type ID for AudioDevices connected via USB.
     #[doc(alias = "kAudioDeviceTransportTypeUSB")]
     pub const USB: Self = Self(u32::from_be_bytes(*b"usb "));
 
+    /// The transport type ID for AudioDevices connected via FireWire.
     #[doc(alias = "kAudioDeviceTransportTypeFireWire")]
     pub const FIRE_WIRE: Self = Self(u32::from_be_bytes(*b"1394"));
 
+    /// The transport type ID for AudioDevices connected via Bluetooth.
     #[doc(alias = "kAudioDeviceTransportTypeBluetooth")]
     pub const BLUETOOTH: Self = Self(u32::from_be_bytes(*b"blue"));
 
+    /// The transport type ID for AudioDevices connected via Bluetooth Low Energy.
     #[doc(alias = "kAudioDeviceTransportTypeBluetoothLE")]
     pub const BLUETOOTH_LE: Self = Self(u32::from_be_bytes(*b"blea"));
 
+    /// The transport type ID for AudioDevices connected via HDMI.
     #[doc(alias = "kAudioDeviceTransportTypeHDMI")]
     pub const HDMI: Self = Self(u32::from_be_bytes(*b"hdmi"));
 
+    /// The transport type ID for AudioDevices connected via DisplayPort.
     #[doc(alias = "kAudioDeviceTransportTypeDisplayPort")]
     pub const DISPLAY_PORT: Self = Self(u32::from_be_bytes(*b"dprt"));
 
+    /// The transport type ID for AudioDevices connected via AirPlay.
     #[doc(alias = "kAudioDeviceTransportTypeAirPlay")]
     pub const AIR_PLAY: Self = Self(u32::from_be_bytes(*b"airp"));
 
+    /// The transport type ID for AudioDevices connected via AVB.
     #[doc(alias = "kAudioDeviceTransportTypeAVB")]
     pub const AVB: Self = Self(u32::from_be_bytes(*b"eavb"));
 
+    /// The transport type ID for AudioDevices connected via Thunderbolt.
     #[doc(alias = "kAudioDeviceTransportTypeThunderbolt")]
     pub const THUNDERBOLT: Self = Self(u32::from_be_bytes(*b"thun"));
 
+    /// The transport type ID for Continuity Capture AudioDevices connected via a cable.
     #[doc(alias = "kAudioDeviceTransportTypeContinuityCaptureWired")]
     pub const CONTINUITY_CAPTURE_WIRED: Self = Self(u32::from_be_bytes(*b"ccwd"));
 
+    /// The transport type ID for Continuity Capture AudioDevices connected via wireless networking.
     #[doc(alias = "kAudioDeviceTransportTypeContinuityCaptureWireless")]
     pub const CONTINUITY_CAPTURE_WIRELESS: Self = Self(u32::from_be_bytes(*b"ccwl"));
+}
+
+impl std::fmt::Debug for DeviceTransportType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let val = self.0;
+        let mut fcc = val.to_be_bytes();
+        f.debug_struct("DeviceTransportType")
+            .field("raw", &val)
+            .field("fcc", &four_cc_to_str(&mut fcc))
+            .finish()
+    }
 }
 
 /// Values provided by the AudioDevice class
@@ -650,7 +683,7 @@ impl PropSelector {
     /// An array of AudioValueRange structs that indicates the valid ranges for the
     /// nominal sample rate of the AudioDevice.
     #[doc(alias = "kAudioDevicePropertyAvailableNominalSampleRates")]
-    pub const DEVICE_AVAILABLE_SAMPLE_RATES: Self = Self(u32::from_be_bytes(*b"nsr#"));
+    pub const DEVICE_AVAILABLE_NOMINAL_SAMPLE_RATES: Self = Self(u32::from_be_bytes(*b"nsr#"));
 
     /// A cf::Url that indicates an image file that can be used to represent the
     /// device visually. The caller is responsible for releasing the returned
@@ -740,4 +773,140 @@ impl PropSelector {
     /// transactions.
     #[doc(alias = "kAudioStreamPropertyAvailablePhysicalFormats")]
     pub const STREAM_AVAILABLE_PHYSICAL_FORMATS: Self = Self(u32::from_be_bytes(*b"pfta"));
+}
+
+#[derive(Eq, PartialEq, Copy, Clone)]
+#[repr(C)]
+pub struct StreamTerminalType(pub u32);
+
+impl StreamTerminalType {
+    /// The ID used when the terminal type for the AudioStream is non known.
+    #[doc(alias = "kAudioStreamTerminalTypeUnknown")]
+    pub const UNKNOWN: Self = Self(032);
+
+    /// The ID for a terminal type of a line level stream. Note that this applies to
+    /// both input streams and output streams
+    #[doc(alias = "kAudioStreamTerminalTypeLine")]
+    pub const LINE: Self = Self(u32::from_be_bytes(*b"line"));
+
+    /// The ID for a terminal type of stream from/to a digital audio interface as
+    /// defined by ISO 60958 (aka SPDIF or AES/EBU). Note that this applies to both
+    /// input streams and output streams
+    #[doc(alias = "kAudioStreamTerminalTypeDigitalAudioInterface")]
+    pub const DIGITAL_AUDIO_INTERFACE: Self = Self(u32::from_be_bytes(*b"spdf"));
+
+    /// The ID for a terminal type of a speaker.
+    #[doc(alias = "kAudioStreamTerminalTypeSpeaker")]
+    pub const SPEAKER: Self = Self(u32::from_be_bytes(*b"spkr"));
+
+    /// The ID for a terminal type of headphones.
+    #[doc(alias = "kAudioStreamTerminalTypeHeadphones")]
+    pub const HEADPHONES: Self = Self(u32::from_be_bytes(*b"hdph"));
+
+    /// The ID for a terminal type of a speaker for low frequency effects.
+    #[doc(alias = "kAudioStreamTerminalTypeLFESpeaker")]
+    pub const LFE_SPEAKER: Self = Self(u32::from_be_bytes(*b"lfes"));
+
+    /// The ID for a terminal type of a speaker on a telephone handset receiver.
+    #[doc(alias = "kAudioStreamTerminalTypeReceiverSpeaker")]
+    pub const RECEIVER_SPEAKER: Self = Self(u32::from_be_bytes(*b"rspk"));
+
+    /// The ID for a terminal type of a microphone.
+    #[doc(alias = "kAudioStreamTerminalTypeMicrophone")]
+    pub const MIC: Self = Self(u32::from_be_bytes(*b"micr"));
+
+    /// The ID for a terminal type of a microphone attached to an headset.
+    #[doc(alias = "kAudioStreamTerminalTypeHeadsetMicrophone")]
+    pub const HEADSET_MIC: Self = Self(u32::from_be_bytes(*b"hmic"));
+
+    /// The ID for a terminal type of a microphone on a telephone handset receiver.
+    #[doc(alias = "kAudioStreamTerminalTypeReceiverMicrophone")]
+    pub const RECEIVER_MIC: Self = Self(u32::from_be_bytes(*b"rmic"));
+
+    /// The ID for a terminal type of a device providing a TTY signal.
+    #[doc(alias = "kAudioStreamTerminalTypeTTY")]
+    pub const TTY: Self = Self(u32::from_be_bytes(*b"tty_"));
+
+    /// The ID for a terminal type of a stream from/to an HDMI port.
+    #[doc(alias = "kAudioStreamTerminalTypeHDMI")]
+    pub const HDMI: Self = Self(u32::from_be_bytes(*b"hdmi"));
+
+    /// The ID for a terminal type of a stream from/to an DisplayPort port.
+    #[doc(alias = "kAudioStreamTerminalTypeDisplayPort")]
+    pub const DISPLAY_PORT: Self = Self(u32::from_be_bytes(*b"dprt"));
+}
+
+impl std::fmt::Debug for StreamTerminalType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let val = self.0;
+        let mut fcc = val.to_be_bytes();
+        f.debug_struct("StreamTerminalType")
+            .field("raw", &val)
+            .field("fcc", &four_cc_to_str(&mut fcc))
+            .finish()
+    }
+}
+
+/// AudioObjectPropertySelector values provided by the AudioClockDevice class.
+///
+/// The AudioClockDevice class is a subclass of the AudioObject class. The class has just
+/// the global scope, kAudioObjectPropertyScopeGlobal, and only a main element.
+impl PropSelector {
+    /// A CFString that contains a persistent identifier for the AudioClockDevice.
+    /// An AudioClockDevice's UID is persistent across boots. The content of the UID
+    /// string is a black box and may contain information that is unique to a
+    /// particular instance of an clock's hardware or unique to the CPU. Therefore
+    /// they are not suitable for passing between CPUs or for identifying similar
+    /// models of hardware. The caller is responsible for releasing the returned
+    /// CFObject.
+    #[doc(alias = "kAudioClockDevicePropertyDeviceUID")]
+    pub const CLOCK_DEVICE_UID: Self = Self(u32::from_be_bytes(*b"cuid"));
+
+    /// A u32 whose value indicates how the AudioClockDevice is connected to the
+    /// CPU. Constants for some of the values for this property can be found in the
+    /// enum in the AudioDevice Constants section of this file.
+    #[doc(alias = "kAudioClockDevicePropertyTransportType")]
+    pub const CLOCK_DEVICE_TRANSPORT_TYPE: Self = Self(u32::from_be_bytes(*b"tran"));
+
+    /// A u32 whose value indicates the clock domain to which this
+    /// AudioClockDevice belongs. AudioClockDevices and AudioDevices that have the
+    /// same value for this property are able to be synchronized in hardware.
+    /// However, a value of 0 indicates that the clock domain for the device is
+    /// unspecified and should be assumed to be separate from every other device's
+    /// clock domain, even if they have the value of 0 as their clock domain as well.
+    #[doc(alias = "kAudioClockDevicePropertyClockDomain")]
+    pub const CLOCK_DEVICE_DOMAIN: Self = Self(u32::from_be_bytes(*b"clkd"));
+
+    /// A UInt32 where a value of 1 means the device is ready and available and 0
+    /// means the device is usable and will most likely go away shortly.
+    #[doc(alias = "kAudioClockDevicePropertyDeviceIsAlive")]
+    pub const CLOCK_DEVICE_IS_ALIVE: Self = Self(u32::from_be_bytes(*b"livn"));
+
+    /// A UInt32 where a value of 0 means the AudioClockDevice is not providing
+    /// times and a value of 1 means that it is. Note that the notification for this
+    /// property is usually sent from the AudioClockDevice's IO thread.
+    #[doc(alias = "kAudioClockDevicePropertyDeviceIsRunning")]
+    pub const CLOCK_DEVICE_IS_RUNNING: Self = Self(u32::from_be_bytes(*b"goin"));
+
+    /// A u32 containing the number of frames of latency in the AudioClockDevice.
+    #[doc(alias = "kAudioClockDevicePropertyLatency")]
+    pub const CLOCK_DEVICE_LATENCY: Self = Self(u32::from_be_bytes(*b"ltnc"));
+
+    /// An array of AudioObjectIDs that represent the AudioControls of the
+    /// AudioClockDevice. Note that if a notification is received for this property,
+    /// any cached AudioObjectIDs for the device become invalid and need to be
+    /// re-fetched.
+    #[doc(alias = "kAudioClockDevicePropertyControlList")]
+    pub const CLOCK_DEVICE_CONTROL_LIST: Self = Self(u32::from_be_bytes(*b"ctrl"));
+
+    /// A Float64 that indicates the current nominal sample rate of the
+    /// AudioClockDevice.
+    #[doc(alias = "kAudioClockDevicePropertyNominalSampleRate")]
+    pub const CLOCK_DEVICE_NOMINAL_SAMPLE_RATE: Self = Self(u32::from_be_bytes(*b"nsrt"));
+
+    /// An array of AudioValueRange structs that indicates the valid ranges for the
+    /// nominal sample rate of the AudioClockDevice.
+    #[doc(alias = "kAudioClockDevicePropertyAvailableNominalSampleRates")]
+    pub const CLOCK_DEVICE_AVAILABLE_NOMINAL_SAMPLE_RATES: Self =
+        Self(u32::from_be_bytes(*b"nsr#"));
 }
