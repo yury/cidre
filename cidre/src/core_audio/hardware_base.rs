@@ -24,7 +24,7 @@ impl std::fmt::Debug for Class {
 }
 
 #[doc(alias = "AudioObjectPropertySelector")]
-#[derive(Eq, PartialEq, Copy, Clone)]
+#[derive(Eq, PartialEq, Copy, Clone, Hash)]
 #[repr(transparent)]
 pub struct PropSelector(pub u32);
 
@@ -59,7 +59,7 @@ impl std::fmt::Debug for PropSelector {
 }
 
 #[doc(alias = "AudioObjectPropertyScope")]
-#[derive(Eq, PartialEq, Copy, Clone)]
+#[derive(Eq, PartialEq, Copy, Clone, Hash)]
 #[repr(transparent)]
 pub struct PropScope(pub u32);
 
@@ -74,12 +74,12 @@ impl std::fmt::Debug for PropScope {
 }
 
 #[doc(alias = "AudioObjectPropertyElement")]
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone, Hash)]
 #[repr(transparent)]
 pub struct PropElement(pub u32);
 
 #[doc(alias = "AudioObjectPropertyAddress")]
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq, Hash)]
 #[repr(C)]
 pub struct PropAddr {
     pub selector: PropSelector,

@@ -502,6 +502,13 @@ impl std::ops::DerefMut for Device {
 }
 
 impl Device {
+    pub fn with_uid(uid: arc::R<cf::String>) -> os::Result<Self> {
+        System::OBJ.prop_with_qualifier(
+            &PropSelector::HARDWARE_TRANSLATE_UID_TO_DEVICE.global_addr(),
+            &uid,
+        )
+    }
+
     pub fn uid(&self) -> os::Result<arc::R<cf::String>> {
         self.cf_prop(&PropSelector::DEVICE_UID.global_addr())
     }
@@ -516,17 +523,34 @@ impl Device {
             &val,
         )
     }
+    ///
+    /// A f64 that indicates the current actual sample rate of the AudioDevice as measured by its time stamps.
+    #[doc(alias = "kAudioDevicePropertyActualSampleRate")]
+    pub fn actual_sample_rate(&self) -> os::Result<f64> {
+        self.prop(&PropSelector::DEVICE_ACTUAL_SAMPLE_RATE.global_addr())
+    }
+
+    pub fn asbd(&self, scope: PropScope) -> os::Result<AudioBasicStreamDesc> {
+        // NOTE: this is depricated property for device, but it is working well
+        self.prop(&PropSelector::STREAM_VIRTUAL_FORMAT.addr(scope, PropElement::MAIN))
+    }
+
+    #[inline]
+    pub fn input_asbd(&self) -> os::Result<AudioBasicStreamDesc> {
+        self.asbd(PropScope::INPUT)
+    }
+
+    #[inline]
+    pub fn output_asbd(&self) -> os::Result<AudioBasicStreamDesc> {
+        self.asbd(PropScope::OUTPUT)
+    }
 
     pub fn available_nominal_sample_rates(&self) -> os::Result<Vec<ValueRange>> {
         self.prop_vec(&PropSelector::DEVICE_AVAILABLE_NOMINAL_SAMPLE_RATES.global_addr())
     }
 
     pub fn stream_cfg(&self, scope: PropScope) -> os::Result<AudioBufListN> {
-        let addr = PropAddr {
-            selector: PropSelector::DEVICE_STREAM_CFG,
-            scope,
-            element: PropElement::WILDCARD,
-        };
+        let addr = PropSelector::DEVICE_STREAM_CFG.addr(scope, PropElement::MAIN);
         let mut size = self.prop_size(&addr)?;
         let mut res = AudioBufListN::new(size as _);
         unsafe {
@@ -559,13 +583,6 @@ impl Device {
         self.prop(&PropSelector::DEVICE_TRANSPORT_TYPE.global_addr())
     }
 
-    /// A f64 that indicates the current actual sample rate of the AudioDevice
-    /// as measured by its time stamps.
-    #[doc(alias = "kAudioDevicePropertyActualSampleRate")]
-    pub fn actual_sample_rate(&self) -> os::Result<f64> {
-        self.prop(&PropSelector::DEVICE_ACTUAL_SAMPLE_RATE.global_addr())
-    }
-
     /// A cf::String that contains the UID for the AudioClockDevice that is currently
     /// serving as the main time base of the device.
     #[doc(alias = "kAudioDevicePropertyClockDevice")]
@@ -578,13 +595,7 @@ impl Device {
     /// Note that this property does not apply to aggregate devices, just real, physical devices.
     #[doc(alias = "kAudioDevicePropertyProcessMute")]
     pub fn is_process_muted(&self, scope: PropScope) -> os::Result<bool> {
-        let addr = PropAddr {
-            selector: PropSelector::DEVICE_PROCESS_MUTE,
-            scope,
-            element: PropElement::WILDCARD,
-        };
-
-        self.bool_prop(&addr)
+        self.bool_prop(&PropSelector::DEVICE_PROCESS_MUTE.addr(scope, PropElement::WILDCARD))
     }
 
     pub fn is_process_input_muted(&self) -> os::Result<bool> {
@@ -1260,7 +1271,7 @@ impl Stream {
     /// the AudioStream. The virtual format refers to the data format in which all
     /// IOProcs for the owning AudioDevice will perform IO transactions.
     #[doc(alias = "kAudioStreamPropertyVirtualFormat")]
-    pub fn virtual_format(&self) -> os::Result<AudioBasicStreamDesc> {
+    pub fn virtual_format(&self) -> os::Result<cat::AudioBasicStreamDesc> {
         self.prop(&PropSelector::STREAM_VIRTUAL_FORMAT.global_addr())
     }
 
@@ -1273,7 +1284,7 @@ impl Stream {
     /// the AudioStream. The physical format refers to the data format in which the
     /// hardware for the owning AudioDevice performs its IO transactions.
     #[doc(alias = "kAudioStreamPropertyPhysicalFormat")]
-    pub fn physical_format(&self) -> os::Result<AudioBasicStreamDesc> {
+    pub fn physical_format(&self) -> os::Result<cat::AudioBasicStreamDesc> {
         self.prop(&PropSelector::STREAM_PHYSICAL_FORMAT.global_addr())
     }
 
@@ -1660,6 +1671,17 @@ mod tests {
     };
 
     #[test]
+    fn device() {
+        let uid = cf::str!(c"BuiltInSpeakerDevice");
+        let device = Device::with_uid(uid.retained()).unwrap();
+        let uid_from_device = device.uid().unwrap();
+        assert_eq!(uid, uid_from_device.as_ref());
+        unsafe { assert_ne!(uid.as_type_ptr(), uid_from_device.as_type_ptr()) };
+        let uid2 = uid.retained();
+        unsafe { assert_eq!(uid.as_type_ptr(), uid2.as_type_ptr()) };
+    }
+
+    #[test]
     fn list_devices() {
         let addr = PropSelector::HARDWARE_DEFAULT_INPUT_DEVICE.global_addr();
         let _device: Device = System::OBJ.prop(&addr).unwrap();
@@ -1684,8 +1706,9 @@ mod tests {
 
     #[test]
     fn aggregate_device() {
-        let output_device = System::default_output_device().unwrap();
-        let output_uid = output_device.uid().unwrap();
+        // let output_device = System::default_output_device().unwrap();
+        let output_uid = cf::str!(c"BuiltInSpeakerDevice"); // output_device.uid().unwrap();
+        println!("device_uid {output_uid:?}");
         let uuid = cf::Uuid::new().to_cf_string();
         let dict = cf::DictionaryOf::with_keys_values(
             &[
@@ -1760,6 +1783,9 @@ mod tests {
         }
 
         let _proc_id = agg_device.create_io_proc_id(proc, None).unwrap();
+
+        let input = agg_device.output_asbd().unwrap();
+        println!("input {input:?}");
 
         let streams = agg_device.streams().unwrap();
         println!("streams {streams:?}");
