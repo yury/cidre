@@ -18,6 +18,12 @@ impl std::ops::Deref for TapGuard {
     }
 }
 
+impl std::ops::DerefMut for TapGuard {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
 impl Drop for TapGuard {
     fn drop(&mut self) {
         let res = unsafe { AudioHardwareDestroyProcessTap(self.0 .0) };
@@ -46,6 +52,10 @@ impl Tap {
 
     pub fn desc(&self) -> os::Result<arc::R<TapDesc>> {
         self.cf_prop(&PropSelector::TAP_DESCRIPTION.global_addr())
+    }
+
+    pub fn set_desc(&mut self, val: arc::R<TapDesc>) -> os::Result {
+        self.set_prop(&PropSelector::TAP_DESCRIPTION.global_addr(), &val)
     }
 
     /// An cat::AudioStreamBasicDesc that describes the current data format for
@@ -82,7 +92,8 @@ pub mod tests {
         let desc = {
             let tap_desc = TapDesc::with_stereo_global_tap_excluding_processes(&ns::Array::new());
             println!("{tap_desc:?}");
-            let tap = tap_desc.create_process_tap().unwrap();
+            let mut tap = tap_desc.create_process_tap().unwrap();
+            tap.set_desc(tap_desc).unwrap();
             let uid = tap.uid().unwrap();
             println!("{uid:?}");
             let asbd = tap.asbd();

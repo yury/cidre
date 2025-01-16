@@ -369,8 +369,15 @@ impl System {
     }
 
     #[doc(alias = "kAudioHardwarePropertyClockDeviceList")]
-    pub fn clock_device_list() -> os::Result<Vec<Clock>> {
+    pub fn clocks() -> os::Result<Vec<Clock>> {
         Self::OBJ.prop_vec(&PropSelector::HARDWARE_CLOCK_DEVICE_LIST.global_addr())
+    }
+
+    /// An array of AudioObjectIds that represent the Process objects for all client processes
+    /// currently connected to the system.
+    #[doc(alias = "kAudioHardwarePropertyProcessObjectList")]
+    pub fn processes() -> os::Result<Vec<Process>> {
+        Self::OBJ.prop_vec(&PropSelector::HARDWARE_PROCESS_OBJ_LIST.global_addr())
     }
 }
 
@@ -424,6 +431,10 @@ impl PropSelector {
     /// currently provided by the system.
     #[doc(alias = "kAudioHardwarePropertyClockDeviceList")]
     pub const HARDWARE_CLOCK_DEVICE_LIST: Self = Self(u32::from_be_bytes(*b"clk#"));
+
+    /// An array of AudioObjectIDs that represent the Tap objects on the system.
+    #[doc(alias = "kAudioHardwarePropertyTapList")]
+    pub const HARDWARE_TAP_LIST: Self = Self(u32::from_be_bytes(*b"tps#"));
 }
 
 /// AudioAggregateDevice Properties
@@ -546,6 +557,42 @@ impl Device {
 
     pub fn transport_type(&self) -> os::Result<DeviceTransportType> {
         self.prop(&PropSelector::DEVICE_TRANSPORT_TYPE.global_addr())
+    }
+
+    /// A f64 that indicates the current actual sample rate of the AudioDevice
+    /// as measured by its time stamps.
+    #[doc(alias = "kAudioDevicePropertyActualSampleRate")]
+    pub fn actual_sample_rate(&self) -> os::Result<f64> {
+        self.prop(&PropSelector::DEVICE_ACTUAL_SAMPLE_RATE.global_addr())
+    }
+
+    /// A cf::String that contains the UID for the AudioClockDevice that is currently
+    /// serving as the main time base of the device.
+    #[doc(alias = "kAudioDevicePropertyClockDevice")]
+    pub fn clock_uid(&self) -> os::Result<arc::R<cf::String>> {
+        self.cf_prop(&PropSelector::DEVICE_CLOCK_DEVICE.global_addr())
+    }
+
+    /// Indicates that the current process's audio will be zeroed out by the system.
+    ///
+    /// Note that this property does not apply to aggregate devices, just real, physical devices.
+    #[doc(alias = "kAudioDevicePropertyProcessMute")]
+    pub fn is_process_muted(&self, scope: PropScope) -> os::Result<bool> {
+        let addr = PropAddr {
+            selector: PropSelector::DEVICE_PROCESS_MUTE,
+            scope,
+            element: PropElement::WILDCARD,
+        };
+
+        self.bool_prop(&addr)
+    }
+
+    pub fn is_process_input_muted(&self) -> os::Result<bool> {
+        self.is_process_muted(PropScope::INPUT)
+    }
+
+    pub fn is_process_output_muted(&self) -> os::Result<bool> {
+        self.is_process_muted(PropScope::OUTPUT)
     }
 
     #[doc(alias = "AudioDeviceCreateIOProcID")]
@@ -1777,7 +1824,7 @@ mod tests {
 
     #[test]
     fn clock() {
-        let clocks = System::clock_device_list().unwrap();
+        let clocks = System::clocks().unwrap();
         for c in clocks {
             assert_eq!(Class::CLOCK, c.class().unwrap());
             assert_eq!(Class::OBJECT, c.base_class().unwrap());
