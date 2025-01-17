@@ -595,7 +595,7 @@ impl Device {
     /// Note that this property does not apply to aggregate devices, just real, physical devices.
     #[doc(alias = "kAudioDevicePropertyProcessMute")]
     pub fn is_process_muted(&self, scope: PropScope) -> os::Result<bool> {
-        self.bool_prop(&PropSelector::DEVICE_PROCESS_MUTE.addr(scope, PropElement::WILDCARD))
+        self.bool_prop(&PropSelector::DEVICE_PROCESS_MUTE.addr(scope, PropElement::MAIN))
     }
 
     pub fn is_process_input_muted(&self) -> os::Result<bool> {
@@ -604,6 +604,23 @@ impl Device {
 
     pub fn is_process_output_muted(&self) -> os::Result<bool> {
         self.is_process_muted(PropScope::OUTPUT)
+    }
+
+    #[doc(alias = "kAudioDevicePropertyProcessMute")]
+    pub fn set_process_muted(&self, scope: PropScope, val: bool) -> os::Result {
+        let val = val as u32;
+        self.set_prop(
+            &PropSelector::DEVICE_PROCESS_MUTE.addr(scope, PropElement::MAIN),
+            &val,
+        )
+    }
+
+    pub fn set_process_input_muted(&self, val: bool) -> os::Result {
+        self.set_process_muted(PropScope::INPUT, val)
+    }
+
+    pub fn set_process_output_muted(&self, val: bool) -> os::Result {
+        self.set_process_muted(PropScope::OUTPUT, val)
     }
 
     #[doc(alias = "AudioDeviceCreateIOProcID")]
@@ -645,6 +662,36 @@ impl Device {
             Ok(res.unwrap_unchecked())
         }
     }
+
+    pub fn buf_frame_size(&self) -> os::Result<u32> {
+        self.prop(&PropSelector::DEVICE_BUF_FRAME_SIZE.global_addr())
+    }
+
+    pub fn buf_frame_size_range(&self) -> os::Result<ValueRange> {
+        self.prop(&PropSelector::DEVICE_BUF_FRAME_SIZE_RANGE.global_addr())
+    }
+
+    pub fn uses_variable_buf_sizes(&self) -> os::Result<bool> {
+        self.bool_prop(&PropSelector::DEVICE_USES_VARIABLE_BUF_FRAME_SIZES.global_addr())
+    }
+
+    /// Voice activity detection can be used with input audio and has echo cancellation.
+    /// Detection works when a process mute is used, but not with hardware mute.
+    pub fn is_vad_enabled(&self) -> os::Result<bool> {
+        self.bool_prop(&PropSelector::DEVICE_VOICE_ACTIVITY_DETECTION_ENABLE.input_addr())
+    }
+
+    pub fn set_vad_enabled(&self, val: bool) -> os::Result {
+        let val: u32 = val as u32;
+        self.set_prop(
+            &PropSelector::DEVICE_VOICE_ACTIVITY_DETECTION_ENABLE.input_addr(),
+            &val,
+        )
+    }
+
+    pub fn vad_state(&self) -> os::Result<bool> {
+        self.bool_prop(&PropSelector::DEVICE_VOICE_ACTIVITY_DETECTION_STATE.input_addr())
+    }
 }
 
 /// AudioDevice Properties
@@ -656,7 +703,7 @@ impl PropSelector {
     #[doc(alias = "kAudioDevicePropertyPlugIn")]
     pub const DEVICE_PLUG_IN: Self = Self(u32::from_be_bytes(*b"plug"));
 
-    /// The type of this property is a UInt32, but its value has no meaning. This
+    /// The type of this property is a u32, but its value has no meaning. This
     /// property exists so that clients can listen to it and be told when the
     /// configuration of the AudioDevice has changed in ways that cannot otherwise
     /// be conveyed through other notifications. In response to this notification,
@@ -1275,6 +1322,11 @@ impl Stream {
         self.prop(&PropSelector::STREAM_VIRTUAL_FORMAT.global_addr())
     }
 
+    #[doc(alias = "kAudioStreamPropertyVirtualFormat")]
+    pub fn set_virtual_format(&self, val: &cat::AudioBasicStreamDesc) -> os::Result {
+        self.set_prop(&PropSelector::STREAM_VIRTUAL_FORMAT.global_addr(), val)
+    }
+
     #[doc(alias = "kAudioStreamPropertyAvailableVirtualFormats")]
     pub fn available_virtual_formats(&self) -> os::Result<Vec<StreamRangedDesc>> {
         self.prop_vec(&PropSelector::STREAM_AVAILABLE_VIRTUAL_FORMATS.global_addr())
@@ -1288,6 +1340,11 @@ impl Stream {
         self.prop(&PropSelector::STREAM_PHYSICAL_FORMAT.global_addr())
     }
 
+    #[doc(alias = "kAudioStreamPropertyPhysicalFormat")]
+    pub fn set_physical_format(&self, val: &cat::AudioBasicStreamDesc) -> os::Result {
+        self.set_prop(&PropSelector::STREAM_PHYSICAL_FORMAT.global_addr(), val)
+    }
+
     /// An array of AudioStreamRangedDescriptions that describe the available data
     /// formats for the AudioStream. The physical format refers to the data format
     /// in which the hardware for the owning AudioDevice performs its IO
@@ -1297,6 +1354,11 @@ impl Stream {
         self.prop_vec(&PropSelector::STREAM_AVAILABLE_PHYSICAL_FORMATS.global_addr())
     }
 
+    /// A u32 containing the number of frames of latency in the AudioStream. Note
+    /// that the owning AudioDevice may have additional latency so it should be
+    /// queried as well. If both the device and the stream say they have latency,
+    /// then the total latency for the stream is the device latency summed with the
+    /// stream latency.
     #[doc(alias = "kAudioStreamPropertyLatency")]
     pub fn latency(&self) -> os::Result<u32> {
         self.prop(&PropSelector::STREAM_LATENCY.global_addr())
@@ -1665,7 +1727,7 @@ mod tests {
         cat, cf,
         core_audio::{
             aggregate_device_keys as agg_keys, AggregateDevice, Class, Device, DeviceTransportType,
-            Obj, Process, PropAddr, PropElement, PropScope, PropSelector, System, TapDesc,
+            Obj, Process, PropSelector, System, TapDesc,
         },
         ns, os,
     };
@@ -1679,6 +1741,9 @@ mod tests {
         unsafe { assert_ne!(uid.as_type_ptr(), uid_from_device.as_type_ptr()) };
         let uid2 = uid.retained();
         unsafe { assert_eq!(uid.as_type_ptr(), uid2.as_type_ptr()) };
+
+        assert_eq!(device.class().unwrap(), Class::DEVICE);
+        assert_eq!(device.base_class().unwrap(), Class::OBJECT);
     }
 
     #[test]
@@ -1686,11 +1751,7 @@ mod tests {
         let addr = PropSelector::HARDWARE_DEFAULT_INPUT_DEVICE.global_addr();
         let _device: Device = System::OBJ.prop(&addr).unwrap();
 
-        let addr = PropAddr {
-            selector: PropSelector::HARDWARE_DEVICES,
-            scope: PropScope::INPUT,
-            element: PropElement::MAIN,
-        };
+        let addr = PropSelector::HARDWARE_DEVICES.input_addr();
         let devices: Vec<Device> = System::OBJ.prop_vec(&addr).unwrap();
 
         assert!(!devices.is_empty());

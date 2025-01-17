@@ -39,6 +39,24 @@ impl PropSelector {
     }
 
     #[inline]
+    pub const fn input_addr(self) -> PropAddr {
+        PropAddr {
+            selector: self,
+            scope: PropScope::INPUT,
+            element: PropElement::MAIN,
+        }
+    }
+
+    #[inline]
+    pub const fn output_addr(self) -> PropAddr {
+        PropAddr {
+            selector: self,
+            scope: PropScope::INPUT,
+            element: PropElement::MAIN,
+        }
+    }
+
+    #[inline]
     pub const fn addr(self, scope: PropScope, element: PropElement) -> PropAddr {
         PropAddr {
             selector: self,
