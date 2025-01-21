@@ -1209,7 +1209,7 @@ impl PropSelector {
     #[doc(alias = "kAudioTapPropertyUID")]
     pub const TAP_UID: Self = Self(u32::from_be_bytes(*b"tuid"));
 
-    /// The CATapDescription used to initially create this tap. This property can be used
+    /// The ca::TapDesc used to initially create this tap. This property can be used
     /// to modify and set the description of an existing tap.
     #[doc(alias = "kAudioTapPropertyDescription")]
     pub const TAP_DESCRIPTION: Self = Self(u32::from_be_bytes(*b"tdsc"));

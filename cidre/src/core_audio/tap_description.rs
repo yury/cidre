@@ -1,11 +1,21 @@
 use crate::{api, arc, define_obj_type, ns, objc};
 
 #[doc(alias = "CATapMuteBehavior")]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
 pub enum TapMuteBehavior {
+    /// Audio is captured by the tap and also sent to the audio hardware
+    #[doc(alias = "CATapUnmuted")]
+    #[default]
     Unmuted = 0,
+
+    /// Audio is captured by the tap but no audio is sent from the process to the audio hardware
+    #[doc(alias = "CATapMuted")]
     Muted = 1,
+
+    /// Audio is captured by the tap and also sent to the audio hardware until the tap is read by another audio client.
+    /// For the duration of the read activity on the tap no audio is sent to the audio hardware.
+    #[doc(alias = "CATapMutedWhenTapped")]
     MuttedWhenTapped = 2,
 }
 
@@ -180,6 +190,7 @@ extern "C" {
 #[cfg(test)]
 mod tests {
     use crate::{core_audio as ca, ns};
+
     #[test]
     fn basics() {
         let _ = ca::TapDesc::new();
