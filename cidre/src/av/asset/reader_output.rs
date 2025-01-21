@@ -1,21 +1,46 @@
 use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
 
-define_obj_type!(pub ReaderOutput(ns::Id));
-define_obj_type!(pub ReaderTrackOutput(ReaderOutput));
-define_obj_type!(pub ReaderAudioMixOutput(ReaderOutput));
-define_obj_type!(pub ReaderVideoCompositionOutput(ReaderOutput));
-define_obj_type!(pub ReaderSampleReferenceOutput(ReaderOutput));
+define_obj_type!(
+    #[doc(alias = "AVAssetReaderOutput")]
+    pub ReaderOutput(ns::Id)
+);
 
-define_obj_type!(pub ReaderOutputMetadataAdaptor(ns::Id));
-define_obj_type!(pub ReaderOutputCaptionAdaptor(ns::Id));
+define_obj_type!(
+    #[doc(alias = "AVAssetReaderTrackOutput")]
+    pub ReaderTrackOutput(ReaderOutput)
+);
+
+define_obj_type!(
+    #[doc(alias = "AVAssetReaderAudioMixOutput")]
+    pub ReaderAudioMixOutput(ReaderOutput)
+);
+
+define_obj_type!(
+    #[doc(alias = "AVAssetReaderVideoCompositionOutput")]
+    pub ReaderVideoCompositionOutput(ReaderOutput)
+);
+define_obj_type!(
+    #[doc(alias = "AVAssetReaderSampleReferenceOutput")]
+    pub ReaderSampleReferenceOutput(ReaderOutput)
+);
+
+define_obj_type!(
+    #[doc(alias = "AVAssetReaderOutputMetadataAdaptor")]
+    pub ReaderOutputMetadataAdaptor(ns::Id)
+);
+
+define_obj_type!(
+    #[doc(alias = "AVAssetReaderOutputCaptionAdaptor")]
+    pub ReaderOutputCaptionAdaptor(ns::Id)
+);
 
 /// Is an abstract class that defines an interface for reading a single collection
 /// of samples of a common media type from an av::AssetReader.
 ///
 /// Clients can read the media data of an asset by adding one or more concrete
-/// instances of AVAssetReaderOutput to an AVAssetReader using the -[AVAssetReader addOutput:] method.
+/// instances of av::AssetReaderOutput to an AVAssetReader using the -[AVAssetReader addOutput:] method.
 ///
-/// MPORTANT PERFORMANCE NOTE: Make sure to set the alwaysCopiesSampleData property to false
+/// IMPORTANT PERFORMANCE NOTE: Make sure to set the always_copies_sample_data property to false
 /// if you do not need to modify the sample data in-place, to avoid unnecessary and inefficient copying.
 impl ReaderOutput {
     #[objc::msg_send(mediaType)]
@@ -42,16 +67,14 @@ impl ReaderOutput {
 
     /// Copies the next sample buffer for the output synchronously.
     ///
-    /// The client is responsible for calling cf::Release on the returned cm::SampleBuffer
-    /// object when finished with it.
-    /// This method will return NULL if there are no more sample buffers available for
+    /// This method will return None if there are no more sample buffers available for
     /// the receiver within the time range specified by its av::AssetReader's time_range property,
-    /// or if there is an error that prevents the AVAssetReader from reading more media data.
-    /// When this method returns NULL, clients should check the value of the associated AVAssetReader's
+    /// or if there is an error that prevents the av::AssetReader from reading more media data.
+    /// When this method returns None, clients should check the value of the associated av::AssetReader's
     /// status property to determine why no more samples could be read.
     ///
     /// This method throws an exception if this output is not added to an instance of av::AssetReader
-    /// (using -addOutput:) and -startReading is not called on that asset reader.
+    /// (using add_output()) and start_reading() is not called on that asset reader.
     #[objc::msg_send(copyNextSampleBuffer)]
     pub unsafe fn next_sample_buf_throws(&mut self) -> Option<arc::Retained<cm::SampleBuf>>;
 
