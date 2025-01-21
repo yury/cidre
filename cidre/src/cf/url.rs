@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use crate::{arc, cf, define_cf_type};
+use crate::{arc, cf, define_cf_type, objc::Obj};
 
 #[cfg(feature = "ns")]
 use crate::ns;
@@ -199,6 +199,26 @@ impl Url {
     #[inline]
     pub fn has_dir_path(&self) -> bool {
         unsafe { CFURLHasDirectoryPath(self) }
+    }
+}
+
+#[cfg(feature = "ns")]
+impl AsRef<ns::Url> for Url {
+    fn as_ref(&self) -> &ns::Url {
+        self.as_ns()
+    }
+}
+
+#[cfg(feature = "ns")]
+impl AsRef<ns::Id> for Url {
+    fn as_ref(&self) -> &ns::Id {
+        self.as_ns().as_id_ref()
+    }
+}
+
+impl AsRef<cf::Type> for Url {
+    fn as_ref(&self) -> &cf::Type {
+        self.as_type_ref()
     }
 }
 

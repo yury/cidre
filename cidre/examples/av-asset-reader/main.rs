@@ -13,10 +13,10 @@ async fn main() {
 
     let options = ns::Dictionary::with_keys_values(
         &[cv::pixel_buffer_keys::pixel_format().as_ns()],
-        &[cv::PixelFormat::_420V.to_cf_number().as_ns().as_id_ref()],
+        &[cv::PixelFormat::_420V.as_ref()],
         // for ML tasks reading in BGRA is faster 3:55 vs 5:00
         // if you analyze every frame. If you skip frames it is better to use 420v
-        //&[cv::PixelFormat::_32_BGRA.to_cf_number().as_type_ref()],
+        //&[cv::PixelFormat::_32_BGRA.to_ns_number().as_id_ref()],
     );
 
     let mut output =

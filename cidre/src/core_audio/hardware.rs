@@ -1845,13 +1845,13 @@ mod tests {
 
         let _proc_id = agg_device.create_io_proc_id(proc, None).unwrap();
 
-        let input = agg_device.output_asbd().unwrap();
-        println!("input {input:?}");
+        // let input = agg_device.output_asbd().unwrap();
+        // println!("input {input:?}");
 
-        let streams = agg_device.streams().unwrap();
-        println!("streams {streams:?}");
-        let asbd = streams[0].virtual_format().unwrap();
-        println!("asbd {asbd:?}");
+        // let streams = agg_device.streams().unwrap();
+        // println!("streams {streams:?}");
+        // let asbd = streams[0].virtual_format().unwrap();
+        // println!("asbd {asbd:?}");
     }
 
     #[test]

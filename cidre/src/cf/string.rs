@@ -9,7 +9,9 @@ use std::{
 use crate::{
     arc,
     cf::{self, Index, OptionFlags, Range, Type, TypeId},
-    define_cf_type, define_opts, UniChar,
+    define_cf_type, define_opts,
+    objc::Obj,
+    UniChar,
 };
 
 #[cfg(feature = "ns")]
@@ -303,6 +305,26 @@ impl String {
 
             std::string::String::from_utf8_unchecked(buffer)
         }
+    }
+}
+
+#[cfg(feature = "ns")]
+impl AsRef<ns::String> for String {
+    fn as_ref(&self) -> &ns::String {
+        self.as_ns()
+    }
+}
+
+#[cfg(feature = "ns")]
+impl AsRef<ns::Id> for String {
+    fn as_ref(&self) -> &ns::Id {
+        self.as_ns().as_id_ref()
+    }
+}
+
+impl AsRef<cf::Type> for String {
+    fn as_ref(&self) -> &cf::Type {
+        self.as_type_ref()
     }
 }
 

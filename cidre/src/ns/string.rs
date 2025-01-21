@@ -263,6 +263,20 @@ impl AsRef<cf::String> for ns::String {
     }
 }
 
+#[cfg(feature = "cf")]
+impl AsRef<cf::Type> for ns::String {
+    fn as_ref(&self) -> &cf::Type {
+        self.as_cf().as_type_ref()
+    }
+}
+
+#[cfg(feature = "cf")]
+impl AsRef<cf::Type> for ns::StringMut {
+    fn as_ref(&self) -> &cf::Type {
+        self.as_cf().as_type_ref()
+    }
+}
+
 impl AsRef<ns::String> for ns::StringMut {
     fn as_ref(&self) -> &ns::String {
         self

@@ -3,7 +3,7 @@ use std::{
     ptr::{slice_from_raw_parts, slice_from_raw_parts_mut},
 };
 
-use crate::{define_opts, four_cc_to_str, os};
+use crate::{cf, define_opts, four_cc_to_str, objc::Obj, os};
 
 #[cfg(feature = "ns")]
 use crate::ns;
@@ -411,6 +411,36 @@ impl Format {
     #[cfg(feature = "ns")]
     pub fn to_ns_number(self) -> &'static ns::Number {
         ns::Number::tagged_i32(self.0 as _)
+    }
+}
+
+impl AsRef<cf::Number> for Format {
+    fn as_ref(&self) -> &'static cf::Number {
+        cf::Number::tagged_i32(self.0 as _)
+    }
+}
+
+impl AsRef<cf::Type> for Format {
+    fn as_ref(&self) -> &'static cf::Type {
+        cf::Number::tagged_i32(self.0 as _).as_type_ref()
+    }
+}
+
+impl AsRef<ns::Id> for Format {
+    fn as_ref(&self) -> &'static ns::Id {
+        self.to_ns_number().as_id_ref()
+    }
+}
+
+impl AsRef<ns::Number> for Format {
+    fn as_ref(&self) -> &'static ns::Number {
+        self.to_ns_number()
+    }
+}
+
+impl AsRef<ns::Id> for u32 {
+    fn as_ref(&self) -> &ns::Id {
+        &ns::Number::tagged_u32(*self).as_id_ref()
     }
 }
 

@@ -5,6 +5,9 @@ use crate::{arc, cf, cv, define_opts, four_cc_to_str, os};
 #[cfg(feature = "io")]
 use crate::io;
 
+#[cfg(feature = "ns")]
+use crate::ns;
+
 pub type PixelBuf = cv::ImageBuf;
 
 pub type ReleaseCallback =
@@ -495,6 +498,12 @@ impl PixelFormat {
         cf::Number::from_four_char_code(self.0)
     }
 
+    #[cfg(feature = "ns")]
+    #[inline]
+    pub fn to_ns_number(&self) -> &'static ns::Number {
+        cf::Number::from_four_char_code(self.0).as_ns()
+    }
+
     /// Checks if a compressed pixel format is supported on the current platform.
     #[doc(alias = "CVIsCompressedPixelFormatAvailable")]
     #[inline]
@@ -640,6 +649,19 @@ impl std::fmt::Debug for PixelFormat {
     }
 }
 
+impl AsRef<cf::Type> for PixelFormat {
+    fn as_ref(&self) -> &'static cf::Type {
+        self.to_cf_number().as_type_ref()
+    }
+}
+
+#[cfg(feature = "ns")]
+impl AsRef<ns::Id> for PixelFormat {
+    fn as_ref(&self) -> &'static ns::Id {
+        self.to_ns_number().as_id_ref()
+    }
+}
+
 #[link(name = "CoreVideo", kind = "framework")]
 extern "C-unwind" {
     fn CVPixelBufferGetTypeID() -> cf::TypeId;
@@ -671,7 +693,8 @@ extern "C-unwind" {
     fn CVPixelBufferGetPlaneCount(pixel_buffer: &PixelBuf) -> usize;
     fn CVPixelBufferGetWidthOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> usize;
     fn CVPixelBufferGetHeightOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> usize;
-    fn CVPixelBufferGetBaseAddressOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> *const u8;
+    fn CVPixelBufferGetBaseAddressOfPlane(pixel_buffer: &PixelBuf, plane_index: usize)
+        -> *const u8;
     fn CVPixelBufferGetBytesPerRowOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> usize;
 
     fn CVPixelBufferLockBaseAddress(pixel_buffer: &PixelBuf, lock_flags: LockFlags) -> cv::Return;
@@ -758,13 +781,16 @@ pub mod keys {
 
 #[cfg(test)]
 mod tests {
-    use crate::cv::PixelFormat;
+    use crate::{cv::PixelFormat, objc::Obj};
 
     #[test]
     fn basics() {
         let number = PixelFormat::_1_MONOCHROME.to_cf_number();
         assert!(number.is_tagged_ptr());
         number.show();
+
+        let number = PixelFormat::_420V.to_ns_number();
+        assert!(number.is_tagged_ptr());
     }
 
     #[test]

@@ -103,8 +103,8 @@ fn writer_and_input(
                 av::audio::all_formats_keys::number_of_channels(),
             ],
             &[
-                cat::AudioFormat::MPEG4_AAC.to_ns_number().as_id_ref(),
-                ns::Number::tagged_i16(src_asbd.channels_per_frame as _).as_id_ref(),
+                cat::AudioFormat::MPEG4_AAC.as_ref(),
+                src_asbd.channels_per_frame.as_ref(),
             ],
         )
     } else {
@@ -117,7 +117,7 @@ fn writer_and_input(
                 // av::audio::linear_pcm_keys::is_float(),
             ],
             &[
-                cat::AudioFormat::LINEAR_PCM.to_ns_number().as_id_ref(),
+                cat::AudioFormat::LINEAR_PCM.as_ref(),
                 // ns::Number::tagged_i16(src_asbd.channels_per_frame as _).as_ref(),
                 // ns::Number::tagged_i16(src_asbd.sample_rate as _).as_ref(),
                 // ns::Number::tagged_i16(32).as_ref(),
