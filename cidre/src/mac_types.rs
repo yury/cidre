@@ -29,6 +29,18 @@ pub fn four_cc_to_str(bytes: &mut [u8; 4]) -> &str {
     unsafe { &std::str::from_utf8_unchecked(bytes) }
 }
 
+pub fn four_cc_debug_fmt(
+    val: u32,
+    name: &str,
+    f: &mut std::fmt::Formatter<'_>,
+) -> std::fmt::Result {
+    let mut fcc = val.to_be_bytes();
+    f.debug_struct(name)
+        .field("raw", &val)
+        .field("fcc", &four_cc_to_str(&mut fcc))
+        .finish()
+}
+
 #[cfg(test)]
 mod tests {
     use crate::four_cc_to_str;

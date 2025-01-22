@@ -2316,12 +2316,12 @@ mod tests {
 
     #[test]
     fn session() {
-        io::Object::SYS.allow_screen_capture_devices(true).unwrap();
-        io::Object::SYS
+        io::Obj::SYS.allow_screen_capture_devices(true).unwrap();
+        io::Obj::SYS
             .allow_wireless_screen_capture_devices(true)
             .unwrap();
 
-        io::Object::SYS.show();
+        io::Obj::SYS.show();
 
         let list = ns::Array::from_slice(&[av::CaptureDeviceType::external()]);
         let session = capture::DiscoverySession::with_device_types_media_and_pos(

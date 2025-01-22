@@ -1,6 +1,6 @@
 use crate::{
     at::audio::{StreamBasicDesc, ValueRange},
-    four_cc_to_str,
+    four_cc_debug_fmt,
 };
 
 #[doc(alias = "AudioObjectID")]
@@ -15,11 +15,7 @@ pub struct Class(pub u32);
 
 impl std::fmt::Debug for Class {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut fcc = self.0.to_be_bytes();
-        f.debug_struct("AudioClass")
-            .field("raw", &self.0)
-            .field("fcc", &four_cc_to_str(&mut fcc))
-            .finish()
+        four_cc_debug_fmt(self.0, "AudioClass", f)
     }
 }
 
@@ -68,11 +64,7 @@ impl PropSelector {
 
 impl std::fmt::Debug for PropSelector {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut fcc = self.0.to_be_bytes();
-        f.debug_struct("AudioObjPropSelector")
-            .field("raw", &self.0)
-            .field("fcc", &four_cc_to_str(&mut fcc))
-            .finish()
+        four_cc_debug_fmt(self.0, "AudioObjPropSelector", f)
     }
 }
 
@@ -83,11 +75,7 @@ pub struct PropScope(pub u32);
 
 impl std::fmt::Debug for PropScope {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut fcc = self.0.to_be_bytes();
-        f.debug_struct("AudioObjPropScope")
-            .field("raw", &self.0)
-            .field("fcc", &four_cc_to_str(&mut fcc))
-            .finish()
+        four_cc_debug_fmt(self.0, "AudioObjPropScope", f)
     }
 }
 
@@ -584,12 +572,7 @@ impl DeviceTransportType {
 
 impl std::fmt::Debug for DeviceTransportType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let val = self.0;
-        let mut fcc = val.to_be_bytes();
-        f.debug_struct("DeviceTransportType")
-            .field("raw", &val)
-            .field("fcc", &four_cc_to_str(&mut fcc))
-            .finish()
+        four_cc_debug_fmt(self.0, "DeviceTransportType", f)
     }
 }
 
@@ -856,12 +839,7 @@ impl StreamTerminalType {
 
 impl std::fmt::Debug for StreamTerminalType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let val = self.0;
-        let mut fcc = val.to_be_bytes();
-        f.debug_struct("StreamTerminalType")
-            .field("raw", &val)
-            .field("fcc", &four_cc_to_str(&mut fcc))
-            .finish()
+        four_cc_debug_fmt(self.0, "StreamTerminalType", f)
     }
 }
 

@@ -1,16 +1,18 @@
 use std::ffi::c_void;
 
-use crate::os;
+use crate::{four_cc_debug_fmt, os};
 
 #[doc(alias = "CMIOObjectPropertySelector")]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct PropSelector(pub u32);
 
 impl PropSelector {
     #[doc(alias = "kCMIOObjectPropertySelectorWildcard")]
     pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
+}
 
+impl PropSelector {
     /// A u32 where 1 means that screen capture devices will be presented to the process.
     /// A 0 means screen capture devices will be ignored. By default, this property is 1.
     #[doc(alias = "kCMIOHardwarePropertyAllowScreenCaptureDevices")]
@@ -20,6 +22,22 @@ impl PropSelector {
     /// A 0 means wireless screen capture devices will be ignored. By default, this property is 0.
     #[doc(alias = "kCMIOHardwarePropertyAllowWirelessScreenCaptureDevices")]
     pub const ALLOW_WIRELESS_SCREEN_CAPTURE_DEVICES: Self = Self(u32::from_be_bytes(*b"wscd"));
+}
+
+impl PropSelector {
+    pub const fn global_addr(self) -> PropAddr {
+        PropAddr {
+            selector: self,
+            scope: PropScope::GLOBAL,
+            element: PropElement::MAIN,
+        }
+    }
+}
+
+impl std::fmt::Debug for PropSelector {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        four_cc_debug_fmt(self.0, "CMIOObjectPropertySelector", f)
+    }
 }
 
 #[doc(alias = "CMIOObjectPropertyScope")]
@@ -58,7 +76,7 @@ impl PropElement {
 }
 
 #[doc(alias = "CMIOObjectPropertyAddress")]
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(C)]
 pub struct PropAddr {
     pub selector: PropSelector,
@@ -82,9 +100,9 @@ impl Class {
 #[doc(alias = "CMIOObjectID")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
-pub struct Object(pub u32);
+pub struct Obj(pub u32);
 
-impl Object {
+impl Obj {
     #[doc(alias = "kCMIOObjectSystemObject")]
     pub const SYS: Self = Self(1);
 
@@ -128,30 +146,26 @@ impl Object {
     }
 
     pub fn allow_screen_capture_devices(&self, val: bool) -> os::Result {
-        let val: u32 = if val { 1u32 } else { 0u32 };
-        let address = PropAddr {
-            selector: PropSelector::ALLOW_SCREEN_CAPTURE_DEVICES,
-            scope: PropScope::GLOBAL,
-            element: PropElement::MAIN,
-        };
-        self.set_prop(&address, &val)
+        let val: u32 = val as _;
+        self.set_prop(
+            &PropSelector::ALLOW_SCREEN_CAPTURE_DEVICES.global_addr(),
+            &val,
+        )
     }
 
     pub fn allow_wireless_screen_capture_devices(&self, val: bool) -> os::Result {
-        let val: u32 = if val { 1u32 } else { 0u32 };
-        let address = PropAddr {
-            selector: PropSelector::ALLOW_WIRELESS_SCREEN_CAPTURE_DEVICES,
-            scope: PropScope::GLOBAL,
-            element: PropElement::MAIN,
-        };
-        self.set_prop(&address, &val)
+        let val: u32 = val as _;
+        self.set_prop(
+            &PropSelector::ALLOW_WIRELESS_SCREEN_CAPTURE_DEVICES.global_addr(),
+            &val,
+        )
     }
 }
 
 #[link(name = "CoreMediaIO", kind = "framework")]
 extern "C-unwind" {
     fn CMIOObjectSetPropertyData(
-        object_id: Object,
+        object_id: Obj,
         address: *const PropAddr,
         qualifier_data_size: u32,
         qualifier_data: *const c_void,
@@ -159,5 +173,5 @@ extern "C-unwind" {
         data: *const c_void,
     ) -> os::Status;
 
-    fn CMIOObjectShow(object_id: Object);
+    fn CMIOObjectShow(object_id: Obj);
 }

@@ -4,9 +4,18 @@ mod macos {
 
     use ca::aggregate_device_keys as agg_keys;
     use ca::sub_device_keys as sub_keys;
-    use cidre::{arc, av, cat, cf, core_audio as ca, ns, os};
+    use cidre::{arc, av, cat, cf, cm, core_audio as ca, ns, os};
 
     pub fn main() {
+        cm::io::Obj::SYS.allow_screen_capture_devices(true).unwrap();
+        cm::io::Obj::SYS
+            .allow_wireless_screen_capture_devices(true)
+            .unwrap();
+
+        let input_devices = ca::System::devices().unwrap();
+        for d in input_devices.iter() {
+            println!("{:?}", d.name());
+        }
         let output_device = ca::System::default_output_device().unwrap();
         let output_uid = output_device.uid().unwrap();
 
