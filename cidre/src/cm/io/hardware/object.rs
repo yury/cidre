@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{four_cc_debug_fmt, os};
+use crate::{four_cc_fmt_debug, os};
 
 #[doc(alias = "CMIOObjectPropertySelector")]
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -10,18 +10,6 @@ pub struct PropSelector(pub u32);
 impl PropSelector {
     #[doc(alias = "kCMIOObjectPropertySelectorWildcard")]
     pub const WILDCARD: Self = Self(u32::from_be_bytes(*b"****"));
-}
-
-impl PropSelector {
-    /// A u32 where 1 means that screen capture devices will be presented to the process.
-    /// A 0 means screen capture devices will be ignored. By default, this property is 1.
-    #[doc(alias = "kCMIOHardwarePropertyAllowScreenCaptureDevices")]
-    pub const ALLOW_SCREEN_CAPTURE_DEVICES: Self = Self(u32::from_be_bytes(*b"yes "));
-
-    /// A u32 where 1 means that wireless screen capture devices will be presented to the process.
-    /// A 0 means wireless screen capture devices will be ignored. By default, this property is 0.
-    #[doc(alias = "kCMIOHardwarePropertyAllowWirelessScreenCaptureDevices")]
-    pub const ALLOW_WIRELESS_SCREEN_CAPTURE_DEVICES: Self = Self(u32::from_be_bytes(*b"wscd"));
 }
 
 impl PropSelector {
@@ -36,12 +24,12 @@ impl PropSelector {
 
 impl std::fmt::Debug for PropSelector {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_debug_fmt(self.0, "CMIOObjectPropertySelector", f)
+        four_cc_fmt_debug(self.0, "CMIOObjectPropertySelector", f)
     }
 }
 
 #[doc(alias = "CMIOObjectPropertyScope")]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct PropScope(pub u32);
 
@@ -53,8 +41,14 @@ impl PropScope {
     pub const GLOBAL: Self = Self(u32::from_be_bytes(*b"glob"));
 }
 
+impl std::fmt::Debug for PropScope {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        four_cc_fmt_debug(self.0, "CMIOObjectPropertyScope", f)
+    }
+}
+
 #[doc(alias = "CMIOObjectPropertyElement")]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct PropElement(pub u32);
 
@@ -75,6 +69,12 @@ impl PropElement {
     pub const NUMBER_NAME: Self = Self(u32::from_be_bytes(*b"lcnn"));
 }
 
+impl std::fmt::Debug for PropElement {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        four_cc_fmt_debug(self.0, "CMIOObjectPropertyElement", f)
+    }
+}
+
 #[doc(alias = "CMIOObjectPropertyAddress")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(C)]
@@ -85,7 +85,7 @@ pub struct PropAddr {
 }
 
 #[doc(alias = "CMIOClassID")]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct Class(pub u32);
 
@@ -95,6 +95,12 @@ impl Class {
 
     #[doc(alias = "kCMIOPlugInClassID")]
     pub const PLUG_IN: Self = Self(u32::from_be_bytes(*b"aplg"));
+}
+
+impl std::fmt::Debug for Class {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        four_cc_fmt_debug(self.0, "CMIOClassID", f)
+    }
 }
 
 #[doc(alias = "CMIOObjectID")]
@@ -112,7 +118,7 @@ impl Obj {
         }
     }
 
-    pub unsafe fn set_property_data(
+    pub unsafe fn set_prop_data(
         &self,
         address: *const PropAddr,
         qualifier_data_size: u32,
@@ -135,7 +141,7 @@ impl Obj {
 
     pub fn set_prop<T: Sized>(&self, address: &PropAddr, val: &T) -> os::Result {
         unsafe {
-            self.set_property_data(
+            self.set_prop_data(
                 address,
                 0,
                 std::ptr::null(),
@@ -148,7 +154,7 @@ impl Obj {
     pub fn allow_screen_capture_devices(&self, val: bool) -> os::Result {
         let val: u32 = val as _;
         self.set_prop(
-            &PropSelector::ALLOW_SCREEN_CAPTURE_DEVICES.global_addr(),
+            &PropSelector::HW_ALLOW_SCREEN_CAPTURE_DEVICES.global_addr(),
             &val,
         )
     }
@@ -156,7 +162,7 @@ impl Obj {
     pub fn allow_wireless_screen_capture_devices(&self, val: bool) -> os::Result {
         let val: u32 = val as _;
         self.set_prop(
-            &PropSelector::ALLOW_WIRELESS_SCREEN_CAPTURE_DEVICES.global_addr(),
+            &PropSelector::HW_ALLOW_WIRELESS_SCREEN_CAPTURE_DEVICES.global_addr(),
             &val,
         )
     }

@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{arc, cf, cv, define_opts, four_cc_debug_fmt, os};
+use crate::{arc, cf, cv, define_opts, four_cc_fmt_debug, os};
 
 #[cfg(feature = "io")]
 use crate::io;
@@ -641,7 +641,7 @@ impl PixelFormat {
 
 impl std::fmt::Debug for PixelFormat {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_debug_fmt(self.0, "cv::PixelFormat", f)
+        four_cc_fmt_debug(self.0, "cv::PixelFormat", f)
     }
 }
 

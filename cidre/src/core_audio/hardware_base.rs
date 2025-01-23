@@ -1,6 +1,6 @@
 use crate::{
     at::audio::{StreamBasicDesc, ValueRange},
-    four_cc_debug_fmt,
+    four_cc_fmt_debug,
 };
 
 #[doc(alias = "AudioObjectID")]
@@ -15,7 +15,7 @@ pub struct Class(pub u32);
 
 impl std::fmt::Debug for Class {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_debug_fmt(self.0, "AudioClass", f)
+        four_cc_fmt_debug(self.0, "AudioClass", f)
     }
 }
 
@@ -64,7 +64,7 @@ impl PropSelector {
 
 impl std::fmt::Debug for PropSelector {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_debug_fmt(self.0, "AudioObjPropSelector", f)
+        four_cc_fmt_debug(self.0, "AudioObjPropSelector", f)
     }
 }
 
@@ -75,7 +75,7 @@ pub struct PropScope(pub u32);
 
 impl std::fmt::Debug for PropScope {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_debug_fmt(self.0, "AudioObjPropScope", f)
+        four_cc_fmt_debug(self.0, "AudioObjPropScope", f)
     }
 }
 
@@ -572,7 +572,7 @@ impl DeviceTransportType {
 
 impl std::fmt::Debug for DeviceTransportType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_debug_fmt(self.0, "DeviceTransportType", f)
+        four_cc_fmt_debug(self.0, "DeviceTransportType", f)
     }
 }
 
@@ -839,7 +839,7 @@ impl StreamTerminalType {
 
 impl std::fmt::Debug for StreamTerminalType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_debug_fmt(self.0, "StreamTerminalType", f)
+        four_cc_fmt_debug(self.0, "StreamTerminalType", f)
     }
 }
 

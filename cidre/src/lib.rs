@@ -1,6 +1,6 @@
 pub mod mac_types;
 
-pub use mac_types::four_cc_debug_fmt;
+pub use mac_types::four_cc_fmt_debug;
 pub use mac_types::four_cc_to_str;
 pub use mac_types::four_cc_to_string;
 pub use mac_types::FourCharCode;

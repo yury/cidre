@@ -1,5 +1,4 @@
 pub mod object;
-
 pub use object::Class;
 pub use object::Obj;
 pub use object::PropAddr as ObjPropAddr;
@@ -7,7 +6,9 @@ pub use object::PropElement as ObjPropElement;
 pub use object::PropScope as ObjPropScope;
 pub use object::PropSelector as ObjPropSelector;
 
-/// The error constants unique to the DAL.
+pub mod system;
+
+/// The err module constants unique to the DAL.
 ///
 /// These are the error constants that are unique to the DAL.
 /// Note that the DAL's functions can and will return other

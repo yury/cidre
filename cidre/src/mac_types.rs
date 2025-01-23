@@ -29,7 +29,7 @@ pub fn four_cc_to_str(bytes: &mut [u8; 4]) -> &str {
     unsafe { &std::str::from_utf8_unchecked(bytes) }
 }
 
-pub fn four_cc_debug_fmt(
+pub fn four_cc_fmt_debug(
     val: u32,
     name: &str,
     f: &mut std::fmt::Formatter<'_>,
