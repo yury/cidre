@@ -102,6 +102,12 @@ macro_rules! define_cf_type {
                 unsafe { crate::cf::Type::retain(self) }
             }
         }
+
+        impl AsRef<$crate::cf::Type> for $NewType {
+            fn as_ref(&self) -> &$crate::cf::Type {
+                self
+            }
+        }
     };
 }
 

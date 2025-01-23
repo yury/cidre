@@ -32,6 +32,18 @@ impl Default for arc::R<Null> {
     }
 }
 
+impl AsRef<cf::Null> for Null {
+    fn as_ref(&self) -> &cf::Null {
+        self.as_cf()
+    }
+}
+
+impl AsRef<cf::Type> for Null {
+    fn as_ref(&self) -> &cf::Type {
+        self.as_cf()
+    }
+}
+
 #[link(name = "ns", kind = "static")]
 extern "C" {
     static NS_NULL: &'static objc::Class<Null>;

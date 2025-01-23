@@ -216,12 +216,6 @@ impl AsRef<ns::Id> for Url {
     }
 }
 
-impl AsRef<cf::Type> for Url {
-    fn as_ref(&self) -> &cf::Type {
-        self.as_type_ref()
-    }
-}
-
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C-unwind" {
     fn CFURLGetTypeID() -> cf::TypeId;

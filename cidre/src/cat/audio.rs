@@ -1,3 +1,6 @@
+pub type Integer = isize;
+pub type UInteger = usize;
+
 mod base_types;
 pub use base_types::*;
 

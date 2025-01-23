@@ -13,8 +13,10 @@ pub use audio::ChannelLayoutTag as AudioChannelLayoutTag;
 pub use audio::ClassDesc as AudioClassDesc;
 pub use audio::Format as AudioFormat;
 pub use audio::FormatFlags as AudioFormatFlags;
+pub use audio::Integer as AudioInteger;
 pub use audio::TimeStamp as AudioTimeStamp;
 pub use audio::TimeStampFlags as AudioTimeStampFlags;
+pub use audio::UInteger as AudioUInteger;
 
 pub use audio::SessionErrorCode as AudioSessionErrorCode;
 pub use audio::SessionId as AudioSessionId;

@@ -603,6 +603,12 @@ macro_rules! define_obj_type {
             }
         }
 
+        impl AsRef<$crate::ns::Id> for $NewType {
+            fn as_ref(&self) -> &$crate::ns::Id {
+                self
+            }
+        }
+
         // impl PartialEq for $NewType {
         //     fn eq(&self, other: &$NewType) -> bool {
         //         self.is_equal(other)

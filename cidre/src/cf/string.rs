@@ -322,12 +322,6 @@ impl AsRef<ns::Id> for String {
     }
 }
 
-impl AsRef<cf::Type> for String {
-    fn as_ref(&self) -> &cf::Type {
-        self.as_type_ref()
-    }
-}
-
 #[macro_export]
 macro_rules! cfstr {
     ($f:literal) => {{

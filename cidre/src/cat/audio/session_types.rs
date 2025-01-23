@@ -4,7 +4,7 @@ pub type SessionId = u32;
 #[doc(alias = "AVAudioSessionErrorCode")]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 #[repr(transparent)]
-pub struct ErrorCode(pub i64);
+pub struct ErrorCode(pub crate::cat::AudioInteger);
 
 impl ErrorCode {
     /// Operation succeeded.

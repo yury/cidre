@@ -4,7 +4,7 @@ use crate::{arc, cf, define_cf_type, define_opts};
 use crate::ns;
 
 use super::{runtime::Type, String};
-use std::{borrow::Cow, cmp::Ordering, ffi::c_void, fmt::Debug};
+use std::{borrow::Cow, cmp::Ordering, ffi::c_void};
 
 pub type Index = isize;
 pub type TypeId = usize;
@@ -22,6 +22,7 @@ pub type ComparatorFn = extern "C" fn(
     context: *mut c_void,
 ) -> ComparisonResult;
 
+#[doc(alias = "kCFNotFound")]
 pub const NOT_FOUND: Index = -1;
 
 #[doc(alias = "CFRange")]
@@ -39,7 +40,7 @@ impl Range {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(isize)]
 pub enum ComparisonResult {
     LessThen = -1,
@@ -142,18 +143,19 @@ impl std::hash::Hash for Type {
     }
 }
 
-impl Debug for Type {
+impl std::fmt::Debug for Type {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let desc = self.desc();
         f.write_str(&Cow::from(desc.as_ref()))
-
-        // f.debug_tuple("cf::Type")
-        //     .field(&Cow::from(desc.as_ref()))
-        //     .finish()
     }
 }
 
 impl Null {
+    #[inline]
+    pub fn type_id() -> cf::TypeId {
+        unsafe { CFNullGetTypeID() }
+    }
+
     #[inline]
     pub fn value() -> &'static Null {
         unsafe { kCFNull }
@@ -163,6 +165,13 @@ impl Null {
     #[inline]
     pub fn as_ns(&self) -> &ns::Null {
         unsafe { std::mem::transmute(self) }
+    }
+}
+
+#[cfg(feature = "ns")]
+impl AsRef<ns::Id> for Null {
+    fn as_ref(&self) -> &ns::Id {
+        self.as_ns()
     }
 }
 
@@ -339,6 +348,8 @@ extern "C-unwind" {
     fn CFCopyTypeIDDescription(type_id: TypeId) -> Option<arc::R<String>>;
 
     static kCFNull: &'static Null;
+
+    fn CFNullGetTypeID() -> cf::TypeId;
 
     static kCFAllocatorDefault: Option<&'static Allocator>;
     static kCFAllocatorSystemDefault: Option<&'static Allocator>;
