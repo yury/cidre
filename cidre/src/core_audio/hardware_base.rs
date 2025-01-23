@@ -15,7 +15,7 @@ pub struct Class(pub u32);
 
 impl std::fmt::Debug for Class {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_fmt_debug(self.0, "AudioClass", f)
+        four_cc_fmt_debug(self.0, "ca::Class", f)
     }
 }
 
@@ -64,7 +64,7 @@ impl PropSelector {
 
 impl std::fmt::Debug for PropSelector {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_fmt_debug(self.0, "AudioObjPropSelector", f)
+        four_cc_fmt_debug(self.0, "ca::PropSelector", f)
     }
 }
 
@@ -75,7 +75,7 @@ pub struct PropScope(pub u32);
 
 impl std::fmt::Debug for PropScope {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_fmt_debug(self.0, "AudioObjPropScope", f)
+        four_cc_fmt_debug(self.0, "ca::PropScope", f)
     }
 }
 
@@ -572,7 +572,7 @@ impl DeviceTransportType {
 
 impl std::fmt::Debug for DeviceTransportType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_fmt_debug(self.0, "DeviceTransportType", f)
+        four_cc_fmt_debug(self.0, "ca::DeviceTransportType", f)
     }
 }
 
@@ -839,11 +839,11 @@ impl StreamTerminalType {
 
 impl std::fmt::Debug for StreamTerminalType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_fmt_debug(self.0, "StreamTerminalType", f)
+        four_cc_fmt_debug(self.0, "ca::StreamTerminalType", f)
     }
 }
 
-/// AudioObjectPropertySelector values provided by the AudioClockDevice class.
+/// ca::PropSelector values provided by the AudioClockDevice class.
 ///
 /// The AudioClockDevice class is a subclass of the AudioObject class. The class has just
 /// the global scope, kAudioObjectPropertyScopeGlobal, and only a main element.

@@ -24,7 +24,7 @@ impl PropSelector {
 
 impl std::fmt::Debug for PropSelector {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_fmt_debug(self.0, "CMIOObjectPropertySelector", f)
+        four_cc_fmt_debug(self.0, "cm::io::PropSelector ", f)
     }
 }
 
@@ -43,7 +43,7 @@ impl PropScope {
 
 impl std::fmt::Debug for PropScope {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_fmt_debug(self.0, "CMIOObjectPropertyScope", f)
+        four_cc_fmt_debug(self.0, "cm::io::PropScope", f)
     }
 }
 
@@ -71,7 +71,7 @@ impl PropElement {
 
 impl std::fmt::Debug for PropElement {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_fmt_debug(self.0, "CMIOObjectPropertyElement", f)
+        four_cc_fmt_debug(self.0, "cm::io::PropElement", f)
     }
 }
 
@@ -99,7 +99,7 @@ impl Class {
 
 impl std::fmt::Debug for Class {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        four_cc_fmt_debug(self.0, "CMIOClassID", f)
+        four_cc_fmt_debug(self.0, "cm::io::Class", f)
     }
 }
 
