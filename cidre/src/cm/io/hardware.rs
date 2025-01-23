@@ -1,10 +1,10 @@
 pub mod object;
 pub use object::Class;
 pub use object::Obj;
-pub use object::PropAddr as ObjPropAddr;
-pub use object::PropElement as ObjPropElement;
-pub use object::PropScope as ObjPropScope;
-pub use object::PropSelector as ObjPropSelector;
+pub use object::PropAddr;
+pub use object::PropElement;
+pub use object::PropScope;
+pub use object::PropSelector;
 
 pub mod system;
 

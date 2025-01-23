@@ -1,10 +1,10 @@
-use crate::cm;
+use crate::cm::io;
 
 /// CMIOSystemObject Properties
 /// CMIOObjectPropertySelector values that apply to the CMIOSystemObject.
 ///
 /// The CMIOSystemObject has one scope, kCMIOObjectPropertyScopeGlobal, and only a main element.
-impl cm::io::ObjPropSelector {
+impl io::PropSelector {
     /// A u32 where 1 means that the current process contains the main instance of the DAL.
     /// The main instance of the DAL is the only instance in which plug-ins should save/restore their devices' settings.
     #[doc(alias = "kCMIOHardwarePropertyProcessIsMain")]
