@@ -1,8 +1,8 @@
 pub mod extension;
 
 pub mod hardware;
+pub use hardware::err;
 pub use hardware::Class;
-pub use hardware::Error;
 pub use hardware::Obj;
 pub use hardware::ObjPropAddr;
 pub use hardware::ObjPropElement;
