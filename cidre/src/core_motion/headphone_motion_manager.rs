@@ -32,7 +32,7 @@ impl HeadphoneMotionManager {
     pub fn start_device_motion_updates_to_queue_handler(
         &mut self,
         queue: &ns::OpQueue,
-        handler: &blocks::ResultCompletionHandler<cm::DeviceMotion>,
+        handler: &blocks::ResultCh<cm::DeviceMotion>,
     );
 
     #[inline]
@@ -41,7 +41,7 @@ impl HeadphoneMotionManager {
         queue: &ns::OpQueue,
         handler: impl FnMut(Option<&cm::DeviceMotion>, Option<&ns::Error>) + 'static,
     ) {
-        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        let mut handler = blocks::ResultCh::new2(handler);
         self.start_device_motion_updates_to_queue_handler(queue, &mut handler)
     }
 

@@ -1,10 +1,10 @@
 use crate::{blocks, define_obj_type, mps::graph, ns, objc};
 
 #[doc(alias = "MPSGraphExecutableCompletionHandler")]
-pub type CompletionHandler = blocks::ResultCompletionHandler<ns::Array<graph::TensorData>>;
+pub type CompletionHandler = blocks::ResultCh<ns::Array<graph::TensorData>>;
 
 #[doc(alias = "MPSGraphExecutableScheduledHandler")]
-pub type ScheduledHandler = blocks::ResultCompletionHandler<ns::Array<graph::TensorData>>;
+pub type ScheduledHandler = blocks::ResultCh<ns::Array<graph::TensorData>>;
 
 define_obj_type!(pub ExecutionDesc(ns::Id));
 

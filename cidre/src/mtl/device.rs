@@ -191,7 +191,7 @@ impl Device {
         &self,
         src: &ns::String,
         ops: Option<&mtl::CompileOpts>,
-        ch: &mut blocks::ResultCompletionHandler<mtl::Lib>,
+        ch: &mut blocks::ResultCh<mtl::Lib>,
     );
 
     #[objc::msg_send(newLibraryWithStitchedDescriptor:error:)]
@@ -212,7 +212,7 @@ impl Device {
     pub fn new_lib_with_stitched_desc_ch(
         &self,
         desc: mtl::FnStitchedLibDesc,
-        ch: &mut blocks::ResultCompletionHandler<mtl::Lib>,
+        ch: &mut blocks::ResultCh<mtl::Lib>,
     );
 
     #[cfg(feature = "async")]

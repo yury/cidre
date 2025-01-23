@@ -422,7 +422,7 @@ mod tests {
         let device = mtl::Device::sys_default().unwrap();
         let src = ns::str!(c"kernel void function_a() {}");
 
-        let mut ch = blocks::ResultCompletionHandler::new2(move |lib, error| {
+        let mut ch = blocks::ResultCh::new2(move |lib, error| {
             println!("nice!!! {:?} {:?}", lib, error);
         });
         device.new_lib_with_src_ch(src, None, &mut ch);

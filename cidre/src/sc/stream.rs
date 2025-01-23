@@ -671,18 +671,18 @@ impl Stream {
     }
 
     #[objc::msg_send(startCaptureWithCompletionHandler:)]
-    pub fn start_with_ch_block(&self, ch: Option<&mut blocks::ErrCompletionHandler>);
+    pub fn start_with_ch_block(&self, ch: Option<&mut blocks::ErrCh>);
 
     pub fn start_with_ch(&self, ch: impl FnMut(Option<&ns::Error>) + 'static) {
-        let mut block = blocks::ErrCompletionHandler::new1(ch);
+        let mut block = blocks::ErrCh::new1(ch);
         self.start_with_ch_block(Some(&mut block));
     }
 
     #[objc::msg_send(stopCaptureWithCompletionHandler:)]
-    pub fn stop_with_ch_block(&self, ch: Option<&mut blocks::ErrCompletionHandler>);
+    pub fn stop_with_ch_block(&self, ch: Option<&mut blocks::ErrCh>);
 
     pub fn stop_with_ch(&self, ch: impl FnMut(Option<&ns::Error>) + 'static) {
-        let mut block = blocks::ErrCompletionHandler::new1(ch);
+        let mut block = blocks::ErrCh::new1(ch);
         self.stop_with_ch_block(Some(&mut block));
     }
 

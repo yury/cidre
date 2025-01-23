@@ -303,7 +303,7 @@ impl FileManager {
         &self,
         url: &ns::Url,
         options: ns::FileManagerUnmountOpts,
-        ch: &mut blocks::ErrCompletionHandler,
+        ch: &mut blocks::ErrCh,
     );
 
     #[cfg(feature = "blocks")]
@@ -314,7 +314,7 @@ impl FileManager {
         options: ns::FileManagerUnmountOpts,
         ch: impl FnMut(Option<&ns::Error>) + 'static,
     ) {
-        let mut ch = blocks::ErrCompletionHandler::new1(ch);
+        let mut ch = blocks::ErrCh::new1(ch);
         self.unmount_volume_at_url_ch_block(url, options, &mut ch)
     }
 

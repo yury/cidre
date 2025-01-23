@@ -125,11 +125,11 @@ impl ShareableContent {
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(getShareableContentWithCompletionHandler:)]
-    pub fn current_with_ch_block(block: &mut blocks::ResultCompletionHandler<Self>);
+    pub fn current_with_ch_block(block: &mut blocks::ResultCh<Self>);
 
     #[cfg(feature = "blocks")]
     pub fn current_with_ch(f: impl FnMut(Option<&Self>, Option<&ns::Error>) + 'static) {
-        let mut block = blocks::ResultCompletionHandler::new2(f);
+        let mut block = blocks::ResultCh::new2(f);
         Self::current_with_ch_block(&mut block);
     }
 
@@ -142,7 +142,7 @@ impl ShareableContent {
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(getCurrentProcessShareableContentWithCompletionHandler:)]
-    pub fn current_process_with_ch(block: &mut blocks::ResultCompletionHandler<Self>);
+    pub fn current_process_with_ch(block: &mut blocks::ResultCh<Self>);
 
     #[cfg(all(feature = "blocks", feature = "async"))]
     pub async fn current_process() -> Result<arc::R<Self>, arc::R<ns::Error>> {
@@ -225,7 +225,7 @@ mod tests {
         let sema = dispatch::Semaphore::new(0);
 
         let signal_guard = sema.guard();
-        let mut bl = blocks::ResultCompletionHandler::new2(move |content, error| {
+        let mut bl = blocks::ResultCh::new2(move |content, error| {
             _ = &signal_guard;
             println!("nice {:?} {:?}", content, error);
         });

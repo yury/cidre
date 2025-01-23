@@ -20,7 +20,7 @@ impl Altimeter {
     pub fn start_relative_altitude_updates_with_handler(
         &mut self,
         queue: &ns::OpQueue,
-        handler: &mut blocks::ResultCompletionHandler<cm::AltitudeData>,
+        handler: &mut blocks::ResultCh<cm::AltitudeData>,
     );
 
     #[inline]
@@ -29,7 +29,7 @@ impl Altimeter {
         queue: &ns::OpQueue,
         handler: impl FnMut(Option<&cm::AltitudeData>, Option<&ns::Error>) + 'static,
     ) {
-        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        let mut handler = blocks::ResultCh::new2(handler);
         self.start_relative_altitude_updates_with_handler(queue, &mut handler)
     }
 
@@ -43,7 +43,7 @@ impl Altimeter {
     pub fn start_abs_altitude_updates_to_queue_handler(
         &mut self,
         queue: &ns::OpQueue,
-        handler: &mut blocks::ResultCompletionHandler<cm::AbsAltitudeData>,
+        handler: &mut blocks::ResultCh<cm::AbsAltitudeData>,
     );
 
     #[inline]
@@ -52,7 +52,7 @@ impl Altimeter {
         queue: &ns::OpQueue,
         handler: impl FnMut(Option<&cm::AbsAltitudeData>, Option<&ns::Error>) + 'static,
     ) {
-        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        let mut handler = blocks::ResultCh::new2(handler);
         self.start_abs_altitude_updates_to_queue_handler(queue, &mut handler)
     }
 

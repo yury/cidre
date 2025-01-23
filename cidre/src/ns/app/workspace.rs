@@ -41,7 +41,7 @@ impl Workspace {
     pub fn request_authorization_of_type_ch_block(
         &self,
         type_: ns::WorkspaceAuthorizationType,
-        ch: &mut blocks::ResultCompletionHandler<ns::WorkspaceAuthorization>,
+        ch: &mut blocks::ResultCh<ns::WorkspaceAuthorization>,
     );
 
     pub fn request_authorization_of_type_ch<F>(&self, type_: ns::WorkspaceAuthorizationType, ch: F)
@@ -50,7 +50,7 @@ impl Workspace {
             + 'static
             + std::marker::Sync,
     {
-        let mut ch = blocks::ResultCompletionHandler::new2(ch);
+        let mut ch = blocks::ResultCh::new2(ch);
         self.request_authorization_of_type_ch_block(type_, &mut ch)
     }
 

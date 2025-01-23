@@ -21,7 +21,7 @@ impl ScreenshotManager {
     pub fn capture_sample_buf_ch(
         filter: &sc::ContentFilter,
         cfg: &sc::StreamCfg,
-        handler: Option<&mut blocks::ResultCompletionHandler<cm::SampleBuf>>,
+        handler: Option<&mut blocks::ResultCh<cm::SampleBuf>>,
     );
 
     #[cfg(all(feature = "blocks", feature = "async", feature = "cm"))]
@@ -41,7 +41,7 @@ impl ScreenshotManager {
     pub fn capture_image_ch(
         filter: &sc::ContentFilter,
         cfg: &sc::StreamCfg,
-        handler: Option<&mut blocks::ResultCompletionHandler<cg::Image>>,
+        handler: Option<&mut blocks::ResultCh<cg::Image>>,
     );
 
     #[cfg(all(feature = "blocks", feature = "async"))]
@@ -61,7 +61,7 @@ impl ScreenshotManager {
     #[api::available(macos = 15.2)]
     pub fn capture_image_in_rect_ch(
         rect: cg::Rect,
-        handler: Option<&mut blocks::ResultCompletionHandler<cg::Image>>,
+        handler: Option<&mut blocks::ResultCh<cg::Image>>,
     );
 
     /// Returns an image containing the contents of the rectangle in points, specified in display space

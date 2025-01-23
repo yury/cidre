@@ -29,7 +29,7 @@ impl MotionManager {
     pub fn start_accelerometer_updates_to_queue_handler(
         &mut self,
         queue: &ns::OpQueue,
-        handler: &mut blocks::ResultCompletionHandler<cm::AccelerometerData>,
+        handler: &mut blocks::ResultCh<cm::AccelerometerData>,
     );
 
     #[inline]
@@ -40,7 +40,7 @@ impl MotionManager {
             + 'static
             + std::marker::Sync,
     ) {
-        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        let mut handler = blocks::ResultCh::new2(handler);
         self.start_accelerometer_updates_to_queue_handler(queue, &mut handler)
     }
 
@@ -69,7 +69,7 @@ impl MotionManager {
     pub fn start_gyro_updates_to_queue_handler(
         &mut self,
         queue: &ns::OpQueue,
-        handler: &mut blocks::ResultCompletionHandler<cm::GyroData>,
+        handler: &mut blocks::ResultCh<cm::GyroData>,
     );
 
     #[inline]
@@ -78,7 +78,7 @@ impl MotionManager {
         queue: &ns::OpQueue,
         handler: impl FnMut(Option<&cm::GyroData>, Option<&ns::Error>) + 'static + std::marker::Sync,
     ) {
-        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        let mut handler = blocks::ResultCh::new2(handler);
         self.start_gyro_updates_to_queue_handler(queue, &mut handler)
     }
 
@@ -107,7 +107,7 @@ impl MotionManager {
     pub fn start_magnetometer_updates_to_queue_handler(
         &mut self,
         queue: &ns::OpQueue,
-        handler: &mut blocks::ResultCompletionHandler<cm::MagnetometerData>,
+        handler: &mut blocks::ResultCh<cm::MagnetometerData>,
     );
 
     #[inline]
@@ -118,7 +118,7 @@ impl MotionManager {
             + 'static
             + std::marker::Sync,
     ) {
-        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        let mut handler = blocks::ResultCh::new2(handler);
         self.start_magnetometer_updates_to_queue_handler(queue, &mut handler)
     }
 
@@ -153,7 +153,7 @@ impl MotionManager {
     pub fn start_device_motion_updates_to_queue_handler(
         &mut self,
         queue: &ns::OpQueue,
-        handler: &blocks::ResultCompletionHandler<cm::DeviceMotion>,
+        handler: &blocks::ResultCh<cm::DeviceMotion>,
     );
 
     #[inline]
@@ -162,7 +162,7 @@ impl MotionManager {
         queue: &ns::OpQueue,
         handler: impl FnMut(Option<&cm::DeviceMotion>, Option<&ns::Error>) + 'static,
     ) {
-        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        let mut handler = blocks::ResultCh::new2(handler);
         self.start_device_motion_updates_to_queue_handler(queue, &mut handler)
     }
 
@@ -177,7 +177,7 @@ impl MotionManager {
         &mut self,
         ref_frame: &cm::AttitudeRefFrame,
         queue: &ns::OpQueue,
-        handler: &mut blocks::ResultCompletionHandler<cm::DeviceMotion>,
+        handler: &mut blocks::ResultCh<cm::DeviceMotion>,
     );
 
     pub fn start_device_motion_updates_using_ref_frame_to_queue(
@@ -186,7 +186,7 @@ impl MotionManager {
         queue: &ns::OpQueue,
         handler: impl FnMut(Option<&cm::DeviceMotion>, Option<&ns::Error>) + 'static + std::marker::Sync,
     ) {
-        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        let mut handler = blocks::ResultCh::new2(handler);
         self.start_device_motion_updates_using_ref_frame_to_queue_handler(
             ref_frame,
             queue,

@@ -138,11 +138,11 @@ impl TextureLoaderOrigin {
 
 #[doc(alias = "MTKTextureLoaderCallback")]
 #[cfg(feature = "blocks")]
-pub type TextureLoaderCb = blocks::ResultCompletionHandler<mtl::Texture>;
+pub type TextureLoaderCb = blocks::ResultCh<mtl::Texture>;
 
 #[doc(alias = "MTKTextureLoaderArrayCallback")]
 #[cfg(feature = "blocks")]
-pub type TextureLoaderArrayCb = blocks::ResultCompletionHandler<ns::Array<mtl::Texture>>;
+pub type TextureLoaderArrayCb = blocks::ResultCh<ns::Array<mtl::Texture>>;
 
 impl arc::A<TextureLoader> {
     #[objc::msg_send(initWithDevice:)]

@@ -129,7 +129,7 @@ impl Session {
         resource_url: &ns::Url,
         resource_name: &ns::String,
         to_peer: &mc::PeerId,
-        completion: &blocks::ErrCompletionHandler,
+        completion: &blocks::ErrCh,
     ) -> Option<arc::R<ns::Progress>>;
 
     pub fn send_resource_at_url_ch(
@@ -139,7 +139,7 @@ impl Session {
         to_peer: &mc::PeerId,
         completion: impl FnMut(Option<&ns::Error>) + 'static,
     ) -> Option<arc::R<ns::Progress>> {
-        let mut completion = blocks::ErrCompletionHandler::new1(completion);
+        let mut completion = blocks::ErrCh::new1(completion);
         self.send_resource_at_url_ch_block(resource_url, resource_name, to_peer, &mut completion)
     }
 
@@ -243,7 +243,7 @@ impl Session {
     pub fn nearby_data_for_peer_ch_block(
         &self,
         peer: &mc::PeerId,
-        handler: &mut blocks::ResultCompletionHandler<ns::Data>,
+        handler: &mut blocks::ResultCh<ns::Data>,
     );
 
     pub fn nearby_data_for_peer_ch(
@@ -251,7 +251,7 @@ impl Session {
         peer: &mc::PeerId,
         handler: impl FnMut(Option<&ns::Data>, Option<&ns::Error>) + 'static,
     ) {
-        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        let mut handler = blocks::ResultCh::new2(handler);
         self.nearby_data_for_peer_ch_block(peer, &mut handler);
     }
 

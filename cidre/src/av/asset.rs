@@ -86,7 +86,7 @@ impl UrlAsset {
     pub fn load_tracks_with_media_type_ch(
         &self,
         media_type: &av::MediaType,
-        completion: &mut blocks::ResultCompletionHandler<ns::Array<av::asset::Track>>,
+        completion: &mut blocks::ResultCh<ns::Array<av::asset::Track>>,
     );
 
     pub fn load_tracks_with_media_type_block(
@@ -94,7 +94,7 @@ impl UrlAsset {
         media_type: &av::MediaType,
         block: impl FnMut(Option<&ns::Array<av::asset::Track>>, Option<&ns::Error>) + 'static,
     ) {
-        let mut block = blocks::ResultCompletionHandler::new2(block);
+        let mut block = blocks::ResultCh::new2(block);
         self.load_tracks_with_media_type_ch(media_type, &mut block)
     }
 

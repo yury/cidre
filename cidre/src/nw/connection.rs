@@ -223,7 +223,7 @@ impl Connection {
         content: Option<&dispatch::Data>,
         context: &nw::ContentCtx,
         is_complete: bool,
-        completion: &mut blocks::ErrCompletionHandler<nw::Error>,
+        completion: &mut blocks::ErrCh<nw::Error>,
     ) {
         unsafe { nw_connection_send(self, content, context, is_complete, completion) }
     }
@@ -237,7 +237,7 @@ impl Connection {
         is_complete: bool,
         completion: impl FnMut(Option<&nw::Error>) + 'static + std::marker::Sync,
     ) {
-        let mut completion = blocks::ErrCompletionHandler::new1(completion);
+        let mut completion = blocks::ErrCh::new1(completion);
         self.send_ch_block(content, context, is_complete, &mut completion);
     }
 
@@ -325,7 +325,7 @@ extern "C-unwind" {
         content: Option<&dispatch::Data>,
         context: &nw::ContentCtx,
         is_complete: bool,
-        completion: &mut blocks::ErrCompletionHandler<nw::Error>,
+        completion: &mut blocks::ErrCh<nw::Error>,
     );
 
     #[cfg(feature = "blocks")]

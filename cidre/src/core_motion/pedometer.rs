@@ -103,7 +103,7 @@ impl Pedometer {
         &self,
         start: &ns::Date,
         end: &ns::Date,
-        handler: &mut blocks::ResultCompletionHandler<cm::PedometerData>,
+        handler: &mut blocks::ResultCh<cm::PedometerData>,
     );
 
     #[inline]
@@ -115,7 +115,7 @@ impl Pedometer {
             + 'static
             + std::marker::Sync,
     ) {
-        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        let mut handler = blocks::ResultCh::new2(handler);
         self.query_pedometer_data_ch_block(start, end, &mut handler)
     }
 
@@ -134,7 +134,7 @@ impl Pedometer {
     pub fn start_pedometer_updates_from_date_handler(
         &mut self,
         start: &ns::Date,
-        handler: &mut blocks::ResultCompletionHandler<cm::PedometerData>,
+        handler: &mut blocks::ResultCh<cm::PedometerData>,
     );
 
     #[inline]
@@ -145,7 +145,7 @@ impl Pedometer {
             + 'static
             + std::marker::Sync,
     ) {
-        let mut handler = blocks::ResultCompletionHandler::new2(handler);
+        let mut handler = blocks::ResultCh::new2(handler);
         self.start_pedometer_updates_from_date_handler(start, &mut handler)
     }
 

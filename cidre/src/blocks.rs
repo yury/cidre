@@ -29,8 +29,11 @@ pub type SyncBlock<F> = Block<F, Sync>;
 pub type CompletionBlock = EscBlock<fn()>;
 pub type WorkBlock<Attr = Sync> = Block<fn(), Attr>;
 
-pub type ErrCompletionHandler<E = ns::Error> = EscBlock<fn(error: Option<&E>)>;
-pub type ResultCompletionHandler<T> = EscBlock<fn(Option<&T>, Option<&ns::Error>)>;
+/// Error Completion Handler
+pub type ErrCh<E = ns::Error> = EscBlock<fn(error: Option<&E>)>;
+
+/// Result Completion Handler
+pub type ResultCh<T> = EscBlock<fn(Option<&T>, Option<&ns::Error>)>;
 
 #[repr(transparent)]
 pub struct Block<Sig, Attr = NoEsc>(ns::Id, PhantomData<(Sig, Attr)>);
@@ -593,14 +596,11 @@ pub fn retained1<R: arc::Retain + std::marker::Send>(
 }
 
 #[cfg(feature = "async")]
-pub fn ok<'a>() -> (
-    Completion<Result<(), arc::R<ns::Error>>>,
-    arc::R<ErrCompletionHandler>,
-) {
+pub fn ok<'a>() -> (Completion<Result<(), arc::R<ns::Error>>>, arc::R<ErrCh>) {
     let shared = Shared::new();
     (
         Completion(shared.clone()),
-        ErrCompletionHandler::new1(move |error: Option<&ns::Error>| {
+        ErrCh::new1(move |error: Option<&ns::Error>| {
             shared.lock().ready(match error {
                 None => Ok(()),
                 Some(err) => Err(err.retained()),
@@ -612,12 +612,12 @@ pub fn ok<'a>() -> (
 #[cfg(feature = "async")]
 pub fn result<T: arc::Retain + std::marker::Send>() -> (
     Completion<Result<arc::R<T>, arc::R<ns::Error>>>,
-    arc::R<ResultCompletionHandler<T>>,
+    arc::R<ResultCh<T>>,
 ) {
     let shared = Shared::new();
     (
         Completion(shared.clone()),
-        ResultCompletionHandler::<T>::new2(move |value: Option<&T>, error: Option<&ns::Error>| {
+        ResultCh::<T>::new2(move |value: Option<&T>, error: Option<&ns::Error>| {
             let res = match error {
                 None => Ok(unsafe { value.unwrap_unchecked().retained() }),
                 Some(err) => Err(err.retained()),

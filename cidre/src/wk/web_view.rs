@@ -35,11 +35,7 @@ impl WebView {
     pub fn stop_loading(&mut self);
 
     #[objc::msg_send(evaluateJavaScript:completionHandler:)]
-    fn eval_js_ch_block(
-        &mut self,
-        js: &ns::String,
-        block: Option<&mut blocks::ResultCompletionHandler<ns::Id>>,
-    );
+    fn eval_js_ch_block(&mut self, js: &ns::String, block: Option<&mut blocks::ResultCh<ns::Id>>);
 
     #[inline]
     pub fn eval_js_ch(
@@ -47,7 +43,7 @@ impl WebView {
         js: &ns::String,
         block: impl FnMut(Option<&ns::Id>, Option<&ns::Error>) + 'static + std::marker::Send,
     ) {
-        let mut block = blocks::ResultCompletionHandler::new2(block);
+        let mut block = blocks::ResultCh::new2(block);
         self.eval_js_ch_block(js, Some(&mut block));
     }
 
