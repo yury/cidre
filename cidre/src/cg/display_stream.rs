@@ -228,31 +228,21 @@ impl DisplayStream {
     }
 
     #[inline]
-    pub unsafe fn stream_start(&self) -> cg::Error {
+    pub unsafe fn stream_start(&self) -> cg::Status {
         CGDisplayStreamStart(self)
     }
 
     pub fn start(&self) -> Result<(), cg::Error> {
-        unsafe {
-            match self.stream_start() {
-                cg::Error::SUCCESS => Ok(()),
-                e => Err(e),
-            }
-        }
+        unsafe { self.stream_start().result() }
     }
 
     #[inline]
-    pub unsafe fn stream_stop(&self) -> cg::Error {
+    pub unsafe fn stream_stop(&self) -> cg::Status {
         CGDisplayStreamStop(self)
     }
 
     pub fn stop(&self) -> Result<(), cg::Error> {
-        unsafe {
-            match self.stream_stop() {
-                cg::Error::SUCCESS => Ok(()),
-                e => Err(e),
-            }
-        }
+        unsafe { self.stream_stop().result() }
     }
 
     #[inline]
@@ -319,8 +309,8 @@ extern "C-unwind" {
         handler: Option<&mut FrameAvailableHandler<blocks::Esc>>,
     ) -> Option<arc::R<DisplayStream>>;
 
-    fn CGDisplayStreamStart(stream: &DisplayStream) -> cg::Error;
-    fn CGDisplayStreamStop(stream: &DisplayStream) -> cg::Error;
+    fn CGDisplayStreamStart(stream: &DisplayStream) -> cg::Status;
+    fn CGDisplayStreamStop(stream: &DisplayStream) -> cg::Status;
 
     fn CGDisplayStreamGetRunLoopSource(stream: &DisplayStream) -> Option<&cf::RunLoop>;
 }

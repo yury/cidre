@@ -1,19 +1,55 @@
+use std::num::NonZeroI32;
+
+#[doc(alias = "CGError")]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
+pub struct Error(pub NonZeroI32);
+
+#[doc(alias = "CGError")]
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(transparent)]
-pub struct Error(pub i32);
+pub struct Status(pub i32);
+
+impl Status {
+    #[inline]
+    pub fn result(self) -> Result<(), Error> {
+        if self.0 == 0 {
+            Ok(())
+        } else {
+            Err(Error(unsafe { NonZeroI32::new_unchecked(self.0) }))
+        }
+    }
+}
 
 impl Error {
-    pub const SUCCESS: Self = Self(0);
-    pub const FAILURE: Self = Self(1000);
-    pub const ILLEGAL_ARGUMENT: Self = Self(1001);
-    pub const INVALID_CONNECTION: Self = Self(1002);
-    pub const INVALID_CONTEXT: Self = Self(1003);
-    pub const CANNOT_COMPLETE: Self = Self(1004);
-    pub const NOT_IMPLEMENTED: Self = Self(1006);
-    pub const RANGE_CHECK: Self = Self(1007);
-    pub const TYPE_CHECK: Self = Self(1008);
-    pub const INVALID_OPERATION: Self = Self(1010);
-    pub const NONE_AVAILABLE: Self = Self(1010);
+    #[doc(alias = "kCGErrorFailure")]
+    pub const FAILURE: Self = Self(unsafe { NonZeroI32::new_unchecked(1000) });
+
+    #[doc(alias = "kCGErrorIllegalArgument")]
+    pub const ILLEGAL_ARGUMENT: Self = Self(unsafe { NonZeroI32::new_unchecked(1001) });
+
+    #[doc(alias = "kCGErrorInvalidConnection")]
+    pub const INVALID_CONNECTION: Self = Self(unsafe { NonZeroI32::new_unchecked(1002) });
+
+    #[doc(alias = "kCGErrorInvalidContext")]
+    pub const INVALID_CONTEXT: Self = Self(unsafe { NonZeroI32::new_unchecked(1003) });
+
+    #[doc(alias = "kCGErrorCannotComplete")]
+    pub const CANNOT_COMPLETE: Self = Self(unsafe { NonZeroI32::new_unchecked(1004) });
+
+    #[doc(alias = "kCGErrorNotImplemented")]
+    pub const NOT_IMPLEMENTED: Self = Self(unsafe { NonZeroI32::new_unchecked(1006) });
+
+    #[doc(alias = "kCGErrorRangeCheck")]
+    pub const RANGE_CHECK: Self = Self(unsafe { NonZeroI32::new_unchecked(1007) });
+
+    #[doc(alias = "kCGErrorTypeCheck")]
+    pub const TYPE_CHECK: Self = Self(unsafe { NonZeroI32::new_unchecked(1008) });
+
+    #[doc(alias = "kCGErrorInvalidOperation")]
+    pub const INVALID_OPERATION: Self = Self(unsafe { NonZeroI32::new_unchecked(1010) });
+
+    #[doc(alias = "kCGErrorNoneAvailable")]
+    pub const NONE_AVAILABLE: Self = Self(unsafe { NonZeroI32::new_unchecked(1010) });
 
     /// Set a callback for easier detection of error conditions
     /// causing CoreGraphics to raise an error.
