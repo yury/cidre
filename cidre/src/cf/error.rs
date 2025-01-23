@@ -34,7 +34,10 @@ where
     f(&mut err).ok_or(err)
 }
 
-define_cf_type!(Error(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CFErrorRef")]
+    Error(cf::Type)
+);
 
 unsafe impl Send for Error {}
 

@@ -4,7 +4,7 @@
     not(feature = "classic-objc-retain-release")
 ))]
 use std::arch::asm;
-use std::{borrow::Cow, ffi::c_void, intrinsics::transmute, marker::PhantomData, ptr::NonNull};
+use std::{borrow::Cow, ffi::c_void, marker::PhantomData, ptr::NonNull};
 
 use crate::{arc, cf::Type, objc};
 
@@ -105,7 +105,7 @@ impl<T: Obj, I: Sized> ClassInstExtra<T, I> {
             // we may skip init?
             // let a = a.init();
 
-            let ptr: *mut u8 = transmute(a);
+            let ptr: *mut u8 = std::mem::transmute(a);
             let d_ptr: *mut std::mem::ManuallyDrop<I> = ptr.add(NS_OBJECT_SIZE) as _;
             *d_ptr = std::mem::ManuallyDrop::new(var);
 
@@ -162,12 +162,12 @@ pub trait Obj: Sized + arc::Retain {
                 lateout("x0") result,
                 clobber_abi("C"),
             );
-            transmute(result)
+            std::mem::transmute(result)
         }
 
         #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
         {
-            transmute(objc_retain(transmute(id)))
+            std::mem::transmute(objc_retain(std::mem::transmute(id)))
         }
     }
 
@@ -194,7 +194,7 @@ pub trait Obj: Sized + arc::Retain {
             feature = "classic-objc-retain-release"
         ))]
         {
-            objc_release(transmute(id));
+            objc_release(std::mem::transmute(id));
         }
     }
 
@@ -665,7 +665,7 @@ where
     let ctx = &mut wrapper as *mut _ as *mut c_void;
 
     unsafe {
-        match cidre_try_catch(transmute(f), ctx) {
+        match cidre_try_catch(std::mem::transmute(f), ctx) {
             None => Ok(result.unwrap_unchecked()),
             Some(e) => Err(e),
         }

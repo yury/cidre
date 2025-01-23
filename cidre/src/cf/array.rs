@@ -4,7 +4,7 @@ use crate::{
 };
 
 use super::{Allocator, Index, String, Type, TypeId};
-use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData};
+use std::{ffi::c_void, marker::PhantomData};
 
 pub type RetainCb = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type ReleaseCb = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
@@ -39,12 +39,12 @@ pub struct ArrayOf<T>(Array, PhantomData<T>);
 impl<T> ArrayOf<T> {
     #[inline]
     pub fn new() -> arc::R<Self> {
-        unsafe { transmute(Array::new()) }
+        unsafe { std::mem::transmute(Array::new()) }
     }
 
     #[inline]
     pub fn new_in(allocator: Option<&Allocator>) -> Option<arc::R<Self>> {
-        unsafe { transmute(Array::new_in(allocator)) }
+        unsafe { std::mem::transmute(Array::new_in(allocator)) }
     }
 
     #[doc(alias = "CFArrayContainsValue")]
@@ -66,7 +66,7 @@ impl<T> ArrayOf<T> {
     #[inline]
     pub fn copy_mut(&self) -> Option<arc::R<ArrayOfMut<T>>> {
         let copy = self.0.copy_mut();
-        unsafe { transmute(copy) }
+        unsafe { std::mem::transmute(copy) }
     }
 
     #[inline]
@@ -81,7 +81,7 @@ impl<T> ArrayOf<T> {
                 Cbs::default(),
                 None,
             );
-            transmute(arr)
+            std::mem::transmute(arr)
         }
     }
 
@@ -97,7 +97,7 @@ impl<T> ArrayOf<T> {
                 Cbs::default(),
                 None,
             );
-            transmute(arr)
+            std::mem::transmute(arr)
         }
     }
 }
@@ -119,7 +119,7 @@ where
 
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
-        unsafe { transmute::<&Type, &T>(&self.0[index]) }
+        unsafe { std::mem::transmute::<&Type, &T>(&self.0[index]) }
     }
 }
 
@@ -129,7 +129,7 @@ where
 {
     #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        unsafe { transmute::<&mut Type, &mut T>(&mut self.0[index]) }
+        unsafe { std::mem::transmute::<&mut Type, &mut T>(&mut self.0[index]) }
     }
 }
 
@@ -143,7 +143,7 @@ impl<T> arc::Release for ArrayOf<T> {
 impl<T> arc::Retain for ArrayOf<T> {
     #[inline]
     fn retained(&self) -> arc::R<Self> {
-        unsafe { transmute(self.0.retained()) }
+        unsafe { std::mem::transmute(self.0.retained()) }
     }
 }
 
@@ -175,7 +175,7 @@ where
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         if self.index < self.len {
-            let res = unsafe { transmute::<&Type, &'a T>(&self.array[self.index]) };
+            let res = unsafe { std::mem::transmute::<&Type, &'a T>(&self.array[self.index]) };
             self.index += 1;
             Some(res)
         } else {
@@ -211,7 +211,7 @@ impl<T: Retain> ArrayOfMut<T> {
     #[inline]
     pub fn with_capacity_in(capacity: usize, alloc: Option<&Allocator>) -> Option<arc::R<Self>> {
         let arr = ArrayMut::create_in(capacity as _, Cbs::default(), alloc);
-        unsafe { transmute(arr) }
+        unsafe { std::mem::transmute(arr) }
     }
 
     #[inline]
@@ -226,7 +226,7 @@ impl<T: Retain> ArrayOfMut<T> {
 
     #[inline]
     pub fn push(&mut self, val: &T) {
-        self.0.push(unsafe { transmute(val) });
+        self.0.push(unsafe { std::mem::transmute(val) });
     }
 
     #[inline]
@@ -240,7 +240,7 @@ impl<T> std::ops::Deref for ArrayOfMut<T> {
 
     #[inline]
     fn deref(&self) -> &Self::Target {
-        unsafe { transmute(self) }
+        unsafe { std::mem::transmute(self) }
     }
 }
 
@@ -252,7 +252,7 @@ where
 
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
-        unsafe { transmute::<&Type, &T>(&self.0[index]) }
+        unsafe { std::mem::transmute::<&Type, &T>(&self.0[index]) }
     }
 }
 
@@ -262,7 +262,7 @@ where
 {
     #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        unsafe { transmute::<&mut Type, &mut T>(&mut self.0[index]) }
+        unsafe { std::mem::transmute::<&mut Type, &mut T>(&mut self.0[index]) }
     }
 }
 
@@ -276,7 +276,7 @@ impl<T> arc::Release for ArrayOfMut<T> {
 impl<T> arc::Retain for ArrayOfMut<T> {
     #[inline]
     fn retained(&self) -> arc::R<Self> {
-        unsafe { transmute(self.0.retained()) }
+        unsafe { std::mem::transmute(self.0.retained()) }
     }
 }
 

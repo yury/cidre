@@ -1,6 +1,5 @@
 use std::{
     ffi::c_void,
-    intrinsics::transmute,
     mem::size_of,
     ops::{Deref, DerefMut},
     ptr::NonNull,
@@ -687,10 +686,10 @@ impl Converter {
     ) -> os::Result {
         AudioConverterFillComplexBuffer(
             self,
-            transmute(in_input_data_proc),
+            std::mem::transmute(in_input_data_proc),
             in_input_data_proc_user_data as _,
             io_output_data_packet_size,
-            transmute(out_output_data),
+            std::mem::transmute(out_output_data),
             out_packet_description,
         )
         .result()

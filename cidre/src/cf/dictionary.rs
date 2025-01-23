@@ -7,7 +7,7 @@ use crate::objc;
 use crate::{arc, cf, define_cf_type};
 use cf::{Allocator, HashCode, Index, String, Type, TypeId};
 
-use std::{ffi::c_void, intrinsics::transmute, marker, ptr};
+use std::{ffi::c_void, marker, ptr};
 
 pub type RetainCb = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
 pub type ReleaseCb = extern "C" fn(allocator: Option<&Allocator>, value: *const c_void);
@@ -165,7 +165,7 @@ impl Dictionary {
         let mut value = Option::None;
         unsafe {
             if CFDictionaryGetValueIfPresent(self, key.as_type_ptr(), &mut value) {
-                Some(transmute(value))
+                Some(std::mem::transmute(value))
             } else {
                 None
             }
@@ -468,7 +468,7 @@ where
     V: arc::Retain,
 {
     pub fn get(&self, k: &K) -> Option<&V> {
-        unsafe { transmute(self.0.value(transmute(k))) }
+        unsafe { std::mem::transmute(self.0.value(std::mem::transmute(k))) }
     }
 
     pub fn new() -> arc::R<Self> {
@@ -485,7 +485,7 @@ where
     /// Toll-Free Bridged
     #[cfg(feature = "ns")]
     pub fn as_ns(&self) -> &ns::Dictionary<K, V> {
-        unsafe { transmute(self) }
+        unsafe { std::mem::transmute(self) }
     }
 }
 
@@ -533,7 +533,7 @@ where
 {
     #[inline]
     fn retained(&self) -> arc::R<Self> {
-        unsafe { transmute(self.0.retained()) }
+        unsafe { std::mem::transmute(self.0.retained()) }
     }
 }
 
@@ -548,7 +548,7 @@ where
     type Target = DictionaryOf<K, V>;
 
     fn deref(&self) -> &Self::Target {
-        unsafe { transmute(self) }
+        unsafe { std::mem::transmute(self) }
     }
 }
 
@@ -590,12 +590,12 @@ where
                 None,
             );
 
-            transmute(dict)
+            std::mem::transmute(dict)
         }
     }
 
     pub fn copy_mut(&self) -> Option<arc::R<DictionaryOfMut<K, V>>> {
-        unsafe { transmute(CFDictionaryCreateMutableCopy(None, 0, &self.0)) }
+        unsafe { std::mem::transmute(CFDictionaryCreateMutableCopy(None, 0, &self.0)) }
     }
 }
 

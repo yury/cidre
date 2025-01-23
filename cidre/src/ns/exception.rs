@@ -1,4 +1,4 @@
-use std::{ffi::c_void, intrinsics::transmute};
+use std::ffi::c_void;
 
 use crate::{arc, define_obj_type, ns, objc};
 
@@ -220,9 +220,9 @@ where
     let ctx = &mut wrapper as *mut _ as *mut c_void;
 
     unsafe {
-        match cidre_try_catch(transmute(f), ctx) {
+        match cidre_try_catch(std::mem::transmute(f), ctx) {
             None => Ok(result.unwrap_unchecked()),
-            Some(e) => Err(transmute(e)),
+            Some(e) => Err(std::mem::transmute(e)),
         }
     }
 }

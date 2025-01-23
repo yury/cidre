@@ -1,4 +1,4 @@
-use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
+use std::{ffi::c_void, ptr::NonNull};
 
 use crate::{api, arc, cf, cm, cv, define_cf_type, os, vt};
 
@@ -41,8 +41,8 @@ impl Session {
                     encoder_specification,
                     source_image_buffer_attributes,
                     compressed_data_allocator,
-                    transmute(output_callback),
-                    transmute(output_callback_ref_con),
+                    std::mem::transmute(output_callback),
+                    std::mem::transmute(output_callback_ref_con),
                     res,
                     None,
                 )

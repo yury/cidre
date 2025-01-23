@@ -12,12 +12,15 @@ pub struct Status(pub i32);
 impl Status {
     #[inline]
     pub fn result(self) -> Result<(), Error> {
-        if self.0 == 0 {
+        if self == Self::SUCCESS {
             Ok(())
         } else {
             Err(Error(unsafe { NonZeroI32::new_unchecked(self.0) }))
         }
     }
+
+    #[doc(alias = "kCGErrorSuccess")]
+    pub const SUCCESS: Self = Self(0);
 }
 
 impl Error {
@@ -49,18 +52,18 @@ impl Error {
     pub const INVALID_OPERATION: Self = Self(unsafe { NonZeroI32::new_unchecked(1010) });
 
     #[doc(alias = "kCGErrorNoneAvailable")]
-    pub const NONE_AVAILABLE: Self = Self(unsafe { NonZeroI32::new_unchecked(1010) });
+    pub const NONE_AVAILABLE: Self = Self(unsafe { NonZeroI32::new_unchecked(1011) });
 
     /// Set a callback for easier detection of error conditions
     /// causing CoreGraphics to raise an error.
     /// Pass None to reset the callback.
-    pub fn set_callback(callback: Option<Callback>) {
+    pub fn set_cb(callback: Option<Cb>) {
         unsafe { CGErrorSetCallback(callback) }
     }
 }
 
-pub type Callback = extern "C" fn();
+pub type Cb = extern "C" fn();
 
 extern "C" {
-    fn CGErrorSetCallback(callback: Option<Callback>);
+    fn CGErrorSetCallback(callback: Option<Cb>);
 }

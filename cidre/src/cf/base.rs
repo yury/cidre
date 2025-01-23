@@ -4,7 +4,7 @@ use crate::{arc, cf, define_cf_type, define_opts};
 use crate::ns;
 
 use super::{runtime::Type, String};
-use std::{borrow::Cow, cmp::Ordering, ffi::c_void, fmt::Debug, intrinsics::transmute};
+use std::{borrow::Cow, cmp::Ordering, ffi::c_void, fmt::Debug};
 
 pub type Index = isize;
 pub type TypeId = usize;
@@ -76,7 +76,7 @@ impl From<ComparisonResult> for Ordering {
     /// ```
     #[inline]
     fn from(o: ComparisonResult) -> Self {
-        unsafe { transmute(o as i8) }
+        unsafe { std::mem::transmute(o as i8) }
     }
 }
 

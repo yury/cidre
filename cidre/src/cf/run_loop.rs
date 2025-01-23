@@ -1,5 +1,3 @@
-use std::intrinsics::transmute;
-
 use crate::{arc, cf, define_cf_type};
 
 #[doc(alias = "CFRunLoopRunResult")]
@@ -204,7 +202,7 @@ define_cf_type!(
 
 impl Mode {
     pub fn with_string(name: &cf::String) -> &Self {
-        unsafe { transmute(name) }
+        unsafe { std::mem::transmute(name) }
     }
 
     #[doc(alias = "kCFRunLoopDefaultMode")]

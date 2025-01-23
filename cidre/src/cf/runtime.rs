@@ -1,4 +1,4 @@
-use std::{ffi::c_void, intrinsics::transmute, ptr::NonNull};
+use std::{ffi::c_void, ptr::NonNull};
 
 use super::TypeId;
 
@@ -11,7 +11,7 @@ pub struct Type(NonNull<c_void>);
 impl Type {
     #[inline]
     pub unsafe fn retain<T: arc::Release>(cf: &Type) -> arc::R<T> {
-        transmute(CFRetain(cf))
+        std::mem::transmute(CFRetain(cf))
     }
 
     #[inline]

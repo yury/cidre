@@ -1,19 +1,41 @@
-use std::ffi::c_void;
-use std::intrinsics::transmute;
 use std::ptr::NonNull;
+use std::{ffi::c_void, num::NonZeroIsize};
 
 use crate::{arc, cf, define_cf_type, define_opts};
 
-define_cf_type!(Socket(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CFSocketRef")]
+    Socket(cf::Type)
+);
 
-#[derive(Debug, PartialEq, Eq)]
+#[doc(alias = "CFSocketError")]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub struct Error(NonZeroIsize);
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(transparent)]
-pub struct Error(cf::Index);
+pub struct Status(cf::Index);
+
+impl Status {
+    #[inline]
+    pub fn result(self) -> Result<(), Error> {
+        if self == Self::SUCCESS {
+            Ok(())
+        } else {
+            Err(Error(unsafe { NonZeroIsize::new_unchecked(self.0) }))
+        }
+    }
+
+    #[doc(alias = "kCFSocketSuccess")]
+    pub const SUCCESS: Self = Self(0);
+}
 
 impl Error {
-    pub const SUCCESS: Self = Self(0);
-    pub const ERROR: Self = Self(-1);
-    pub const TIMEOUT: Self = Self(-2);
+    #[doc(alias = "kCFSocketError")]
+    pub const ERROR: Self = Self(unsafe { NonZeroIsize::new_unchecked(-1) });
+
+    #[doc(alias = "kCFSocketTimeout")]
+    pub const TIMEOUT: Self = Self(unsafe { NonZeroIsize::new_unchecked(-2) });
 }
 
 #[derive(Debug)]
@@ -25,7 +47,10 @@ pub struct Signature {
     pub address: arc::R<cf::Data>,
 }
 
-define_opts!(pub CbType(usize));
+define_opts!(
+    #[doc(alias = "CFSocketCallBackType")]
+    pub CbType(usize)
+);
 
 impl CbType {
     pub const NO: Self = Self(0);
@@ -36,17 +61,31 @@ impl CbType {
     pub const WRITE: Self = Self(8);
 }
 
-define_opts!(pub Flags(usize));
+define_opts!(
+    pub Flags(usize)
+);
 
 impl Flags {
+    #[doc(alias = "kCFSocketAutomaticallyReenableReadCallBack")]
     pub const AUTOMATICALLY_REENABLE_READ_CALL_BACK: Self = Self(1);
+
+    #[doc(alias = "kCFSocketAutomaticallyReenableAcceptCallBack")]
     pub const AUTOMATICALLY_REENABLE_ACCEPT_CALL_BACK: Self = Self(2);
+
+    #[doc(alias = "kCFSocketAutomaticallyReenableDataCallBack")]
     pub const AUTOMATICALLY_REENABLE_DATA_CALL_BACK: Self = Self(3);
+
+    #[doc(alias = "kCFSocketAutomaticallyReenableWriteCallBack")]
     pub const AUTOMATICALLY_REENABLE_WRITE_CALL_BACK: Self = Self(8);
+
+    #[doc(alias = "kCFSocketLeaveErrors")]
     pub const LEAVE_ERRORS: Self = Self(64);
+
+    #[doc(alias = "kCFSocketCloseOnInvalidate")]
     pub const CLOSE_ON_INVALIDATE: Self = Self(128);
 }
 
+#[doc(alias = "CFSocketCallBack")]
 pub type Cb<T> =
     extern "C" fn(s: &Socket, cb_type: CbType, address: &cf::Data, data: *const u8, info: *mut T);
 
@@ -59,6 +98,7 @@ pub struct Context<T> {
     pub copy_description: Option<extern "C" fn(info: *const T) -> Option<arc::R<cf::String>>>,
 }
 
+#[doc(alias = "CFSocketNativeHandle")]
 pub type NativeHandle = i32;
 
 impl Socket {
@@ -77,7 +117,7 @@ impl Socket {
             socket_type,
             protocol,
             cb_types,
-            transmute(callout),
+            std::mem::transmute(callout),
             context,
         )
     }
@@ -88,7 +128,13 @@ impl Socket {
         context: Option<NonNull<Context<c_void>>>,
         allocator: Option<&cf::Allocator>,
     ) -> Option<arc::R<Socket>> {
-        CFSocketCreateWithNative(allocator, sock, cb_types, transmute(callout), context)
+        CFSocketCreateWithNative(
+            allocator,
+            sock,
+            cb_types,
+            std::mem::transmute(callout),
+            context,
+        )
     }
 
     pub unsafe fn create_with_native<T>(
@@ -153,8 +199,8 @@ impl Socket {
         address: Option<&cf::Data>,
         data: &cf::Data,
         timeout: cf::TimeInterval,
-    ) -> Error {
-        unsafe { CFSocketSendData(self, address, data, timeout) }
+    ) -> Result<(), Error> {
+        unsafe { CFSocketSendData(self, address, data, timeout).result() }
     }
 }
 
@@ -201,6 +247,6 @@ extern "C-unwind" {
         address: Option<&cf::Data>,
         data: &cf::Data,
         timeout: cf::TimeInterval,
-    ) -> Error;
+    ) -> Status;
 
 }

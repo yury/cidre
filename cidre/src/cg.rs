@@ -29,7 +29,7 @@ pub use affine_transform::AffineTransform;
 pub use affine_transform::Components as AffineTransformComponents;
 
 mod error;
-pub use error::Callback as ErrorCallback;
+pub use error::Cb as ErrorCallback;
 pub use error::Error;
 pub use error::Status;
 

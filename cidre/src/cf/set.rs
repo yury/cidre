@@ -1,5 +1,5 @@
 use std::mem::MaybeUninit;
-use std::{ffi::c_void, intrinsics::transmute, marker::PhantomData, ops::Deref};
+use std::{ffi::c_void, marker::PhantomData, ops::Deref};
 
 use crate::{arc, cf, define_cf_type};
 
@@ -90,7 +90,7 @@ where
     T: arc::Release + arc::Retain,
 {
     fn retained(&self) -> arc::R<Self> {
-        unsafe { transmute(self.0.retained()) }
+        unsafe { std::mem::transmute(self.0.retained()) }
     }
 }
 

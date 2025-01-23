@@ -1,4 +1,4 @@
-use std::{ffi::c_void, intrinsics::transmute};
+use std::ffi::c_void;
 
 use crate::{
     arc, cf,
@@ -50,7 +50,7 @@ impl Session {
                     video_format_description,
                     video_decoder_specification,
                     destination_image_buffer_attirbutes,
-                    transmute(output_callback),
+                    std::mem::transmute(output_callback),
                     res,
                 )
             })
@@ -122,7 +122,7 @@ impl Session {
             self,
             sample_buffer,
             decode_flags,
-            transmute(source_frame_ref_con),
+            std::mem::transmute(source_frame_ref_con),
             info_flags_out,
         )
         .result()
