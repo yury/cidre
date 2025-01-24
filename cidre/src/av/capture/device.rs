@@ -7,7 +7,7 @@ use crate::blocks;
 
 #[link(name = "AVFoundation", kind = "framework")]
 #[api::weak]
-extern "C" {
+extern "C-unwind" {
 
     #[api::available(
         macos = 14.0,
@@ -190,6 +190,29 @@ impl Device {
 
     #[objc::msg_send(setActiveVideoMaxFrameDuration:)]
     pub unsafe fn set_active_video_max_frame_duration(&mut self, val: cm::Time);
+}
+
+#[doc(alias = "AVCaptureFlashMode")]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[repr(isize)]
+pub enum FlashMode {
+    Off = 0,
+    On = 1,
+    Auto = 2,
+}
+
+/// AVCaptureDeviceFlash
+impl Device {
+    /// Indicates whether the receiver has a flash.
+    #[objc::msg_send(hasFlash)]
+    pub fn has_flash(&self) -> bool;
+
+    /// Indicates whether the receiver's flash is currently available for use.
+    ///
+    /// The value of this property is a bool indicating whether the receiver's flash is currently available.
+    /// The flash may become unavailable if, for example, the device overheats and needs to cool off. This property is key-value observable.
+    #[objc::msg_send(isFlashAvailable)]
+    pub fn is_flash_available(&self) -> bool;
 }
 
 #[doc(alias = "AVCaptureTorchMode")]

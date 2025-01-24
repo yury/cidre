@@ -23,6 +23,7 @@ pub use device::ConfigLockGuard as DeviceConfigurationLockGuard;
 pub use device::Device;
 pub use device::DiscoverySession;
 pub use device::ExposureMode;
+pub use device::FlashMode;
 pub use device::FocusMode;
 pub use device::Format as DeviceFormat;
 pub use device::FrameRateRange;
@@ -82,6 +83,7 @@ pub use video_preview_layer::VideoPreviewLayer;
 
 pub mod photo_output;
 pub use photo_output::PhotoOutput;
+pub use photo_output::PhotoSettings;
 
 pub mod audio_data_output;
 pub use audio_data_output::AudioDataOutput;
