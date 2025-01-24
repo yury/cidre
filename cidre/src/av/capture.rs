@@ -83,6 +83,7 @@ pub use video_preview_layer::VideoPreviewLayer;
 
 pub mod photo_output;
 pub use photo_output::PhotoOutput;
+pub use photo_output::PhotoQualityPrioritization;
 pub use photo_output::PhotoSettings;
 
 pub mod audio_data_output;
