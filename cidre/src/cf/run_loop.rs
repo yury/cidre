@@ -218,6 +218,12 @@ impl Mode {
     }
 }
 
+impl Default for &'static Mode {
+    fn default() -> Self {
+        Mode::default()
+    }
+}
+
 extern "C" {
     static kCFRunLoopDefaultMode: &'static Mode;
     static kCFRunLoopCommonModes: &'static Mode;

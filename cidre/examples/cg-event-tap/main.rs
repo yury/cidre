@@ -1,4 +1,4 @@
-use cidre::{cf, cg, ns};
+use cidre::{cf, cg};
 
 extern "C" fn tap(
     _proxy: *mut cg::EventTapProxy,
@@ -6,8 +6,9 @@ extern "C" fn tap(
     event: &mut cg::Event,
     _user_info: *mut std::ffi::c_void,
 ) -> Option<&cg::Event> {
-    println!("{event_type:?} {}", event.key_code());
-    // event.show();
+    if !event.is_autorepeat() {
+        println!("{event_type:?} {}", event.key_code());
+    }
     return Some(event);
 }
 
@@ -21,15 +22,15 @@ fn main() {
 
     let tap = cg::EventTap::new(
         cg::EventTapLocation::Session,
-        cg::EventTapPlacement::TailAppend,
+        cg::EventTapPlacement::HeadInsert,
         cg::EventTapOpts::LISTEN_ONLY,
         cg::EventType::KB_EVENTS_MASK,
         tap,
         std::ptr::null_mut(),
     )
     .unwrap();
-    let run_loop_src = tap.run_loop_src(0).unwrap();
-    cf::RunLoop::main().add_src(&run_loop_src, cf::RunLoopMode::default());
 
-    ns::RunLoop::main().run();
+    let rl_src = tap.run_loop_src(0).unwrap();
+    cf::RunLoop::main().add_src(&rl_src, Default::default());
+    cf::RunLoop::run();
 }
