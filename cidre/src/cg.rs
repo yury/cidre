@@ -33,6 +33,21 @@ pub use error::Cb as ErrorCallback;
 pub use error::Error;
 pub use error::Status;
 
+#[cfg(target_os = "macos")]
+pub mod remote_operation;
+#[cfg(target_os = "macos")]
+pub use remote_operation::*;
+
+#[cfg(target_os = "macos")]
+pub mod event;
+#[cfg(target_os = "macos")]
+pub mod event_source;
+
+#[cfg(target_os = "macos")]
+pub mod event_types;
+#[cfg(target_os = "macos")]
+pub use event_types::*;
+
 pub mod image;
 #[cfg(feature = "iio")]
 pub use image::animate_image_at_url;

@@ -24,7 +24,7 @@ define_cf_type!(
 
 define_cf_type!(
     #[doc(alias = "CFRunLoopSource")]
-    Source(cf::Type)
+    Src(cf::Type)
 );
 
 define_cf_type!(
@@ -76,19 +76,19 @@ impl RunLoop {
 
     #[doc(alias = "CFRunLoopContainsSource")]
     #[inline]
-    pub fn contains_source(&self, source: &Source, mode: &Mode) -> bool {
+    pub fn contains_source(&self, source: &Src, mode: &Mode) -> bool {
         unsafe { CFRunLoopContainsSource(self, source, mode) }
     }
 
     #[doc(alias = "CFRunLoopAddSource")]
     #[inline]
-    pub fn add_source(&self, source: &Source, mode: &Mode) {
+    pub fn add_source(&self, source: &Src, mode: &Mode) {
         unsafe { CFRunLoopAddSource(self, source, mode) }
     }
 
     #[doc(alias = "CFRunLoopRemoveSource")]
     #[inline]
-    pub fn remove_source(&self, source: &Source, mode: &Mode) {
+    pub fn remove_source(&self, source: &Src, mode: &Mode) {
         unsafe { CFRunLoopRemoveSource(self, source, mode) }
     }
 
@@ -176,9 +176,9 @@ extern "C" {
     fn CFRunLoopGetMain() -> &'static RunLoop;
     fn CFRunLoopCopyCurrentMode(rl: &RunLoop) -> Option<arc::R<Mode>>;
     fn CFRunLoopCopyAllModes(rl: &RunLoop) -> arc::R<cf::ArrayOf<Mode>>;
-    fn CFRunLoopContainsSource(rl: &RunLoop, source: &Source, mode: &Mode) -> bool;
-    fn CFRunLoopAddSource(rl: &RunLoop, source: &Source, mode: &Mode);
-    fn CFRunLoopRemoveSource(rl: &RunLoop, source: &Source, mode: &Mode);
+    fn CFRunLoopContainsSource(rl: &RunLoop, source: &Src, mode: &Mode) -> bool;
+    fn CFRunLoopAddSource(rl: &RunLoop, source: &Src, mode: &Mode);
+    fn CFRunLoopRemoveSource(rl: &RunLoop, source: &Src, mode: &Mode);
     fn CFRunLoopContainsObserver(rl: &RunLoop, observer: &Observer, mode: &Mode) -> bool;
     fn CFRunLoopAddObserver(rl: &RunLoop, observer: &Observer, mode: &Mode);
     fn CFRunLoopRemoveObserver(rl: &RunLoop, observer: &Observer, mode: &Mode);
@@ -223,7 +223,7 @@ extern "C" {
     static kCFRunLoopCommonModes: &'static Mode;
 }
 
-impl Source {
+impl Src {
     #[doc(alias = "CFRunLoopSourceInvalidate")]
     #[inline]
     pub fn invalidate(&self) {
@@ -251,10 +251,10 @@ impl Source {
 
 #[link(name = "CoreFoundation", kind = "framework")]
 extern "C" {
-    fn CFRunLoopSourceInvalidate(source: &Source);
-    fn CFRunLoopSourceIsValid(source: &Source) -> bool;
-    fn CFRunLoopSourceGetOrder(source: &Source) -> cf::Index;
-    fn CFRunLoopSourceSignal(source: &Source);
+    fn CFRunLoopSourceInvalidate(source: &Src);
+    fn CFRunLoopSourceIsValid(source: &Src) -> bool;
+    fn CFRunLoopSourceGetOrder(source: &Src) -> cf::Index;
+    fn CFRunLoopSourceSignal(source: &Src);
 }
 
 impl Timer {

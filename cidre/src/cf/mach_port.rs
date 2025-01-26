@@ -17,12 +17,17 @@ impl MachPort {
     }
 
     #[inline]
-    pub fn create_run_loop_source(
+    pub fn run_loop_src_in(
         &self,
-        allocator: Option<&cf::Allocator>,
         index: cf::Index,
-    ) -> Option<arc::R<cf::RunLoopSource>> {
+        allocator: Option<&cf::Allocator>,
+    ) -> Option<arc::R<cf::RunLoopSrc>> {
         unsafe { CFMachPortCreateRunLoopSource(allocator, self, index) }
+    }
+
+    #[inline]
+    pub fn run_loop_src(&self, index: cf::Index) -> Option<arc::R<cf::RunLoopSrc>> {
+        unsafe { CFMachPortCreateRunLoopSource(None, self, index) }
     }
 
     #[inline]
@@ -39,7 +44,7 @@ extern "C-unwind" {
         allocator: Option<&cf::Allocator>,
         port: &MachPort,
         index: cf::Index,
-    ) -> Option<arc::R<cf::RunLoopSource>>;
+    ) -> Option<arc::R<cf::RunLoopSrc>>;
 
     fn CFMachPortGetPort(port: &MachPort) -> crate::mach::Port;
 }

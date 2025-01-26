@@ -111,7 +111,7 @@ pub use run_loop::Mode as RunLoopMode;
 pub use run_loop::Observer as RunLoopObserver;
 pub use run_loop::RunLoop;
 pub use run_loop::RunResult as RunLoopRunResult;
-pub use run_loop::Source as RunLoopSource;
+pub use run_loop::Src as RunLoopSrc;
 pub use run_loop::Timer as RunLoopTimer;
 
 pub mod socket;

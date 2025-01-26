@@ -161,16 +161,16 @@ impl Socket {
         unsafe { CFSocketIsValid(self) }
     }
 
-    pub fn create_runloop_source_in(
+    pub fn run_loop_src_in(
         &self,
         order: cf::Index,
         allocator: Option<&cf::Allocator>,
-    ) -> Option<arc::R<cf::RunLoopSource>> {
+    ) -> Option<arc::R<cf::RunLoopSrc>> {
         unsafe { CFSocketCreateRunLoopSource(allocator, self, order) }
     }
 
-    pub fn create_runloop_source(&self, order: cf::Index) -> Option<arc::R<cf::RunLoopSource>> {
-        self.create_runloop_source_in(order, None)
+    pub fn run_loop_src(&self, order: cf::Index) -> Option<arc::R<cf::RunLoopSrc>> {
+        self.run_loop_src_in(order, None)
     }
 
     #[inline]
@@ -234,7 +234,7 @@ extern "C-unwind" {
         allocator: Option<&cf::Allocator>,
         s: &Socket,
         order: cf::Index,
-    ) -> Option<arc::R<cf::RunLoopSource>>;
+    ) -> Option<arc::R<cf::RunLoopSrc>>;
 
     fn CFSocketGetSocketFlags(s: &Socket) -> Flags;
     fn CFSocketSetSocketFlags(s: &Socket, flags: Flags);
