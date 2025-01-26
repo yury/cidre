@@ -76,7 +76,7 @@ impl RunLoop {
 
     #[doc(alias = "CFRunLoopContainsSource")]
     #[inline]
-    pub fn contains_source(&self, source: &Src, mode: &Mode) -> bool {
+    pub fn contains_src(&self, source: &Src, mode: &Mode) -> bool {
         unsafe { CFRunLoopContainsSource(self, source, mode) }
     }
 
@@ -169,7 +169,7 @@ impl RunLoop {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFRunLoopRun();
     fn CFRunLoopStop(rl: &RunLoop);
     fn CFRunLoopGetCurrent() -> &'static RunLoop;
@@ -256,7 +256,7 @@ impl Src {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFRunLoopSourceInvalidate(source: &Src);
     fn CFRunLoopSourceIsValid(source: &Src) -> bool;
     fn CFRunLoopSourceGetOrder(source: &Src) -> cf::Index;
@@ -291,7 +291,7 @@ impl Timer {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFRunLoopTimerInvalidate(timer: &Timer);
     fn CFRunLoopTimerIsValid(timer: &Timer) -> bool;
     fn CFRunLoopTimerDoesRepeat(timer: &Timer) -> bool;
@@ -317,7 +317,7 @@ impl Observer {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CFRunLoopObserverInvalidate(timer: &Observer);
     fn CFRunLoopObserverIsValid(timer: &Observer) -> bool;
     fn CFRunLoopObserverDoesRepeat(timer: &Observer) -> bool;
@@ -326,6 +326,7 @@ extern "C" {
 #[cfg(test)]
 mod tests {
     use crate::cf;
+
     #[test]
     fn runloop_main() {
         assert!(!cf::RunLoop::current().all_modes().is_empty());

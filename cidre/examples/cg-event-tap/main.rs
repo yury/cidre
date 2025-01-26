@@ -1,6 +1,6 @@
 use cidre::{cf, cg};
 
-extern "C" fn tap(
+extern "C" fn tap_cb(
     _proxy: *mut cg::EventTapProxy,
     event_type: cg::EventType,
     event: &mut cg::Event,
@@ -21,11 +21,11 @@ fn main() {
     }
 
     let tap = cg::EventTap::new(
-        cg::EventTapLocation::Session,
+        cg::EventTapLocation::Hid,
         cg::EventTapPlacement::HeadInsert,
         cg::EventTapOpts::LISTEN_ONLY,
         cg::EventType::KB_EVENTS_MASK,
-        tap,
+        tap_cb,
         std::ptr::null_mut(),
     )
     .unwrap();
