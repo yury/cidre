@@ -6,8 +6,8 @@ extern "C" fn tap_cb(
     event: &mut cg::Event,
     _user_info: *mut std::ffi::c_void,
 ) -> Option<&cg::Event> {
-    if !event.is_autorepeat() {
-        println!("{event_type:?} {}", event.key_code());
+    if !event.is_kb_autorepeat() {
+        println!("{event_type:?} {}", event.kb_key_code());
     }
     return Some(event);
 }

@@ -186,11 +186,11 @@ impl cg::Event {
         }
     }
 
-    pub fn key_code(&self) -> cg::KeyCode {
+    pub fn kb_key_code(&self) -> cg::KeyCode {
         self.field_i64(cg::EventField::KEYBOARD_EVENT_KEYCODE) as _
     }
 
-    pub fn is_autorepeat(&self) -> bool {
+    pub fn is_kb_autorepeat(&self) -> bool {
         self.field_i64(cg::EventField::KEYBOARD_EVENT_AUTOREPEAT) != 0
     }
 }
