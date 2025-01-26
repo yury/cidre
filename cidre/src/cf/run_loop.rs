@@ -82,13 +82,13 @@ impl RunLoop {
 
     #[doc(alias = "CFRunLoopAddSource")]
     #[inline]
-    pub fn add_source(&self, source: &Src, mode: &Mode) {
+    pub fn add_src(&self, source: &Src, mode: &Mode) {
         unsafe { CFRunLoopAddSource(self, source, mode) }
     }
 
     #[doc(alias = "CFRunLoopRemoveSource")]
     #[inline]
-    pub fn remove_source(&self, source: &Src, mode: &Mode) {
+    pub fn remove_src(&self, source: &Src, mode: &Mode) {
         unsafe { CFRunLoopRemoveSource(self, source, mode) }
     }
 

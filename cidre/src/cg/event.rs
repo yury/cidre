@@ -161,6 +161,34 @@ impl cg::Event {
     pub fn set_flags(&mut self, val: cg::EventFlags) {
         unsafe { CGEventSetFlags(self, val) }
     }
+
+    #[doc(alias = "CGEventGetIntegerValueField")]
+    pub fn field_i64(&self, field: cg::EventField) -> i64 {
+        unsafe { CGEventGetIntegerValueField(self, field) }
+    }
+
+    #[doc(alias = "CGEventSetIntegerValueField")]
+    pub fn set_field_i64(&mut self, field: cg::EventField, val: i64) {
+        unsafe {
+            CGEventSetIntegerValueField(self, field, val);
+        }
+    }
+
+    #[doc(alias = "CGEventGetDoubleValueField")]
+    pub fn field_f64(&self, field: cg::EventField) -> f64 {
+        unsafe { CGEventGetDoubleValueField(self, field) }
+    }
+
+    #[doc(alias = "CGEventSetDoubleValueField")]
+    pub fn set_field_f64(&mut self, field: cg::EventField, val: f64) {
+        unsafe {
+            CGEventSetDoubleValueField(self, field, val);
+        }
+    }
+
+    pub fn key_code(&self) -> cg::KeyCode {
+        self.field_i64(cg::EventField::KEYBOARD_EVENT_KEYCODE) as _
+    }
 }
 
 impl cg::EventSrc {
@@ -182,16 +210,18 @@ define_cf_type!(EventTap(cf::MachPort));
 impl EventTap {
     #[doc(alias = "CGEventTapCreate")]
     pub fn new<U>(
-        tap: cg::EventTapLocation,
+        location: cg::EventTapLocation,
         place: cg::EventTapPlacement,
+        options: cg::EventTapOpts,
         events_of_interest: cg::EventMask,
         callback: cg::EventTapCb<U>,
         user_info: *mut U,
     ) -> Option<arc::R<EventTap>> {
         unsafe {
             CGEventTapCreate(
-                tap,
+                location,
                 place,
+                options,
                 events_of_interest,
                 std::mem::transmute(callback),
                 std::mem::transmute(user_info),
@@ -296,6 +326,7 @@ extern "C-unwind" {
     fn CGEventTapCreate(
         tap: cg::EventTapLocation,
         place: cg::EventTapPlacement,
+        options: cg::EventTapOpts,
         events_of_interest: cg::EventMask,
         callback: cg::EventTapCb,
         user_info: *mut std::ffi::c_void,
@@ -303,4 +334,10 @@ extern "C-unwind" {
 
     fn CGEventTapEnable(tap: &mut EventTap, val: bool);
     fn CGEventTapIsEnabled(tap: &EventTap) -> bool;
+
+    fn CGEventGetIntegerValueField(event: *const cg::Event, field: cg::EventField) -> i64;
+    fn CGEventSetIntegerValueField(event: *mut cg::Event, field: cg::EventField, val: i64);
+
+    fn CGEventGetDoubleValueField(event: *const cg::Event, field: cg::EventField) -> f64;
+    fn CGEventSetDoubleValueField(event: *mut cg::Event, field: cg::EventField, val: f64);
 }

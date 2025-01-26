@@ -75,8 +75,8 @@ mod macos {
                 None,
             )
             .unwrap();
-            let source = sock.create_runloop_source(0).unwrap();
-            cf::RunLoop::main().add_source(&source, cf::RunLoopMode::common());
+            let source = sock.run_loop_src(0).unwrap();
+            cf::RunLoop::main().add_src(&source, cf::RunLoopMode::common());
             // source.invalidate();
 
             let n = connection.send(&[1]).unwrap();

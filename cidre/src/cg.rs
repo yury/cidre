@@ -41,6 +41,8 @@ pub use remote_operation::*;
 #[cfg(target_os = "macos")]
 pub mod event;
 #[cfg(target_os = "macos")]
+pub use event::EventTap;
+#[cfg(target_os = "macos")]
 pub mod event_source;
 
 #[cfg(target_os = "macos")]

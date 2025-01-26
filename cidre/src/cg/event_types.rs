@@ -102,38 +102,88 @@ define_opts!(
 
 impl EventFlags {}
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-#[repr(u32)]
-pub enum EventType {
-    Null = 0,
-    LeftMouseDown = 1,
-    LeftMouseUp = 2,
-    RightMouseDown = 3,
-    RightMouseUp = 4,
-    MouseMoved = 5,
-    LeftMouseDragged = 6,
-    RightMouseDragged = 7,
-
-    KeyDown = 10,
-    KeyUp = 11,
-    FlagsChanged = 12,
-
-    ScrollWheel = 22,
-    TabletPointer = 23,
-    TabletProximity = 24,
-    OtherMouseDown = 25,
-    OtherMouseUp = 26,
-    OtherMouseDragged = 27,
-
-    TapDisabledByTimeout = 0xFFFFFFFE,
-    TapDisabledByUserInput = 0xFFFFFFFF,
-}
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, PartialOrd)]
+#[repr(C)]
+pub struct EventType(pub u32);
 
 impl EventType {
+    #[doc(alias = "kCGEventNull")]
+    pub const NULL: Self = Self(0);
+
+    #[doc(alias = "kCGEventLeftMouseDown")]
+    pub const LEFT_MOUSE_DOWN: Self = Self(1);
+
+    #[doc(alias = "kCGEventLeftMouseUp")]
+    pub const LEFT_MOUSE_UP: Self = Self(2);
+
+    #[doc(alias = "kCGEventRightMouseDown")]
+    pub const RIGHT_MOUSE_DOWN: Self = Self(3);
+
+    #[doc(alias = "kCGEventRightMouseUp")]
+    pub const RIGHT_MOUSE_UP: Self = Self(4);
+
+    #[doc(alias = "kCGEventMouseMoved")]
+    pub const MOUSE_MOVED: Self = Self(5);
+
+    #[doc(alias = "kCGEventLeftMouseDragged")]
+    pub const LEFT_MOUSE_DRAGGED: Self = Self(6);
+
+    #[doc(alias = "kCGEventRightMouseDragged")]
+    pub const RIGHT_MOUSE_DRAGGED: Self = Self(7);
+
+    #[doc(alias = "kCGEventKeyDown")]
+    pub const KEY_DOWN: Self = Self(10);
+
+    #[doc(alias = "kCGEventKeyUp")]
+    pub const KEY_UP: Self = Self(11);
+
+    #[doc(alias = "kCGEventFlagsChanged")]
+    pub const FLAGS_CHANGED: Self = Self(12);
+
+    pub const SYSTEM_DEFINED: Self = Self(14);
+
+    #[doc(alias = "kCGEventScrollWheel")]
+    pub const SCROLL_WHEEL: Self = Self(22);
+
+    #[doc(alias = "kCGEventTabletPointer")]
+    pub const TABLET_POINTER: Self = Self(23);
+
+    #[doc(alias = "kCGEventTabletProximity")]
+    pub const TABLET_PROXIMITY: Self = Self(24);
+
+    #[doc(alias = "kCGEventOtherMouseDown")]
+    pub const OHTER_MOUSE_DOWN: Self = Self(25);
+
+    #[doc(alias = "kCGEventOtherMouseUp")]
+    pub const OHTER_MOUSE_UP: Self = Self(26);
+
+    #[doc(alias = "kCGEventOtherMouseDragged")]
+    pub const OTHER_MOUSE_DRAGGED: Self = Self(27);
+
+    #[doc(alias = "kCGEventTapDisabledByTimeout")]
+    pub const TAP_DISABLED_BY_TIMEOUT: Self = Self(0xFFFFFFFE);
+
+    #[doc(alias = "kCGEventTapDisabledByUserInput")]
+    pub const TAP_DISABLED_BY_USER_INPUT: Self = Self(0xFFFFFFFF);
+
     #[doc(alias = "CGEventMaskBit")]
-    pub fn mask(&self) -> EventMask {
-        1 << *self as u32
+    pub const fn mask(&self) -> EventMask {
+        1 << self.0
     }
+
+    pub const KB_EVENTS_MASK: EventMask =
+        Self::KEY_DOWN.mask() | Self::KEY_UP.mask() | Self::FLAGS_CHANGED.mask();
+
+    pub const LEFT_BUTTON_MOUSE_EVENTS_MASK: EventMask =
+        Self::LEFT_MOUSE_DOWN.mask() | Self::LEFT_MOUSE_UP.mask() | Self::LEFT_MOUSE_DRAGGED.mask();
+
+    pub const RIGHT_BUTTON_MOUSE_EVENTS_MASK: EventMask = Self::RIGHT_MOUSE_DOWN.mask()
+        | Self::RIGHT_MOUSE_UP.mask()
+        | Self::RIGHT_MOUSE_DRAGGED.mask();
+
+    pub const MOUSE_EVENTS_MASK: EventMask = Self::LEFT_BUTTON_MOUSE_EVENTS_MASK
+        | Self::RIGHT_BUTTON_MOUSE_EVENTS_MASK
+        | Self::MOUSE_MOVED.mask();
 
     pub const ALL_EVENTS_MASK: EventMask = !0;
 }
@@ -224,3 +274,79 @@ pub type EventTapCb<U = std::ffi::c_void> = extern "C" fn(
     event: &mut Event,
     user_info: *mut U,
 ) -> Option<&Event>;
+
+#[doc(alias = "CGEventField")]
+#[repr(transparent)]
+pub struct EventField(pub u32);
+
+impl EventField {
+    /// Key to access an integer field that contains the mouse button event
+    /// number. Matching mouse-down and mouse-up events will have the same
+    /// event number.
+    #[doc(alias = "kCGMouseEventNumber")]
+    pub const MOUSE_EVENT_NUMBER: Self = Self(0);
+
+    /// Key to access an integer field that contains the mouse button click
+    /// state. A click state of 1 represents a single click. A click state of 2
+    /// represents a double-click. A click state of 3 represents a
+    /// triple-click.
+    #[doc(alias = "kCGMouseEventClickState")]
+    pub const MOUSE_EVENT_CLICK_STATE: Self = Self(1);
+
+    /// Key to access a double field that contains the mouse button pressure.
+    /// The pressure value may range from 0 to 1, with 0 representing the mouse
+    /// being up. This value is commonly set by tablet pens mimicking a mouse.
+    #[doc(alias = "kCGMouseEventPressure")]
+    pub const MOUSE_EVENT_PRESSURE: Self = Self(2);
+
+    /// Key to access an integer field that contains the mouse button number.
+    #[doc(alias = "kCGMouseEventButtonNumber")]
+    pub const MOUSE_EVENT_BUTTON_NUMBER: Self = Self(3);
+
+    /// Key to access an integer field that contains the horizontal mouse delta
+    /// since the last mouse movement event.
+    #[doc(alias = "kCGMouseEventDeltaX")]
+    pub const MOUSE_EVENT_DELTA_X: Self = Self(4);
+
+    /// Key to access an integer field that contains the vertical mouse delta
+    /// since the last mouse movement event.
+    #[doc(alias = "kCGMouseEventDeltaY")]
+    pub const MOUSE_EVENT_DELTA_Y: Self = Self(5);
+
+    /// Key to access an integer field. The value is non-zero if the event
+    /// should be ignored by the Inkwell subsystem.
+    #[doc(alias = "kCGMouseEventInstantMouser")]
+    pub const MOUSE_EVENT_INSTANT_MOUSER: Self = Self(6);
+
+    /// Key to access an integer field that encodes the mouse event subtype as a `kCFNumberIntType'
+    #[doc(alias = "kCGMouseEventSubtype")]
+    pub const MOUSE_EVENT_SUBTYPE: Self = Self(7);
+
+    /// Key to access an integer field, non-zero when this is an autorepeat of
+    /// a key-down, and zero otherwise.
+    #[doc(alias = "kCGKeyboardEventAutorepeat")]
+    pub const KEYBOARD_EVENT_AUTOREPEAT: Self = Self(8);
+
+    /// Key to access an integer field that contains the virtual keycode of the
+    /// key-down or key-up event.
+    #[doc(alias = "kCGKeyboardEventKeycode")]
+    pub const KEYBOARD_EVENT_KEYCODE: Self = Self(9);
+
+    /// Key to access an integer field that contains the keyboard type identifier.
+    #[doc(alias = "kCGKeyboardEventKeyboardType")]
+    pub const KEYBOARD_EVENT_KEYBOARD_TYPE: Self = Self(10);
+
+    /// Key to access an integer field that contains scrolling data. This field
+    /// typically contains the change in vertical position since the last
+    /// scrolling event from a Mighty Mouse scroller or a single-wheel mouse scroller.
+    #[doc(alias = "kCGScrollWheelEventDeltaAxis1")]
+    pub const SCROLL_WHEEL_EVENT_DELTA_AXIS1: Self = Self(11);
+
+    /// Key to access an integer field that contains scrolling data. This field
+    /// typically contains the change in horizontal position since the last
+    /// scrolling event from a Mighty Mouse scroller.
+    #[doc(alias = "kCGScrollWheelEventDeltaAxis2")]
+    pub const SCROLL_WHEEL_EVENT_DELTA_AXIS2: Self = Self(12);
+
+    // ...
+}
