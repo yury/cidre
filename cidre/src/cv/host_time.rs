@@ -23,7 +23,7 @@ pub fn host_clock_minimum_time_delta() -> u32 {
 }
 
 #[link(name = "CoreVideo", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CVGetCurrentHostTime() -> u64;
     fn CVGetHostClockFrequency() -> f64;
     fn CVGetHostClockMinimumTimeDelta() -> u32;
