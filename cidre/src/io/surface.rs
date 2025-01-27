@@ -262,7 +262,7 @@ impl Surf {
     }
 }
 
-extern "C" {
+extern "C-unwind" {
     fn IOSurfaceGetTypeID() -> cf::TypeId;
     fn IOSurfaceCreate(properties: &cf::Dictionary) -> Option<arc::R<Surf>>;
     fn IOSurfaceLookup(csid: SurfId) -> Option<arc::R<Surf>>;
