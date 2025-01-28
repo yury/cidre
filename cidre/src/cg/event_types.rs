@@ -100,7 +100,31 @@ define_opts!(
     pub EventFlags(u64)
 );
 
-impl EventFlags {}
+impl EventFlags {
+    #[doc(alias = "kCGEventFlagMaskAlphaShift")]
+    pub const ALPHA_SHIFT: Self = Self(0x00010000);
+    
+    #[doc(alias = "kCGEventFlagMaskShift")]
+    pub const SHIFT: Self = Self(0x00020000);
+
+    #[doc(alias = "kCGEventFlagMaskControl")]
+    pub const CTRL: Self = Self(0x00040000);
+
+    #[doc(alias = "kCGEventFlagMaskAlternate")]
+    pub const ALT: Self = Self(0x00080000);
+
+    #[doc(alias = "kCGEventFlagMaskCommand")]
+    pub const CMD: Self = Self(0x00100000);
+
+    #[doc(alias = "kCGEventFlagMaskHelp")]
+    pub const HELP: Self = Self(0x00400000);
+
+    #[doc(alias = "kCGEventFlagMaskSecondaryFn")]
+    pub const SECONDARY_FN: Self = Self(0x00800000);
+
+    #[doc(alias = "kCGEventFlagMaskNumericPad")]
+    pub const NUM_PAD: Self = Self(0x00200000);
+}
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, PartialOrd)]
 #[repr(C)]
