@@ -1,7 +1,6 @@
 use crate::{define_opts, os};
 use std::{ffi, os::fd::AsRawFd};
 
-pub type Speed = std::ffi::c_ulong;
 pub type Cc = std::ffi::c_uchar;
 
 pub const NCCS: usize = 20;
@@ -16,22 +15,23 @@ pub struct Termios {
     pub output_flags: OutputFlags,
 
     /// Control flags
-    pub control_flags: ControlFlags,
+    pub control_flags: CtrlFlags,
 
     /// Local flags
     pub local_flags: LocalFlags,
 
     /// Control chars
-    pub control_chars: [Cc; NCCS],
+    pub ctrl_chars: [Cc; NCCS],
 
     /// Input speed
-    pub input_speed: Speed,
+    input_speed: BaudRate,
 
     /// Output speed
-    pub output_speed: Speed,
+    output_speed: BaudRate,
 }
 
 define_opts!(
+    #[doc(alias = "tcflag_t")]
     pub InputFlags(ffi::c_ulong)
 );
 
@@ -70,25 +70,87 @@ impl InputFlags {
 }
 
 define_opts!(
+    #[doc(alias = "tcflag_t")]
     pub OutputFlags(ffi::c_ulong)
 );
 
 define_opts!(
-    pub ControlFlags(ffi::c_ulong)
+    #[doc(alias = "tcflag_t")]
+    pub CtrlFlags(ffi::c_ulong)
 );
+
+impl CtrlFlags {
+    /// Ignore control flags
+    #[doc(alias = "CIGNORE")]
+    pub const IGNORE: Self = Self(0x00000001);
+}
 
 define_opts!(
     pub LocalFlags(ffi::c_ulong)
 );
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[doc(alias = "speed_t")]
+#[repr(transparent)]
+pub struct BaudRate(pub ffi::c_ulong);
+
+impl BaudRate {
+    pub const _0: Self = Self(0);
+    pub const _50: Self = Self(50);
+    pub const _75: Self = Self(75);
+    pub const _110: Self = Self(110);
+    pub const _134: Self = Self(134);
+    pub const _150: Self = Self(150);
+    pub const _200: Self = Self(200);
+    pub const _300: Self = Self(300);
+    pub const _600: Self = Self(600);
+    pub const _1200: Self = Self(1200);
+    pub const _1800: Self = Self(1800);
+    pub const _2400: Self = Self(2400);
+    pub const _4800: Self = Self(4800);
+    pub const _7200: Self = Self(7200);
+    pub const _9600: Self = Self(9600);
+    pub const _14400: Self = Self(14400);
+    pub const _19200: Self = Self(19200);
+    pub const _28800: Self = Self(28800);
+    pub const _38400: Self = Self(38400);
+    pub const _57600: Self = Self(57600);
+    pub const _76800: Self = Self(76800);
+    pub const _115200: Self = Self(115200);
+    pub const _230400: Self = Self(230400);
+}
+
 impl LocalFlags {
+    /// Enable echoing
     pub const ECHO: Self = Self(0x00000008);
+
+    /// echo NL even if ECHO is off
+    pub const ECHO_NL: Self = Self(0x00000010);
+
+    /// echo control chars as ^(Char)
+    pub const ECHO_CTRL: Self = Self(0x00000040);
 
     pub fn set_echo(&mut self, val: bool) {
         if val {
             *self |= Self::ECHO
         } else {
             *self ^= Self::ECHO
+        }
+    }
+
+    pub fn set_echo_nl(&mut self, val: bool) {
+        if val {
+            *self |= Self::ECHO_NL
+        } else {
+            *self ^= Self::ECHO_NL
+        }
+    }
+
+    pub fn set_echo_ctrl(&mut self, val: bool) {
+        if val {
+            *self |= Self::ECHO_CTRL
+        } else {
+            *self ^= Self::ECHO_CTRL
         }
     }
 }
@@ -116,32 +178,68 @@ pub enum FlushArg {
 }
 
 impl Termios {
+    #[inline]
     pub fn read<Fd: AsRawFd>(fd: Fd) -> os::Result<Self> {
         os::result_init(|res| unsafe { tcgetattr(fd.as_raw_fd(), res) })
     }
 
+    #[inline]
     pub fn apply<Fd: AsRawFd>(&self, fd: Fd, action: SetArg) -> os::Result {
         unsafe { tcsetattr(fd.as_raw_fd(), action as _, self).result() }
     }
 
+    #[inline]
     pub fn apply_now<Fd: AsRawFd>(&self, fd: Fd) -> os::Result {
         self.apply(fd, SetArg::Now)
+    }
+
+    #[doc(alias = "cfgetospeed")]
+    #[inline]
+    pub fn output_speed(&self) -> BaudRate {
+        unsafe { cfgetospeed(self) }
+    }
+
+    #[doc(alias = "cfgetispeed")]
+    #[inline]
+    pub fn input_speed(&self) -> BaudRate {
+        unsafe { cfgetispeed(self) }
+    }
+
+    #[doc(alias = "cfsetospeed")]
+    #[inline]
+    pub fn set_output_speed(&mut self, val: BaudRate) -> os::Result {
+        unsafe { cfsetospeed(self, val).result() }
+    }
+
+    #[doc(alias = "cfsetispeed")]
+    #[inline]
+    pub fn set_input_speed(&mut self, val: BaudRate) -> os::Result {
+        unsafe { cfsetispeed(self, val).result() }
     }
 }
 
 extern "C-unwind" {
     fn tcgetattr(fd: ffi::c_int, value: *mut Termios) -> os::Status;
     fn tcsetattr(fd: ffi::c_int, action: ffi::c_int, value: *const Termios) -> os::Status;
+
+    fn cfgetispeed(termios: *const Termios) -> BaudRate;
+    fn cfgetospeed(termios: *const Termios) -> BaudRate;
+
+    fn cfsetispeed(termios: *mut Termios, val: BaudRate) -> os::Status;
+    fn cfsetospeed(termios: *mut Termios, val: BaudRate) -> os::Status;
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::sys::termios::{LocalFlags, Termios};
+    use crate::sys::termios as t;
 
     #[test]
     fn basics() {
-        let mut cfg = Termios::read(std::io::stdin()).unwrap();
-        cfg.local_flags ^= LocalFlags::ECHO;
+        let mut cfg = t::Termios::read(std::io::stdin()).unwrap();
+        cfg.local_flags ^= t::LocalFlags::ECHO;
         cfg.apply_now(std::io::stdin()).unwrap();
+
+        cfg.set_input_speed(t::BaudRate::_0).unwrap();
+        assert_eq!(cfg.input_speed, t::BaudRate::_0);
     }
 }

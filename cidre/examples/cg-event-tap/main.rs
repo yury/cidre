@@ -121,10 +121,12 @@ fn main() {
             return;
         }
     }
-    //
-    // trurn off echo
+
+    // turn off echo
     let mut cfg = Termios::read(std::io::stdin()).unwrap();
     cfg.local_flags.set_echo(false);
+    cfg.local_flags.set_echo_nl(false);
+    cfg.local_flags.set_echo_ctrl(false);
     cfg.apply_now(std::io::stdin()).unwrap();
 
     let mut buf = String::new();
