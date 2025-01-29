@@ -239,6 +239,22 @@ macro_rules! define_opts {
             }
         }
 
+        impl ::std::ops::BitXor for $NewType {
+            type Output = Self;
+
+            #[inline]
+            fn bitxor(self, rhs: Self) -> Self::Output {
+                Self(self.0 ^ rhs.0)
+            }
+        }
+
+        impl ::std::ops::BitXorAssign for $NewType {
+            #[inline]
+            fn bitxor_assign(&mut self, rhs: Self) {
+                self.0 ^= rhs.0
+            }
+        }
+
         impl ::std::convert::From<$BaseType> for $NewType {
             #[inline]
             fn from(value: $BaseType) -> Self {

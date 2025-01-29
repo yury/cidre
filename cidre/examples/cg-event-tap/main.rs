@@ -1,13 +1,10 @@
 use std::io::Write;
 
-use cidre::{cf, cg};
+use cidre::{cf, cg, sys::termios::Termios};
 
 fn display(buf: *mut String, event_type: cg::EventType, event: &cg::Event) {
     let buf = unsafe { buf.as_mut().unwrap() };
     buf.clear();
-
-    // Clean line
-    buf.push_str("\r                                       ");
 
     match event_type {
         cg::EventType::KEY_DOWN => buf.push_str("\r▼"),
@@ -124,6 +121,11 @@ fn main() {
             return;
         }
     }
+    //
+    // trurn off echo
+    let mut cfg = Termios::with_fd(std::io::stdin()).unwrap();
+    cfg.local_flags.set_echo(false);
+    cfg.apply_now(std::io::stdin()).unwrap();
 
     let mut buf = String::new();
 
