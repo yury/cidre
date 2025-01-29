@@ -123,7 +123,7 @@ fn main() {
     }
     //
     // trurn off echo
-    let mut cfg = Termios::with_fd(std::io::stdin()).unwrap();
+    let mut cfg = Termios::read(std::io::stdin()).unwrap();
     cfg.local_flags.set_echo(false);
     cfg.apply_now(std::io::stdin()).unwrap();
 

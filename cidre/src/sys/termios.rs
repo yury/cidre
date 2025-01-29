@@ -116,7 +116,7 @@ pub enum FlushArg {
 }
 
 impl Termios {
-    pub fn with_fd<Fd: AsRawFd>(fd: Fd) -> os::Result<Self> {
+    pub fn read<Fd: AsRawFd>(fd: Fd) -> os::Result<Self> {
         os::result_init(|res| unsafe { tcgetattr(fd.as_raw_fd(), res) })
     }
 
@@ -140,7 +140,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut cfg = Termios::with_fd(std::io::stdin()).unwrap();
+        let mut cfg = Termios::read(std::io::stdin()).unwrap();
         cfg.local_flags ^= LocalFlags::ECHO;
         cfg.apply_now(std::io::stdin()).unwrap();
     }
