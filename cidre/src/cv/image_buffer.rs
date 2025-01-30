@@ -85,7 +85,7 @@ impl ImageBuf {
     }
 }
 
-extern "C" {
+extern "C-unwind" {
     fn CVImageBufferGetColorSpace(image_buffer: &ImageBuf) -> Option<&cg::ColorSpace>;
     fn CVImageBufferGetEncodedSize(image_buffer: &ImageBuf) -> cg::Size;
     fn CVImageBufferGetDisplaySize(image_buffer: &ImageBuf) -> cg::Size;

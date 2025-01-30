@@ -11,6 +11,7 @@ pub struct Time {
 impl Time {
     /// Zero time or duration. For example,
     /// CVDisplayLinkGetOutputVideoLatency returns kCVZeroTime for zero video latency.
+    #[doc(alias = "kCVZeroTime")]
     #[inline]
     pub fn zero() -> Self {
         unsafe { kCVZeroTime }
@@ -19,34 +20,57 @@ impl Time {
     /// An unknown or indefinite time. For example,
     /// CVDisplayLinkGetNominalOutputVideoRefreshPeriod returns kCVIndefiniteTime
     /// if the display link specified is not valid.
+    #[doc(alias = "kCVIndefiniteTime")]
     #[inline]
     pub fn indefinite() -> Self {
         unsafe { kCVIndefiniteTime }
     }
 }
 
-define_opts!(pub Flags(i32));
+define_opts!(
+    #[doc(alias = "CVTimeFlags")]
+    pub Flags(i32)
+);
 
 impl Flags {
     pub const NONE: Self = Self(0);
     pub const IS_INDEFINITE: Self = Self(1);
 }
 
-#[derive(Debug, Default)]
+#[doc(alias = "CVSmpteTime")]
+#[derive(Debug, Default, Copy, Clone)]
 #[repr(C)]
 pub struct SmpteTime {
+    /// The number of subframes in the full message.
     pub subframes: i16,
+
+    /// The number of subframes per frame (typically 80).
     pub subframes_divisor: i16,
+
+    /// The total number of messages received.
     pub counter: u32,
+
+    /// The kind of SMPTE time using the SMPTE time type constants.
     pub r#type: u32,
+
+    /// A set of flags that indicate the SMPTE state.
     pub flags: u32,
+
+    /// The number of hours in the full message.
     pub hours: i16,
+
+    /// The number of minutes in the full message.
     pub minutes: i16,
+
+    /// The number of seconds in the full message.
     pub seconds: i16,
+
+    /// The number of frames in the full message.
     pub frames: i16,
 }
 
-#[derive(Debug, Default)]
+#[doc(alias = "CVTimeStamp")]
+#[derive(Debug, Default, Copy, Clone)]
 #[repr(C)]
 pub struct TimeStamp {
     /// The current cv::TimeStamp is version 0

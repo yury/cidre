@@ -1,5 +1,6 @@
 use crate::{cv, mtl};
 
+#[doc(alias = "CVMetalTextureRef")]
 pub type Texture = cv::ImageBuf;
 
 impl Texture {

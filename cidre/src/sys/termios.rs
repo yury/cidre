@@ -178,18 +178,21 @@ pub enum FlushArg {
 }
 
 impl Termios {
+    #[doc(alias = "tcgetattr")]
     #[inline]
-    pub fn read<Fd: AsRawFd>(fd: Fd) -> os::Result<Self> {
+    pub fn read<Fd: AsRawFd>(fd: &Fd) -> os::Result<Self> {
         os::result_init(|res| unsafe { tcgetattr(fd.as_raw_fd(), res) })
     }
 
+    #[doc(alias = "tcsetattr")]
     #[inline]
-    pub fn apply<Fd: AsRawFd>(&self, fd: Fd, action: SetArg) -> os::Result {
+    pub fn apply<Fd: AsRawFd>(&self, fd: &mut Fd, action: SetArg) -> os::Result {
         unsafe { tcsetattr(fd.as_raw_fd(), action as _, self).result() }
     }
 
+    #[doc(alias = "tcsetattr")]
     #[inline]
-    pub fn apply_now<Fd: AsRawFd>(&self, fd: Fd) -> os::Result {
+    pub fn apply_now<Fd: AsRawFd>(&self, fd: &mut Fd) -> os::Result {
         self.apply(fd, SetArg::Now)
     }
 
@@ -235,11 +238,15 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut cfg = t::Termios::read(std::io::stdin()).unwrap();
+        let mut fd = std::io::stdin();
+        let mut cfg = t::Termios::read(&fd).unwrap();
+        let original_cfg = cfg.clone();
         cfg.local_flags ^= t::LocalFlags::ECHO;
-        cfg.apply_now(std::io::stdin()).unwrap();
+        cfg.apply_now(&mut fd).unwrap();
 
         cfg.set_input_speed(t::BaudRate::_0).unwrap();
         assert_eq!(cfg.input_speed, t::BaudRate::_0);
+
+        original_cfg.apply_now(&mut fd).unwrap();
     }
 }

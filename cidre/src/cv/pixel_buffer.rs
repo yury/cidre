@@ -8,6 +8,7 @@ use crate::io;
 #[cfg(feature = "ns")]
 use crate::ns;
 
+#[doc(alias = "CVPixelBuffer")]
 pub type PixelBuf = cv::ImageBuf;
 
 pub type ReleaseCallback =
@@ -74,13 +75,13 @@ impl PixelBuf {
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let pixel_buffer = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+    /// let pixel_buf = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
     ///
-    /// assert_eq!(200, pixel_buffer.width());
-    /// assert_eq!(100, pixel_buffer.height());
-    /// assert_eq!(cv::PixelFormat::_32_BGRA, pixel_buffer.pixel_format());
-    /// assert_eq!(0, pixel_buffer.plane_count());
-    /// assert_eq!(cv::PixelBuf::type_id(), pixel_buffer.get_type_id());
+    /// assert_eq!(200, pixel_buf.width());
+    /// assert_eq!(100, pixel_buf.height());
+    /// assert_eq!(cv::PixelFormat::_32_BGRA, pixel_buf.pixel_format());
+    /// assert_eq!(0, pixel_buf.plane_count());
+    /// assert_eq!(cv::PixelBuf::type_id(), pixel_buf.get_type_id());
     ///
     /// ```
     pub fn new(
@@ -664,8 +665,8 @@ extern "C-unwind" {
         pixel_format_type: PixelFormat,
         base_address: *mut c_void,
         bytes_per_row: usize,
-        releaseCallback: ReleaseCallback,
-        releaseRefCon: *mut c_void,
+        release_callback: ReleaseCallback,
+        release_ref_con: *mut c_void,
         pixel_buf_attrs: Option<&cf::Dictionary>,
         pixel_buf_out: *mut Option<arc::R<PixelBuf>>,
     ) -> cv::Return;
