@@ -14,6 +14,7 @@ pub type ReleaseCallback =
     extern "C" fn(release_ref_con: *mut c_void, base_address: *const *const c_void);
 
 impl PixelBuf {
+    #[doc(alias = "CVPixelBufferGetTypeID")]
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CVPixelBufferGetTypeID() }
@@ -86,20 +87,13 @@ impl PixelBuf {
         width: usize,
         height: usize,
         pixel_format_type: cv::PixelFormat,
-        pixel_buffer_attributes: Option<&cf::Dictionary>,
-    ) -> Result<arc::R<PixelBuf>, cv::Return> {
-        let mut pixel_buffer_out = None;
-
-        let r = Self::create_in(
-            width,
-            height,
-            pixel_format_type,
-            pixel_buffer_attributes,
-            &mut pixel_buffer_out,
-            None,
-        );
-
-        unsafe { r.to_result_unchecked(pixel_buffer_out) }
+        pixel_buf_attrs: Option<&cf::Dictionary>,
+    ) -> os::Result<arc::R<PixelBuf>> {
+        unsafe {
+            os::result_unchecked(|res| {
+                Self::create_in(width, height, pixel_format_type, pixel_buf_attrs, res, None)
+            })
+        }
     }
 
     #[doc(alias = "CVPixelBufferCreateWithBytes")]
@@ -111,23 +105,24 @@ impl PixelBuf {
         release_callback: ReleaseCallback,
         release_ref_con: *mut c_void,
         pixel_format_type: cv::PixelFormat,
-        pixel_buffer_attributes: Option<&cf::Dictionary>,
-    ) -> Result<arc::R<PixelBuf>, cv::Return> {
-        let mut pixel_buf_out = None;
-
-        let r = Self::create_with_bytes_in(
-            width,
-            height,
-            pixel_format_type,
-            base_address,
-            bytes_per_row,
-            release_callback,
-            release_ref_con,
-            pixel_buffer_attributes,
-            &mut pixel_buf_out,
-            None,
-        );
-        unsafe { r.to_result_unchecked(pixel_buf_out) }
+        pixel_buf_attrs: Option<&cf::Dictionary>,
+    ) -> os::Result<arc::R<PixelBuf>> {
+        unsafe {
+            os::result_unchecked(|res| {
+                Self::create_with_bytes_in(
+                    width,
+                    height,
+                    pixel_format_type,
+                    base_address,
+                    bytes_per_row,
+                    release_callback,
+                    release_ref_con,
+                    pixel_buf_attrs,
+                    res,
+                    None,
+                )
+            })
+        }
     }
 
     pub fn create_in(
@@ -181,25 +176,21 @@ impl PixelBuf {
 
     #[doc(alias = "CVPixelBufferLockBaseAddress")]
     #[inline]
-    pub unsafe fn lock_base_addr(&self, flags: LockFlags) -> cv::Return {
+    pub unsafe fn lock_base_addr(&mut self, flags: LockFlags) -> cv::Return {
         CVPixelBufferLockBaseAddress(self, flags)
     }
 
     #[doc(alias = "CVPixelBufferUnlockBaseAddress")]
     #[inline]
-    pub unsafe fn unlock_lock_base_addr(&self, flags: LockFlags) -> cv::Return {
+    pub unsafe fn unlock_lock_base_addr(&mut self, flags: LockFlags) -> cv::Return {
         CVPixelBufferUnlockBaseAddress(self, flags)
     }
 
     #[inline]
-    pub fn base_address_lock(&self, flags: LockFlags) -> Result<BaseAddrLockGuard, cv::Return> {
+    pub fn base_address_lock(&mut self, flags: LockFlags) -> os::Result<BaseAddrLockGuard> {
         unsafe {
-            let res = self.lock_base_addr(flags);
-            if res.is_ok() {
-                Ok(BaseAddrLockGuard(self, flags))
-            } else {
-                Err(res)
-            }
+            self.lock_base_addr(flags).result()?;
+            Ok(BaseAddrLockGuard(self, flags))
         }
     }
 
@@ -220,7 +211,7 @@ impl PixelBuf {
     pub fn with_io_surf(
         surface: &io::Surf,
         pixel_buffer_attributes: Option<&cf::Dictionary>,
-    ) -> Result<arc::R<Self>, cv::Return> {
+    ) -> os::Result<arc::R<Self>> {
         Self::with_io_surf_in(surface, pixel_buffer_attributes, None)
     }
 
@@ -231,26 +222,22 @@ impl PixelBuf {
         surface: &io::Surf,
         pixel_buf_attrs: Option<&cf::Dictionary>,
         allocator: Option<&cf::Allocator>,
-    ) -> Result<arc::R<Self>, cv::Return> {
-        let mut buffer = None;
+    ) -> os::Result<arc::R<Self>> {
         unsafe {
-            let res =
-                CVPixelBufferCreateWithIOSurface(allocator, surface, pixel_buf_attrs, &mut buffer);
-            if res.is_ok() {
-                Ok(buffer.unwrap_unchecked())
-            } else {
-                Err(res)
-            }
+            os::result_unchecked(|res| {
+                CVPixelBufferCreateWithIOSurface(allocator, surface, pixel_buf_attrs, res)
+            })
         }
     }
 }
 
-pub struct BaseAddrLockGuard<'a>(&'a PixelBuf, LockFlags);
+pub struct BaseAddrLockGuard<'a>(&'a mut PixelBuf, LockFlags);
 
 impl<'a> Drop for BaseAddrLockGuard<'a> {
     #[inline]
     fn drop(&mut self) {
-        let res = unsafe { self.0.unlock_lock_base_addr(self.1) };
+        let flags = self.1;
+        let res = unsafe { self.0.unlock_lock_base_addr(flags) };
         debug_assert!(res.is_ok());
     }
 }
@@ -666,8 +653,8 @@ extern "C-unwind" {
         width: usize,
         height: usize,
         pixel_format_type: PixelFormat,
-        pixel_buffer_attributes: Option<&cf::Dictionary>,
-        pixel_buffer_out: *mut Option<arc::R<PixelBuf>>,
+        pixel_buf_attrs: Option<&cf::Dictionary>,
+        pixel_buf_out: *mut Option<arc::R<PixelBuf>>,
     ) -> cv::Return;
 
     fn CVPixelBufferCreateWithBytes(
@@ -679,8 +666,8 @@ extern "C-unwind" {
         bytes_per_row: usize,
         releaseCallback: ReleaseCallback,
         releaseRefCon: *mut c_void,
-        pixel_buffer_attributes: Option<&cf::Dictionary>,
-        pixel_buffer_out: *mut Option<arc::R<PixelBuf>>,
+        pixel_buf_attrs: Option<&cf::Dictionary>,
+        pixel_buf_out: *mut Option<arc::R<PixelBuf>>,
     ) -> cv::Return;
 
     fn CVPixelBufferGetWidth(pixel_buffer: &PixelBuf) -> usize;
@@ -693,9 +680,14 @@ extern "C-unwind" {
         -> *const u8;
     fn CVPixelBufferGetBytesPerRowOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> usize;
 
-    fn CVPixelBufferLockBaseAddress(pixel_buffer: &PixelBuf, lock_flags: LockFlags) -> cv::Return;
-    fn CVPixelBufferUnlockBaseAddress(pixel_buffer: &PixelBuf, lock_flags: LockFlags)
-        -> cv::Return;
+    fn CVPixelBufferLockBaseAddress(
+        pixel_buffer: &mut PixelBuf,
+        lock_flags: LockFlags,
+    ) -> cv::Return;
+    fn CVPixelBufferUnlockBaseAddress(
+        pixel_buffer: &mut PixelBuf,
+        lock_flags: LockFlags,
+    ) -> cv::Return;
 
     #[cfg(feature = "io")]
     fn CVPixelBufferGetIOSurface(pixel_buffer: &PixelBuf) -> Option<&io::Surf>;

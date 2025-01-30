@@ -1,4 +1,4 @@
-use crate::{arc, cf, cv, define_cf_type, define_opts};
+use crate::{arc, cf, cv, define_cf_type, define_opts, os};
 
 define_cf_type!(
     #[doc(alias = "CVPixelBufferPoolRef")]
@@ -10,7 +10,7 @@ impl PixelBufPool {
     pub fn new(
         pool_attributes: Option<&cf::Dictionary>,
         pixel_buf_attributes: Option<&cf::Dictionary>,
-    ) -> Result<arc::R<Self>, cv::Return> {
+    ) -> os::Result<arc::R<Self>> {
         unsafe {
             let mut pool_out = None;
             Self::create_in(pool_attributes, pixel_buf_attributes, &mut pool_out, None)
@@ -18,6 +18,7 @@ impl PixelBufPool {
         }
     }
 
+    #[doc(alias = "CVPixelBufferPoolCreate")]
     #[inline]
     pub unsafe fn create_in(
         pool_attributes: Option<&cf::Dictionary>,
@@ -28,11 +29,13 @@ impl PixelBufPool {
         CVPixelBufferPoolCreate(allocator, pool_attributes, pixel_buf_attributes, pool_out)
     }
 
+    #[doc(alias = "CVPixelBufferPoolGetAttribute")]
     #[inline]
     pub fn attrs(&self) -> Option<&cf::Dictionary> {
         unsafe { CVPixelBufferPoolGetAttributes(self) }
     }
 
+    #[doc(alias = "CVPixelBufferPoolGetPixelBufferAttributes")]
     #[inline]
     pub fn pixel_buf_attrs(&self) -> Option<&cf::Dictionary> {
         unsafe { CVPixelBufferPoolGetPixelBufferAttributes(self) }
@@ -48,12 +51,8 @@ impl PixelBufPool {
     }
 
     #[inline]
-    pub fn pixel_buf(&self) -> Result<arc::R<cv::PixelBuf>, cv::Return> {
-        unsafe {
-            let mut pixel_buf = None;
-            self.create_pixel_buffer_in(&mut pixel_buf, None)
-                .to_result_unchecked(pixel_buf)
-        }
+    pub fn pixel_buf(&self) -> os::Result<arc::R<cv::PixelBuf>> {
+        unsafe { os::result_unchecked(|res| self.create_pixel_buffer_in(res, None)) }
     }
 
     #[doc(alias = "CVPixelBufferPoolCreatePixelBufferWithAuxAttributes")]
@@ -76,15 +75,11 @@ impl PixelBufPool {
     pub fn pixel_buf_with_aux_attrs(
         &self,
         aux_attributes: Option<&cf::Dictionary>,
-    ) -> Result<arc::R<cv::PixelBuf>, cv::Return> {
+    ) -> os::Result<arc::R<cv::PixelBuf>> {
         unsafe {
-            let mut pixel_buffer_out = None;
-            self.create_pixel_buf_with_aux_attributes_in(
-                None,
-                aux_attributes,
-                &mut pixel_buffer_out,
-            )
-            .to_result_unchecked(pixel_buffer_out)
+            os::result_unchecked(|res| {
+                self.create_pixel_buf_with_aux_attributes_in(None, aux_attributes, res)
+            })
         }
     }
 
@@ -94,7 +89,7 @@ impl PixelBufPool {
     }
 }
 
-extern "C" {
+extern "C-unwind" {
     fn CVPixelBufferPoolCreate(
         allocator: Option<&cf::Allocator>,
         pool_attributes: Option<&cf::Dictionary>,

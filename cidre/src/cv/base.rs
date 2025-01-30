@@ -3,8 +3,8 @@ use crate::define_opts;
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(C)]
 pub struct Time {
-    pub time_value: i64,
-    pub time_scale: i32,
+    pub value: i64,
+    pub scale: i32,
     pub flags: Flags,
 }
 
@@ -78,7 +78,10 @@ pub struct TimeStamp {
 
 pub type OptionFlags = u64;
 
-define_opts!(pub TimeStampFlags(u64));
+define_opts!(
+    #[doc(alias = "CVTimeStampFlags")]
+    pub TimeStampFlags(u64)
+);
 
 impl TimeStampFlags {
     pub const VIDEO_TIME_VALID: Self = Self(1 << 0);

@@ -1,4 +1,4 @@
-use crate::{arc, cf, cv, define_cf_type, mtl};
+use crate::{arc, cf, cv, define_cf_type, mtl, os};
 
 define_cf_type!(
     #[doc(alias = "CVMetalTextureCacheRef")]
@@ -9,17 +9,17 @@ impl TextureCache {
     #[doc(alias = "CVMetalTextureCacheCreate")]
     #[inline]
     pub unsafe fn create_in(
-        cache_attributes: Option<&cf::Dictionary>,
+        cache_attrs: Option<&cf::Dictionary>,
         metal_device: &mtl::Device,
-        texture_attributes: Option<&cf::Dictionary>,
+        texture_attrs: Option<&cf::Dictionary>,
         cache_out: *mut Option<arc::R<TextureCache>>,
         allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
         CVMetalTextureCacheCreate(
             allocator,
-            cache_attributes,
+            cache_attrs,
             metal_device,
-            texture_attributes,
+            texture_attrs,
             cache_out,
         )
     }
@@ -27,20 +27,14 @@ impl TextureCache {
     #[doc(alias = "CVMetalTextureCacheCreate")]
     #[inline]
     pub fn create(
-        cache_attributes: Option<&cf::Dictionary>,
+        cache_attrs: Option<&cf::Dictionary>,
         metal_device: &mtl::Device,
-        texture_attributes: Option<&cf::Dictionary>,
-    ) -> Result<arc::R<TextureCache>, cv::Return> {
+        texture_attrs: Option<&cf::Dictionary>,
+    ) -> os::Result<arc::R<TextureCache>> {
         unsafe {
-            let mut cache_out = None;
-            Self::create_in(
-                cache_attributes,
-                metal_device,
-                texture_attributes,
-                &mut cache_out,
-                None,
-            )
-            .to_result_unchecked(cache_out)
+            os::result_unchecked(|res| {
+                Self::create_in(cache_attrs, metal_device, texture_attrs, res, None)
+            })
         }
     }
 
@@ -49,7 +43,7 @@ impl TextureCache {
     pub unsafe fn create_texture_in(
         &self,
         source_image: &cv::ImageBuf,
-        texture_attributes: Option<&cf::Dictionary>,
+        texture_attrs: Option<&cf::Dictionary>,
         pixel_format: mtl::PixelFormat,
         width: usize,
         height: usize,
@@ -61,7 +55,7 @@ impl TextureCache {
             allocator,
             self,
             source_image,
-            texture_attributes,
+            texture_attrs,
             pixel_format,
             width,
             height,
@@ -80,20 +74,20 @@ impl TextureCache {
         width: usize,
         height: usize,
         plane_index: usize,
-    ) -> Result<arc::R<cv::MetalTexture>, cv::Return> {
+    ) -> os::Result<arc::R<cv::MetalTexture>> {
         unsafe {
-            let mut texture_out = None;
-            self.create_texture_in(
-                source_image,
-                texture_attributes,
-                pixel_format,
-                width,
-                height,
-                plane_index,
-                &mut texture_out,
-                None,
-            )
-            .to_result_unchecked(texture_out)
+            os::result_unchecked(|res| {
+                self.create_texture_in(
+                    source_image,
+                    texture_attributes,
+                    pixel_format,
+                    width,
+                    height,
+                    plane_index,
+                    res,
+                    None,
+                )
+            })
         }
     }
 
@@ -102,18 +96,18 @@ impl TextureCache {
     /// This call must be made periodically to give the texture cache a chance to do internal housekeeping operations.
     #[doc(alias = "CVMetalTextureCacheFlush")]
     #[inline]
-    pub fn flush(&self) {
+    pub fn flush(&mut self) {
         unsafe { CVMetalTextureCacheFlush(self, 0) }
     }
 }
 
 #[link(name = "CoreVideo", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CVMetalTextureCacheCreate(
         allocator: Option<&cf::Allocator>,
-        cache_attributes: Option<&cf::Dictionary>,
+        cache_attrs: Option<&cf::Dictionary>,
         metal_device: &mtl::Device,
-        texture_attributes: Option<&cf::Dictionary>,
+        texture_attrs: Option<&cf::Dictionary>,
         cache_out: *mut Option<arc::R<TextureCache>>,
     ) -> cv::Return;
 
@@ -121,7 +115,7 @@ extern "C" {
         allocator: Option<&cf::Allocator>,
         texture_cache: &TextureCache,
         source_image: &cv::ImageBuf,
-        texture_attributes: Option<&cf::Dictionary>,
+        texture_attrs: Option<&cf::Dictionary>,
         pixel_format: mtl::PixelFormat,
         width: usize,
         height: usize,
@@ -129,7 +123,7 @@ extern "C" {
         texture_out: *mut Option<arc::R<cv::MetalTexture>>,
     ) -> cv::Return;
 
-    fn CVMetalTextureCacheFlush(texture_cache: &TextureCache, options: usize);
+    fn CVMetalTextureCacheFlush(texture_cache: &mut TextureCache, options: usize);
 }
 
 pub mod keys {

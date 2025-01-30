@@ -7,6 +7,7 @@ pub use base::TimeStamp;
 pub use base::TimeStampFlags;
 
 mod _return;
+pub use _return::err;
 pub use _return::Return;
 
 pub mod buffer;

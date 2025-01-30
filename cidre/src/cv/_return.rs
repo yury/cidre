@@ -1,84 +1,85 @@
-#[derive(Clone, Copy, PartialEq, Eq)]
-#[repr(transparent)]
-pub struct Return(i32);
+/// Check error values with cv::err module
+pub type Return = crate::os::Status;
 
-impl Return {
-    /// Function executed successfully without errors.
-    pub const SUCCESS: Self = Self(0);
-    /// Placeholder to mark the beginning of the range of cv::Return codes.
-    pub const FIRST: Self = Self(-6660);
+pub mod err {
+    use crate::os::Error;
 
-    pub const ERROR: Self = Self::FIRST;
+    /// Placeholder to mark the beginning of the range of cv::err codes.
+    #[doc(alias = "kCVReturnFirst")]
+    pub const FIRST: Error = Error::new_unchecked(-6660);
+
+    #[doc(alias = "kCVReturnError")]
+    pub const ERROR: Error = FIRST;
 
     /// At least one of the arguments passed in is not valid. Either out of range or the wrong type.
-    pub const INVALID_ARGUMENT: Self = Self(-6661);
+    #[doc(alias = "kCVReturnInvalidArgument")]
+    pub const INVALID_ARG: Error = Error::new_unchecked(-6661);
     /// The allocation for a buffer or buffer pool failed. Most likely because of lack of resources.
-    pub const ALLOCATION_FAILED: Self = Self(-6662);
+    #[doc(alias = "kCVReturnAllocationFailed")]
+    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-6662);
 
-    pub const UNSUPPORTED: Self = Self(-6663);
+    #[doc(alias = "kCVReturnUnsupported")]
+    pub const UNSUPPORTED: Error = Error::new_unchecked(-6663);
 
     // DisplayLink related errors
 
-    pub const INVALID_DISPLAY: Self = Self(-6670);
-    pub const DISPLAY_LINK_ALREADY_RUNNING: Self = Self(-6671);
-    pub const DISPLAY_LINK_NOT_RUNNING: Self = Self(-6672);
-    pub const DISPLAY_LINK_CALLBACKS_NOT_SET: Self = Self(-6673);
+    /// A cv::DisplayLink cannot be created for the given DisplayRef.
+    #[doc(alias = "kCVReturnInvalidDisplay")]
+    pub const INVALID_DISPLAY: Error = Error::new_unchecked(-6670);
+
+    /// The cv::DisplayLink is already started and running.
+    #[doc(alias = "kCVReturnDisplayLinkAlreadyRunning")]
+    pub const DISPLAY_LINK_ALREADY_RUNNING: Error = Error::new_unchecked(-6671);
+
+    /// The cv::DisplayLink has not been started.
+    #[doc(alias = "kCVReturnDisplayLinkNotRunning")]
+    pub const DISPLAY_LINK_NOT_RUNNING: Error = Error::new_unchecked(-6672);
+
+    /// The output callback is not set.
+    #[doc(alias = "kCVReturnDisplayLinkCallbacksNotSet")]
+    pub const DISPLAY_LINK_CALLBACKS_NOT_SET: Error = Error::new_unchecked(-6673);
 
     // Buffer related errors
 
-    pub const INVALID_PIXEL_FORMAT: Self = Self(-6680);
-    pub const INVALID_SIZE: Self = Self(-6681);
-    pub const INVALID_PIXEL_BUFFER_ATTRIBUTES: Self = Self(-6682);
-    pub const PIXEL_BUFFER_NOT_OPEN_GLCOMPATIBLE: Self = Self(-6683);
-    pub const PIXEL_BUFFER_NOT_METAL_COMPATIBLE: Self = Self(-6684);
+    /// The requested pixelformat is not supported for the cv::Buf type.
+    #[doc(alias = "kCVReturnInvalidPixelFormat")]
+    pub const INVALID_PIXEL_FORMAT: Error = Error::new_unchecked(-6680);
+
+    ///  The requested size (most likely too big) is not supported for the cv::Buf type.
+    #[doc(alias = "kCVReturnInvalidSize")]
+    pub const INVALID_SIZE: Error = Error::new_unchecked(-6681);
+
+    /// A cv::Buffer cannot be created with the given attributes.
+    #[doc(alias = "kCVReturnInvalidPixelBufferAttributes")]
+    pub const INVALID_PIXEL_BUF_ATTRS: Error = Error::new_unchecked(-6682);
+
+    /// The Buffer cannot be used with OpenGL as either its size, pixelformat or attributes are not supported by OpenGL.
+    #[doc(alias = "kCVReturnPixelBufferNotOpenGLCompatible")]
+    pub const PIXEL_BUF_NOT_OPEN_GL_COMPATIBLE: Error = Error::new_unchecked(-6683);
+
+    /// The Buffer cannot be used with Metal as either its size, pixelformat or attributes are not supported by Metal.
+    #[doc(alias = "kCVReturnPixelBufferNotMetalCompatible")]
+    pub const PIXEL_BUF_NOT_METAL_COMPATIBLE: Error = Error::new_unchecked(-6684);
 
     // Buffer pool related errors
 
-    pub const WOULD_EXCEED_ALLOCATION_THRESHOLD: Self = Self(-6689);
-    pub const POOL_ALLOCATION_FAILED: Self = Self(-6690);
-    pub const INVALID_POOL_ATTRIBUTES: Self = Self(-6691);
-    pub const RETRY: Self = Self(-6692);
+    /// The allocation request failed because it would have exceeded a specified allocation threshold (see kCVPixelBufferPoolAllocationThresholdKey).
+    #[doc(alias = "kCVReturnWouldExceedAllocationThreshold")]
+    pub const WOULD_EXCEED_ALLOCATION_THRESHOLD: Error = Error::new_unchecked(-6689);
 
-    /// Placeholder to mark the end of the range of cv::Return codes.
-    pub const LAST: Self = Self(-6699);
+    /// The allocation for the buffer pool failed. Most likely because of lack of resources. Check if your parameters are in range.
+    #[doc(alias = "kCVReturnPoolAllocationFailed")]
+    pub const POOL_ALLOCATION_FAILED: Error = Error::new_unchecked(-6690);
 
-    #[inline]
-    pub fn is_ok(&self) -> bool {
-        *self == Self::SUCCESS
-    }
+    /// A cv::BufPool cannot be created with the given attributes.
+    #[doc(alias = "kCVReturnInvalidPoolAttributes")]
+    pub const INVALID_POOL_ATTRS: Error = Error::new_unchecked(-6691);
 
-    #[inline]
-    pub unsafe fn to_result_unchecked<T>(self, option: Option<T>) -> Result<T, Self> {
-        if self.is_ok() {
-            Ok(option.unwrap_unchecked())
-        } else {
-            Err(self)
-        }
-    }
+    /// A scan hasn't completely traversed the CVBufferPool due to a concurrent operation. The client can retry the scan.
+    #[doc(alias = "kCVReturnRetry")]
+    pub const RETRY: Error = Error::new_unchecked(-6692);
 
-    #[inline]
-    pub fn result(self) -> Result<(), Self> {
-        if self.is_ok() {
-            Ok(())
-        } else {
-            Err(self)
-        }
-    }
-}
-
-impl From<Return> for Result<(), Return> {
-    #[inline]
-    fn from(r: Return) -> Self {
-        r.result()
-    }
-}
-
-impl std::fmt::Debug for Return {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let help = format!("https://www.osstatus.com?search={}", self.0);
-        f.debug_struct("os::Status")
-            .field("raw", &self.0)
-            .field("help", &help)
-            .finish()
-    }
+    /// Placeholder to mark the end of the range of cv::err codes.
+    #[doc(alias = "kCVReturnLast")]
+    pub const LAST: Error = Error::new_unchecked(-6699);
 }

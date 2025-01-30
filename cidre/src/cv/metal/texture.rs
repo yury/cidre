@@ -3,11 +3,13 @@ use crate::{cv, mtl};
 pub type Texture = cv::ImageBuf;
 
 impl Texture {
+    #[doc(alias = "CVMetalTextureGetTexture")]
     #[inline]
     pub fn texture(&self) -> Option<&mtl::Texture> {
         unsafe { CVMetalTextureGetTexture(self) }
     }
 
+    #[doc(alias = "CVMetalTextureIsFlipped")]
     #[inline]
     pub fn is_texture_flipped(&self) -> bool {
         unsafe { CVMetalTextureIsFlipped(self) }
@@ -15,7 +17,7 @@ impl Texture {
 }
 
 #[link(name = "CoreVideo", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn CVMetalTextureGetTexture(image: &Texture) -> Option<&mtl::Texture>;
     fn CVMetalTextureIsFlipped(image: &Texture) -> bool;
 }
@@ -23,11 +25,13 @@ extern "C" {
 pub mod keys {
     use crate::cf;
 
+    #[doc(alias = "kCVMetalTextureUsage")]
     #[inline]
     pub fn usage() -> &'static cf::String {
         unsafe { kCVMetalTextureUsage }
     }
 
+    #[doc(alias = "kCVMetalTextureStorageMode")]
     #[inline]
     pub fn storage_mode() -> &'static cf::String {
         unsafe { kCVMetalTextureStorageMode }
