@@ -171,7 +171,7 @@ impl Device {
         &self,
         src: &ns::String,
         opts: Option<&mtl::CompileOpts>,
-    ) -> Result<arc::R<Lib>, &'ear ns::Error> {
+    ) -> ns::Result<'ear, arc::R<Lib>> {
         ns::if_none(|err| unsafe { Self::new_lib_with_src_err(self, src, opts, err) })
     }
 
@@ -204,7 +204,7 @@ impl Device {
     pub fn new_lib_with_stitched_desc_blocking<'ear>(
         &self,
         desc: mtl::FnStitchedLibDesc,
-    ) -> Result<arc::R<mtl::Lib>, &'ear ns::Error> {
+    ) -> ns::Result<'ear, arc::R<mtl::Lib>> {
         ns::if_none(|err| unsafe { self.new_lib_with_stitched_desc_err(desc, err) })
     }
 
@@ -243,7 +243,7 @@ impl Device {
     pub fn new_render_ps<'ear>(
         &self,
         desc: &mtl::RenderPipelineDesc,
-    ) -> Result<arc::R<mtl::RenderPipelineState>, &'ear ns::Error> {
+    ) -> ns::Result<'ear, arc::R<mtl::RenderPipelineState>> {
         ns::if_none(|err| unsafe { Self::new_render_ps_err(self, desc, err) })
     }
 
@@ -251,7 +251,7 @@ impl Device {
     pub fn new_compute_ps_with_fn<'ear>(
         &self,
         function: &mtl::Fn,
-    ) -> Result<arc::R<mtl::ComputePipelineState>, &'ear ns::Error> {
+    ) -> ns::Result<'ear, arc::R<mtl::ComputePipelineState>> {
         ns::if_none(|err| unsafe { self.new_compute_ps_with_fn_err(function, err) })
     }
 
@@ -269,7 +269,7 @@ impl Device {
         &self,
         desc: &mtl::ComputePipelineDesc,
         opts: mtl::PipelineOpt,
-    ) -> Result<arc::R<mtl::ComputePipelineState>, &'ear ns::Error> {
+    ) -> ns::Result<'ear, arc::R<mtl::ComputePipelineState>> {
         ns::if_none(|err| unsafe { self.new_compute_ps_err(desc, opts, std::ptr::null_mut(), err) })
     }
 
@@ -286,7 +286,7 @@ impl Device {
         &self,
         desc: &mtl::TileRenderPipelineDesc,
         opts: mtl::PipelineOpt,
-    ) -> Result<arc::R<mtl::RenderPipelineState>, &'ear ns::Error> {
+    ) -> ns::Result<'ear, arc::R<mtl::RenderPipelineState>> {
         ns::if_none(|err| unsafe {
             self.new_tile_render_ps_err(desc, opts, std::ptr::null_mut(), err)
         })
@@ -417,7 +417,7 @@ impl Device {
     pub fn min_linear_texture_alignment_for_pixel_format<'ear>(
         &self,
         format: mtl::PixelFormat,
-    ) -> Result<usize, &'ear ns::Exception> {
+    ) -> ns::ExResult<'ear, usize> {
         ns::try_catch(|| unsafe {
             self.min_linear_texture_alignment_for_pixel_format_throws(format)
         })
@@ -451,7 +451,7 @@ impl Device {
     pub fn new_residency_set<'ear>(
         &self,
         desc: &mtl::ResidencySetDesc,
-    ) -> Result<arc::R<mtl::ResidencySet>, &'ear ns::Error> {
+    ) -> ns::Result<'ear, arc::R<mtl::ResidencySet>> {
         ns::if_none(|err| unsafe { self.new_residency_set_err(desc, err) })
     }
 
