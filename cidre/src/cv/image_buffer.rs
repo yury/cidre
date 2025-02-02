@@ -70,6 +70,7 @@ impl ImageBuf {
     /// use cidre::{cv, cg};
     ///
     /// let buf = cv::PixelBuf::new(200, 100, cv::PixelFormat::_32_BGRA, None).unwrap();
+    /// assert!(buf.color_space().is_none());
     ///
     /// ```
     #[inline]

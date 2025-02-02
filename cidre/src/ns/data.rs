@@ -74,6 +74,12 @@ define_obj_type!(
 
 unsafe impl Send for Data {}
 
+impl AsRef<cf::Data> for Data {
+    fn as_ref(&self) -> &cf::Data {
+        self.as_cf()
+    }
+}
+
 define_obj_type!(
     #[doc(alias = "NSMutableData")]
     pub DataMut(Data), NS_MUTABLE_DATA
@@ -201,6 +207,18 @@ impl DataMut {
 
     pub fn as_cf_mut(&mut self) -> &mut cf::DataMut {
         unsafe { std::mem::transmute(self) }
+    }
+}
+
+impl AsRef<cf::DataMut> for DataMut {
+    fn as_ref(&self) -> &cf::DataMut {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
+impl AsMut<cf::DataMut> for DataMut {
+    fn as_mut(&mut self) -> &mut cf::DataMut {
+        self.as_cf_mut()
     }
 }
 

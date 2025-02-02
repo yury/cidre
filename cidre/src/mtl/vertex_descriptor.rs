@@ -246,6 +246,7 @@ define_obj_type!(
     pub VertexBufLayoutDesc(ns::Id),
     MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR
 );
+
 impl VertexBufLayoutDesc {
     /// The distance, in bytes, between the attribute data
     /// of two vertices in the buffer.
@@ -337,6 +338,7 @@ define_obj_type!(
     #[doc(alias = "MTLVertexAttributeDescriptorArray")]
     pub VertexAttrDescArray(ns::Id)
 );
+
 impl VertexAttrDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
     pub fn get(&self, index: usize) -> &VertexAttrDesc;

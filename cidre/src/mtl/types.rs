@@ -102,6 +102,10 @@ impl Region {
             },
         }
     }
+
+    pub fn with(origin: Origin, size: Size) -> Self {
+        Self { origin, size }
+    }
 }
 
 /// Identify a sample within a pixel. Origin is top-left with a range [0,1) for both x and y.

@@ -2,7 +2,8 @@ use crate::{arc, cg, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "UIColor")]
-    pub Color(ns::Id), UI_COLOR
+    pub Color(ns::Id),
+    UI_COLOR
 );
 
 unsafe impl Send for Color {}

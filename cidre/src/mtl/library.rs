@@ -65,22 +65,43 @@ impl Attr {
 #[derive(Debug, PartialEq, Eq)]
 #[repr(usize)]
 pub enum LangVersion {
+    #[doc(alias = "MTLLanguageVersion1_0")]
     _1_0 = (1 << 16),
+
+    #[doc(alias = "MTLLanguageVersion1_1")]
     _1_1 = (1 << 16) + 1,
+    #[doc(alias = "MTLLanguageVersion1_2")]
     _1_2 = (1 << 16) + 2,
+
+    #[doc(alias = "MTLLanguageVersion2_0")]
     _2_0 = (2 << 16),
+
+    #[doc(alias = "MTLLanguageVersion2_1")]
     _2_1 = (2 << 16) + 1,
+
+    #[doc(alias = "MTLLanguageVersion2_2")]
     _2_2 = (2 << 16) + 2,
+
+    #[doc(alias = "MTLLanguageVersion2_3")]
     _2_3 = (2 << 16) + 3,
+
+    #[doc(alias = "MTLLanguageVersion2_4")]
     _2_4 = (2 << 16) + 4,
+
+    #[doc(alias = "MTLLanguageVersion3_0")]
     _3_0 = (3 << 16),
+
+    #[doc(alias = "MTLLanguageVersion3_1")]
     _3_1 = (3 << 16) + 1,
+
+    #[doc(alias = "MTLLanguageVersion3_2")]
     _3_2 = (3 << 16) + 2,
 }
 
 /// An enum to indicate if the compiler can perform optimizations for floating-point
 /// arithmetic that may violate the IEEE 754 standard
 #[doc(alias = "MTLMathMode")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
 pub enum MathMode {
     /// Disables unsafe floating-point optimizations
@@ -98,6 +119,7 @@ pub enum MathMode {
 
 /// An enum to indicate the default math functions for single precision floating-point
 #[doc(alias = "MTLMathFloatingPointFunctions")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
 pub enum MathFloatingPointFns {
     /// Sets the default math functions for single precision floating-point to the corresponding functions in `metal::fast` namespace
@@ -119,10 +141,11 @@ pub enum Type {
 }
 
 #[doc(alias = "MTLLibraryOptimizationLevel")]
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Default, Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
 pub enum OptimizationLevel {
     /// An optimization option for the Metal compiler that prioritizes runtime performance.
+    #[default]
     Default = 0,
 
     /// An optimization option for the Metal compiler that prioritizes minimizing
@@ -263,10 +286,10 @@ impl Fn {
     define_mtl!(set_label);
 
     #[objc::msg_send(device)]
-    pub fn device(&self) -> arc::R<mtl::Device>;
+    pub fn device(&self) -> &mtl::Device;
 
     #[objc::msg_send(label)]
-    pub fn label(&self) -> Option<arc::R<ns::String>>;
+    pub fn label(&self) -> Option<&ns::String>;
 
     #[objc::msg_send(name)]
     pub fn name(&self) -> arc::R<ns::String>;
@@ -304,10 +327,10 @@ impl Lib {
     define_mtl!(set_label);
 
     #[objc::msg_send(device)]
-    pub fn device(&self) -> arc::R<mtl::Device>;
+    pub fn device(&self) -> &mtl::Device;
 
     #[objc::msg_send(label)]
-    pub fn label(&self) -> Option<arc::R<ns::String>>;
+    pub fn label(&self) -> Option<&ns::String>;
 
     /// The array contains ns::String objects, with the name of each function in library.
     #[objc::msg_send(functionNames)]

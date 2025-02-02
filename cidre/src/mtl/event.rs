@@ -12,7 +12,7 @@ impl Event {
     pub fn device(&self) -> arc::R<mtl::Device>;
 
     #[objc::msg_send(label)]
-    pub fn label(&self) -> Option<arc::R<ns::String>>;
+    pub fn label(&self) -> Option<&ns::String>;
 }
 
 define_obj_type!(
