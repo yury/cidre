@@ -1,3 +1,4 @@
+#[cfg(all(feature = "blocks", feature = "dispatch"))]
 use crate::{blocks, cm, dispatch, objc};
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -8,6 +9,7 @@ pub enum Status {
     Failed = 2,
 }
 
+#[cfg(all(feature = "blocks", feature = "dispatch"))]
 #[objc::protocol(AVQueuedSampleBufferRendering)]
 pub trait QueuedSampleBufRendering: objc::Obj {
     #[objc::msg_send(timebase)]

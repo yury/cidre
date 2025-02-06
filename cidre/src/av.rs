@@ -121,6 +121,7 @@ pub use asset::SegmentTrackReport as AssetSegmentTrackReport;
 pub use asset::SegmentType as AssetSegmentType;
 
 pub use asset::AssetImageGenerator;
+#[cfg(feature = "blocks")]
 pub use asset::AssetImageGeneratorCh;
 pub use asset::AssetImageGeneratorResult;
 
@@ -131,6 +132,7 @@ pub use audio::ChannelLayout as AudioChannelLayout;
 pub use audio::CommonFormat as AudioCommonFormat;
 pub use audio::CompressedBuf as AudioCompressedBuf;
 pub use audio::Converter as AudioConverter;
+#[cfg(feature = "blocks")]
 pub use audio::ConverterInputBlock as AudioConverterInputBlock;
 pub use audio::ConverterInputStatus as AudioConverterInputStatus;
 pub use audio::Engine as AudioEngine;
@@ -140,10 +142,12 @@ pub use audio::FrameCount as AudioFrameCount;
 pub use audio::FramePos as AudioFramePos;
 pub use audio::InputNode as AudioInputNode;
 pub use audio::IoNode as AudioIoNode;
+#[cfg(feature = "blocks")]
 pub use audio::IoNodeInputBlock as AudioIoNodeInputBlock;
 pub use audio::MixerNode as AudioMixerNode;
 pub use audio::Node as AudioNode;
 pub use audio::NodeBus as AudioNodeBus;
+#[cfg(feature = "blocks")]
 pub use audio::NodeCh as AudioNodeCompletionHandler;
 pub use audio::OutputNode as AudioOutputNode;
 pub use audio::PacketCount as AudioPacketCount;
@@ -210,6 +214,7 @@ pub use video::Codec as VideoCodec;
 
 pub mod sample_buffer;
 pub use sample_buffer::DisplayLayer as SampleBufDisplayLayer;
+#[cfg(all(feature = "blocks", feature = "dispatch"))]
 pub use sample_buffer::QueuedSampleBufRendering;
 pub use sample_buffer::QueuedSampleBufRenderingStatus;
 pub use sample_buffer::VideoRenderer as SampleBufVideoRenderer;

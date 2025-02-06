@@ -1405,6 +1405,7 @@ pub enum VoiceIoSpeechActivityEvent {
     Ended = 1,
 }
 
+#[cfg(feature = "blocks")]
 pub type VoiceIoMutedSpeechActivityEventListener =
     crate::blocks::EscBlock<fn(VoiceIoSpeechActivityEvent)>;
 

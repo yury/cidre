@@ -1,4 +1,7 @@
-use crate::{arc, cf, cm, define_cf_type, dispatch, os};
+use crate::{arc, cf, cm, define_cf_type, os};
+
+#[cfg(feature = "dispatch")]
+use crate::dispatch;
 
 define_cf_type!(
     /// A timing source object.
@@ -506,6 +509,7 @@ impl Timebase {
     ///
     #[doc(alias = "CMTimebaseAddTimerDispatchSource")]
     #[inline]
+    #[cfg(feature = "dispatch")]
     pub fn add_timer_dispatch_src(&mut self, timer_src: &dispatch::TimerSrc) -> os::Result {
         unsafe { CMTimebaseAddTimerDispatchSource(self, timer_src).result() }
     }
@@ -517,6 +521,7 @@ impl Timebase {
     /// from its list and release it even if this function is not called.
     #[doc(alias = "CMTimebaseRemoveTimerDispatchSource")]
     #[inline]
+    #[cfg(feature = "dispatch")]
     pub fn remove_timer_dispatch_src(&mut self, timer_src: &dispatch::TimerSrc) -> os::Result {
         unsafe { CMTimebaseRemoveTimerDispatchSource(self, timer_src).result() }
     }
@@ -538,6 +543,7 @@ impl Timebase {
     /// kCMTimeInvalid across the timebase change.)
     #[doc(alias = "CMTimebaseSetTimerDispatchSourceNextFireTime")]
     #[inline]
+    #[cfg(feature = "dispatch")]
     pub fn set_timer_dispatch_src_next_fire_time(
         &mut self,
         timer_src: &dispatch::TimerSrc,
@@ -552,6 +558,7 @@ impl Timebase {
     /// cm::Timebase::set_timer_dispatch_src_next_fire_time call.
     #[doc(alias = "CMTimebaseSetTimerDispatchSourceToFireImmediately")]
     #[inline]
+    #[cfg(feature = "dispatch")]
     pub fn set_timer_dispatch_src_to_fire_immediately(
         &mut self,
         timer_src: &dispatch::TimerSrc,
@@ -662,16 +669,19 @@ extern "C-unwind" {
         timer: &mut cf::RunLoopTimer,
     ) -> os::Status;
 
+    #[cfg(feature = "dispatch")]
     fn CMTimebaseAddTimerDispatchSource(
         timebase: &mut cm::Timebase,
         timer_src: &dispatch::TimerSrc,
     ) -> os::Status;
 
+    #[cfg(feature = "dispatch")]
     fn CMTimebaseRemoveTimerDispatchSource(
         timebase: &mut cm::Timebase,
         timer_src: &dispatch::TimerSrc,
     ) -> os::Status;
 
+    #[cfg(feature = "dispatch")]
     fn CMTimebaseSetTimerDispatchSourceNextFireTime(
         timebase: &mut cm::Timebase,
         timer_src: &dispatch::TimerSrc,
@@ -679,6 +689,7 @@ extern "C-unwind" {
         flags: u32,
     ) -> os::Status;
 
+    #[cfg(feature = "dispatch")]
     fn CMTimebaseSetTimerDispatchSourceToFireImmediately(
         timebase: &mut cm::Timebase,
         timer_src: &dispatch::TimerSrc,

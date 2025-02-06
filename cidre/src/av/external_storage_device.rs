@@ -1,4 +1,7 @@
-use crate::{api, arc, av, blocks, define_obj_type, ns, objc};
+use crate::{api, arc, av, define_obj_type, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 define_obj_type!(
     #[doc(alias = "AVExternalStorageDevice")]
@@ -65,9 +68,11 @@ impl Device {
     #[objc::msg_send(authorizationStatus)]
     pub fn authorization_status() -> av::AuthorizationStatus;
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(requestAccessWithCompletionHandler:)]
     pub fn request_access_ch_block(block: &mut blocks::EscBlock<fn(granted: bool)>);
 
+    #[cfg(feature = "blocks")]
     pub fn request_access_ch(block: impl FnMut(bool) + 'static) {
         let mut block = blocks::EscBlock::new1(block);
         Self::request_access_ch_block(&mut block);

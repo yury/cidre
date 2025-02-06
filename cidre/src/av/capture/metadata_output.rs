@@ -1,4 +1,7 @@
-use crate::{api, arc, av, cg, define_obj_type, dispatch, ns, objc};
+use crate::{api, arc, av, cg, define_obj_type, ns, objc};
+
+#[cfg(feature = "dispatch")]
+use crate::dispatch;
 
 use super::Output;
 
@@ -29,6 +32,7 @@ define_obj_type!(
 );
 
 impl MetadataOutput {
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(setMetadataObjectsDelegate:queue:)]
     pub fn set_meta_data_objs_delegate<D: MetadataOutputObjsDelegate>(
         &mut self,

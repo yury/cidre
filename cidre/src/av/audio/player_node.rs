@@ -1,8 +1,7 @@
-use crate::{
-    arc,
-    av::{self, audio},
-    blocks, define_obj_type, objc,
-};
+use crate::{arc, av::audio, define_obj_type, objc};
+
+#[cfg(feature = "blocks")]
+use crate::{av, blocks};
 
 /// Options controlling buffer scheduling.
 #[doc(alias = "AVAudioPlayerNodeBufferOptions")]
@@ -40,6 +39,7 @@ impl PlayerNode {
     /// Schedule playing samples from an [`av::AudioPCMBuf`].
     ///
     /// Schedules the buffer to be played following any previously scheduled commands.
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(scheduleBuffer:completionHandler:)]
     pub fn schedule_buf_ch_block(
         &mut self,
@@ -47,11 +47,13 @@ impl PlayerNode {
         handler: Option<&mut audio::NodeCh<blocks::Esc>>,
     );
 
+    #[cfg(feature = "blocks")]
     pub fn schedule_buf_ch(&mut self, buffer: &av::AudioPcmBuf, handler: impl FnMut() + 'static) {
         let mut block = blocks::EscBlock::new0(handler);
         self.schedule_buf_ch_block(buffer, Some(&mut block));
     }
 
+    #[cfg(feature = "blocks")]
     pub async fn schedule_buf(&mut self, buffer: &av::AudioPcmBuf) {
         let (future, mut block) = blocks::comp0();
         self.schedule_buf_ch_block(buffer, Some(&mut block));

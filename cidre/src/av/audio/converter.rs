@@ -3,8 +3,13 @@ use std::mem::transmute;
 use crate::{
     arc,
     av::{self, audio},
-    blocks, cf, define_cls, define_obj_type, ns, objc,
+    define_cls, define_obj_type, ns, objc,
 };
+
+#[cfg(feature = "blocks")]
+use crate::{blocks, cf};
+
+#[cfg(feature = "blocks")]
 #[doc(alias = "AVAudioConverterInputBlock")]
 pub type InputBlock<Attr> = blocks::Block<
     fn(av::AudioPacketCount, &mut av::AudioConverterInputStatus) -> Option<arc::Rar<av::AudioBuf>>,
@@ -141,6 +146,7 @@ impl Converter {
         }
     }
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(convertToBuffer:error:withInputFromBlock:)]
     pub unsafe fn convert_to_buf_err_with_input_from_block(
         &self,
@@ -155,6 +161,7 @@ impl Converter {
     /// sample frames successfully converted.
     #[doc(alias = "convertToBuffer:error:withInputFromBlock:")]
     #[inline]
+    #[cfg(feature = "blocks")]
     pub fn convert_to_buf_with_input_from_block<'ar>(
         &self,
         output_buffer: &mut av::AudioBuf,

@@ -1,4 +1,7 @@
-use crate::{arc, av::MediaType, blocks, cm, cv, define_cls, define_obj_type, dispatch, ns, objc};
+use crate::{arc, av::MediaType, cm, cv, define_cls, define_obj_type, ns, objc};
+
+#[cfg(all(feature = "blocks", feature = "dispatch"))]
+use crate::{blocks, dispatch};
 
 define_obj_type!(pub WriterInput(ns::Id));
 
@@ -124,6 +127,7 @@ impl WriterInput {
         ns::try_catch(|| unsafe { self.append_sample_buf_throws(buffer) })
     }
 
+    #[cfg(all(feature = "blocks", feature = "dispatch"))]
     #[objc::msg_send(requestMediaDataWhenReadyOnQueue:usingBlock:)]
     pub unsafe fn request_media_data_when_ready_on_queue_throws(
         &self,
@@ -131,6 +135,7 @@ impl WriterInput {
         block: &mut blocks::CompletionBlock,
     );
 
+    #[cfg(all(feature = "blocks", feature = "dispatch"))]
     pub fn request_media_data_when_ready_on_queue(
         &self,
         queue: &dispatch::Queue,

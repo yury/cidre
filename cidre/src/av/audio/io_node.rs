@@ -1,5 +1,9 @@
-use crate::{at, av, blocks, define_obj_type, ns, objc};
+use crate::{av, define_obj_type, ns, objc};
 
+#[cfg(feature = "blocks")]
+use crate::{at, blocks};
+
+#[cfg(feature = "blocks")]
 #[doc(alias = "AVAudioIONodeInputBlock")]
 pub type InputBlock<Attr> = blocks::Block<fn(av::AudioFrameCount) -> *const at::AudioBufList, Attr>;
 
@@ -72,6 +76,7 @@ define_obj_type!(
 );
 
 impl InputNode {
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(setManualRenderingInputPCMFormat:inputBlock:)]
     pub fn _set_manual_rendering_input_pcm_format(
         &mut self,
@@ -79,6 +84,7 @@ impl InputNode {
         input_block: &mut av::AudioIoNodeInputBlock<blocks::Esc>,
     ) -> bool;
 
+    #[cfg(feature = "blocks")]
     pub fn set_manual_rendering_input_pcm_format(
         &mut self,
         format: &av::AudioFormat,
@@ -112,12 +118,14 @@ impl InputNode {
     #[objc::msg_send(setVoiceProcessingInputMuted:)]
     pub fn set_vp_input_muted(&mut self, val: bool);
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(setMutedSpeechActivityEventListener:)]
     pub fn _set_muted_speech_activity_event_listener(
         &mut self,
         block: Option<&mut blocks::EscBlock<fn(VpSpeechActivityEvent)>>,
     ) -> bool;
 
+    #[cfg(feature = "blocks")]
     pub fn set_muted_speech_activity_event_listener(
         &mut self,
         block: Option<&mut blocks::EscBlock<fn(VpSpeechActivityEvent)>>,

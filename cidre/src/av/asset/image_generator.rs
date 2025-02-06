@@ -1,4 +1,7 @@
-use crate::{arc, av, blocks, cg, cm, define_obj_type, ns, objc};
+use crate::{arc, av, cg, cm, define_obj_type, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 #[doc(alias = "AVAssetImageGeneratorResult")]
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -9,6 +12,7 @@ pub enum ImageGeneratorResult {
     Cancelled = 2,
 }
 
+#[cfg(feature = "blocks")]
 #[doc(alias = "AVAssetImageGeneratorCompletionHandler")]
 pub type ImageGeneratorCh = blocks::EscBlock<
     fn(
@@ -66,6 +70,7 @@ impl ImageGenerator {
     #[objc::msg_send(setRequestedTimeToleranceAfter:)]
     pub fn set_requested_time_tolerance_after(&mut self, val: cm::Time);
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(generateCGImagesAsynchronouslyForTimes:completionHandler:)]
     pub fn cg_images_for_times_ch(
         &self,
@@ -73,6 +78,7 @@ impl ImageGenerator {
         ch: &mut ImageGeneratorCh,
     );
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(generateCGImageAsynchronouslyForTime:completionHandler:)]
     pub fn cg_image_for_time_ch(
         &self,
@@ -82,6 +88,7 @@ impl ImageGenerator {
         >,
     );
 
+    #[cfg(feature = "async")]
     pub async fn cg_image_for_time(
         &self,
         request_time: cm::Time,

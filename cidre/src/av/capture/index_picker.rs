@@ -1,7 +1,7 @@
-use crate::{api, arc, av, define_obj_type, dispatch, ns, objc};
+use crate::{api, arc, av, define_obj_type, ns, objc};
 
-#[cfg(feature = "blocks")]
-use crate::blocks;
+#[cfg(all(feature = "blocks", feature = "dispatch"))]
+use crate::{blocks, dispatch};
 
 define_obj_type!(
     #[doc(alias = "AVCaptureIndexPicker")]
@@ -107,7 +107,7 @@ impl IndexPicker {
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
     pub fn set_accessibility_id(&mut self, val: Option<&ns::String>);
 
-    #[cfg(feature = "blocks")]
+    #[cfg(all(feature = "blocks", feature = "dispatch"))]
     #[objc::msg_send(setActionQueue:action:)]
     pub fn set_queue_action(
         &mut self,

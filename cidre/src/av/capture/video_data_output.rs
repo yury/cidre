@@ -1,4 +1,7 @@
-use crate::{arc, av, cm, define_obj_type, dispatch, ns, objc};
+use crate::{arc, av, cm, define_obj_type, ns, objc};
+
+#[cfg(feature = "dispatch")]
+use crate::dispatch;
 
 use super::Output;
 
@@ -29,6 +32,7 @@ define_obj_type!(
 );
 
 impl VideoDataOutput {
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(setSampleBufferDelegate:queue:)]
     pub fn set_sample_buf_delegate<D: VideoDataOutputSampleBufDelegate>(
         &mut self,
@@ -76,6 +80,7 @@ impl VideoDataOutput {
     pub fn available_video_codecs(&self) -> arc::R<ns::Array<av::VideoCodec>>;
 
     /// The dispatch queue on which all sample buffer delegate methods will be called.
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(sampleBufferCallbackQueue)]
     pub fn sample_buf_callback_queue(&self) -> Option<arc::R<dispatch::Queue>>;
 

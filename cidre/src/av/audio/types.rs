@@ -1,3 +1,4 @@
+#[cfg(feature = "blocks")]
 use crate::blocks;
 
 #[doc(alias = "AVAudioFramePosition")]
@@ -18,6 +19,7 @@ pub type ChannelCount = u32;
 pub type NodeBus = usize;
 
 #[doc(alias = "AVAudioNodeCompletionHandler")]
+#[cfg(feature = "blocks")]
 pub type NodeCh<Attr> = blocks::Block<fn(), Attr>;
 
 #[derive(Copy, Clone, Debug, PartialEq)]

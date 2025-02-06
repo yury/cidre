@@ -13,6 +13,7 @@ pub use types::ChannelCount;
 pub use types::FrameCount;
 pub use types::FramePos;
 pub use types::NodeBus;
+#[cfg(feature = "blocks")]
 pub use types::NodeCh;
 pub use types::PacketCount;
 pub use types::Point3d;
@@ -23,6 +24,7 @@ mod node;
 pub use node::Node;
 
 pub mod io_node;
+#[cfg(feature = "blocks")]
 pub use io_node::InputBlock as IoNodeInputBlock;
 pub use io_node::InputNode;
 pub use io_node::IoNode;
@@ -118,6 +120,7 @@ pub use connection_point::ConnectionPoint;
 
 pub mod converter;
 pub use converter::Converter;
+#[cfg(feature = "blocks")]
 pub use converter::InputBlock as ConverterInputBlock;
 pub use converter::InputStatus as ConverterInputStatus;
 pub use converter::OutputStatus as ConverterOutputStatus;

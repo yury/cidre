@@ -1,4 +1,7 @@
-use crate::{arc, av, cg, cm, define_cls, define_obj_type, dispatch, ns, objc};
+use crate::{arc, av, cg, cm, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "dispatch")]
+use crate::dispatch;
 
 /// Constants indicating video orientation, for use with
 /// [`av::CaptureVideoPreviewLayer`] and [`av::CaptureConnection`].
@@ -132,6 +135,7 @@ impl Session {
     #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
     pub fn controls_delegate(&self) -> Option<arc::R<AnyControlsDelegate>>;
 
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(setControlsDelegate:queue:)]
     #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
     pub fn set_controls_delegate<D: ControlsDelegate>(
@@ -140,6 +144,7 @@ impl Session {
         queue: Option<&dispatch::Queue>,
     );
 
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(controlsDelegateCallbackQueue)]
     #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
     pub fn controls_delegate_cb_queue(&self) -> Option<arc::R<dispatch::Queue>>;

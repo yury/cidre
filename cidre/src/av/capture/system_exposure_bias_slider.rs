@@ -1,7 +1,7 @@
-use crate::{api, arc, av, cg, define_obj_type, ns, objc};
+use crate::{api, arc, av, define_obj_type, ns, objc};
 
 #[cfg(feature = "blocks")]
-use crate::blocks;
+use crate::{blocks, cg};
 
 define_obj_type!(
     /// A control that adjusts the exposure bias of a capture device within

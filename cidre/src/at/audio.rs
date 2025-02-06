@@ -70,9 +70,11 @@ pub use queue::err as queue_err;
 pub use queue::Queue;
 pub use queue::QueueBuf;
 pub use queue::QueueInputCb;
+#[cfg(feature = "blocks")]
 pub use queue::QueueInputCbBlock;
 pub use queue::QueueLevelMeterState;
 pub use queue::QueueOutputCb;
+#[cfg(feature = "blocks")]
 pub use queue::QueueOutputCbBlock;
 pub use queue::QueueParam;
 pub use queue::QueueParamEvent;

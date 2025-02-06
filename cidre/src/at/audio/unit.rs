@@ -52,6 +52,7 @@ pub use properties::ScheduledSliceCompProc;
 pub use properties::ScheduledSliceFlags;
 pub use properties::SpatializationAlgorithm;
 pub use properties::StartAtTimeParams as OutputStartAtTimeParams;
+#[cfg(feature = "blocks")]
 pub use properties::VoiceIoMutedSpeechActivityEventListener;
 pub use properties::VoiceIoOtherAudioDuckingCfg;
 pub use properties::VoiceIoSpeechActivityEvent;

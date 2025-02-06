@@ -1,5 +1,7 @@
-use crate::{arc, av, blocks, define_obj_type, ns, objc};
-use crate::{cm, define_cls};
+use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 pub mod cache;
 pub use cache::Cache as AssetCache;
@@ -39,6 +41,7 @@ pub use segment_report::TrackReport as SegmentTrackReport;
 
 pub mod image_generator;
 pub use image_generator::ImageGenerator as AssetImageGenerator;
+#[cfg(feature = "blocks")]
 pub use image_generator::ImageGeneratorCh as AssetImageGeneratorCh;
 pub use image_generator::ImageGeneratorResult as AssetImageGeneratorResult;
 
@@ -82,6 +85,7 @@ impl UrlAsset {
         Self::alloc().init_with_url_opts(url, options)
     }
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(loadTracksWithMediaType:completionHandler:)]
     pub fn load_tracks_with_media_type_ch(
         &self,
@@ -89,6 +93,7 @@ impl UrlAsset {
         completion: &mut blocks::ResultCh<ns::Array<av::asset::Track>>,
     );
 
+    #[cfg(feature = "blocks")]
     pub fn load_tracks_with_media_type_block(
         &self,
         media_type: &av::MediaType,
@@ -98,6 +103,7 @@ impl UrlAsset {
         self.load_tracks_with_media_type_ch(media_type, &mut block)
     }
 
+    #[cfg(feature = "async")]
     pub async fn load_tracks_with_media_type(
         &self,
         media_type: &av::MediaType,

@@ -1,6 +1,6 @@
 use crate::{arc, cf, cg, define_cf_type};
 
-#[cfg(feature = "io")]
+#[cfg(all(feature = "io", any(feature = "blocks", feature = "dispatch")))]
 use crate::io;
 
 #[cfg(all(feature = "blocks", feature = "io"))]

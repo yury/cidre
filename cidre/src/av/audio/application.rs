@@ -1,4 +1,7 @@
-use crate::{api, arc, av, blocks, define_obj_type, ns, objc};
+use crate::{api, arc, av, define_obj_type, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 #[doc(alias = "AVAudioApplicationRecordPermission")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -121,16 +124,18 @@ impl App {
     #[objc::msg_send(recordPermission)]
     pub fn record_permission(&self) -> av::AudioAppRecordPermission;
 
-    #[cfg(target_os = "macos")]
+    #[cfg(all(target_os = "macos", feature = "blocks"))]
     #[objc::msg_send(setInputMuteStateChangeHandler:)]
     pub fn set_input_mute_state_change_handler(
         &mut self,
         handler: Option<&mut blocks::EscBlock<fn(input_should_be_muted: bool) -> bool>>,
     );
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(requestRecordPermissionWithCompletionHandler:)]
     pub fn request_record_permission_ch_block(handler: &mut blocks::SendBlock<fn(bool)>);
 
+    #[cfg(feature = "blocks")]
     pub fn request_record_permission_ch(handler: impl FnMut(bool) + 'static + std::marker::Send) {
         let mut handler = blocks::SendBlock::new1(handler);
         Self::request_record_permission_ch_block(&mut handler)
@@ -149,12 +154,14 @@ impl App {
     #[objc::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
     pub fn mic_injection_permission(&self) -> MicInjectionPermission;
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(requestMicrophoneInjectionPermissionWithCompletionHandler:)]
     #[objc::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
     pub fn request_mic_injection_permission_ch_block(
         handler: &mut blocks::SendBlock<fn(MicInjectionPermission)>,
     );
 
+    #[cfg(feature = "blocks")]
     #[objc::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
     pub fn request_mic_injection_permission_ch(
         handler: impl FnMut(MicInjectionPermission) + 'static + std::marker::Send,

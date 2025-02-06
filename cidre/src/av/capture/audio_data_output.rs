@@ -1,4 +1,7 @@
-use crate::{arc, av, cm, define_obj_type, dispatch, ns, objc};
+use crate::{arc, av, cm, define_obj_type, ns, objc};
+
+#[cfg(feature = "dispatch")]
+use crate::dispatch;
 
 use super::Output;
 
@@ -17,6 +20,7 @@ pub trait AudioDataOutputSampleBufDelegate: objc::Obj {
 define_obj_type!(pub AudioDataOutput(Output), AV_CAPTURE_AUDIO_DATA_OUTPUT);
 
 impl AudioDataOutput {
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(setSampleBufferDelegate:queue:)]
     pub fn set_sample_buf_delegate<D: AudioDataOutputSampleBufDelegate>(
         &mut self,
@@ -25,6 +29,7 @@ impl AudioDataOutput {
     );
 
     /// The dispatch queue on which all sample buffer delegate methods will be called.
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(sampleBufferCallbackQueue)]
     pub fn sample_buf_callback_queue(&self) -> Option<&dispatch::Queue>;
 

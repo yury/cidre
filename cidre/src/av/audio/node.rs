@@ -1,7 +1,11 @@
-use crate::{arc, av, blocks, define_obj_type, ns, objc};
+use crate::{arc, av, define_obj_type, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 define_obj_type!(pub Node(ns::Id));
 
+#[cfg(feature = "blocks")]
 pub type AudioNodeTapBlock<Attr> = blocks::Block<fn(&av::AudioPcmBuf, &av::AudioTime), Attr>;
 
 impl Node {
@@ -47,6 +51,7 @@ impl Node {
     pub fn output_presentation_latency(&self) -> ns::TimeInterval;
 
     /// NOTE: `remove_tap_on_bus` if you have already installed tap
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(installTapOnBus:bufferSize:format:block:)]
     pub fn install_tap_on_bus_block(
         &mut self,
@@ -56,6 +61,7 @@ impl Node {
         tap_block: &mut AudioNodeTapBlock<blocks::Esc>,
     );
 
+    #[cfg(feature = "blocks")]
     #[inline]
     pub fn install_tap_on_bus(
         &mut self,

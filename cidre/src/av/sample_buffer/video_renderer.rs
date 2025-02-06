@@ -1,4 +1,7 @@
-use crate::{api, arc, av, blocks, cm, cv, define_obj_type, ns, objc};
+use crate::{api, arc, cm, cv, define_obj_type, ns, objc};
+
+#[cfg(all(feature = "blocks", feature = "dispatch"))]
+use crate::av;
 
 define_obj_type!(
     #[doc(alias = "AVSampleBufferVideoRenderer")]
@@ -7,8 +10,13 @@ define_obj_type!(
     #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0, visionos = 1.0)]
 );
 
+#[cfg(all(feature = "blocks", feature = "dispatch"))]
 impl av::QueuedSampleBufRendering for VideoRenderer {}
 
+#[cfg(feature = "blocks")]
+use crate::blocks;
+
+#[cfg(all(feature = "blocks", feature = "dispatch"))]
 impl VideoRenderer {
     #[objc::msg_send(status)]
     pub fn status(&self) -> av::QueuedSampleBufRenderingStatus;
@@ -20,6 +28,7 @@ impl VideoRenderer {
     pub fn requires_flush_to_resume_decoding(&self) -> bool;
 
     /// Instructs the video renderer to discard pending enqueued sample buffers and call the provided block when complete.
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(removeDisplayedImage:completionHandler:)]
     pub fn flush_ch_block(
         &mut self,
@@ -28,6 +37,7 @@ impl VideoRenderer {
     );
 
     /// Instructs the video renderer to discard pending enqueued sample buffers and call the provided closure when complete.
+    #[cfg(feature = "blocks")]
     #[doc(alias = "removeDisplayedImage:completionHandler:")]
     pub fn flush_ch(&mut self, remove_displayed_image: bool, ch: impl FnMut() + 'static) {
         let mut block = blocks::CompletionBlock::new0(ch);

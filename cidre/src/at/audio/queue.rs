@@ -1,6 +1,9 @@
 use std::{ffi::c_void, ptr::NonNull};
 
-use crate::{at::audio, blocks, define_opts};
+use crate::{at::audio, define_opts};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 #[doc(alias = "AudioQueuePropertyID")]
 #[repr(transparent)]

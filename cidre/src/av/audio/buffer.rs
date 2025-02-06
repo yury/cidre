@@ -1,6 +1,9 @@
 use std::ffi::c_void;
 
-use crate::{arc, blocks, define_cls, define_obj_type, ns, objc};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 #[cfg(feature = "at")]
 use crate::at::{audio::StreamPacketDesc, AudioBufList};
@@ -42,6 +45,7 @@ impl arc::A<PcmBuf> {
         frame_capacity: FrameCount,
     ) -> Option<arc::R<PcmBuf>>;
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(initWithPCMFormat:bufferListNoCopy:deallocator:)]
     pub fn init_with_pcm_format_buf_list_no_copy<const N: usize>(
         self,
@@ -60,6 +64,7 @@ impl PcmBuf {
         Self::alloc().init_with_pcm_format_frame_capacity(format, frame_capacity)
     }
 
+    #[cfg(feature = "blocks")]
     pub fn with_buf_list_no_copy<const N: usize>(
         format: &Format,
         buf_list: &AudioBufList<N>,

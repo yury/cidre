@@ -942,6 +942,7 @@ impl Device {
     pub fn lens_pos(&self) -> f32;
 
     // #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(setFocusModeLockedWithLensPosition:completionHandler:)]
     unsafe fn set_focus_mode_locked_with_lens_pos_ch_throws(
         &mut self,
