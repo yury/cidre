@@ -706,13 +706,13 @@ impl<'a> ConfigLockGuard<'a> {
         ns::try_catch(|| unsafe { self.set_face_driven_auto_focus_enabled_throws(val) })
     }
 
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub unsafe fn set_focus_mode_locked_with_lens_pos_no_ch_throws(&mut self, val: f32) {
         self.device
             .set_focus_mode_locked_with_lens_pos_ch_throws(val, None)
     }
 
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub fn set_focus_mode_locked_with_lens_pos_no_ch<'ear>(
         &mut self,
         val: f32,
@@ -720,8 +720,7 @@ impl<'a> ConfigLockGuard<'a> {
         ns::try_catch(|| unsafe { self.set_focus_mode_locked_with_lens_pos_no_ch_throws(val) })
     }
 
-    #[cfg(feature = "blocks")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub unsafe fn set_focus_mode_locked_with_lens_pos_with_ch_throws(
         &mut self,
         val: f32,
@@ -731,8 +730,7 @@ impl<'a> ConfigLockGuard<'a> {
             .set_focus_mode_locked_with_lens_pos_ch_throws(val, Some(block))
     }
 
-    #[cfg(feature = "blocks")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub fn set_focus_mode_locked_with_lens_pos_with_ch<'ear>(
         &mut self,
         val: f32,
@@ -744,8 +742,11 @@ impl<'a> ConfigLockGuard<'a> {
         })
     }
 
-    #[cfg(feature = "async")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(
+        feature = "blocks",
+        feature = "async",
+        any(target_os = "tvos", target_os = "ios")
+    ))]
     pub async unsafe fn set_focus_mode_locked_with_lens_pos_throws(
         &mut self,
         val: f32,
@@ -755,8 +756,11 @@ impl<'a> ConfigLockGuard<'a> {
         future.await
     }
 
-    #[cfg(feature = "async")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(
+        feature = "blocks",
+        feature = "async",
+        any(target_os = "tvos", target_os = "ios")
+    ))]
     pub async fn set_focus_mode_locked_with_lens_pos(
         &mut self,
         val: f32,
@@ -1037,7 +1041,7 @@ impl Device {
     #[objc::msg_send(ISO)]
     pub fn iso(&self) -> cm::Time;
 
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     #[objc::msg_send(setExposureModeCustomWithDuration:ISO:completionHandler:)]
     pub fn set_exposure_mode_custom_with_duration_and_iso_throws(
         &mut self,
@@ -1063,7 +1067,7 @@ impl Device {
     #[objc::msg_send(maxExposureTargetBias)]
     pub fn max_exposure_target_bias(&self) -> f32;
 
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     #[objc::msg_send(setExposureTargetBias:completionHandler:)]
     unsafe fn set_exposure_target_bias_throws(
         &mut self,
@@ -1130,7 +1134,7 @@ impl<'a> ConfigLockGuard<'a> {
         ns::try_catch(|| unsafe { self.set_active_max_exposure_duration_throws(val) })
     }
 
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub unsafe fn set_exposure_mode_custom_with_duration_and_iso_no_ch_throws(
         &mut self,
         duration: cm::Time,
@@ -1140,7 +1144,7 @@ impl<'a> ConfigLockGuard<'a> {
             .set_exposure_mode_custom_with_duration_and_iso_throws(duration, iso, None)
     }
 
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub fn set_exposure_mode_custom_with_duration_and_iso_no_ch<'ear>(
         &mut self,
         duration: cm::Time,
@@ -1151,8 +1155,7 @@ impl<'a> ConfigLockGuard<'a> {
         })
     }
 
-    #[cfg(feature = "blocks")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub unsafe fn set_exposure_mode_custom_with_duration_and_iso_with_ch_throws(
         &mut self,
         duration: cm::Time,
@@ -1163,8 +1166,7 @@ impl<'a> ConfigLockGuard<'a> {
             .set_exposure_mode_custom_with_duration_and_iso_throws(duration, iso, Some(block))
     }
 
-    #[cfg(feature = "blocks")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub fn set_exposure_mode_custom_with_duration_and_iso_with_ch<'ear>(
         &mut self,
         duration: cm::Time,
@@ -1177,8 +1179,11 @@ impl<'a> ConfigLockGuard<'a> {
         })
     }
 
-    #[cfg(feature = "async")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(
+        feature = "blocks",
+        feature = "async",
+        any(target_os = "tvos", target_os = "ios")
+    ))]
     pub async unsafe fn set_exposure_mode_custom_with_duration_and_iso_throws(
         &mut self,
         duration: cm::Time,
@@ -1193,8 +1198,11 @@ impl<'a> ConfigLockGuard<'a> {
         future.await
     }
 
-    #[cfg(feature = "async")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(
+        feature = "blocks",
+        feature = "async",
+        any(target_os = "tvos", target_os = "ios")
+    ))]
     pub async fn set_exposure_mode_custom_with_duration_and_iso(
         &mut self,
         duration: cm::Time,
@@ -1214,8 +1222,7 @@ impl<'a> ConfigLockGuard<'a> {
         Ok(future.await)
     }
 
-    #[cfg(feature = "blocks")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub unsafe fn set_exposure_target_bias_with_ch_throws(
         &mut self,
         bias: f32,
@@ -1225,13 +1232,12 @@ impl<'a> ConfigLockGuard<'a> {
             .set_exposure_target_bias_throws(bias, Some(block))
     }
 
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub unsafe fn set_exposure_target_bias_no_ch_throws(&mut self, bias: f32) {
         self.device.set_exposure_target_bias_throws(bias, None)
     }
 
-    #[cfg(feature = "blocks")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub fn set_exposure_target_bias_with_ch<'ear>(
         &mut self,
         bias: f32,
@@ -1243,21 +1249,27 @@ impl<'a> ConfigLockGuard<'a> {
         })
     }
 
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub fn set_exposure_target_bias_no_ch<'ear>(&mut self, bias: f32) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.device.set_exposure_target_bias_throws(bias, None) })
     }
 
-    #[cfg(feature = "async")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(
+        feature = "blocks",
+        feature = "async",
+        any(target_os = "tvos", target_os = "ios")
+    ))]
     pub async unsafe fn set_exposure_target_bias_throws(&mut self, bias: f32) -> cm::Time {
         let (future, mut block) = blocks::comp1();
         self.set_exposure_target_bias_with_ch_throws(bias, block.as_esc_mut());
         future.await
     }
 
-    #[cfg(feature = "async")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(
+        feature = "async",
+        feature = "blocks",
+        any(target_os = "tvos", target_os = "ios")
+    ))]
     pub async fn set_exposure_target_bias(
         &mut self,
         bias: f32,
@@ -1368,7 +1380,7 @@ impl Device {
     #[objc::msg_send(maxWhiteBalanceGain)]
     pub fn max_wb_gain(&self) -> f32;
 
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     #[objc::msg_send(setWhiteBalanceModeLockedWithDeviceWhiteBalanceGains:completionHandler:)]
     unsafe fn set_wb_mode_locked_with_device_wb_gains_throws(
         &mut self,
@@ -1412,14 +1424,13 @@ impl<'a> ConfigLockGuard<'a> {
             .set_wb_mode_locked_with_device_wb_gains_throws(gains, Some(block))
     }
 
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub unsafe fn set_wb_mode_locked_with_device_wb_gains_no_ch_throws(&mut self, gains: WbGains) {
         self.device
             .set_wb_mode_locked_with_device_wb_gains_throws(gains, None)
     }
 
-    #[cfg(feature = "blocks")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub fn set_wb_mode_locked_with_device_wb_gains_with_ch<'ear>(
         &mut self,
         gains: WbGains,
@@ -1430,7 +1441,7 @@ impl<'a> ConfigLockGuard<'a> {
         })
     }
 
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub fn set_wb_mode_locked_with_device_wb_gains_no_ch<'ear>(
         &mut self,
         gains: WbGains,
@@ -1440,8 +1451,11 @@ impl<'a> ConfigLockGuard<'a> {
         })
     }
 
-    #[cfg(feature = "async")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(
+        feature = "blocks",
+        feature = "async",
+        any(target_os = "tvos", target_os = "ios")
+    ))]
     pub async unsafe fn set_wb_mode_locked_with_device_wb_gains_throws(
         &mut self,
         gains: WbGains,
@@ -1451,8 +1465,11 @@ impl<'a> ConfigLockGuard<'a> {
         future.await
     }
 
-    #[cfg(feature = "async")]
-    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[cfg(all(
+        feature = "blocks",
+        feature = "async",
+        any(target_os = "tvos", target_os = "ios")
+    ))]
     pub async fn set_wb_mode_locked_with_device_wb_gains(
         &mut self,
         gains: WbGains,
