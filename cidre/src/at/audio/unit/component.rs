@@ -1,4 +1,4 @@
-use std::{ffi::c_void, marker::PhantomData, mem::MaybeUninit};
+use std::{ffi::c_void, marker::PhantomData};
 
 use crate::{
     arc,
@@ -920,17 +920,9 @@ impl Unit {
     pub fn prop<T: Sized>(&self, prop_id: PropId, scope: Scope, element: Element) -> os::Result<T> {
         let mut size = std::mem::size_of::<T>() as u32;
         unsafe {
-            let mut value = MaybeUninit::<T>::uninit();
-            AudioUnitGetProperty(
-                self,
-                prop_id,
-                scope,
-                element,
-                value.as_mut_ptr().cast(),
-                &mut size,
-            )
-            .result()?;
-            Ok(value.assume_init())
+            os::result_init(|res: *mut T| {
+                AudioUnitGetProperty(self, prop_id, scope, element, res.cast(), &mut size)
+            })
         }
     }
 
@@ -961,11 +953,7 @@ impl Unit {
         scope: Scope,
         element: Element,
     ) -> os::Result<ParamValue> {
-        let mut val = Default::default();
-        unsafe {
-            AudioUnitGetParameter(self, param_id, scope, element, &mut val).result()?;
-        }
-        Ok(val)
+        unsafe { os::result_init(|res| AudioUnitGetParameter(self, param_id, scope, element, res)) }
     }
 
     pub fn set_param(
@@ -988,7 +976,6 @@ impl Unit {
 
     pub fn set_offline_render(&mut self, val: bool) -> os::Result {
         let val = val as u32;
-
         self.set_prop(PropId::OFFLINE_RENDER, Scope::GLOBAL, Element::INPUT, &val)
     }
 
@@ -1421,7 +1408,7 @@ extern "C-unwind" {
         param_id: ParamId,
         in_scope: Scope,
         in_element: Element,
-        out_value: &mut ParamValue,
+        out_value: *mut ParamValue,
     ) -> os::Status;
 
     fn AudioUnitSetParameter(

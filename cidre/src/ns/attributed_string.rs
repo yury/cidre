@@ -122,8 +122,7 @@ impl AttrStringKey {
     }
 }
 
-#[cfg(feature = "app")]
-#[cfg(target_os = "macos")]
+#[cfg(all(feature = "app", target_os = "macos"))]
 #[link(name = "AppKit", kind = "framework")]
 extern "C" {
     static NSFontAttributeName: &'static AttrStringKey;

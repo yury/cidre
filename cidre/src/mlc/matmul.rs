@@ -19,16 +19,17 @@ impl Desc {
     #[objc::msg_send(descriptorWithAlpha:transposesX:transposesY:)]
     pub fn with_alpha(alpha: f32, transposes_x: bool, transposes_y: bool) -> Option<arc::R<Self>>;
 
-    #[objc::msg_send(descriptor)]
-    pub fn desc_(&self) -> arc::R<Self>;
-
     #[inline]
     pub fn new() -> arc::R<Self> {
         Self::desc()
     }
 }
 
-define_obj_type!(pub Layer(mlc::Layer));
+define_obj_type!(
+    #[doc(alias = "MLCLayer")]
+    pub Layer(mlc::Layer)
+);
+
 impl Layer {
     define_cls!(MLC_MATMUL_LAYER);
 
