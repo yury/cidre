@@ -7,96 +7,115 @@ define_obj_type!(
 
 #[cfg(any(feature = "app", feature = "ui"))]
 impl AttrStringKey {
+    #[doc(alias = "NSFontAttributeName")]
     #[inline]
     pub fn font_name() -> &'static Self {
         unsafe { NSFontAttributeName }
     }
 
+    #[doc(alias = "NSParagraphStyleAttributeName")]
     #[inline]
     pub fn paragraph_style() -> &'static Self {
         unsafe { NSParagraphStyleAttributeName }
     }
 
+    #[doc(alias = "NSForegroundColorAttributeName")]
     #[inline]
     pub fn foreground_color() -> &'static Self {
         unsafe { NSForegroundColorAttributeName }
     }
 
+    #[doc(alias = "NSBackgroundColorAttributeName")]
     #[inline]
     pub fn background_color() -> &'static Self {
         unsafe { NSBackgroundColorAttributeName }
     }
 
+    #[doc(alias = "NSLigatureAttributeName")]
     #[inline]
     pub fn ligature() -> &'static Self {
         unsafe { NSLigatureAttributeName }
     }
 
+    #[doc(alias = "NSKernAttributeName")]
     #[inline]
     pub fn kern() -> &'static Self {
         unsafe { NSKernAttributeName }
     }
 
+    #[doc(alias = "NSTrackingAttributeName")]
     #[inline]
     pub fn tracking() -> &'static Self {
         unsafe { NSTrackingAttributeName }
     }
 
+    #[doc(alias = "NSStrikethroughStyleAttributeName")]
     #[inline]
     pub fn strikethrough_style() -> &'static Self {
         unsafe { NSStrikethroughStyleAttributeName }
     }
 
+    #[doc(alias = "NSUnderlineStyleAttributeName")]
     #[inline]
     pub fn underline_style() -> &'static Self {
         unsafe { NSUnderlineStyleAttributeName }
     }
 
+    #[doc(alias = "NSStrokeColorAttributeName")]
     #[inline]
     pub fn stroke_color() -> &'static Self {
         unsafe { NSStrokeColorAttributeName }
     }
 
+    #[doc(alias = "NSStrokeWidthAttributeName")]
     #[inline]
     pub fn stroke_width() -> &'static Self {
         unsafe { NSStrokeWidthAttributeName }
     }
 
+    #[doc(alias = "NSShadowAttributeName")]
     #[inline]
     pub fn shadow() -> &'static Self {
         unsafe { NSShadowAttributeName }
     }
 
+    #[doc(alias = "NSTextEffectAttributeName")]
     #[inline]
     pub fn text_effect() -> &'static Self {
         unsafe { NSTextEffectAttributeName }
     }
 
+    #[doc(alias = "NSAttachmentAttributeName")]
     #[inline]
     pub fn attachment() -> &'static Self {
         unsafe { NSAttachmentAttributeName }
     }
 
+    #[doc(alias = "NSLinkAttributeName")]
     #[inline]
     pub fn link() -> &'static Self {
         unsafe { NSLinkAttributeName }
     }
 
+    #[doc(alias = "NSBaselineOffsetAttributeName")]
     #[inline]
     pub fn baseline_offset() -> &'static Self {
         unsafe { NSBaselineOffsetAttributeName }
     }
 
+    #[doc(alias = "NSUnderlineColorAttributeName")]
     #[inline]
     pub fn underline_color() -> &'static Self {
         unsafe { NSUnderlineColorAttributeName }
     }
 
+    #[doc(alias = "NSStrikethroughColorAttributeName")]
     #[inline]
     pub fn strikethrough_color() -> &'static Self {
         unsafe { NSStrikethroughColorAttributeName }
     }
 
+    #[doc(alias = "NSWritingDirectionAttributeName")]
     #[inline]
     pub fn writing_direction() -> &'static Self {
         unsafe { NSWritingDirectionAttributeName }
