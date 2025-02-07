@@ -33,7 +33,7 @@ define_obj_type!(
 
 impl ResidencySet {
     #[objc::msg_send(device)]
-    pub fn device(&self) -> arc::R<mtl::Device>;
+    pub fn device(&self) -> &mtl::Device;
 
     #[objc::msg_send(label)]
     pub fn label(&self) -> Option<arc::R<ns::String>>;

@@ -1,4 +1,4 @@
-use crate::{cg, cm, define_obj_type, ns, objc};
+use crate::{arc, cg, cm, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "AVMetadataObjectType")]
@@ -278,6 +278,7 @@ define_obj_type!(
     #[doc(alias = "AVMetadataFaceObject")]
     pub FaceObj(Obj)
 );
+
 define_obj_type!(
     #[doc(alias = "AVMetadataMachineReadableCodeObject")]
     pub MachineReadableCodeObj(Obj)
@@ -290,24 +291,34 @@ define_obj_type!(
 
 impl SalientObj {
     #[objc::msg_send(objectID)]
-    pub fn object_id(&self) -> isize;
+    pub fn obj_id(&self) -> isize;
 }
 
 impl FaceObj {
+    /// A unique number associated with the receiver.
+    ///
+    /// The value of this property is an isize indicating the unique identifier of this face in the picture.
+    /// When a new face enters the picture, it is assigned a new unique identifier. face_ids are not re-used as faces
+    /// leave the picture and new ones enter. Faces that leave the picture then re-enter are assigned a new face_id.
     #[objc::msg_send(faceID)]
     pub fn face_id(&self) -> isize;
 
+    /// The roll angle of the face in degrees.
+    ///
+    /// The value of this property is a cg::Float indicating the face's angle of roll (or tilt) in degrees.
+    /// A value of 0.0 indicates that the face is level in the picture. If -has_roll_angle returns false, then reading this property throws
+    /// an ns::GenericException.
     #[objc::msg_send(hasRollAngle)]
     pub fn has_roll_angle(&self) -> bool;
 
     #[objc::msg_send(rollAngle)]
-    fn _roll_angle(&self) -> cg::Float;
+    pub unsafe fn roll_angle_throws(&self) -> cg::Float;
 
     /// The roll angle of the face in degrees.
     #[inline]
     pub fn roll_angle(&self) -> Option<cg::Float> {
         if self.has_roll_angle() {
-            Some(self._roll_angle())
+            Some(unsafe { self.roll_angle_throws() })
         } else {
             None
         }
@@ -315,16 +326,45 @@ impl FaceObj {
     #[objc::msg_send(hasYawAngle)]
     pub fn has_yaw_angle(&self) -> bool;
 
+    /// The yaw angle of the face in degrees.
+    ///
+    /// The value of this property is a cg::Float indicating the face's angle of yaw (or turn) in degrees.
+    /// A value of 0.0 indicates that the face is straight on in the picture.
+    /// If has_yaw_angle() returns false, then reading this property throws an ns::GenericException.
     #[objc::msg_send(yawAngle)]
-    fn _yaw_angle(&self) -> cg::Float;
+    pub unsafe fn yaw_angle_throws(&self) -> cg::Float;
 
     /// The yaw angle of the face in degrees.
     #[inline]
     pub fn yaw_angle(&self) -> Option<cg::Float> {
         if self.has_yaw_angle() {
-            Some(self._yaw_angle())
+            Some(unsafe { self.yaw_angle_throws() })
         } else {
             None
         }
     }
+}
+
+impl MachineReadableCodeObj {
+    /// The points defining the (X,Y) locations of the corners of the machine-readable code.
+    #[objc::msg_send(corners)]
+    pub fn corners(&self) -> arc::R<ns::Dictionary<ns::String, ns::Id>>;
+
+    /// Returns the receiver's errorCorrectedData decoded into a human-readable string.
+    #[objc::msg_send(stringValue)]
+    pub fn string_value(&self) -> Option<arc::R<ns::String>>;
+}
+
+#[cfg(feature = "ci")]
+use crate::ci;
+
+/// AVMetadataMachineReadableCodeDescriptor
+#[cfg(feature = "ci")]
+impl MachineReadableCodeObj {
+    /// An abstract representation of a machine readable code's symbol attributes.
+    ///
+    /// The value may be None if an abstract representation of a machine readable
+    /// code object is not defined for the code type or could not be detected.
+    #[objc::msg_send(descriptor)]
+    pub fn descriptor(&self) -> Option<arc::R<ci::BarcodeDesc>>;
 }

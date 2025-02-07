@@ -8,3 +8,6 @@ pub use image::ImageOption;
 
 mod vector;
 pub use vector::Vec;
+
+mod barcode_descriptor;
+pub use barcode_descriptor::BarcodeDesc;
