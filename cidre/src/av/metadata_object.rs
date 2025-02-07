@@ -1,12 +1,21 @@
 use crate::{cg, cm, define_obj_type, ns, objc};
 
-define_obj_type!(pub Type(ns::String));
+define_obj_type!(
+    #[doc(alias = "AVMetadataObjectType")]
+    pub Type(ns::String)
+);
 
 impl Type {
     #[doc(alias = "AVMetadataObjectTypeHumanBody")]
     #[inline]
     pub fn human_body() -> &'static Type {
         unsafe { AVMetadataObjectTypeHumanBody }
+    }
+
+    #[doc(alias = "AVMetadataObjectTypeHumanFullBody")]
+    #[inline]
+    pub fn human_full_body() -> &'static Type {
+        unsafe { AVMetadataObjectTypeHumanFullBody }
     }
 
     #[doc(alias = "AVMetadataObjectTypeCatBody")]
@@ -169,6 +178,7 @@ impl Type {
 
 extern "C" {
     static AVMetadataObjectTypeHumanBody: &'static Type;
+    static AVMetadataObjectTypeHumanFullBody: &'static Type;
     static AVMetadataObjectTypeCatBody: &'static Type;
     static AVMetadataObjectTypeDogBody: &'static Type;
     static AVMetadataObjectTypeSalientObject: &'static Type;
@@ -192,7 +202,6 @@ extern "C" {
     static AVMetadataObjectTypeGS1DataBarLimitedCode: &'static Type;
     static AVMetadataObjectTypeMicroQRCode: &'static Type;
     static AVMetadataObjectTypeMicroPDF417Code: &'static Type;
-
 }
 
 define_obj_type!(
@@ -228,6 +237,10 @@ impl Obj {
     #[objc::msg_send(duration)]
     pub fn duration(&self) -> cm::Time;
 
+    /// An identifier for the metadata object.
+    ///
+    /// Clients inspecting a collection of metadata objects can use this property to filter objects
+    /// with a matching type.
     #[objc::msg_send(type)]
     pub fn obj_type(&self) -> &Type;
 }
@@ -241,13 +254,39 @@ impl BodyObj {
     pub fn body_id(&self) -> isize;
 }
 
-define_obj_type!(pub CatBodyObj(BodyObj));
-define_obj_type!(pub DogBodyObj(BodyObj));
-define_obj_type!(pub HumanBodyObj(BodyObj));
+define_obj_type!(
+    #[doc(alias = "AVMetadataCatBodyObject")]
+    pub CatBodyObj(BodyObj)
+);
 
-define_obj_type!(pub FaceObj(Obj));
-define_obj_type!(pub MachineReadableCodeObj(Obj));
-define_obj_type!(pub SalientObj(Obj));
+define_obj_type!(
+    #[doc(alias = "AVMetadataDogBodyObject")]
+    pub DogBodyObj(BodyObj)
+);
+
+define_obj_type!(
+    #[doc(alias = "AVMetadataHumanBodyObject")]
+    pub HumanBodyObj(BodyObj)
+);
+
+define_obj_type!(
+    #[doc(alias = "AVMetadataHumanFullBodyObject")]
+    pub HumanFullBodyObj(BodyObj)
+);
+
+define_obj_type!(
+    #[doc(alias = "AVMetadataFaceObject")]
+    pub FaceObj(Obj)
+);
+define_obj_type!(
+    #[doc(alias = "AVMetadataMachineReadableCodeObject")]
+    pub MachineReadableCodeObj(Obj)
+);
+
+define_obj_type!(
+    #[doc(alias = "AVMetadataSalientObject")]
+    pub SalientObj(Obj)
+);
 
 impl SalientObj {
     #[objc::msg_send(objectID)]

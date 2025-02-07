@@ -79,7 +79,9 @@ pub use metadata_object::CatBodyObj as MetadataCatBodyObj;
 pub use metadata_object::DogBodyObj as MetadataDogBodyObj;
 pub use metadata_object::FaceObj as MetadataFaceObj;
 pub use metadata_object::HumanBodyObj as MetadataHumanBodyObj;
+pub use metadata_object::HumanFullBodyObj as MetadataHumanFullBodyObj;
 pub use metadata_object::Obj as MetadataObj;
+pub use metadata_object::SalientObj as MetadataSalientObj;
 pub use metadata_object::Type as MetadataObjType;
 
 pub mod player;
