@@ -7,10 +7,10 @@ define_obj_type!(
 
 impl SampleBufAttachDesc {
     #[objc::msg_send(sampleBuffer)]
-    pub fn sample_buffer(&self) -> Option<arc::R<mtl::CounterSampleBuf>>;
+    pub fn sample_buf(&self) -> Option<arc::R<mtl::CounterSampleBuf>>;
 
     #[objc::msg_send(setSampleBuffer:)]
-    pub fn set_sample_buffer(&mut self, val: Option<&mtl::CounterSampleBuf>);
+    pub fn set_sample_buf(&mut self, val: Option<&mtl::CounterSampleBuf>);
 
     #[objc::msg_send(startOfEncoderSampleIndex)]
     pub fn start_of_encoder_sample_index(&self) -> usize;
@@ -89,6 +89,6 @@ mod tests {
         let attaches = bpd.sample_buf_attaches_mut();
         let attach = &mut attaches[0];
         attach.set_start_of_encoder_sample_index(0);
-        assert!(attach.sample_buffer().is_none());
+        assert!(attach.sample_buf().is_none());
     }
 }

@@ -1187,7 +1187,7 @@ pub mod quality {
     pub const MIN: u32 = 0x00;
 }
 
-extern "C" {
+extern "C-unwind" {
     fn AudioCodecReset(in_codec: &mut Codec) -> os::Status;
 
     fn AudioCodecInitialize(

@@ -22,8 +22,13 @@ use crate::ns;
 pub struct Encoding(u32);
 
 impl Encoding {
+    #[doc(alias = "kCFStringEncodingMacRoman")]
     pub const MAC_ROMAN: Self = Self(0);
+
+    #[doc(alias = "kCFStringEncodingASCII")]
     pub const ASCII: Self = Self(0x0600);
+
+    #[doc(alias = "kCFStringEncodingUTF8")]
     pub const UTF8: Self = Self(0x08000100);
 
     /// The default encoding for the system; untagged 8-bit characters are usually in this encoding
@@ -287,8 +292,8 @@ impl String {
                 &mut bytes_required,
             );
 
-            let mut buffer = Vec::with_capacity(bytes_required as _);
-            buffer.set_len(bytes_required as _);
+            let mut buf = Vec::with_capacity(bytes_required as _);
+            buf.set_len(bytes_required as _);
             let mut used_buf_len: Index = 0;
             CFStringGetBytes(
                 self,
@@ -296,14 +301,14 @@ impl String {
                 Encoding::UTF8,
                 0,
                 false,
-                buffer.as_mut_ptr(),
-                buffer.len() as _,
+                buf.as_mut_ptr(),
+                buf.len() as _,
                 &mut used_buf_len,
             );
 
             debug_assert_eq!(bytes_required, used_buf_len);
 
-            std::string::String::from_utf8_unchecked(buffer)
+            std::string::String::from_utf8_unchecked(buf)
         }
     }
 }
