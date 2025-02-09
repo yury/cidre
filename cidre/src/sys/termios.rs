@@ -130,28 +130,16 @@ impl LocalFlags {
     /// echo control chars as ^(Char)
     pub const ECHO_CTRL: Self = Self(0x00000040);
 
-    pub fn set_echo(&mut self, val: bool) {
-        if val {
-            *self |= Self::ECHO
-        } else {
-            *self ^= Self::ECHO
-        }
+    pub fn set_echo(&mut self, on: bool) {
+        self.set(Self::ECHO, on)
     }
 
-    pub fn set_echo_nl(&mut self, val: bool) {
-        if val {
-            *self |= Self::ECHO_NL
-        } else {
-            *self ^= Self::ECHO_NL
-        }
+    pub fn set_echo_nl(&mut self, on: bool) {
+        self.set(Self::ECHO_NL, on)
     }
 
-    pub fn set_echo_ctrl(&mut self, val: bool) {
-        if val {
-            *self |= Self::ECHO_CTRL
-        } else {
-            *self ^= Self::ECHO_CTRL
-        }
+    pub fn set_echo_ctrl(&mut self, on: bool) {
+        self.set(Self::ECHO_CTRL, on)
     }
 }
 

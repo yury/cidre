@@ -204,8 +204,27 @@ macro_rules! define_opts {
 
         impl $NewType {
             #[inline]
-            pub fn contains(&self, rhs: Self) -> bool {
-                *self & rhs == rhs
+            pub fn contains(&self, val: Self) -> bool {
+                *self & val == val
+            }
+
+            #[inline]
+            pub fn insert(&mut self, val: Self) {
+                *self |= val
+            }
+
+            #[inline]
+            pub fn remove(&mut self, val: Self) {
+                *self &= !val
+            }
+
+            #[inline]
+            pub fn set(&mut self, val: Self, on: bool) {
+                if on {
+                    self.insert(val)
+                } else {
+                    self.remove(val)
+                }
             }
         }
 
@@ -218,6 +237,7 @@ macro_rules! define_opts {
 
         impl ::std::ops::BitAnd for $NewType {
             type Output = $NewType;
+
             #[inline]
             fn bitand(self, rhs: Self) -> Self {
                 Self(self.0 & rhs.0)
@@ -226,6 +246,7 @@ macro_rules! define_opts {
 
         impl ::std::ops::BitOr for $NewType {
             type Output = $NewType;
+
             #[inline]
             fn bitor(self, rhs: Self) -> Self {
                 Self(self.0 | rhs.0)
@@ -255,6 +276,15 @@ macro_rules! define_opts {
             }
         }
 
+        impl ::std::ops::Not for $NewType {
+            type Output = Self;
+
+            #[inline]
+            fn not(self) -> Self::Output {
+                Self(!self.0)
+            }
+        }
+
         impl ::std::convert::From<$BaseType> for $NewType {
             #[inline]
             fn from(value: $BaseType) -> Self {
@@ -267,6 +297,7 @@ macro_rules! define_opts {
                 ::std::fmt::Binary::fmt(&self.0, f)
             }
         }
+
     };
 }
 
