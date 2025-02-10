@@ -1,5 +1,4 @@
 use std::ffi::{c_char, c_long, c_void, CStr};
-use std::mem::transmute;
 use std::ptr::NonNull;
 
 use crate::{arc, define_obj_type, dispatch};
@@ -15,11 +14,25 @@ define_obj_type!(
 );
 
 define_obj_type!(pub Global(Queue));
-define_obj_type!(pub Serial(Queue));
-define_obj_type!(pub Main(Serial));
-define_obj_type!(pub Concurrent(Queue));
 
-define_obj_type!(pub Attr(dispatch::Object));
+define_obj_type!(
+    #[doc(alias = "dispatch_queue_serial")]
+    #[doc(alias = "dispatch_queue_serial_t")]
+    pub Serial(Queue)
+);
+
+define_obj_type!(pub Main(Serial));
+define_obj_type!(
+    #[doc(alias = "dispatch_queue_concurrent")]
+    #[doc(alias = "dispatch_queue_concurrent_t")]
+    pub Concurrent(Queue)
+);
+
+define_obj_type!(
+    #[doc(alias = "dispatch_queue_attr")]
+    #[doc(alias = "dispatch_queue_attr_t")]
+    pub Attr(dispatch::Object)
+);
 
 #[doc(alias = "DispatchQoS")]
 #[repr(transparent)]
@@ -234,49 +247,49 @@ impl Queue {
     #[doc(alias = "dispatch_async_f")]
     #[inline]
     pub fn async_f<T>(&self, context: *mut T, work: dispatch::Fn<T>) {
-        unsafe { dispatch_async_f(self, context as _, transmute(work)) }
+        unsafe { dispatch_async_f(self, context as _, std::mem::transmute(work)) }
     }
 
     #[doc(alias = "dispatch_sync_f")]
     #[inline]
     pub fn sync_f<T>(&self, context: *mut T, work: dispatch::Fn<T>) {
-        unsafe { dispatch_sync_f(self, context as _, transmute(work)) }
+        unsafe { dispatch_sync_f(self, context as _, std::mem::transmute(work)) }
     }
 
     #[doc(alias = "dispatch_async_and_wait_f")]
     #[inline]
     pub fn async_and_wait_f<T>(&self, context: *mut T, work: dispatch::Fn<T>) {
-        unsafe { dispatch_async_and_wait_f(self, context as _, transmute(work)) }
+        unsafe { dispatch_async_and_wait_f(self, context as _, std::mem::transmute(work)) }
     }
 
     #[doc(alias = "dispatch_after_f")]
     #[inline]
     pub fn after_f<T>(&self, when: super::Time, context: *mut T, work: dispatch::Fn<T>) {
-        unsafe { dispatch_after_f(when, self, context as _, transmute(work)) }
+        unsafe { dispatch_after_f(when, self, context as _, std::mem::transmute(work)) }
     }
 
     #[doc(alias = "dispatch_barrier_async_f")]
     #[inline]
     pub fn barrier_async_f<T>(&self, context: *mut T, work: dispatch::Fn<T>) {
-        unsafe { dispatch_barrier_async_f(self, context as _, transmute(work)) }
+        unsafe { dispatch_barrier_async_f(self, context as _, std::mem::transmute(work)) }
     }
 
     #[doc(alias = "dispatch_barrier_sync_f")]
     #[inline]
     pub fn barrier_sync_f<T>(&self, context: *mut T, work: dispatch::Fn<T>) {
-        unsafe { dispatch_barrier_sync_f(self, context as _, transmute(work)) }
+        unsafe { dispatch_barrier_sync_f(self, context as _, std::mem::transmute(work)) }
     }
 
     #[doc(alias = "dispatch_barrier_async_and_wait_f")]
     #[inline]
     pub fn barrier_async_and_wait_f<T>(&self, context: *mut T, work: dispatch::Fn<T>) {
-        unsafe { dispatch_barrier_async_and_wait_f(self, context as _, transmute(work)) }
+        unsafe { dispatch_barrier_async_and_wait_f(self, context as _, std::mem::transmute(work)) }
     }
 
     #[doc(alias = "dispatch_group_async_f")]
     #[inline]
     pub fn group_async_f<T>(&self, group: &super::Group, context: *mut T, work: dispatch::Fn<T>) {
-        unsafe { dispatch_group_async_f(group, self, context as _, transmute(work)) }
+        unsafe { dispatch_group_async_f(group, self, context as _, std::mem::transmute(work)) }
     }
 
     pub const TARGET_QUEUE_DEFAULT: Option<&'static Self> = None;

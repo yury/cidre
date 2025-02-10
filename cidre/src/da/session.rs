@@ -39,7 +39,7 @@ impl Session {
 }
 
 #[link(name = "DiskArbitration", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn DASessionGetTypeID() -> cf::TypeId;
     fn DASessionCreate(allocator: Option<&cf::Allocator>) -> Option<arc::R<Session>>;
     fn DASessionScheduleWithRunLoop(

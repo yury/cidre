@@ -54,7 +54,7 @@ impl Disk {
 }
 
 #[link(name = "DiskArbitration", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn DADiskGetTypeID() -> cf::TypeId;
     fn DADiskCopyDescription(disk: &Disk)
         -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>>;
