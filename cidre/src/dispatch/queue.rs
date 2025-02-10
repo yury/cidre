@@ -13,7 +13,11 @@ define_obj_type!(
     pub Queue(dispatch::Object)
 );
 
-define_obj_type!(pub Global(Queue));
+define_obj_type!(
+    #[doc(alias = "dispatch_queue_global")]
+    #[doc(alias = "dispatch_queue_global_t")]
+    pub Global(Queue)
+);
 
 define_obj_type!(
     #[doc(alias = "dispatch_queue_serial")]
@@ -21,7 +25,12 @@ define_obj_type!(
     pub Serial(Queue)
 );
 
-define_obj_type!(pub Main(Serial));
+define_obj_type!(
+    #[doc(alias = "dispatch_queue_main")]
+    #[doc(alias = "dispatch_queue_main_t")]
+    pub Main(Serial)
+);
+
 define_obj_type!(
     #[doc(alias = "dispatch_queue_concurrent")]
     #[doc(alias = "dispatch_queue_concurrent_t")]
