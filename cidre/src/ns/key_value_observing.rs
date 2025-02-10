@@ -70,6 +70,17 @@ where
     cidre_observer: Option<arc::R<CidreObserver>>,
 }
 
+impl<F> std::fmt::Debug for Observer<F>
+where
+    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>),
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Observer")
+            .field("cidre_observer", &self.cidre_observer)
+            .finish()
+    }
+}
+
 impl<F> Observer<F>
 where
     F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>)
@@ -89,7 +100,7 @@ where
         key_path: &ns::String,
         options: KVOOpts,
         closure: F,
-    ) -> Result<Box<dyn crate::Dyn>, &'ar ns::Exception>
+    ) -> Result<Box<Self>, &'ar ns::Exception>
     where
         O: objc::Obj + KVObserverRegistration,
     {
@@ -118,11 +129,6 @@ where
             Err(ex) => Err(ex),
         }
     }
-}
-
-impl<F> crate::Dyn for Observer<F> where
-    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>)
-{
 }
 
 impl<F> Drop for Observer<F>

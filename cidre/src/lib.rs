@@ -204,6 +204,15 @@ macro_rules! define_opts {
 
         impl $NewType {
             #[inline]
+            pub fn is_empty(&self) -> bool {
+                self.0 == 0
+            }
+
+            pub fn any(&self, mask: Self) -> bool {
+                self.0 & mask.0 != 0
+            }
+
+            #[inline]
             pub fn contains(&self, val: Self) -> bool {
                 *self & val == val
             }
@@ -299,14 +308,6 @@ macro_rules! define_opts {
         }
 
     };
-}
-
-pub trait Dyn {}
-
-impl std::fmt::Debug for dyn Dyn {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str("dyn")
-    }
 }
 
 #[cfg(test)]

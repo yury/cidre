@@ -16,6 +16,12 @@ impl OptionFlags {
     pub const NONE: Self = Self(0);
 }
 
+impl PartialEq<usize> for OptionFlags {
+    fn eq(&self, other: &usize) -> bool {
+        self.0 == *other
+    }
+}
+
 pub type ComparatorFn = extern "C" fn(
     val1: *const c_void,
     val2: *const c_void,
