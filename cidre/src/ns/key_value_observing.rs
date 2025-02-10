@@ -83,8 +83,7 @@ where
 
 impl<F> Observer<F>
 where
-    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>)
-        + 'static,
+    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>),
 {
     extern "C" fn change_handler(
         &mut self,
@@ -96,7 +95,7 @@ where
     }
 
     pub fn with_obj<'ar, O: objc::Obj>(
-        object: &mut O,
+        obj: &mut O,
         key_path: &ns::String,
         options: KVOOpts,
         closure: F,
@@ -104,30 +103,23 @@ where
     where
         O: objc::Obj + KVObserverRegistration,
     {
-        let bx = Box::new(Self {
+        let mut bx = Box::new(Self {
             closure,
             cidre_observer: None,
         });
-        let raw = Box::into_raw(bx);
 
-        let res = ns::try_catch(|| unsafe {
+        let o = ns::try_catch(|| unsafe {
             cidre_create_observer(
-                object.as_id_ref(),
+                obj.as_id_ref(),
                 key_path,
                 options,
-                raw as *mut c_void,
+                bx.as_mut() as *mut Self as *mut c_void,
                 Self::change_handler as _,
             )
-        });
-        let mut bx = unsafe { Box::from_raw(raw) };
+        })?;
 
-        match res {
-            Ok(o) => {
-                bx.cidre_observer = Some(o);
-                Ok(bx)
-            }
-            Err(ex) => Err(ex),
-        }
+        bx.cidre_observer = Some(o);
+        Ok(bx)
     }
 }
 
