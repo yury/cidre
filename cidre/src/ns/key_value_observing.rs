@@ -2,34 +2,42 @@ use std::ffi::c_void;
 
 use crate::{arc, define_obj_type, define_opts, ns, objc};
 
-define_opts!(pub KVOOpts(usize));
-impl KVOOpts {
+define_opts!(
+    #[doc(alias = "NSKeyValueObservingOptions")]
+    pub KvoOpts(usize)
+);
+impl KvoOpts {
     pub const NEW: Self = Self(0x01);
     pub const OLD: Self = Self(0x02);
     pub const INITIAL: Self = Self(0x04);
     pub const PRIOR: Self = Self(0x08);
 }
 
+#[doc(alias = "NSKeyValueChange")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
-pub enum KVChange {
+pub enum KvChange {
     Setting = 1,
     Insertion = 2,
     Removal = 3,
     Replacement = 4,
 }
 
+#[doc(alias = "NSKeyValueSetMutationKind")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
-pub enum KVSetMutationKind {
+pub enum KvSetMutationKind {
     Union = 1,
     Minus = 2,
     Intersect = 3,
     Set = 4,
 }
 
-define_obj_type!(pub KVChangeKey(ns::String));
-impl KVChangeKey {
+define_obj_type!(
+    #[doc(alias = "NSKeyValueChangeKey")]
+    pub KvChangeKey(ns::String)
+);
+impl KvChangeKey {
     pub fn kind() -> &'static Self {
         unsafe { NSKeyValueChangeKindKey }
     }
@@ -51,20 +59,20 @@ impl KVChangeKey {
     }
 }
 
-pub trait KVObserving {
+pub trait KvObserving {
     #[objc::msg_send(observeValueForKeyPath:ofObject:change:context:)]
     fn observe_value_for_key_path(
         &mut self,
         key_path: Option<&ns::String>,
         of_object: Option<&ns::Id>,
-        change: Option<&ns::Dictionary<KVChangeKey, ns::Id>>,
+        change: Option<&ns::Dictionary<KvChangeKey, ns::Id>>,
         context: *mut c_void,
     );
 }
 
 pub struct Observer<F>
 where
-    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>),
+    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KvChangeKey, ns::Id>>),
 {
     closure: F,
     cidre_observer: Option<arc::R<CidreObserver>>,
@@ -72,7 +80,7 @@ where
 
 impl<F> std::fmt::Debug for Observer<F>
 where
-    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>),
+    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KvChangeKey, ns::Id>>),
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Observer")
@@ -83,13 +91,13 @@ where
 
 impl<F> Observer<F>
 where
-    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>),
+    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KvChangeKey, ns::Id>>),
 {
     extern "C" fn change_handler(
         &mut self,
         key_path: Option<&ns::String>,
         object: Option<&ns::Id>,
-        change: Option<&ns::Dictionary<KVChangeKey, ns::Id>>,
+        change: Option<&ns::Dictionary<KvChangeKey, ns::Id>>,
     ) {
         (self.closure)(key_path, object, change)
     }
@@ -97,11 +105,11 @@ where
     pub fn with_obj<'ar, O: objc::Obj>(
         obj: &mut O,
         key_path: &ns::String,
-        options: KVOOpts,
+        options: KvoOpts,
         closure: F,
     ) -> Result<Box<Self>, &'ar ns::Exception>
     where
-        O: objc::Obj + KVObserverRegistration,
+        O: objc::Obj + KvObserverRegistration,
     {
         let mut bx = Box::new(Self {
             closure,
@@ -125,7 +133,7 @@ where
 
 impl<F> Drop for Observer<F>
 where
-    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KVChangeKey, ns::Id>>),
+    F: FnMut(Option<&ns::String>, Option<&ns::Id>, Option<&ns::Dictionary<KvChangeKey, ns::Id>>),
 {
     fn drop(&mut self) {
         if let Some(o) = self.cidre_observer.take() {
@@ -135,13 +143,13 @@ where
 }
 
 #[objc::protocol(CidreKVObserverRegistration)]
-pub trait KVObserverRegistration {
+pub trait KvObserverRegistration {
     #[objc::msg_send(addObserver:forKeyPath:options:context:)]
     unsafe fn add_observer_throws(
         &mut self,
         observer: &ns::Id,
         for_key_path: &ns::String,
-        options: KVOOpts,
+        options: KvoOpts,
         context: *mut c_void,
     );
 
@@ -149,18 +157,18 @@ pub trait KVObserverRegistration {
     unsafe fn remove_observer_ctx_throws(
         &mut self,
         observer: &ns::Id,
-        for_key_path: &ns::String,
+        key_path: &ns::String,
         context: *mut c_void,
     );
 
     #[objc::msg_send(removeObserver:forKeyPath:)]
-    unsafe fn remove_observer_throws(&mut self, observer: &ns::Id, for_key_path: &ns::String);
+    unsafe fn remove_observer_throws(&mut self, observer: &ns::Id, key_path: &ns::String);
 
     fn add_observer(
         &mut self,
         observer: &ns::Id,
         for_key_path: &ns::String,
-        options: KVOOpts,
+        options: KvoOpts,
         context: *mut c_void,
     ) -> ns::ExResult {
         ns::try_catch(|| unsafe {
@@ -192,19 +200,19 @@ impl CidreObserver {
 
 #[link(name = "Foundation", kind = "framework")]
 extern "C" {
-    static NSKeyValueChangeKindKey: &'static KVChangeKey;
-    static NSKeyValueChangeNewKey: &'static KVChangeKey;
-    static NSKeyValueChangeOldKey: &'static KVChangeKey;
-    static NSKeyValueChangeIndexesKey: &'static KVChangeKey;
-    static NSKeyValueChangeNotificationIsPriorKey: &'static KVChangeKey;
+    static NSKeyValueChangeKindKey: &'static KvChangeKey;
+    static NSKeyValueChangeNewKey: &'static KvChangeKey;
+    static NSKeyValueChangeOldKey: &'static KvChangeKey;
+    static NSKeyValueChangeIndexesKey: &'static KvChangeKey;
+    static NSKeyValueChangeNotificationIsPriorKey: &'static KvChangeKey;
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+extern "C-unwind" {
     fn cidre_create_observer(
         obj: &ns::Id,
         key_path: &ns::String,
-        options: KVOOpts,
+        options: KvoOpts,
         context: *mut c_void,
         fn_ptr: *const c_void,
     ) -> arc::R<CidreObserver>;
@@ -223,22 +231,22 @@ mod tests {
 
         let _observer = ns::Observer::with_obj(
             q.as_mut(),
-            &ns::String::with_str("name"),
-            ns::KVOOpts::NEW,
+            ns::str!(c"name"),
+            ns::KvoOpts::NEW,
             |_key, _obj, _change| unsafe {
                 CALLS_COUNT += 1;
             },
         )
         .unwrap();
 
-        q.set_name(Some(&ns::String::with_str("nice")));
+        q.set_name(Some(ns::str!(c"nice")));
 
         let pi = ns::ProcessInfo::current();
 
         let _observer = ns::Observer::with_obj(
             pi,
-            &ns::String::with_str("thermalState"),
-            ns::KVOOpts::INITIAL,
+            ns::str!(c"thermalState"),
+            ns::KvoOpts::INITIAL,
             |_key, _obj, _change| unsafe {
                 CALLS_COUNT += 1;
             },
@@ -253,8 +261,8 @@ mod tests {
         let mut q = ns::OpQueue::new();
         let _observer = ns::Observer::with_obj(
             q.as_mut(),
-            &ns::String::with_str("wrong. name"),
-            ns::KVOOpts::NEW,
+            ns::str!(c"wrong. name"),
+            ns::KvoOpts::NEW,
             |_key, _obj, _change| {},
         )
         .expect_err("should fail");

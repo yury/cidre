@@ -2160,7 +2160,7 @@ impl DiscoverySession {
     pub fn supported_multi_cam_device_sets(&self) -> arc::R<ns::Array<ns::Set<Device>>>;
 }
 
-impl ns::KVObserverRegistration for DiscoverySession {}
+impl ns::KvObserverRegistration for DiscoverySession {}
 
 define_obj_type!(
     /// Allows clients to monitor rotations of a given [`av::CaptureDevice`] instance

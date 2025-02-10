@@ -32,7 +32,7 @@ define_obj_type!(
 
 unsafe impl Send for ProcessInfo {}
 
-impl ns::KVObserverRegistration for ProcessInfo {}
+impl ns::KvObserverRegistration for ProcessInfo {}
 
 #[doc(alias = "NSOperatingSystemVersion")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]

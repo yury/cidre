@@ -77,15 +77,15 @@ impl BlockOp {
     pub fn with_block(block: &mut blocks::WorkBlock) -> arc::R<Self>;
 }
 
-impl ns::KVObserverRegistration for Op {}
-impl ns::KVObserverRegistration for BlockOp {}
+impl ns::KvObserverRegistration for Op {}
+impl ns::KvObserverRegistration for BlockOp {}
 
 define_obj_type!(
     #[doc(alias = "NSOperationQueue")]
     pub OpQueue(ns::Id), NS_OPERATION_QUEUE
 );
 
-impl ns::KVObserverRegistration for OpQueue {}
+impl ns::KvObserverRegistration for OpQueue {}
 
 impl OpQueue {
     /// The default maximum number of operations to invoke concurrently in a queue.

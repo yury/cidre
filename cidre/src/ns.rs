@@ -215,13 +215,13 @@ pub use locale::Locale;
 
 mod key_value_observing;
 pub use key_value_observing::CidreObserver;
-pub use key_value_observing::KVChange;
-pub use key_value_observing::KVChangeKey;
-pub use key_value_observing::KVOOpts;
-pub use key_value_observing::KVObserverRegistration;
-pub use key_value_observing::KVObserverRegistrationImpl;
-pub use key_value_observing::KVObserving;
-pub use key_value_observing::KVSetMutationKind;
+pub use key_value_observing::KvChange;
+pub use key_value_observing::KvChangeKey;
+pub use key_value_observing::KvObserverRegistration;
+pub use key_value_observing::KvObserverRegistrationImpl;
+pub use key_value_observing::KvObserving;
+pub use key_value_observing::KvSetMutationKind;
+pub use key_value_observing::KvoOpts;
 pub use key_value_observing::Observer;
 
 mod key_value_coding;
