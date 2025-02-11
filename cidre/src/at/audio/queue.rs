@@ -1,6 +1,6 @@
 use std::{ffi::c_void, ptr::NonNull};
 
-use crate::{at::audio, define_opts};
+use crate::{at::audio, define_opts, four_cc_fmt_debug};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
@@ -108,14 +108,14 @@ impl QueueProp {
     #[doc(alias = "kAudioQueueProperty_EnableLevelMetering")]
     pub const ENABLE_LEVEL_METERING: Self = Self(u32::from_be_bytes(*b"aqme"));
 
-    /// A read-only property whose value is an array of AudioQueueLevelMeter structures, one
-    /// array element per audio channel. The values in the AudioQueueLevelMeters are in the
+    /// A read-only property whose value is an array of AudioQueueLevelMeterState structures, one
+    /// array element per audio channel. The values in the AudioQueueLevelMetersState are in the
     /// range 0-1.
     #[doc(alias = "kAudioQueueProperty_CurrentLevelMeter")]
     pub const CURRENT_LEVEL_METER: Self = Self(u32::from_be_bytes(*b"aqmv"));
 
-    /// A read-only property whose value is an array of AudioQueueLevelMeter structures, one
-    /// array element per audio channel. The values in the AudioQueueLevelMeters are in
+    /// A read-only property whose value is an array of AudioQueueLevelMeterState structures, one
+    /// array element per audio channel. The values in the AudioQueueLevelMeterState are in
     /// decibels.
     #[doc(alias = "kAudioQueueProperty_CurrentLevelMeterDB")]
     pub const CURRENT_LEVEL_METER_DB: Self = Self(u32::from_be_bytes(*b"aqmd"));
@@ -150,6 +150,7 @@ impl QueueProp {
     pub const TIME_PITCH_BYPASS: Self = Self(u32::from_be_bytes(*b"qtpb"));
 }
 
+#[doc(alias = "AudioQueueTimePitchAlgorithm")]
 #[repr(transparent)]
 pub struct QueueTimePitchAlgorithm(pub u32);
 
@@ -168,6 +169,12 @@ impl QueueTimePitchAlgorithm {
     pub const VARISPEED: Self = Self(u32::from_be_bytes(*b"vspd"));
 }
 
+impl std::fmt::Debug for QueueTimePitchAlgorithm {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        four_cc_fmt_debug(self.0, "QueueTimePitchAlgorithm", f)
+    }
+}
+
 impl QueueProp {
     #[doc(alias = "kAudioQueueProperty_HardwareCodecPolicy")]
     pub const HARDWARE_CODEC_POLICY: Self = Self(u32::from_be_bytes(*b"aqcp"));
@@ -178,6 +185,12 @@ impl QueueProp {
     /// (New in iOS 6.0).
     #[doc(alias = "kAudioQueueProperty_ChannelAssignments")]
     pub const CHANNEL_ASSIGNMENTS: Self = Self(u32::from_be_bytes(*b"aqca"));
+}
+
+impl std::fmt::Debug for QueueProp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        four_cc_fmt_debug(self.0, "QueueProp", f)
+    }
 }
 
 impl QueueParam {
@@ -212,6 +225,7 @@ impl QueueParam {
 }
 
 define_opts!(
+    #[doc(alias = "AudioQueueProcessingTapFlags")]
     pub QueueProcessingTapFlags(u32)
 );
 
@@ -241,12 +255,15 @@ pub struct QueueBuf {
     pub packet_description_count: u32,
 }
 
+#[doc(alias = "AudioQueueParameterEvent")]
 #[repr(C)]
 pub struct QueueParamEvent {
     pub id: QueueParam,
     pub value: QueueParamValue,
 }
 
+/// Specifies the current level metering information for one channel of an audio queue.
+#[doc(alias = "AudioQueueLevelMeterState")]
 #[repr(C)]
 pub struct QueueLevelMeterState {
     /// The audio channel's average RMS power.
@@ -278,8 +295,10 @@ pub type QueueInputCbBlock = blocks::EscBlock<
     fn(&mut Queue, &mut QueueBuf, *const audio::TimeStamp, u32, *const audio::StreamPacketDesc),
 >;
 
+#[doc(alias = "AudioQueueOutputCallback")]
 pub type QueueOutputCb = extern "C" fn(*mut c_void, &mut Queue, &mut QueueBuf);
 
+#[doc(alias = "AudioQueueInputCallback")]
 pub type QueueInputCb = extern "C" fn(
     *mut c_void,
     &mut Queue,
@@ -289,4 +308,5 @@ pub type QueueInputCb = extern "C" fn(
     *const audio::StreamPacketDesc,
 );
 
+#[doc(alias = "AudioQueuePropertyListenerProc")]
 pub type QueuePropListenerProc = extern "C" fn(*mut c_void, &mut Queue, QueueProp);
