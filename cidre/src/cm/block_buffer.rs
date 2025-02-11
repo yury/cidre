@@ -71,6 +71,7 @@ impl BlockBuf {
     ///
     /// assert!(b.is_empty());
     /// assert!(b.data_len() == 0);
+    /// assert!(b.len() == 0);
     ///
     /// ```
     #[doc(alias = "CMBlockBufferCreateEmpty")]
@@ -362,31 +363,40 @@ pub mod err {
 
     /// Returned when a cm::BlockBuffer-creating API gets a failure
     /// from the cf::Allocator provided for cm::BlockBuffer construction.
-    pub const STRUCTURE_ALLOCATION_FAILED: Error = Error::new_unchecked(-12700);
+    #[doc(alias = "kCMBlockBufferStructureAllocationFailedErr")]
+    pub const STRUCT_ALLOCATION_FAILED: Error = Error::new_unchecked(-12700);
 
     /// Returned when the allocator provided to allocate a memory block
     /// (as distinct from cm::BlockBuffer structures) fails.
+    #[doc(alias = "kCMBlockBufferBlockAllocationFailedErr")]
     pub const BLOCK_ALLOCATION_FAILED: Error = Error::new_unchecked(-12701);
 
     /// The custom block source’s Allocate() routine was NULL when an allocation was attempted.
-    pub const BAD_CUSTOM_BLOCK_SOURCE: Error = Error::new_unchecked(-12702);
+    #[doc(alias = "kCMBlockBufferBadCustomBlockSourceErr")]
+    pub const BAD_CUSTOM_BLOCK_SRC: Error = Error::new_unchecked(-12702);
 
     /// The offset provided to an API is out of the range of the relevent cm::BlockBuffer
-    pub const BAD_OFFSET_PARAMETER: Error = Error::new_unchecked(-12703);
+    #[doc(alias = "kCMBlockBufferBadOffsetParameterErr")]
+    pub const BAD_OFFSET_PARAM: Error = Error::new_unchecked(-12703);
 
     /// The length provided to an API is out of the range of the relevent cm::BlockBuffer,
     /// or is not allowed to be zero.
-    pub const BAD_LENGTH_PARAMETER: Error = Error::new_unchecked(-12704);
+    #[doc(alias = "kCMBlockBufferBadLengthParameterErr")]
+    pub const BAD_LEN_PARAM: Error = Error::new_unchecked(-12704);
 
     /// A pointer parameter (e.g. cm::BlockBuffer reference, destination memory) is NULL
     /// or otherwise invalid.
-    pub const BAD_POINTER_PARAMETER: Error = Error::new_unchecked(-12705);
+    #[doc(alias = "kCMBlockBufferBadPointerParameterErr")]
+    pub const BAD_POINTER_PARAM: Error = Error::new_unchecked(-12705);
 
     /// Expected a non-empty cm::BlockBuffer.
-    pub const EMPTY_BBUF: Error = Error::new_unchecked(-12706);
+    #[doc(alias = "kCMBlockBufferEmptyBBufErr")]
+    pub const EMPTY_BUF: Error = Error::new_unchecked(-12706);
 
     /// An unallocated memory block was encountered.
+    #[doc(alias = "kCMBlockBufferUnallocatedBlockErr")]
     pub const UNALLOCATED_BLOCK: Error = Error::new_unchecked(-12707);
 
+    #[doc(alias = "kCMBlockBufferInsufficientSpaceErr")]
     pub const INSUFFICIENT_SPACE: Error = Error::new_unchecked(-12708);
 }
