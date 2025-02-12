@@ -8,6 +8,11 @@ macro_rules! accessors {
         }
 
         #[inline]
+        pub unsafe fn x_unchecked(&self) -> &T {
+            unsafe { self.0.get_unchecked(0) }
+        }
+
+        #[inline]
         pub fn set_x(&mut self, val: T) {
             self.0[0] = val;
         }
@@ -15,6 +20,11 @@ macro_rules! accessors {
         #[inline]
         pub fn r(&self) -> T {
             self.0[0]
+        }
+
+        #[inline]
+        pub unsafe fn r_unchecked(&self) -> &T {
+            unsafe { self.0.get_unchecked(0) }
         }
 
         #[inline]
@@ -29,6 +39,11 @@ macro_rules! accessors {
         }
 
         #[inline]
+        pub unsafe fn y_unchecked(&self) -> &T {
+            unsafe { self.0.get_unchecked(1) }
+        }
+
+        #[inline]
         pub fn set_y(&mut self, val: T) {
             self.0[1] = val;
         }
@@ -36,6 +51,11 @@ macro_rules! accessors {
         #[inline]
         pub fn g(&self) -> T {
             self.0[1]
+        }
+
+        #[inline]
+        pub unsafe fn g_unchecked(&self) -> &T {
+            unsafe { self.0.get_unchecked(1) }
         }
 
         #[inline]
@@ -50,6 +70,11 @@ macro_rules! accessors {
         }
 
         #[inline]
+        pub unsafe fn z_unchecked(&self) -> &T {
+            unsafe { self.0.get_unchecked(2) }
+        }
+
+        #[inline]
         pub fn set_z(&mut self, val: T) {
             self.0[2] = val;
         }
@@ -57,6 +82,11 @@ macro_rules! accessors {
         #[inline]
         pub fn b(&self) -> T {
             self.0[2]
+        }
+
+        #[inline]
+        pub unsafe fn b_unchecked(&self) -> &T {
+            unsafe { self.0.get_unchecked(2) }
         }
 
         #[inline]
@@ -71,6 +101,11 @@ macro_rules! accessors {
         }
 
         #[inline]
+        pub unsafe fn w_unchecked(&self) -> &T {
+            unsafe { self.0.get_unchecked(3) }
+        }
+
+        #[inline]
         pub fn set_w(&mut self, val: T) {
             self.0[3] = val;
         }
@@ -78,6 +113,11 @@ macro_rules! accessors {
         #[inline]
         pub fn a(&self) -> T {
             self.0[3]
+        }
+
+        #[inline]
+        pub unsafe fn a_unchecked(&self) -> &T {
+            unsafe { self.0.get_unchecked(3) }
         }
 
         #[inline]

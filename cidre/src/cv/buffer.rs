@@ -62,6 +62,7 @@ impl Buf {
         unsafe { CVBufferCopyAttachment(self, key, attachment_mode) }
     }
 
+    #[doc(alias = "CVBufferHasAttachment")]
     #[inline]
     pub fn has_attach(&self, key: &cf::String) -> bool {
         unsafe { CVBufferHasAttachment(self, key) }
