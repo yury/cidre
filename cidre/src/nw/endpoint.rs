@@ -82,7 +82,7 @@ impl Endpoint {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn nw_endpoint_get_type(endpoint: &Endpoint) -> EndpointType;
     fn nw_endpoint_create_host(
         hostname: *const c_char,
@@ -142,7 +142,7 @@ impl Endpoint {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn nw_endpoint_create_bonjour_service(
         name: *const c_char,
         type_: *const c_char,
@@ -204,7 +204,7 @@ impl Endpoint {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn nw_endpoint_create_url(url: *const c_char) -> Option<arc::R<Endpoint>>;
     fn nw_endpoint_get_url(endpoint: &Endpoint) -> *const c_char;
     fn nw_endpoint_copy_txt_record(endpoint: &Endpoint) -> *mut c_char;

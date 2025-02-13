@@ -143,7 +143,7 @@ impl Listener {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn nw_listener_create_with_port(
         port: *const c_char,
         params: &nw::Params,

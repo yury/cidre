@@ -118,7 +118,7 @@ pub enum IfaceRadioType {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn nw_interface_get_type(iface: &Iface) -> IfaceType;
     fn nw_interface_get_name(iface: &Iface) -> *const c_char;
     fn nw_interface_get_index(iface: &Iface) -> u32;

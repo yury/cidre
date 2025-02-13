@@ -75,7 +75,7 @@ impl AdvertiseDesc {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn nw_advertise_descriptor_create_bonjour_service(
         name: *const c_char,
         type_: *const c_char,

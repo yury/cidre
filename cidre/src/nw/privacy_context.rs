@@ -59,7 +59,7 @@ impl PrivacyContext {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn nw_privacy_context_create(description: *const c_char) -> arc::R<PrivacyContext>;
     fn nw_privacy_context_flush_cache(context: &mut PrivacyContext);
     fn nw_privacy_context_disable_logging(context: &mut PrivacyContext);

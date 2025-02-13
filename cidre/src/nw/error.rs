@@ -47,7 +47,7 @@ impl Error {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn nw_error_get_error_domain(error: &Error) -> ErrorDomain;
     fn nw_error_get_error_code(error: &Error) -> i32;
     fn nw_error_copy_cf_error(error: &Error) -> arc::R<cf::Error>;

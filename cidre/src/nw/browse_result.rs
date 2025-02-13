@@ -77,7 +77,7 @@ impl BrowseResult {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn nw_browse_result_copy_endpoint(res: &BrowseResult) -> arc::R<nw::Endpoint>;
     fn nw_browse_result_get_changes(
         old: Option<&BrowseResult>,

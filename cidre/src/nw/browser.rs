@@ -118,7 +118,7 @@ impl Browser {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C" {
+extern "C-unwind" {
     fn nw_browser_create(
         descriptor: &nw::BrowseDesc,
         params: Option<&nw::Params>,
