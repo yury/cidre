@@ -19,12 +19,17 @@ use crate::ns;
 /// December 16th, 1999 at 17:54:34. Repeated calls to this function do not guarantee
 /// monotonically increasing results. The system time may decrease due to synchronization
 /// with external time references or due to an explicit user change of the clock.
+#[doc(alias = "CFAbsoluteTimeGetCurrent")]
 #[inline]
 pub fn abs_time_current() -> AbsTime {
     unsafe { CFAbsoluteTimeGetCurrent() }
 }
 
-define_cf_type!(Date(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CFType")]
+    #[doc(alias = "CFTypeRef")]
+    Date(cf::Type)
+);
 
 impl Date {
     #[doc(alias = "CFDateGetTypeID")]
@@ -48,6 +53,11 @@ impl Date {
     #[inline]
     pub fn new() -> arc::R<Self> {
         Self::new_at(abs_time_current())
+    }
+
+    #[inline]
+    pub fn now() -> arc::R<Self> {
+        Self::new()
     }
 
     #[doc(alias = "CFDateGetAbsoluteTime")]
