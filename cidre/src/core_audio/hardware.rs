@@ -64,19 +64,16 @@ impl Obj {
     #[doc(alias = "AudioObjectGetPropertyData")]
     pub fn prop<T: Sized>(&self, address: &PropAddr) -> os::Result<T> {
         let mut data_size = std::mem::size_of::<T>() as u32;
-        let mut val = std::mem::MaybeUninit::uninit();
-        unsafe {
+        os::result_init(|res| unsafe {
             AudioObjectGetPropertyData(
                 *self,
                 address,
                 0,
                 std::ptr::null(),
                 &mut data_size,
-                val.as_mut_ptr() as _,
+                res as _,
             )
-            .result()?;
-            Ok(val.assume_init())
-        }
+        })
     }
 
     pub fn bool_prop(&self, address: &PropAddr) -> os::Result<bool> {
@@ -92,19 +89,16 @@ impl Obj {
     ) -> os::Result<T> {
         let mut data_size = std::mem::size_of::<T>() as u32;
         let qualifier_size = std::mem::size_of::<Q>() as u32;
-        let mut val = std::mem::MaybeUninit::uninit();
-        unsafe {
+        os::result_init(|res| unsafe {
             AudioObjectGetPropertyData(
                 *self,
                 address,
                 qualifier_size,
                 qualifier as *const Q as *const _,
                 &mut data_size,
-                val.as_mut_ptr() as _,
+                res as _,
             )
-            .result()?;
-            Ok(val.assume_init())
-        }
+        })
     }
 
     pub fn cf_prop<T: arc::Release>(&self, address: &PropAddr) -> os::Result<arc::R<T>> {
