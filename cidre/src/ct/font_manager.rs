@@ -65,12 +65,12 @@ extern "C-unwind" {
     fn CTFontManagerRegisterFontsForURL(
         font_url: &cf::Url,
         scope: Scope,
-        error: *mut Option<arc::R<cf::Error>>,
+        error: *mut arc::R<cf::Error>,
     ) -> bool;
     fn CTFontManagerUnregisterFontsForURL(
         font_url: &cf::Url,
         scope: Scope,
-        error: *mut Option<arc::R<cf::Error>>,
+        error: *mut arc::R<cf::Error>,
     ) -> bool;
 
 }

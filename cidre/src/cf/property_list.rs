@@ -7,7 +7,7 @@ impl cf::Plist {
         data: &cf::Data,
         flags: cf::PlistMutabilityOpts,
         format: *mut cf::PlistFormat,
-        err: *mut Option<arc::R<cf::Error>>,
+        err: *mut arc::R<cf::Error>,
         allocator: Option<&cf::Allocator>,
     ) -> Option<arc::R<cf::Plist>> {
         unsafe { CFPropertyListCreateWithData(allocator, data, flags, format, err) }
@@ -17,7 +17,7 @@ impl cf::Plist {
         data: &cf::Data,
         flags: cf::PlistMutabilityOpts,
         format: *mut cf::PlistFormat,
-        err: *mut Option<arc::R<cf::Error>>,
+        err: *mut arc::R<cf::Error>,
     ) -> Option<arc::R<cf::Plist>> {
         unsafe { Self::from_data_err_in(data, flags, format, err, None) }
     }
@@ -41,7 +41,7 @@ impl cf::Plist {
     pub unsafe fn to_cf_data_err_in(
         &self,
         format: cf::PlistFormat,
-        err: *mut Option<arc::R<cf::Error>>,
+        err: *mut arc::R<cf::Error>,
         allocator: Option<&cf::Allocator>,
     ) -> Option<arc::R<cf::Data>> {
         unsafe { CFPropertyListCreateData(allocator, self, format, Default::default(), err) }
@@ -50,7 +50,7 @@ impl cf::Plist {
     pub unsafe fn to_cf_data_err(
         &self,
         format: cf::PlistFormat,
-        err: *mut Option<arc::R<cf::Error>>,
+        err: *mut arc::R<cf::Error>,
     ) -> Option<arc::R<cf::Data>> {
         unsafe { CFPropertyListCreateData(None, self, format, Default::default(), err) }
     }
@@ -279,7 +279,7 @@ extern "C-unwind" {
         data: &cf::Data,
         flags: cf::PlistMutabilityOpts,
         format: *mut cf::PlistFormat,
-        err: *mut Option<arc::R<cf::Error>>,
+        err: *mut arc::R<cf::Error>,
     ) -> Option<arc::R<cf::Plist>>;
 
     fn CFPropertyListCreateData(
@@ -287,7 +287,7 @@ extern "C-unwind" {
         prop_list: &cf::Plist,
         format: cf::PlistFormat,
         options: cf::OptionFlags,
-        err: *mut Option<arc::R<cf::Error>>,
+        err: *mut arc::R<cf::Error>,
     ) -> Option<arc::R<cf::Data>>;
 
     fn CFPropertyListIsValid(plist: &cf::Plist, format: cf::PlistFormat) -> bool;
@@ -302,6 +302,7 @@ extern "C-unwind" {
 #[cfg(test)]
 mod tests {
     use crate::cf;
+
     #[test]
     fn basics() {
         let num = cf::Number::from_i16(10);

@@ -148,7 +148,7 @@ impl Dst {
         &mut self,
         isrc: &cg::ImageSrc,
         options: Option<&cf::DictionaryOf<CopyOptKey, cf::Type>>,
-        err: *mut Option<arc::R<cf::Error>>,
+        err: *mut arc::R<cf::Error>,
     ) -> bool {
         unsafe { CGImageDestinationCopyImageSource(self, isrc, options, err) }
     }
@@ -241,7 +241,7 @@ extern "C" {
         idst: &mut Dst,
         isrc: &cg::ImageSrc,
         options: Option<&cf::DictionaryOf<CopyOptKey, cf::Type>>,
-        err: *mut Option<arc::R<cf::Error>>,
+        err: *mut arc::R<cf::Error>,
     ) -> bool;
 
     fn CGImageDestinationAddImage(

@@ -131,21 +131,21 @@ extern "C-unwind" {
     fn SecCertificateCopyValues(
         crt: &sec::Cert,
         keys: Option<&cf::ArrayOf<cf::String>>,
-        error: *mut Option<arc::R<cf::Error>>,
+        error: *mut arc::R<cf::Error>,
     ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::DictionaryOf<cf::String, cf::Type>>>>;
 
     #[cfg(target_os = "macos")]
     fn SecCertificateCopyLongDescription(
         alloc: Option<&cf::Allocator>,
         cert: &sec::Cert,
-        error: *mut Option<arc::R<cf::Error>>,
+        error: *mut arc::R<cf::Error>,
     ) -> Option<arc::R<cf::String>>;
 
     #[cfg(target_os = "macos")]
     fn SecCertificateCopyShortDescription(
         alloc: Option<&cf::Allocator>,
         cert: &sec::Cert,
-        error: *mut Option<arc::R<cf::Error>>,
+        error: *mut arc::R<cf::Error>,
     ) -> Option<arc::R<cf::String>>;
 }
 

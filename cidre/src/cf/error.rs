@@ -6,32 +6,32 @@ use crate::ns;
 #[inline]
 pub fn if_false<F>(f: F) -> Result<(), arc::R<Error>>
 where
-    F: FnOnce(*mut Option<arc::R<Error>>) -> bool,
+    F: FnOnce(*mut arc::R<Error>) -> bool,
 {
-    let mut err = None;
-    if f(&mut err) {
+    let mut err = std::mem::MaybeUninit::uninit();
+    if f(err.as_mut_ptr()) {
         Ok(())
     } else {
-        unsafe { Err(err.unwrap_unchecked()) }
+        unsafe { Err(err.assume_init()) }
     }
 }
 
 #[inline]
 pub fn if_none<R, F>(f: F) -> Result<R, arc::R<Error>>
 where
-    F: FnOnce(*mut Option<arc::R<Error>>) -> Option<R>,
+    F: FnOnce(*mut arc::R<Error>) -> Option<R>,
 {
-    let mut err = None;
-    f(&mut err).ok_or_else(|| unsafe { err.unwrap_unchecked() })
+    let mut err = std::mem::MaybeUninit::uninit();
+    f(err.as_mut_ptr()).ok_or_else(|| unsafe { err.assume_init() })
 }
 
 #[inline]
 pub fn if_none_maybe<R, F>(f: F) -> Result<R, Option<arc::R<Error>>>
 where
-    F: FnOnce(*mut Option<arc::R<Error>>) -> Option<R>,
+    F: FnOnce(*mut arc::R<Error>) -> Option<R>,
 {
     let mut err = None;
-    f(&mut err).ok_or(err)
+    f(unsafe { std::mem::transmute(&mut err) }).ok_or(err)
 }
 
 define_cf_type!(
