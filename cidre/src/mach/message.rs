@@ -1,8 +1,9 @@
 use std::ffi::{c_uint, c_void};
 
-use crate::define_opts;
-
-use super::{Boolean, Integer, KernReturn, Natural, Port, PortName};
+use crate::{
+    define_opts,
+    mach::{Boolean, Integer, KernReturn, Natural, Port, PortName},
+};
 
 pub type Number = Natural;
 
@@ -139,7 +140,7 @@ impl TypeName {
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(u8)]
-pub enum CopyOptions {
+pub enum CopyOpts {
     PhysicalCopy = 0,
     VirtualCopy = 1,
     Allocate = 2,
@@ -165,9 +166,9 @@ pub enum DescType {
     Port,
 
     /// Out of line
-    OOL,
-    OOLPorts,
-    OOLVolatile,
+    Ool,
+    OolPorts,
+    OolVolatile,
     GuardedPort,
 }
 
@@ -193,7 +194,7 @@ pub struct PortDesc {
 }
 
 #[repr(C, align(4))]
-pub struct OOLDesc32 {
+pub struct OolDesc32 {
     pub address: u32,
     pub size: Size,
     pub deallocate: Boolean,
@@ -202,7 +203,7 @@ pub struct OOLDesc32 {
 }
 
 #[repr(C, align(4))]
-pub struct OOLDesc64 {
+pub struct OolDesc64 {
     pub address: u64,
     pub size: Size,
     pub deallocate: Boolean,
@@ -211,10 +212,10 @@ pub struct OOLDesc64 {
 }
 
 #[repr(C, align(4))]
-pub struct OOLDesc {
+pub struct OolDesc {
     pub address: *mut c_void,
     pub deallocate: u8,
-    pub copy: CopyOptions,
+    pub copy: CopyOpts,
     pub pad1: u8,
     pub type_: DescType,
     pub size: Size,

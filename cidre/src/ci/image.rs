@@ -11,7 +11,7 @@ impl arc::A<Image> {
     pub fn init_with_mlt_texture_options(
         self,
         texture: &mtl::Texture,
-        options: Option<&cf::DictionaryOf<ImageOption, cf::Type>>,
+        options: Option<&cf::DictionaryOf<ImageOpt, cf::Type>>,
     ) -> Option<arc::Retained<Image>>;
 }
 
@@ -20,7 +20,7 @@ impl Image {
 
     pub fn with_mtl_texture(
         texture: &mtl::Texture,
-        options: Option<&cf::DictionaryOf<ImageOption, cf::Type>>,
+        options: Option<&cf::DictionaryOf<ImageOpt, cf::Type>>,
     ) -> Option<arc::R<Self>> {
         Self::alloc().init_with_mlt_texture_options(texture, options)
     }
@@ -347,10 +347,10 @@ extern "C" {
 
 define_obj_type!(
     #[doc(alias = "CIImageOption")]
-    pub ImageOption(ns::String)
+    pub ImageOpt(ns::String)
 );
 
-impl ImageOption {
+impl ImageOpt {
     /// A &cg::ColorSpace defining the color space of the image. This value
     /// overrides the image's implicit color space.
     /// If cf::Null::null() then dont color manage the image.
@@ -465,22 +465,22 @@ impl ImageOption {
 extern "C" {
     static CI_IMAGE: &'static objc::Class<Image>;
 
-    static kCIImageColorSpace: &'static ImageOption;
-    static kCIImageToneMapHDRtoSDR: &'static ImageOption;
-    static kCIImageNearestSampling: &'static ImageOption;
-    static kCIImageProperties: &'static ImageOption;
-    static kCIImageApplyOrientationProperty: &'static ImageOption;
-    static kCIImageTextureTarget: &'static ImageOption;
-    static kCIImageTextureFormat: &'static ImageOption;
+    static kCIImageColorSpace: &'static ImageOpt;
+    static kCIImageToneMapHDRtoSDR: &'static ImageOpt;
+    static kCIImageNearestSampling: &'static ImageOpt;
+    static kCIImageProperties: &'static ImageOpt;
+    static kCIImageApplyOrientationProperty: &'static ImageOpt;
+    static kCIImageTextureTarget: &'static ImageOpt;
+    static kCIImageTextureFormat: &'static ImageOpt;
 
-    static kCIImageAuxiliaryDepth: &'static ImageOption;
-    static kCIImageAuxiliaryDisparity: &'static ImageOption;
-    static kCIImageAuxiliaryPortraitEffectsMatte: &'static ImageOption;
-    static kCIImageAuxiliarySemanticSegmentationSkinMatte: &'static ImageOption;
-    static kCIImageAuxiliarySemanticSegmentationHairMatte: &'static ImageOption;
-    static kCIImageAuxiliarySemanticSegmentationTeethMatte: &'static ImageOption;
-    static kCIImageAuxiliarySemanticSegmentationGlassesMatte: &'static ImageOption;
-    static kCIImageAuxiliarySemanticSegmentationSkyMatte: &'static ImageOption;
+    static kCIImageAuxiliaryDepth: &'static ImageOpt;
+    static kCIImageAuxiliaryDisparity: &'static ImageOpt;
+    static kCIImageAuxiliaryPortraitEffectsMatte: &'static ImageOpt;
+    static kCIImageAuxiliarySemanticSegmentationSkinMatte: &'static ImageOpt;
+    static kCIImageAuxiliarySemanticSegmentationHairMatte: &'static ImageOpt;
+    static kCIImageAuxiliarySemanticSegmentationTeethMatte: &'static ImageOpt;
+    static kCIImageAuxiliarySemanticSegmentationGlassesMatte: &'static ImageOpt;
+    static kCIImageAuxiliarySemanticSegmentationSkyMatte: &'static ImageOpt;
 
     #[api::available(
         macos = 15.0,
@@ -489,7 +489,7 @@ extern "C" {
         tvos = 18.0,
         visionos = 2.0
     )]
-    static kCIImageContentHeadroom: &'static ImageOption;
+    static kCIImageContentHeadroom: &'static ImageOpt;
 }
 
 #[cfg(test)]
@@ -526,10 +526,10 @@ mod tests {
             let headroom = unsafe { black.content_headroom() };
             assert_eq!(0.0f32, headroom);
 
-            let key = unsafe { ci::ImageOption::content_headeroom() };
+            let key = unsafe { ci::ImageOpt::content_headeroom() };
             assert!(key.is_some());
         } else {
-            let key = unsafe { ci::ImageOption::content_headeroom() };
+            let key = unsafe { ci::ImageOpt::content_headeroom() };
             assert!(key.is_none());
         }
     }
@@ -541,6 +541,6 @@ mod tests {
         let headroom = black.content_headroom();
         assert_eq!(0.0f32, headroom);
 
-        let _key = ci::ImageOption::content_headeroom();
+        let _key = ci::ImageOpt::content_headeroom();
     }
 }

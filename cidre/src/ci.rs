@@ -4,7 +4,7 @@ pub use context::Context;
 mod image;
 pub use image::Format;
 pub use image::Image;
-pub use image::ImageOption;
+pub use image::ImageOpt;
 
 mod vector;
 pub use vector::Vec;
