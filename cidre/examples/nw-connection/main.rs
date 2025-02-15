@@ -26,7 +26,7 @@ mod macos {
                 send_request(&mut block_conn);
             }
             nw::ConnectionState::Failed => eprintln!("error: {err:?}"),
-            nw::ConnectionState::Cancelled => todo!(),
+            nw::ConnectionState::Cancelled => ns::App::shared().terminate(None),
         });
 
         let queue = dispatch::Queue::new();
@@ -37,7 +37,7 @@ mod macos {
 
     fn recv_loop(conn: &mut nw::Connection) {
         let mut block_conn = conn.retained();
-        conn.recv(1, u32::MAX, move |content, _ctx, _is_complete, err| {
+        conn.recv(1, u32::MAX, move |content, _ctx, is_complete, err| {
             if let Some(err) = err {
                 // breaking the "loop" on error
                 eprintln!("{err:?}");
@@ -50,13 +50,18 @@ mod macos {
                 eprintln!("{res}");
             }
             // "looping"
-            recv_loop(&mut block_conn)
+            if is_complete {
+                block_conn.cancel();
+            } else {
+                recv_loop(&mut block_conn)
+            }
         });
     }
 
     fn send_request(conn: &mut nw::Connection) {
         let body = b"GET / HTTP/1.1
 Host: example.com
+Connection: Close
 
 
 ";
