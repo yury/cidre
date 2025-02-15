@@ -15,6 +15,12 @@ impl Default for Status {
     }
 }
 
+impl PartialEq<Error> for Status {
+    fn eq(&self, other: &Error) -> bool {
+        self.0 == other.0.get()
+    }
+}
+
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(C)]
 pub struct Error(pub NonZeroI32);
