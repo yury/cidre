@@ -254,158 +254,202 @@ pub struct Trailer {
     pub size: TrailerSize,
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-#[repr(transparent)]
-pub struct Return(pub KernReturn);
+/// Check errors with mach::msg_err
+pub type Return = KernReturn;
 
-impl Return {
-    pub const SUCCESS: Self = Self(KernReturn(0));
+pub mod err {
+    use crate::os::Error;
 
-    pub const MASK: Self = Self(KernReturn(0x00003e00));
+    #[doc(alias = "MACH_MSG_MASK")]
+    pub const MASK: Error = Error::new_unchecked(0x00003e00);
 
     /// No room in IPC name space for another capability name.
-    pub const IPC_SPACE: Self = Self(KernReturn(0x00002000));
+    #[doc(alias = "MACH_MSG_IPC_SPACE")]
+    pub const IPC_SPACE: Error = Error::new_unchecked(0x00002000);
 
     ///  No room in VM address space for out-of-line memory.
-    pub const VM_SPACE: Self = Self(KernReturn(0x00001000));
+    #[doc(alias = "MACH_MSG_VM_SPACE")]
+    pub const VM_SPACE: Error = Error::new_unchecked(0x00001000);
 
     /// Kernel resource shortage handling an IPC capability.
-    pub const IPC_KERNEL: Self = Self(KernReturn(0x00000800));
+    #[doc(alias = "MACH_MSG_IPC_KERNEL")]
+    pub const IPC_KERNEL: Error = Error::new_unchecked(0x00000800);
 
     /// Kernel resource shortage handling out-of-line memory.
-    pub const VM_KERNEL: Self = Self(KernReturn(0x00000400));
+    #[doc(alias = "MACH_MSG_VM_KERNEL")]
+    pub const VM_KERNEL: Error = Error::new_unchecked(0x00000400);
 
     /// Thread is waiting to send.  (Internal use only.)
-    pub const SEND_IN_PROGRESS: Self = Self(KernReturn(0x10000001));
+    #[doc(alias = "MACH_SEND_IN_PROGRESS")]
+    pub const SEND_IN_PROGRESS: Error = Error::new_unchecked(0x10000001);
 
     /// Bogus in-line data.
-    pub const SEND_INVALID_DATA: Self = Self(KernReturn(0x10000002));
+    #[doc(alias = "MACH_SEND_INVALID_DATA")]
+    pub const SEND_INVALID_DATA: Error = Error::new_unchecked(0x10000002);
 
     /// Bogus destination port.
-    pub const SEND_INVALID_DEST: Self = Self(KernReturn(0x10000003));
+    #[doc(alias = "MACH_SEND_INVALID_DEST")]
+    pub const SEND_INVALID_DEST: Error = Error::new_unchecked(0x10000003);
 
     /// Message not sent before timeout expired.
-    pub const SEND_TIMED_OUT: Self = Self(KernReturn(0x10000004));
+    #[doc(alias = "MACH_SEND_TIMED_OUT")]
+    pub const SEND_TIMED_OUT: Error = Error::new_unchecked(0x10000004);
 
     /// Bogus voucher port.
-    pub const SEND_INVALID_VOUCHER: Self = Self(KernReturn(0x10000005));
+    #[doc(alias = "MACH_SEND_INVALID_VOUCHER")]
+    pub const SEND_INVALID_VOUCHER: Error = Error::new_unchecked(0x10000005);
 
     /// Software interrupt.
-    pub const SEND_INTERRUPTED: Self = Self(KernReturn(0x10000007));
+    #[doc(alias = "MACH_SEND_INTERRUPTED")]
+    pub const SEND_INTERRUPTED: Error = Error::new_unchecked(0x10000007);
 
     /// Data doesn't contain a complete message.
-    pub const SEND_SEND_MSG_TOO_SMALL: Self = Self(KernReturn(0x10000008));
+    #[doc(alias = "MACH_SEND_MSG_TOO_SMALL")]
+    pub const SEND_SEND_MSG_TOO_SMALL: Error = Error::new_unchecked(0x10000008);
 
     ///  Bogus reply port.
-    pub const SEND_INVALID_REPLY: Self = Self(KernReturn(0x10000009));
+    #[doc(alias = "MACH_SEND_INVALID_REPLY")]
+    pub const SEND_INVALID_REPLY: Error = Error::new_unchecked(0x10000009);
 
     /// Bogus port rights in the message body.
-    pub const SEND_INVALID_RIGHT: Self = Self(KernReturn(0x1000000a));
+    #[doc(alias = "MACH_SEND_INVALID_RIGHT")]
+    pub const SEND_INVALID_RIGHT: Error = Error::new_unchecked(0x1000000a);
 
     /// Bogus notify port argument.
-    pub const SEND_INVALID_NOTIFY: Self = Self(KernReturn(0x1000000b));
+    #[doc(alias = "MACH_SEND_INVALID_NOTIFY")]
+    pub const SEND_INVALID_NOTIFY: Error = Error::new_unchecked(0x1000000b);
 
     /// Invalid out-of-line memory pointer.
-    pub const SEND_INVALID_MEMORY: Self = Self(KernReturn(0x1000000c));
+    #[doc(alias = "MACH_SEND_INVALID_MEMORY")]
+    pub const SEND_INVALID_MEMORY: Error = Error::new_unchecked(0x1000000c);
 
     /// No message buffer is available.
-    pub const SEND_NO_BUFFER: Self = Self(KernReturn(0x1000000d));
+    #[doc(alias = "MACH_SEND_NO_BUFFER")]
+    pub const SEND_NO_BUFFER: Error = Error::new_unchecked(0x1000000d);
 
     /// Send is too large for port
-    pub const SEND_TOO_LARGE: Self = Self(KernReturn(0x1000000e));
+    #[doc(alias = "MACH_SEND_TOO_LARGE")]
+    pub const SEND_TOO_LARGE: Error = Error::new_unchecked(0x1000000e);
 
     /// Invalid msg-type specification.
-    pub const SEND_INVALID_TYPE: Self = Self(KernReturn(0x1000000f));
+    #[doc(alias = "MACH_SEND_INVALID_TYPE")]
+    pub const SEND_INVALID_TYPE: Error = Error::new_unchecked(0x1000000f);
 
-    ///  A field in the header had a bad value.
-    pub const SEND_INVALID_HEADER: Self = Self(KernReturn(0x10000010));
+    /// A field in the header had a bad value.
+    #[doc(alias = "MACH_SEND_INVALID_HEADER")]
+    pub const SEND_INVALID_HEADER: Error = Error::new_unchecked(0x10000010);
 
     /// The trailer to be sent does not match kernel format.
-    pub const SEND_INVALID_TRAILER: Self = Self(KernReturn(0x10000011));
+    #[doc(alias = "MACH_SEND_INVALID_TRAILER")]
+    pub const SEND_INVALID_TRAILER: Error = Error::new_unchecked(0x10000011);
 
     /// The sending thread context did not match the context on the dest port
-    pub const SEND_INVALID_CONTEXT: Self = Self(KernReturn(0x10000012));
+    #[doc(alias = "MACH_SEND_INVALID_CONTEXT")]
+    pub const SEND_INVALID_CONTEXT: Error = Error::new_unchecked(0x10000012);
 
-    ///  Send options are invalid.
-    pub const SEND_INVALID_OPTIONS: Self = Self(KernReturn(0x10000013));
+    /// Send options are invalid.
+    #[doc(alias = "MACH_SEND_INVALID_OPTIONS")]
+    pub const SEND_INVALID_OPTIONS: Error = Error::new_unchecked(0x10000013);
 
-    ///  compatibility: no longer a returned error
-    pub const SEND_INVALID_RT_OOL_SIZE: Self = Self(KernReturn(0x10000015));
+    /// Compatibility: no longer a returned error
+    #[doc(alias = "MACH_SEND_INVALID_RT_OOL_SIZE")]
+    pub const SEND_INVALID_RT_OOL_SIZE: Error = Error::new_unchecked(0x10000015);
 
     /// The destination port doesn't accept ports in body
-    pub const SEND_NO_GRANT_DEST: Self = Self(KernReturn(0x10000016));
+    #[doc(alias = "MACH_SEND_NO_GRANT_DEST")]
+    pub const SEND_NO_GRANT_DEST: Error = Error::new_unchecked(0x10000016);
 
     /// Message send was rejected by message filter
-    pub const SEND_MSG_FILTERED: Self = Self(KernReturn(0x10000017));
+    #[doc(alias = "MACH_SEND_MSG_FILTERED")]
+    pub const SEND_MSG_FILTERED: Error = Error::new_unchecked(0x10000017);
 
     /// Message auxiliary data is too small
-    pub const SEND_AUX_TOO_SMALL: Self = Self(KernReturn(0x10000018));
+    #[doc(alias = "MACH_SEND_AUX_TOO_SMALL")]
+    pub const SEND_AUX_TOO_SMALL: Error = Error::new_unchecked(0x10000018);
 
     /// Message auxiliary data is too large
-    pub const SEND_SEND_AUX_TOO_LARGE: Self = Self(KernReturn(0x10000019));
+    #[doc(alias = "MACH_SEND_AUX_TOO_LARGE")]
+    pub const SEND_SEND_AUX_TOO_LARGE: Error = Error::new_unchecked(0x10000019);
 
-    /// Thread is waiting for receive.  (Internal use only.)
-    pub const RCV_IN_PROGRESS: Self = Self(KernReturn(0x10004001));
+    /// Thread is waiting for receive. (Internal use only.)
+    #[doc(alias = "MACH_RCV_IN_PROGRESS")]
+    pub const RCV_IN_PROGRESS: Error = Error::new_unchecked(0x10004001);
 
     /// Bogus name for receive port/port-set.
-    pub const RCV_INVALID_NAME: Self = Self(KernReturn(0x10004002));
+    #[doc(alias = "MACH_RCV_INVALID_NAME")]
+    pub const RCV_INVALID_NAME: Error = Error::new_unchecked(0x10004002);
 
     /// Didn't get a message within the timeout value.
-    pub const RCV_TIMED_OUT: Self = Self(KernReturn(0x10004003));
+    #[doc(alias = "MACH_RCV_TIMED_OUT")]
+    pub const RCV_TIMED_OUT: Error = Error::new_unchecked(0x10004003);
 
     /// Message buffer is not large enough for inline data.
-    pub const RCV_TOO_LARGE: Self = Self(KernReturn(0x10004004));
+    #[doc(alias = "MACH_RCV_TOO_LARGE")]
+    pub const RCV_TOO_LARGE: Error = Error::new_unchecked(0x10004004);
 
     /// Software interrupt.    
-    pub const RCV_INTERRUPTED: Self = Self(KernReturn(0x10004005));
+    #[doc(alias = "MACH_RCV_INTERRUPTED")]
+    pub const RCV_INTERRUPTED: Error = Error::new_unchecked(0x10004005);
 
     /// compatibility: no longer a returned error
-    pub const RCV_PORT_CHANGED: Self = Self(KernReturn(0x10004006));
+    #[doc(alias = "MACH_RCV_PORT_CHANGED")]
+    pub const RCV_PORT_CHANGED: Error = Error::new_unchecked(0x10004006);
 
     /// Bogus notify port argument.
-    pub const RCV_INVALID_NOTIFY: Self = Self(KernReturn(0x10004007));
+    #[doc(alias = "MACH_RCV_INVALID_NOTIFY")]
+    pub const RCV_INVALID_NOTIFY: Error = Error::new_unchecked(0x10004007);
 
     /// Bogus message buffer for inline data.
-    pub const RCV_INVALID_DATA: Self = Self(KernReturn(0x10004008));
+    #[doc(alias = "MACH_RCV_INVALID_DATA")]
+    pub const RCV_INVALID_DATA: Error = Error::new_unchecked(0x10004008);
 
     /// Port/set was sent away/died during receive.
-    pub const RCV_PORT_DIED: Self = Self(KernReturn(0x10004009));
+    #[doc(alias = "MACH_RCV_PORT_DIED")]
+    pub const RCV_PORT_DIED: Error = Error::new_unchecked(0x10004009);
 
     /// compatibility: no longer a returned error
-    pub const RCV_IN_SET: Self = Self(KernReturn(0x1000400a));
+    #[doc(alias = "MACH_RCV_IN_SET")]
+    pub const RCV_IN_SET: Error = Error::new_unchecked(0x1000400a);
 
     /// Error receiving message header.  See special bits.
-    pub const RCV_HEADER_ERROR: Self = Self(KernReturn(0x1000400b));
+    #[doc(alias = "MACH_RCV_HEADER_ERROR")]
+    pub const RCV_HEADER_ERROR: Error = Error::new_unchecked(0x1000400b);
 
     /// Error receiving message body.  See special bits.
-    pub const RCV_BODY_ERROR: Self = Self(KernReturn(0x1000400c));
+    #[doc(alias = "MACH_RCV_BODY_ERROR")]
+    pub const RCV_BODY_ERROR: Error = Error::new_unchecked(0x1000400c);
 
     /// Invalid msg-type specification in scatter list.
-    pub const RCV_INVALID_TYPE: Self = Self(KernReturn(0x1000400d));
+    #[doc(alias = "MACH_RCV_INVALID_TYPE")]
+    pub const RCV_INVALID_TYPE: Error = Error::new_unchecked(0x1000400d);
 
     /// Out-of-line overwrite region is not large enough
-    pub const RCV_SCATTER_SMALL: Self = Self(KernReturn(0x1000400e));
+    #[doc(alias = "MACH_RCV_SCATTER_SMALL")]
+    pub const RCV_SCATTER_SMALL: Error = Error::new_unchecked(0x1000400e);
 
     /// trailer type or number of trailer elements not supported
-    pub const RCV_INVALID_TRAILER: Self = Self(KernReturn(0x1000400f));
+    #[doc(alias = "MACH_RCV_INVALID_TRAILER")]
+    pub const RCV_INVALID_TRAILER: Error = Error::new_unchecked(0x1000400f);
 
     /// Waiting for receive with timeout. (Internal use only.)
-    pub const RCV_IN_PROGRESS_TIMED: Self = Self(KernReturn(0x10004011));
+    #[doc(alias = "MACH_RCV_IN_PROGRESS_TIMED")]
+    pub const RCV_IN_PROGRESS_TIMED: Error = Error::new_unchecked(0x10004011);
 
     /// invalid reply port used in a STRICT_REPLY message    
-    pub const RCV_INVALID_REPLY: Self = Self(KernReturn(0x10004012));
+    #[doc(alias = "MACH_RCV_INVALID_REPLY")]
+    pub const RCV_INVALID_REPLY: Error = Error::new_unchecked(0x10004012);
 
     /// invalid receive arguments, receive has not started
-    pub const RCV_INVALID_ARGUMENTS: Self = Self(KernReturn(0x10004013));
-
-    pub fn is_ok(&self) -> bool {
-        *self == Self::SUCCESS
-    }
+    #[doc(alias = "MACH_RCV_INVALID_ARGUMENTS")]
+    pub const RCV_INVALID_ARGUMENTS: Error = Error::new_unchecked(0x10004013);
 }
 
-define_opts!(pub MsgOption(Integer));
+define_opts!(
+    #[doc(alias = "mach_msg_option_t")]
+    pub MsgOpt(Integer)
+);
 
-impl MsgOption {
+impl MsgOpt {
     pub const NONE: Self = Self(0x00000000);
 
     pub const SEND_MSG: Self = Self(0x00000001);
@@ -503,7 +547,7 @@ impl Timeout {
 #[inline]
 pub fn msg(
     msg: &mut Header,
-    option: MsgOption,
+    option: MsgOpt,
     send_size: Size,
     rcv_size: Size,
     rcv_name: PortName,
@@ -517,7 +561,7 @@ pub fn msg(
 #[inline]
 pub fn msg_overwrite(
     msg: *mut Header,
-    option: MsgOption,
+    option: MsgOpt,
     send_size: Size,
     rcv_size: Size,
     rcv_name: PortName,
@@ -533,10 +577,10 @@ pub fn msg_overwrite(
     }
 }
 
-extern "C" {
+extern "C-unwind" {
     fn mach_msg(
         msg: *mut Header,
-        option: MsgOption,
+        option: MsgOpt,
         send_size: Size,
         rcv_size: Size,
         rcv_name: PortName,
@@ -546,7 +590,7 @@ extern "C" {
 
     fn mach_msg_overwrite(
         msg: *mut Header,
-        option: MsgOption,
+        option: MsgOpt,
         send_size: Size,
         rcv_size: Size,
         rcv_name: PortName,

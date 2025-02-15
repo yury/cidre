@@ -69,11 +69,8 @@ impl Tap {
 
 impl TapDesc {
     pub fn create_process_tap(&self) -> os::Result<TapGuard> {
-        let mut res = std::mem::MaybeUninit::uninit();
-        unsafe {
-            AudioHardwareCreateProcessTap(self, res.as_mut_ptr()).result()?;
-            Ok(TapGuard(Tap(res.assume_init())))
-        }
+        os::result_init(|res| unsafe { AudioHardwareCreateProcessTap(self, res) })
+            .map(|tap| TapGuard(Tap(tap)))
     }
 }
 

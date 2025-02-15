@@ -9,6 +9,7 @@ pub use time::continuous_time;
 pub use time::TimeBaseInfo;
 
 pub mod kern_return;
+pub use kern_return::err as kern_err;
 pub use kern_return::KernReturn;
 
 pub mod port;
@@ -18,6 +19,7 @@ pub use port::Right as PortRight;
 pub use port::Type as PortType;
 
 pub mod message;
+pub use message::err as msg_err;
 pub use message::msg;
 pub use message::msg_overwrite;
 pub use message::Base as MsgBase;
@@ -28,7 +30,7 @@ pub use message::GuardFlags as MsgGuardFlags;
 pub use message::Header as MsgHeader;
 pub use message::HeaderBits as MsgHBits;
 pub use message::Id as MsgId;
-pub use message::MsgOption;
+pub use message::MsgOpt;
 pub use message::OOLDesc as MsgOOLDesc;
 pub use message::PortDesc as MsgPortDesc;
 pub use message::Priority as MsgPriority;
