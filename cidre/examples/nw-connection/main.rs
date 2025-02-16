@@ -1,12 +1,9 @@
 #[cfg(target_os = "macos")]
 mod macos {
-    use std::ffi::CString;
-
     use cidre::{dispatch, ns, nw};
 
     pub fn main() {
-        let url = CString::new("https://example.com").unwrap();
-        let endpoint = nw::Endpoint::with_url(&url).unwrap();
+        let endpoint = nw::Endpoint::with_url(c"https://example.com").unwrap();
 
         let mut conn =
             nw::Connection::with_endpoint(&endpoint, &nw::Params::default_tcp()).unwrap();
@@ -14,12 +11,8 @@ mod macos {
         let mut block_conn = conn.retained();
         conn.set_state_changed_handler(move |state, err| match state {
             nw::ConnectionState::Invalid => todo!(),
-            nw::ConnectionState::Waiting => {
-                eprintln!("waiting");
-            }
-            nw::ConnectionState::Preparing => {
-                eprintln!("preparing");
-            }
+            nw::ConnectionState::Waiting => eprintln!("waiting"),
+            nw::ConnectionState::Preparing => eprintln!("preparing"),
             nw::ConnectionState::Ready => {
                 eprintln!("ready");
                 recv_loop(&mut block_conn);

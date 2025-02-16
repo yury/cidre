@@ -24,7 +24,7 @@ impl Params {
 
     #[doc(alias = "nw_parameters_create_secure_tcp")]
     #[inline]
-    pub fn create_secure_tcp(
+    pub fn secure_tcp(
         configure_tls: &mut ParamsCfgProtocolBlock,
         configure_tcp: &mut ParamsCfgProtocolBlock,
     ) -> Option<arc::R<Self>> {
@@ -35,12 +35,12 @@ impl Params {
     pub fn default_tcp() -> arc::R<Self> {
         let cfg1 = Self::default_cfg();
         let cfg2 = Self::default_cfg();
-        unsafe { Self::create_secure_tcp(cfg1, cfg2).unwrap_unchecked() }
+        unsafe { Self::secure_tcp(cfg1, cfg2).unwrap_unchecked() }
     }
 
     #[doc(alias = "nw_parameters_create_secure_udp")]
     #[inline]
-    pub fn create_secure_udp(
+    pub fn secure_udp(
         configure_dtls: &mut ParamsCfgProtocolBlock,
         configure_udp: &mut ParamsCfgProtocolBlock,
     ) -> Option<arc::R<Self>> {
@@ -49,7 +49,7 @@ impl Params {
 
     #[doc(alias = "nw_parameters_create_custom_ip")]
     #[inline]
-    pub fn create_secure_custom_ip(
+    pub fn secure_custom_ip(
         custom_ip_protocol_number: u32,
         configure_ip: &mut ParamsCfgProtocolBlock,
     ) -> Option<arc::R<Self>> {
@@ -58,13 +58,13 @@ impl Params {
 
     #[doc(alias = "nw_parameters_create_quic")]
     #[inline]
-    pub fn create_quic(configure_quic: &mut ParamsCfgProtocolBlock) -> Option<arc::R<Self>> {
+    pub fn quic(configure_quic: &mut ParamsCfgProtocolBlock) -> Option<arc::R<Self>> {
         unsafe { nw_parameters_create_quic(configure_quic) }
     }
 
     #[doc(alias = "nw_parameters_create_application_service")]
     #[inline]
-    pub fn create_app_service() -> arc::R<Self> {
+    pub fn app_service() -> arc::R<Self> {
         unsafe { nw_parameters_create_application_service() }
     }
 
@@ -133,8 +133,7 @@ mod tests {
     #[test]
     fn basics() {
         let params =
-            nw::Params::create_secure_tcp(nw::Params::default_cfg(), nw::Params::default_cfg())
-                .unwrap();
+            nw::Params::secure_tcp(nw::Params::default_cfg(), nw::Params::default_cfg()).unwrap();
         eprintln!("{:?}", params.debug_desc());
 
         let mut x = Dr(vec![]);
@@ -143,7 +142,7 @@ mod tests {
                 x.0.push(1);
                 eprintln!("{:?}----------> {:?}", x.0, opts);
             });
-            let params = nw::Params::create_quic(&mut b).unwrap();
+            let params = nw::Params::quic(&mut b).unwrap();
             eprintln!("{:?}", params.debug_desc());
         }
         eprintln!("{:?}", nw::Params::default_cfg().debug_desc());

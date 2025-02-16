@@ -5,17 +5,23 @@ use crate::blocks;
 
 #[doc(alias = "nw_connection_receive_completion_t")]
 pub type RecvCompletion = blocks::SyncBlock<
-    fn(Option<&dispatch::Data>, Option<&nw::ContentCtx>, bool, Option<&nw::Error>),
+    fn(
+        content: Option<&dispatch::Data>,
+        context: Option<&nw::ContentCtx>,
+        is_completed: bool,
+        err: Option<&nw::Error>,
+    ),
 >;
 
 #[doc(alias = "nw_connection_state_changed_handler_t")]
-pub type StateChangedHandler = blocks::SyncBlock<fn(nw::ConnectionState, Option<&nw::Error>)>;
+pub type StateChangedHandler =
+    blocks::SyncBlock<fn(state: nw::ConnectionState, error: Option<&nw::Error>)>;
 
 #[doc(alias = "nw_connection_boolean_event_handler_t")]
-pub type BoolEventHandler = blocks::SyncBlock<fn(bool)>;
+pub type BoolEventHandler = blocks::SyncBlock<fn(value: bool)>;
 
 #[doc(alias = "nw_connection_path_event_handler_t")]
-pub type PathEventHandler = blocks::SyncBlock<fn(&nw::Path)>;
+pub type PathEventHandler = blocks::SyncBlock<fn(path: &nw::Path)>;
 
 /// Connection states sent by nw_connection_set_state_changed_handler.
 /// States generally progress forward and do not move backwards, with the
@@ -54,6 +60,7 @@ pub enum State {
 
 define_obj_type!(
     #[doc(alias = "nw_connection")]
+    #[doc(alias = "nw_connection_t")]
     pub Connection(ns::Id)
 );
 

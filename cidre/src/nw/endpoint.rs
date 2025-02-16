@@ -158,8 +158,8 @@ extern "C-unwind" {
 impl Endpoint {
     #[doc(alias = "nw_endpoint_create_url")]
     #[inline]
-    pub fn with_url(url: &CStr) -> Option<arc::R<Self>> {
-        unsafe { nw_endpoint_create_url(url.as_ptr()) }
+    pub fn with_url(url: impl AsRef<CStr>) -> Option<arc::R<Self>> {
+        unsafe { nw_endpoint_create_url(url.as_ref().as_ptr()) }
     }
 
     #[doc(alias = "nw_endpoint_get_url")]

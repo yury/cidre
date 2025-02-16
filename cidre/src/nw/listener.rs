@@ -6,16 +6,18 @@ use crate::{arc, define_obj_type, dispatch, ns, nw};
 use crate::blocks;
 
 #[doc(alias = "nw_listener_state_changed_handler_t")]
-pub type StateChangedHandler = blocks::SyncBlock<fn(nw::ListenerState, Option<&nw::Error>)>;
+pub type StateChangedHandler =
+    blocks::SyncBlock<fn(state: nw::ListenerState, err: Option<&nw::Error>)>;
 
 #[doc(alias = "nw_listener_new_connection_handler_t")]
-pub type NewConnectionHandler = blocks::SyncBlock<fn(&nw::Connection)>;
+pub type NewConnectionHandler = blocks::SyncBlock<fn(connection: &nw::Connection)>;
 
 #[doc(alias = "nw_listener_new_connection_group_handler_t")]
-pub type NewConnectionGroupHandler = blocks::SyncBlock<fn(&nw::ConnectionGroup)>;
+pub type NewConnectionGroupHandler = blocks::SyncBlock<fn(connection_group: &nw::ConnectionGroup)>;
 
 #[doc(alias = "nw_listener_advertised_endpoint_changed_handler_t")]
-pub type AdvertisedEndpointChangedHandler<'a> = blocks::SyncBlock<fn(&nw::Endpoint, bool)>;
+pub type AdvertisedEndpointChangedHandler<'a> =
+    blocks::SyncBlock<fn(advertised_endpoint: &nw::Endpoint, added: bool)>;
 
 define_obj_type!(
     #[doc(alias = "nw_listener")]
@@ -25,13 +27,26 @@ define_obj_type!(
 unsafe impl Send for Listener {}
 unsafe impl Sync for Listener {}
 
+/// States progress forward and do not move backwards.
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[doc(alias = "nw_listener_state_t")]
 #[repr(i32)]
 pub enum State {
+    /// The state of the listener is not valid. This state
+    /// will never be delivered in the listener's state update handler, and can be treated as
+    /// an unexpected value.
     Invalid = 0,
+
+    /// The listener is waiting for a usable network before being able to receive connections
     Waiting = 1,
+
+    /// The listener is ready and able to accept incoming connections
     Ready = 2,
+
+    /// The listener has irrecoverably closed or failed
     Failed = 3,
+
+    /// The listener has been cancelled by the caller
     Cancelled = 4,
 }
 
@@ -45,10 +60,14 @@ impl Listener {
         unsafe { nw_listener_create(params) }
     }
 
+    /// Creates a networking listener bound to a specified local port.
+    ///
+    /// Arguments:
+    /// - port - A port number as a C string, such as c"443", or a service name, such as "https".
     #[doc(alias = "nw_listener_create_with_port")]
     #[inline]
-    pub fn with_port(port: &CStr, params: &nw::Params) -> Option<arc::R<Self>> {
-        unsafe { nw_listener_create_with_port(port.as_ptr(), params) }
+    pub fn with_port(port: impl AsRef<CStr>, params: &nw::Params) -> Option<arc::R<Self>> {
+        unsafe { nw_listener_create_with_port(port.as_ref().as_ptr(), params) }
     }
 
     #[doc(alias = "nw_listener_create_with_connection")]
@@ -124,11 +143,32 @@ impl Listener {
     #[doc(alias = "nw_listener_set_new_connection_handler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn set_new_connection_handler(
+    pub fn set_new_connection_handler_block(
         &mut self,
         handler: Option<&mut nw::ListenerNewConnectionHandler>,
     ) {
         unsafe { nw_listener_set_new_connection_handler(self, handler) }
+    }
+
+    #[doc(alias = "nw_listener_set_new_connection_handler")]
+    #[cfg(feature = "blocks")]
+    #[inline]
+    pub fn set_new_connection_handler(
+        &mut self,
+        handler: impl FnMut(&nw::Connection) + 'static + Send + Sync,
+    ) {
+        let mut block = NewConnectionHandler::new1(handler);
+        self.set_new_connection_handler_block(Some(&mut block));
+    }
+
+    #[doc(alias = "nw_listener_set_state_changed_handler")]
+    #[cfg(feature = "blocks")]
+    #[inline]
+    pub fn set_state_changed_handler_block(
+        &mut self,
+        handler: Option<&mut nw::ListenerStateChangedHandler>,
+    ) {
+        unsafe { nw_listener_set_state_changed_handler(self, handler) }
     }
 
     #[doc(alias = "nw_listener_set_state_changed_handler")]
@@ -136,9 +176,10 @@ impl Listener {
     #[inline]
     pub fn set_state_changed_handler(
         &mut self,
-        handler: Option<&mut nw::ListenerStateChangedHandler>,
+        handler: impl FnMut(nw::ListenerState, Option<&nw::Error>) + 'static + Send + Sync,
     ) {
-        unsafe { nw_listener_set_state_changed_handler(self, handler) }
+        let mut block = nw::ListenerStateChangedHandler::new2(handler);
+        self.set_state_changed_handler_block(Some(&mut block));
     }
 }
 
@@ -190,4 +231,34 @@ extern "C-unwind" {
         listener: &mut Listener,
         handler: Option<&mut nw::ListenerStateChangedHandler>,
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{dispatch, nw};
+
+    #[test]
+    fn basics() {
+        let sema = dispatch::Semaphore::new(0);
+        let q = dispatch::Queue::new();
+        let mut listener = nw::Listener::with_port(c"9089", &nw::Params::app_service()).unwrap();
+        let mut sema_guard = Some(sema.guard());
+        let block_listener = listener.retained();
+
+        listener.set_state_changed_handler(move |state, err| {
+            assert!(err.is_none());
+            assert_eq!(state, nw::ListenerState::Ready);
+            assert_eq!(block_listener.port(), 9089);
+
+            sema_guard.take();
+        });
+
+        listener.set_new_connection_handler(|_conn| {});
+
+        assert_eq!(listener.port(), 0);
+
+        listener.start(&q);
+
+        sema.wait_forever();
+    }
 }
