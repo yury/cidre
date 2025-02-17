@@ -15,7 +15,7 @@ pub mod keys {
 
     #[doc(alias = "kVTPixelTransferPropertyKey_DestinationPixelAspectRatio")]
     #[inline]
-    pub fn dst_pixel_aspect_ration() -> &'static cf::String {
+    pub fn dst_pixel_aspect_ratio() -> &'static cf::String {
         unsafe { kVTPixelTransferPropertyKey_DestinationPixelAspectRatio }
     }
 

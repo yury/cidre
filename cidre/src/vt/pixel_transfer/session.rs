@@ -81,3 +81,15 @@ extern "C-unwind" {
         destination_buffer: &cv::PixelBuf,
     ) -> os::Status;
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::vt;
+
+    #[test]
+    fn basics() {
+        let mut session = vt::PixelTransferSession::new().unwrap();
+        session.set_realtime(true).unwrap();
+        session.set_scaling_letter_box().unwrap();
+    }
+}

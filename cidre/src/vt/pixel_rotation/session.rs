@@ -93,3 +93,15 @@ extern "C-unwind" {
         destination_buffer: &mut cv::PixelBuf,
     ) -> os::Status;
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::vt;
+
+    #[test]
+    fn basics() {
+        let mut session = vt::PixelRotationSession::new().unwrap();
+        session.set_vertical_flip(true).unwrap();
+        session.set_horizontal_flip(true).unwrap();
+    }
+}
