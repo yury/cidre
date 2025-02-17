@@ -9,18 +9,21 @@ define_cf_type!(
 );
 
 impl Session {
+    #[doc(alias = "VTPixelRotationSessionGetTypeID")]
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { VTPixelRotationSessionGetTypeID() }
     }
 
+    #[doc(alias = "VTPixelRotationSessionCreate")]
     #[inline]
-    pub fn create() -> os::Result<arc::R<Self>> {
-        Self::create_in(None)
+    pub fn new() -> os::Result<arc::R<Self>> {
+        Self::new_in(None)
     }
 
+    #[doc(alias = "VTPixelRotationSessionCreate")]
     #[inline]
-    pub fn create_in(allocator: Option<&cf::Allocator>) -> os::Result<arc::R<Self>> {
+    pub fn new_in(allocator: Option<&cf::Allocator>) -> os::Result<arc::R<Self>> {
         unsafe { os::result_unchecked(|res| VTPixelRotationSessionCreate(allocator, res)) }
     }
 
@@ -77,7 +80,7 @@ impl Session {
     }
 }
 
-extern "C" {
+extern "C-unwind" {
     fn VTPixelRotationSessionGetTypeID() -> cf::TypeId;
     fn VTPixelRotationSessionCreate(
         allocator: Option<&cf::Allocator>,

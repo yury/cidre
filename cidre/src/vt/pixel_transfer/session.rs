@@ -18,12 +18,12 @@ impl Session {
     #[doc(alias = "VTPixelTransferSessionCreate")]
     #[inline]
     pub fn new() -> os::Result<arc::R<Self>> {
-        Self::create_in(None)
+        Self::new_in(None)
     }
 
     #[doc(alias = "VTPixelTransferSessionCreate")]
     #[inline]
-    pub fn create_in(allocator: Option<&cf::Allocator>) -> os::Result<arc::R<Self>> {
+    pub fn new_in(allocator: Option<&cf::Allocator>) -> os::Result<arc::R<Self>> {
         unsafe { os::result_unchecked(|res| VTPixelTransferSessionCreate(allocator, res)) }
     }
 
@@ -68,7 +68,7 @@ impl Session {
     }
 }
 
-extern "C" {
+extern "C-unwind" {
     fn VTPixelTransferSessionGetTypeID() -> cf::TypeId;
     fn VTPixelTransferSessionCreate(
         allocator: Option<&cf::Allocator>,

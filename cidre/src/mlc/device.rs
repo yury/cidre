@@ -44,15 +44,15 @@ mod tests {
     #[test]
     pub fn basics() {
         let device = mlc::Device::ane().unwrap();
-        assert_eq!(device.device_type(), mlc::DeviceType::ANE);
+        assert_eq!(device.device_type(), mlc::DeviceType::Ane);
         println!("{device:?}");
 
         let device = mlc::Device::cpu();
-        assert_eq!(device.device_type(), mlc::DeviceType::CPU);
+        assert_eq!(device.device_type(), mlc::DeviceType::Cpu);
         println!("{device:?}");
 
         let device = mlc::Device::gpu().unwrap();
-        assert_eq!(device.device_type(), mlc::DeviceType::GPU);
+        assert_eq!(device.device_type(), mlc::DeviceType::Gpu);
         println!("{device:?}");
 
         assert!(!device.gpus().is_empty());

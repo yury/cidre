@@ -1,14 +1,17 @@
 pub mod keys {
     use crate::cf;
 
+    #[inline]
     pub const fn rotation() -> &'static cf::String {
         unsafe { kVTPixelRotationPropertyKey_Rotation }
     }
 
+    #[inline]
     pub const fn flip_horizontal_orientation() -> &'static cf::String {
         unsafe { kVTPixelRotationPropertyKey_FlipHorizontalOrientation }
     }
 
+    #[inline]
     pub const fn flip_vertical_orientation() -> &'static cf::String {
         unsafe { kVTPixelRotationPropertyKey_FlipVerticalOrientation }
     }
