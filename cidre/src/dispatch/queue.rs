@@ -43,6 +43,7 @@ define_obj_type!(
 );
 
 #[doc(alias = "DispatchQoS")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct QosClass(pub u32);
 

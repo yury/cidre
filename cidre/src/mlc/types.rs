@@ -49,10 +49,10 @@ pub enum RandomInitializerType {
 #[repr(i32)]
 pub enum DeviceType {
     /// The CPU device
-    CPU = 0,
+    Cpu = 0,
 
     /// The GPU device
-    GPU = 1,
+    Gpu = 1,
 
     /// The any device type.  When selected, the framework will automatically use the appropriate devices
     /// to achieve the best performance.
@@ -63,7 +63,7 @@ pub enum DeviceType {
     /// will not select the Neural Engine device.  In addition, this device can be used with inference graphs only.  This device cannot be used with a
     /// training graph or an inference graph that shares layers with a training graph.
     ///
-    ANE = 3,
+    Ane = 3,
 }
 
 #[doc(alias = "MLCArithmeticOperation")]
