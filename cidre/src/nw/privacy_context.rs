@@ -11,8 +11,8 @@ define_obj_type!(
 impl PrivacyContext {
     #[doc(alias = "nw_privacy_context_create")]
     #[inline]
-    pub fn with_desc(val: &CStr) -> arc::R<Self> {
-        unsafe { nw_privacy_context_create(val.as_ptr()) }
+    pub fn with_desc(val: impl AsRef<CStr>) -> arc::R<Self> {
+        unsafe { nw_privacy_context_create(val.as_ref().as_ptr()) }
     }
 
     #[inline]

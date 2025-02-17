@@ -11,11 +11,14 @@ define_obj_type!(
 impl BrowseDesc {
     #[doc(alias = "nw_browse_descriptor_create_bonjour_service")]
     #[inline]
-    pub fn create_bonjour_service(type_: &CStr, domain: Option<&CStr>) -> arc::R<Self> {
+    pub fn bonjour_service(
+        type_: impl AsRef<CStr>,
+        domain: Option<impl AsRef<CStr>>,
+    ) -> arc::R<Self> {
         unsafe {
             nw_browse_descriptor_create_bonjour_service(
-                type_.as_ptr(),
-                domain.map_or(std::ptr::null(), CStr::as_ptr),
+                type_.as_ref().as_ptr(),
+                domain.map_or(std::ptr::null(), |d| d.as_ref().as_ptr()),
             )
         }
     }
@@ -53,8 +56,8 @@ impl BrowseDesc {
 
     #[doc(alias = "nw_browse_descriptor_create_application_service")]
     #[inline]
-    pub fn create_app_service(name: &CStr) -> arc::R<Self> {
-        unsafe { nw_browse_descriptor_create_application_service(name.as_ptr()) }
+    pub fn app_service(name: impl AsRef<CStr>) -> arc::R<Self> {
+        unsafe { nw_browse_descriptor_create_application_service(name.as_ref().as_ptr()) }
     }
 
     #[doc(alias = "nw_browse_descriptor_get_application_service_name")]

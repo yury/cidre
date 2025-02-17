@@ -1,5 +1,4 @@
 use std::ffi::{c_char, c_long, c_void, CStr};
-use std::ptr::NonNull;
 
 use crate::{arc, define_obj_type, dispatch};
 
@@ -124,38 +123,41 @@ impl Queue {
     #[inline]
     pub fn new() -> arc::R<Self> {
         let attr = Attr::serial();
-        Self::with_label_and_attrs(None, attr)
+        Self::with_label_and_attrs(None::<&CStr>, attr)
     }
 
     /// Concurrent queue
     #[inline]
     pub fn concurrent() -> arc::R<Self> {
         let attr = Attr::concurrent();
-        Self::with_label_and_attrs(None, attr)
+        Self::with_label_and_attrs(None::<&CStr>, attr)
     }
 
     #[inline]
     pub fn serial_with_ar_pool() -> arc::R<Self> {
         let attr = Attr::serial_with_ar_pool();
-        Self::with_label_and_attrs(None, Some(&attr))
+        Self::with_label_and_attrs(None::<&CStr>, Some(&attr))
     }
 
     #[inline]
     pub fn concurrent_with_ar_pool() -> arc::R<Self> {
         let attr = Attr::concurrent_with_ar_pool();
-        Self::with_label_and_attrs(None, Some(&attr))
+        Self::with_label_and_attrs(None::<&CStr>, Some(&attr))
     }
 
     #[inline]
     pub fn concurrent_without_ar_pool() -> arc::R<Self> {
         let attr = Attr::concurrent_without_ar_pool();
-        Self::with_label_and_attrs(None, Some(&attr))
+        Self::with_label_and_attrs(None::<&CStr>, Some(&attr))
     }
 
     #[inline]
-    pub fn with_label_and_attrs(label: Option<&CStr>, attr: Option<&Attr>) -> arc::R<Self> {
+    pub fn with_label_and_attrs(
+        label: Option<impl AsRef<CStr>>,
+        attr: Option<&Attr>,
+    ) -> arc::R<Self> {
         unsafe {
-            let label = label.map(|f| NonNull::new_unchecked(f.as_ptr() as *mut _));
+            let label = label.map_or(std::ptr::null(), |f| f.as_ref().as_ptr());
             dispatch_queue_create(label, attr)
         }
     }
@@ -392,7 +394,7 @@ extern "C-unwind" {
 
     fn dispatch_async_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);
     fn dispatch_sync_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);
-    fn dispatch_queue_create(label: Option<NonNull<c_char>>, attr: Option<&Attr>) -> arc::R<Queue>;
+    fn dispatch_queue_create(label: *const c_char, attr: Option<&Attr>) -> arc::R<Queue>;
 
     fn dispatch_async_and_wait_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);
 

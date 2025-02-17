@@ -44,8 +44,8 @@ impl Endpoint {
 impl Endpoint {
     #[doc(alias = "nw_endpoint_create_host")]
     #[inline]
-    pub fn with_host(hostname: &CStr, port: &CStr) -> Option<arc::R<Self>> {
-        unsafe { nw_endpoint_create_host(hostname.as_ptr(), port.as_ptr()) }
+    pub fn with_host(hostname: impl AsRef<CStr>, port: impl AsRef<CStr>) -> Option<arc::R<Self>> {
+        unsafe { nw_endpoint_create_host(hostname.as_ref().as_ptr(), port.as_ref().as_ptr()) }
     }
 
     #[doc(alias = "nw_endpoint_get_hostname")]
@@ -95,9 +95,17 @@ extern "C-unwind" {
 
 /// Bonjour Endpoints
 impl Endpoint {
-    pub fn with_bonjour_service(name: &CStr, type_: &CStr, domain: &CStr) -> Option<arc::R<Self>> {
+    pub fn with_bonjour_service(
+        name: impl AsRef<CStr>,
+        type_: impl AsRef<CStr>,
+        domain: impl AsRef<CStr>,
+    ) -> Option<arc::R<Self>> {
         unsafe {
-            nw_endpoint_create_bonjour_service(name.as_ptr(), type_.as_ptr(), domain.as_ptr())
+            nw_endpoint_create_bonjour_service(
+                name.as_ref().as_ptr(),
+                type_.as_ref().as_ptr(),
+                domain.as_ref().as_ptr(),
+            )
         }
     }
 
@@ -217,44 +225,40 @@ extern "C-unwind" {
 #[cfg(test)]
 mod tests {
     use crate::nw;
-    use std::ffi::CString;
 
     #[test]
     fn host() {
-        let host = CString::new("localhost").unwrap();
-        let port = CString::new("8000").unwrap();
-        let endpoint = nw::Endpoint::with_host(&host, &port).unwrap();
+        let host = c"localhost";
+        let port = c"8000";
+        let endpoint = nw::Endpoint::with_host(host, port).unwrap();
 
         assert_eq!(endpoint.type_(), nw::EndpointType::Host);
-        assert_eq!(endpoint.hostname().unwrap(), host.as_c_str());
+        assert_eq!(endpoint.hostname().unwrap(), host);
         assert_eq!(endpoint.port(), 8000);
-        assert_eq!(endpoint.port_c_string().unwrap(), port);
+        assert_eq!(endpoint.port_c_string().unwrap().as_c_str(), port);
     }
 
     #[test]
     fn bonjour() {
-        let name = CString::new("example").unwrap();
-        let type_ = CString::new("_what._udp").unwrap();
-        let domain = CString::new("local").unwrap();
+        let name = c"example";
+        let type_ = c"_what._udp";
+        let domain = c"local";
         let endpoint = nw::Endpoint::with_bonjour_service(&name, &type_, &domain).unwrap();
 
         assert_eq!(endpoint.type_(), nw::EndpointType::BonjourService);
         assert_eq!(endpoint.hostname(), None);
         assert_eq!(endpoint.port(), 0);
-        assert_eq!(endpoint.bonjour_service_name().unwrap(), name.as_c_str());
-        assert_eq!(endpoint.bonjour_service_type().unwrap(), type_.as_c_str());
-        assert_eq!(
-            endpoint.bonjour_service_domain().unwrap(),
-            domain.as_c_str()
-        );
+        assert_eq!(endpoint.bonjour_service_name().unwrap(), name);
+        assert_eq!(endpoint.bonjour_service_type().unwrap(), type_);
+        assert_eq!(endpoint.bonjour_service_domain().unwrap(), domain);
     }
 
     #[test]
     fn url() {
-        let url = CString::new("https:://ya.ru").unwrap();
+        let url = c"https:://ya.ru";
         let endpoint = nw::Endpoint::with_url(&url).unwrap();
         assert_eq!(endpoint.type_(), nw::EndpointType::Url);
-        assert_eq!(endpoint.url().unwrap(), url.as_c_str());
+        assert_eq!(endpoint.url().unwrap(), url);
 
         assert!(endpoint.txt_record().is_none());
         assert!(endpoint.signature().is_none());

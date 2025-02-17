@@ -142,15 +142,12 @@ extern "C-unwind" {
 
 #[cfg(test)]
 mod tests {
-    use std::ffi::CString;
-
     use crate::{dispatch, nw};
 
     #[test]
     fn basics() {
         let queue = dispatch::Queue::new();
-        let type_ = CString::new("_service._udp").unwrap();
-        let desc = nw::BrowseDesc::create_bonjour_service(&type_, None);
+        let desc = nw::BrowseDesc::bonjour_service(c"_service._udp", None::<&std::ffi::CStr>);
         let mut browser = nw::Browser::with_desc(&desc, None);
         let mut state_handler = nw::BrowserChangedHandler::new2(|state, error| {
             eprintln!("------ {:?} {:?}", state, error);

@@ -11,16 +11,16 @@ define_obj_type!(
 impl AdvertiseDesc {
     #[doc(alias = "nw_advertise_descriptor_create_bonjour_service")]
     #[inline]
-    pub fn create_bonjour_service(
-        name: Option<&CStr>,
-        type_: &CStr,
-        domain: Option<&CStr>,
+    pub fn bonjour_service(
+        name: Option<impl AsRef<CStr>>,
+        type_: impl AsRef<CStr>,
+        domain: Option<impl AsRef<CStr>>,
     ) -> Option<arc::R<Self>> {
         unsafe {
             nw_advertise_descriptor_create_bonjour_service(
-                name.map_or(std::ptr::null(), |s| s.as_ptr()),
-                type_.as_ptr(),
-                domain.map_or(std::ptr::null(), |s| s.as_ptr()),
+                name.map_or(std::ptr::null(), |s| s.as_ref().as_ptr()),
+                type_.as_ref().as_ptr(),
+                domain.map_or(std::ptr::null(), |s| s.as_ref().as_ptr()),
             )
         }
     }
@@ -57,8 +57,8 @@ impl AdvertiseDesc {
 
     #[doc(alias = "nw_advertise_descriptor_create_application_service")]
     #[inline]
-    pub fn create_app_service(name: &CStr) -> arc::R<Self> {
-        unsafe { nw_advertise_descriptor_create_application_service(name.as_ptr()) }
+    pub fn app_service(name: impl AsRef<CStr>) -> arc::R<Self> {
+        unsafe { nw_advertise_descriptor_create_application_service(name.as_ref().as_ptr()) }
     }
 
     #[doc(alias = "nw_advertise_descriptor_get_application_service_name")]
@@ -116,12 +116,11 @@ extern "C-unwind" {
 #[cfg(test)]
 mod tests {
     use crate::nw;
-    use std::ffi::CString;
 
     #[test]
     fn basics() {
-        let name = CString::new("Test").unwrap();
-        let desc = nw::AdvertiseDesc::create_app_service(&name);
+        let name = c"Test";
+        let desc = nw::AdvertiseDesc::app_service(&name);
         let service_name = desc.app_service_name().unwrap().to_str().unwrap();
         assert!(service_name.starts_with("Test"));
     }
