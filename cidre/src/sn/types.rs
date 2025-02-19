@@ -6,6 +6,7 @@ define_obj_type!(
 );
 
 impl Id {
+    #[inline]
     pub fn v1() -> &'static Id {
         unsafe { SNClassifierIdentifierVersion1 }
     }

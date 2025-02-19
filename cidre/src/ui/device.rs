@@ -36,6 +36,7 @@ impl Orientation {
     }
 }
 
+#[doc(alias = "UIDeviceBatteryState")]
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(isize)]
 pub enum BatteryState {
@@ -48,9 +49,10 @@ pub enum BatteryState {
     Full,
 }
 
+#[doc(alias = "UIUserInterfaceIdiom")]
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(isize)]
-pub enum UserInterfaceIdiom {
+pub enum Idiom {
     Unspecified = -1,
     /// iPhone and iPod touch style UI
     Phone,
@@ -62,6 +64,9 @@ pub enum UserInterfaceIdiom {
     CarPlay,
     /// Optimized for Mac UI
     Mac = 5,
+
+    /// Vision UI
+    Vision = 6,
 }
 
 pub mod notifications {
@@ -96,7 +101,10 @@ pub mod notifications {
     }
 }
 
-define_obj_type!(pub Device(ns::Id));
+define_obj_type!(
+    #[doc(alias = "UIDevice")]
+    pub Device(ns::Id)
+);
 
 impl Device {
     define_cls!(UI_DEVICE);
@@ -104,8 +112,11 @@ impl Device {
     #[objc::msg_send(currentDevice)]
     pub fn current() -> &'static Device;
 
+    #[objc::msg_send(currentDevice)]
+    pub fn current_mut() -> &'static mut Device;
+
     #[objc::msg_send(userInterfaceIdiom)]
-    pub fn user_interface_idiom(&self) -> UserInterfaceIdiom;
+    pub fn user_interface_idiom(&self) -> Idiom;
 
     #[objc::msg_send(isMultitaskingSupported)]
     pub fn is_multitasking_supported(&self) -> bool;
@@ -117,7 +128,7 @@ impl Device {
     pub fn is_proximity_monitoring_enabled(&self) -> bool;
 
     #[objc::msg_send(setProximityMonitoringEnabled:)]
-    pub fn set_proximity_monitoring_enabled(&self, val: bool);
+    pub fn set_proximity_monitoring_enabled(&mut self, val: bool);
 
     #[objc::msg_send(batteryLevel)]
     pub fn battery_level(&self) -> f32;
@@ -129,7 +140,7 @@ impl Device {
     pub fn is_battery_monitoring_enabled(&self) -> bool;
 
     #[objc::msg_send(setBatteryMonitoringEnabled:)]
-    pub fn set_battery_monitoring_enabled(&self, val: bool);
+    pub fn set_battery_monitoring_enabled(&mut self, val: bool);
 
     #[objc::msg_send(identifierForVendor)]
     pub fn id_for_vendor(&self) -> Option<arc::R<ns::Uuid>>;
