@@ -75,8 +75,8 @@ impl Session {
     /// Some properties may modify this behaviour; see VTPixelRotationProperties.h for more details.
     #[doc(alias = "VTPixelRotationSessionRotateImage")]
     #[inline]
-    pub fn rotate(&self, src: &cv::PixelBuf, dst: &mut cv::PixelBuf) -> os::Result {
-        unsafe { VTPixelRotationSessionRotateImage(self, src, dst).result() }
+    pub fn rotate(&self, src_buf: &cv::PixelBuf, dst_buf: &mut cv::PixelBuf) -> os::Result {
+        unsafe { VTPixelRotationSessionRotateImage(self, src_buf, dst_buf).result() }
     }
 }
 
@@ -89,8 +89,8 @@ extern "C-unwind" {
     fn VTPixelRotationSessionInvalidate(session: &mut Session);
     fn VTPixelRotationSessionRotateImage(
         session: &Session,
-        source_buffer: &cv::PixelBuf,
-        destination_buffer: &mut cv::PixelBuf,
+        src_buf: &cv::PixelBuf,
+        dst_buf: &mut cv::PixelBuf,
     ) -> os::Status;
 }
 
@@ -100,8 +100,8 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut session = vt::PixelRotationSession::new().unwrap();
-        session.set_vertical_flip(true).unwrap();
-        session.set_horizontal_flip(true).unwrap();
+        let mut s = vt::PixelRotationSession::new().unwrap();
+        s.set_vertical_flip(true).unwrap();
+        s.set_horizontal_flip(true).unwrap();
     }
 }
