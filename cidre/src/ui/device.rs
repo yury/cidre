@@ -54,14 +54,19 @@ pub enum BatteryState {
 #[repr(isize)]
 pub enum Idiom {
     Unspecified = -1,
+
     /// iPhone and iPod touch style UI
     Phone,
+
     /// iPad style UI
     Pad,
+
     /// Apple TV style UI
     Tv,
+
     /// CarPlay style UI
     CarPlay,
+
     /// Optimized for Mac UI
     Mac = 5,
 
@@ -116,7 +121,7 @@ impl Device {
     pub fn current_mut() -> &'static mut Device;
 
     #[objc::msg_send(userInterfaceIdiom)]
-    pub fn user_interface_idiom(&self) -> Idiom;
+    pub fn idiom(&self) -> Idiom;
 
     #[objc::msg_send(isMultitaskingSupported)]
     pub fn is_multitasking_supported(&self) -> bool;
