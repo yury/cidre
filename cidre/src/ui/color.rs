@@ -21,6 +21,13 @@ impl Color {
 
     #[objc::msg_send(colorWithRed:green:blue:alpha:)]
     pub fn with_rgba(r: cg::Float, g: cg::Float, b: cg::Float, a: cg::Float) -> arc::R<Self>;
+
+    #[objc::msg_send(colorNamed:)]
+    pub fn color_named(name: &ns::String) -> Option<arc::R<Self>>;
+
+    pub fn named(name: impl AsRef<ns::String>) -> Option<arc::R<Self>> {
+        Self::color_named(name.as_ref())
+    }
 }
 
 #[link(name = "ui", kind = "static")]

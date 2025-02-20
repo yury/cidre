@@ -48,6 +48,7 @@ impl SceneCfg {
 }
 
 define_obj_type!(
+    #[doc(alias = "UISceneSession")]
     pub SceneSession(ns::Id)
 );
 

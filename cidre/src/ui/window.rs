@@ -1,6 +1,7 @@
 use crate::{arc, define_obj_type, objc, ui};
 
 define_obj_type!(
+    #[doc(alias = "UIWindow")]
     pub Window(ui::View),
     UI_WINDOW
 );

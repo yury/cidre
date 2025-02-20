@@ -15,6 +15,13 @@ impl Color {
     #[objc::msg_send(colorWithHue:saturation:brightness:alpha:)]
     pub fn with_hsba(h: cg::Float, s: cg::Float, b: cg::Float, a: cg::Float) -> arc::R<Self>;
 
+    #[objc::msg_send(colorNamed:)]
+    pub fn color_named(name: &ns::String) -> Option<arc::R<Self>>;
+
+    pub fn named(name: impl AsRef<ns::String>) -> Option<arc::R<Self>> {
+        Self::color_named(name.as_ref())
+    }
+
     #[objc::msg_send(whiteComponent)]
     pub unsafe fn white_throws(&self) -> cg::Float;
 
@@ -66,5 +73,7 @@ mod tests {
         assert_eq!(black.alpha(), 1.0);
 
         black.red().expect_err("should be err");
+
+        assert!(ns::Color::named(ns::str!(c"foo")).is_none());
     }
 }

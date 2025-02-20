@@ -1,6 +1,7 @@
 use crate::{define_cls, define_obj_type, ns, objc, ui};
 
 define_obj_type!(
+    #[doc(alias = "UIScene")]
     pub Scene(ui::Responder)
 );
 
