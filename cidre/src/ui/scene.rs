@@ -34,6 +34,6 @@ define_obj_type!(
 impl SceneDelegate for AnySceneDelegate {}
 
 #[link(name = "ui", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static UI_SCENE: &'static objc::Class<Scene>;
 }

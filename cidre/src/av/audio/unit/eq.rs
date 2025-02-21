@@ -104,7 +104,7 @@ impl UnitEq {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_AUDIO_UNIT_EQ: &'static objc::Class<UnitEq>;
 }
 

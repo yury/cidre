@@ -43,6 +43,6 @@ impl Locale {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_LOCALE: &'static objc::Class<Locale>;
 }

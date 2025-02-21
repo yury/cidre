@@ -140,7 +140,7 @@ impl ServiceConnection {
     }
 }
 
-extern "C" {
+unsafe extern "C" {
     fn AMDServiceConnectionGetSocket(connection: &ServiceConnection) -> RawFd;
 
     fn AMDServiceConnectionSend(

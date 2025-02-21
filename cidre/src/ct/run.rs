@@ -136,7 +136,7 @@ impl Run {
 }
 
 #[link(name = "CoreText", kind = "framework")]
-extern "C" {
+unsafe extern "C-unwind" {
     fn CTRunGetTypeID() -> cf::TypeId;
     fn CTRunGetGlyphCount(run: &Run) -> cf::Index;
     fn CTRunGetAttributes(run: &Run) -> &cf::DictionaryOf<cf::String, cf::Type>;

@@ -726,7 +726,7 @@ impl Event {
 }
 
 #[link(name = "app", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_EVENT: &'static objc::Class<Event>;
 }
 

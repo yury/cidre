@@ -511,7 +511,7 @@ impl Session {
 
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_AUDIO_SESSION: &'static objc::Class<Session>;
 }
 
@@ -574,7 +574,7 @@ impl Session {
 
 #[link(name = "AVFAudio", kind = "framework")]
 #[api::weak]
-extern "C" {
+unsafe extern "C" {
     static AVAudioSessionInterruptionNotification: &'static ns::NotificationName;
     static AVAudioSessionRouteChangeNotification: &'static ns::NotificationName;
     static AVAudioSessionMediaServicesWereLostNotification: &'static ns::NotificationName;

@@ -167,21 +167,21 @@ impl App {
         handler: impl FnMut(MicInjectionPermission) + 'static + std::marker::Send,
     ) {
         let mut handler = blocks::SendBlock::new1(handler);
-        Self::request_mic_injection_permission_ch_block(&mut handler)
+        unsafe { Self::request_mic_injection_permission_ch_block(&mut handler) }
     }
 
     #[cfg(feature = "async")]
     #[objc::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
     pub async fn request_mic_injection_permission() -> MicInjectionPermission {
         let (future, mut block) = blocks::comp1();
-        Self::request_mic_injection_permission_ch_block(&mut block);
+        unsafe { Self::request_mic_injection_permission_ch_block(&mut block) };
         future.await
     }
 }
 
 #[link(name = "AVFAudio", kind = "framework")]
 #[api::weak]
-extern "C" {
+unsafe extern "C" {
     #[api::available(
         macos = 14.0,
         ios = 17.0,
@@ -204,7 +204,7 @@ extern "C" {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_AUDIO_APPLICATION: &'static objc::Class<App>;
 }
 

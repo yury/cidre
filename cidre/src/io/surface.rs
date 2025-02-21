@@ -246,7 +246,7 @@ impl Surf {
 
     #[inline]
     pub unsafe fn from_raw(ptr: *mut u8) -> arc::R<Self> {
-        std::mem::transmute(ptr)
+        unsafe { std::mem::transmute(ptr) }
     }
 
     #[doc(alias = "IOSurfaceGetBytesPerRow")]
@@ -262,7 +262,7 @@ impl Surf {
     }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn IOSurfaceGetTypeID() -> cf::TypeId;
     fn IOSurfaceCreate(properties: &cf::Dictionary) -> Option<arc::R<Surf>>;
     fn IOSurfaceLookup(csid: SurfId) -> Option<arc::R<Surf>>;
@@ -482,7 +482,7 @@ pub mod key {
 
     #[link(name = "IOSurface", kind = "framework")]
     #[api::weak]
-    extern "C" {
+    unsafe extern "C" {
         static kIOSurfaceAllocSize: &'static String;
         static kIOSurfaceWidth: &'static String;
         static kIOSurfaceHeight: &'static String;

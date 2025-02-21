@@ -23,7 +23,7 @@ impl Device {
 }
 
 #[link(name = "mpsg", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MPS_GRAPH_DEVICE: &'static objc::Class<Device>;
 }
 

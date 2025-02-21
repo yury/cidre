@@ -31,6 +31,6 @@ impl Color {
 }
 
 #[link(name = "ui", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static UI_COLOR: &'static objc::Class<Color>;
 }

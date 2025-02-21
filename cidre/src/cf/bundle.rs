@@ -74,7 +74,7 @@ impl Bundle {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFBundleGetTypeID() -> cf::TypeId;
     fn CFBundleGetMainBundle() -> Option<&'static Bundle>;
     fn CFBundleCopyBundleURL(bundle: &Bundle) -> Option<arc::R<cf::Url>>;

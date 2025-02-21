@@ -35,6 +35,6 @@ impl DisplayLayer {
 }
 
 #[link(name = "ca", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_DISPLAY_LAYER: &'static objc::Class<DisplayLayer>;
 }

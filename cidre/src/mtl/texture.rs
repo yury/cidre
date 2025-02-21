@@ -318,7 +318,7 @@ impl Texture {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_TEXTURE_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 

@@ -169,7 +169,7 @@ impl OpQueue {
     pub fn progress(&self) -> arc::R<ns::Progress>;
 }
 
-extern "C" {
+unsafe extern "C" {
     static NS_OPERATION: &'static objc::Class<Op>;
     static NS_BLOCK_OPERATION: &'static objc::Class<BlockOp>;
     static NS_OPERATION_QUEUE: &'static objc::Class<OpQueue>;

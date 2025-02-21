@@ -38,7 +38,7 @@ impl av::PipControllerContentSrc {
 
 #[link(name = "av_kit", kind = "static")]
 #[api::weak]
-extern "C" {
+unsafe extern "C" {
     #[api::available(ios = 15.0, visionos = 1.0)]
     static AV_PICTURE_IN_PICTURE_VIDEO_CALL_VIEW_CONTROLLER:
         &'static objc::Class<PipViewCallController>;

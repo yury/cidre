@@ -12,6 +12,6 @@ impl NotificationRequest {
     pub fn id(&self) -> arc::R<ns::String>;
 }
 
-extern "C" {
+unsafe extern "C" {
     static UN_NOTIFICATION_REQUEST: &'static objc::Class<NotificationRequest>;
 }

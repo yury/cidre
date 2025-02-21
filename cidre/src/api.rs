@@ -1,8 +1,8 @@
 use std::{
-    ffi::{c_char, c_void, CStr},
+    ffi::{CStr, c_char, c_void},
     marker::PhantomData,
     str::FromStr,
-    sync::atomic::{fence, AtomicUsize, Ordering},
+    sync::atomic::{AtomicUsize, Ordering, fence},
 };
 
 pub struct DlSym<T> {
@@ -49,11 +49,11 @@ impl<T> DlSym<T> {
     // Cold because it should only happen during first-time initialization.
     #[cold]
     unsafe fn initialize_fn(&self) -> usize {
-        extern "C" {
+        unsafe extern "C" {
             fn dlsym(handle: *const c_void, symbol: *const c_char) -> *mut c_void;
         }
         const RTLD_DEFAULT: isize = -2isize;
-        let val = dlsym(RTLD_DEFAULT as _, self.name.as_ptr());
+        let val = unsafe { dlsym(RTLD_DEFAULT as _, self.name.as_ptr()) };
         if val.is_null() {
             return 0;
         }
@@ -68,17 +68,17 @@ impl<T> DlSym<T> {
 
     #[cold]
     unsafe fn initialize_var(&self) -> usize {
-        extern "C" {
+        unsafe extern "C" {
             fn dlsym(handle: *const c_void, symbol: *const c_char) -> *mut c_void;
         }
         const RTLD_DEFAULT: isize = -2isize;
-        let val = dlsym(RTLD_DEFAULT as _, self.name.as_ptr());
+        let val = unsafe { dlsym(RTLD_DEFAULT as _, self.name.as_ptr()) };
         if val.is_null() {
             return 0;
         }
 
         let val = val as *mut usize;
-        let val = *val;
+        let val = unsafe { *val };
 
         // This synchronizes with the acquire fence in `get`.
         self.ptr.store(val, Ordering::Release);

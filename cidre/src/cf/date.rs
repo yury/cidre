@@ -75,7 +75,7 @@ impl Date {
     #[doc(alias = "CFDateCompare")]
     #[inline]
     pub unsafe fn compare(&self, other_date: &Date, context: *mut c_void) -> cf::ComparisonResult {
-        CFDateCompare(self, other_date, context)
+        unsafe { CFDateCompare(self, other_date, context) }
     }
 
     #[cfg(feature = "ns")]
@@ -113,7 +113,7 @@ impl std::convert::TryFrom<std::time::SystemTime> for arc::R<Date> {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFAbsoluteTimeGetCurrent() -> AbsTime;
     fn CFDateGetTypeID() -> cf::TypeId;
     fn CFDateCreate(allocator: Option<&cf::Allocator>, at: AbsTime) -> Option<arc::R<Date>>;

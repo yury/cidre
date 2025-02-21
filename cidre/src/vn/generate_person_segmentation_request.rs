@@ -60,7 +60,7 @@ impl GenPersonSegmentationRequest {
 }
 
 #[link(name = "vn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static VN_GENERATE_PERSON_SEGMENTAION_REQUEST:
         &'static objc::Class<GenPersonSegmentationRequest>;
 }
@@ -68,8 +68,8 @@ extern "C" {
 #[cfg(test)]
 mod tests {
     use crate::{
-        cv::PixelFormat, vn::generate_person_segmentation_request::QualityLevel,
-        vn::GenPersonSegmentationRequest,
+        cv::PixelFormat, vn::GenPersonSegmentationRequest,
+        vn::generate_person_segmentation_request::QualityLevel,
     };
 
     #[test]

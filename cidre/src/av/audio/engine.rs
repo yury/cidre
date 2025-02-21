@@ -1,6 +1,6 @@
 use crate::{arc, av, define_obj_type, ns, objc, os};
 
-use super::{mixer_node::MixerNode, ConnectionPoint, Format, InputNode, Node, NodeBus, OutputNode};
+use super::{ConnectionPoint, Format, InputNode, Node, NodeBus, OutputNode, mixer_node::MixerNode};
 
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 #[repr(transparent)]
@@ -286,7 +286,7 @@ impl Engine {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_AUDIO_ENGINE: &'static objc::Class<Engine>;
 }
 

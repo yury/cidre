@@ -28,7 +28,7 @@ impl Color {
 }
 
 #[link(name = "gc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static GC_COLOR: &'static objc::Class<Color>;
 }
 

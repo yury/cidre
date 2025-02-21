@@ -9,7 +9,7 @@ pub fn cg_image_from_cv_pixel_buf(
     }
 }
 
-extern "C" {
+unsafe extern "C" {
     fn VTCreateCGImageFromCVPixelBuffer(
         pixel_buffer: &cv::PixelBuf,
         options: Option<&cf::Dictionary>,

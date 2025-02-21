@@ -1,4 +1,4 @@
-use std::ffi::{c_char, CStr};
+use std::ffi::{CStr, c_char};
 
 use crate::{arc, define_obj_type, dispatch, ns, nw};
 
@@ -184,7 +184,7 @@ impl Listener {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn nw_listener_create_with_port(
         port: *const c_char,
         params: &nw::Params,

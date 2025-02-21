@@ -7,22 +7,22 @@ pub mod session;
 pub use session::Session;
 
 pub mod compression;
-pub use compression::properties as compression_properties;
 pub use compression::Session as CompressionSession;
+pub use compression::properties as compression_properties;
 
 pub mod decompression;
-pub use decompression::properties as decompression_properties;
 pub use decompression::OutputCb as DecompressionOutputCb;
 pub use decompression::OutputCbRecord as DecompressionOutputCbRecord;
 pub use decompression::Session as DecompressionSession;
+pub use decompression::properties as decompression_properties;
 
 pub mod pixel_transfer;
-pub use pixel_transfer::properties as pixel_transfer_properties;
 pub use pixel_transfer::Session as PixelTransferSession;
+pub use pixel_transfer::properties as pixel_transfer_properties;
 
 pub mod pixel_rotation;
-pub use pixel_rotation::properties as pixel_rotation_properties;
 pub use pixel_rotation::Session as PixelRotationSession;
+pub use pixel_rotation::properties as pixel_rotation_properties;
 
 pub mod video_encoder_list;
 
@@ -30,4 +30,4 @@ pub mod utilities;
 pub use utilities::cg_image_from_cv_pixel_buf;
 
 #[link(name = "VideoToolbox", kind = "framework")]
-extern "C" {}
+unsafe extern "C" {}

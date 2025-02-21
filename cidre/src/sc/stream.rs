@@ -444,7 +444,7 @@ impl Cfg {
 }
 
 #[link(name = "sc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static SC_STREAM_CONFIGURATION: &'static objc::Class<Cfg>;
     static SC_CONTENT_FILTER: &'static objc::Class<ContentFilter>;
     static SC_STREAM: &'static objc::Class<Stream>;
@@ -452,7 +452,7 @@ extern "C" {
 
 #[link(name = "ScreenCaptureKit", kind = "framework")]
 #[api::weak]
-extern "C" {
+unsafe extern "C" {
     #[api::available(macos = 12.3)]
     static SCStreamFrameInfoStatus: &'static FrameInfo;
     #[api::available(macos = 12.3)]

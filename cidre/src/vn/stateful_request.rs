@@ -51,7 +51,7 @@ impl StatefulRequest {
 }
 
 #[link(name = "vn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static VN_STATEFUL_REQUEST: &'static objc::Class<StatefulRequest>;
 }
 

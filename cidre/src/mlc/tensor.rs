@@ -59,6 +59,6 @@ impl Tensor {
 }
 
 #[link(name = "mlc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MLC_TENSOR: &'static objc::Class<Tensor>;
 }

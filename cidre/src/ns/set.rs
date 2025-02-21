@@ -89,7 +89,7 @@ impl<T> ns::FastEnumeration<T> for Set<T> where T: Obj {}
 impl<T> ns::FastEnumeration<T> for SetMut<T> where T: Obj {}
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_SET: &'static Class<ns::Set<ns::Id>>;
 }
 

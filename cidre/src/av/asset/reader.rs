@@ -86,6 +86,6 @@ impl Reader {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_ASSET_READER: &'static objc::Class<Reader>;
 }

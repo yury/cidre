@@ -71,13 +71,13 @@ impl ScreenshotManager {
         rect: cg::Rect,
     ) -> Result<arc::R<cg::Image>, arc::R<ns::Error>> {
         let (future, mut block) = blocks::result();
-        Self::capture_image_in_rect_ch(rect, Some(&mut block));
+        unsafe { Self::capture_image_in_rect_ch(rect, Some(&mut block)) };
         future.await
     }
 }
 
 #[link(name = "sc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static SC_SCREENSHOT_MANAGER: &'static objc::Class<ScreenshotManager>;
 }
 

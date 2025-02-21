@@ -36,7 +36,7 @@ impl LangRecognizer {
 }
 
 #[link(name = "nl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NL_LANGUAGE_RECOGNIZER: &'static objc::Class<LangRecognizer>;
 }
 

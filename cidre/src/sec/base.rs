@@ -1928,7 +1928,7 @@ pub mod ssl_err {
 }
 
 #[link(name = "Security", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn SecCopyErrorMessageString(
         status: os::Status,
         reserved: *mut std::ffi::c_void,

@@ -28,7 +28,7 @@ impl Error {
     pub unsafe fn to_result<T>(self, option: Option<T>) -> Result<T, Self> {
         if self.is_ok() {
             debug_assert!(option.is_some());
-            Ok(option.unwrap_unchecked())
+            Ok(unsafe { option.unwrap_unchecked() })
         } else {
             Err(self)
         }
@@ -36,11 +36,7 @@ impl Error {
 
     #[inline]
     pub fn result(self) -> Result<(), Self> {
-        if self.is_ok() {
-            Ok(())
-        } else {
-            Err(self)
-        }
+        if self.is_ok() { Ok(()) } else { Err(self) }
     }
 
     pub const SUCCESS: Self = Self::make(0);
@@ -293,7 +289,7 @@ impl Debug for Error {
 }
 
 #[link(name = "MobileDevice", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     fn AMDCopyErrorText(error: Error) -> Option<arc::R<cf::String>>;
 }
 

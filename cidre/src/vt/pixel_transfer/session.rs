@@ -68,7 +68,7 @@ impl Session {
     }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn VTPixelTransferSessionGetTypeID() -> cf::TypeId;
     fn VTPixelTransferSessionCreate(
         allocator: Option<&cf::Allocator>,

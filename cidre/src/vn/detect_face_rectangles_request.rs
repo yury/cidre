@@ -21,6 +21,6 @@ impl DetectFaceRectanglesRequest {
 }
 
 #[link(name = "vn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static VN_DETECT_FACE_RECTANGLES_REQUEST: &'static objc::Class<DetectFaceRectanglesRequest>;
 }

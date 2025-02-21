@@ -124,7 +124,7 @@ impl BarcodeSymbology {
 }
 
 #[link(name = "CoreImage", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static VNBarcodeSymbologyAztec: &'static BarcodeSymbology;
     static VNBarcodeSymbologyCode39: &'static BarcodeSymbology;
     static VNBarcodeSymbologyCode39Checksum: &'static BarcodeSymbology;

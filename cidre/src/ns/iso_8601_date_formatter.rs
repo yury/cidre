@@ -51,7 +51,7 @@ impl Iso8601DateFormatter {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_ISO_8601_DATE_FORMATTER: &'static objc::Class<Iso8601DateFormatter>;
 }
 

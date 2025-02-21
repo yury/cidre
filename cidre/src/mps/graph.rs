@@ -133,6 +133,6 @@ impl Graph {
 }
 
 #[link(name = "mpsg", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MPS_GRAPH: &'static objc::Class<Graph>;
 }

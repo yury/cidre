@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_cf_type, FourCharCode};
+use crate::{FourCharCode, arc, cf, define_cf_type};
 
 #[cfg(feature = "ns")]
 use crate::ns;
@@ -310,7 +310,7 @@ impl Number {
         value_ptr: *const c_void,
         allocator: Option<&Allocator>,
     ) -> Option<arc::R<Self>> {
-        CFNumberCreate(allocator, the_type, value_ptr)
+        unsafe { CFNumberCreate(allocator, the_type, value_ptr) }
     }
 
     /// ```
@@ -481,7 +481,7 @@ impl From<Duration> for arc::R<Number> {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFBooleanGetTypeID() -> TypeId;
     static kCFBooleanTrue: &'static Boolean;
     static kCFBooleanFalse: &'static Boolean;

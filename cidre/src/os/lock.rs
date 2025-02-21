@@ -40,7 +40,7 @@ impl Default for UnfairLock {
     }
 }
 
-extern "C" {
+unsafe extern "C-unwind" {
     fn os_unfair_lock_lock(lock: &UnfairLock);
     fn os_unfair_lock_trylock(lock: &UnfairLock) -> bool;
     fn os_unfair_lock_unlock(lock: &UnfairLock);

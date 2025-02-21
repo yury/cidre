@@ -13,9 +13,9 @@ pub use destination::Dst as ImageDst;
 #[cfg(feature = "iio")]
 pub mod animation;
 #[cfg(feature = "iio")]
-pub use animation::err as animation_err;
-#[cfg(feature = "iio")]
 pub use animation::OptKey as AnimationOptKey;
+#[cfg(feature = "iio")]
+pub use animation::err as animation_err;
 
 #[cfg(feature = "iio")]
 pub use animation::AnimationBlock;
@@ -89,7 +89,7 @@ impl Image {
 }
 
 #[link(name = "CoreGraphics", kind = "framework")]
-extern "C" {
+unsafe extern "C-unwind" {
     fn CGImageIsMask(image: &Image) -> bool;
     fn CGImageGetWidth(image: &Image) -> usize;
     fn CGImageGetHeight(image: &Image) -> usize;

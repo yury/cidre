@@ -158,7 +158,7 @@ impl File {
     pub fn set_frame_pos(&mut self, val: av::audio::FramePos);
 }
 
-extern "C" {
+unsafe extern "C" {
     static AV_AUDIO_FILE: &'static objc::Class<File>;
 }
 

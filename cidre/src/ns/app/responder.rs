@@ -6,6 +6,6 @@ define_obj_type!(
 );
 
 #[link(name = "app", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_RESPONDER: &'static objc::Class<Responder>;
 }

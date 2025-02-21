@@ -156,6 +156,6 @@ impl Slider {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_CAPTURE_SLIDER: &'static objc::Class<Slider>;
 }

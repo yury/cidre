@@ -45,7 +45,7 @@ impl ClassifySoundRequest {
 }
 
 #[link(name = "sn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static SN_CLASSIFY_SOUND_REQUEST: &'static objc::Class<ClassifySoundRequest>;
 }
 

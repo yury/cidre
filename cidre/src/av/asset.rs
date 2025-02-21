@@ -130,7 +130,7 @@ impl UrlAsset {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_URL_ASSET: &'static objc::Class<UrlAsset>;
 }
 

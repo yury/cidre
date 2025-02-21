@@ -1,9 +1,9 @@
 use std::{ffi::c_void, mem::transmute};
 
 use crate::{
-    api, arc,
+    FourCharCode, api, arc,
     cf::{self, Allocator},
-    define_cf_type, os, FourCharCode,
+    define_cf_type, os,
 };
 
 #[cfg(feature = "cv")]
@@ -484,15 +484,17 @@ impl VideoFormatDesc {
         parameter_set_count_out: *mut usize,
         nal_unit_header_length_out: *mut i32,
     ) -> os::Result {
-        CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(
-            self,
-            parameter_set_index,
-            parameter_set_pointer_out,
-            parameter_set_size_out,
-            parameter_set_count_out,
-            nal_unit_header_length_out,
-        )
-        .result()
+        unsafe {
+            CMVideoFormatDescriptionGetHEVCParameterSetAtIndex(
+                self,
+                parameter_set_index,
+                parameter_set_pointer_out,
+                parameter_set_size_out,
+                parameter_set_count_out,
+                nal_unit_header_length_out,
+            )
+            .result()
+        }
     }
 
     #[doc(alias = "CMVideoFormatDescriptionGetHEVCParameterSetAtIndex")]
@@ -897,7 +899,7 @@ impl LogTransferFn {
 
 #[link(name = "CoreMedia", kind = "framework")]
 #[api::weak]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     static kCMFormatDescriptionExtension_FormatName: &'static FormatDescExtKey;
     static kCMFormatDescriptionExtension_Depth: &'static FormatDescExtKey;
     static kCMFormatDescriptionExtension_CleanAperture: &'static FormatDescExtKey;
@@ -1039,8 +1041,8 @@ extern "C-unwind" {
         nal_unit_header_length_out: *mut i32,
     ) -> os::Status;
 
-    fn CMVideoFormatDescriptionGetExtensionKeysCommonWithImageBuffers(
-    ) -> &'static cf::ArrayOf<FormatDescExtKey>;
+    fn CMVideoFormatDescriptionGetExtensionKeysCommonWithImageBuffers()
+    -> &'static cf::ArrayOf<FormatDescExtKey>;
 }
 
 #[cfg(test)]

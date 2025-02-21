@@ -27,7 +27,7 @@ impl PixelBufPool {
         pool_out: *mut Option<arc::R<PixelBufPool>>,
         allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
-        CVPixelBufferPoolCreate(allocator, pool_attrs, pixel_buf_attrs, pool_out)
+        unsafe { CVPixelBufferPoolCreate(allocator, pool_attrs, pixel_buf_attrs, pool_out) }
     }
 
     #[doc(alias = "CVPixelBufferPoolGetAttribute")]
@@ -48,7 +48,7 @@ impl PixelBufPool {
         pixel_buf_out: *mut Option<arc::R<cv::PixelBuf>>,
         allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
-        CVPixelBufferPoolCreatePixelBuffer(allocator, self, pixel_buf_out)
+        unsafe { CVPixelBufferPoolCreatePixelBuffer(allocator, self, pixel_buf_out) }
     }
 
     #[inline]
@@ -66,12 +66,14 @@ impl PixelBufPool {
         aux_attrs: Option<&cf::Dictionary>,
         pixel_buf_out: *mut Option<arc::R<cv::PixelBuf>>,
     ) -> cv::Return {
-        CVPixelBufferPoolCreatePixelBufferWithAuxAttributes(
-            allocator,
-            self,
-            aux_attrs,
-            pixel_buf_out,
-        )
+        unsafe {
+            CVPixelBufferPoolCreatePixelBufferWithAuxAttributes(
+                allocator,
+                self,
+                aux_attrs,
+                pixel_buf_out,
+            )
+        }
     }
 
     #[inline]
@@ -92,7 +94,7 @@ impl PixelBufPool {
     }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CVPixelBufferPoolCreate(
         allocator: Option<&cf::Allocator>,
         pool_attrs: Option<&cf::Dictionary>,
@@ -135,7 +137,7 @@ pub mod keys {
         unsafe { kCVPixelBufferPoolMaximumBufferAgeKey }
     }
 
-    extern "C" {
+    unsafe extern "C" {
         static kCVPixelBufferPoolMinimumBufferCountKey: &'static cf::String;
         static kCVPixelBufferPoolMaximumBufferAgeKey: &'static cf::String;
     }
@@ -150,7 +152,7 @@ pub mod aux_attr_keys {
         unsafe { kCVPixelBufferPoolAllocationThresholdKey }
     }
 
-    extern "C" {
+    unsafe extern "C" {
         static kCVPixelBufferPoolAllocationThresholdKey: &'static cf::String;
     }
 }
@@ -164,7 +166,7 @@ pub mod notifications {
         unsafe { kCVPixelBufferPoolFreeBufferNotification }
     }
 
-    extern "C" {
+    unsafe extern "C" {
         static kCVPixelBufferPoolFreeBufferNotification: &'static cf::NotificationName;
     }
 }

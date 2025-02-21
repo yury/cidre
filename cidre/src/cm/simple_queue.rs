@@ -34,7 +34,7 @@ impl SimpleQueue {
         capacity: i32,
         allocator: Option<&cf::Allocator>,
     ) -> os::Result<arc::R<Self>> {
-        os::result_unchecked(|res| CMSimpleQueueCreate(allocator, capacity, res))
+        unsafe { os::result_unchecked(|res| CMSimpleQueueCreate(allocator, capacity, res)) }
     }
 
     #[doc(alias = "CMSimpleQueueCreate")]
@@ -106,7 +106,7 @@ impl SimpleQueue {
     }
 }
 
-extern "C" {
+unsafe extern "C-unwind" {
     fn CMSimpleQueueGetTypeID() -> cf::TypeId;
     fn CMSimpleQueueCreate(
         allocator: Option<&cf::Allocator>,

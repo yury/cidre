@@ -362,7 +362,7 @@ define_obj_type!(
 );
 
 #[link(name = "AVFAudio", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static AVSpeechUtteranceMinimumSpeechRate: f32;
     static AVSpeechUtteranceMaximumSpeechRate: f32;
     static AVSpeechUtteranceDefaultSpeechRate: f32;

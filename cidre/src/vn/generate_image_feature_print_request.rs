@@ -36,7 +36,7 @@ impl GenImageFeaturePrintRequest {
 }
 
 #[link(name = "vn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static VN_GENERATE_IMAGE_FEAUTRE_PRINT_REQUEST:
         &'static objc::Class<GenImageFeaturePrintRequest>;
 }

@@ -88,7 +88,7 @@ define_obj_type!(
 );
 
 #[link(name = "Network", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn nw_parameters_create() -> arc::R<Params>;
     fn nw_parameters_copy(parameters: &Params) -> Option<arc::R<Params>>;
 

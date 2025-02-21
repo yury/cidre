@@ -55,12 +55,12 @@ impl<Sig> std::ops::Deref for Block<Sig, NoEsc> {
 impl<Sig, Attr> objc::Obj for Block<Sig, Attr> {
     #[inline]
     unsafe fn retain(id: &Self) -> arc::R<Self> {
-        std::mem::transmute(_Block_copy(std::mem::transmute(id)))
+        unsafe { std::mem::transmute(_Block_copy(std::mem::transmute(id))) }
     }
 
     #[inline]
     unsafe fn release(id: &mut Self) {
-        _Block_release(std::mem::transmute(id))
+        unsafe { _Block_release(std::mem::transmute(id)) }
     }
 }
 
@@ -468,7 +468,7 @@ impl<'a, Closure: 'a + Sized> Layout2Mut<'a, Closure> {
 }
 
 #[link(name = "System", kind = "dylib")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     // static _NSConcreteGlobalBlock: objc::Class<ns::Id>;
     static _NSConcreteStackBlock: objc::Class<ns::Id>;
     static _NSConcreteMallocBlock: objc::Class<ns::Id>;
@@ -586,8 +586,8 @@ pub fn comp1<R: std::marker::Send>() -> (Completion<R>, arc::R<Block<fn(R), Send
 }
 
 #[cfg(feature = "async")]
-pub fn retained1<R: arc::Retain + std::marker::Send>(
-) -> (Completion<arc::R<R>>, arc::R<Block<fn(&R), Send>>) {
+pub fn retained1<R: arc::Retain + std::marker::Send>()
+-> (Completion<arc::R<R>>, arc::R<Block<fn(&R), Send>>) {
     let shared = Shared::new();
     (
         Completion(shared.clone()),

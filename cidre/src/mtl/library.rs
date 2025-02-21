@@ -427,12 +427,12 @@ impl PartialEq<isize> for Error {
 }
 
 #[link(name = "Metal", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static MTLLibraryErrorDomain: &'static ErrorDomain;
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_COMPILE_OPTIONS: &'static objc::Class<CompileOpts>;
 }
 

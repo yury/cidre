@@ -13,6 +13,6 @@ pub fn current_media_time() -> cf::TimeInterval {
 }
 
 #[link(name = "QuartzCore", kind = "framework")]
-extern "C" {
+unsafe extern "C-unwind" {
     fn CACurrentMediaTime() -> cf::TimeInterval;
 }

@@ -4,11 +4,11 @@ pub use application::AppDelegate;
 pub use application::AppDelegateImpl;
 
 mod device;
-pub use device::notifications as device_notifications;
 pub use device::BatteryState as DeviceBatteryState;
 pub use device::Device;
 pub use device::Idiom;
 pub use device::Orientation as DeviceOrientation;
+pub use device::notifications as device_notifications;
 
 mod responder;
 pub use responder::Responder;
@@ -69,7 +69,7 @@ pub fn app_main(
     }
 }
 
-extern "C" {
+unsafe extern "C" {
     fn UIApplicationMain(
         argc: std::ffi::c_int,
         argv: *const *const std::ffi::c_char,

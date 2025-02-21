@@ -99,7 +99,7 @@ impl Src {
 }
 
 #[link(name = "ImageIO", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CGImageSourceGetTypeID() -> cf::TypeId;
     fn CGImageSourceCopyTypeIdentifiers() -> arc::R<cf::ArrayOf<cf::String>>;
 

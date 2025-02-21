@@ -76,7 +76,7 @@ impl ReactionType {
 
 #[link(name = "AVFoundation", kind = "framework")]
 #[api::weak]
-extern "C" {
+unsafe extern "C" {
     #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     static AVCaptureReactionTypeThumbsUp: &'static ReactionType;
 

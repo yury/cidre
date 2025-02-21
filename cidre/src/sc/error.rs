@@ -92,6 +92,6 @@ pub fn domain() -> &'static cf::String {
     unsafe { SCStreamErrorDomain }
 }
 
-extern "C" {
+unsafe extern "C" {
     static SCStreamErrorDomain: &'static cf::String;
 }

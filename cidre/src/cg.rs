@@ -20,9 +20,9 @@ mod window_level;
 pub use window_level::WindowLevel;
 
 pub mod direct_display;
+pub use direct_display::Id as DirectDisplayId;
 #[cfg(target_os = "macos")]
 pub use direct_display::main_display_id;
-pub use direct_display::Id as DirectDisplayId;
 
 pub mod affine_transform;
 pub use affine_transform::AffineTransform;
@@ -52,6 +52,14 @@ pub use event_types::*;
 
 pub mod image;
 #[cfg(feature = "iio")]
+pub use image::AnimationBlock as ImageAnimationBlock;
+#[cfg(feature = "iio")]
+pub use image::AnimationOptKey as ImageAnimationOptKey;
+#[cfg(feature = "iio")]
+pub use image::ImageDst;
+#[cfg(feature = "iio")]
+pub use image::ImageSrc;
+#[cfg(feature = "iio")]
 pub use image::animate_image_at_url;
 #[cfg(feature = "iio")]
 pub use image::animate_image_at_url_with_block;
@@ -61,14 +69,6 @@ pub use image::animate_image_data;
 pub use image::animate_image_data_with_block;
 #[cfg(feature = "iio")]
 pub use image::animation_err as image_animation_err;
-#[cfg(feature = "iio")]
-pub use image::AnimationBlock as ImageAnimationBlock;
-#[cfg(feature = "iio")]
-pub use image::AnimationOptKey as ImageAnimationOptKey;
-#[cfg(feature = "iio")]
-pub use image::ImageDst;
-#[cfg(feature = "iio")]
-pub use image::ImageSrc;
 
 pub use image::AlphaInfo as ImageAlphaInfo;
 pub use image::Image;
@@ -112,4 +112,4 @@ pub use display_stream::UpdateRectType as DisplayStreamUpdateRectType;
 pub use display_stream::YCbCrMatrix as DisplayStreamYCbCrMatrix;
 
 #[link(name = "CoreGraphics", kind = "framework")]
-extern "C" {}
+unsafe extern "C" {}

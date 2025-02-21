@@ -1,4 +1,4 @@
-use std::ffi::{c_char, c_void, CStr};
+use std::ffi::{CStr, c_char, c_void};
 
 use crate::{arc, define_obj_type, ns, nw};
 
@@ -75,7 +75,7 @@ impl AdvertiseDesc {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn nw_advertise_descriptor_create_bonjour_service(
         name: *const c_char,
         type_: *const c_char,

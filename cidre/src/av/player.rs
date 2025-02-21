@@ -70,7 +70,7 @@ impl Player {
     }
 
     pub unsafe fn with_player_item_throws(item: Option<&PlayerItem>) -> arc::R<Self> {
-        Self::alloc().init_with_player_item_throws(item)
+        unsafe { Self::alloc().init_with_player_item_throws(item) }
     }
 
     pub fn with_player_item<'ear>(
@@ -97,7 +97,7 @@ define_obj_type!(
 );
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_PLAYER: &'static objc::Class<Player>;
 }
 
@@ -110,7 +110,7 @@ impl ns::NotificationName {
 }
 
 #[link(name = "AVFoundation", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static AVPlayerRateDidChangeNotification: &'static ns::NotificationName;
 }
 

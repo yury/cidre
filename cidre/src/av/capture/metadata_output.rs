@@ -51,7 +51,7 @@ impl MetadataOutput {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_CAPTURE_METADATA_OUTPUT: &'static objc::Class<MetadataOutput>;
 }
 

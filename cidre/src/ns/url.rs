@@ -114,7 +114,7 @@ impl Url {
 unsafe impl Send for Url {}
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_URL: &'static Class<Url>;
 }
 
@@ -595,7 +595,7 @@ impl ResKey {
 }
 
 #[link(name = "Foundation", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static NSURLNameKey: &'static ResKey;
     static NSURLLocalizedNameKey: &'static ResKey;
     static NSURLIsRegularFileKey: &'static ResKey;

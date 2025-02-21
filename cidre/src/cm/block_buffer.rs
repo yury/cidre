@@ -134,19 +134,21 @@ impl BlockBuf {
         flags: Flags,
         structure_allocator: Option<&cf::Allocator>,
     ) -> os::Result<arc::R<BlockBuf>> {
-        os::result_unchecked(|val| {
-            CMBlockBufferCreateWithMemoryBlock(
-                structure_allocator,
-                memory_block,
-                block_length,
-                block_allocator,
-                std::ptr::null(),
-                offset_to_data,
-                data_length,
-                flags,
-                val,
-            )
-        })
+        unsafe {
+            os::result_unchecked(|val| {
+                CMBlockBufferCreateWithMemoryBlock(
+                    structure_allocator,
+                    memory_block,
+                    block_length,
+                    block_allocator,
+                    std::ptr::null(),
+                    offset_to_data,
+                    data_length,
+                    flags,
+                    val,
+                )
+            })
+        }
     }
 
     /// Obtains the total data length reachable via a cm::BlockBuf.
@@ -191,14 +193,16 @@ impl BlockBuf {
         total_length_out: *mut usize,
         data_pointer_out: *mut *mut u8,
     ) -> os::Result {
-        CMBlockBufferGetDataPointer(
-            self,
-            offset,
-            length_at_offset_out,
-            total_length_out,
-            data_pointer_out,
-        )
-        .result()
+        unsafe {
+            CMBlockBufferGetDataPointer(
+                self,
+                offset,
+                length_at_offset_out,
+                total_length_out,
+                data_pointer_out,
+            )
+            .result()
+        }
     }
 
     #[doc(alias = "CMBlockBufferGetDataPointer")]
@@ -287,15 +291,17 @@ impl BlockBuf {
         flags: Flags,
         block_buf_out: *mut Option<arc::R<BlockBuf>>,
     ) -> os::Result {
-        CMBlockBufferCreateWithBufferReference(
-            structure_allocator,
-            buf_reference,
-            offset_to_data,
-            data_length,
-            flags,
-            block_buf_out,
-        )
-        .result()
+        unsafe {
+            CMBlockBufferCreateWithBufferReference(
+                structure_allocator,
+                buf_reference,
+                offset_to_data,
+                data_length,
+                flags,
+                block_buf_out,
+            )
+            .result()
+        }
     }
 
     /// Assures that the system allocates memory for all memory blocks in a
@@ -310,7 +316,7 @@ impl BlockBuf {
     }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CMBlockBufferGetTypeID() -> cf::TypeId;
     fn CMBlockBufferIsEmpty(the_buffer: &BlockBuf) -> bool;
 

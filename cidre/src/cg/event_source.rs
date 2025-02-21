@@ -111,7 +111,7 @@ impl cg::EventSrcStateId {
 }
 
 #[link(name = "CoreGraphics", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CGEventSourceGetTypeID() -> cf::TypeId;
     fn CGEventSourceCreate(state_id: cg::EventSrcStateId) -> Option<arc::R<cg::EventSrc>>;
     fn CGEventSourceGetKeyboardType(src: *const cg::EventSrc) -> cg::EventSrcKeyboardType;
@@ -150,5 +150,5 @@ extern "C-unwind" {
     );
 
     fn CGEventSourceGetLocalEventsSuppressionInterval(src: *const cg::EventSrc)
-        -> cf::TimeInterval;
+    -> cf::TimeInterval;
 }

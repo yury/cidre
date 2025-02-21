@@ -8,4 +8,4 @@ pub use surface::Surf;
 pub use surface::SurfId;
 
 #[link(name = "IOSurface", kind = "framework")]
-extern "C" {}
+unsafe extern "C" {}

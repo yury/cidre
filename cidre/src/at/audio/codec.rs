@@ -638,7 +638,7 @@ impl<S: State<Codec>> Drop for CodecRef<S> {
     fn drop(&mut self) {
         let res = S::release_resources(self.0);
         debug_assert!(res.is_ok());
-        let res = unsafe { self.0 .0.dispose() };
+        let res = unsafe { self.0.0.dispose() };
         debug_assert!(res.is_ok());
     }
 }
@@ -1187,7 +1187,7 @@ pub mod quality {
     pub const MIN: u32 = 0x00;
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn AudioCodecReset(in_codec: &mut Codec) -> os::Status;
 
     fn AudioCodecInitialize(

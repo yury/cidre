@@ -135,7 +135,7 @@ define_obj_type!(
 );
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     #[cfg(not(target_os = "watchos"))]
     static AV_CAPTURE_DEVICE_INPUT: &'static objc::Class<DeviceInput>;
 
@@ -186,7 +186,7 @@ pub mod port_notifications {
 
     #[link(name = "AVFoundation", kind = "framework")]
     #[api::weak]
-    extern "C" {
+    unsafe extern "C" {
         #[api::available(macos = 10.7, ios = 4.0, maccatalyst = 14.0, tvos = 17.0)]
         static AVCaptureInputPortFormatDescriptionDidChangeNotification:
             &'static ns::NotificationName;

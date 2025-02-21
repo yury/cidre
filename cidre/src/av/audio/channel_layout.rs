@@ -35,7 +35,7 @@ impl ChannelLayout {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_AUDIO_CHANNEL_LAYOUT: &'static objc::Class<ChannelLayout>;
 }
 

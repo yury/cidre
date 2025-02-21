@@ -1,6 +1,6 @@
 use crate::{arc, at::audio::StreamBasicDesc, define_cls, define_obj_type, ns, objc};
 
-use super::{channel_layout::ChannelLayout, ChannelCount};
+use super::{ChannelCount, channel_layout::ChannelLayout};
 
 #[doc(alias = "AVAudioCommonFormat")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -152,6 +152,6 @@ impl Format {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_AUDIO_FORMAT: &'static objc::Class<Format>;
 }

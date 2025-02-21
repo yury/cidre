@@ -38,7 +38,7 @@ impl ClassifyImageRequest {
 }
 
 #[link(name = "vn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static VN_CLASSIFY_IMAGE_REQUEST: &'static objc::Class<ClassifyImageRequest>;
 }
 

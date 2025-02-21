@@ -276,7 +276,7 @@ impl graph::Graph {
 }
 
 #[link(name = "mpsg", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MPS_GRAPH_SINGLE_GATE_RNN_DESCRIPTOR: &'static objc::Class<SingleGateRNNDesc>;
     static MPS_GRAPH_LSTM_DESCRIPTOR: &'static objc::Class<LSTMDesc>;
     static MPS_GRAPH_GRU_DESCRIPTOR: &'static objc::Class<GRUDescr>;

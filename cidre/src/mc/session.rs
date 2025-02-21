@@ -264,7 +264,7 @@ impl Session {
     pub fn cancel_connect_peer(&mut self, peer: &mc::PeerId);
 }
 
-extern "C" {
+unsafe extern "C" {
     static MC_SESSION: &'static objc::Class<Session>;
 }
 

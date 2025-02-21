@@ -37,7 +37,7 @@ impl Color {
 }
 
 #[link(name = "CoreGraphics", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     fn CGColorCreateGenericGray(gray: cg::Float, alpha: cg::Float) -> arc::R<Color>;
     fn CGColorCreateGenericRGB(
         red: cg::Float,

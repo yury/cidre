@@ -18,7 +18,7 @@ impl TrainingGraph {
 }
 
 #[link(name = "mlc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MLC_TRAINING_GRAPH: &'static objc::Class<TrainingGraph>;
 }
 

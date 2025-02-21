@@ -108,7 +108,7 @@ pub mod dictionary {
     }
 
     #[link(name = "ImageIO", kind = "framework")]
-    extern "C" {
+    unsafe extern "C" {
         static kCGImagePropertyTIFFDictionary: &'static cf::String;
         static kCGImagePropertyGIFDictionary: &'static cf::String;
         static kCGImagePropertyHEIFDictionary: &'static cf::String;
@@ -179,7 +179,7 @@ pub mod webp_keys {
     }
 
     #[link(name = "ImageIO", kind = "framework")]
-    extern "C" {
+    unsafe extern "C" {
         static kCGImagePropertyWebPLoopCount: &'static cf::String;
         static kCGImagePropertyWebPDelayTime: &'static cf::String;
         static kCGImagePropertyWebPUnclampedDelayTime: &'static cf::String;
@@ -255,7 +255,7 @@ pub mod gif_keys {
     }
 
     #[link(name = "ImageIO", kind = "framework")]
-    extern "C" {
+    unsafe extern "C" {
         static kCGImagePropertyGIFLoopCount: &'static cf::String;
         static kCGImagePropertyGIFDelayTime: &'static cf::String;
         static kCGImagePropertyGIFImageColorMap: &'static cf::String;

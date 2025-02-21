@@ -75,7 +75,7 @@ impl FnDesc {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_FUNCTION_DESCRIPTOR: &'static objc::Class<FnDesc>;
 }
 

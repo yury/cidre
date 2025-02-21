@@ -103,7 +103,7 @@ impl ns::NotificationName {
 }
 
 #[link(name = "AVFoundation", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static AVPlayerItemTimeJumpedNotification: &'static ns::NotificationName;
     static AVPlayerItemDidPlayToEndTimeNotification: &'static ns::NotificationName;
     static AVPlayerItemFailedToPlayToEndTimeNotification: &'static ns::NotificationName;

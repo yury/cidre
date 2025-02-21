@@ -69,6 +69,6 @@ impl ns::FileManager {
     pub fn with_authorization(authorization: &ns::WorkspaceAuthorization) -> arc::R<Self>;
 }
 
-extern "C" {
+unsafe extern "C" {
     static NS_WORKSPACE: &'static objc::Class<Workspace>;
 }

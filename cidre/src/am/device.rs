@@ -161,7 +161,7 @@ impl<'a> Connected<'a> {
         domain: Option<&cf::String>,
         key: Option<&cf::String>,
     ) -> Option<arc::R<cf::Type>> {
-        AMDeviceCopyValue(self.0, domain, key)
+        unsafe { AMDeviceCopyValue(self.0, domain, key) }
     }
 
     ///
@@ -186,7 +186,7 @@ impl<'a> Connected<'a> {
         key: Option<&cf::String>,
         error_out: &mut Error,
     ) -> Option<arc::R<cf::Plist>> {
-        AMDeviceCopyValueWithError(self, domain, key, error_out)
+        unsafe { AMDeviceCopyValueWithError(self, domain, key, error_out) }
     }
 
     pub fn try_value(
@@ -361,7 +361,7 @@ impl<'a> Deref for Session<'a> {
 }
 
 #[link(name = "MobileDevice", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     fn AMDeviceGetConnectionID(device: &Device) -> u32;
     fn AMDeviceCopyDeviceIdentifier(device: &Device) -> arc::R<cf::String>;
     fn AMDeviceCopyValue(

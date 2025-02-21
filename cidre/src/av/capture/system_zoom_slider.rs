@@ -62,6 +62,6 @@ impl SysZoomSlider {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_CAPTURE_SYSTEM_ZOOM_SLIDER: &'static objc::Class<SysZoomSlider>;
 }

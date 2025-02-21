@@ -77,12 +77,12 @@ impl ns::AttrString {
 
 #[cfg(target_os = "macos")]
 #[cfg(feature = "app")]
-extern "C" {
+unsafe extern "C" {
     static NS_TEXT_ATTACHMENT: &'static objc::Class<TextAttachment>;
 }
 
 #[cfg(any(target_os = "ios", target_os = "tvos", target_os = "watchos"))]
 #[cfg(feature = "ui")]
-extern "C" {
+unsafe extern "C" {
     static NS_TEXT_ATTACHMENT: &'static objc::Class<TextAttachment>;
 }

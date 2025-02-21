@@ -34,6 +34,6 @@ impl Clock {
     }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn clock_gettime_nsec_np(clock_id: Clock) -> u64;
 }

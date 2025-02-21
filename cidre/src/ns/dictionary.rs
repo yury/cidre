@@ -132,7 +132,7 @@ impl<K: Obj, V: Obj> DictionaryMut<K, V> {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_DICTIONARY: &'static ns::Class<Dictionary<ns::Id, ns::Id>>;
     static NS_MUTABLE_DICTIONARY: &'static ns::Class<DictionaryMut<ns::Id, ns::Id>>;
 }

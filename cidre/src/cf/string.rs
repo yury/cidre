@@ -1,17 +1,16 @@
 use core::fmt;
 use std::{
     borrow::{Borrow, Cow},
-    ffi::{c_char, CStr},
+    ffi::{CStr, c_char},
     hash::Hash,
     str::from_utf8_unchecked,
 };
 
 use crate::{
-    arc,
+    UniChar, arc,
     cf::{self, Index, OptionFlags, Range, Type, TypeId},
     define_cf_type, define_opts,
     objc::Obj,
-    UniChar,
 };
 
 #[cfg(feature = "ns")]
@@ -135,13 +134,15 @@ impl String {
 
     #[inline]
     pub unsafe fn from_cstr_no_copy(cstr: &CStr) -> arc::R<Self> {
-        Self::create_with_cstring_no_copy_in(
-            cstr.to_bytes_with_nul(),
-            Encoding::UTF8,
-            cf::Allocator::null(),
-            None,
-        )
-        .unwrap_unchecked()
+        unsafe {
+            Self::create_with_cstring_no_copy_in(
+                cstr.to_bytes_with_nul(),
+                Encoding::UTF8,
+                cf::Allocator::null(),
+                None,
+            )
+            .unwrap_unchecked()
+        }
     }
 
     #[doc(alias = "CFShowStr")]
@@ -331,7 +332,7 @@ impl AsRef<ns::Id> for String {
 macro_rules! cfstr {
     ($f:literal) => {{
         #[link(name = "CoreFoundation", kind = "framework")]
-        extern "C" {
+        unsafe extern "C" {
             static __CFConstantStringClassReference: std::ffi::c_void;
         }
         // #[link_section = "__TEXT,__cstring,cstring_literals"]
@@ -416,7 +417,7 @@ impl StringMut {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFStringGetTypeID() -> TypeId;
     fn CFStringGetLength(the_string: &String) -> Index;
     fn CFStringCreateMutable(

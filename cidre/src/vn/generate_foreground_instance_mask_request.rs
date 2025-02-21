@@ -14,7 +14,7 @@ impl GenForegroundInstanceMaskRequest {
     pub fn results(&self) -> Option<arc::R<ns::Array<vn::InstanceMaskObservation>>>;
 }
 
-extern "C" {
+unsafe extern "C" {
     static VN_GENERATE_FOREGROUND_INSTANCE_MASK_REQUEST:
         &'static objc::Class<GenForegroundInstanceMaskRequest>;
 }

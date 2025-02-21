@@ -96,7 +96,7 @@ impl<'a> AppsLookupBuilder<'a> {
 }
 
 #[link(name = "MobileDevice", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     fn AMDeviceLookupApplications(
         device: &Device,
         options: &cf::Dictionary,

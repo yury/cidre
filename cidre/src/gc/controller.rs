@@ -91,13 +91,13 @@ impl Controller {
 }
 
 #[link(name = "gc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static GC_CONTROLLER: &'static objc::Class<Controller>;
 }
 
 #[link(name = "GameController", kind = "framework")]
 #[api::weak]
-extern "C" {
+unsafe extern "C" {
     #[api::available(macos = 10.9, ios = 7.0, tvos = 7.0)]
     static GCControllerDidConnectNotification: &'static ns::NotificationName;
     #[api::available(macos = 10.9, ios = 7.0, tvos = 7.0)]

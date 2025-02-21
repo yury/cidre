@@ -152,7 +152,7 @@ impl Src {
         mask: std::ffi::c_ulong,
         queue: Option<&dispatch::Queue>,
     ) -> Option<arc::R<Src>> {
-        dispatch_source_create(type_, handle, mask, queue)
+        unsafe { dispatch_source_create(type_, handle, mask, queue) }
     }
 
     #[inline]
@@ -248,7 +248,7 @@ impl Src {
     ///  use TimerSource::set
     #[inline]
     unsafe fn source_set_timer(&mut self, start: dispatch::Time, interval: u64, leeway: u64) {
-        dispatch_source_set_timer(self, start, interval, leeway)
+        unsafe { dispatch_source_set_timer(self, start, interval, leeway) }
     }
 }
 
@@ -262,7 +262,7 @@ impl TimerSrc {
     }
 }
 
-extern "C" {
+unsafe extern "C-unwind" {
     static _dispatch_source_type_data_add: TypeDataAdd;
     static _dispatch_source_type_data_or: TypeDataOr;
     static _dispatch_source_type_data_replace: TypeDataReplace;

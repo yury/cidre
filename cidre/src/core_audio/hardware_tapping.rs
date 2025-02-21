@@ -26,7 +26,7 @@ impl std::ops::DerefMut for TapGuard {
 
 impl Drop for TapGuard {
     fn drop(&mut self) {
-        let res = unsafe { AudioHardwareDestroyProcessTap(self.0 .0) };
+        let res = unsafe { AudioHardwareDestroyProcessTap(self.0.0) };
         debug_assert!(res.is_ok(), "Failed to destroy process tap");
     }
 }
@@ -75,7 +75,7 @@ impl TapDesc {
 }
 
 #[link(name = "CoreAudio", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     pub fn AudioHardwareCreateProcessTap(desc: &TapDesc, out_tap_id: *mut Obj) -> os::Status;
     pub fn AudioHardwareDestroyProcessTap(tap_id: Obj) -> os::Status;
 }

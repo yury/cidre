@@ -37,8 +37,8 @@ impl MotionManager {
         &mut self,
         queue: &ns::OpQueue,
         handler: impl FnMut(Option<&cm::AccelerometerData>, Option<&ns::Error>)
-            + 'static
-            + std::marker::Sync,
+        + 'static
+        + std::marker::Sync,
     ) {
         let mut handler = blocks::ResultCh::new2(handler);
         self.start_accelerometer_updates_to_queue_handler(queue, &mut handler)
@@ -115,8 +115,8 @@ impl MotionManager {
         &mut self,
         queue: &ns::OpQueue,
         handler: impl FnMut(Option<&cm::MagnetometerData>, Option<&ns::Error>)
-            + 'static
-            + std::marker::Sync,
+        + 'static
+        + std::marker::Sync,
     ) {
         let mut handler = blocks::ResultCh::new2(handler);
         self.start_magnetometer_updates_to_queue_handler(queue, &mut handler)
@@ -196,6 +196,6 @@ impl MotionManager {
 }
 
 #[link(name = "core_motion", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static CM_MOTION_MANAGER: &'static objc::Class<MotionManager>;
 }

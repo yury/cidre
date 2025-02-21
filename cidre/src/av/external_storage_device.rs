@@ -108,7 +108,7 @@ impl DiscoverySession {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_EXTERNAL_STORAGE_DEVICE: &'static objc::Class<Device>;
     static AV_EXTERNAL_STORAGE_DEVICE_DISCOVERY_SESSION: &'static objc::Class<DiscoverySession>;
 }

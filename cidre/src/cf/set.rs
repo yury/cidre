@@ -30,12 +30,12 @@ impl Set {
 
     #[inline]
     pub unsafe fn contains_value(&self, value: *const c_void) -> bool {
-        CFSetContainsValue(self, value)
+        unsafe { CFSetContainsValue(self, value) }
     }
 
     #[inline]
     pub unsafe fn get_values(&self, values: *mut *const c_void) {
-        CFSetGetValues(self, values)
+        unsafe { CFSetGetValues(self, values) }
     }
 }
 
@@ -81,7 +81,7 @@ where
     T: arc::Release + arc::Retain,
 {
     unsafe fn release(&mut self) {
-        self.0.release()
+        unsafe { self.0.release() }
     }
 }
 
@@ -95,7 +95,7 @@ where
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     fn CFSetGetCount(set: &Set) -> cf::Index;
     fn CFSetContainsValue(set: &Set, value: *const c_void) -> bool;
     fn CFSetGetValues(set: &Set, values: *mut *const c_void);

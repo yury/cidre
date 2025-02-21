@@ -152,6 +152,6 @@ impl ReaderTrackOutput {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_ASSET_READER_TRACK_OUTPUT: &'static objc::Class<ReaderTrackOutput>;
 }

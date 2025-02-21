@@ -56,6 +56,6 @@ impl App {
     pub fn shared_mut() -> &'static mut Self;
 }
 
-extern "C" {
+unsafe extern "C" {
     static UI_APPLICATION: &'static objc::Class<App>;
 }

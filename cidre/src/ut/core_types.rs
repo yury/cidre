@@ -42,7 +42,7 @@ impl ut::Type {
     }
 }
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeItem: &'static ut::Type;
     static UTTypeContent: &'static ut::Type;
     static UTTypeCompositeContent: &'static ut::Type;
@@ -123,7 +123,7 @@ impl ut::Type {
     }
 }
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeData: &'static ut::Type;
     static UTTypeDirectory: &'static ut::Type;
     static UTTypeResolvable: &'static ut::Type;
@@ -168,7 +168,7 @@ impl ut::Type {
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeURL: &'static ut::Type;
     static UTTypeFileURL: &'static ut::Type;
 }
@@ -280,7 +280,7 @@ impl ut::Type {
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeText: &'static ut::Type;
     static UTTypePlainText: &'static ut::Type;
     static UTTypeUTF8PlainText: &'static ut::Type;
@@ -327,7 +327,7 @@ impl ut::Type {
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeHTML: &'static ut::Type;
     static UTTypeXML: &'static ut::Type;
     static UTTypeYAML: &'static ut::Type;
@@ -426,7 +426,7 @@ impl ut::Type {
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeSourceCode: &'static ut::Type;
     static UTTypeAssemblyLanguageSource: &'static ut::Type;
     static UTTypeCSource: &'static ut::Type;
@@ -552,7 +552,7 @@ impl ut::Type {
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeScript: &'static ut::Type;
     static UTTypeAppleScript: &'static ut::Type;
     static UTTypeOSAScript: &'static ut::Type;
@@ -611,7 +611,7 @@ impl ut::Type {
     }
 }
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeJSON: &'static ut::Type;
     static UTTypePropertyList: &'static ut::Type;
     static UTTypeXMLPropertyList: &'static ut::Type;
@@ -663,7 +663,7 @@ impl ut::Type {
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypePDF: &'static ut::Type;
     static UTTypeRTFD: &'static ut::Type;
     static UTTypeFlatRTFD: &'static ut::Type;
@@ -813,7 +813,7 @@ impl ut::Type {
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeImage: &'static ut::Type;
     static UTTypeJPEG: &'static ut::Type;
     static UTTypeTIFF: &'static ut::Type;
@@ -1085,7 +1085,7 @@ impl ut::Type {
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTType3DContent: &'static ut::Type;
     static UTTypeUSD: &'static ut::Type;
     static UTTypeUSDZ: &'static ut::Type;
@@ -1267,7 +1267,7 @@ impl ut::Type {
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeFolder: &'static ut::Type;
     static UTTypeVolume: &'static ut::Type;
     static UTTypePackage: &'static ut::Type;
@@ -1338,7 +1338,7 @@ impl ut::Type {
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeArchive: &'static ut::Type;
     static UTTypeGZIP: &'static ut::Type;
     static UTTypeBZ2: &'static ut::Type;
@@ -1379,7 +1379,7 @@ impl ut::Type {
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeSpreadsheet: &'static ut::Type;
     static UTTypePresentation: &'static ut::Type;
     static UTTypeDatabase: &'static ut::Type;
@@ -1445,7 +1445,7 @@ impl ut::Type {
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeMessage: &'static ut::Type;
     static UTTypeContact: &'static ut::Type;
     static UTTypeVCard: &'static ut::Type;
@@ -1478,7 +1478,7 @@ impl ut::Type {
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeInternetLocation: &'static ut::Type;
     static UTTypeInternetShortcut: &'static ut::Type;
 }
@@ -1553,7 +1553,7 @@ impl ut::Type {
 }
 
 #[link(name = "UniformTypeIdentifiers", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static UTTypeFont: &'static ut::Type;
     static UTTypeBookmark: &'static ut::Type;
     static UTTypePKCS12: &'static ut::Type;

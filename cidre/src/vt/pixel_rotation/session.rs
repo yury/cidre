@@ -80,7 +80,7 @@ impl Session {
     }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn VTPixelRotationSessionGetTypeID() -> cf::TypeId;
     fn VTPixelRotationSessionCreate(
         allocator: Option<&cf::Allocator>,

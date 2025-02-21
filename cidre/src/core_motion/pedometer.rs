@@ -112,8 +112,8 @@ impl Pedometer {
         start: &ns::Date,
         end: &ns::Date,
         handler: impl FnMut(Option<&cm::PedometerData>, Option<&ns::Error>)
-            + 'static
-            + std::marker::Sync,
+        + 'static
+        + std::marker::Sync,
     ) {
         let mut handler = blocks::ResultCh::new2(handler);
         self.query_pedometer_data_ch_block(start, end, &mut handler)
@@ -142,8 +142,8 @@ impl Pedometer {
         &mut self,
         start: &ns::Date,
         handler: impl FnMut(Option<&cm::PedometerData>, Option<&ns::Error>)
-            + 'static
-            + std::marker::Sync,
+        + 'static
+        + std::marker::Sync,
     ) {
         let mut handler = blocks::ResultCh::new2(handler);
         self.start_pedometer_updates_from_date_handler(start, &mut handler)
@@ -154,7 +154,7 @@ impl Pedometer {
 }
 
 #[link(name = "core_motion", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static CM_PEDOMETER: &'static objc::Class<Pedometer>;
 }
 

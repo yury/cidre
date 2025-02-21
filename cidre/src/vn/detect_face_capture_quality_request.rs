@@ -14,7 +14,7 @@ impl DetectFaceCaptureQualityRequest {
 }
 
 #[link(name = "vn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static VN_DETECT_FACE_CAPTURE_QUALITY_REQUEST:
         &'static objc::Class<DetectFaceCaptureQualityRequest>;
 }

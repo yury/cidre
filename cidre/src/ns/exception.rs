@@ -123,7 +123,7 @@ impl ExceptionName {
     }
 }
 
-extern "C" {
+unsafe extern "C" {
     static NSGenericException: &'static ExceptionName;
     static NSRangeException: &'static ExceptionName;
     static NSInvalidArgumentException: &'static ExceptionName;
@@ -181,13 +181,13 @@ pub unsafe fn set_uncaught_exception_handler(handler: *const UncaughtExceptionHa
     unsafe { NSSetUncaughtExceptionHandler(handler) }
 }
 
-extern "C" {
+unsafe extern "C" {
     fn NSGetUncaughtExceptionHandler() -> *const UncaughtExceptionHandler;
     fn NSSetUncaughtExceptionHandler(handler: *const UncaughtExceptionHandler);
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn cidre_raise_exception(message: &ns::String) -> !;
     fn cidre_try_catch<'ar>(
         during: extern "C" fn(ctx: *mut c_void),

@@ -77,7 +77,7 @@ impl Data {
 
     #[inline]
     pub unsafe fn get_bytes(&self, range: cf::Range, buffer: *mut u8) {
-        CFDataGetBytes(self, range, buffer)
+        unsafe { CFDataGetBytes(self, range, buffer) }
     }
 
     #[inline]
@@ -112,7 +112,7 @@ impl DataMut {
     #[doc(alias = "CFDataAppendBytes")]
     #[inline]
     pub unsafe fn append_bytes(&mut self, bytes: *const u8, length: cf::Index) {
-        CFDataAppendBytes(self, bytes, length)
+        unsafe { CFDataAppendBytes(self, bytes, length) }
     }
 
     #[inline]
@@ -126,7 +126,7 @@ impl DataMut {
     #[doc(alias = "CFDataGetMutableBytePtr")]
     #[inline]
     pub unsafe fn bytes_ptr_mut(&mut self) -> *mut u8 {
-        CFDataGetMutableBytePtr(self)
+        unsafe { CFDataGetMutableBytePtr(self) }
     }
 
     #[doc(alias = "CFDataSetLength")]
@@ -160,7 +160,7 @@ impl From<&[u8]> for arc::R<Data> {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFDataGetTypeID() -> cf::TypeId;
     fn CFDataCreate(
         allocator: Option<&cf::Allocator>,

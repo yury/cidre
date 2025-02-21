@@ -27,12 +27,12 @@ impl Session {
         key: &cf::String,
         value: Option<&cf::Type>,
     ) -> os::Result {
-        VTSessionSetProperty(self, key, value).result()
+        unsafe { VTSessionSetProperty(self, key, value).result() }
     }
 
     #[inline]
     pub unsafe fn set_properties(&mut self, dict: &cf::Dictionary) -> os::Result {
-        VTSessionSetProperties(self, dict).result()
+        unsafe { VTSessionSetProperties(self, dict).result() }
     }
 
     #[inline]
@@ -51,7 +51,10 @@ impl Session {
         &self,
         supported_property_dictionary_out: *mut Option<arc::R<cf::Dictionary>>,
     ) -> os::Result {
-        VTSessionCopySupportedPropertyDictionary(self, supported_property_dictionary_out).result()
+        unsafe {
+            VTSessionCopySupportedPropertyDictionary(self, supported_property_dictionary_out)
+                .result()
+        }
     }
 
     #[doc(alias = "VTSessionCopySupportedPropertyDictionary")]
@@ -84,7 +87,7 @@ impl Session {
 }
 
 #[link(name = "VideoToolbox", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn VTSessionSetProperty(
         session: &mut Session,
         property_key: &cf::String,

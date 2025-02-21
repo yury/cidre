@@ -109,7 +109,7 @@ pub struct Vector {
     pub dy: Float,
 }
 
-extern "C" {
+unsafe extern "C" {
     fn CGPointCreateDictionaryRepresentation(point: Point) -> arc::R<cf::Dictionary>;
     fn CGSizeCreateDictionaryRepresentation(size: Size) -> arc::R<cf::Dictionary>;
     fn CGRectCreateDictionaryRepresentation(rect: Rect) -> arc::R<cf::Dictionary>;

@@ -34,6 +34,6 @@ impl AdamWOptimizer {
 }
 
 #[link(name = "mlc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MLC_ADAMW_OPTIMIZER: &'static objc::Class<AdamWOptimizer>;
 }

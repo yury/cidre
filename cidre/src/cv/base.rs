@@ -125,7 +125,7 @@ impl TimeStampFlags {
 }
 
 #[link(name = "CoreVideo", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static kCVZeroTime: Time;
     static kCVIndefiniteTime: Time;
 }

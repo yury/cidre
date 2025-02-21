@@ -606,7 +606,7 @@ impl ExecutionOpts {
 }
 
 #[link(name = "MLCompute", kind = "framework")]
-extern "C" {
+unsafe extern "C-unwind" {
     fn MLCActivationTypeDebugDescription(activationType: ActivationType) -> &'static ns::String;
     fn MLCArithmeticOperationDebugDescription(op: ArithmeticOp) -> &'static ns::String;
     fn MLCPaddingPolicyDebugDescription(policy: PaddingPolicy) -> &'static ns::String;
@@ -614,7 +614,7 @@ extern "C" {
     fn MLCReductionTypeDebugDescription(reduction_type: ReductionType) -> &'static ns::String;
     fn MLCPaddingTypeDebugDescription(padding_type: PaddingType) -> &'static ns::String;
     fn MLCConvolutionTypeDebugDescription(convolution_type: ConvolutionType)
-        -> &'static ns::String;
+    -> &'static ns::String;
     fn MLCPoolingTypeDebugDescription(pooling_type: PoolingType) -> &'static ns::String;
     fn MLCSoftmaxOperationDebugDescription(operation: SoftmaxOp) -> &'static ns::String;
     fn MLCSampleModeDebugDescription(mode: SampleMode) -> &'static ns::String;

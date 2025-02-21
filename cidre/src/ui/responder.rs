@@ -7,6 +7,6 @@ define_obj_type!(
 );
 
 #[link(name = "ui", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static UI_RESPONDER: &'static objc::Class<Responder>;
 }

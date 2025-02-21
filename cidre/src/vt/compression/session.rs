@@ -64,19 +64,21 @@ impl Session {
         compression_session_out: *mut Option<arc::R<Session>>,
         allocator: Option<&cf::Allocator>,
     ) -> os::Result {
-        VTCompressionSessionCreate(
-            allocator,
-            width,
-            height,
-            codec_type,
-            encoder_specification,
-            source_image_buffer_attributes,
-            compressed_data_allocator,
-            output_callback,
-            output_callback_ref_con,
-            compression_session_out,
-        )
-        .result()
+        unsafe {
+            VTCompressionSessionCreate(
+                allocator,
+                width,
+                height,
+                codec_type,
+                encoder_specification,
+                source_image_buffer_attributes,
+                compressed_data_allocator,
+                output_callback,
+                output_callback_ref_con,
+                compression_session_out,
+            )
+            .result()
+        }
     }
 
     #[doc(alias = "VTCompressionSessionInvalidate")]
@@ -96,7 +98,7 @@ impl Session {
     #[doc(alias = "VTCompressionSessionPrepareToEncodeFrames")]
     #[inline]
     pub unsafe fn prepare_to_encode_frames(&mut self) -> os::Result {
-        VTCompressionSessionPrepareToEncodeFrames(self).result()
+        unsafe { VTCompressionSessionPrepareToEncodeFrames(self).result() }
     }
 
     /// Encoded frames may or may not be output before the function returns.
@@ -261,7 +263,7 @@ impl Session {
 
 #[link(name = "VideoToolbox", kind = "framework")]
 #[api::weak]
-extern "C" {
+unsafe extern "C" {
     fn VTCompressionSessionCreate(
         allocator: Option<&cf::Allocator>,
         width: i32,

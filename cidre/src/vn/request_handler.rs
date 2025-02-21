@@ -161,7 +161,7 @@ impl SequenceRequestHandler {
 }
 
 #[link(name = "vn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static VN_IMAGE_REQUEST_HANDLER: &'static objc::Class<ImageRequestHandler>;
     static VN_SEQUENCE_REQUEST_HANDLER: &'static objc::Class<SequenceRequestHandler>;
 }

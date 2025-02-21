@@ -329,7 +329,7 @@ impl AsRef<ns::Number> for ns::Number {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_VALUE: &'static Class<ns::Value>;
     static NS_NUMBER: &'static Class<ns::Number>;
 }
@@ -338,7 +338,7 @@ extern "C" {
 mod tests {
     use crate::{
         ns,
-        objc::{ar_pool, Obj},
+        objc::{Obj, ar_pool},
     };
 
     #[test]

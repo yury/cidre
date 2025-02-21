@@ -183,7 +183,7 @@ impl TapDesc {
 }
 
 #[link(name = "core_audio", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static CA_TAP_DESCRIPTION: &'static objc::Class<TapDesc>;
 }
 

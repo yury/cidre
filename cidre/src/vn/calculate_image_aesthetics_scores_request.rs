@@ -38,7 +38,7 @@ impl CalcImageAestheticsScoresRequest {
 }
 
 #[link(name = "vn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static VN_CALCULATE_IMAGE_AESTHETICS_SCORES_REQUEST:
         &'static objc::Class<CalcImageAestheticsScoresRequest>;
 }

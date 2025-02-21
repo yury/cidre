@@ -178,13 +178,13 @@ impl PixelBuf {
     #[doc(alias = "CVPixelBufferLockBaseAddress")]
     #[inline]
     pub unsafe fn lock_base_addr(&mut self, flags: LockFlags) -> cv::Return {
-        CVPixelBufferLockBaseAddress(self, flags)
+        unsafe { CVPixelBufferLockBaseAddress(self, flags) }
     }
 
     #[doc(alias = "CVPixelBufferUnlockBaseAddress")]
     #[inline]
     pub unsafe fn unlock_lock_base_addr(&mut self, flags: LockFlags) -> cv::Return {
-        CVPixelBufferUnlockBaseAddress(self, flags)
+        unsafe { CVPixelBufferUnlockBaseAddress(self, flags) }
     }
 
     #[inline]
@@ -647,7 +647,7 @@ impl AsRef<ns::Id> for PixelFormat {
 }
 
 #[link(name = "CoreVideo", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CVPixelBufferGetTypeID() -> cf::TypeId;
     fn CVPixelBufferCreate(
         allocator: Option<&cf::Allocator>,
@@ -678,7 +678,7 @@ extern "C-unwind" {
     fn CVPixelBufferGetWidthOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> usize;
     fn CVPixelBufferGetHeightOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> usize;
     fn CVPixelBufferGetBaseAddressOfPlane(pixel_buffer: &PixelBuf, plane_index: usize)
-        -> *const u8;
+    -> *const u8;
     fn CVPixelBufferGetBytesPerRowOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> usize;
 
     fn CVPixelBufferLockBaseAddress(
@@ -756,7 +756,7 @@ pub mod keys {
         unsafe { kCVPixelBufferCGImageCompatibilityKey }
     }
 
-    extern "C" {
+    unsafe extern "C" {
         static kCVPixelBufferPixelFormatTypeKey: &'static cf::String;
         static kCVPixelBufferWidthKey: &'static cf::String;
         static kCVPixelBufferHeightKey: &'static cf::String;

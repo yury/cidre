@@ -199,7 +199,7 @@ impl CidreObserver {
 }
 
 #[link(name = "Foundation", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static NSKeyValueChangeKindKey: &'static KvChangeKey;
     static NSKeyValueChangeNewKey: &'static KvChangeKey;
     static NSKeyValueChangeOldKey: &'static KvChangeKey;
@@ -208,7 +208,7 @@ extern "C" {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn cidre_create_observer(
         obj: &ns::Id,
         key_path: &ns::String,

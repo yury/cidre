@@ -1,9 +1,9 @@
 [package]
 name = "cidre"
-version = "0.5.0"
-edition = "2021"
+version = "0.6.0"
+edition = "2024"
 
-rust-version = "1.81"
+rust-version = "1.85"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

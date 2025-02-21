@@ -81,7 +81,7 @@ impl Update {
     }
 
     pub unsafe fn moved_rect_delta(&self, x: *mut cg::Float, y: *mut cg::Float) {
-        CGDisplayStreamUpdateGetMovedRectsDelta(self, x, y)
+        unsafe { CGDisplayStreamUpdateGetMovedRectsDelta(self, x, y) }
     }
 
     #[inline]
@@ -229,7 +229,7 @@ impl DisplayStream {
 
     #[inline]
     pub unsafe fn stream_start(&self) -> cg::Status {
-        CGDisplayStreamStart(self)
+        unsafe { CGDisplayStreamStart(self) }
     }
 
     pub fn start(&self) -> Result<(), cg::Error> {
@@ -238,7 +238,7 @@ impl DisplayStream {
 
     #[inline]
     pub unsafe fn stream_stop(&self) -> cg::Status {
-        CGDisplayStreamStop(self)
+        unsafe { CGDisplayStreamStop(self) }
     }
 
     pub fn stop(&self) -> Result<(), cg::Error> {
@@ -252,7 +252,7 @@ impl DisplayStream {
 }
 
 #[link(name = "CoreGraphics", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CGDisplayStreamUpdateGetTypeID() -> cf::TypeId;
 
     fn CGDisplayStreamUpdateGetRects(

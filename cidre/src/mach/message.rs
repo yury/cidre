@@ -578,7 +578,7 @@ pub fn msg_overwrite(
     }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn mach_msg(
         msg: *mut Header,
         option: MsgOpt,

@@ -89,6 +89,6 @@ impl PlayerNode {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_AUDIO_PLAYER_NODE: &'static objc::Class<PlayerNode>;
 }

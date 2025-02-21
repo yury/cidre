@@ -97,7 +97,7 @@ impl ActivationLayer {
 }
 
 #[link(name = "mlc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MLC_ACTIVATION_LAYER: &'static objc::Class<ActivationLayer>;
 }
 

@@ -18,7 +18,7 @@ impl Texture {
 }
 
 #[link(name = "CoreVideo", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CVMetalTextureGetTexture(image: &Texture) -> Option<&mtl::Texture>;
     fn CVMetalTextureIsFlipped(image: &Texture) -> bool;
 }
@@ -39,7 +39,7 @@ pub mod keys {
     }
 
     #[link(name = "CoreVideo", kind = "framework")]
-    extern "C" {
+    unsafe extern "C" {
         static kCVMetalTextureUsage: &'static cf::String;
         static kCVMetalTextureStorageMode: &'static cf::String;
     }

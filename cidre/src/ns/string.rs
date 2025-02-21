@@ -224,7 +224,7 @@ impl StringMut {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_STRING: &'static Class<String>;
     static NS_MUTABLE_STRING: &'static Class<StringMut>;
 }
@@ -243,9 +243,7 @@ impl fmt::Display for String {
 
 #[macro_export]
 macro_rules! nsstr {
-    ($f:literal) => {{
-        $crate::cfstr!($f).as_ns()
-    }};
+    ($f:literal) => {{ $crate::cfstr!($f).as_ns() }};
 }
 
 pub use nsstr as str;

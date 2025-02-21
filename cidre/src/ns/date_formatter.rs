@@ -49,7 +49,7 @@ impl DateFormatter {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_DATE_FORMATTER: &'static objc::Class<DateFormatter>;
 }
 

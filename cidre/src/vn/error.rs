@@ -7,7 +7,7 @@ impl ns::ErrorDomain {
 }
 
 #[link(name = "Vision", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static VNErrorDomain: &'static ns::ErrorDomain;
 }
 

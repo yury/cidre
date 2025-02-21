@@ -69,6 +69,6 @@ impl VideoPreviewLayer {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_CAPTURE_VIDEO_PREVIEW_LAYER: &'static objc::Class<VideoPreviewLayer>;
 }

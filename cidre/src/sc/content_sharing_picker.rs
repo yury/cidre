@@ -133,7 +133,7 @@ pub trait Observer: objc::Obj {
 }
 
 #[link(name = "sc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static SC_CONTENT_SHARING_PICKER_CONFIGURATION: &'static objc::Class<Cfg>;
     static SC_CONTENT_SHARING_PICKER: &'static objc::Class<Picker>;
 }
@@ -146,8 +146,9 @@ mod tests {
     fn basics() {
         let picker = sc::ContentSharingPicker::shared();
         let cfg = picker.default_cfg();
-        assert!(cfg
-            .allowed_picker_modes()
-            .contains(sc::ContentSharingPickerMode::SINGLE_WINDOW));
+        assert!(
+            cfg.allowed_picker_modes()
+                .contains(sc::ContentSharingPickerMode::SINGLE_WINDOW)
+        );
     }
 }

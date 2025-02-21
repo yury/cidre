@@ -99,7 +99,7 @@ impl Desc {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 

@@ -48,7 +48,7 @@ impl UrlResponse {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_URL_RESPONSE: &'static objc::Class<UrlResponse>;
 }
 

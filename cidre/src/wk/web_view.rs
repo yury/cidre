@@ -53,6 +53,6 @@ impl WebView {
 }
 
 #[link(name = "wk", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static WK_WEB_VIEW: &'static objc::Class<WebView>;
 }

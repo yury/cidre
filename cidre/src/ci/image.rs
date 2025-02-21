@@ -309,7 +309,7 @@ impl Format {
 }
 
 #[link(name = "CoreImage", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static kCIFormatARGB8: Format;
     static kCIFormatBGRA8: Format;
     static kCIFormatRGBA8: Format;
@@ -462,7 +462,7 @@ impl ImageOpt {
 
 #[link(name = "ci", kind = "static")]
 #[api::weak]
-extern "C" {
+unsafe extern "C" {
     static CI_IMAGE: &'static objc::Class<Image>;
 
     static kCIImageColorSpace: &'static ImageOpt;

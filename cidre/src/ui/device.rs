@@ -98,7 +98,7 @@ pub mod notifications {
     }
 
     #[link(name = "UIKit", kind = "framework")]
-    extern "C" {
+    unsafe extern "C" {
         static UIDeviceOrientationDidChangeNotification: &'static ns::NotificationName;
         static UIDeviceBatteryStateDidChangeNotification: &'static ns::NotificationName;
         static UIDeviceBatteryLevelDidChangeNotification: &'static ns::NotificationName;
@@ -169,6 +169,6 @@ impl Device {
 }
 
 #[link(name = "ui", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static UI_DEVICE: &'static objc::Class<Device>;
 }

@@ -3,7 +3,7 @@ use crate::objc;
 pub type Result<'ear, R = (), E = &'ear Error> = std::result::Result<R, E>;
 pub type ExResult<'ear, R = ()> = std::result::Result<R, &'ear Exception>;
 
-pub use objc::{ns, Class, Id, Sel};
+pub use objc::{Class, Id, Sel, ns};
 
 mod bundle;
 pub use bundle::Bundle;
@@ -31,21 +31,21 @@ mod progress;
 pub use progress::Progress;
 
 pub mod objc_runtime;
+pub use objc_runtime::ExceptionName;
 pub use objc_runtime::class_from_ns_string;
 pub use objc_runtime::protocol_from_ns_string;
 pub use objc_runtime::selector_from_ns_string;
 pub use objc_runtime::string_from_class;
 pub use objc_runtime::string_from_protocol;
 pub use objc_runtime::string_from_selector;
-pub use objc_runtime::ExceptionName;
 
 pub mod exception;
+pub use exception::Exception;
+pub use exception::UncaughtExceptionHandler;
 pub use exception::set_uncaught_exception_handler;
 pub use exception::try_catch;
 pub use exception::try_catch_err;
 pub use exception::uncaught_exception_handler;
-pub use exception::Exception;
-pub use exception::UncaughtExceptionHandler;
 
 mod port;
 pub use port::MachPort;
@@ -131,10 +131,10 @@ pub use text_checking_result::TextCheckingResult;
 pub use text_checking_result::Type as TextCheckingType;
 
 mod string;
-pub use string::str;
 pub use string::Encoding as StringEncoding;
 pub use string::String;
 pub use string::StringMut;
+pub use string::str;
 
 mod attributed_string;
 pub use attributed_string::AttrString;
@@ -156,15 +156,15 @@ pub use run_loop::RunLoopMode;
 
 mod date;
 pub use date::Date;
-pub use date::TimeInterval;
 pub use date::TIME_INTERVAL_SINCE_1970;
+pub use date::TimeInterval;
 
 mod error;
+pub use error::Domain as ErrorDomain;
+pub use error::Error;
 pub use error::if_err;
 pub use error::if_false;
 pub use error::if_none;
-pub use error::Domain as ErrorDomain;
-pub use error::Error;
 
 mod thread;
 pub use thread::Thread;
@@ -184,6 +184,8 @@ pub use file_manager::UrlRelationship;
 pub use file_manager::VolumeEnumOpts;
 
 mod path_utilities;
+pub use path_utilities::SearchPathDirectory;
+pub use path_utilities::SearchPathDomainMask;
 pub use path_utilities::full_user_name;
 pub use path_utilities::home_dir;
 pub use path_utilities::home_dir_for_user;
@@ -192,8 +194,6 @@ pub use path_utilities::search_path_for_dirs_in_domains;
 pub use path_utilities::search_path_for_dirs_in_domains_ar;
 pub use path_utilities::tmp_dir;
 pub use path_utilities::user_name;
-pub use path_utilities::SearchPathDirectory;
-pub use path_utilities::SearchPathDomainMask;
 
 mod notification;
 pub use notification::Notification;
@@ -255,7 +255,7 @@ macro_rules! log {
 pub use log;
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     fn cidre_log(str: &crate::ns::String);
 }
 

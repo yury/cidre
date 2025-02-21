@@ -144,7 +144,7 @@ impl ColorSpace {
     }
 }
 
-extern "C" {
+unsafe extern "C" {
     fn CGColorSpaceGetTypeID() -> cf::TypeId;
     fn CGColorSpaceGetName(space: &ColorSpace) -> Option<&cf::String>;
     fn CGColorSpaceIsWideGamutRGB(space: &ColorSpace) -> bool;
@@ -342,7 +342,7 @@ pub mod names {
         unsafe { kCGColorSpaceExtendedLinearGray }
     }
 
-    extern "C" {
+    unsafe extern "C" {
         static kCGColorSpaceGenericGray: &'static cf::String;
         static kCGColorSpaceGenericRGB: &'static cf::String;
         static kCGColorSpaceGenericCMYK: &'static cf::String;

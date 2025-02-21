@@ -61,6 +61,6 @@ impl Altimeter {
 }
 
 #[link(name = "core_motion", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static CM_ALTIMETER: &'static objc::Class<Altimeter>;
 }

@@ -209,7 +209,7 @@ impl Termios {
     }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn tcgetattr(fd: ffi::c_int, value: *mut Termios) -> os::Status;
     fn tcsetattr(fd: ffi::c_int, action: ffi::c_int, value: *const Termios) -> os::Status;
 

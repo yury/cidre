@@ -72,7 +72,7 @@ impl UrlCache {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_URL_CACHE: &'static objc::Class<UrlCache>;
 }
 

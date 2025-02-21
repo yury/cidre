@@ -46,6 +46,6 @@ impl Transaction {
 }
 
 #[link(name = "ca", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static CA_TRANSACTION: &'static objc::Class<Transaction>;
 }

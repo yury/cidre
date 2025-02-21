@@ -6,6 +6,6 @@ impl sec::Identity {
     }
 }
 
-extern "C" {
+unsafe extern "C" {
     fn SecIdentityGetTypeID() -> cf::TypeId;
 }

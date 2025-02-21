@@ -33,7 +33,7 @@ pub mod class {
         unsafe { kSecClassIdentity }
     }
 
-    extern "C" {
+    unsafe extern "C" {
         static kSecClassInternetPassword: &'static cf::String;
         static kSecClassGenericPassword: &'static cf::String;
         static kSecClassCertificate: &'static cf::String;
@@ -48,7 +48,7 @@ pub fn matching(query: &cf::DictionaryOf<cf::String, cf::Type>) -> os::Result<ar
 }
 
 #[link(name = "Security", kind = "framework")]
-extern "C" {
+unsafe extern "C-unwind" {
     static kSecClass: &'static cf::String;
 
     fn SecItemCopyMatching(
@@ -200,7 +200,7 @@ pub mod match_keys {
 
     #[link(name = "Security", kind = "framework")]
     #[api::weak]
-    extern "C" {
+    unsafe extern "C" {
         static kSecMatchPolicy: &'static cf::String;
         static kSecMatchItemList: &'static cf::String;
         static kSecMatchIssuers: &'static cf::String;
@@ -239,7 +239,7 @@ pub mod match_limit {
     }
 
     #[link(name = "Security", kind = "framework")]
-    extern "C" {
+    unsafe extern "C" {
         static kSecMatchLimitOne: &'static cf::String;
         static kSecMatchLimitAll: &'static cf::String;
     }
@@ -290,7 +290,7 @@ pub mod return_data {
     }
 
     #[link(name = "Security", kind = "framework")]
-    extern "C" {
+    unsafe extern "C" {
 
         static kSecReturnData: &'static cf::String;
         static kSecReturnAttributes: &'static cf::String;

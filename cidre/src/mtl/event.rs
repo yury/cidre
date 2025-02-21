@@ -98,6 +98,6 @@ impl SharedEvent {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_SHARED_EVENT_LISTENER: &'static objc::Class<SharedEventListener>;
 }

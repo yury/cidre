@@ -169,7 +169,7 @@ impl Heap {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_HEAP_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 

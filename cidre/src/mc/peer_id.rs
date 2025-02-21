@@ -23,7 +23,7 @@ impl PeerId {
 }
 
 #[link(name = "mc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MC_PEER_ID: &'static objc::Class<PeerId>;
 }
 

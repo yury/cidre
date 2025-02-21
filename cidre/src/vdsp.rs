@@ -1270,7 +1270,7 @@ pub fn u16_f32(a: &[u16], c: &mut [f32]) {
 }
 
 #[link(name = "Accelerate", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     #[link_name = "vDSP_vadd"]
     pub fn _add_f32(
         __A: *const f32,

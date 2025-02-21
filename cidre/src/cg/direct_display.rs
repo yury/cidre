@@ -18,7 +18,7 @@ pub fn direct_display_current_mtl_device(display: Id) -> Option<arc::R<mtl::Devi
     unsafe { CGDirectDisplayCopyCurrentMetalDevice(display) }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     #[cfg(target_os = "macos")]
     fn CGMainDisplayID() -> Id;
 

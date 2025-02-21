@@ -29,7 +29,7 @@ impl WriterInput {
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<WriterInput> {
-        Self::alloc().init_media_type_output_settings_throws(media_type, output_settings)
+        unsafe { Self::alloc().init_media_type_output_settings_throws(media_type, output_settings) }
     }
 
     pub fn with_media_type_and_output_settings<'ear>(
@@ -46,11 +46,13 @@ impl WriterInput {
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
         source_format_hint: Option<&cm::FormatDesc>,
     ) -> arc::R<WriterInput> {
-        Self::alloc().with_media_type_output_settings_source_format_hint_throws(
-            media_type,
-            output_settings,
-            source_format_hint,
-        )
+        unsafe {
+            Self::alloc().with_media_type_output_settings_source_format_hint_throws(
+                media_type,
+                output_settings,
+                source_format_hint,
+            )
+        }
     }
 
     pub fn with_media_type_output_settings_source_format_hint<'ear>(
@@ -71,15 +73,17 @@ impl WriterInput {
         media_type: &MediaType,
         source_format_hint: &cm::FormatDesc,
     ) -> arc::R<WriterInput> {
-        Self::alloc().with_media_type_output_settings_source_format_hint_throws(
-            media_type,
-            None,
-            Some(source_format_hint),
-        )
+        unsafe {
+            Self::alloc().with_media_type_output_settings_source_format_hint_throws(
+                media_type,
+                None,
+                Some(source_format_hint),
+            )
+        }
     }
 
     pub unsafe fn with_media_type_throws(media_type: &MediaType) -> arc::R<WriterInput> {
-        Self::with_media_type_output_settings_throws(media_type, None)
+        unsafe { Self::with_media_type_output_settings_throws(media_type, None) }
     }
 
     pub fn with_media_type<'ear>(
@@ -203,7 +207,7 @@ impl WriterInputPixelBufAdaptor {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_ASSET_WRITER_INPUT: &'static objc::Class<WriterInput>;
     static AV_ASSET_WRITER_INPUT_PIXEL_BUFFER_ADAPTOR:
         &'static objc::Class<WriterInputPixelBufAdaptor>;

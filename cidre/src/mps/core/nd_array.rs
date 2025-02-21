@@ -64,7 +64,7 @@ impl NDArrayDesc {
 }
 
 #[link(name = "mps", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MPS_NDARRAY: &'static objc::Class<NDArray>;
     static MPS_NDARRAY_DESCRIPTOR: &'static objc::Class<NDArrayDesc>;
 }

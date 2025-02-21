@@ -5,6 +5,6 @@ define_obj_type!(
 );
 
 #[link(name = "app", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_VIEW_CONTROLLER: &'static objc::Class<ViewController>;
 }

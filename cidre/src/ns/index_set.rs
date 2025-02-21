@@ -113,7 +113,7 @@ impl IndexSetMut {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_INDEX_SET: &'static objc::Class<IndexSet>;
     static NS_MUTABLE_INDEX_SET: &'static objc::Class<IndexSetMut>;
 }

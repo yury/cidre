@@ -49,6 +49,6 @@ impl Constraint {
 }
 
 #[link(name = "sn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static SN_TIME_DURATION_CONSTRAINT: &'static objc::Class<Constraint>;
 }

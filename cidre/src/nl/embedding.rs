@@ -241,7 +241,7 @@ impl Embedding {
 }
 
 #[link(name = "nl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NL_EMBEDDING: &'static objc::Class<Embedding>;
 }
 

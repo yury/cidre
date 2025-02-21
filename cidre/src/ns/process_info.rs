@@ -52,7 +52,7 @@ pub enum Platform {
     VisionOs = 11,
 }
 
-extern "C" {
+unsafe extern "C" {
     fn __isPlatformVersionAtLeast(platform: u32, major: u32, minor: u32, patch: u32) -> i32;
 }
 
@@ -225,7 +225,7 @@ impl ProcessInfo {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_PROCESS_INFO: &'static objc::Class<ProcessInfo>;
 }
 

@@ -256,13 +256,15 @@ impl PropId {
         in_specifier: *const c_void,
     ) -> os::Result<u32> {
         let mut out_property_data_size = 0;
-        AudioFormatGetPropertyInfo(
-            *self,
-            in_specifier_size,
-            in_specifier,
-            &mut out_property_data_size,
-        )
-        .result()?;
+        unsafe {
+            AudioFormatGetPropertyInfo(
+                *self,
+                in_specifier_size,
+                in_specifier,
+                &mut out_property_data_size,
+            )
+            .result()
+        }?;
         Ok(out_property_data_size)
     }
 
@@ -273,53 +275,59 @@ impl PropId {
         io_property_data_size: *mut u32,
         out_property_data: *mut c_void,
     ) -> os::Result {
-        AudioFormatGetProperty(
-            *self,
-            in_specifier_size,
-            in_specifier,
-            io_property_data_size,
-            out_property_data,
-        )
-        .result()
+        unsafe {
+            AudioFormatGetProperty(
+                *self,
+                in_specifier_size,
+                in_specifier,
+                io_property_data_size,
+                out_property_data,
+            )
+            .result()
+        }
     }
 
     pub unsafe fn fill<T: Sized>(&self, val: &mut T) -> os::Result {
         let mut size = size_of::<T>() as u32;
-        self.value(0, std::ptr::null(), &mut size, val as *mut _ as *mut _)
+        unsafe { self.value(0, std::ptr::null(), &mut size, val as *mut _ as *mut _) }
     }
 
     pub unsafe fn fill_with<S: Sized, T: Sized>(&self, val: &mut T, specifier: &S) -> os::Result {
         let mut size = size_of::<T>() as u32;
         let spec_size = size_of::<S>() as u32;
-        self.value(
-            spec_size,
-            specifier as *const _ as _,
-            &mut size,
-            val as *mut _ as *mut _,
-        )
+        unsafe {
+            self.value(
+                spec_size,
+                specifier as *const _ as _,
+                &mut size,
+                val as *mut _ as *mut _,
+            )
+        }
     }
 
     pub unsafe fn get_vec<T: Sized>(&self) -> os::Result<Vec<T>> {
-        let mut size = self.info(0, std::ptr::null())?;
+        let mut size = unsafe { self.info(0, std::ptr::null()) }?;
         let len = size as usize / size_of::<T>();
         let mut result = Vec::with_capacity(len);
-        self.value(0, std::ptr::null(), &mut size, result.as_mut_ptr() as _)?;
-        result.set_len(len);
+        unsafe { self.value(0, std::ptr::null(), &mut size, result.as_mut_ptr() as _) }?;
+        unsafe { result.set_len(len) };
         Ok(result)
     }
 
     pub unsafe fn get_vec_with<S: Sized, T: Sized>(&self, specifier: &S) -> os::Result<Vec<T>> {
         let spec_size = size_of::<S>() as u32;
-        let mut size = self.info(spec_size, specifier as *const _ as _)?;
+        let mut size = unsafe { self.info(spec_size, specifier as *const _ as _) }?;
         let len = size as usize / size_of::<T>();
         let mut result = Vec::with_capacity(len);
-        self.value(
-            spec_size,
-            specifier as *const _ as _,
-            &mut size,
-            result.as_mut_ptr() as _,
-        )?;
-        result.set_len(len);
+        unsafe {
+            self.value(
+                spec_size,
+                specifier as *const _ as _,
+                &mut size,
+                result.as_mut_ptr() as _,
+            )
+        }?;
+        unsafe { result.set_len(len) };
         Ok(result)
     }
 
@@ -389,7 +397,7 @@ impl PropId {
 }
 
 #[link(name = "AudioToolbox", kind = "framework")]
-extern "C" {
+unsafe extern "C-unwind" {
     fn AudioFormatGetPropertyInfo(
         property_id: PropId,
         in_specifier_size: u32,

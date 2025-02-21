@@ -15,13 +15,15 @@ impl TextureCache {
         cache_out: *mut Option<arc::R<TextureCache>>,
         allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
-        CVMetalTextureCacheCreate(
-            allocator,
-            cache_attrs,
-            metal_device,
-            texture_attrs,
-            cache_out,
-        )
+        unsafe {
+            CVMetalTextureCacheCreate(
+                allocator,
+                cache_attrs,
+                metal_device,
+                texture_attrs,
+                cache_out,
+            )
+        }
     }
 
     #[doc(alias = "CVMetalTextureCacheCreate")]
@@ -51,17 +53,19 @@ impl TextureCache {
         texture_out: *mut Option<arc::R<cv::MetalTexture>>,
         allocator: Option<&cf::Allocator>,
     ) -> cv::Return {
-        CVMetalTextureCacheCreateTextureFromImage(
-            allocator,
-            self,
-            source_image,
-            texture_attrs,
-            pixel_format,
-            width,
-            height,
-            plane_index,
-            texture_out,
-        )
+        unsafe {
+            CVMetalTextureCacheCreateTextureFromImage(
+                allocator,
+                self,
+                source_image,
+                texture_attrs,
+                pixel_format,
+                width,
+                height,
+                plane_index,
+                texture_out,
+            )
+        }
     }
 
     #[doc(alias = "CVMetalTextureCacheCreateTextureFromImage")]
@@ -102,7 +106,7 @@ impl TextureCache {
 }
 
 #[link(name = "CoreVideo", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CVMetalTextureCacheCreate(
         allocator: Option<&cf::Allocator>,
         cache_attrs: Option<&cf::Dictionary>,
@@ -145,7 +149,7 @@ pub mod keys {
     }
 
     #[link(name = "CoreVideo", kind = "framework")]
-    extern "C" {
+    unsafe extern "C" {
         static kCVMetalTextureCacheMaximumTextureAgeKey: &'static cf::String;
         static kCVMetalTextureUsage: &'static cf::String;
     }

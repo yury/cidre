@@ -55,7 +55,7 @@ impl Uuid {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+unsafe extern "C-unwind" {
     fn CFUUIDGetTypeID() -> cf::TypeId;
     fn CFUUIDCreate(alloc: Option<&cf::Allocator>) -> Option<arc::R<Uuid>>;
     fn CFUUIDCreateFromString(
@@ -63,7 +63,7 @@ extern "C" {
         uuid_str: &cf::String,
     ) -> Option<arc::R<Uuid>>;
     fn CFUUIDCreateString(alloc: Option<&cf::Allocator>, uuid: &Uuid)
-        -> Option<arc::R<cf::String>>;
+    -> Option<arc::R<cf::String>>;
 }
 
 #[cfg(test)]

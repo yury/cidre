@@ -7,7 +7,7 @@ use crate::blocks;
 
 #[link(name = "AVFoundation", kind = "framework")]
 #[api::weak]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
 
     #[api::available(
         macos = 14.0,
@@ -259,7 +259,7 @@ impl Device {
 /// AVCaptureDeviceTorch
 impl<'a> ConfigLockGuard<'a> {
     pub unsafe fn set_torch_mode_throws(&mut self, val: TorchMode) {
-        self.device.set_torch_mode_throws(val)
+        unsafe { self.device.set_torch_mode_throws(val) }
     }
 
     pub fn set_torch_mode<'ear>(&mut self, val: TorchMode) -> ns::ExResult<'ear> {
@@ -271,8 +271,10 @@ impl<'a> ConfigLockGuard<'a> {
         torch_level: f32,
         error: *mut Option<&'ear ns::Error>,
     ) -> bool {
-        self.device
-            .set_torch_mode_on_with_level_err(torch_level, error)
+        unsafe {
+            self.device
+                .set_torch_mode_on_with_level_err(torch_level, error)
+        }
     }
 
     pub fn set_torch_mode_on_with_level(&mut self, torch_level: f32) -> ns::Result {
@@ -310,7 +312,7 @@ impl Device {
     #[objc::msg_send(reactionEffectsInProgress)]
     #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn reaction_effects_in_progress(&self)
-        -> arc::R<ns::Array<av::CaptureReactionEffectState>>;
+    -> arc::R<ns::Array<av::CaptureReactionEffectState>>;
 }
 
 /// AVCaptureDeviceBackgroundReplacement
@@ -618,12 +620,12 @@ impl<'a> ConfigLockGuard<'a> {
     /// NOTE: I suspect bc of dispatch_sync on other queue.
     #[inline]
     pub unsafe fn set_active_color_space_throws(&mut self, val: ColorSpace) {
-        self.device.set_active_color_space_throws(val)
+        unsafe { self.device.set_active_color_space_throws(val) }
     }
 
     #[inline]
     pub unsafe fn set_focus_mode_throws(&mut self, mode: FocusMode) {
-        self.device.set_focus_mode_throws(mode)
+        unsafe { self.device.set_focus_mode_throws(mode) }
     }
 
     pub fn set_focus_mode<'ear>(&mut self, mode: FocusMode) -> ns::ExResult<'ear> {
@@ -632,7 +634,7 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[inline]
     pub unsafe fn set_focus_point_of_interest_throws(&mut self, val: cg::Point) {
-        self.device.set_focus_point_of_interest_throws(val)
+        unsafe { self.device.set_focus_point_of_interest_throws(val) }
     }
 
     /// The value of this property is a 'cg::Point' that determines the receiver's focus point of interest,
@@ -653,7 +655,7 @@ impl<'a> ConfigLockGuard<'a> {
         &mut self,
         val: AutoFocusRangeRestriction,
     ) {
-        self.device.set_auto_focus_range_restriction_throws(val)
+        unsafe { self.device.set_auto_focus_range_restriction_throws(val) }
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -667,7 +669,7 @@ impl<'a> ConfigLockGuard<'a> {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[inline]
     pub unsafe fn set_smooth_auto_focus_enabled_throws(&mut self, val: bool) {
-        self.device.set_smooth_auto_focus_enabled_throws(val)
+        unsafe { self.device.set_smooth_auto_focus_enabled_throws(val) }
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -681,8 +683,10 @@ impl<'a> ConfigLockGuard<'a> {
         &mut self,
         val: bool,
     ) {
-        self.device
-            .set_automatically_adjusts_face_driven_auto_focus_enabled_throws(val)
+        unsafe {
+            self.device
+                .set_automatically_adjusts_face_driven_auto_focus_enabled_throws(val)
+        }
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -698,7 +702,7 @@ impl<'a> ConfigLockGuard<'a> {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[inline]
     pub unsafe fn set_face_driven_auto_focus_enabled_throws(&mut self, val: bool) {
-        self.device.set_face_driven_auto_focus_enabled_throws(val)
+        unsafe { self.device.set_face_driven_auto_focus_enabled_throws(val) }
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -708,8 +712,10 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub unsafe fn set_focus_mode_locked_with_lens_pos_no_ch_throws(&mut self, val: f32) {
-        self.device
-            .set_focus_mode_locked_with_lens_pos_ch_throws(val, None)
+        unsafe {
+            self.device
+                .set_focus_mode_locked_with_lens_pos_ch_throws(val, None)
+        }
     }
 
     #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
@@ -726,8 +732,10 @@ impl<'a> ConfigLockGuard<'a> {
         val: f32,
         block: &mut blocks::EscBlock<fn(sync_time: cm::Time)>,
     ) {
-        self.device
-            .set_focus_mode_locked_with_lens_pos_ch_throws(val, Some(block))
+        unsafe {
+            self.device
+                .set_focus_mode_locked_with_lens_pos_ch_throws(val, Some(block))
+        }
     }
 
     #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
@@ -752,7 +760,7 @@ impl<'a> ConfigLockGuard<'a> {
         val: f32,
     ) -> cm::Time {
         let (future, mut block) = blocks::comp1();
-        self.set_focus_mode_locked_with_lens_pos_with_ch_throws(val, block.as_esc_mut());
+        unsafe { self.set_focus_mode_locked_with_lens_pos_with_ch_throws(val, block.as_esc_mut()) };
         future.await
     }
 
@@ -813,7 +821,7 @@ impl<'a> DerefMut for ConfigLockGuard<'a> {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_CAPTURE_DEVICE: &'static objc::Class<Device>;
 }
 
@@ -1079,7 +1087,7 @@ impl Device {
 /// AVCaptureExposureMode
 impl<'a> ConfigLockGuard<'a> {
     pub unsafe fn set_exposure_mode_throws(&mut self, val: ExposureMode) {
-        self.device.set_exposure_mode_throws(val)
+        unsafe { self.device.set_exposure_mode_throws(val) }
     }
 
     pub fn set_exposure_mode<'ear>(&mut self, val: ExposureMode) -> ns::ExResult<'ear> {
@@ -1087,7 +1095,7 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     pub unsafe fn set_exposure_point_of_interest_throws(&mut self, val: cg::Point) {
-        self.device.set_exposure_point_of_interest_throws(val)
+        unsafe { self.device.set_exposure_point_of_interest_throws(val) }
     }
 
     pub fn set_exposure_point_of_interest<'ear>(&mut self, val: cg::Point) -> ns::ExResult<'ear> {
@@ -1099,8 +1107,10 @@ impl<'a> ConfigLockGuard<'a> {
         &mut self,
         val: bool,
     ) {
-        self.device
-            .set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(val)
+        unsafe {
+            self.device
+                .set_automatically_adjusts_face_driven_auto_exposure_enabled_throws(val)
+        }
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -1115,8 +1125,10 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub unsafe fn set_face_driven_auto_exposure_enabled_throws(&mut self, val: bool) {
-        self.device
-            .set_face_driven_auto_exposure_enabled_throws(val)
+        unsafe {
+            self.device
+                .set_face_driven_auto_exposure_enabled_throws(val)
+        }
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -1126,7 +1138,7 @@ impl<'a> ConfigLockGuard<'a> {
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub unsafe fn set_active_max_exposure_duration_throws(&mut self, val: cm::Time) {
-        self.device.set_active_max_exposure_duration_throws(val)
+        unsafe { self.device.set_active_max_exposure_duration_throws(val) }
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -1190,11 +1202,13 @@ impl<'a> ConfigLockGuard<'a> {
         iso: f32,
     ) -> cm::Time {
         let (future, mut block) = blocks::comp1();
-        self.set_exposure_mode_custom_with_duration_and_iso_with_ch_throws(
-            duration,
-            iso,
-            block.as_esc_mut(),
-        );
+        unsafe {
+            self.set_exposure_mode_custom_with_duration_and_iso_with_ch_throws(
+                duration,
+                iso,
+                block.as_esc_mut(),
+            )
+        };
         future.await
     }
 
@@ -1228,13 +1242,15 @@ impl<'a> ConfigLockGuard<'a> {
         bias: f32,
         block: &mut blocks::EscBlock<fn(sync_time: cm::Time)>,
     ) {
-        self.device
-            .set_exposure_target_bias_throws(bias, Some(block))
+        unsafe {
+            self.device
+                .set_exposure_target_bias_throws(bias, Some(block))
+        }
     }
 
     #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub unsafe fn set_exposure_target_bias_no_ch_throws(&mut self, bias: f32) {
-        self.device.set_exposure_target_bias_throws(bias, None)
+        unsafe { self.device.set_exposure_target_bias_throws(bias, None) }
     }
 
     #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
@@ -1261,7 +1277,7 @@ impl<'a> ConfigLockGuard<'a> {
     ))]
     pub async unsafe fn set_exposure_target_bias_throws(&mut self, bias: f32) -> cm::Time {
         let (future, mut block) = blocks::comp1();
-        self.set_exposure_target_bias_with_ch_throws(bias, block.as_esc_mut());
+        unsafe { self.set_exposure_target_bias_with_ch_throws(bias, block.as_esc_mut()) };
         future.await
     }
 
@@ -1406,7 +1422,7 @@ impl Device {
 impl<'a> ConfigLockGuard<'a> {
     #[inline]
     pub unsafe fn set_wb_mode_throws(&mut self, val: WbMode) {
-        self.device.set_wb_mode_throws(val)
+        unsafe { self.device.set_wb_mode_throws(val) }
     }
 
     pub fn set_wb_mode<'ear>(&mut self, val: WbMode) -> ns::ExResult<'ear> {
@@ -1420,14 +1436,18 @@ impl<'a> ConfigLockGuard<'a> {
         gains: WbGains,
         block: &mut blocks::EscBlock<fn(sync_time: cm::Time)>,
     ) {
-        self.device
-            .set_wb_mode_locked_with_device_wb_gains_throws(gains, Some(block))
+        unsafe {
+            self.device
+                .set_wb_mode_locked_with_device_wb_gains_throws(gains, Some(block))
+        }
     }
 
     #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
     pub unsafe fn set_wb_mode_locked_with_device_wb_gains_no_ch_throws(&mut self, gains: WbGains) {
-        self.device
-            .set_wb_mode_locked_with_device_wb_gains_throws(gains, None)
+        unsafe {
+            self.device
+                .set_wb_mode_locked_with_device_wb_gains_throws(gains, None)
+        }
     }
 
     #[cfg(all(feature = "blocks", any(target_os = "tvos", target_os = "ios")))]
@@ -1461,7 +1481,9 @@ impl<'a> ConfigLockGuard<'a> {
         gains: WbGains,
     ) -> cm::Time {
         let (future, mut block) = blocks::comp1();
-        self.set_wb_mode_locked_with_device_wb_gains_with_ch_throws(gains, block.as_esc_mut());
+        unsafe {
+            self.set_wb_mode_locked_with_device_wb_gains_with_ch_throws(gains, block.as_esc_mut())
+        };
         future.await
     }
 
@@ -1529,7 +1551,7 @@ impl Device {
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
 impl<'a> ConfigLockGuard<'a> {
     pub unsafe fn set_low_light_boost_enabled_throws(&mut self, val: bool) {
-        self.device.set_low_light_boost_enabled_throws(val)
+        unsafe { self.device.set_low_light_boost_enabled_throws(val) }
     }
 
     pub fn set_low_light_boost_enabled<'ear>(&mut self, val: bool) -> ns::ExResult<'ear> {
@@ -1540,8 +1562,10 @@ impl<'a> ConfigLockGuard<'a> {
         &mut self,
         val: bool,
     ) {
-        self.device
-            .set_automatically_enables_low_light_boost_when_available_throws(val)
+        unsafe {
+            self.device
+                .set_automatically_enables_low_light_boost_when_available_throws(val)
+        }
     }
 
     pub fn set_automatically_enables_low_light_boost_when_available<'ear>(
@@ -2112,7 +2136,7 @@ pub mod notifications {
 
     #[link(name = "AVFoundation", kind = "framework")]
     #[api::weak]
-    extern "C" {
+    unsafe extern "C" {
         #[api::available(macos = 10.7, ios = 4.0, maccatalyst = 14.0, tvos = 17.0)]
         static AVCaptureDeviceWasConnectedNotification: &'static ns::NotificationName;
         #[api::available(macos = 10.7, ios = 4.0, maccatalyst = 14.0, tvos = 17)]
@@ -2232,7 +2256,7 @@ impl ZoomRange {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_CAPTURE_DEVICE_DISCOVERY_SESSION: &'static objc::Class<DiscoverySession>;
     static AV_CAPTURE_DEVICE_ROTATION_COORDINATOR: &'static objc::Class<RotationCoordinator>;
 }

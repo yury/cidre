@@ -13,7 +13,7 @@ impl GenAttentionBasedSaliencyImageRequest {
 }
 
 #[link(name = "vn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static VN_GENERATE_ATTENTION_BAED_SALIENCY_IMAGE_REQUEST:
         &'static objc::Class<GenAttentionBasedSaliencyImageRequest>;
 }

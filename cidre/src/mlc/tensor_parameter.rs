@@ -24,6 +24,6 @@ impl TensorParameter {
 }
 
 #[link(name = "mlc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MLC_TENSOR_PARAMETER: &'static objc::Class<TensorParameter>;
 }

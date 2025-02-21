@@ -3,7 +3,7 @@ use crate::{arc, cf, define_cf_type, define_opts};
 #[cfg(feature = "ns")]
 use crate::ns;
 
-use super::{runtime::Type, String};
+use super::{String, runtime::Type};
 use std::{borrow::Cow, cmp::Ordering, ffi::c_void};
 
 pub type Index = isize;
@@ -65,7 +65,7 @@ pub enum ComparisonResult {
 /// }
 /// ```
 pub unsafe fn copy_type_id_desc(type_id: TypeId) -> Option<arc::R<String>> {
-    CFCopyTypeIDDescription(type_id)
+    unsafe { CFCopyTypeIDDescription(type_id) }
 }
 
 impl From<ComparisonResult> for Ordering {
@@ -316,13 +316,13 @@ impl Allocator {
     #[doc(alias = "CFAllocatorAllocate")]
     #[inline]
     pub unsafe fn allocate(&self, size: Index, hint: OptionFlags) -> *mut c_void {
-        CFAllocatorAllocate(Some(self), size, hint)
+        unsafe { CFAllocatorAllocate(Some(self), size, hint) }
     }
 
     #[doc(alias = "CFAllocatorAllocate")]
     #[inline]
     pub unsafe fn allocate_size(size: usize) -> *mut c_void {
-        CFAllocatorAllocate(None, size as isize, OptionFlags::default())
+        unsafe { CFAllocatorAllocate(None, size as isize, OptionFlags::default()) }
     }
 
     #[doc(alias = "CFAllocatorReallocate")]
@@ -333,13 +333,13 @@ impl Allocator {
         new_size: Index,
         hint: OptionFlags,
     ) -> *mut c_void {
-        CFAllocatorReallocate(self, ptr, new_size, hint)
+        unsafe { CFAllocatorReallocate(self, ptr, new_size, hint) }
     }
 
     #[doc(alias = "CFAllocatorDeallocate")]
     #[inline]
     pub unsafe fn deallocate(&self, ptr: *mut c_void) {
-        CFAllocatorDeallocate(self, ptr)
+        unsafe { CFAllocatorDeallocate(self, ptr) }
     }
 
     #[doc(alias = "CFAllocatorGetPreferredSizeForSize")]
@@ -350,7 +350,7 @@ impl Allocator {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFCopyTypeIDDescription(type_id: TypeId) -> Option<arc::R<String>>;
 
     static kCFNull: &'static Null;

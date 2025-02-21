@@ -100,7 +100,7 @@ impl std::fmt::Display for Window {
 }
 
 #[link(name = "sc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static SC_SHAREABLE_CONTENT: &'static objc::Class<ShareableContent>;
 }
 

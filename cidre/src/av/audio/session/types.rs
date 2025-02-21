@@ -185,7 +185,7 @@ impl Port {
 
 #[link(name = "AVFAudio", kind = "framework")]
 #[api::weak]
-extern "C" {
+unsafe extern "C" {
     #[api::available(ios = 17.0, watchos = 10.0, tvos = 17.0)]
     static AVAudioSessionPortContinuityMicrophone: &'static Port;
 
@@ -331,7 +331,7 @@ impl Category {
 }
 
 #[link(name = "AVFAudio", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static AVAudioSessionCategoryAmbient: &'static Category;
     static AVAudioSessionCategorySoloAmbient: &'static Category;
     static AVAudioSessionCategoryPlayback: &'static Category;
@@ -429,7 +429,7 @@ impl Mode {
 }
 
 #[link(name = "AVFAudio", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static AVAudioSessionModeDefault: &'static Mode;
     static AVAudioSessionModeVoiceChat: &'static Mode;
     static AVAudioSessionModeGameChat: &'static Mode;

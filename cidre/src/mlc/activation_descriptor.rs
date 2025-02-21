@@ -39,7 +39,7 @@ impl ActivationDesc {
 }
 
 #[link(name = "mlc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MLC_ACTIVATION_DESCRIPTOR: &'static objc::Class<ActivationDesc>;
 }
 

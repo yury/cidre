@@ -388,7 +388,7 @@ impl Desc {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_VERTEX_DESCRIPTOR: &'static objc::Class<Desc>;
     static MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR: &'static objc::Class<VertexBufLayoutDesc>;
     static MTL_VERTEX_ATTRIBUTE_DESCRIPTOR: &'static objc::Class<VertexAttrDesc>;

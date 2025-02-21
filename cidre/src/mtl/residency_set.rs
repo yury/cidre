@@ -8,7 +8,7 @@ define_obj_type!(
 );
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_RESIDENCY_SET_DESCRIPTOR: &'static objc::Class<ResidencySetDesc>;
 }
 

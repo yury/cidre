@@ -333,7 +333,7 @@ impl Output<InitializedState> {
 }
 
 #[link(name = "AudioToolbox", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn AudioOutputUnitStart(unit: &mut audio::Unit) -> os::Status;
     fn AudioOutputUnitStop(unit: &mut audio::Unit) -> os::Status;
 }

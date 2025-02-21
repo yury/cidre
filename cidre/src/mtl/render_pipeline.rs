@@ -1,6 +1,6 @@
 use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 
-use super::{argument::Arg, Fn, PixelFormat};
+use super::{Fn, PixelFormat, argument::Arg};
 
 #[doc(alias = "MTLBlendFactor")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -252,7 +252,7 @@ impl Desc {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_RENDER_PIPELINE_DESCRIPTOR: &'static objc::Class<Desc>;
     static MTL_TILE_RENDER_PIPELINE_DESCRIPTOR: &'static objc::Class<TileRenderPipelineDesc>;
 }

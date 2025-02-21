@@ -30,6 +30,6 @@ impl ClassificationResult {
     pub fn classification_for_id(&self, id: &ns::String) -> Option<arc::R<Classification>>;
 }
 
-extern "C" {
+unsafe extern "C" {
     static SN_CLASSIFICATION_RESULT: &'static objc::Class<ClassificationResult>;
 }

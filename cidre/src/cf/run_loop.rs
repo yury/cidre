@@ -169,7 +169,7 @@ impl RunLoop {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFRunLoopRun();
     fn CFRunLoopStop(rl: &RunLoop);
     fn CFRunLoopGetCurrent() -> &'static RunLoop;
@@ -224,7 +224,7 @@ impl Default for &'static Mode {
     }
 }
 
-extern "C" {
+unsafe extern "C" {
     static kCFRunLoopDefaultMode: &'static Mode;
     static kCFRunLoopCommonModes: &'static Mode;
 }
@@ -256,7 +256,7 @@ impl Src {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFRunLoopSourceInvalidate(source: &Src);
     fn CFRunLoopSourceIsValid(source: &Src) -> bool;
     fn CFRunLoopSourceGetOrder(source: &Src) -> cf::Index;
@@ -291,7 +291,7 @@ impl Timer {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFRunLoopTimerInvalidate(timer: &Timer);
     fn CFRunLoopTimerIsValid(timer: &Timer) -> bool;
     fn CFRunLoopTimerDoesRepeat(timer: &Timer) -> bool;
@@ -317,7 +317,7 @@ impl Observer {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFRunLoopObserverInvalidate(timer: &Observer);
     fn CFRunLoopObserverIsValid(timer: &Observer) -> bool;
     fn CFRunLoopObserverDoesRepeat(timer: &Observer) -> bool;

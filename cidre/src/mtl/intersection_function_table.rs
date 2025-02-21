@@ -116,6 +116,6 @@ impl IntersectionFnTable {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_INTERSECTION_FUNCTION_TABLE_DESCRIPTOR: &'static objc::Class<Desc>;
 }

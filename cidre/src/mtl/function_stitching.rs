@@ -158,7 +158,7 @@ impl FnStitchedLibDesc {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_FUNCTION_STITCHING_GRAPH: &'static objc::Class<FnStitchingGraph>;
     static MTL_FUNCTION_STITCHING_INPUT_NODE: &'static objc::Class<FnStitchingInputNode>;
     static MTL_FUNCTION_STITCHING_FUNCTION_NODE: &'static objc::Class<FnStitchingFnNode>;

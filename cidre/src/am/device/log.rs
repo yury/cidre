@@ -14,7 +14,7 @@ pub fn set_level(level: i32) {
     unsafe { AMDSetLogLevel(level) }
 }
 
-extern "C" {
+unsafe extern "C" {
     fn AMDAddLogFileDescriptor(fd: RawFd) -> Error;
     fn AMDRemoveLogFileDescriptor(fd: RawFd) -> Error;
     fn AMDSetLogLevel(level: i32);

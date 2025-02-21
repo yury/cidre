@@ -57,6 +57,6 @@ impl std::ops::IndexMut<usize> for PipelineBufDescArray {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_PIPELINE_BUFFER_DESCRIPTOR: &'static objc::Class<PipelineBufDesc>;
 }

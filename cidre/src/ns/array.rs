@@ -1,6 +1,6 @@
 use std::{
     marker::PhantomData,
-    mem::{transmute, MaybeUninit},
+    mem::{MaybeUninit, transmute},
     ops::Deref,
 };
 
@@ -363,7 +363,7 @@ impl<const N: usize> From<[u32; N]> for arc::R<ns::Array<ns::Number>> {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_ARRAY: &'static objc::Class<ns::Array<ns::Id>>;
     static NS_MUTABLE_ARRAY: &'static objc::Class<ns::ArrayMut<ns::Id>>;
 }

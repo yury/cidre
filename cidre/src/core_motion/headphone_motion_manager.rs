@@ -67,7 +67,7 @@ define_obj_type!(
 impl Delegate for AnyDelegate {}
 
 #[link(name = "core_motion", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static CM_HEADPHONE_MOTION_MANAGER: &'static objc::Class<HeadphoneMotionManager>;
 }
 

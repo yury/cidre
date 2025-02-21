@@ -109,7 +109,7 @@ impl SessionPreset {
 }
 
 #[link(name = "AVFoundation", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static AVCaptureSessionPresetPhoto: &'static SessionPreset;
     static AVCaptureSessionPresetHigh: &'static SessionPreset;
     static AVCaptureSessionPresetMedium: &'static SessionPreset;

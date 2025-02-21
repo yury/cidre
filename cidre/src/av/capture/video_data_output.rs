@@ -115,6 +115,6 @@ impl VideoDataOutput {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_CAPTURE_VIDEO_DATA_OUTPUT: &'static objc::Class<VideoDataOutput>;
 }

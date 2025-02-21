@@ -97,7 +97,7 @@ pub fn animate_image_data(
 }
 
 #[link(name = "ImageIO", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     static kCGImageAnimationStartIndex: &'static OptKey;
     static kCGImageAnimationDelayTime: &'static OptKey;
     static kCGImageAnimationLoopCount: &'static OptKey;

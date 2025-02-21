@@ -106,7 +106,7 @@ impl Time {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_AUDIO_TIME: &'static objc::Class<Time>;
 }
 

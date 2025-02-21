@@ -45,7 +45,7 @@ impl Layer {
 }
 
 #[link(name = "mlc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MLC_MATMUL_DESCRIPTOR: &'static objc::Class<Desc>;
     static MLC_MATMUL_LAYER: &'static objc::Class<Layer>;
 }

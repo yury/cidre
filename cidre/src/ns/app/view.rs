@@ -13,6 +13,6 @@ impl View {
 }
 
 #[link(name = "app", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_VIEW: &'static objc::Class<View>;
 }

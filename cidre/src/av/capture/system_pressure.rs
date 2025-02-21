@@ -49,7 +49,7 @@ impl State {
 }
 
 #[link(name = "AVFoundation", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static AVCaptureSystemPressureLevelNominal: &'static Level;
     static AVCaptureSystemPressureLevelFair: &'static Level;
     static AVCaptureSystemPressureLevelSerious: &'static Level;

@@ -10,7 +10,7 @@ use super::{Connected, Device, Error, Session};
 pub type MountCallback<T> = extern "C" fn(status: arc::R<cf::Dictionary>, context: *mut T);
 
 #[link(name = "MobileDevice", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     fn AMDeviceMountImage(
         device: &Device,
         image_path: &cf::String,
@@ -49,7 +49,7 @@ impl<'a> Session<'a> {
         callback: *const MountCallback<T>,
         ctx: *mut T,
     ) -> Error {
-        AMDeviceMountImage(self, image, options, transmute(callback), transmute(ctx))
+        unsafe { AMDeviceMountImage(self, image, options, transmute(callback), transmute(ctx)) }
     }
 
     pub fn mount_developer_image(&self) -> Result<(), Error> {

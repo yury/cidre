@@ -1,4 +1,4 @@
-use std::ffi::{c_char, CStr};
+use std::ffi::{CStr, c_char};
 
 use crate::{arc, define_obj_type, ns};
 
@@ -75,7 +75,7 @@ impl BrowseDesc {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn nw_browse_descriptor_create_bonjour_service(
         type_: *const c_char,
         domain: *const c_char,

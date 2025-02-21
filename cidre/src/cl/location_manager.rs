@@ -116,7 +116,7 @@ pub trait Delegate {
 }
 
 #[link(name = "cl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static CL_LOCATION_MANAGER: &'static objc::Class<LocationManager>;
 }
 

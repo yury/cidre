@@ -16,7 +16,7 @@ impl RunLoopMode {
     }
 }
 
-extern "C" {
+unsafe extern "C" {
     static NSDefaultRunLoopMode: &'static RunLoopMode;
     static NSRunLoopCommonModes: &'static RunLoopMode;
 }
@@ -47,7 +47,7 @@ impl RunLoop {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_RUN_LOOP: &'static objc::Class<ns::Id>;
 }
 

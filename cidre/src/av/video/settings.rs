@@ -68,7 +68,7 @@ pub mod keys {
 
     #[link(name = "AVFoundation", kind = "framework")]
     #[api::weak]
-    extern "C" {
+    unsafe extern "C" {
         #[api::available(macos = 10.7, ios = 4.0, tvos = 9.0, visionos = 1.0)]
         static AVVideoWidthKey: &'static ns::String;
         #[api::available(macos = 10.7, ios = 4.0, tvos = 9.0, visionos = 1.0)]
@@ -176,7 +176,7 @@ impl Codec {
 
 #[link(name = "AVFoundation", kind = "framework")]
 #[api::weak]
-extern "C" {
+unsafe extern "C" {
     #[api::available(macos = 10.13, ios = 11.0, tvos = 11.0, visionos = 1.0)]
     static AVVideoCodecTypeHEVC: &'static Codec;
     #[api::available(macos = 10.13, ios = 11.0, tvos = 11.0, visionos = 1.0)]

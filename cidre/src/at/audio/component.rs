@@ -181,7 +181,7 @@ impl Instance {
     }
 
     pub unsafe fn dispose(&mut self) -> os::Result {
-        AudioComponentInstanceDispose(self).into()
+        unsafe { AudioComponentInstanceDispose(self).into() }
     }
 }
 
@@ -206,7 +206,7 @@ impl DerefMut for InstanceRef {
     }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn AudioComponentFindNext(
         in_component: Option<&Component>,
         in_desc: &Desc,

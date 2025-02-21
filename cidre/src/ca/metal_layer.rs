@@ -90,7 +90,7 @@ impl MetalLayer {
 }
 
 #[link(name = "ca", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static CA_METAL_LAYER: &'static objc::Class<MetalLayer>;
 }
 

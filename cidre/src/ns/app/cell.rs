@@ -45,7 +45,7 @@ impl Cell {
 }
 
 #[link(name = "app", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_CELL: &'static objc::Class<Cell>;
 }
 

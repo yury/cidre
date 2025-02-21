@@ -101,7 +101,7 @@ impl Dictionary {
     #[doc(alias = "CFDictionaryContainsKey")]
     #[inline]
     pub unsafe fn contains_raw_key(&self, key: *const c_void) -> bool {
-        CFDictionaryContainsKey(self, key)
+        unsafe { CFDictionaryContainsKey(self, key) }
     }
 
     /// ```
@@ -126,13 +126,13 @@ impl Dictionary {
     #[doc(alias = "CFDictionaryContainsValue")]
     #[inline]
     pub unsafe fn contains_raw_value(&self, val: *const c_void) -> bool {
-        CFDictionaryContainsValue(self, val)
+        unsafe { CFDictionaryContainsValue(self, val) }
     }
 
     #[doc(alias = "CFDictionaryGetValue")]
     #[inline]
     pub unsafe fn raw_value(&self, key: *const c_void) -> Option<ptr::NonNull<c_void>> {
-        CFDictionaryGetValue(self, key)
+        unsafe { CFDictionaryGetValue(self, key) }
     }
 
     #[doc(alias = "CFDictionaryGetValueIfPresent")]
@@ -140,7 +140,7 @@ impl Dictionary {
     pub unsafe fn raw_value_if_present(&self, key: *const c_void) -> Option<ptr::NonNull<c_void>> {
         let mut value = None;
 
-        if CFDictionaryGetValueIfPresent(self, key, &mut value) {
+        if unsafe { CFDictionaryGetValueIfPresent(self, key, &mut value) } {
             value
         } else {
             None
@@ -233,14 +233,16 @@ impl Dictionary {
         value_callbacks: Option<&ValueCbs>,
         allocator: Option<&Allocator>,
     ) -> Option<arc::R<Dictionary>> {
-        CFDictionaryCreate(
-            allocator,
-            keys,
-            values,
-            num_values,
-            key_callbacks,
-            value_callbacks,
-        )
+        unsafe {
+            CFDictionaryCreate(
+                allocator,
+                keys,
+                values,
+                num_values,
+                key_callbacks,
+                value_callbacks,
+            )
+        }
     }
 
     /// ```
@@ -312,7 +314,7 @@ impl Dictionary {
     #[doc(alias = "CFDictionaryGetKeysAndValues")]
     #[inline]
     pub unsafe fn keys_and_values(&self, keys: *mut *const c_void, values: *mut *const c_void) {
-        CFDictionaryGetKeysAndValues(self, keys, values)
+        unsafe { CFDictionaryGetKeysAndValues(self, keys, values) }
     }
 
     #[inline]
@@ -333,7 +335,7 @@ impl Default for arc::R<Dictionary> {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static kCFTypeDictionaryKeyCallBacks: KeyCbs;
     static kCFCopyStringDictionaryKeyCallBacks: KeyCbs;
     static kCFTypeDictionaryValueCallBacks: ValueCbs;
@@ -409,7 +411,7 @@ impl DictionaryMut {
         key_callbacks: Option<&KeyCbs>,
         value_callbacks: Option<&ValueCbs>,
     ) -> Option<arc::R<Self>> {
-        CFDictionaryCreateMutable(allocator, capacity, key_callbacks, value_callbacks)
+        unsafe { CFDictionaryCreateMutable(allocator, capacity, key_callbacks, value_callbacks) }
     }
 
     #[doc(alias = "CFDictionarySetValue")]
@@ -427,25 +429,25 @@ impl DictionaryMut {
     #[doc(alias = "CFDictionaryAddValue")]
     #[inline]
     pub unsafe fn add_value(&mut self, key: *const c_void, val: *const c_void) {
-        CFDictionaryAddValue(self, key, val)
+        unsafe { CFDictionaryAddValue(self, key, val) }
     }
 
     #[doc(alias = "CFDictionarySetValue")]
     #[inline]
     pub unsafe fn set_value(&mut self, key: *const c_void, val: *const c_void) {
-        CFDictionarySetValue(self, key, val)
+        unsafe { CFDictionarySetValue(self, key, val) }
     }
 
     #[doc(alias = "CFDictionaryReplaceValue")]
     #[inline]
     pub unsafe fn replace_value(&mut self, key: *const c_void, val: *const c_void) {
-        CFDictionaryReplaceValue(self, key, val)
+        unsafe { CFDictionaryReplaceValue(self, key, val) }
     }
 
     #[doc(alias = "CFDictionaryRemoveValue")]
     #[inline]
     pub unsafe fn remove_value(&mut self, key: *const c_void) {
-        CFDictionaryRemoveValue(self, key)
+        unsafe { CFDictionaryRemoveValue(self, key) }
     }
 
     #[doc(alias = "CFDictionaryRemoveAllValues")]
@@ -522,7 +524,7 @@ where
 {
     #[inline]
     unsafe fn release(&mut self) {
-        self.0.release()
+        unsafe { self.0.release() }
     }
 }
 
@@ -606,7 +608,7 @@ where
 {
     #[inline]
     unsafe fn release(&mut self) {
-        self.0.release()
+        unsafe { self.0.release() }
     }
 }
 
@@ -622,7 +624,7 @@ where
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFDictionaryCreateMutable(
         allocator: Option<&cf::Allocator>,
         capacity: cf::Index,

@@ -219,7 +219,7 @@ impl UrlRequestMut {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_URL_REQUEST: &'static objc::Class<UrlRequest>;
     static NS_MUTABLE_URL_REQUEST: &'static objc::Class<UrlRequestMut>;
 }
@@ -252,10 +252,11 @@ mod tests {
         let url = ns::Url::with_str("https://google.com").unwrap();
         let request = ns::UrlRequest::with_url(&url);
         let request_url = request.url().unwrap();
-        assert!(url
-            .abs_string()
-            .unwrap()
-            .eq(&request_url.abs_string().unwrap()));
+        assert!(
+            url.abs_string()
+                .unwrap()
+                .eq(&request_url.abs_string().unwrap())
+        );
         assert_eq!(
             request.cache_policy(),
             ns::UrlRequestCachePolicy::UseProtocol

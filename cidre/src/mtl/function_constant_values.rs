@@ -32,7 +32,7 @@ impl FnConstValues {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_FUNCTION_CONSTANT_VALUES: &'static objc::Class<FnConstValues>;
 }
 

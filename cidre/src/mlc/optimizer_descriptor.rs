@@ -77,6 +77,6 @@ impl OptimizerDesc {
 }
 
 #[link(name = "mlc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MLC_OPTIMIZER_DESCRIPTOR: &'static objc::Class<OptimizerDesc>;
 }

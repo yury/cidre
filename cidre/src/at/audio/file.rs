@@ -313,7 +313,7 @@ impl FileId {
         data_size: *mut u32,
         property_data: *mut c_void,
     ) -> os::Result {
-        AudioFileGetProperty(self.0, property_id, data_size, property_data).result()
+        unsafe { AudioFileGetProperty(self.0, property_id, data_size, property_data).result() }
     }
 
     #[doc(alias = "AudioFileGetProperty")]
@@ -345,7 +345,7 @@ impl FileId {
         data_size: u32,
         prop_data: *const c_void,
     ) -> os::Result {
-        AudioFileSetProperty(self.0, prop_id, data_size, prop_data).result()
+        unsafe { AudioFileSetProperty(self.0, prop_id, data_size, prop_data).result() }
     }
 
     #[inline]
@@ -353,8 +353,8 @@ impl FileId {
         let (size, _writable) = self.property_info(prop_id)?;
         let mut sz: u32 = size as _;
         let mut vec = Vec::with_capacity(size / std::mem::size_of::<T>());
-        self.get_property(prop_id, &mut sz, vec.as_mut_ptr() as _)?;
-        vec.set_len(sz as usize / std::mem::size_of::<T>());
+        unsafe { self.get_property(prop_id, &mut sz, vec.as_mut_ptr() as _) }?;
+        unsafe { vec.set_len(sz as usize / std::mem::size_of::<T>()) };
         Ok(vec)
     }
 
@@ -644,7 +644,7 @@ pub enum Permissions {
 }
 
 #[link(name = "AudioToolbox", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     fn AudioFileCreateWithURL(
         in_file_url: &cf::Url,
         in_file_type: FileTypeId,
@@ -771,9 +771,10 @@ mod tests {
 
         assert_eq!(file.optimized().unwrap(), false);
 
-        assert!(file
-            .property_info(audio::FilePropId::DATA_FORMAT_NAME)
-            .is_err());
+        assert!(
+            file.property_info(audio::FilePropId::DATA_FORMAT_NAME)
+                .is_err()
+        );
 
         let (size, writable) = file
             .property_info(audio::FilePropId::RESERVE_DURATION)

@@ -81,7 +81,7 @@ impl ns::Value {
 }
 
 #[link(name = "Foundation", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     fn NSIntersectionRange(a: Range, b: Range) -> Range;
     fn NSUnionRange(a: Range, b: Range) -> Range;
 }

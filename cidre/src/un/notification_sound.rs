@@ -49,7 +49,7 @@ impl NotificationSound {
 }
 
 #[link(name = "un", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     #[cfg(not(target_os = "tvos"))]
     static UN_NOTIFICATION_SOUND: &'static objc::Class<NotificationSound>;
 }

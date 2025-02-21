@@ -31,11 +31,7 @@ impl Service {
     #[doc(alias = "DNSServiceProcessResult")]
     pub fn process_result(&self) -> Result<(), ServiceErrorType> {
         let res = unsafe { DNSServiceProcessResult(self) };
-        if res.0 == 0 {
-            Ok(())
-        } else {
-            Err(res)
-        }
+        if res.0 == 0 { Ok(()) } else { Err(res) }
     }
 
     #[doc(alias = "DNSServiceRefDeallocate")]
@@ -62,7 +58,7 @@ define_opts!(pub ServiceProtocol(u32));
 #[repr(transparent)]
 pub struct ServiceErrorType(i32);
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn DNSServiceRefSockFD(service: &Service) -> Sock;
     fn DNSServiceProcessResult(service: &Service) -> ServiceErrorType;
     fn DNSServiceRefDeallocate(service: &Service);

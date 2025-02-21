@@ -111,15 +111,17 @@ impl Socket {
         context: Option<NonNull<Context<c_void>>>,
         allocator: Option<&cf::Allocator>,
     ) -> Option<arc::R<Socket>> {
-        CFSocketCreate(
-            allocator,
-            protocol_family,
-            socket_type,
-            protocol,
-            cb_types,
-            std::mem::transmute(callout),
-            context,
-        )
+        unsafe {
+            CFSocketCreate(
+                allocator,
+                protocol_family,
+                socket_type,
+                protocol,
+                cb_types,
+                std::mem::transmute(callout),
+                context,
+            )
+        }
     }
     pub unsafe fn create_with_native_in<T>(
         sock: NativeHandle,
@@ -128,13 +130,15 @@ impl Socket {
         context: Option<NonNull<Context<c_void>>>,
         allocator: Option<&cf::Allocator>,
     ) -> Option<arc::R<Socket>> {
-        CFSocketCreateWithNative(
-            allocator,
-            sock,
-            cb_types,
-            std::mem::transmute(callout),
-            context,
-        )
+        unsafe {
+            CFSocketCreateWithNative(
+                allocator,
+                sock,
+                cb_types,
+                std::mem::transmute(callout),
+                context,
+            )
+        }
     }
 
     pub unsafe fn create_with_native<T>(
@@ -143,7 +147,7 @@ impl Socket {
         callout: Cb<T>,
         context: Option<NonNull<Context<c_void>>>,
     ) -> Option<arc::R<Socket>> {
-        Self::create_with_native_in(sock, cb_types, callout, context, None)
+        unsafe { Self::create_with_native_in(sock, cb_types, callout, context, None) }
     }
 
     #[inline]
@@ -205,7 +209,7 @@ impl Socket {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFSocketCreate(
         allocator: Option<&cf::Allocator>,
         protocol_family: i32,

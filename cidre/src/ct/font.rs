@@ -1,4 +1,4 @@
-use crate::{arc, cf, cg, ct, define_cf_type, define_opts, UniChar};
+use crate::{UniChar, arc, cf, cg, ct, define_cf_type, define_opts};
 
 define_cf_type!(Font(cf::Type));
 impl Font {
@@ -317,7 +317,7 @@ pub enum UIFontType {
 }
 
 #[link(name = "CoreText", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CTFontGetTypeID() -> cf::TypeId;
     fn CTFontCreateWithName(
         name: &cf::String,

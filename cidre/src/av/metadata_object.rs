@@ -176,7 +176,7 @@ impl Type {
     }
 }
 
-extern "C" {
+unsafe extern "C" {
     static AVMetadataObjectTypeHumanBody: &'static Type;
     static AVMetadataObjectTypeHumanFullBody: &'static Type;
     static AVMetadataObjectTypeCatBody: &'static Type;

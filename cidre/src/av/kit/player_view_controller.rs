@@ -270,6 +270,6 @@ define_obj_type!(
 );
 
 #[link(name = "av_kit", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_PLAYER_VIEW_CONTROLLER: &'static objc::Class<PlayerViewController>;
 }

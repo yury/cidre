@@ -74,11 +74,11 @@ impl Renderer {
 }
 
 #[link(name = "ca", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static CA_RENDERER: &'static objc::Class<Renderer>;
 }
 
-extern "C" {
+unsafe extern "C" {
     static kCARendererColorSpace: &'static OptionKey;
     static kCARendererMetalCommandQueue: &'static OptionKey;
 }

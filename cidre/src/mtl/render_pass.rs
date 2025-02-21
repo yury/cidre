@@ -310,7 +310,7 @@ impl AttachDesc {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_RENDER_PASS_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 

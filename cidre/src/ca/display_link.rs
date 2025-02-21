@@ -62,6 +62,6 @@ impl DisplayLink {
 }
 
 #[link(name = "ca", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static CA_DISPLAY_LINK: &'static objc::Class<ns::Id>;
 }

@@ -132,20 +132,20 @@ impl VideoRenderer {
         tvos = 17.0,
         visionos = 1.0
     )]
-    pub fn requires_flush_to_resume_decoding_did_change_notification(
-    ) -> &'static ns::NotificationName {
+    pub fn requires_flush_to_resume_decoding_did_change_notification()
+    -> &'static ns::NotificationName {
         unsafe { AVSampleBufferVideoRendererRequiresFlushToResumeDecodingDidChangeNotification }
     }
 }
 
 #[link(name = "ca", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_SAMPLE_BUFFER_VIDEO_RENDERER: &'static objc::Class<VideoRenderer>;
 }
 
 #[link(name = "AVFoundation", kind = "framework")]
 #[api::weak]
-extern "C" {
+unsafe extern "C" {
     #[api::available(
         macos = 14.0,
         maccatalyst = 17.0,

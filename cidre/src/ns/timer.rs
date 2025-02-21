@@ -21,6 +21,6 @@ impl Timer {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_TIMER: &'static objc::Class<Timer>;
 }

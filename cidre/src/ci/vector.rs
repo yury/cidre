@@ -97,7 +97,7 @@ impl ci::Vec {
 }
 
 #[link(name = "ci", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static CI_VECTOR: &'static objc::Class<Vec>;
 }
 

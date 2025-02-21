@@ -13,7 +13,7 @@ impl DetectDocumentSegmentationRequest {
 }
 
 #[link(name = "vn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static VN_DETECT_DOCUMENT_SEGMENTATION_REQUEST:
         &'static objc::Class<DetectDocumentSegmentationRequest>;
 }

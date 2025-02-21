@@ -221,7 +221,7 @@ impl Default for TaskPriority {
 }
 
 #[link(name = "Foundation", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static NSURLSessionTaskPriorityDefault: TaskPriority;
     static NSURLSessionTaskPriorityLow: TaskPriority;
     static NSURLSessionTaskPriorityHigh: TaskPriority;
@@ -272,7 +272,7 @@ impl WebSocketMessage {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_URL_SESSION: &'static Class<Session>;
     static NS_URL_SESSION_WEB_SOCKET_MESSAGE: &'static Class<WebSocketMessage>;
 }

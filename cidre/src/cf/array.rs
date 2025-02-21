@@ -136,7 +136,7 @@ where
 impl<T> arc::Release for ArrayOf<T> {
     #[inline]
     unsafe fn release(&mut self) {
-        self.0.release()
+        unsafe { self.0.release() }
     }
 }
 
@@ -269,7 +269,7 @@ where
 impl<T> arc::Release for ArrayOfMut<T> {
     #[inline]
     unsafe fn release(&mut self) {
-        self.0.release()
+        unsafe { self.0.release() }
     }
 }
 
@@ -362,7 +362,7 @@ impl Array {
         callbacks: Option<&Cbs>,
         allocator: Option<&Allocator>,
     ) -> Option<arc::R<Self>> {
-        CFArrayCreate(allocator, values, num_values, callbacks)
+        unsafe { CFArrayCreate(allocator, values, num_values, callbacks) }
     }
 
     #[inline]
@@ -467,7 +467,7 @@ impl ArrayMut {
     #[doc(alias = "CFArrayAppendValue")]
     #[inline]
     pub unsafe fn append_value(&mut self, val: *const c_void) {
-        CFArrayAppendValue(self, val)
+        unsafe { CFArrayAppendValue(self, val) }
     }
 
     #[doc(alias = "CFArrayAppendValue")]
@@ -526,7 +526,7 @@ impl ArrayMut {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     static kCFTypeArrayCallBacks: Cbs;
 
     fn CFArrayGetTypeID() -> TypeId;

@@ -273,7 +273,7 @@ where
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFPropertyListCreateWithData(
         allocator: Option<&cf::Allocator>,
         data: &cf::Data,

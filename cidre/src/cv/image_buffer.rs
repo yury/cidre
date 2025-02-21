@@ -86,7 +86,7 @@ impl ImageBuf {
     }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CVImageBufferGetColorSpace(image_buffer: &ImageBuf) -> Option<&cg::ColorSpace>;
     fn CVImageBufferGetEncodedSize(image_buffer: &ImageBuf) -> cg::Size;
     fn CVImageBufferGetDisplaySize(image_buffer: &ImageBuf) -> cg::Size;
@@ -174,7 +174,7 @@ pub mod attachment {
             unsafe { kCVImageBufferTransferFunctionKey }
         }
 
-        extern "C" {
+        unsafe extern "C" {
             static kCVImageBufferCGColorSpaceKey: &'static cf::String;
             static kCVImageBufferCleanApertureKey: &'static cf::String;
 
@@ -218,7 +218,7 @@ pub mod attachment {
             unsafe { kCVImageBufferCleanApertureVerticalOffsetKey }
         }
 
-        extern "C" {
+        unsafe extern "C" {
             static kCVImageBufferCleanApertureWidthKey: &'static cf::String;
             static kCVImageBufferCleanApertureHeightKey: &'static cf::String;
             static kCVImageBufferCleanApertureHorizontalOffsetKey: &'static cf::String;
@@ -253,7 +253,7 @@ pub mod attachment {
             unsafe { kCVImageBufferFieldDetailSpatialFirstLineLate }
         }
 
-        extern "C" {
+        unsafe extern "C" {
             static kCVImageBufferFieldDetailTemporalTopFirst: &'static cf::String;
             static kCVImageBufferFieldDetailTemporalBottomFirst: &'static cf::String;
             static kCVImageBufferFieldDetailSpatialFirstLineEarly: &'static cf::String;
@@ -276,7 +276,7 @@ pub mod attachment {
             unsafe { kCVImageBufferPixelAspectRatioVerticalSpacingKey }
         }
 
-        extern "C" {
+        unsafe extern "C" {
             static kCVImageBufferPixelAspectRatioHorizontalSpacingKey: &'static cf::String;
             static kCVImageBufferPixelAspectRatioVerticalSpacingKey: &'static cf::String;
         }
@@ -297,7 +297,7 @@ pub mod attachment {
             unsafe { kCVImageBufferDisplayHeightKey }
         }
 
-        extern "C" {
+        unsafe extern "C" {
             static kCVImageBufferDisplayWidthKey: &'static cf::String;
             static kCVImageBufferDisplayHeightKey: &'static cf::String;
         }
@@ -330,7 +330,7 @@ pub mod attachment {
             unsafe { kCVImageBufferYCbCrMatrix_ITU_R_2020 }
         }
 
-        extern "C" {
+        unsafe extern "C" {
             static kCVImageBufferYCbCrMatrix_ITU_R_709_2: &'static cf::String;
             static kCVImageBufferYCbCrMatrix_ITU_R_601_4: &'static cf::String;
             static kCVImageBufferYCbCrMatrix_SMPTE_240M_1995: &'static cf::String;
@@ -383,7 +383,7 @@ pub mod attachment {
             unsafe { kCVImageBufferColorPrimaries_ITU_R_2020 }
         }
 
-        extern "C" {
+        unsafe extern "C" {
             static kCVImageBufferColorPrimaries_ITU_R_709_2: &'static cf::String;
             static kCVImageBufferColorPrimaries_EBU_3213: &'static cf::String;
             static kCVImageBufferColorPrimaries_SMPTE_C: &'static cf::String;
@@ -450,7 +450,7 @@ pub mod attachment {
             unsafe { kCVImageBufferTransferFunction_Linear }
         }
 
-        extern "C" {
+        unsafe extern "C" {
             static kCVImageBufferTransferFunction_ITU_R_709_2: &'static cf::String;
             static kCVImageBufferTransferFunction_SMPTE_240M_1995: &'static cf::String;
             static kCVImageBufferTransferFunction_UseGamma: &'static cf::String;

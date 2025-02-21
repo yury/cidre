@@ -210,7 +210,7 @@ impl AccelerationStruct {
     define_mtl!(gpu_res_id);
 }
 
-extern "C" {
+unsafe extern "C" {
     static MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR: &'static objc::Class<GeometryDesc>;
     static MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR:
         &'static objc::Class<TriangleGeometryDesc>;

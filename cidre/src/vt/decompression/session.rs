@@ -67,14 +67,16 @@ impl Session {
         output_callback: Option<&OutputCbRecord<c_void, c_void>>,
         decompression_session_out: *mut Option<arc::R<Session>>,
     ) -> os::Status {
-        VTDecompressionSessionCreate(
-            allocator,
-            video_format_description,
-            video_decoder_specification,
-            destination_image_buffer_attirbutes,
-            output_callback,
-            decompression_session_out,
-        )
+        unsafe {
+            VTDecompressionSessionCreate(
+                allocator,
+                video_format_description,
+                video_decoder_specification,
+                destination_image_buffer_attirbutes,
+                output_callback,
+                decompression_session_out,
+            )
+        }
     }
 
     /// Tears down a decompression session
@@ -118,14 +120,16 @@ impl Session {
         source_frame_ref_con: *mut F,
         info_flags_out: *mut vt::DecodeInfoFlags,
     ) -> os::Result {
-        VTDecompressionSessionDecodeFrame(
-            self,
-            sample_buffer,
-            decode_flags,
-            std::mem::transmute(source_frame_ref_con),
-            info_flags_out,
-        )
-        .result()
+        unsafe {
+            VTDecompressionSessionDecodeFrame(
+                self,
+                sample_buffer,
+                decode_flags,
+                std::mem::transmute(source_frame_ref_con),
+                info_flags_out,
+            )
+            .result()
+        }
     }
 
     pub fn finish_delayed_frames(&mut self) -> os::Result {
@@ -162,7 +166,7 @@ pub fn is_hardware_decode_supported(codec_type: VideoCodec) -> bool {
 }
 
 #[link(name = "VideoToolbox", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
 
     fn VTDecompressionSessionCreate(
         allocator: Option<&cf::Allocator>,

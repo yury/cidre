@@ -65,6 +65,6 @@ pub fn main() {
 }
 
 #[link(name = "System", kind = "dylib")]
-extern "C" {
+unsafe extern "C-unwind" {
     fn dispatch_main();
 }

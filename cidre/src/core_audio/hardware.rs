@@ -2,7 +2,7 @@ use std::ffi::c_void;
 
 use crate::{
     arc,
-    at::{audio::ValueRange, AudioBufListN},
+    at::{AudioBufListN, audio::ValueRange},
     cat::{self, AudioBasicStreamDesc},
     cf,
     core_audio::{
@@ -644,7 +644,7 @@ impl Device {
         block: &mut DeviceIoBlock<IN, ON>,
     ) -> os::Result<DeviceIoProcId> {
         let mut res = None;
-        let obj = Obj(self.0 .0);
+        let obj = Obj(self.0.0);
         unsafe {
             AudioDeviceCreateIOProcIDWithBlock(
                 &mut res,
@@ -1620,7 +1620,7 @@ impl Clock {
 }
 
 #[link(name = "CoreAudio", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
 
     fn AudioObjectShow(objectId: Obj);
 
@@ -1720,8 +1720,8 @@ mod tests {
     use crate::{
         cat, cf,
         core_audio::{
-            aggregate_device_keys as agg_keys, AggregateDevice, Class, Device, DeviceTransportType,
-            Obj, Process, PropSelector, System, TapDesc,
+            AggregateDevice, Class, Device, DeviceTransportType, Obj, Process, PropSelector,
+            System, TapDesc, aggregate_device_keys as agg_keys,
         },
         ns, os,
     };

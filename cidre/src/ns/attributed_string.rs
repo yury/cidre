@@ -124,7 +124,7 @@ impl AttrStringKey {
 
 #[cfg(all(feature = "app", target_os = "macos"))]
 #[link(name = "AppKit", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static NSFontAttributeName: &'static AttrStringKey;
     static NSParagraphStyleAttributeName: &'static AttrStringKey;
     static NSForegroundColorAttributeName: &'static AttrStringKey;
@@ -148,7 +148,7 @@ extern "C" {
 
 #[cfg(any(target_os = "ios", target_os = "tvos", target_os = "watchos"))]
 #[link(name = "UIKit", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static NSFontAttributeName: &'static AttrStringKey;
     static NSParagraphStyleAttributeName: &'static AttrStringKey;
     static NSForegroundColorAttributeName: &'static AttrStringKey;
@@ -362,7 +362,7 @@ impl InlinePresentationIntent {
     pub const BLOCK_HTML: Self = Self(1 << 9);
 }
 
-extern "C" {
+unsafe extern "C" {
     static NS_ATTRIBUTED_STRING: &'static objc::Class<AttrString>;
     static NS_MUTABLE_ATTRIBUTED_STRING: &'static objc::Class<AttrStringMut>;
 }

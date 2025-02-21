@@ -13,7 +13,7 @@ impl GenObjectnessBasedSaliencyImageRequest {
 }
 
 #[link(name = "vn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static VN_GENERATE_OBJECTNESS_BASED_SALIENCY_IMAGE_REQUEST:
         &'static objc::Class<GenObjectnessBasedSaliencyImageRequest>;
 }

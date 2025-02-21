@@ -27,7 +27,7 @@ pub fn supported_props_for_encoder(
     }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn VTCopyVideoEncoderList(
         // Not currently supported. Pass NULL for this parameter.
         options: Option<&cf::Dictionary>,

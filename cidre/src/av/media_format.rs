@@ -284,7 +284,7 @@ impl MediaCharacteristic {
 }
 
 #[link(name = "AVFoundation", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static AVMediaCharacteristicVisual: &'static MediaCharacteristic;
     static AVMediaCharacteristicAudible: &'static MediaCharacteristic;
     static AVMediaCharacteristicLegible: &'static MediaCharacteristic;
@@ -560,7 +560,7 @@ impl FileTypeProfile {
 }
 
 #[link(name = "AVFoundation", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static AVFileTypeQuickTimeMovie: &'static FileType;
     static AVFileTypeMPEG4: &'static FileType;
     static AVFileTypeAppleM4V: &'static FileType;

@@ -55,7 +55,7 @@ pub mod keys {
         unsafe { kVTPixelTransferPropertyKey_RealTime }
     }
 
-    extern "C" {
+    unsafe extern "C" {
         static kVTPixelTransferPropertyKey_ScalingMode: &'static cf::String;
         static kVTPixelTransferPropertyKey_DestinationCleanAperture: &'static cf::String;
         static kVTPixelTransferPropertyKey_DestinationPixelAspectRatio: &'static cf::String;
@@ -96,7 +96,7 @@ pub mod scaling_mode {
         unsafe { kVTScalingMode_Trim }
     }
 
-    extern "C" {
+    unsafe extern "C" {
         static kVTScalingMode_Normal: &'static cf::String;
         static kVTScalingMode_CropSourceToCleanAperture: &'static cf::String;
         static kVTScalingMode_Letterbox: &'static cf::String;
@@ -118,7 +118,7 @@ pub mod downsampling_mode {
         unsafe { kVTDownsamplingMode_Average }
     }
 
-    extern "C" {
+    unsafe extern "C" {
         static kVTDownsamplingMode_Decimate: &'static cf::String;
         static kVTDownsamplingMode_Average: &'static cf::String;
     }

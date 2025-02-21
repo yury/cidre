@@ -263,13 +263,13 @@ impl Layer {
 }
 
 #[link(name = "ca", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static CA_LAYER: &'static objc::Class<Layer>;
 }
 
 #[link(name = "QuartzCore", kind = "framework")]
 #[api::weak]
-extern "C" {
+unsafe extern "C" {
     #[api::available(
         macos = 15.0,
         maccatalyst = 18.0,

@@ -105,7 +105,7 @@ impl Buf {
 
 #[link(name = "CoreVideo", kind = "framework")]
 #[api::weak]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
 
     #[api::available(macos = 10.4, ios = 4.0, visionos = 1.0)]
     static kCVBufferPropagatedAttachmentsKey: &'static cf::String;

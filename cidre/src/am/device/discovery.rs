@@ -137,7 +137,7 @@ impl Device {
         query: &cf::Dictionary,
         out_array: *mut Option<arc::R<cf::ArrayOf<Device>>>,
     ) -> Error {
-        AMDCopyArrayOfDevicesMatchingQuery(note, query, out_array)
+        unsafe { AMDCopyArrayOfDevicesMatchingQuery(note, query, out_array) }
     }
 }
 
@@ -205,7 +205,7 @@ impl QueryBuilder {
 }
 
 #[link(name = "MobileDevice", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     fn AMDCreateDeviceList() -> Option<arc::R<cf::ArrayOf<Device>>>;
     fn AMDCopyArrayOfDevicesMatchingQuery<'a>(
         note: Option<&Notification>,
@@ -222,13 +222,15 @@ impl Notification {
         context: *mut T,
         ref_out: *mut Option<arc::R<Notification>>,
     ) -> Error {
-        AMDeviceNotificationSubscribe(
-            transmute(callback),
-            minimum_interface_speed,
-            connection_type,
-            transmute(context),
-            ref_out,
-        )
+        unsafe {
+            AMDeviceNotificationSubscribe(
+                transmute(callback),
+                minimum_interface_speed,
+                connection_type,
+                transmute(context),
+                ref_out,
+            )
+        }
     }
 
     pub fn with<T>(
@@ -255,7 +257,7 @@ impl Notification {
     }
 
     pub unsafe fn unsubscribe(&self) -> Error {
-        AMDeviceNotificationUnsubscribe(self)
+        unsafe { AMDeviceNotificationUnsubscribe(self) }
     }
 }
 
@@ -286,7 +288,7 @@ impl Drop for SubscriptionGuard {
 }
 
 #[link(name = "MobileDevice", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     fn AMDeviceNotificationSubscribe(
         callback: NotificationCallback<c_void>,
         minimum_interface_speed: Speed,
@@ -368,7 +370,7 @@ mod tests {
     use crate::{
         am::{
             self,
-            device::discovery::{matching, NotificationInfo, SafeInfo},
+            device::discovery::{NotificationInfo, SafeInfo, matching},
         },
         cf,
     };

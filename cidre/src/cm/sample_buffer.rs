@@ -169,21 +169,23 @@ impl SampleBuf {
         sample_size_array: *const usize,
         sample_buffer_out: *mut Option<arc::R<SampleBuf>>,
     ) -> os::Result {
-        CMSampleBufferCreate(
-            allocator,
-            data_buffer,
-            data_ready,
-            make_data_ready_cb,
-            make_data_ready_refcon,
-            format_description,
-            num_samples,
-            num_samples_timing_entries,
-            sample_timing_array,
-            num_sample_size_entries,
-            sample_size_array,
-            sample_buffer_out,
-        )
-        .result()
+        unsafe {
+            CMSampleBufferCreate(
+                allocator,
+                data_buffer,
+                data_ready,
+                make_data_ready_cb,
+                make_data_ready_refcon,
+                format_description,
+                num_samples,
+                num_samples_timing_entries,
+                sample_timing_array,
+                num_sample_size_entries,
+                sample_size_array,
+                sample_buffer_out,
+            )
+            .result()
+        }
     }
 
     #[doc(alias = "CMSampleBufferCreateForImageBuffer")]
@@ -394,7 +396,7 @@ impl SampleBuf {
 
     #[inline]
     pub unsafe fn contains_not_sync(&self) -> bool {
-        let arr = self.attaches(true).unwrap_unchecked();
+        let arr = unsafe { self.attaches(true).unwrap_unchecked() };
         arr[0].contains_key(attach_keys::not_sync())
     }
 
@@ -556,7 +558,7 @@ impl<const N: usize> BlockBufAudioBufList<N> {
 }
 
 #[link(name = "CoreMedia", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     static kCMTimingInfoInvalid: SampleTimingInfo;
 
     fn CMSampleBufferCreate(
@@ -728,7 +730,7 @@ pub mod attach_keys {
     }
 
     // https://developer.apple.com/library/archive/qa/qa1957/_index.html#//apple_ref/doc/uid/DTS40017660
-    extern "C" {
+    unsafe extern "C" {
         static kCMSampleAttachmentKey_NotSync: &'static cf::String;
         static kCMSampleAttachmentKey_PartialSync: &'static cf::String;
         static kCMSampleAttachmentKey_HasRedundantCoding: &'static cf::String;
@@ -921,7 +923,7 @@ pub mod buf_attach_keys {
     }
 
     // https://developer.apple.com/library/archive/qa/qa1957/_index.html#//apple_ref/doc/uid/DTS40017660
-    extern "C" {
+    unsafe extern "C" {
         static kCMSampleBufferAttachmentKey_ResetDecoderBeforeDecoding: &'static cf::String;
         static kCMSampleBufferAttachmentKey_DrainAfterDecoding: &'static cf::String;
         static kCMSampleBufferAttachmentKey_PostNotificationWhenConsumed: &'static cf::String;

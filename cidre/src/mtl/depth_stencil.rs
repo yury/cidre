@@ -172,7 +172,7 @@ impl State {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_STENCIL_DESCRIPTOR: &'static objc::Class<StencilDesc>;
     static MTL_DEPTH_STENCIL_DESCRIPTOR: &'static objc::Class<DepthStencilDesc>;
 }

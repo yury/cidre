@@ -6,7 +6,7 @@ use crate::{arc, define_cls, define_obj_type, ns, objc};
 use crate::blocks;
 
 #[cfg(feature = "at")]
-use crate::at::{audio::StreamPacketDesc, AudioBufList};
+use crate::at::{AudioBufList, audio::StreamPacketDesc};
 
 use super::{Format, FrameCount, PacketCount};
 
@@ -274,7 +274,7 @@ impl CompressedBuf {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_AUDIO_PCM_BUFFER: &'static objc::Class<PcmBuf>;
     static AV_AUDIO_COMPRESSED_BUFFER: &'static objc::Class<CompressedBuf>;
 }

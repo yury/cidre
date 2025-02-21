@@ -167,7 +167,7 @@ pub fn search_path_for_dirs_in_domains(
 }
 
 #[link(name = "Foundation", kind = "framework")]
-extern "C" {
+unsafe extern "C-unwind" {
     fn NSSearchPathForDirectoriesInDomains(
         directory: SearchPathDirectory,
         domain_mask: SearchPathDomainMask,

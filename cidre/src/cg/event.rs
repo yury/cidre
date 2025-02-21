@@ -268,7 +268,7 @@ pub mod access {
     }
 
     #[link(name = "CoreGraphics", kind = "framework")]
-    extern "C-unwind" {
+    unsafe extern "C-unwind" {
         fn CGPreflightListenEventAccess() -> bool;
         fn CGRequestListenEventAccess() -> bool;
         fn CGPreflightPostEventAccess() -> bool;
@@ -277,7 +277,7 @@ pub mod access {
 }
 
 #[link(name = "CoreGraphics", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CGEventGetTypeID() -> cf::TypeId;
     fn CGEventCreate(source: Option<&cg::EventSrc>) -> Option<arc::R<cg::Event>>;
     fn CGEventCreateData(

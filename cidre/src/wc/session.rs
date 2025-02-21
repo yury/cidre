@@ -128,6 +128,6 @@ define_obj_type!(
 impl Delegate for AnyDelegate {}
 
 #[link(name = "wc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static WC_SESSION: &'static objc::Class<Session>;
 }

@@ -486,7 +486,7 @@ impl ConverterRef {
         dst_format: &audio::StreamBasicDesc,
         out_audio_converter: *mut Option<Self>,
     ) -> os::Status {
-        AudioConverterNew(src_format, dst_format, out_audio_converter)
+        unsafe { AudioConverterNew(src_format, dst_format, out_audio_converter) }
     }
 
     pub fn with_formats(
@@ -546,7 +546,9 @@ impl Converter {
         io_prop_data_size: *mut u32,
         out_prop_data: *mut c_void,
     ) -> os::Result {
-        AudioConverterGetProperty(self, prop_id, io_prop_data_size, out_prop_data).result()
+        unsafe {
+            AudioConverterGetProperty(self, prop_id, io_prop_data_size, out_prop_data).result()
+        }
     }
 
     #[inline]
@@ -556,30 +558,34 @@ impl Converter {
         in_prop_data_size: u32,
         in_prop_data: *const c_void,
     ) -> os::Result {
-        AudioConverterSetProperty(self, prop_id, in_prop_data_size, in_prop_data).result()
+        unsafe {
+            AudioConverterSetProperty(self, prop_id, in_prop_data_size, in_prop_data).result()
+        }
     }
 
     pub unsafe fn set_prop<T: Sized>(&mut self, prop_id: PropId, val: &T) -> os::Result {
         let size = size_of::<T>() as u32;
-        self.set_property(prop_id, size, val as *const _ as _)
+        unsafe { self.set_property(prop_id, size, val as *const _ as _) }
     }
 
     #[inline]
     pub unsafe fn prop_vec<T: Sized>(&self, prop_id: PropId) -> os::Result<Vec<T>> {
         let mut info = self.property_info(prop_id)?;
         let mut vec = Vec::with_capacity(info.size as usize / size_of::<T>());
-        self.get_property(prop_id, &mut info.size, vec.as_mut_ptr() as _)?;
-        vec.set_len(info.size as usize / size_of::<T>());
+        unsafe { self.get_property(prop_id, &mut info.size, vec.as_mut_ptr() as _) }?;
+        unsafe { vec.set_len(info.size as usize / size_of::<T>()) };
         Ok(vec)
     }
 
     #[inline]
     pub unsafe fn set_prop_vec<T: Sized>(&mut self, prop_id: PropId, val: Vec<T>) -> os::Result {
-        self.set_property(
-            prop_id,
-            (val.len() * std::mem::size_of::<T>()) as u32,
-            val.as_ptr() as _,
-        )?;
+        unsafe {
+            self.set_property(
+                prop_id,
+                (val.len() * std::mem::size_of::<T>()) as u32,
+                val.as_ptr() as _,
+            )
+        }?;
         Ok(())
     }
 
@@ -587,7 +593,7 @@ impl Converter {
     pub unsafe fn prop<T: Sized + Default>(&self, prop_id: PropId) -> os::Result<T> {
         let mut size = size_of::<T>() as u32;
         let mut value = Default::default();
-        self.get_property(prop_id, &mut size, &mut value as *mut _ as _)?;
+        unsafe { self.get_property(prop_id, &mut size, &mut value as *mut _ as _) }?;
         Ok(value)
     }
 
@@ -684,15 +690,17 @@ impl Converter {
         out_output_data: &mut audio::BufList<NO>,
         out_packet_description: *mut audio::StreamPacketDesc,
     ) -> os::Result {
-        AudioConverterFillComplexBuffer(
-            self,
-            std::mem::transmute(in_input_data_proc),
-            in_input_data_proc_user_data as _,
-            io_output_data_packet_size,
-            std::mem::transmute(out_output_data),
-            out_packet_description,
-        )
-        .result()
+        unsafe {
+            AudioConverterFillComplexBuffer(
+                self,
+                std::mem::transmute(in_input_data_proc),
+                in_input_data_proc_user_data as _,
+                io_output_data_packet_size,
+                std::mem::transmute(out_output_data),
+                out_packet_description,
+            )
+            .result()
+        }
     }
 
     /// Converts PCM data from an input buffer list to an output buffer list.
@@ -712,13 +720,15 @@ impl Converter {
         in_input_data: *const audio::BufList<N1>,
         out_output_data: *mut audio::BufList<N2>,
     ) -> os::Result {
-        AudioConverterConvertComplexBuffer(
-            self,
-            in_number_pcm_frames,
-            in_input_data as _,
-            out_output_data as _,
-        )
-        .result()
+        unsafe {
+            AudioConverterConvertComplexBuffer(
+                self,
+                in_number_pcm_frames,
+                in_input_data as _,
+                out_output_data as _,
+            )
+            .result()
+        }
     }
 
     /// Converts PCM data from an input buffer list to an output buffer list.
@@ -766,14 +776,16 @@ impl Converter {
         io_output_data_size: *mut u32,
         out_output_data: *mut c_void,
     ) -> os::Result {
-        AudioConverterConvertBuffer(
-            self,
-            in_input_data_size,
-            in_input_data,
-            io_output_data_size,
-            out_output_data,
-        )
-        .result()
+        unsafe {
+            AudioConverterConvertBuffer(
+                self,
+                in_input_data_size,
+                in_input_data,
+                io_output_data_size,
+                out_output_data,
+            )
+            .result()
+        }
     }
 
     #[inline]
@@ -841,7 +853,7 @@ impl Opts {
 
 #[link(name = "AudioToolbox", kind = "framework")]
 #[api::weak]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn AudioConverterNew(
         in_source_format: &audio::StreamBasicDesc,
         in_destination_format: &audio::StreamBasicDesc,

@@ -43,7 +43,7 @@ impl PlayerLayer {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_PLAYER_LAYER: &'static objc::Class<PlayerLayer>;
 }
 

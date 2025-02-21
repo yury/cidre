@@ -113,7 +113,7 @@ impl RecognizeTextRequest {
 }
 
 #[link(name = "vn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static VN_RECOGNIZE_TEXT_REQUEST: &'static objc::Class<RecognizeTextRequest>;
 }
 

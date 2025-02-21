@@ -60,7 +60,7 @@ pub fn continuous_approximate_time() -> u64 {
     unsafe { mach_continuous_approximate_time() }
 }
 
-extern "C" {
+unsafe extern "C-unwind" {
     fn mach_absolute_time() -> u64;
     fn mach_approximate_time() -> u64;
     fn mach_continuous_time() -> u64;

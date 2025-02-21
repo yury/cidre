@@ -30,7 +30,7 @@ impl Thread {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_THREAD: &'static objc::Class<Thread>;
 }
 

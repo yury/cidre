@@ -18,7 +18,7 @@ impl ns::Value {
     pub fn cm_video_dimensions_value(&self) -> cm::VideoDimensions;
 }
 
-extern "C" {
+unsafe extern "C-unwind" {
     fn AVMakeRectWithAspectRatioInsideRect(
         aspect_ratio: cg::Size,
         bounding_rect: cg::Rect,

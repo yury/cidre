@@ -120,10 +120,7 @@ impl PartialEq<i32> for Status {
 
 impl PartialEq<Status> for Error {
     fn eq(&self, other: &Status) -> bool {
-        if other.0 == 0 {
-            return false;
-        }
-        self.0.eq(unsafe { &NonZeroI32::new_unchecked(other.0) })
+        self.0.get() == other.0
     }
 }
 
@@ -143,7 +140,7 @@ impl Status {
     #[inline]
     pub unsafe fn to_result_unchecked<T>(self, option: Option<T>) -> Result<T> {
         if self.is_ok() {
-            Ok(option.unwrap_unchecked())
+            Ok(unsafe { option.unwrap_unchecked() })
         } else {
             Err(Error::new_unchecked(self.0))
         }

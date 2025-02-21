@@ -134,12 +134,12 @@ impl Domain {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_ERROR: &'static objc::Class<Error>;
 }
 
 #[link(name = "Foundation", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
 
     static NSCocoaErrorDomain: &'static Domain;
     static NSPOSIXErrorDomain: &'static Domain;

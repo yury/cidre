@@ -84,7 +84,7 @@ impl Type {
     }
 }
 
-extern "C" {
+unsafe extern "C-unwind" {
     static mach_task_self_: Port;
 
     fn mach_port_deallocate(task: Port, port: Port) -> c_int;

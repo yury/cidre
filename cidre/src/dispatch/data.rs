@@ -160,7 +160,7 @@ impl From<Box<[u8]>> for arc::R<Data> {
 }
 
 #[link(name = "System", kind = "dylib")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     static _dispatch_data_empty: Data;
 
     #[cfg(feature = "blocks")]
@@ -176,7 +176,7 @@ extern "C-unwind" {
     fn dispatch_data_create_concat(data1: &Data, data2: &Data) -> arc::R<Data>;
     #[cfg(feature = "blocks")]
     fn dispatch_data_apply(data: &Data, applier: &mut dispatch::DataApplier<blocks::NoEsc>)
-        -> bool;
+    -> bool;
 
     fn dispatch_data_create_map(
         data: &Data,

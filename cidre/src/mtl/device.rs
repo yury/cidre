@@ -3,7 +3,7 @@ use crate::{api, arc, blocks, define_obj_type, define_opts, mtl, ns, objc};
 #[cfg(feature = "io")]
 use crate::io;
 
-use super::{event::SharedEvent, Buf, CmdQueue, Event, Fence, Lib, Size};
+use super::{Buf, CmdQueue, Event, Fence, Lib, Size, event::SharedEvent};
 
 #[doc(alias = "MTLTimestamp")]
 pub type Timestamp = u64;
@@ -471,7 +471,7 @@ impl Device {
 
 #[link(name = "Metal", kind = "framework")]
 #[api::weak]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn MTLCreateSystemDefaultDevice() -> Option<arc::R<Device>>;
 
     #[api::available(

@@ -71,7 +71,7 @@ impl Clock {
         allocator: Option<&cf::Allocator>,
         clock_out: *mut Option<arc::R<Clock>>,
     ) -> os::Result {
-        CMAudioClockCreate(allocator, clock_out).result()
+        unsafe { CMAudioClockCreate(allocator, clock_out).result() }
     }
 
     /// Creates a clock that advances at the same rate as audio output.
@@ -195,7 +195,7 @@ pub mod sync_err {
 }
 
 #[link(name = "CoreMedia", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CMClockGetTypeID() -> cf::TypeId;
     fn CMClockGetHostTimeClock() -> &'static Clock;
     #[cfg(not(target_os = "macos"))]
@@ -575,7 +575,7 @@ impl Timebase {
 }
 
 #[link(name = "CoreMedia", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CMTimebaseGetTypeID() -> cf::TypeId;
 
     fn CMTimebaseCreateWithSourceClock(
@@ -762,7 +762,7 @@ impl ClockOrTimebase {
 }
 
 #[link(name = "CoreMedia", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
 
     fn CMSyncGetRelativeRate(
         of_clock_or_timebase: &cm::ClockOrTimebase,

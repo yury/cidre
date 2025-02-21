@@ -25,6 +25,6 @@ impl ConnectionPoint {
     pub fn bus(&self) -> audio::NodeBus;
 }
 
-extern "C" {
+unsafe extern "C" {
     static AV_AUDIO_CONNECTION_POINT: &'static objc::Class<ConnectionPoint>;
 }

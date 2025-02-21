@@ -34,6 +34,6 @@ impl App {
 }
 
 #[link(name = "app", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_APPLICATION: &'static objc::Class<App>;
 }

@@ -44,6 +44,6 @@ impl UserNotificationCenter {
 }
 
 #[link(name = "un", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static UN_USER_NOTIFICATION_CENTER: &'static objc::Class<UserNotificationCenter>;
 }

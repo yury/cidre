@@ -204,7 +204,7 @@ impl arc::R<Dst> {
     }
 }
 
-extern "C" {
+unsafe extern "C" {
     static kCGImageDestinationLossyCompressionQuality: &'static OptKey;
     static kCGImageDestinationBackgroundColor: &'static OptKey;
     static kCGImageDestinationImageMaxPixelSize: &'static OptKey;

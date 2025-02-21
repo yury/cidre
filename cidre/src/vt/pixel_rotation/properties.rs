@@ -16,7 +16,7 @@ pub mod keys {
         unsafe { kVTPixelRotationPropertyKey_FlipVerticalOrientation }
     }
 
-    extern "C" {
+    unsafe extern "C" {
         static kVTPixelRotationPropertyKey_Rotation: &'static cf::String;
         static kVTPixelRotationPropertyKey_FlipHorizontalOrientation: &'static cf::String;
         static kVTPixelRotationPropertyKey_FlipVerticalOrientation: &'static cf::String;
@@ -46,7 +46,7 @@ pub mod rotation {
         unsafe { kVTRotation_CCW90 }
     }
 
-    extern "C" {
+    unsafe extern "C" {
         static kVTRotation_0: &'static cf::String;
         static kVTRotation_CW90: &'static cf::String;
         static kVTRotation_180: &'static cf::String;

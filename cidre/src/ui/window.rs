@@ -27,6 +27,6 @@ impl Window {
 }
 
 #[link(name = "ui", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static UI_WINDOW: &'static objc::Class<Window>;
 }

@@ -19,6 +19,6 @@ impl BatchNormalizationLayer {
     pub fn gamma(&self) -> Option<&mlc::Tensor>;
 }
 
-extern "C" {
+unsafe extern "C" {
     static MLC_BATCH_NORMALIZATION_LAYER: &'static objc::Class<BatchNormalizationLayer>;
 }

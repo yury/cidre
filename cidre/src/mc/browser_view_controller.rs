@@ -110,7 +110,7 @@ define_obj_type!(
 impl Delegate for AnyDelegate {}
 
 #[link(name = "mc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MC_BROWSER_VIEW_CONTROLLER: &'static objc::Class<BrowserViewController>;
 }
 

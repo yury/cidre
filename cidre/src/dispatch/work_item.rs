@@ -15,12 +15,12 @@ pub struct WorkItem(dispatch::Block<blocks::Sync>);
 impl objc::Obj for WorkItem {
     #[inline]
     unsafe fn retain(id: &Self) -> arc::R<Self> {
-        std::mem::transmute(_Block_copy(std::mem::transmute(id)))
+        unsafe { std::mem::transmute(_Block_copy(std::mem::transmute(id))) }
     }
 
     #[inline]
     unsafe fn release(id: &mut Self) {
-        _Block_release(std::mem::transmute(id))
+        unsafe { _Block_release(std::mem::transmute(id)) }
     }
 }
 
@@ -95,7 +95,7 @@ impl WorkItem {
 }
 
 #[link(name = "System", kind = "dylib")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn dispatch_block_create<'a>(
         flags: dispatch::BlockFlags,
         block: &dispatch::Block,

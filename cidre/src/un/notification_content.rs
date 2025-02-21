@@ -160,7 +160,7 @@ impl NotificationContentMut {
 }
 
 #[link(name = "un", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static UN_NOTIFICATION_CONTENT: &'static objc::Class<NotificationContent>;
     static UN_MUTABLE_NOTIFICATION_CONTENT: &'static objc::Class<NotificationContent>;
 }

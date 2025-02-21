@@ -89,7 +89,7 @@ pub mod keys {
     }
 
     #[link(name = "VideoToolbox", kind = "framework")]
-    extern "C" {
+    unsafe extern "C" {
         static kVTDecompressionPropertyKey_PixelBufferPool: &'static cf::String;
         static kVTDecompressionPropertyKey_PixelBufferPoolIsShared: &'static cf::String;
         static kVTDecompressionPropertyKey_OutputPoolRequestedMinimumBufferCount:
@@ -154,7 +154,7 @@ pub mod video_decoder_specification {
     }
 
     #[link(name = "VideoToolbox", kind = "framework")]
-    extern "C" {
+    unsafe extern "C" {
         static kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder:
             &'static cf::String;
 

@@ -185,13 +185,13 @@ impl Connection {
         min_incomplete_len: u32,
         max_len: u32,
         block: impl FnMut(
-                /* content */ Option<&dispatch::Data>,
-                /* context */ Option<&nw::ContentCtx>,
-                /* is_complete */ bool,
-                /* error */ Option<&nw::Error>,
-            )
-            + 'static
-            + std::marker::Sync,
+            /* content */ Option<&dispatch::Data>,
+            /* context */ Option<&nw::ContentCtx>,
+            /* is_complete */ bool,
+            /* error */ Option<&nw::Error>,
+        )
+        + 'static
+        + std::marker::Sync,
     ) {
         let mut block = RecvCompletion::new4(block);
         self.recv_ch(min_incomplete_len, max_len, &mut block);
@@ -210,13 +210,13 @@ impl Connection {
     pub fn recv_msg(
         &mut self,
         block: impl FnMut(
-                /* content */ Option<&dispatch::Data>,
-                /* context */ Option<&nw::ContentCtx>,
-                /* is_complete */ bool,
-                /* error */ Option<&nw::Error>,
-            )
-            + 'static
-            + std::marker::Sync,
+            /* content */ Option<&dispatch::Data>,
+            /* context */ Option<&nw::ContentCtx>,
+            /* is_complete */ bool,
+            /* error */ Option<&nw::Error>,
+        )
+        + 'static
+        + std::marker::Sync,
     ) {
         let mut block = RecvCompletion::new4(block);
         self.recv_msg_ch(&mut block);
@@ -275,7 +275,7 @@ impl Connection {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn nw_connection_create(
         endpoint: &nw::Endpoint,
         params: &nw::Params,

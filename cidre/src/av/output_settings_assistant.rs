@@ -81,7 +81,7 @@ impl OutputSettingsPreset {
 }
 
 #[link(name = "AVFoundation", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static AVOutputSettingsPreset640x480: &'static OutputSettingsPreset;
     static AVOutputSettingsPreset960x540: &'static OutputSettingsPreset;
     static AVOutputSettingsPreset1280x720: &'static OutputSettingsPreset;
@@ -142,7 +142,7 @@ impl OutputSettingsAssistant {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_OUTPUT_SETTINGS_ASSISTANT: &'static objc::Class<OutputSettingsAssistant>;
 }
 

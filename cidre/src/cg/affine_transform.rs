@@ -145,7 +145,7 @@ impl cg::Rect {
     }
 }
 
-extern "C" {
+unsafe extern "C-unwind" {
     static CGAffineTransformIdentity: AffineTransform;
 
     fn CGAffineTransformMakeTranslation(tx: f64, ty: f64) -> AffineTransform;

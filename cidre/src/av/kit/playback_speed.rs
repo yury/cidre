@@ -33,7 +33,7 @@ impl PlaybackSpeed {
 }
 
 #[link(name = "av_kit", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_PLAYBACK_SPEED: &'static objc::Class<PlaybackSpeed>;
 }
 

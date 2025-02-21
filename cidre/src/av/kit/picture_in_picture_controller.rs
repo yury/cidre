@@ -142,7 +142,7 @@ pub trait PipControllerDelegate: objc::Obj {
 }
 
 #[link(name = "av_kit", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_PICTURE_IN_PICTURE_CONTROLLER: &'static objc::Class<PipController>;
     static AV_PICTURE_IN_PICTURE_CONTROLLER_CONTENT_SRC:
         &'static objc::Class<PipControllerContentSrc>;

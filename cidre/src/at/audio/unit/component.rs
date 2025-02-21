@@ -5,10 +5,9 @@ use crate::{
     at::{
         self,
         audio::{
-            self,
+            self, StreamBasicDesc,
             component::{InitializedState, State, UninitializedState},
             unit::ScheduledSlice,
-            StreamBasicDesc,
         },
     },
     cf, define_opts, os,
@@ -39,7 +38,7 @@ impl<S: State<Unit>> Drop for UnitRef<S> {
     fn drop(&mut self) {
         let res = S::release_resources(self.0);
         debug_assert!(res.is_ok());
-        let res = unsafe { self.0 .0.dispose() };
+        let res = unsafe { self.0.0.dispose() };
         debug_assert!(res.is_ok());
     }
 }
@@ -1352,7 +1351,7 @@ impl audio::Component {
 }
 
 #[link(name = "AudioToolbox", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     static kAudioComponentRegistrationsChangedNotification: &'static cf::NotificationName;
     static kAudioComponentInstanceInvalidationNotification: &'static cf::NotificationName;
 
@@ -1441,7 +1440,7 @@ mod tests {
     use std::{f32::consts::PI, ffi::c_void};
 
     use au::Element;
-    use audio::{unit::FrequencyResponseBin, BufList, TimeStamp};
+    use audio::{BufList, TimeStamp, unit::FrequencyResponseBin};
 
     use crate::{
         at::{au, audio},

@@ -20,11 +20,11 @@ pub struct Protocol(Type);
 
 impl<T: Obj> Class<T> {
     pub unsafe fn method_impl(&self, name: &Sel) -> *const c_void {
-        class_getMethodImplementation(std::mem::transmute(self), name)
+        unsafe { class_getMethodImplementation(std::mem::transmute(self), name) }
     }
 
     pub unsafe fn add_protocol(&self, protocol: &Protocol) -> bool {
-        class_addProtocol(std::mem::transmute(self), protocol)
+        unsafe { class_addProtocol(std::mem::transmute(self), protocol) }
     }
 }
 
@@ -140,7 +140,7 @@ impl<T: Obj> Obj for Class<T> {}
 impl<T: Obj> arc::Release for T {
     #[inline]
     unsafe fn release(&mut self) {
-        <T as Obj>::release(self)
+        unsafe { <T as Obj>::release(self) }
     }
 }
 
@@ -153,48 +153,52 @@ impl<T: Obj> arc::Retain for T {
 pub trait Obj: Sized + arc::Retain {
     #[inline]
     unsafe fn retain(id: &Self) -> arc::R<Self> {
-        #[cfg(all(target_arch = "aarch64", not(feature = "classic-objc-retain-release")))]
-        {
-            let result: *mut Self;
-            core::arch::asm!(
-                "bl _objc_retain_{obj:x}",
-                obj = in(reg) id,
-                lateout("x0") result,
-                clobber_abi("C"),
-            );
-            std::mem::transmute(result)
-        }
+        unsafe {
+            #[cfg(all(target_arch = "aarch64", not(feature = "classic-objc-retain-release")))]
+            {
+                let result: *mut Self;
+                core::arch::asm!(
+                    "bl _objc_retain_{obj:x}",
+                    obj = in(reg) id,
+                    lateout("x0") result,
+                    clobber_abi("C"),
+                );
+                std::mem::transmute(result)
+            }
 
-        #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
-        {
-            std::mem::transmute(objc_retain(std::mem::transmute(id)))
+            #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
+            {
+                std::mem::transmute(objc_retain(std::mem::transmute(id)))
+            }
         }
     }
 
     #[inline]
     unsafe fn release(id: &mut Self) {
-        #[cfg(all(
-            target_arch = "aarch64",
-            target_pointer_width = "64",
-            not(feature = "classic-objc-retain-release")
-        ))]
-        {
-            asm!(
-                "bl _objc_release_{x}",
-                x = in(reg) id,
-                clobber_abi("C")
-                // system also works
-                // clobber_abi("system")
-            );
-        }
+        unsafe {
+            #[cfg(all(
+                target_arch = "aarch64",
+                target_pointer_width = "64",
+                not(feature = "classic-objc-retain-release")
+            ))]
+            {
+                asm!(
+                    "bl _objc_release_{x}",
+                    x = in(reg) id,
+                    clobber_abi("C")
+                    // system also works
+                    // clobber_abi("system")
+                );
+            }
 
-        #[cfg(any(
-            target_arch = "x86_64",
-            target_pointer_width = "32",
-            feature = "classic-objc-retain-release"
-        ))]
-        {
-            objc_release(std::mem::transmute(id));
+            #[cfg(any(
+                target_arch = "x86_64",
+                target_pointer_width = "32",
+                feature = "classic-objc-retain-release"
+            ))]
+            {
+                objc_release(std::mem::transmute(id));
+            }
         }
     }
 
@@ -246,7 +250,7 @@ unsafe impl Send for Id {}
 impl Id {
     #[inline]
     pub unsafe fn autorelease<'ar>(id: &mut Id) -> &'ar mut Id {
-        objc_autorelease(id)
+        unsafe { objc_autorelease(id) }
     }
 
     // #[inline]
@@ -296,11 +300,11 @@ where
 }
 
 pub unsafe fn sel_reg_name(str: *const i8) -> &'static Sel {
-    std::mem::transmute(sel_registerName(str))
+    unsafe { std::mem::transmute(sel_registerName(str)) }
 }
 
 #[link(name = "objc", kind = "dylib")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
     pub fn objc_retain<'a>(obj: &Id) -> &'a Id;
     #[cfg(any(
@@ -651,7 +655,7 @@ pub fn throw(obj: &Id) -> ! {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn cidre_try_catch<'ar>(
         during: extern "C" fn(ctx: *mut c_void),
         ctx: *mut c_void,

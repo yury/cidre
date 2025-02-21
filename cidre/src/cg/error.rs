@@ -64,6 +64,6 @@ impl Error {
 
 pub type Cb = extern "C" fn();
 
-extern "C" {
+unsafe extern "C" {
     fn CGErrorSetCallback(callback: Option<Cb>);
 }

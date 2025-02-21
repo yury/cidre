@@ -75,7 +75,7 @@ impl Desc {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_BLIT_PASS_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 

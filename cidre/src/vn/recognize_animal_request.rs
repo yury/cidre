@@ -51,13 +51,13 @@ impl RecognizeAnimalsRequest {
 }
 
 #[link(name = "Vision", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static VNAnimalIdentifierDog: &'static AnimalId;
     static VNAnimalIdentifierCat: &'static AnimalId;
 }
 
 #[link(name = "vn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static VN_RECOGNIZE_ANIMALS_REQUEST: &'static objc::Class<RecognizeAnimalsRequest>;
 }
 

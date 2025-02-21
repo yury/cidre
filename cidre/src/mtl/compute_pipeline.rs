@@ -44,7 +44,7 @@ impl Desc {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_COMPUTE_PIPELINE_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 

@@ -60,6 +60,6 @@ impl SceneSession {
     pub fn role(&self) -> &ui::SceneSessionRole;
 }
 
-extern "C" {
+unsafe extern "C" {
     static UI_SCENE_CONFIGURATION: &'static objc::Class<SceneCfg>;
 }

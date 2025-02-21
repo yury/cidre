@@ -77,7 +77,7 @@ impl BrowseResult {
 }
 
 #[link(name = "Network", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn nw_browse_result_copy_endpoint(res: &BrowseResult) -> arc::R<nw::Endpoint>;
     fn nw_browse_result_get_changes(
         old: Option<&BrowseResult>,
@@ -86,7 +86,7 @@ extern "C-unwind" {
 
     fn nw_browse_result_get_interfaces_count(res: &BrowseResult) -> usize;
     fn nw_browse_result_copy_txt_record_object(res: &BrowseResult)
-        -> Option<arc::R<nw::TxtRecord>>;
+    -> Option<arc::R<nw::TxtRecord>>;
 
     fn nw_browse_result_enumerate_interfaces(
         res: &BrowseResult,

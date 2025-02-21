@@ -25,6 +25,6 @@ impl Effect {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_AUDIO_UNIT_EFFECT: &'static objc::Class<Effect>;
 }

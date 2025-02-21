@@ -91,12 +91,12 @@ pub mod keys {
         unsafe { kCMMemoryPoolOption_AgeOutPeriod }
     }
 
-    extern "C" {
+    unsafe extern "C" {
         static kCMMemoryPoolOption_AgeOutPeriod: &'static cf::String;
     }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CMMemoryPoolCreate(options: Option<&cf::Dictionary>) -> arc::R<MemPool>;
     fn CMMemoryPoolGetAllocator(pool: &MemPool) -> &cf::Allocator;
     fn CMMemoryPoolFlush(pool: &MemPool);

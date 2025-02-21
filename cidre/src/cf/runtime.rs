@@ -11,12 +11,12 @@ pub struct Type(NonNull<c_void>);
 impl Type {
     #[inline]
     pub unsafe fn retain<T: arc::Release>(cf: &Type) -> arc::R<T> {
-        std::mem::transmute(CFRetain(cf))
+        unsafe { std::mem::transmute(CFRetain(cf)) }
     }
 
     #[inline]
     pub unsafe fn release(cf: &mut Type) {
-        CFRelease(cf)
+        unsafe { CFRelease(cf) }
     }
 
     #[inline]
@@ -51,7 +51,7 @@ impl arc::Retain for Type {
 impl arc::Release for Type {
     #[inline]
     unsafe fn release(&mut self) {
-        Type::release(self)
+        unsafe { Type::release(self) }
     }
 }
 
@@ -85,7 +85,7 @@ macro_rules! define_cf_type {
         impl $crate::arc::Release for $NewType {
             #[inline]
             unsafe fn release(&mut self) {
-                self.0.release()
+                unsafe { self.0.release() }
             }
         }
 
@@ -112,7 +112,7 @@ macro_rules! define_cf_type {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFRetain(cf: &Type) -> arc::R<Type>;
     fn CFRelease(cf: &mut Type);
     fn CFGetTypeID(cf: &Type) -> TypeId;

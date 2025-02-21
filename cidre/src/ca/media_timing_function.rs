@@ -48,7 +48,7 @@ impl MediaTimingFn {
 }
 
 #[link(name = "QuartzCore", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     static kCAMediaTimingFunctionLinear: &'static Name;
     static kCAMediaTimingFunctionEaseIn: &'static Name;
     static kCAMediaTimingFunctionEaseOut: &'static Name;
@@ -57,7 +57,7 @@ extern "C" {
 }
 
 #[link(name = "ca", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static CA_MEDIA_TIMING_FUNCTION: &'static objc::Class<MediaTimingFn>;
 }
 

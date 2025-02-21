@@ -24,7 +24,7 @@ pub fn basic_info(target_task: mach::Port) -> Result<mach::TaskBasicInfo, mach::
     }
 }
 
-extern "C" {
+unsafe extern "C-unwind" {
     fn task_info(
         target_task: mach::Port,
         flavor: mach::TaskFlavor,

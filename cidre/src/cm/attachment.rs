@@ -62,7 +62,7 @@ impl Bearer {
         mode: Mode,
         allocator: Option<&cf::Allocator>,
     ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> {
-        CMCopyDictionaryOfAttachments(allocator, self, mode)
+        unsafe { CMCopyDictionaryOfAttachments(allocator, self, mode) }
     }
 
     #[doc(alias = "CMCopyDictionaryOfAttachments")]
@@ -75,7 +75,7 @@ impl Bearer {
     }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CMSetAttachment(target: &Bearer, key: &cf::String, value: &cf::Type, attachment_mode: Mode);
 
     fn CMGetAttachment<'a>(

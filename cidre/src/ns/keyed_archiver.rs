@@ -25,7 +25,7 @@ impl KeyedArchiver {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_KEYED_ARCHIVER: &'static objc::Class<KeyedArchiver>;
 }
 

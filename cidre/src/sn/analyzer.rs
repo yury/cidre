@@ -112,7 +112,7 @@ impl AudioFileAnalyzer {
 }
 
 #[link(name = "sn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static SN_AUDIO_STREAM_ANALYZER: &'static objc::Class<AudioStreamAnalyzer>;
     static SN_AUDIO_FILE_ANALYZER: &'static objc::Class<AudioFileAnalyzer>;
 }

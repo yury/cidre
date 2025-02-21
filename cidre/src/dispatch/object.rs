@@ -59,7 +59,7 @@ impl Object {
 }
 
 #[link(name = "System", kind = "dylib")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn dispatch_activate(object: &Object);
     fn dispatch_suspend(object: &Object);
     fn dispatch_resume(object: &Object);

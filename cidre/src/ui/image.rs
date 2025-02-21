@@ -35,6 +35,6 @@ impl Image {
 }
 
 #[link(name = "ui", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static UI_IMAGE: &'static objc::Class<Image>;
 }

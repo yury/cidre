@@ -161,7 +161,7 @@ impl VideoProcessor {
 }
 
 #[link(name = "vn", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static VN_VIDEO_PROCESSOR: &'static objc::Class<VideoProcessor>;
     static VN_VIDEO_PROCESSOR_FRAME_RATE_CADENCE: &'static objc::Class<FrameRateCadence>;
     static VN_VIDEO_PROCESSOR_TIME_INTERVAL_CADENCE: &'static objc::Class<TimeIntervalCadence>;

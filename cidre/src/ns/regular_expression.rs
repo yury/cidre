@@ -115,7 +115,7 @@ impl Regex {
 }
 
 #[link(name = "ns", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static NS_REGULAR_EXPRESSION: &'static objc::Class<Regex>;
 }
 

@@ -34,6 +34,6 @@ impl graph::Graph {
 }
 
 #[link(name = "mpsg", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR: &'static objc::Class<Convolution2dOpDesc>;
 }

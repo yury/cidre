@@ -110,7 +110,7 @@ impl AttrStringMut {
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CFAttributedStringGetTypeID() -> cf::TypeId;
     fn CFAttributedStringCreate(
         alloc: Option<&cf::Allocator>,

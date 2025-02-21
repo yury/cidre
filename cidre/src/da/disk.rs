@@ -54,10 +54,10 @@ impl Disk {
 }
 
 #[link(name = "DiskArbitration", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn DADiskGetTypeID() -> cf::TypeId;
     fn DADiskCopyDescription(disk: &Disk)
-        -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>>;
+    -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>>;
     fn DADiskCopyWholeDisk(disk: &Disk) -> Option<arc::R<Disk>>;
     fn DADiskCreateFromBSDName(
         allocator: Option<&cf::Allocator>,

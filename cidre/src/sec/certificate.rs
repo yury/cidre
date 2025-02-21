@@ -99,7 +99,7 @@ impl sec::Cert {
 }
 
 #[link(name = "Security", kind = "framework")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn SecCertificateGetTypeID() -> cf::TypeId;
 
     fn SecCertificateCreateWithData(
@@ -176,7 +176,7 @@ pub mod oids {
     }
 
     #[link(name = "Security", kind = "framework")]
-    extern "C" {
+    unsafe extern "C" {
         static kSecOIDX509V1SubjectName: &'static cf::String;
         static kSecOIDX509V1IssuerName: &'static cf::String;
 
@@ -210,7 +210,7 @@ pub mod prop_keys {
     }
 
     #[link(name = "Security", kind = "framework")]
-    extern "C" {
+    unsafe extern "C" {
         static kSecPropertyKeyType: &'static cf::String;
         static kSecPropertyKeyLabel: &'static cf::String;
         static kSecPropertyKeyLocalizedLabel: &'static cf::String;
@@ -268,7 +268,7 @@ pub mod prop_types {
     }
 
     #[link(name = "Security", kind = "framework")]
-    extern "C" {
+    unsafe extern "C" {
         static kSecPropertyTypeWarning: &'static cf::String;
         static kSecPropertyTypeSuccess: &'static cf::String;
         static kSecPropertyTypeSection: &'static cf::String;

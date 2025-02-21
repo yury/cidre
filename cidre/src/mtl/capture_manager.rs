@@ -66,7 +66,7 @@ impl CaptureManager {
 }
 
 #[link(name = "mtl", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MTL_CAPTURE_DESCRIPTOR: &'static objc::Class<CaptureDesc>;
     static MTL_CAPTURE_MANAGER: &'static objc::Class<CaptureManager>;
 }

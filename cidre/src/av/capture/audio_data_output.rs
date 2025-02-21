@@ -41,6 +41,6 @@ impl AudioDataOutput {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_CAPTURE_AUDIO_DATA_OUTPUT: &'static objc::Class<AudioDataOutput>;
 }

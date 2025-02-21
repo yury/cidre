@@ -1,4 +1,4 @@
-use std::ffi::{c_char, c_long, c_void, CStr};
+use std::ffi::{CStr, c_char, c_long, c_void};
 
 use crate::{arc, define_obj_type, dispatch};
 
@@ -198,7 +198,7 @@ impl Queue {
     #[doc(alias = "dispatch_get_global_queue")]
     #[inline]
     pub unsafe fn global_with_flags<'a>(identifier: isize, flags: usize) -> Option<&'a Global> {
-        dispatch_get_global_queue(identifier, flags)
+        unsafe { dispatch_get_global_queue(identifier, flags) }
     }
 
     #[cfg(feature = "blocks")]
@@ -384,7 +384,7 @@ impl Attr {
 }
 
 #[link(name = "System", kind = "dylib")]
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     static _dispatch_main_q: Main;
     static _dispatch_queue_attr_concurrent: Attr;
 

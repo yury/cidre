@@ -13,7 +13,7 @@ impl ArithmeticLayer {
 }
 
 #[link(name = "mlc", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static MLC_ARITHMETIC_LAYER: &'static objc::Class<ArithmeticLayer>;
 }
 

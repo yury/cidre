@@ -17,7 +17,7 @@ impl Location {
 }
 
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
-extern "C" {
+unsafe extern "C" {
     static AVAudioSessionLocationUpper: &'static Location;
     static AVAudioSessionLocationLower: &'static Location;
 }
@@ -55,7 +55,7 @@ impl Orientation {
 }
 
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
-extern "C" {
+unsafe extern "C" {
     static AVAudioSessionOrientationTop: &'static Orientation;
     static AVAudioSessionOrientationBottom: &'static Orientation;
     static AVAudioSessionOrientationFront: &'static Orientation;
@@ -90,7 +90,7 @@ impl PolarPattern {
 }
 
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
-extern "C" {
+unsafe extern "C" {
     static AVAudioSessionPolarPatternOmnidirectional: &'static PolarPattern;
     static AVAudioSessionPolarPatternCardioid: &'static PolarPattern;
     static AVAudioSessionPolarPatternSubcardioid: &'static PolarPattern;

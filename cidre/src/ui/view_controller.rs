@@ -18,6 +18,6 @@ impl ViewController {
 }
 
 #[link(name = "ui", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static UI_VIEW_CONTROLLER: &'static objc::Class<ViewController>;
 }

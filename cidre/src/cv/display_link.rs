@@ -31,7 +31,7 @@ impl DisplayLink {
         display_id: cg::DirectDisplayId,
         display_link_out: *mut Option<arc::R<DisplayLink>>,
     ) -> cv::Return {
-        CVDisplayLinkCreateWithCGDisplay(display_id, display_link_out)
+        unsafe { CVDisplayLinkCreateWithCGDisplay(display_id, display_link_out) }
     }
 
     /// ```
@@ -85,7 +85,7 @@ impl DisplayLink {
 
     #[doc(alias = "CVDisplayLinkGetCurrentTime")]
     pub unsafe fn get_current_time(&self, out_time: *mut cv::TimeStamp) -> cv::Return {
-        CVDisplayLinkGetCurrentTime(self, out_time)
+        unsafe { CVDisplayLinkGetCurrentTime(self, out_time) }
     }
 
     #[doc(alias = "CVDisplayLinkGetCurrentTime")]
@@ -96,11 +96,11 @@ impl DisplayLink {
     #[doc(alias = "CVDisplayLinkSetOutputCallback")]
     #[must_use]
     pub unsafe fn set_callback<T>(&self, callback: OutputCb<T>, user_info: *mut T) -> cv::Return {
-        CVDisplayLinkSetOutputCallback(self, transmute(callback), user_info as _)
+        unsafe { CVDisplayLinkSetOutputCallback(self, transmute(callback), user_info as _) }
     }
 }
 
-extern "C-unwind" {
+unsafe extern "C-unwind" {
     fn CVDisplayLinkGetTypeID() -> cf::TypeId;
 
     #[cfg(feature = "cg")]

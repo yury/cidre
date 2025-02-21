@@ -26,6 +26,6 @@ impl View {
 }
 
 #[link(name = "ui", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static UI_VIEW: &'static objc::Class<View>;
 }

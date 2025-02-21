@@ -113,6 +113,6 @@ impl ImageGenerator {
     pub fn cancel_all_cg_image_gen(&mut self);
 }
 
-extern "C" {
+unsafe extern "C" {
     static AV_ASSET_IMAGE_GENERATOR: &'static objc::Class<ImageGenerator>;
 }

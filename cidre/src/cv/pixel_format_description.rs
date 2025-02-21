@@ -17,7 +17,7 @@ pub fn all_pixel_formats() -> Option<arc::R<cf::ArrayOf<cf::Number>>> {
     unsafe { CVPixelFormatDescriptionArrayCreateWithAllPixelFormatTypes(None) }
 }
 
-extern "C" {
+unsafe extern "C" {
     fn CVPixelFormatDescriptionCreateWithPixelFormatType(
         allocator: Option<&cf::Allocator>,
         pixel_format: cv::PixelFormat,
@@ -80,7 +80,7 @@ pub mod keys {
         unsafe { kCVPixelFormatComponentRange }
     }
 
-    extern "C" {
+    unsafe extern "C" {
         static kCVPixelFormatName: &'static cf::String;
         static kCVPixelFormatConstant: &'static cf::String;
         static kCVPixelFormatCodecType: &'static cf::String;
@@ -101,7 +101,7 @@ pub mod component_range {
         unsafe { kCVPixelFormatComponentRange_VideoRange }
     }
 
-    extern "C" {
+    unsafe extern "C" {
         static kCVPixelFormatComponentRange_VideoRange: &'static cf::String;
     }
 }

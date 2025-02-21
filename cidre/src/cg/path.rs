@@ -507,7 +507,7 @@ impl PathMut {
 }
 
 #[link(name = "CoreGraphics", kind = "framework")]
-extern "C" {
+unsafe extern "C-unwind" {
     fn CGPathGetTypeID() -> cf::TypeId;
     fn CGPathCreateMutable() -> arc::R<PathMut>;
     fn CGPathCreateCopy(path: &Path) -> arc::R<Path>;

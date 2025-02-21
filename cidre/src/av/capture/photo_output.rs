@@ -79,7 +79,7 @@ impl PhotoSettings {
 }
 
 #[link(name = "av", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static AV_CAPTURE_PHOTO_OUTPUT: &'static objc::Class<PhotoOutput>;
     static AV_CAPTURE_PHOTO_SETTINGS: &'static objc::Class<PhotoSettings>;
 }

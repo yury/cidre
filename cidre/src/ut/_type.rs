@@ -60,7 +60,7 @@ impl Type {
 }
 
 #[link(name = "ut", kind = "static")]
-extern "C" {
+unsafe extern "C" {
     static UT_TYPE: &'static objc::Class<Type>;
 }
 
