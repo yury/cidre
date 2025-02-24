@@ -1,4 +1,4 @@
-use std::{ffi::c_ulong, ptr::slice_from_raw_parts};
+use std::ffi::c_ulong;
 
 use crate::objc::{self, Obj};
 
@@ -55,12 +55,10 @@ where
     T: Obj + 'a,
 {
     pub obj: &'a E,
-    objects: [*const T; N],
-    items: &'a [*const T],
+    objs: [*const T; N],
     state: FastEnumerationState<T>,
     index: usize,
     len: usize,
-    total_index: usize,
 }
 
 impl<'a, E, T, const N: usize> FEIterator<'a, E, T, N>
@@ -68,28 +66,18 @@ where
     E: Obj + FastEnumeration<T>,
     T: Obj + 'a,
 {
+    #[inline]
     pub fn new(obj: &'a E) -> Self {
         Self {
             obj,
             state: Default::default(),
-            objects: [std::ptr::null(); N],
-            items: &mut [],
+            // on stack buffer to fill
+            objs: [std::ptr::null(); N],
             index: 0,
             len: 0,
-            total_index: 0,
         }
     }
 }
-
-// impl<'a, E, T, const N: usize> ExactSizeIterator for FEIterator<'a, E, T, N>
-// where
-//     E: objc::Obj + FastEnumeration<T>,
-//     T: objc::Obj + 'a,
-// {
-//     fn len(&self) -> usize {
-//         self.total_len - self.total_index
-//     }
-// }
 
 impl<'a, E, T, const N: usize> Iterator for FEIterator<'a, E, T, N>
 where
@@ -100,29 +88,26 @@ where
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        if self.index + 1 > self.len {
+        // We need first/next batch
+        if self.index == self.len {
             if self.len > 0 && self.len < N {
                 return None;
             }
-            self.index = 0;
 
-            let len = self
+            self.len = self
                 .obj
-                .count_by_enumerating(&mut self.state, self.objects.as_mut_ptr(), N);
+                .count_by_enumerating(&mut self.state, self.objs.as_mut_ptr(), N);
 
-            if len == 0 {
+            if self.len == 0 {
                 return None;
             }
 
-            self.items = unsafe { &*slice_from_raw_parts(self.state.items_ptr, len) };
-
-            self.len = len;
+            self.index = 0;
         }
 
-        let item = unsafe { self.items[self.index].as_ref().unwrap_unchecked() };
+        let item = unsafe { *self.state.items_ptr.add(self.index) };
         self.index += 1;
-        self.total_index += 1;
-        Some(item)
+        Some(unsafe { &*item })
     }
 }
 
