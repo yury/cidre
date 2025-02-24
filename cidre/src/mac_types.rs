@@ -4,29 +4,18 @@ pub type ResType = FourCharCode; // ??
 pub type UniChar = u16;
 
 pub fn four_cc_to_string(bytes: [u8; 4]) -> String {
-    let mut res = String::with_capacity(4);
-
-    for b in bytes {
-        let ch = if b >= b' ' && b <= b'~' {
-            unsafe { char::from_u32_unchecked(b as u32) }
-        } else {
-            '.'
-        };
-        res.push(ch);
-    }
-
-    res
+    let mut bytes = bytes;
+    four_cc_to_str(&mut bytes).to_owned()
 }
 
 pub fn four_cc_to_str(bytes: &mut [u8; 4]) -> &str {
-    for i in 0..4 {
-        let b = unsafe { bytes.get_unchecked_mut(i) };
-        if b < &mut b' ' || b > &mut b'~' {
+    for b in bytes.iter_mut() {
+        if *b < b' ' || *b > b'~' {
             *b = b'.';
-        };
+        }
     }
-
-    unsafe { &std::str::from_utf8_unchecked(bytes) }
+    // SAFETY: All bytes are in the ASCII range, so the result is valid UTF-8.
+    unsafe { std::str::from_utf8_unchecked(bytes) }
 }
 
 pub fn four_cc_fmt_debug(
