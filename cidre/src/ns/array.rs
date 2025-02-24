@@ -101,8 +101,8 @@ impl<T: objc::Obj> Array<T> {
     }
 
     #[inline]
-    pub fn iter(&self) -> ns::FEIterator<Self, T> {
-        ns::FastEnumeration::iter(self)
+    pub fn iter(&self) -> ns::FeIterator<Self, T> {
+        ns::FastEnum::iter(self)
     }
 
     #[objc::msg_send(objectAtIndex:)]
@@ -171,8 +171,8 @@ impl<T: objc::Obj> arc::R<ArrayMut<T>> {
     }
 }
 
-impl<T: objc::Obj> ns::FastEnumeration<T> for Array<T> {}
-impl<T: objc::Obj> ns::FastEnumeration<T> for ArrayMut<T> {}
+impl<T: objc::Obj> ns::FastEnum<T> for Array<T> {}
+impl<T: objc::Obj> ns::FastEnum<T> for ArrayMut<T> {}
 
 impl<T: objc::Obj> From<&[&T]> for arc::R<Array<T>> {
     fn from(value: &[&T]) -> Self {

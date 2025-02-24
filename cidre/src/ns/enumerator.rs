@@ -1,20 +1,20 @@
-use std::ffi::c_ulong;
+use crate::objc;
 
-use crate::objc::{self, Obj};
+static MUTATIONS_TARGET: std::ffi::c_ulong = 0;
+static MUTATIONS_PTR: &std::ffi::c_ulong = &MUTATIONS_TARGET;
 
-static MUTATIONS_TARGET: c_ulong = 0;
-static MUTATIONS_PTR: &c_ulong = &MUTATIONS_TARGET;
-
+#[doc(alias = "NSFastEnumerationState")]
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
-pub struct FastEnumerationState<T> {
-    pub state: c_ulong,
+pub struct FeState<T> {
+    pub state: std::ffi::c_ulong,
     pub items_ptr: *const *const T,
-    pub mutations_ptr: &'static c_ulong,
-    pub extra: [c_ulong; 5],
+    pub mutations_ptr: &'static std::ffi::c_ulong,
+    pub extra: [std::ffi::c_ulong; 5],
 }
 
-impl<T> FastEnumerationState<T> {
+impl<T> FeState<T> {
+    #[inline]
     pub fn new() -> Self {
         Self {
             state: 0,
@@ -25,46 +25,42 @@ impl<T> FastEnumerationState<T> {
     }
 }
 
-impl<T> Default for FastEnumerationState<T> {
+impl<T> Default for FeState<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-pub trait FastEnumeration<T: Obj>: Obj {
+#[doc(alias = "NSFastEnumeration")]
+pub trait FastEnum<T: objc::Obj>: objc::Obj {
     #[objc::msg_send(countByEnumeratingWithState:objects:count:)]
-    fn count_by_enumerating(
-        &self,
-        state: &mut FastEnumerationState<T>,
-        objects: *mut *const T,
-        count: usize,
-    ) -> usize;
+    fn count_by_enum(&self, state: &mut FeState<T>, objects: *mut *const T, count: usize) -> usize;
 
     #[inline]
-    fn iter(&self) -> FEIterator<Self, T> {
-        FEIterator::new(self)
+    fn iter(&self) -> FeIterator<Self, T> {
+        FeIterator::new(self)
     }
 }
 
 // https://github.com/apple/swift-corelibs-foundation/blob/main/Darwin/Foundation-swiftoverlay/NSFastEnumeration.swift
 // https://www.mikeash.com/pyblog/friday-qa-2010-04-16-implementing-fast-enumeration.html
 #[derive(Debug)]
-pub struct FEIterator<'a, E, T, const N: usize = 16>
+pub struct FeIterator<'a, E, T, const N: usize = 16>
 where
-    E: Obj + FastEnumeration<T>,
-    T: Obj + 'a,
+    E: objc::Obj + FastEnum<T>,
+    T: objc::Obj + 'a,
 {
-    pub obj: &'a E,
-    objs: [*const T; N],
-    state: FastEnumerationState<T>,
+    obj: &'a E,
+    batch: [*const T; N],
+    state: FeState<T>,
     index: usize,
     len: usize,
 }
 
-impl<'a, E, T, const N: usize> FEIterator<'a, E, T, N>
+impl<'a, E, T, const N: usize> FeIterator<'a, E, T, N>
 where
-    E: Obj + FastEnumeration<T>,
-    T: Obj + 'a,
+    E: objc::Obj + FastEnum<T>,
+    T: objc::Obj + 'a,
 {
     #[inline]
     pub fn new(obj: &'a E) -> Self {
@@ -72,17 +68,17 @@ where
             obj,
             state: Default::default(),
             // on stack buffer to fill
-            objs: [std::ptr::null(); N],
+            batch: [std::ptr::null(); N],
             index: 0,
             len: 0,
         }
     }
 }
 
-impl<'a, E, T, const N: usize> Iterator for FEIterator<'a, E, T, N>
+impl<'a, E, T, const N: usize> Iterator for FeIterator<'a, E, T, N>
 where
-    E: Obj + FastEnumeration<T>,
-    T: Obj + 'a,
+    E: objc::Obj + FastEnum<T>,
+    T: objc::Obj + 'a,
 {
     type Item = &'a T;
 
@@ -96,7 +92,7 @@ where
 
             self.len = self
                 .obj
-                .count_by_enumerating(&mut self.state, self.objs.as_mut_ptr(), N);
+                .count_by_enum(&mut self.state, self.batch.as_mut_ptr(), N);
 
             if self.len == 0 {
                 return None;

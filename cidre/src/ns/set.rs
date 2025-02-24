@@ -74,8 +74,8 @@ impl<T: Obj> Set<T> {
     }
 
     #[inline]
-    pub fn iter(&self) -> ns::FEIterator<Self, T> {
-        ns::FastEnumeration::iter(self)
+    pub fn iter(&self) -> ns::FeIterator<Self, T> {
+        ns::FastEnum::iter(self)
     }
 
     #[cfg(feature = "cf")]
@@ -85,8 +85,8 @@ impl<T: Obj> Set<T> {
     }
 }
 
-impl<T> ns::FastEnumeration<T> for Set<T> where T: Obj {}
-impl<T> ns::FastEnumeration<T> for SetMut<T> where T: Obj {}
+impl<T> ns::FastEnum<T> for Set<T> where T: Obj {}
+impl<T> ns::FastEnum<T> for SetMut<T> where T: Obj {}
 
 #[link(name = "ns", kind = "static")]
 unsafe extern "C" {

@@ -105,9 +105,9 @@ pub use dictionary::Dictionary;
 pub use dictionary::DictionaryMut;
 
 mod enumerator;
-pub use enumerator::FEIterator;
-pub use enumerator::FastEnumeration;
-pub use enumerator::FastEnumerationState;
+pub use enumerator::FastEnum;
+pub use enumerator::FeIterator;
+pub use enumerator::FeState;
 
 mod set;
 pub use set::Set;
