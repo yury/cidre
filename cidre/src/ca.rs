@@ -40,7 +40,7 @@ pub use metal_layer::MetalDrawable;
 pub use metal_layer::MetalLayer;
 
 mod renderer;
-pub use renderer::OptionKey as RendererOptionKey;
+pub use renderer::OptKey as RendererOptKey;
 pub use renderer::Renderer;
 
 mod transaction;
