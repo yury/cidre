@@ -8,7 +8,7 @@ pub mod err {
 
     /// NULL or invalid parameter passed to API
     #[doc(alias = "kCGImageAnimationStatus_ParameterError")]
-    pub const PARAMAMETER_ERROR: Error = Error::new_unchecked(-22140);
+    pub const PARAM_ERR: Error = Error::new_unchecked(-22140);
 
     /// An image cannot be read from the given source
     #[doc(alias = "kCGImageAnimationStatus_CorruptInputImage")]
@@ -24,7 +24,7 @@ pub mod err {
 
     /// A required resource could not be created
     #[doc(alias = "kCGImageAnimationStatus_AllocationFailure")]
-    pub const ALLOCATION_FAILURE: Error = Error::new_unchecked(-22143);
+    pub const ALLOC_FAILURE: Error = Error::new_unchecked(-22143);
 }
 
 define_cf_type!(OptKey(cf::String));
