@@ -1,6 +1,9 @@
 use crate::{define_opts, ns};
 
-define_opts!(pub KernelOpts(usize));
+define_opts!(
+    #[doc(alias = "MPSKernelOptions")]
+    pub KernelOpts(usize)
+);
 
 /// Options used when creating mps::Kernel objects
 impl KernelOpts {
@@ -132,7 +135,7 @@ pub enum ImageFeatureChannelFormat {
 #[doc(alias = "MPSDataType")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(u32)]
-pub enum DataType {
+pub enum DType {
     Invalid,
 
     /// 32-bit floating point (single-precision).
@@ -175,7 +178,7 @@ pub enum DataType {
     UNorm8 = Self::NORMALIZED_BIT | 8u32,
 }
 
-impl DataType {
+impl DType {
     /// A common bit for all floating point data types. Zero for integer types
     pub const FLOAT_BIT: u32 = 0x10000000;
 

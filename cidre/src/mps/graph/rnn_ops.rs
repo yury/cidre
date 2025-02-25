@@ -1,8 +1,9 @@
 use crate::{arc, define_obj_type, mps::graph, ns, objc};
 
+#[doc(alias = "MPSGraphRNNActivation")]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(usize)]
-pub enum RNNActivation {
+pub enum RnnActivation {
     None = 0,
     Relu,
     Tahn,
@@ -11,10 +12,11 @@ pub enum RNNActivation {
 }
 
 define_obj_type!(
-    pub SingleGateRNNDesc(ns::Id),
+    #[doc(alias = "MPSGraphSingleGateRNNDescriptor")]
+    pub SingleGateRnnDesc(ns::Id),
     MPS_GRAPH_SINGLE_GATE_RNN_DESCRIPTOR
 );
-impl SingleGateRNNDesc {
+impl SingleGateRnnDesc {
     /// If set then the input sequence is passed in reverse time order to the layer.
     /// Ignored when `bidirectional = true`
     /// Default value `false`
@@ -44,13 +46,18 @@ impl SingleGateRNNDesc {
     /// Activation function to use with the RNN op.
     /// Default value `None`
     #[objc::msg_send(activation)]
-    pub fn activation(&self) -> RNNActivation;
+    pub fn activation(&self) -> RnnActivation;
 
     #[objc::msg_send(setActivation:)]
-    pub fn set_activation(&mut self, val: RNNActivation);
+    pub fn set_activation(&mut self, val: RnnActivation);
 }
-define_obj_type!(pub LSTMDesc(ns::Id), MPS_GRAPH_LSTM_DESCRIPTOR);
-impl LSTMDesc {
+
+define_obj_type!(
+    #[doc(alias = "MPSGraphLSTMDescriptor")]
+    pub LstmDesc(ns::Id), MPS_GRAPH_LSTM_DESCRIPTOR
+);
+
+impl LstmDesc {
     #[objc::msg_send(reverse)]
     pub fn reverse(&self) -> bool;
 
@@ -82,38 +89,42 @@ impl LSTMDesc {
     pub fn set_forget_gate_last(&mut self, val: bool);
 
     #[objc::msg_send(inputGateActivation)]
-    pub fn input_gate_activation(&self) -> RNNActivation;
+    pub fn input_gate_activation(&self) -> RnnActivation;
 
     #[objc::msg_send(setInputGateActivation:)]
-    pub fn set_input_gate_activation(&mut self, val: RNNActivation);
+    pub fn set_input_gate_activation(&mut self, val: RnnActivation);
 
     #[objc::msg_send(forgetGateActivation)]
-    pub fn forget_gate_activation(&self) -> RNNActivation;
+    pub fn forget_gate_activation(&self) -> RnnActivation;
 
     #[objc::msg_send(setForgetGateActivation:)]
-    pub fn set_forget_gate_activation(&mut self, val: RNNActivation);
+    pub fn set_forget_gate_activation(&mut self, val: RnnActivation);
 
     #[objc::msg_send(cellGateActivation)]
-    pub fn cell_gate_activation(&self) -> RNNActivation;
+    pub fn cell_gate_activation(&self) -> RnnActivation;
 
     #[objc::msg_send(setCellGateActivation:)]
-    pub fn set_cell_gate_activation(&mut self, val: RNNActivation);
+    pub fn set_cell_gate_activation(&mut self, val: RnnActivation);
 
     #[objc::msg_send(outputGateActivation)]
-    pub fn output_gate_activation(&self) -> RNNActivation;
+    pub fn output_gate_activation(&self) -> RnnActivation;
 
     #[objc::msg_send(setOutputGateActivation:)]
-    pub fn set_output_gate_activation(&mut self, val: RNNActivation);
+    pub fn set_output_gate_activation(&mut self, val: RnnActivation);
 
     #[objc::msg_send(activation)]
-    pub fn activation(&self) -> RNNActivation;
+    pub fn activation(&self) -> RnnActivation;
 
     #[objc::msg_send(setActivation:)]
-    pub fn set_activation(&mut self, val: RNNActivation);
+    pub fn set_activation(&mut self, val: RnnActivation);
 }
 
-define_obj_type!(pub GRUDescr(ns::Id), MPS_GRAPH_GRU_DESCRIPTOR);
-impl GRUDescr {
+define_obj_type!(
+    #[doc(alias = "MPSGraphGRUDescriptor")]
+    pub GruDescr(ns::Id), MPS_GRAPH_GRU_DESCRIPTOR
+);
+
+impl GruDescr {
     #[objc::msg_send(reverse)]
     pub fn reverse(&self) -> bool;
 
@@ -146,22 +157,22 @@ impl GRUDescr {
     pub fn set_reset_after(&mut self, val: bool);
 
     #[objc::msg_send(updateGateActivation)]
-    pub fn update_gate_activation(&self) -> RNNActivation;
+    pub fn update_gate_activation(&self) -> RnnActivation;
 
     #[objc::msg_send(setUpdateGateActivation:)]
-    pub fn set_update_gate_activation(&mut self, val: RNNActivation);
+    pub fn set_update_gate_activation(&mut self, val: RnnActivation);
 
     #[objc::msg_send(resetGateActivation)]
-    pub fn reset_gate_activation(&self) -> RNNActivation;
+    pub fn reset_gate_activation(&self) -> RnnActivation;
 
     #[objc::msg_send(setResetGateActivation:)]
-    pub fn set_reset_gate_activation(&mut self, val: RNNActivation);
+    pub fn set_reset_gate_activation(&mut self, val: RnnActivation);
 
     #[objc::msg_send(outputGateActivation)]
-    pub fn output_gate_activation(&self) -> RNNActivation;
+    pub fn output_gate_activation(&self) -> RnnActivation;
 
     #[objc::msg_send(setOutputGateActivation:)]
-    pub fn set_output_gate_activation(&mut self, val: RNNActivation);
+    pub fn set_output_gate_activation(&mut self, val: RnnActivation);
 }
 
 impl graph::Graph {
@@ -174,7 +185,7 @@ impl graph::Graph {
         bias: Option<&graph::Tensor>,
         init_state: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDesc,
+        descriptor: &SingleGateRnnDesc,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 
@@ -191,7 +202,7 @@ impl graph::Graph {
         bias: Option<&graph::Tensor>,
         init_state: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
-        descriptor: &SingleGateRNNDesc,
+        descriptor: &SingleGateRnnDesc,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 
@@ -207,7 +218,7 @@ impl graph::Graph {
         init_cell: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
         peephole: Option<&graph::Tensor>,
-        descriptor: &LSTMDesc,
+        descriptor: &LstmDesc,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 
@@ -231,7 +242,7 @@ impl graph::Graph {
         init_cell: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
         peephole: Option<&graph::Tensor>,
-        descriptor: &LSTMDesc,
+        descriptor: &LstmDesc,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 
@@ -248,7 +259,7 @@ impl graph::Graph {
         init_state: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
         secondary_bias: Option<&graph::Tensor>,
-        descriptor: &GRUDescr,
+        descriptor: &GruDescr,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 
@@ -270,16 +281,16 @@ impl graph::Graph {
         init_state: Option<&graph::Tensor>,
         mask: Option<&graph::Tensor>,
         secondary_bias: Option<&graph::Tensor>,
-        descriptor: &GRUDescr,
+        descriptor: &GruDescr,
         name: Option<&ns::String>,
     ) -> arc::R<ns::Array<graph::Tensor>>;
 }
 
 #[link(name = "mpsg", kind = "static")]
 unsafe extern "C" {
-    static MPS_GRAPH_SINGLE_GATE_RNN_DESCRIPTOR: &'static objc::Class<SingleGateRNNDesc>;
-    static MPS_GRAPH_LSTM_DESCRIPTOR: &'static objc::Class<LSTMDesc>;
-    static MPS_GRAPH_GRU_DESCRIPTOR: &'static objc::Class<GRUDescr>;
+    static MPS_GRAPH_SINGLE_GATE_RNN_DESCRIPTOR: &'static objc::Class<SingleGateRnnDesc>;
+    static MPS_GRAPH_LSTM_DESCRIPTOR: &'static objc::Class<LstmDesc>;
+    static MPS_GRAPH_GRU_DESCRIPTOR: &'static objc::Class<GruDescr>;
 }
 
 #[cfg(test)]
@@ -288,7 +299,7 @@ mod test {
 
     #[test]
     fn basics() {
-        let desc = graph::SingleGateRNNDesc::new();
-        assert_eq!(desc.activation(), graph::RNNActivation::None);
+        let desc = graph::SingleGateRnnDesc::new();
+        assert_eq!(desc.activation(), graph::RnnActivation::None);
     }
 }

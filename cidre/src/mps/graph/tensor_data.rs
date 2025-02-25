@@ -7,7 +7,7 @@ impl TensorData {
     pub fn shape(&self) -> mps::Shape;
 
     #[objc::msg_send(dataType)]
-    pub fn data_type(&self) -> mps::DataType;
+    pub fn data_type(&self) -> mps::DType;
 
     #[objc::msg_send(device)]
     pub fn device(&self) -> &mps::graph::Device;

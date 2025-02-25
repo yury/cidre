@@ -31,7 +31,7 @@ mod memory_ops;
 pub use memory_ops::VariableOp;
 
 mod convolution_ops;
-pub use convolution_ops::Convolution2dOpDesc;
+pub use convolution_ops::Conv2dOpDesc;
 
 mod resize_ops;
 pub use resize_ops::ResizeMode;
@@ -45,8 +45,8 @@ mod normalization_ops;
 mod shape_ops;
 
 mod rnn_ops;
-pub use rnn_ops::RNNActivation;
-pub use rnn_ops::SingleGateRNNDesc;
+pub use rnn_ops::RnnActivation;
+pub use rnn_ops::SingleGateRnnDesc;
 
 /// Options to be utilized by the graph
 #[doc(alias = "MPSGraphOptions")]

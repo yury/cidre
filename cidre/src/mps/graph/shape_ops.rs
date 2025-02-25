@@ -68,7 +68,7 @@ impl graph::Graph {
     pub fn cast(
         &self,
         tensor: &graph::Tensor,
-        to_type: mps::DataType,
+        to_type: mps::DType,
         name: Option<&ns::String>,
     ) -> arc::R<graph::Tensor>;
 

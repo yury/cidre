@@ -6,7 +6,7 @@ impl Tensor {
     pub fn shape(&self) -> Option<&mps::Shape>;
 
     #[objc::msg_send(dataType)]
-    pub fn data_type(&self) -> mps::DataType;
+    pub fn data_type(&self) -> mps::DType;
 
     #[objc::msg_send(operation)]
     pub fn op(&self) -> &graph::Op;

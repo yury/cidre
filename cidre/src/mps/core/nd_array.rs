@@ -1,13 +1,19 @@
 use crate::{arc, define_cls, define_obj_type, mps, mtl, ns, objc};
 
-define_obj_type!(pub NDArrayAllocator(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MPSNDArrayAllocator")]
+    pub NdArrayAllocator(ns::Id)
+);
 
-define_obj_type!(pub NDArray(ns::Id));
-impl NDArray {
+define_obj_type!(
+    #[doc(alias = "MPSNDArray")]
+    pub NdArray(ns::Id)
+);
+impl NdArray {
     define_cls!(MPS_NDARRAY);
 
     #[objc::msg_send(defaultAllocator)]
-    pub fn default_allocator() -> arc::R<NDArrayAllocator>;
+    pub fn default_allocator() -> arc::R<NdArrayAllocator>;
 
     #[objc::msg_send(label)]
     pub fn label(&self) -> Option<arc::R<ns::String>>;
@@ -16,11 +22,11 @@ impl NDArray {
     pub fn set_label(&mut self, value: Option<&ns::String>);
 
     #[objc::msg_send(dataType)]
-    pub fn data_type(&self) -> mps::DataType;
+    pub fn data_type(&self) -> mps::DType;
 
-    /// Copy bytes from NDArray into buffer
-    /// The dimensionality and size of the copy region is given by the size of the NDArray
-    /// For subregions, use a NDArray view.
+    /// Copy bytes from NdArray into buffer
+    /// The dimensionality and size of the copy region is given by the size of the NdArray
+    /// For subregions, use a NdArray view.
     #[objc::msg_send(readBytes:strideBytes:)]
     pub fn read_bytes(&self, bytes: *mut u8, stride_bytes: *mut isize);
 
@@ -37,18 +43,22 @@ impl NDArray {
     pub fn device(&self) -> &mtl::Device;
 
     #[objc::msg_send(descriptor)]
-    pub fn descriptor(&self) -> &NDArrayDesc;
+    pub fn descriptor(&self) -> &NdArrayDesc;
 }
 
-define_obj_type!(pub NDArrayDesc(ns::Id));
-impl NDArrayDesc {
+define_obj_type!(
+    #[doc(alias = "MPSNDArrayDescriptor")]
+    pub NdArrayDesc(ns::Id)
+);
+
+impl NdArrayDesc {
     define_cls!(MPS_NDARRAY_DESCRIPTOR);
 
     #[objc::msg_send(dataType)]
-    pub fn data_type(&self) -> mps::DataType;
+    pub fn data_type(&self) -> mps::DType;
 
     #[objc::msg_send(setDataType:)]
-    pub fn set_data_type(&mut self, value: mps::DataType);
+    pub fn set_data_type(&mut self, value: mps::DType);
 
     #[objc::msg_send(numberOfDimensions)]
     pub fn ndim(&self) -> usize;
@@ -65,6 +75,6 @@ impl NDArrayDesc {
 
 #[link(name = "mps", kind = "static")]
 unsafe extern "C" {
-    static MPS_NDARRAY: &'static objc::Class<NDArray>;
-    static MPS_NDARRAY_DESCRIPTOR: &'static objc::Class<NDArrayDesc>;
+    static MPS_NDARRAY: &'static objc::Class<NdArray>;
+    static MPS_NDARRAY_DESCRIPTOR: &'static objc::Class<NdArrayDesc>;
 }

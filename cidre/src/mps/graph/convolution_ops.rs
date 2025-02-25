@@ -1,8 +1,11 @@
 use crate::{arc, define_cls, define_obj_type, mps::graph, ns, objc};
 
-define_obj_type!(pub Convolution2dOpDesc(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MPSGraphConvolution2dDescriptor")]
+    pub Conv2dOpDesc(ns::Id)
+);
 
-impl Convolution2dOpDesc {
+impl Conv2dOpDesc {
     define_cls!(MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR);
 
     #[objc::msg_send(descriptorWithStrideInX:strideInY:dilationRateInX:dilationRateInY:groups:paddingLeft:paddingRight:paddingTop:paddingBottom:paddingStyle:dataLayout:weightsLayout:)]
@@ -24,16 +27,16 @@ impl Convolution2dOpDesc {
 
 impl graph::Graph {
     #[objc::msg_send(convolution2DWithSourceTensor:weightsTensor:descriptor:name:)]
-    pub fn convolution_2d(
+    pub fn conv_2d(
         &self,
         source: &graph::Tensor,
         weights: &graph::Tensor,
-        descriptor: &Convolution2dOpDesc,
+        descriptor: &Conv2dOpDesc,
         name: Option<&ns::String>,
     ) -> arc::R<graph::Tensor>;
 }
 
 #[link(name = "mpsg", kind = "static")]
 unsafe extern "C" {
-    static MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR: &'static objc::Class<Convolution2dOpDesc>;
+    static MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR: &'static objc::Class<Conv2dOpDesc>;
 }
