@@ -11,6 +11,7 @@ pub type ApplyBlock<Attr> = blocks::Block<fn(&cg::PathElement), Attr>;
 
 pub type PathApplierFn<T> = extern "C" fn(info: *mut T, element: *mut Element);
 
+#[doc(alias = "CGLineJoin")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum LineJoin {
@@ -19,6 +20,7 @@ pub enum LineJoin {
     Bevel,
 }
 
+#[doc(alias = "CGLineCap")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum LineCap {
@@ -27,6 +29,7 @@ pub enum LineCap {
     Square,
 }
 
+#[doc(alias = "CGPathElementType")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum ElementType {
@@ -37,6 +40,7 @@ pub enum ElementType {
     CloseSubpath,
 }
 
+#[doc(alias = "CGPathElement")]
 #[derive(Debug)]
 #[repr(C)]
 pub struct Element {
@@ -70,28 +74,37 @@ impl Element {
     }
 }
 
-define_cf_type!(Path(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CGPathRef")]
+    Path(cf::Type)
+);
+
 impl Path {
+    #[doc(alias = "CGPathGetTypeID")]
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CGPathGetTypeID() }
     }
 
+    #[doc(alias = "CGPathCreateCopy")]
     #[inline]
     pub fn copy(&self) -> arc::R<Self> {
         unsafe { CGPathCreateCopy(self) }
     }
 
+    #[doc(alias = "CGPathCreateMutableCopy")]
     #[inline]
     pub fn copy_mut(&self) -> arc::R<PathMut> {
         unsafe { CGPathCreateMutableCopy(self) }
     }
 
+    #[doc(alias = "CGPathCreateCopyByTransformingPath")]
     #[inline]
     pub fn copy_transforming_path(&self, transform: Option<&cg::AffineTransform>) -> arc::R<Self> {
         unsafe { CGPathCreateCopyByTransformingPath(self, transform) }
     }
 
+    #[doc(alias = "CGPathCreateMutableCopyByTransformingPath")]
     #[inline]
     pub fn copy_mut_transforming_path(
         &self,
@@ -100,6 +113,7 @@ impl Path {
         unsafe { CGPathCreateMutableCopyByTransformingPath(self, transform) }
     }
 
+    #[doc(alias = "CGPathCreateCopyByDashingPath")]
     #[inline]
     pub fn copy_dashing_path(
         &self,
@@ -112,6 +126,7 @@ impl Path {
         }
     }
 
+    #[doc(alias = "CGPathCreateCopyByStrokingPath")]
     #[inline]
     pub fn copy_stroking_path(
         &self,
@@ -133,16 +148,19 @@ impl Path {
         }
     }
 
+    #[doc(alias = "CGPathEqualToPath")]
     #[inline]
     pub fn equal(&self, other: &Path) -> bool {
         unsafe { CGPathEqualToPath(self, other) }
     }
 
+    #[doc(alias = "CGPathCreateWithRect")]
     #[inline]
     pub fn with_rect(rect: cg::Rect, transform: Option<&cg::AffineTransform>) -> arc::R<Self> {
         unsafe { CGPathCreateWithRect(rect, transform) }
     }
 
+    #[doc(alias = "CGPathCreateWithEllipseInRect")]
     #[inline]
     pub fn with_ellipse_in_rect(
         rect: cg::Rect,
@@ -151,6 +169,7 @@ impl Path {
         unsafe { CGPathCreateWithEllipseInRect(rect, transform) }
     }
 
+    #[doc(alias = "CGPathCreateWithRoundedRect")]
     #[inline]
     pub fn with_rounded_rect(
         rect: cg::Rect,
@@ -161,26 +180,31 @@ impl Path {
         unsafe { CGPathCreateWithRoundedRect(rect, corner_width, corner_height, transform) }
     }
 
+    #[doc(alias = "CGPathIsEmpty")]
     #[inline]
     pub fn is_empty(&self) -> bool {
         unsafe { CGPathIsEmpty(self) }
     }
 
+    #[doc(alias = "CGPathIsRect")]
     #[inline]
     pub fn is_rect(&self) -> bool {
         unsafe { CGPathIsRect(self) }
     }
 
+    #[doc(alias = "CGPathGetCurrentPoint")]
     #[inline]
     pub fn current_point(&self) -> cg::Point {
         unsafe { CGPathGetCurrentPoint(self) }
     }
 
+    #[doc(alias = "CGPathGetBoundingBox")]
     #[inline]
     pub fn bounding_box(&self) -> cg::Rect {
         unsafe { CGPathGetBoundingBox(self) }
     }
-
+    
+    #[doc(alias = "CGPathGetPathBoundingBox")]
     #[inline]
     pub fn path_bounding_box(&self) -> cg::Rect {
         unsafe { CGPathGetPathBoundingBox(self) }

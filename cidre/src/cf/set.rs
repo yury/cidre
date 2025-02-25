@@ -1,4 +1,3 @@
-use std::mem::MaybeUninit;
 use std::{ffi::c_void, marker::PhantomData, ops::Deref};
 
 use crate::{arc, cf, define_cf_type};
@@ -49,7 +48,7 @@ where
 {
     pub fn values(&self) -> Vec<arc::R<T>> {
         let len = self.len();
-        let mut vec: Vec<MaybeUninit<arc::R<T>>> = Vec::with_capacity(len);
+        let mut vec: Vec<std::mem::MaybeUninit<arc::R<T>>> = Vec::with_capacity(len);
         unsafe {
             self.get_values(vec.as_mut_ptr() as _);
             vec.set_len(len);

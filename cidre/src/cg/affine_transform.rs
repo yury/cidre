@@ -1,5 +1,7 @@
 use crate::cg;
 
+/// An affine transformation.
+#[doc(alias = "CGAffineTransform")]
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
 pub struct AffineTransform {
@@ -19,6 +21,8 @@ pub struct AffineTransform {
  *    AffineTransform      scale           shear            rotation          translation
  */
 
+/// The components of an affine transformation.
+#[doc(alias = "CGAffineTransformComponents")]
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[repr(C)]
 pub struct Components {
