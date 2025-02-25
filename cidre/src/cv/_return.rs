@@ -16,7 +16,7 @@ pub mod err {
     pub const INVALID_ARG: Error = Error::new_unchecked(-6661);
     /// The allocation for a buffer or buffer pool failed. Most likely because of lack of resources.
     #[doc(alias = "kCVReturnAllocationFailed")]
-    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-6662);
+    pub const ALLOC_FAILED: Error = Error::new_unchecked(-6662);
 
     #[doc(alias = "kCVReturnUnsupported")]
     pub const UNSUPPORTED: Error = Error::new_unchecked(-6663);
@@ -69,7 +69,7 @@ pub mod err {
 
     /// The allocation for the buffer pool failed. Most likely because of lack of resources. Check if your parameters are in range.
     #[doc(alias = "kCVReturnPoolAllocationFailed")]
-    pub const POOL_ALLOCATION_FAILED: Error = Error::new_unchecked(-6690);
+    pub const POOL_ALLOC_FAILED: Error = Error::new_unchecked(-6690);
 
     /// A cv::BufPool cannot be created with the given attributes.
     #[doc(alias = "kCVReturnInvalidPoolAttributes")]

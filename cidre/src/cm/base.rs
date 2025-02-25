@@ -1,6 +1,7 @@
 pub type ItemCount = crate::cf::Index;
 pub type ItemIndex = crate::cf::Index;
 
+#[doc(alias = "CMPersistentTrackID")]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct PersistentTrackId(pub i32);

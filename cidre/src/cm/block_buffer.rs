@@ -370,12 +370,12 @@ pub mod err {
     /// Returned when a cm::BlockBuffer-creating API gets a failure
     /// from the cf::Allocator provided for cm::BlockBuffer construction.
     #[doc(alias = "kCMBlockBufferStructureAllocationFailedErr")]
-    pub const STRUCT_ALLOCATION_FAILED: Error = Error::new_unchecked(-12700);
+    pub const STRUCT_ALLOC_FAILED: Error = Error::new_unchecked(-12700);
 
     /// Returned when the allocator provided to allocate a memory block
     /// (as distinct from cm::BlockBuffer structures) fails.
     #[doc(alias = "kCMBlockBufferBlockAllocationFailedErr")]
-    pub const BLOCK_ALLOCATION_FAILED: Error = Error::new_unchecked(-12701);
+    pub const BLOCK_ALLOC_FAILED: Error = Error::new_unchecked(-12701);
 
     /// The custom block source’s Allocate() routine was NULL when an allocation was attempted.
     #[doc(alias = "kCMBlockBufferBadCustomBlockSourceErr")]

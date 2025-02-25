@@ -953,7 +953,7 @@ pub mod err {
 
     /// An allocation failed.
     #[doc(alias = "kCMSampleBufferError_AllocationFailed")]
-    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-12730);
+    pub const ALLOC_FAILED: Error = Error::new_unchecked(-12730);
 
     /// NULL or 0 was passed for a required parameter.
     #[doc(alias = "kCMSampleBufferError_RequiredParameterMissing")]

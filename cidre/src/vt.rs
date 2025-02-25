@@ -15,6 +15,8 @@ pub use decompression::OutputCb as DecompressionOutputCb;
 pub use decompression::OutputCbRecord as DecompressionOutputCbRecord;
 pub use decompression::Session as DecompressionSession;
 pub use decompression::properties as decompression_properties;
+pub use decompression::session::is_hardware_decode_supported;
+pub use decompression::session::is_stereo_mv_hevc_decode_supported;
 
 pub mod pixel_transfer;
 pub use pixel_transfer::Session as PixelTransferSession;

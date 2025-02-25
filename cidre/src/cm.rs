@@ -23,6 +23,17 @@ pub use format_description_bridge::swap_be_sound_desc_to_host;
 pub use format_description_bridge::swap_host_image_desc_to_be;
 pub use format_description_bridge::swap_host_sound_desc_to_be;
 
+mod tag;
+pub use tag::Tag;
+pub use tag::TagCategory;
+pub use tag::TagDataType;
+pub use tag::err as tag_err;
+
+mod tag_collection;
+pub use tag_collection::TagCollection;
+pub use tag_collection::TagCollectionMut;
+pub use tag_collection::err as tag_collection_err;
+
 mod time;
 pub use time::Time;
 pub use time::TimeEpoch;

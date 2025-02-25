@@ -152,7 +152,7 @@ pub mod clock_err {
     pub const INVALID_PARAMETER: Error = Error::new_unchecked(-12746);
 
     #[doc(alias = "kCMClockError_AllocationFailed")]
-    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-12747);
+    pub const ALLOC_FAILED: Error = Error::new_unchecked(-12747);
 
     #[doc(alias = "kCMClockError_UnsupportedOperation")]
     pub const UNSUPPORTED_OPERATION: Error = Error::new_unchecked(-12756);
@@ -169,7 +169,7 @@ pub mod timebase_err {
     pub const INVALID_PARAMETER: Error = Error::new_unchecked(-12749);
 
     #[doc(alias = "kCMTimebaseError_AllocationFailed")]
-    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-12750);
+    pub const ALLOC_FAILED: Error = Error::new_unchecked(-12750);
 
     #[doc(alias = "kCMTimebaseError_TimerIntervalTooShort")]
     pub const TIMER_INTERVAL_TOO_SHORT: Error = Error::new_unchecked(-12751);
@@ -188,7 +188,7 @@ pub mod sync_err {
     pub const INVALID_PARAMETER: Error = Error::new_unchecked(-12753);
 
     #[doc(alias = "kCMSyncError_AllocationFailed")]
-    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-12754);
+    pub const ALLOC_FAILED: Error = Error::new_unchecked(-12754);
 
     #[doc(alias = "kCMSyncError_RateMustBeNonZero")]
     pub const RATE_MUST_BE_NON_ZERO: Error = Error::new_unchecked(-12755);

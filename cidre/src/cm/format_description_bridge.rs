@@ -9,7 +9,7 @@ pub mod err {
 
     /// Returned when an allocation fails.
     #[doc(alias = "kCMFormatDescriptionBridgeError_AllocationFailed")]
-    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-12713);
+    pub const ALLOC_FAILED: Error = Error::new_unchecked(-12713);
 
     /// Returned when the sample description is invalid (e.g. invalid size).
     #[doc(alias = "kCMFormatDescriptionBridgeError_InvalidSerializedSampleDescription")]

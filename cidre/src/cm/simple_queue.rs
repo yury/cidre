@@ -10,7 +10,7 @@ define_cf_type!(
 pub mod err {
     use crate::os::Error;
     /// An allocation failed.
-    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-12770);
+    pub const ALLOC_FAILED: Error = Error::new_unchecked(-12770);
 
     /// NULL or 0 was passed for a required parameter.
     pub const REQUIRED_PARAMETER_MISSING: Error = Error::new_unchecked(-12771);

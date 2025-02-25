@@ -34,7 +34,22 @@ impl<O, F> OutputCbRecord<O, F> {
     }
 }
 
-define_cf_type!(Session(vt::Session));
+#[doc(alias = "VTDecompressionOutputMultiImageCallback")]
+pub type OutputMultiImageCb<O, F> = extern "C" fn(
+    output_ref_con: *mut O,
+    source_frame_ref_con: *mut F,
+    status: os::Status,
+    info_flags: vt::DecodeInfoFlags,
+    // tagged_buf_group: Option<&cv::TaggedBufGroup>,
+    // image_buffer: Option<&cv::ImageBuf>,
+    pts: cm::Time,
+    duration: cm::Time,
+);
+
+define_cf_type!(
+    #[doc(alias = "VTDecompressionSessionRef")]
+    Session(vt::Session)
+);
 
 impl Session {
     pub fn new<O, F>(
@@ -161,12 +176,23 @@ impl Session {
 /// favoring alternate encodings when hardware decode is not supported.
 /// This call returning true does not guarantee that hardware decode resources will be
 /// available at all times.
+#[doc(alias = "VTIsHardwareDecodeSupported")]
+#[inline]
 pub fn is_hardware_decode_supported(codec_type: VideoCodec) -> bool {
     unsafe { VTIsHardwareDecodeSupported(codec_type) }
 }
 
+/// Indicates whether the current system supports stereo MV-HEVC decode.
+///
+/// This call returning true does not guarantee that decode resources will be available at all times.
+#[doc(alias = "VTIsStereoMVHEVCDecodeSupported")]
+#[inline]
+pub fn is_stereo_mv_hevc_decode_supported() -> bool {
+    unsafe { VTIsStereoMVHEVCDecodeSupported() }
+}
+
 #[link(name = "VideoToolbox", kind = "framework")]
-unsafe extern "C" {
+unsafe extern "C-unwind" {
 
     fn VTDecompressionSessionCreate(
         allocator: Option<&cf::Allocator>,
@@ -201,6 +227,8 @@ unsafe extern "C" {
     ) -> os::Status;
 
     fn VTIsHardwareDecodeSupported(codec_type: VideoCodec) -> bool;
+
+    fn VTIsStereoMVHEVCDecodeSupported() -> bool;
 
 }
 
