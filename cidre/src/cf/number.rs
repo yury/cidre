@@ -7,7 +7,10 @@ use crate::cf::{Allocator, ComparisonResult, Index, Type, TypeId};
 
 use std::{ffi::c_void, time::Duration};
 
-define_cf_type!(Boolean(Type));
+define_cf_type!(
+    #[doc(alias = "CFBooleanRef")]
+    Boolean(Type)
+);
 
 impl Boolean {
     /// ```

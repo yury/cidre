@@ -6,16 +6,17 @@ use crate::{arc, cf, define_cf_type};
 use crate::ns;
 
 define_cf_type!(
-    #[doc(alias = "CFData")]
+    #[doc(alias = "CFDataRef")]
     Data(cf::Type)
 );
 
 define_cf_type!(
-    #[doc(alias = "CFMutableData")]
+    #[doc(alias = "CFMutableDataRef")]
     DataMut(Data)
 );
 
 impl Data {
+    #[doc(alias = "CFDataGetTypeID")]
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CFDataGetTypeID() }

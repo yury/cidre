@@ -5,7 +5,10 @@ use crate::{cf, define_cf_type};
 #[cfg(feature = "ns")]
 use crate::ns;
 
-define_cf_type!(NotificationName(cf::String));
+define_cf_type!(
+    #[doc(alias = "CFNotificationName")]
+    NotificationName(cf::String)
+);
 
 impl NotificationName {
     pub fn with_raw(string: &cf::String) -> &Self {
@@ -27,9 +30,13 @@ pub type NotificationCallback = extern "C" fn(
     user_info: Option<&cf::Dictionary>,
 );
 
-define_cf_type!(NotificationCenter(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CFNotificationCenterRef")]
+    NotificationCenter(cf::Type)
+);
 
 impl NotificationCenter {
+    #[doc(alias = "CFNotificationCenterGetTypeID")]
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CFNotificationCenterGetTypeID() }
@@ -101,11 +108,17 @@ impl NotificationCenter {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[doc(alias = "CFNotificationSuspensionBehavior")]
 #[repr(isize)]
 pub enum NotificationSuspensionBehavior {
+    #[doc(alias = "kCFNotificationSuspensionBehaviorDrop")]
     Drop = 1,
+    #[doc(alias = "kCFNotificationSuspensionBehaviorCoalesce")]
     Coalesce = 2,
+    #[doc(alias = "kCFNotificationSuspensionBehaviorHold")]
     Hold = 3,
+    #[doc(alias = "kCFNotificationSuspensionBehaviorDeliverImmediately")]
     DeliverImmediately = 4,
 }
 
