@@ -79,6 +79,15 @@ impl TaggedBufGroup {
     }
 }
 
+impl cm::SampleBuf {
+    #[doc(alias = "CMSampleBufferGetTaggedBufferGroup")]
+    #[doc(alias = "taggedBuffers")]
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    pub fn tagged_bufs(&self) -> Option<&cm::TaggedBufGroup> {
+        unsafe { CMSampleBufferGetTaggedBufferGroup(self) }
+    }
+}
+
 #[link(name = "CoreMedia", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
@@ -95,6 +104,9 @@ unsafe extern "C-unwind" {
 
     #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
     fn CMTaggedBufferGroupGetCount(group: &TaggedBufGroup) -> cm::ItemCount;
+
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    fn CMSampleBufferGetTaggedBufferGroup(sbuf: &cm::SampleBuf) -> Option<&cm::TaggedBufGroup>;
 }
 
 #[cfg(test)]

@@ -1,50 +1,60 @@
 use std::ffi::c_void;
 
-use crate::{
-    arc, cf,
-    cm::{self, SampleBuf, VideoCodec},
-    cv, define_cf_type, os, vt,
-};
+use crate::{api, arc, cf, cm, cv, define_cf_type, os, vt};
 
-pub type OutputCb<O, F> = extern "C" fn(
-    output_ref_con: *mut O,
-    source_frame_ref_con: *mut F,
+#[cfg(feature = "blocks")]
+use crate::blocks;
+
+pub type OutputCb<O = c_void, F = c_void> = extern "C" fn(
+    // passed during session creation
+    output_ptr: *mut O,
+    // passed during decode_frame call
+    src_frame_ptr: *mut F,
     status: os::Status,
     info_flags: vt::DecodeInfoFlags,
-    image_buffer: Option<&cv::ImageBuf>,
+    image_buf: Option<&cv::ImageBuf>,
     pts: cm::Time,
     duration: cm::Time,
 );
 
+#[doc(alias = "VTDecompressionOutputCallbackRecord")]
 #[repr(C)]
 pub struct OutputCbRecord<O, F> {
-    pub callback: OutputCb<O, F>,
-    pub output_ref_con: *mut O,
+    pub cb: Option<OutputCb<O, F>>,
+    pub ptr: *mut O,
 }
 
-unsafe impl<O, F> Send for OutputCbRecord<O, F> {}
-
 impl<O, F> OutputCbRecord<O, F> {
-    pub fn new(ref_con: O, callback: OutputCb<O, F>) -> Self {
-        let b = Box::new(ref_con);
-        Self {
-            callback,
-            output_ref_con: Box::into_raw(b),
-        }
+    pub fn new(ptr: *mut O, cb: Option<OutputCb<O, F>>) -> Self {
+        Self { cb, ptr }
     }
 }
 
 #[doc(alias = "VTDecompressionOutputMultiImageCallback")]
-pub type OutputMultiImageCb<O, F> = extern "C" fn(
-    output_ref_con: *mut O,
-    source_frame_ref_con: *mut F,
+pub type OutputMultiImageCb<O = c_void, F = c_void> = extern "C" fn(
+    // passed during session creation
+    output_ptr: *mut O,
+    // passed during decode_frame call
+    src_frame_ptr: *mut F,
     status: os::Status,
     info_flags: vt::DecodeInfoFlags,
-    // tagged_buf_group: Option<&cv::TaggedBufGroup>,
-    // image_buffer: Option<&cv::ImageBuf>,
+    tagged_buf_group: Option<&cm::TaggedBufGroup>,
     pts: cm::Time,
     duration: cm::Time,
 );
+
+#[doc(alias = "VTDecompressionMultiImageCapableOutputHandler")]
+#[cfg(feature = "blocks")]
+pub type MultiImageCapableOutputHandler = blocks::EscBlock<
+    fn(
+        status: os::Status,
+        info_flags: vt::DecodeInfoFlags,
+        image_buf: Option<&cv::ImageBuf>,
+        tagged_buf_group: Option<&cm::TaggedBufGroup>,
+        pts: cm::Time,
+        duration: cm::Time,
+    ),
+>;
 
 define_cf_type!(
     #[doc(alias = "VTDecompressionSessionRef")]
@@ -53,19 +63,19 @@ define_cf_type!(
 
 impl Session {
     pub fn new<O, F>(
-        video_format_description: &cm::VideoFormatDesc,
-        video_decoder_specification: Option<&cf::Dictionary>,
-        destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
-        output_callback: Option<&OutputCbRecord<O, F>>,
+        video_format_desc: &cm::VideoFormatDesc,
+        video_decoder_spec: Option<&cf::Dictionary>,
+        dst_image_buf_attrs: Option<&cf::Dictionary>,
+        record: Option<&OutputCbRecord<O, F>>,
     ) -> os::Result<arc::R<Self>> {
         unsafe {
             os::result_unchecked(|res| {
                 Self::create_in(
                     None,
-                    video_format_description,
-                    video_decoder_specification,
-                    destination_image_buffer_attirbutes,
-                    std::mem::transmute(output_callback),
+                    video_format_desc,
+                    video_decoder_spec,
+                    dst_image_buf_attrs,
+                    std::mem::transmute(record),
                     res,
                 )
             })
@@ -76,18 +86,18 @@ impl Session {
     /// Use safe new
     pub unsafe fn create_in(
         allocator: Option<&cf::Allocator>,
-        video_format_description: &cm::VideoFormatDesc,
-        video_decoder_specification: Option<&cf::Dictionary>,
-        destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
-        output_callback: Option<&OutputCbRecord<c_void, c_void>>,
+        video_format_desc: &cm::VideoFormatDesc,
+        video_decoder_spec: Option<&cf::Dictionary>,
+        destination_image_buf_attrs: Option<&cf::Dictionary>,
+        output_callback: *const OutputCbRecord<c_void, c_void>,
         decompression_session_out: *mut Option<arc::R<Session>>,
     ) -> os::Status {
         unsafe {
             VTDecompressionSessionCreate(
                 allocator,
-                video_format_description,
-                video_decoder_specification,
-                destination_image_buffer_attirbutes,
+                video_format_desc,
+                video_decoder_spec,
+                destination_image_buf_attrs,
                 output_callback,
                 decompression_session_out,
             )
@@ -110,13 +120,13 @@ impl Session {
     #[inline]
     pub fn decode(
         &self,
-        sample_buffer: &SampleBuf,
+        sample_buf: &cm::SampleBuf,
         decode_flags: vt::DecodeFrameFlags,
     ) -> os::Result {
         unsafe {
             VTDecompressionSessionDecodeFrame(
                 self,
-                sample_buffer,
+                sample_buf,
                 decode_flags,
                 std::ptr::null_mut(),
                 std::ptr::null_mut(),
@@ -130,7 +140,7 @@ impl Session {
     #[inline]
     pub unsafe fn decode_frame<F>(
         &self,
-        sample_buffer: &SampleBuf,
+        sample_buf: &cm::SampleBuf,
         decode_flags: vt::DecodeFrameFlags,
         source_frame_ref_con: *mut F,
         info_flags_out: *mut vt::DecodeInfoFlags,
@@ -138,7 +148,7 @@ impl Session {
         unsafe {
             VTDecompressionSessionDecodeFrame(
                 self,
-                sample_buffer,
+                sample_buf,
                 decode_flags,
                 std::mem::transmute(source_frame_ref_con),
                 info_flags_out,
@@ -164,8 +174,23 @@ impl Session {
     ///
     /// The pixel buffer is in the same format that the session is decompressing to.
     #[inline]
-    pub fn copy_black_pixel_buffer(&self) -> os::Result<arc::R<cv::PixelBuf>> {
+    pub fn black_pixel_buf(&self) -> os::Result<arc::R<cv::PixelBuf>> {
         unsafe { os::result_unchecked(|res| VTDecompressionSessionCopyBlackPixelBuffer(self, res)) }
+    }
+}
+
+/// Multi-image decompression
+impl Session {
+    #[api::available(macos = 14.0, ios = 17.0, visionos = 1.0)]
+    pub fn set_multi_image_cb<T>(
+        &mut self,
+        cb: OutputMultiImageCb<T>,
+        output_ptr: *mut c_void,
+    ) -> os::Result {
+        unsafe {
+            VTDecompressionSessionSetMultiImageCallback(self, std::mem::transmute(cb), output_ptr)
+                .result()
+        }
     }
 }
 
@@ -178,7 +203,7 @@ impl Session {
 /// available at all times.
 #[doc(alias = "VTIsHardwareDecodeSupported")]
 #[inline]
-pub fn is_hardware_decode_supported(codec_type: VideoCodec) -> bool {
+pub fn is_hardware_decode_supported(codec_type: cm::VideoCodec) -> bool {
     unsafe { VTIsHardwareDecodeSupported(codec_type) }
 }
 
@@ -199,7 +224,7 @@ unsafe extern "C-unwind" {
         video_format_description: &cm::VideoFormatDesc,
         video_decoder_specification: Option<&cf::Dictionary>,
         destination_image_buffer_attirbutes: Option<&cf::Dictionary>,
-        output_callback: Option<&OutputCbRecord<c_void, c_void>>,
+        output_callback: *const OutputCbRecord<c_void, c_void>,
         decompression_session_out: *mut Option<arc::R<Session>>,
     ) -> os::Status;
 
@@ -207,7 +232,7 @@ unsafe extern "C-unwind" {
 
     fn VTDecompressionSessionDecodeFrame(
         session: &Session,
-        sample_buffer: &SampleBuf,
+        sample_buffer: &cm::SampleBuf,
         decode_flags: vt::DecodeFrameFlags,
         source_frame_ref_con: *mut c_void,
         info_flags_out: *mut vt::DecodeInfoFlags,
@@ -226,10 +251,15 @@ unsafe extern "C-unwind" {
         pixel_buffer_out: *mut Option<arc::R<cv::PixelBuf>>,
     ) -> os::Status;
 
-    fn VTIsHardwareDecodeSupported(codec_type: VideoCodec) -> bool;
-
+    fn VTIsHardwareDecodeSupported(codec_type: cm::VideoCodec) -> bool;
     fn VTIsStereoMVHEVCDecodeSupported() -> bool;
 
+    #[api::available(macos = 14.0, ios = 17.0, visionos = 1.0)]
+    fn VTDecompressionSessionSetMultiImageCallback(
+        session: &mut Session,
+        output_multi_image_cb: OutputMultiImageCb,
+        output_multi_ref_con: *mut c_void,
+    ) -> os::Status;
 }
 
 #[cfg(test)]
@@ -258,9 +288,9 @@ mod tests {
         ) {
         }
 
-        let ctx = Context {};
+        let mut ctx = Context {};
 
-        let _record = vt::DecompressionOutputCbRecord::new(ctx, callback);
+        let _record = vt::DecompressionOutputCbRecord::new(&mut ctx, Some(callback));
 
         //vt::DecompressionSession::new(&desc, None, None, None).unwrap();
     }

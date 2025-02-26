@@ -11,8 +11,10 @@ pub use compression::Session as CompressionSession;
 pub use compression::properties as compression_properties;
 
 pub mod decompression;
+pub use decompression::MultiImageCapableOutputHandler as DecompressionMultiImageCapableOutputHandler;
 pub use decompression::OutputCb as DecompressionOutputCb;
 pub use decompression::OutputCbRecord as DecompressionOutputCbRecord;
+pub use decompression::OutputMultiImageCb as DecompressionOutputMultiImageCb;
 pub use decompression::Session as DecompressionSession;
 pub use decompression::properties as decompression_properties;
 pub use decompression::session::is_hardware_decode_supported;

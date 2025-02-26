@@ -3,7 +3,7 @@ use std::{ffi::c_void, mem::transmute};
 use crate::{
     FourCharCode, api, arc,
     cf::{self, Allocator},
-    define_cf_type, os,
+    cm, define_cf_type, os,
 };
 
 #[cfg(feature = "cv")]
@@ -66,7 +66,7 @@ pub struct VideoDimensions {
 }
 
 #[doc(alias = "CMMediaType")]
-#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[derive(Eq, PartialEq, Copy, Clone, Hash)]
 #[repr(transparent)]
 pub struct MediaType(pub FourCharCode);
 
@@ -106,8 +106,14 @@ impl MediaType {
     }
 }
 
+impl std::fmt::Debug for MediaType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        crate::four_cc_fmt_debug(self.0, "MediaType", f)
+    }
+}
+
 #[doc(alias = "CMVideoCodecType")]
-#[derive(Debug, Eq, PartialEq, Clone, Copy)]
+#[derive(Eq, PartialEq, Clone, Copy, Hash)]
 #[repr(transparent)]
 pub struct VideoCodec(FourCharCode);
 
@@ -171,6 +177,12 @@ impl VideoCodec {
     }
 }
 
+impl std::fmt::Debug for VideoCodec {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        crate::four_cc_fmt_debug(self.0, "VideoCodec", f)
+    }
+}
+
 define_cf_type!(
     #[doc(alias = "CMFormatDescriptionRef")]
     FormatDesc(cf::Type)
@@ -179,26 +191,31 @@ define_cf_type!(
 unsafe impl Send for FormatDesc {}
 
 impl FormatDesc {
+    #[doc(alias = "CMFormatDescriptionGetTypeID")]
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CMFormatDescriptionGetTypeID() }
     }
 
+    #[doc(alias = "CMFormatDescriptionGetMediaType")]
     #[inline]
     pub fn media_type(&self) -> MediaType {
         unsafe { CMFormatDescriptionGetMediaType(self) }
     }
 
+    #[doc(alias = "CMFormatDescriptionGetMediaSubType")]
     #[inline]
     pub fn media_sub_type(&self) -> FourCharCode {
         unsafe { CMFormatDescriptionGetMediaSubType(self) }
     }
 
+    #[doc(alias = "CMFormatDescriptionGetExtensions")]
     #[inline]
     pub fn exts(&self) -> Option<&cf::DictionaryOf<cf::String, cf::Plist>> {
         unsafe { CMFormatDescriptionGetExtensions(self) }
     }
 
+    #[doc(alias = "CMFormatDescriptionGetExtension")]
     pub fn ext<'a>(&'a self, key: &FormatDescExtKey) -> Option<&'a cf::Plist> {
         unsafe { CMFormatDescriptionGetExtension(self, key) }
     }
@@ -308,21 +325,21 @@ impl VideoFormatDesc {
     /// let desc = cm::VideoFormatDesc::video(cm::VideoCodec::H264, 1920, 1080, None).unwrap();
     /// ```
     pub fn video(
-        codec_type: VideoCodec,
+        codec: VideoCodec,
         width: i32,
         height: i32,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
     ) -> os::Result<arc::R<Self>> {
         unsafe {
             os::result_unchecked(|res| {
-                Self::create_video_in(codec_type, width, height, extensions, res, None)
+                Self::create_video_in(codec, width, height, extensions, res, None)
             })
         }
     }
 
     #[doc(alias = "CMVideoFormatDescriptionCreate")]
     pub fn create_video_in(
-        codec_type: VideoCodec,
+        codec: VideoCodec,
         width: i32,
         height: i32,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
@@ -332,7 +349,7 @@ impl VideoFormatDesc {
         unsafe {
             CMVideoFormatDescriptionCreate(
                 allocator,
-                codec_type,
+                codec,
                 width,
                 height,
                 extensions,
@@ -355,6 +372,15 @@ impl VideoFormatDesc {
     #[inline]
     pub fn matches_image_buf(&self, image_buffer: &cv::ImageBuf) -> bool {
         unsafe { CMVideoFormatDescriptionMatchesImageBuffer(self, image_buffer) }
+    }
+
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    pub fn tag_collections(&self) -> os::Result<arc::R<cf::ArrayOf<cm::TagCollection>>> {
+        unsafe {
+            let mut res = None;
+            CMVideoFormatDescriptionCopyTagCollectionArray(self, &mut res).result()?;
+            Ok(res.unwrap_unchecked())
+        }
     }
 
     #[doc(alias = "CMVideoFormatDescriptionCreateForImageBuffer")]
@@ -887,7 +913,10 @@ impl FormatDescExtKey {
     }
 }
 
-define_cf_type!(LogTransferFn(cf::String));
+define_cf_type!(
+    #[doc(alias = "CMFormatDescriptionLogTransferFunction")]
+    LogTransferFn(cf::String)
+);
 
 impl LogTransferFn {
     #[doc(alias = "kCMFormatDescriptionLogTransferFunction_AppleLog")]
@@ -896,6 +925,12 @@ impl LogTransferFn {
         unsafe { kCMFormatDescriptionLogTransferFunction_AppleLog }
     }
 }
+
+#[doc(alias = "CMTaggedBufferGroupFormatDescriptionRef")]
+pub type TaggedBufGroupFormatDesc = FormatDesc;
+
+#[doc(alias = "CMMuxedFormatDescriptionRef")]
+pub type MuxedFormatDesc = FormatDesc;
 
 #[link(name = "CoreMedia", kind = "framework")]
 #[api::weak]
@@ -947,7 +982,7 @@ unsafe extern "C-unwind" {
 
     fn CMVideoFormatDescriptionCreate(
         allocator: Option<&cf::Allocator>,
-        codec_type: VideoCodec,
+        codec: VideoCodec,
         width: i32,
         height: i32,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
@@ -961,6 +996,12 @@ unsafe extern "C-unwind" {
         video_desc: &VideoFormatDesc,
         image_buffer: &cv::ImageBuf,
     ) -> bool;
+
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    fn CMVideoFormatDescriptionCopyTagCollectionArray(
+        video_desc: &VideoFormatDesc,
+        tag_collection_out: *mut Option<arc::R<cf::ArrayOf<cm::TagCollection>>>,
+    ) -> os::Status;
 
     fn CMFormatDescriptionGetMediaSubType(desc: &FormatDesc) -> FourCharCode;
 
