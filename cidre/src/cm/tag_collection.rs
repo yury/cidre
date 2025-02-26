@@ -108,11 +108,35 @@ impl TagCollection {
         }
     }
 
+    #[doc(alias = "CMTagCollectionContainsTag")]
     #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
     #[inline]
     pub fn contains(&self, val: cm::Tag) -> bool {
         unsafe { CMTagCollectionContainsTag(self, val) }
     }
+
+    #[doc(alias = "CMTagCollectionContainsTagsOfCollection")]
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    #[inline]
+    pub fn contains_collection(&self, val: &cm::TagCollection) -> bool {
+        unsafe { CMTagCollectionContainsTagsOfCollection(self, val) }
+    }
+
+    #[doc(alias = "CMTagCollectionContainsSpecifiedTags")]
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    #[inline]
+    pub fn contains_tags(&self, tags: &[cm::Tag]) -> bool {
+        unsafe { CMTagCollectionContainsSpecifiedTags(self, tags.as_ptr(), tags.len() as _) }
+    }
+
+    #[doc(alias = "CMTagCollectionContainsCategory")]
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    #[inline]
+    pub fn contains_catogery(&self, val: cm::TagCategory) -> bool {
+        unsafe { CMTagCollectionContainsCategory(self, val) }
+    }
+
+    // TODO: more api
 }
 
 #[link(name = "CoreMedia", kind = "framework")]
@@ -135,6 +159,25 @@ unsafe extern "C-unwind" {
 
     #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
     fn CMTagCollectionContainsTag(tag_collection: &TagCollection, val: cm::Tag) -> bool;
+
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    fn CMTagCollectionContainsTagsOfCollection(
+        tag_collection: &TagCollection,
+        contained_tag_collection: &TagCollection,
+    ) -> bool;
+
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    fn CMTagCollectionContainsSpecifiedTags(
+        tag_collection: &TagCollection,
+        contained_tags: *const cm::Tag,
+        contained_tag_count: cm::ItemCount,
+    ) -> bool;
+
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    fn CMTagCollectionContainsCategory(
+        tag_collection: &TagCollection,
+        category: cm::TagCategory,
+    ) -> bool;
 }
 
 #[cfg(test)]
@@ -148,5 +191,11 @@ mod tests {
 
         let tag = cm::Tag::with_f64(cm::TagCategory::MediaType, 0.0);
         assert!(!empty.contains(tag));
+        let empty2 = cm::TagCollection::with_tags(&[]).unwrap();
+
+        assert!(empty.contains_collection(&empty2));
+
+        assert!(empty.contains_tags(&[]));
+        assert!(!empty.contains_tags(&[tag]));
     }
 }

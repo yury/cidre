@@ -34,6 +34,10 @@ pub use tag_collection::TagCollection;
 pub use tag_collection::TagCollectionMut;
 pub use tag_collection::err as tag_collection_err;
 
+mod tagged_buffer_group;
+pub use tagged_buffer_group::TaggedBufGroup;
+pub use tagged_buffer_group::err as tagged_buf_group_err;
+
 mod time;
 pub use time::Time;
 pub use time::TimeEpoch;
