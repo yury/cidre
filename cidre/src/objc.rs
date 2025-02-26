@@ -8,8 +8,6 @@ use std::{borrow::Cow, ffi::c_void, marker::PhantomData, ptr::NonNull};
 
 use crate::{arc, cf::Type, objc};
 
-pub use cidre_macros::api_available as available;
-
 #[derive(Debug)]
 #[repr(transparent)]
 pub struct Class<T: Obj>(Type, PhantomData<T>);
@@ -721,6 +719,7 @@ mod tests {
     }
 }
 pub use cidre_macros::add_methods;
+pub use cidre_macros::api_available as available;
 pub use cidre_macros::optional;
 pub use cidre_macros::protocol;
 

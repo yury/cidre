@@ -10,11 +10,10 @@ use crate::{
     UniChar, arc,
     cf::{self, Index, OptionFlags, Range, Type, TypeId},
     define_cf_type, define_opts,
-    objc::Obj,
 };
 
 #[cfg(feature = "ns")]
-use crate::ns;
+use crate::{ns, objc::Obj};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(transparent)]

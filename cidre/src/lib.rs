@@ -1,11 +1,11 @@
 pub mod mac_types;
 
-pub use mac_types::four_cc_fmt_debug;
-pub use mac_types::four_cc_to_str;
-pub use mac_types::four_cc_to_string;
 pub use mac_types::FourCharCode;
 pub use mac_types::ResType;
 pub use mac_types::UniChar;
+pub use mac_types::four_cc_fmt_debug;
+pub use mac_types::four_cc_to_str;
+pub use mac_types::four_cc_to_string;
 
 /// Apple Mobile
 #[cfg(all(target_os = "macos", feature = "am"))]

@@ -96,7 +96,7 @@ cv = ["cf", "cg"]
 ci = ["cf", "ns"]
 cg = ["cf"] # optional io, dispatch, blocks
 iio = ["cg", "blocks"]
-objc = ["dep:cidre-macros"]
+objc = []
 ns = ["objc", "cg"]
 nl = ["ns"]
 vt = ["cf", "cv", "cg", "cm"]
@@ -242,7 +242,7 @@ visionos_2_2 = ["visionos_2_1"]
 
 tokio = { optional = true, version = "1", default-features = false, features = ["macros", "rt", "rt-multi-thread", "time", "net", "process", "io-util"] }
 parking_lot = { optional = true, version = "0.12" }
-cidre-macros = { optional = true, path = "../cidre-macros" }
+cidre-macros = { path = "../cidre-macros" }
 
 [dev-dependencies]
 criterion = "0.5"

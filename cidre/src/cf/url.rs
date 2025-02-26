@@ -1,9 +1,9 @@
 use std::path::Path;
 
-use crate::{arc, cf, define_cf_type, objc::Obj};
+use crate::{arc, cf, define_cf_type};
 
 #[cfg(feature = "ns")]
-use crate::ns;
+use crate::{ns, objc::Obj};
 
 #[doc(alias = "CFURLPathStyle")]
 #[derive(Debug, PartialEq, Eq)]
