@@ -998,6 +998,7 @@ unsafe extern "C-unwind" {
         format_description_out: *mut Option<arc::R<FormatDesc>>,
     ) -> os::Status;
 
+    #[cfg(feature = "cv")]
     fn CMVideoFormatDescriptionCreateForImageBuffer(
         allocator: Option<&cf::Allocator>,
         image_buffer: &cv::ImageBuf,

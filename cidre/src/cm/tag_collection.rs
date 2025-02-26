@@ -1,4 +1,4 @@
-use crate::{cf, define_cf_type};
+use crate::{api, arc, cf, cm, define_cf_type, os};
 
 /// Errors returned from the cm::TagCollection routines.
 #[doc(alias = "CMTagCollectionError")]
@@ -58,13 +58,95 @@ define_cf_type!(
 
 impl TagCollection {
     #[doc(alias = "CMTagCollectionGetTypeID")]
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CMTagCollectionGetTypeID() }
     }
+
+    #[doc(alias = "CMTagCollectionCreate")]
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    pub unsafe fn create_in(
+        tags: *const cm::Tag,
+        tag_count: cm::ItemCount,
+        out: *mut Option<arc::R<Self>>,
+        allocator: Option<&cf::Allocator>,
+    ) -> os::Status {
+        unsafe { CMTagCollectionCreate(allocator, tags, tag_count, out) }
+    }
+
+    #[doc(alias = "CMTagCollectionCreate")]
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    pub fn with_tags(tags: &[cm::Tag]) -> Result<arc::R<Self>, os::Error> {
+        unsafe {
+            let mut res = None;
+            Self::create_in(tags.as_ptr(), tags.len() as _, &mut res, None).result()?;
+            Ok(res.unwrap_unchecked())
+        }
+    }
+
+    #[doc(alias = "CMTagCollectionGetCount")]
+    #[inline]
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    pub fn count(&self) -> cm::ItemCount {
+        unsafe { CMTagCollectionGetCount(self) }
+    }
+
+    #[inline]
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    pub fn len(&self) -> usize {
+        self.count() as _
+    }
+
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        // for versions below available self.len() is unsafe
+        #[allow(unused_unsafe)]
+        unsafe {
+            self.len() == 0
+        }
+    }
+
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    #[inline]
+    pub fn contains(&self, val: cm::Tag) -> bool {
+        unsafe { CMTagCollectionContainsTag(self, val) }
+    }
 }
 
 #[link(name = "CoreMedia", kind = "framework")]
+#[api::weak]
 unsafe extern "C-unwind" {
+
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
     fn CMTagCollectionGetTypeID() -> cf::TypeId;
+
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    fn CMTagCollectionCreate(
+        allocator: Option<&cf::Allocator>,
+        tags: *const cm::Tag,
+        tag_count: cm::ItemCount,
+        collection_out: *mut Option<arc::R<cm::TagCollection>>,
+    ) -> os::Status;
+
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    fn CMTagCollectionGetCount(tag_collection: &TagCollection) -> cm::ItemCount;
+
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    fn CMTagCollectionContainsTag(tag_collection: &TagCollection, val: cm::Tag) -> bool;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::cm;
+
+    #[test]
+    fn basics() {
+        let empty = cm::TagCollection::with_tags(&[]).unwrap();
+        assert!(empty.is_empty());
+
+        let tag = cm::Tag::with_f64(cm::TagCategory::MediaType, 0.0);
+        assert!(!empty.contains(tag));
+    }
 }

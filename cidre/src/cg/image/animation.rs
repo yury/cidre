@@ -6,7 +6,7 @@ pub type AnimationBlock = blocks::EscBlock<fn(index: usize, image: &cg::Image, s
 pub mod err {
     use crate::os::Error;
 
-    /// NULL or invalid parameter passed to API
+    /// None/null or invalid parameter passed to API
     #[doc(alias = "kCGImageAnimationStatus_ParameterError")]
     pub const PARAM_ERR: Error = Error::new_unchecked(-22140);
 
@@ -27,7 +27,10 @@ pub mod err {
     pub const ALLOC_FAILURE: Error = Error::new_unchecked(-22143);
 }
 
-define_cf_type!(OptKey(cf::String));
+define_cf_type!(
+    #[doc(alias = "CGImageAnimationOptions")]
+    OptKey(cf::String)
+);
 
 pub type Opts = cf::DictionaryOf<OptKey, cf::Number>;
 

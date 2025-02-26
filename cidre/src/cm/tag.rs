@@ -151,6 +151,7 @@ impl Tag {
         Self::new(category, TagDataType::Flags, TagValue(val))
     }
 
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
     pub fn with_cf_dictionary(dict: &cf::Dictionary) -> Self {
         unsafe { CMTagMakeFromDictionary(dict) }
     }
