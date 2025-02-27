@@ -5,6 +5,7 @@ use crate::{api, arc, cf, cm, cv, define_cf_type, os, vt};
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
+#[cfg(feature = "blocks")]
 pub type OutputHandler =
     blocks::SendBlock<fn(os::Status, vt::EncodeInfoFlags, Option<&cm::SampleBuf>)>;
 

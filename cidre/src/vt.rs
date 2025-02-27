@@ -11,6 +11,7 @@ pub use compression::Session as CompressionSession;
 pub use compression::properties as compression_properties;
 
 pub mod decompression;
+#[cfg(feature = "blocks")]
 pub use decompression::MultiImageCapableOutputHandler as DecompressionMultiImageCapableOutputHandler;
 pub use decompression::OutputCb as DecompressionOutputCb;
 pub use decompression::OutputCbRecord as DecompressionOutputCbRecord;

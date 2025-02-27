@@ -27,6 +27,16 @@ impl TaggedBufGroup {
         unsafe { CMTaggedBufferGroupGetTypeID() }
     }
 
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    unsafe fn _create_in(
+        tag_collections: &cf::ArrayOf<cm::TagCollection>,
+        buffers: &cf::ArrayOf<cf::Type>,
+        group_out: *mut Option<arc::R<TaggedBufGroup>>,
+        allocator: Option<&cf::Allocator>,
+    ) -> os::Status {
+        unsafe { CMTaggedBufferGroupCreate(allocator, tag_collections, buffers, group_out) }
+    }
+
     #[doc(alias = "CMTaggedBufferGroupCreate")]
     #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
     #[inline]
@@ -37,8 +47,7 @@ impl TaggedBufGroup {
     ) -> os::Result<Option<arc::R<Self>>> {
         unsafe {
             let mut res = None;
-            CMTaggedBufferGroupCreate(allocator, tag_collections, buffers, &mut res)
-                .to_result_option(res)
+            Self::_create_in(tag_collections, buffers, &mut res, allocator).to_result_option(res)
         }
     }
 

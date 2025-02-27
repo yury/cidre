@@ -375,10 +375,18 @@ impl VideoFormatDesc {
     }
 
     #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
+    unsafe fn _tag_collections(
+        &self,
+        tag_collection_out: *mut Option<arc::R<cf::ArrayOf<cm::TagCollection>>>,
+    ) -> os::Status {
+        unsafe { CMVideoFormatDescriptionCopyTagCollectionArray(self, tag_collection_out) }
+    }
+
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
     pub fn tag_collections(&self) -> os::Result<arc::R<cf::ArrayOf<cm::TagCollection>>> {
         unsafe {
             let mut res = None;
-            CMVideoFormatDescriptionCopyTagCollectionArray(self, &mut res).result()?;
+            self._tag_collections(&mut res);
             Ok(res.unwrap_unchecked())
         }
     }

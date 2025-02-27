@@ -182,13 +182,22 @@ impl Session {
 /// Multi-image decompression
 impl Session {
     #[api::available(macos = 14.0, ios = 17.0, visionos = 1.0)]
+    unsafe fn _set_multi_image_cb(
+        &mut self,
+        cb: OutputMultiImageCb,
+        output_ptr: *mut c_void,
+    ) -> os::Status {
+        unsafe { VTDecompressionSessionSetMultiImageCallback(self, cb, output_ptr) }
+    }
+
+    #[api::available(macos = 14.0, ios = 17.0, visionos = 1.0)]
     pub fn set_multi_image_cb<T>(
         &mut self,
         cb: OutputMultiImageCb<T>,
         output_ptr: *mut c_void,
     ) -> os::Result {
         unsafe {
-            VTDecompressionSessionSetMultiImageCallback(self, std::mem::transmute(cb), output_ptr)
+            self._set_multi_image_cb(std::mem::transmute(cb), output_ptr)
                 .result()
         }
     }
@@ -217,6 +226,7 @@ pub fn is_stereo_mv_hevc_decode_supported() -> bool {
 }
 
 #[link(name = "VideoToolbox", kind = "framework")]
+#[api::weak]
 unsafe extern "C-unwind" {
 
     fn VTDecompressionSessionCreate(
