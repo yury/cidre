@@ -1,10 +1,14 @@
-use crate::{arc, av, cm, define_obj_type, ns, objc};
+use crate::{arc, av, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 #[cfg(feature = "dispatch")]
 use crate::dispatch;
 
 use super::Output;
 
+#[cfg(feature = "cm")]
 #[objc::protocol(AVCaptureVideoDataOutputSampleBufferDelegate)]
 pub trait VideoDataOutputSampleBufDelegate: objc::Obj {
     #[objc::optional]
@@ -12,7 +16,7 @@ pub trait VideoDataOutputSampleBufDelegate: objc::Obj {
     fn capture_output_did_output_sample_buf_from_connection(
         &mut self,
         output: &av::CaptureOutput,
-        sample_buffer: &cm::SampleBuf,
+        sample_buf: &cm::SampleBuf,
         connection: &av::CaptureConnection,
     );
 
@@ -32,6 +36,7 @@ define_obj_type!(
 );
 
 impl VideoDataOutput {
+    #[cfg(feature = "cm")]
     #[cfg(feature = "dispatch")]
     #[objc::msg_send(setSampleBufferDelegate:queue:)]
     pub fn set_sample_buf_delegate<D: VideoDataOutputSampleBufDelegate>(

@@ -1,4 +1,7 @@
-use crate::{api, arc, cm, cv, define_obj_type, ns, objc};
+use crate::{api, arc, cv, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 #[cfg(all(feature = "blocks", feature = "dispatch"))]
 use crate::av;
@@ -70,6 +73,7 @@ impl VideoRenderer {
 impl VideoRenderer {
     /// Promises, for the purpose of enabling power optimizations,
     /// that future sample buffers will have PTS values no less than a specified lower-bound PTS.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(minimumUpcomingPresentationTime:)]
     #[objc::available(
         macos = 14.4,

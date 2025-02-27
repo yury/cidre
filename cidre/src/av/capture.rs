@@ -41,12 +41,12 @@ pub use device::WbTempTintValues;
 pub use device::notifications as device_notifications;
 
 pub mod input;
-pub use input::port_notifications as input_port_notifications;
 pub use input::DeviceInput;
 pub use input::Input;
 #[cfg(any(target_os = "ios", target_os = "tvos"))]
 pub use input::MetadataInput;
 pub use input::Port as InputPort;
+pub use input::port_notifications as input_port_notifications;
 
 pub mod output_base;
 pub use output_base::DataDroppedReason;
@@ -56,8 +56,6 @@ pub mod session_preset;
 pub use session_preset::SessionPreset;
 
 pub mod session;
-pub use session::err_key as session_err_key;
-pub use session::notifications as session_notifications;
 pub use session::AudioChannel;
 pub use session::Connection;
 pub use session::ControlsDelegate;
@@ -67,6 +65,8 @@ pub use session::InterruptionReason;
 pub use session::MultiCamSession;
 pub use session::Session;
 pub use session::VideoOrienation;
+pub use session::err_key as session_err_key;
+pub use session::notifications as session_notifications;
 
 pub mod metadata_output;
 pub use metadata_output::MetadataOutput;
@@ -75,7 +75,9 @@ pub use metadata_output::MetadataOutputObjsDelegateImpl;
 
 pub mod video_data_output;
 pub use video_data_output::VideoDataOutput;
+#[cfg(feature = "cm")]
 pub use video_data_output::VideoDataOutputSampleBufDelegate;
+#[cfg(feature = "cm")]
 pub use video_data_output::VideoDataOutputSampleBufDelegateImpl;
 
 pub mod video_preview_layer;
@@ -88,7 +90,9 @@ pub use photo_output::PhotoSettings;
 
 pub mod audio_data_output;
 pub use audio_data_output::AudioDataOutput;
+#[cfg(feature = "cm")]
 pub use audio_data_output::AudioDataOutputSampleBufDelegate;
+#[cfg(feature = "cm")]
 pub use audio_data_output::AudioDataOutputSampleBufDelegateImpl;
 
 #[cfg(not(target_os = "macos"))]

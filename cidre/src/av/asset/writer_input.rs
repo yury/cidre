@@ -1,4 +1,7 @@
-use crate::{arc, av::MediaType, cm, cv, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av::MediaType, cv, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 #[cfg(all(feature = "blocks", feature = "dispatch"))]
 use crate::{blocks, dispatch};
@@ -13,6 +16,7 @@ impl arc::A<WriterInput> {
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<WriterInput>;
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(initWithMediaType:outputSettings:sourceFormatHint:)]
     pub unsafe fn with_media_type_output_settings_source_format_hint_throws(
         self,
@@ -41,6 +45,7 @@ impl WriterInput {
         })
     }
 
+    #[cfg(feature = "cm")]
     pub unsafe fn with_media_type_output_settings_source_format_hint_throws(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
@@ -55,6 +60,7 @@ impl WriterInput {
         }
     }
 
+    #[cfg(feature = "cm")]
     pub fn with_media_type_output_settings_source_format_hint<'ear>(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
@@ -69,6 +75,7 @@ impl WriterInput {
         })
     }
 
+    #[cfg(feature = "cm")]
     pub unsafe fn with_media_type_format_hint_throws(
         media_type: &MediaType,
         source_format_hint: &cm::FormatDesc,
@@ -124,9 +131,11 @@ impl WriterInput {
     /// contains an error object that describes the failure.
     ///
     /// This method throws an exception if the sample buffer's media type does not match the asset writer input's media type.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(appendSampleBuffer:)]
     pub unsafe fn append_sample_buf_throws(&mut self, buffer: &cm::SampleBuf) -> bool;
 
+    #[cfg(feature = "cm")]
     pub fn append_sample_buf<'ear>(&mut self, buffer: &cm::SampleBuf) -> ns::ExResult<'ear, bool> {
         ns::try_catch(|| unsafe { self.append_sample_buf_throws(buffer) })
     }
@@ -190,6 +199,7 @@ impl WriterInputPixelBufAdaptor {
     pub fn pixel_buf_pool(&self) -> Option<&cv::PixelBufPool>;
 
     /// This method throws an exception if the presentation time is is non-numeric (see cm::Time::is_numeric()) or if "ready_for_more_media_data" is false.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(appendPixelBuffer:withPresentationTime:)]
     pub unsafe fn append_pixel_buf_with_pts_throws(
         &mut self,
@@ -197,6 +207,7 @@ impl WriterInputPixelBufAdaptor {
         pts: cm::Time,
     ) -> bool;
 
+    #[cfg(feature = "cm")]
     pub fn append_pixel_buf_with_pts<'ear>(
         &mut self,
         buf: &cv::PixelBuf,

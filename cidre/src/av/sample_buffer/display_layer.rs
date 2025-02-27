@@ -1,13 +1,24 @@
-use crate::{arc, av, ca, cm, define_obj_type, objc};
+use crate::{arc, av, ca, define_obj_type, objc};
 
-define_obj_type!(pub DisplayLayer(ca::Layer), AV_DISPLAY_LAYER);
+define_obj_type!(
+    #[doc(alias = "AVSampleBufferDisplayLayer")]
+    pub DisplayLayer(ca::Layer),
+    AV_DISPLAY_LAYER
+);
+
+#[cfg(feature = "cm")]
+use crate::cm;
+
+#[cfg(feature = "cm")]
 impl DisplayLayer {
     #[objc::msg_send(controlTimebase)]
     pub fn control_timebase(&self) -> Option<&cm::Timebase>;
 
     #[objc::msg_send(setControlTimebase:)]
     pub fn set_control_timebase(&self, value: Option<&cm::Timebase>);
+}
 
+impl DisplayLayer {
     #[objc::msg_send(videoGravity)]
     pub fn video_gravity(&self) -> arc::R<av::LayerVideoGravity>;
 

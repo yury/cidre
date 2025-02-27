@@ -1,4 +1,7 @@
-use crate::{arc, cg, cm, ns, objc};
+use crate::cg;
+
+#[cfg(feature = "cm")]
+use crate::{arc, cm, ns, objc};
 
 impl cg::Rect {
     #[doc(alias = "AVMakeRectWithAspectRatioInsideRect")]
@@ -8,6 +11,7 @@ impl cg::Rect {
 }
 
 /// NSValueCMVideoDimensionsExtensions
+#[cfg(feature = "cm")]
 impl ns::Value {
     #[objc::msg_send(valueWithCMVideoDimensions:)]
     #[objc::available(macos = 13.0, ios = 16.0, tvos = 16.0, watchos = 9.0, visionos = 1.0)]

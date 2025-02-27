@@ -1,4 +1,7 @@
-use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 #[doc(alias = "AVAssetReaderStatus")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -75,9 +78,11 @@ impl Reader {
     #[objc::msg_send(status)]
     pub fn status(&self) -> Status;
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(timeRange)]
     pub fn time_range(&self) -> cm::TimeRange;
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(setTimeRange:)]
     pub fn set_time_range(&mut self, value: cm::TimeRange);
 

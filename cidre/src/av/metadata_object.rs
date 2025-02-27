@@ -1,4 +1,7 @@
-use crate::{arc, cg, cm, define_obj_type, ns, objc};
+use crate::{arc, cg, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 define_obj_type!(
     #[doc(alias = "AVMetadataObjectType")]
@@ -225,6 +228,7 @@ impl Obj {
     /// For capture, it is the time at which this object was captured. If this metadata
     /// object originates from a cm::SampleBuffer, its time matches the sample buffer's
     /// presentation time. This property may return cm::Time::invalid.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(time)]
     pub fn time(&self) -> cm::Time;
 
@@ -234,6 +238,7 @@ impl Obj {
     /// of the metadata object. If this metadata object originates from a cm::SampleBuffer,
     /// its duration matches the sample buffer's duration.
     /// This property may return cm::Time::invalid.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(duration)]
     pub fn duration(&self) -> cm::Time;
 

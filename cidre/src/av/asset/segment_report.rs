@@ -1,4 +1,7 @@
-use crate::{arc, av, cm, define_obj_type, ns, objc};
+use crate::{arc, av, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[doc(alias = "AVAssetSegmentType")]
@@ -36,6 +39,7 @@ define_obj_type!(
 unsafe impl Send for TrackReport {}
 
 impl TrackReport {
+    #[cfg(feature = "cm")]
     #[objc::msg_send(trackID)]
     pub fn track_id(&self) -> cm::PersistentTrackId;
 
@@ -44,11 +48,13 @@ impl TrackReport {
 
     /// Indicates the earliest presentation timestamp (PTS) for this track.
     /// The value is kCMTimeInvalid if there is no information available.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(earliestPresentationTimeStamp)]
     pub fn earliest_pts(&self) -> cm::Time;
 
     /// Indicates the duration for this track. The value is kCMTimeInvalid
     /// if there is no information available.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(duration)]
     pub fn duration(&self) -> cm::Time;
 
@@ -66,6 +72,7 @@ unsafe impl Send for SampleInfo {}
 impl SampleInfo {
     /// The presentation timestamp (PTS) of the sample.
     /// This timestamp may be different from the earliest_pts if the video is encoded using frame reordering.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(presentationTimeStamp)]
     pub fn pts(&self) -> cm::Time;
 

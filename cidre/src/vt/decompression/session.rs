@@ -222,7 +222,7 @@ pub fn is_hardware_decode_supported(codec_type: cm::VideoCodec) -> bool {
 ///
 /// This call returning true does not guarantee that decode resources will be available at all times.
 #[doc(alias = "VTIsStereoMVHEVCDecodeSupported")]
-#[api::available(macos = 14.0, ios = 17.0, visionos = 1.0)]
+#[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, visionos = 1.0)]
 #[inline]
 pub fn is_stereo_mv_hevc_decode_supported() -> bool {
     unsafe { VTIsStereoMVHEVCDecodeSupported() }
@@ -266,7 +266,7 @@ unsafe extern "C-unwind" {
     #[api::available(macos = 10.13, ios = 11.0, tvos = 11.0, visionos = 1.0)]
     fn VTIsHardwareDecodeSupported(codec_type: cm::VideoCodec) -> bool;
 
-    #[api::available(macos = 14.0, ios = 17.0, visionos = 1.0)]
+    #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, visionos = 1.0)]
     fn VTIsStereoMVHEVCDecodeSupported() -> bool;
 
     #[api::available(macos = 14.0, ios = 17.0, visionos = 1.0)]

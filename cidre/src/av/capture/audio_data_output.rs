@@ -1,10 +1,14 @@
-use crate::{arc, av, cm, define_obj_type, ns, objc};
+use crate::{arc, av, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 #[cfg(feature = "dispatch")]
 use crate::dispatch;
 
 use super::Output;
 
+#[cfg(feature = "cm")]
 #[objc::protocol(AVCaptureAudioDataOutputSampleBufferDelegate)]
 pub trait AudioDataOutputSampleBufDelegate: objc::Obj {
     #[objc::optional]
@@ -17,9 +21,13 @@ pub trait AudioDataOutputSampleBufDelegate: objc::Obj {
     );
 }
 
-define_obj_type!(pub AudioDataOutput(Output), AV_CAPTURE_AUDIO_DATA_OUTPUT);
+define_obj_type!(
+    pub AudioDataOutput(Output),
+    AV_CAPTURE_AUDIO_DATA_OUTPUT
+);
 
 impl AudioDataOutput {
+    #[cfg(feature = "cm")]
     #[cfg(feature = "dispatch")]
     #[objc::msg_send(setSampleBufferDelegate:queue:)]
     pub fn set_sample_buf_delegate<D: AudioDataOutputSampleBufDelegate>(

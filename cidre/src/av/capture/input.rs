@@ -1,4 +1,7 @@
-use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 define_obj_type!(
     #[doc(alias = "AVCaptureInput")]
@@ -82,10 +85,12 @@ impl DeviceInput {
 
     /// A property that acts as a modifier to the [`av::CaptureDevice`]'s activeVideoMinFrameDuration property.
     /// Default value is cm::Time::invalid().
+    #[cfg(feature = "cm")]
     #[objc::msg_send(videoMinFrameDurationOverride)]
     #[objc::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn video_min_frame_duration_override(&self) -> cm::Time;
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(setVideoMinFrameDurationOverride:)]
     #[objc::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn set_video_min_frame_duration_override(&mut self, val: cm::Time);
@@ -153,6 +158,7 @@ impl Port {
     pub fn media_type(&self) -> av::MediaType;
 
     /// The format of the data provided by the receiver.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(formatDescription)]
     pub fn format_desc(&self) -> Option<&cm::FormatDesc>;
 
@@ -163,6 +169,7 @@ impl Port {
     pub fn set_enabled(&mut self, val: bool);
 
     /// Provides access to the "native" clock used by the input port.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(clock)]
     pub fn clock(&self) -> Option<&cm::Clock>;
 

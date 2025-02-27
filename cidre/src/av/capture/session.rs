@@ -1,4 +1,7 @@
-use crate::{arc, av, cg, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, cg, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 #[cfg(feature = "dispatch")]
 use crate::dispatch;
@@ -270,6 +273,7 @@ impl Session {
     #[objc::msg_send(stopRunning)]
     pub fn stop_running(&mut self);
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(synchronizationClock)]
     pub fn sync_clock(&self) -> Option<&cm::Clock>;
 

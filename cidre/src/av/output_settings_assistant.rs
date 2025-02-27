@@ -1,4 +1,7 @@
-use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 define_obj_type!(
     #[doc(alias = "AVOutputSettingsPreset")]
@@ -122,12 +125,14 @@ impl OutputSettingsAssistant {
 }
 
 /// AVOutputSettingsAssistant_SourceInformation
+#[cfg(feature = "cm")]
 impl OutputSettingsAssistant {
     #[objc::msg_send(sourceAudioFormat)]
     pub fn src_audio_format(&self) -> Option<&cm::AudioFormatDesc>;
 
     #[objc::msg_send(setSourceAudioFormat:)]
     pub fn set_src_audio_format(&mut self, val: Option<&cm::AudioFormatDesc>);
+
     #[objc::msg_send(sourceVideoFormat)]
     pub fn src_video_format(&self) -> Option<&cm::VideoFormatDesc>;
 

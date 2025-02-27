@@ -1,4 +1,7 @@
-use crate::{av, cg, cm, define_obj_type, ns, objc};
+use crate::{av, cg, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 define_obj_type!(
     #[doc(alias = "AVAssetTrack")]
@@ -20,6 +23,7 @@ impl Track {
     pub fn asset(&self) -> &av::Asset;
 
     /// The persistent unique identifier for this track of the asset.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(trackID)]
     pub fn track_id(&self) -> cm::PersistentTrackId;
 }
@@ -49,6 +53,7 @@ impl Track {
 }
 
 /// AVAssetTrackPropertiesForTemporalInformation
+#[cfg(feature = "cm")]
 impl Track {
     #[objc::msg_send(timeRange)]
     pub fn time_range(&self) -> cm::TimeRange;
@@ -77,6 +82,7 @@ impl Track {
     #[objc::msg_send(nominalFrameRate)]
     pub fn nominal_frame_rate(&self) -> f32;
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(minFrameDuration)]
     pub fn min_frame_duration(&self) -> cm::Time;
 

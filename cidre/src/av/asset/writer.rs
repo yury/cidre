@@ -1,4 +1,7 @@
-use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc, ut};
+use crate::{arc, av, define_cls, define_obj_type, ns, objc, ut};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 use super::WriterInput;
 
@@ -62,9 +65,11 @@ impl Writer {
     #[objc::msg_send(startWriting)]
     pub fn start_writing(&mut self) -> bool;
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(startSessionAtSourceTime:)]
     pub fn start_session_at_src_time(&mut self, start_time: cm::Time);
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(endSessionAtSourceTime:)]
     pub fn end_session_at_src_time(&mut self, end_time: cm::Time);
 
@@ -108,13 +113,16 @@ impl Writer {
 
 /// AVAssetWriterSegmentation
 impl Writer {
+    #[cfg(feature = "cm")]
     #[objc::msg_send(preferredOutputSegmentInterval)]
     pub fn preferred_output_segment_interval(&self) -> cm::Time;
 
     /// Specifies preferred segment interval.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(setPreferredOutputSegmentInterval:)]
     pub fn set_preferred_output_segment_interval(&mut self, val: cm::Time);
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(initialSegmentStartTime)]
     pub fn initial_segment_start_time(&self) -> cm::Time;
 
@@ -125,6 +133,7 @@ impl Writer {
     ///
     /// This property cannot be set after writing has started.
     /// TODO: check throws
+    #[cfg(feature = "cm")]
     #[objc::msg_send(setInitialSegmentStartTime:)]
     pub fn set_initial_segment_start_time(&mut self, val: cm::Time);
 
@@ -160,10 +169,12 @@ impl Writer {
     /// Some container formats, such as QuickTime movies, support writing movies
     /// in fragments. Using this feature enables you to open and play a partially
     /// written movie in the event that an unexpected error or interruption occurs.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(movieFragmentInterval)]
     pub fn movie_fragment_interval(&self) -> cm::Time;
 
     /// This property cannot be set after writing has started.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(setMovieFragmentInterval:)]
     pub fn set_movie_fragment_interval(&mut self, val: cm::Time);
 
@@ -174,10 +185,12 @@ impl Writer {
     /// The default value is kCMTimeInvalid, which indicates that the interval for
     /// initial movie fragment is same as the one specified by movie_fragment_interval
     /// property.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(initialMovieFragmentInterval)]
     pub fn initial_movie_fragment_interval(&self) -> cm::Time;
 
     /// This property cannot be set after writing has started.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(setInitialMovieFragmentInterval:)]
     pub fn set_initial_movie_fragment_interval(&mut self, val: cm::Time);
 
@@ -195,15 +208,19 @@ impl Writer {
     #[objc::msg_send(setProducesCombinableFragments:)]
     pub fn set_produces_combinable_fragments(&mut self, val: bool);
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(overallDurationHint)]
     pub fn overall_duration_hint(&self) -> cm::Time;
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(setOverallDurationHint:)]
     pub fn set_overall_duration_hint(&mut self, val: cm::Time);
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(movieTimeScale)]
     pub fn movie_time_scale(&self) -> cm::TimeScale;
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(setMovieTimeScale:)]
     pub fn set_movie_time_scale(&self, val: cm::TimeScale);
 }

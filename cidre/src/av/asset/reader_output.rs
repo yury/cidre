@@ -1,4 +1,7 @@
-use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 define_obj_type!(
     #[doc(alias = "AVAssetReaderOutput")]
@@ -75,9 +78,11 @@ impl ReaderOutput {
     ///
     /// This method throws an exception if this output is not added to an instance of av::AssetReader
     /// (using add_output()) and start_reading() is not called on that asset reader.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(copyNextSampleBuffer)]
     pub unsafe fn next_sample_buf_throws(&mut self) -> Option<arc::Retained<cm::SampleBuf>>;
 
+    #[cfg(feature = "cm")]
     #[inline]
     pub fn next_sample_buf<'ear>(&mut self) -> ns::ExResult<'ear, Option<arc::R<cm::SampleBuf>>> {
         ns::try_catch(|| unsafe { self.next_sample_buf_throws() })

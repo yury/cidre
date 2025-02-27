@@ -1,4 +1,7 @@
-use crate::{api, arc, cm, define_obj_type, ns, objc};
+use crate::{api, arc, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 define_obj_type!(
     #[doc(alias = "AVCaptureReactionType")]
@@ -117,12 +120,14 @@ impl EffectState {
     pub fn reaction_type(&self) -> &ReactionType;
 
     /// Provides the presentation time of the first frame where the effect is being rendered.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(startTime)]
     #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn start_time(&self) -> cm::Time;
 
     /// Provides the presentation time of the frame following
     /// the last frame where the effect is seen.
+    #[cfg(feature = "cm")]
     #[objc::msg_send(endTime)]
     #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     pub fn end_time(&self) -> cm::Time;

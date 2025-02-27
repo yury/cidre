@@ -1,4 +1,7 @@
-use crate::{api, arc, cf, cg, define_cls, define_obj_type, mtl, ns, objc};
+use crate::{api, arc, cg, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "mtl")]
+use crate::{cf, mtl};
 
 define_obj_type!(
     /// A representation of an image to be processed or produced by Core Image filters.
@@ -7,6 +10,7 @@ define_obj_type!(
 );
 
 impl arc::A<Image> {
+    #[cfg(feature = "mtl")]
     #[objc::msg_send(initWithMTLTexture:options:)]
     pub fn init_with_mlt_texture_options(
         self,
@@ -18,6 +22,7 @@ impl arc::A<Image> {
 impl Image {
     define_cls!(CI_IMAGE);
 
+    #[cfg(feature = "mtl")]
     pub fn with_mtl_texture(
         texture: &mtl::Texture,
         options: Option<&cf::DictionaryOf<ImageOpt, cf::Type>>,
@@ -77,6 +82,7 @@ impl Image {
     )]
     pub fn content_headroom(&self) -> f32;
 
+    #[cfg(feature = "mtl")]
     #[objc::msg_send(metalTexture)]
     #[api::available(
         macos = 15.0,

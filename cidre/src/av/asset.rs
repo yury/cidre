@@ -1,4 +1,7 @@
-use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
@@ -125,6 +128,7 @@ impl UrlAsset {
     #[objc::msg_send(audiovisualMIMETypes)]
     pub fn av_mime_types() -> arc::R<ns::Array<ns::String>>;
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(duration)]
     pub fn duration(&self) -> cm::Time;
 }

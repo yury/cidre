@@ -1,4 +1,7 @@
-use crate::{arc, av, cg, cm, define_obj_type, ns, objc};
+use crate::{arc, av, cg, define_obj_type, ns, objc};
+
+#[cfg(feature = "cm")]
+use crate::cm;
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
@@ -12,7 +15,7 @@ pub enum ImageGeneratorResult {
     Cancelled = 2,
 }
 
-#[cfg(feature = "blocks")]
+#[cfg(all(feature = "blocks", feature = "cm"))]
 #[doc(alias = "AVAssetImageGeneratorCompletionHandler")]
 pub type ImageGeneratorCh = blocks::EscBlock<
     fn(
@@ -58,15 +61,19 @@ impl ImageGenerator {
     #[objc::msg_send(setMaximumSize:)]
     pub fn set_max_size(&mut self, val: cg::Size);
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(requestedTimeToleranceBefore)]
     pub fn requested_time_tolerance_before(&self) -> cm::Time;
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(setRequestedTimeToleranceBefore:)]
     pub fn set_requested_time_tolerance_before(&mut self, val: cm::Time);
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(requestedTimeToleranceAfter)]
     pub fn requested_time_tolerance_after(&self) -> cm::Time;
 
+    #[cfg(feature = "cm")]
     #[objc::msg_send(setRequestedTimeToleranceAfter:)]
     pub fn set_requested_time_tolerance_after(&mut self, val: cm::Time);
 
@@ -78,7 +85,7 @@ impl ImageGenerator {
         ch: &mut ImageGeneratorCh,
     );
 
-    #[cfg(feature = "blocks")]
+    #[cfg(all(feature = "blocks", feature = "cm"))]
     #[objc::msg_send(generateCGImageAsynchronouslyForTime:completionHandler:)]
     pub fn cg_image_for_time_ch(
         &self,
@@ -88,7 +95,7 @@ impl ImageGenerator {
         >,
     );
 
-    #[cfg(feature = "async")]
+    #[cfg(all(feature = "async", feature = "cm"))]
     pub async fn cg_image_for_time(
         &self,
         request_time: cm::Time,
