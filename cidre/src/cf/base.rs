@@ -6,11 +6,19 @@ use crate::ns;
 use super::{String, runtime::Type};
 use std::{borrow::Cow, cmp::Ordering, ffi::c_void};
 
+#[doc(alias = "CFIndex")]
 pub type Index = isize;
+
+#[doc(alias = "CFTypeID")]
 pub type TypeId = usize;
+
+#[doc(alias = "CFHashCode")]
 pub type HashCode = usize;
 
-define_opts!(pub OptionFlags(usize));
+define_opts!(
+    #[doc(alias = "CFOptionFlags")]
+    pub OptionFlags(usize)
+);
 
 impl OptionFlags {
     pub const NONE: Self = Self(0);
@@ -46,6 +54,7 @@ impl Range {
     }
 }
 
+#[doc(alias = "CFComparisonResult")]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(isize)]
 pub enum ComparisonResult {
@@ -64,7 +73,8 @@ pub enum ComparisonResult {
 ///     assert_eq!("CFNumber", desc.to_string());
 /// }
 /// ```
-pub unsafe fn copy_type_id_desc(type_id: TypeId) -> Option<arc::R<String>> {
+#[doc(alias = "CFCopyTypeIDDescription")]
+pub unsafe fn type_id_desc(type_id: TypeId) -> Option<arc::R<String>> {
     unsafe { CFCopyTypeIDDescription(type_id) }
 }
 

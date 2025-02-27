@@ -19,7 +19,7 @@ pub use base::PlistFormat;
 pub use base::PlistMutabilityOpts;
 pub use base::Range;
 pub use base::TypeId;
-pub use base::copy_type_id_desc;
+pub use base::type_id_desc;
 
 mod property_list;
 
