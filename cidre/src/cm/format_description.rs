@@ -99,7 +99,7 @@ impl MediaType {
     pub const AUXILIARY_PICTURE: Self = Self::from_be_bytes(b"auxv");
 
     #[doc(alias = "kCMMediaType_TaggedBufferGroup")]
-    pub const TAGGED_BUFFER_GROUP: Self = Self::from_be_bytes(b"tbgr");
+    pub const TAGGED_BUF_GROUP: Self = Self::from_be_bytes(b"tbgr");
 
     const fn from_be_bytes(bytes: &[u8; 4]) -> Self {
         Self(FourCharCode::from_be_bytes(*bytes))
@@ -929,8 +929,55 @@ impl LogTransferFn {
 #[doc(alias = "CMTaggedBufferGroupFormatDescriptionRef")]
 pub type TaggedBufGroupFormatDesc = FormatDesc;
 
+/// The subtypes of cm::TaggedBufGroup media type.
+#[doc(alias = "CMTaggedBufferGroupFormatType")]
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
+#[non_exhaustive]
+#[repr(u32)]
+pub enum TaggedBufGroupFormatType {
+    /// For sample buffers carrying CMTaggedBufferGroup objects.
+    #[doc(alias = "kCMTaggedBufferGroupFormatType_TaggedBufferGroup")]
+    TaggedBufGroup = u32::from_be_bytes(*b"tbgr"),
+}
+
 #[doc(alias = "CMMuxedFormatDescriptionRef")]
 pub type MuxedFormatDesc = FormatDesc;
+
+/// Muxed media format/subtype.
+///
+/// Contains interleaved sample buffers from multiple media types. The receiver should query the media type of each cm::SampleBuf’s
+/// format description to discover if it’s video or audio, and process it accordingly.
+#[doc(alias = "CMMuxedStreamType")]
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
+#[non_exhaustive]
+#[repr(u32)]
+pub enum MuxedStreamType {
+    /// MPEG-1 System stream
+    #[doc(alias = "kCMMuxedStreamType_MPEG1System")]
+    Mpeg1Sys = u32::from_be_bytes(*b"mp1s"),
+
+    /// MPEG-2 Transport stream
+    #[doc(alias = "kCMMuxedStreamType_MPEG2Transport")]
+    Mpeg2Transport = u32::from_be_bytes(*b"mp2t"),
+
+    /// MPEG-2 Program stream
+    #[doc(alias = "kCMMuxedStreamType_MPEG2Program")]
+    Mpeg2Program = u32::from_be_bytes(*b"mp2p"),
+
+    /// DV stream
+    #[doc(alias = "kCMMuxedStreamType_DV")]
+    Dv = u32::from_be_bytes(*b"dv  "),
+
+    /// Screen capture on an embedded device
+    #[doc(alias = "kCMMuxedStreamType_EmbeddedDeviceScreenRecording")]
+    EmbeddedDeviceScreenRecording = u32::from_be_bytes(*b"isr "),
+}
+
+impl std::fmt::Debug for MuxedStreamType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        crate::four_cc_fmt_debug(*self as _, "MuxedStreamType", f)
+    }
+}
 
 #[link(name = "CoreMedia", kind = "framework")]
 #[api::weak]
