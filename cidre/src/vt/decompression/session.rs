@@ -182,6 +182,7 @@ impl Session {
 /// Multi-image decompression
 impl Session {
     #[api::available(macos = 14.0, ios = 17.0, visionos = 1.0)]
+    #[inline]
     unsafe fn _set_multi_image_cb(
         &mut self,
         cb: OutputMultiImageCb,
@@ -211,6 +212,7 @@ impl Session {
 /// This call returning true does not guarantee that hardware decode resources will be
 /// available at all times.
 #[doc(alias = "VTIsHardwareDecodeSupported")]
+#[api::available(macos = 10.13, ios = 11.0, tvos = 11.0, visionos = 1.0)]
 #[inline]
 pub fn is_hardware_decode_supported(codec_type: cm::VideoCodec) -> bool {
     unsafe { VTIsHardwareDecodeSupported(codec_type) }
@@ -220,6 +222,7 @@ pub fn is_hardware_decode_supported(codec_type: cm::VideoCodec) -> bool {
 ///
 /// This call returning true does not guarantee that decode resources will be available at all times.
 #[doc(alias = "VTIsStereoMVHEVCDecodeSupported")]
+#[api::available(macos = 14.0, ios = 17.0, visionos = 1.0)]
 #[inline]
 pub fn is_stereo_mv_hevc_decode_supported() -> bool {
     unsafe { VTIsStereoMVHEVCDecodeSupported() }
@@ -228,7 +231,6 @@ pub fn is_stereo_mv_hevc_decode_supported() -> bool {
 #[link(name = "VideoToolbox", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
-
     fn VTDecompressionSessionCreate(
         allocator: Option<&cf::Allocator>,
         video_format_description: &cm::VideoFormatDesc,
@@ -261,7 +263,10 @@ unsafe extern "C-unwind" {
         pixel_buffer_out: *mut Option<arc::R<cv::PixelBuf>>,
     ) -> os::Status;
 
+    #[api::available(macos = 10.13, ios = 11.0, tvos = 11.0, visionos = 1.0)]
     fn VTIsHardwareDecodeSupported(codec_type: cm::VideoCodec) -> bool;
+
+    #[api::available(macos = 14.0, ios = 17.0, visionos = 1.0)]
     fn VTIsStereoMVHEVCDecodeSupported() -> bool;
 
     #[api::available(macos = 14.0, ios = 17.0, visionos = 1.0)]
