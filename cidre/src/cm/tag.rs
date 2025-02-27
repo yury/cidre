@@ -259,11 +259,11 @@ impl Tag {
 }
 
 #[cfg(any(
-    feature = "macos_14_0",
-    feature = "ios_17_0",
-    feature = "tvos_17_0",
-    feature = "watchos_10_0",
-    feature = "visionos_1_0"
+    all(feature = "macos_14_0", target_os = "macos"),
+    all(feature = "ios_17_0", target_os = "ios"),
+    all(feature = "tvos_17_0", target_os = "tvos"),
+    all(feature = "watchos_10_0", target_os = "watchos"),
+    all(feature = "visionos_1_0", target_os = "visionos")
 ))]
 impl Into<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> for Tag {
     #[inline]
@@ -273,13 +273,12 @@ impl Into<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> for Tag {
 }
 
 #[cfg(any(
-    feature = "macos_14_0",
-    feature = "ios_17_0",
-    feature = "tvos_17_0",
-    feature = "watchos_10_0",
-    feature = "visionos_1_0"
+    all(feature = "macos_14_0", target_os = "macos"),
+    all(feature = "ios_17_0", target_os = "ios"),
+    all(feature = "tvos_17_0", target_os = "tvos"),
+    all(feature = "watchos_10_0", target_os = "watchos"),
+    all(feature = "visionos_1_0", target_os = "visionos")
 ))]
-
 impl From<&cf::Dictionary> for Tag {
     fn from(value: &cf::Dictionary) -> Self {
         unsafe { CMTagMakeFromDictionary(&value) }
@@ -287,11 +286,11 @@ impl From<&cf::Dictionary> for Tag {
 }
 
 #[cfg(any(
-    feature = "macos_14_0",
-    feature = "ios_17_0",
-    feature = "tvos_17_0",
-    feature = "watchos_10_0",
-    feature = "visionos_1_0"
+    all(feature = "macos_14_0", target_os = "macos"),
+    all(feature = "ios_17_0", target_os = "ios"),
+    all(feature = "tvos_17_0", target_os = "tvos"),
+    all(feature = "watchos_10_0", target_os = "watchos"),
+    all(feature = "visionos_1_0", target_os = "visionos")
 ))]
 impl From<&cf::DictionaryOf<cf::String, cf::Type>> for Tag {
     fn from(value: &cf::DictionaryOf<cf::String, cf::Type>) -> Self {
