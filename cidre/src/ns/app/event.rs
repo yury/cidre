@@ -1,4 +1,7 @@
-use crate::{arc, blocks, cg, define_obj_type, define_opts, ns, objc};
+use crate::{arc, cg, define_obj_type, define_opts, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 #[doc(alias = "NSEventType")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -654,6 +657,7 @@ impl Event {
     #[objc::msg_send(isSwipeTrackingFromScrollEventsEnabled)]
     pub fn is_swipe_tracking_from_scroll_events_enabled(&self) -> bool;
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(trackSwipeEventWithOptions:dampenAmountThresholdMin:max:usingHandler:)]
     pub fn track_swipe_event(
         &self,
@@ -693,12 +697,14 @@ impl Event {
     #[objc::msg_send(keyRepeatInterval)]
     pub fn key_repeat_interval(&self) -> ns::TimeInterval;
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(addGlobalMonitorForEventsMatchingMask:handler:)]
     pub fn add_global_monitor_for_events_matching_mask_handler(
         mask: EventMask,
         handler: &mut blocks::EscBlock<fn(event: &ns::Event)>,
     ) -> Option<arc::R<ns::Id>>;
 
+    #[cfg(feature = "blocks")]
     pub fn add_global_monitor_for_events_matching_mask(
         mask: EventMask,
         handler: impl FnMut(&ns::Event) + 'static,
@@ -707,12 +713,14 @@ impl Event {
         Self::add_global_monitor_for_events_matching_mask_handler(mask, &mut block)
     }
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(addLocalMonitorForEventsMatchingMask:handler:)]
     pub fn add_local_monitor_for_events_matching_mask_handler(
         mask: EventMask,
         handler: &mut blocks::EscBlock<fn(event: &ns::Event)>,
     ) -> Option<arc::R<ns::Id>>;
 
+    #[cfg(feature = "blocks")]
     pub fn add_local_monitor_for_events_matching_mask(
         mask: EventMask,
         handler: impl FnMut(&ns::Event) + 'static,

@@ -1,4 +1,7 @@
-use crate::{arc, blocks, define_cls, define_obj_type, ns, objc};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 define_obj_type!(
     #[doc(alias = "NSWorkspace")]
@@ -37,6 +40,7 @@ unsafe impl Send for Authorization {}
 
 /// NSWorkspaceAuthorization
 impl Workspace {
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(requestAuthorizationOfType:completionHandler:)]
     pub fn request_authorization_of_type_ch_block(
         &self,
@@ -44,6 +48,7 @@ impl Workspace {
         ch: &mut blocks::ResultCh<ns::WorkspaceAuthorization>,
     );
 
+    #[cfg(feature = "blocks")]
     pub fn request_authorization_of_type_ch<F>(&self, type_: ns::WorkspaceAuthorizationType, ch: F)
     where
         F: FnMut(Option<&ns::WorkspaceAuthorization>, Option<&ns::Error>)
@@ -54,6 +59,7 @@ impl Workspace {
         self.request_authorization_of_type_ch_block(type_, &mut ch)
     }
 
+    #[cfg(feature = "async")]
     pub async fn request_authorization_of_type(
         &self,
         type_: ns::WorkspaceAuthorizationType,
