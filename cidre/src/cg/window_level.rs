@@ -1,4 +1,5 @@
 #[doc(alias = "CGWindowLevel")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 #[repr(transparent)]
 pub struct WindowLevel(pub i32);
 

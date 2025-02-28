@@ -1,11 +1,16 @@
 use crate::{arc, cf, cg, define_cf_type};
 
-define_cf_type!(Font(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CGFontRef")]
+    Font(cf::Type)
+);
 
+#[doc(alias = "CGFontIndex")]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct Index(pub u16);
 
+#[doc(alias = "CGGlyph")]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct Glyph(pub Index);
@@ -33,39 +38,43 @@ impl Index {
 }
 
 impl Font {
+    #[doc(alias = "CGFontGetTypeID")]
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CGFontGetTypeID() }
     }
 
+    #[doc(alias = "CGFontCreateWithFontName")]
     #[inline]
     pub fn with_name(name: &cf::String) -> Option<arc::R<Self>> {
         unsafe { CGFontCreateWithFontName(name) }
     }
 
+    #[doc(alias = "CGFontCreateCopyWithVariations")]
     #[inline]
-    pub fn copy_with_variations(
-        &self,
-        variations: Option<&cf::Dictionary>,
-    ) -> Option<arc::R<Self>> {
+    pub fn with_variations(&self, variations: Option<&cf::Dictionary>) -> Option<arc::R<Self>> {
         unsafe { CGFontCreateCopyWithVariations(self, variations) }
     }
 
+    #[doc(alias = "CGFontGetNumberOfGlyphs")]
     #[inline]
     pub fn nglyphs(&self) -> usize {
         unsafe { CGFontGetNumberOfGlyphs(self) }
     }
 
+    #[doc(alias = "CGFontGetUnitsPerEm")]
     #[inline]
     pub fn units_per_em(&self) -> i32 {
         unsafe { CGFontGetUnitsPerEm(self) }
     }
 
+    #[doc(alias = "CGFontCopyPostScriptName")]
     #[inline]
     pub fn post_script_name(&self) -> arc::R<cf::String> {
         unsafe { CGFontCopyPostScriptName(self) }
     }
 
+    #[doc(alias = "CGFontCopyFullName")]
     #[inline]
     pub fn full_name(&self) -> arc::R<cf::String> {
         unsafe { CGFontCopyFullName(self) }
@@ -74,6 +83,7 @@ impl Font {
     /// The ascent is the maximum distance above the
     /// baseline of glyphs in a font. The value is specified in glyph space
     /// units.
+    #[doc(alias = "CGFontGetAscent")]
     #[inline]
     pub fn ascent(&self) -> i32 {
         unsafe { CGFontGetAscent(self) }
@@ -82,6 +92,7 @@ impl Font {
     /// The descent is the maximum distance below
     /// the baseline of glyphs in a font. The value is specified in glyph space
     /// units.
+    #[doc(alias = "CGFontGetDescent")]
     #[inline]
     pub fn descent(&self) -> i32 {
         unsafe { CGFontGetDescent(self) }
@@ -90,6 +101,7 @@ impl Font {
     /// The leading is the spacing between
     /// consecutive lines of text in a font. The value is specified in glyph
     /// space units.
+    #[doc(alias = "CGFontGetLeading")]
     #[inline]
     pub fn leading(&self) -> i32 {
         unsafe { CGFontGetLeading(self) }
@@ -98,6 +110,7 @@ impl Font {
     /// The cap height is the distance above the
     /// baseline of the top of flat capital letters of glyphs in a font. The
     /// value is specified in glyph space units.
+    #[doc(alias = "CGFontGetCapHeight")]
     #[inline]
     pub fn cap_height(&self) -> i32 {
         unsafe { CGFontGetCapHeight(self) }
@@ -106,6 +119,7 @@ impl Font {
     /// The x-height is the distance above the
     /// baseline of the top of flat, non-ascending lowercase letters (such as
     /// "x") of glyphs in a font. The value is specified in glyph space units.
+    #[doc(alias = "CGFontGetXHeight")]
     #[inline]
     pub fn x_height(&self) -> i32 {
         unsafe { CGFontGetXHeight(self) }
@@ -114,11 +128,13 @@ impl Font {
     /// The font bounding box is the
     /// union of all of the bounding boxes for all the glyphs in a font. The
     /// value is specified in glyph space units.
+    #[doc(alias = "CGFontGetFontBBox")]
     #[inline]
     pub fn bbox(&self) -> cg::Rect {
         unsafe { CGFontGetFontBBox(self) }
     }
 
+    #[doc(alias = "CGFontGetItalicAngle")]
     #[inline]
     pub fn italic_angle(&self) -> cg::Float {
         unsafe { CGFontGetItalicAngle(self) }
@@ -126,6 +142,7 @@ impl Font {
 
     /// The thickness of the dominant vertical stems of glyphs in font.
     /// The value is specified in glyph space units.
+    #[doc(alias = "CGFontGetStemV")]
     #[inline]
     pub fn stem_v(&self) -> cg::Float {
         unsafe { CGFontGetStemV(self) }
@@ -135,6 +152,7 @@ impl Font {
     /// variation axis dictionary contains values for the variation axis keys
     /// listed below. This function returns None if font doesn't support
     /// variations.
+    #[doc(alias = "CGFontCopyVariationAxes")]
     #[inline]
     pub fn variation_axes(&self) -> Option<arc::R<cf::Array>> {
         unsafe { CGFontCopyVariationAxes(self) }
@@ -146,6 +164,7 @@ impl Font {
     /// value specified for that particular variation axis represented as a
     /// cf::Number. This function returns None if font doesn't support
     /// variations.
+    #[doc(alias = "CGFontCopyVariations")]
     #[inline]
     pub fn variations(&self) -> Option<arc::R<cf::Array>> {
         unsafe { CGFontCopyVariations(self) }
@@ -272,7 +291,7 @@ mod tests {
     #[test]
     fn basics() {
         let font = cg::Font::with_name(&cf::String::from_str("Helvetica")).unwrap();
-        let copy = font.copy_with_variations(None).unwrap();
+        let copy = font.with_variations(None).unwrap();
         copy.show();
 
         assert_eq!(font.nglyphs(), 2252);
