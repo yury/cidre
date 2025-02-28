@@ -5,7 +5,10 @@ use std::{
 
 use crate::{arc, cf, define_cf_type, define_opts, os};
 
-define_opts!(pub Flags(u32));
+define_opts!(
+    #[doc(alias = "CMBlockBufferFlags")]
+    pub Flags(u32)
+);
 
 impl Flags {
     pub const NONE: Self = Self(0);
@@ -31,7 +34,10 @@ impl Flags {
     pub const PERMIT_EMPTY_REFERENCE: Self = Self(1u32 << 3);
 }
 
-define_cf_type!(BlockBuf(cf::Type));
+define_cf_type!(
+    #[doc(alias = "CMBlockBufferRef")]
+    BlockBuf(cf::Type)
+);
 // TODO: termporary...
 unsafe impl Send for BlockBuf {}
 unsafe impl Sync for BlockBuf {}
