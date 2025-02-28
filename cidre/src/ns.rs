@@ -85,6 +85,9 @@ pub use url_cache::CachedUrlResponse;
 pub use url_cache::StoragePolicy as UrlCacheStoragePolicy;
 pub use url_cache::UrlCache;
 
+mod user_defaults;
+pub use user_defaults::UserDefaults;
+
 mod value;
 pub use value::Number;
 pub use value::Value;
