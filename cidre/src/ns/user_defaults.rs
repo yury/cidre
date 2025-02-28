@@ -19,7 +19,7 @@ impl UserDefaults {
     pub fn standard() -> arc::R<Self>;
 
     #[objc::msg_send(resetStandardUserDefaults)]
-    pub fn reset();
+    pub fn reset_standard();
 
     pub fn with_suite_name(name: Option<&ns::String>) -> Option<arc::R<Self>> {
         Self::alloc().init_with_suite_name(name)
