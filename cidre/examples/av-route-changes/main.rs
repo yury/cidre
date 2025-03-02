@@ -12,6 +12,9 @@ mod macos {
 
         for addr in addresses {
             match addr.selector {
+                ca::PropSelector::HW_DEFAULT_INPUT_DEVICE => {
+                    println!("default input device changed")
+                }
                 ca::PropSelector::HW_DEFAULT_OUTPUT_DEVICE => {
                     println!("default output device changed");
                     let device = ca::System::default_output_device().unwrap();
@@ -33,13 +36,16 @@ mod macos {
     }
 
     pub(crate) fn main() {
-        ca::System::OBJ
-            .add_prop_listener(
-                &ca::PropSelector::HW_DEFAULT_OUTPUT_DEVICE.global_addr(),
-                listener,
-                std::ptr::null_mut(),
-            )
-            .unwrap();
+        let selectors = [
+            ca::PropSelector::HW_DEFAULT_INPUT_DEVICE,
+            ca::PropSelector::HW_DEFAULT_OUTPUT_DEVICE,
+        ];
+
+        for s in selectors {
+            ca::System::OBJ
+                .add_prop_listener(&s.global_addr(), listener, std::ptr::null_mut())
+                .unwrap();
+        }
 
         ns::RunLoop::main().run();
     }
