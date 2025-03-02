@@ -19,7 +19,9 @@ pub use surface::SurfId;
 unsafe extern "C" {}
 
 #[cfg(all(target_os = "macos", feature = "io_kit"))]
-pub mod kit;
+mod kit;
+#[cfg(all(target_os = "macos", feature = "io_kit"))]
+pub use kit::audio;
 // we just define constants for now, so we don't need link yet
 // #[link(name = "IOKit", kind = "framework")]
 // unsafe extern "C" {}

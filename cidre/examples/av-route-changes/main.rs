@@ -23,7 +23,7 @@ mod macos {
                         .iter()
                         .find(|s| {
                             let term_type = s.terminal_type().unwrap();
-                            term_type.0 == io::kit::audio::types::output_term::HEADPHONES
+                            term_type.0 == io::audio::output_term::HEADPHONES
                                 || term_type == ca::StreamTerminalType::HEADPHONES
                         })
                         .is_some();
