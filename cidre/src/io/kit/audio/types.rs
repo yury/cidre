@@ -1,5 +1,8 @@
 /// Input terminal types
 pub mod input_term {
+    #[doc(alias = "INPUT_NULL")]
+    pub const NULL: u32 = 0x0101;
+
     #[doc(alias = "INPUT_UNDEFINED")]
     pub const UNDEFINED: u32 = 0x0200;
 
@@ -27,6 +30,9 @@ pub mod input_term {
 
 /// Output terminal types
 pub mod output_term {
+    #[doc(alias = "OUTPUT_NULL")]
+    pub const NULL: u32 = 0x0100;
+
     #[doc(alias = "OUTPUT_UNDEFINED")]
     pub const UNDEFINED: u32 = 0x0300;
 
@@ -50,4 +56,25 @@ pub mod output_term {
 
     #[doc(alias = "OUTPUT_LOW_FREQUENCY_EFFECTS_SPEAKER")]
     pub const LOW_FREQUENCY_EFFECTS_SPEAKER: u32 = 0x0307;
+}
+
+/// Bi-directional terminal types
+pub mod bidirectional_term {
+    #[doc(alias = "BIDIRECTIONAL_UNDEFINED")]
+    pub const UNDEFINED: u32 = 0x0400;
+
+    #[doc(alias = "BIDIRECTIONAL_HANDSET")]
+    pub const HANDSET: u32 = 0x0401;
+
+    #[doc(alias = "BIDIRECTIONAL_HEADSET")]
+    pub const HEADSET: u32 = 0x0402;
+
+    #[doc(alias = "BIDIRECTIONAL_SPEAKERPHONE_NO_ECHO_REDX")]
+    pub const SPEAKERPHONE_NO_ECHO_REDX: u32 = 0x0403;
+
+    #[doc(alias = "BIDIRECTIONAL_ECHO_SUPPRESSING_SPEAKERPHONE")]
+    pub const ECHO_SUPPRESSING_SPEAKERPHONE: u32 = 0x0404;
+
+    #[doc(alias = "BIDIRECTIONAL_ECHO_CANCELING_SPEAKERPHONE")]
+    pub const ECHO_CANCELING_SPEAKERPHONE: u32 = 0x0405;
 }
