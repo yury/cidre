@@ -572,6 +572,110 @@ impl Session {
     }
 }
 
+/// Keys for ns::Notification user_info dictionaries
+pub mod keys {
+    use crate::{api, ns};
+
+    /// value is an ns::Number whose boolean value indicates if spatial audio enabled.
+    ///
+    /// key for AVAudioSessionSpatialPlaybackCapabilitiesChangedNotification
+    #[doc(alias = "AVAudioSessionSpatialAudioEnabledKey")]
+    #[api::available(ios = 15.0, watchos = 8.0, tvos = 15.0)]
+    pub fn spacial_audio_enabled() -> &'static ns::String {
+        unsafe { AVAudioSessionSpatialAudioEnabledKey }
+    }
+
+    /// Value is an ns::Number representing an av::AudioSessionInterruptionType
+    #[doc(alias = "AVAudioSessionInterruptionTypeKey")]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
+    pub fn interruption_type() -> &'static ns::String {
+        unsafe { AVAudioSessionInterruptionTypeKey }
+    }
+
+    /// Only present for end interruption events. Value is of type av::AudioSessionInterruptionOptions.
+    #[doc(alias = "AVAudioSessionInterruptionOptionKey")]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
+    pub fn interruption_option() -> &'static ns::String {
+        unsafe { AVAudioSessionInterruptionOptionKey }
+    }
+
+    /// Only present in begin interruption events. Value is of type av::AudioSessionInterruptionReason.
+    #[doc(alias = "AVAudioSessionInterruptionReasonKey")]
+    #[api::available(ios = 14.5, watchos = 7.3)]
+    pub fn interruption_reason() -> &'static ns::String {
+        unsafe { AVAudioSessionInterruptionReasonKey }
+    }
+
+    /// Value is an ns::Number representing an av::AudioSessionRouteChangeReason
+    #[doc(alias = "AVAudioSessionRouteChangeReasonKey")]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
+    pub fn route_change_reason() -> &'static ns::String {
+        unsafe { AVAudioSessionRouteChangeReasonKey }
+    }
+
+    /// Value is av::AudioSessionRouteDesc
+    #[doc(alias = "AVAudioSessionRouteChangePreviousRouteKey")]
+    #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
+    pub fn route_change_previuous_route() -> &'static ns::String {
+        unsafe { AVAudioSessionRouteChangePreviousRouteKey }
+    }
+
+    /// Value is an ns::Number representing an AVAudioSessionSilenceSecondaryAudioHintType
+    #[doc(alias = "AVAudioSessionSilenceSecondaryAudioHintTypeKey")]
+    #[api::available(ios = 8.0, watchos = 2.0, tvos = 9.0)]
+    pub fn silence_secondary_audio_hint_type() -> &'static ns::String {
+        unsafe { AVAudioSessionSilenceSecondaryAudioHintTypeKey }
+    }
+
+    /// Contains a payload of ns::Integer representing the new resolved rendering mode
+    #[doc(alias = "AVAudioSessionRenderingModeNewRenderingModeKey")]
+    #[api::available(ios = 17.2, tvos = 17.2)]
+    pub fn rendering_mode_new_rendering_mode() -> &'static ns::String {
+        unsafe { AVAudioSessionRenderingModeNewRenderingModeKey }
+    }
+
+    /// Indicates if microphone injection is available.
+    ///
+    /// Value is an ns::Number whose boolean value indicates if microphone injection is available.
+    #[doc(alias = "AVAudioSessionMicrophoneInjectionIsAvailableKey")]
+    #[api::available(ios = 18.2, visionos = 2.2)]
+    pub fn mic_injection_is_available() -> &'static ns::String {
+        unsafe { AVAudioSessionMicrophoneInjectionIsAvailableKey }
+    }
+
+    #[link(name = "AVFAudio", kind = "framework")]
+    #[api::weak]
+    unsafe extern "C" {
+        #[api::available(ios = 15.0, watchos = 8.0, tvos = 15.0)]
+        static AVAudioSessionSpatialAudioEnabledKey: &'static ns::String;
+
+        #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
+        static AVAudioSessionInterruptionTypeKey: &'static ns::String;
+
+        #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
+        static AVAudioSessionInterruptionOptionKey: &'static ns::String;
+
+        #[api::available(ios = 14.5, watchos = 7.3)]
+        static AVAudioSessionInterruptionReasonKey: &'static ns::String;
+
+        #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
+        static AVAudioSessionRouteChangeReasonKey: &'static ns::String;
+
+        #[api::available(ios = 6.0, watchos = 2.0, tvos = 9.0)]
+        static AVAudioSessionRouteChangePreviousRouteKey: &'static ns::String;
+
+        #[api::available(ios = 8.0, watchos = 2.0, tvos = 9.0)]
+        static AVAudioSessionSilenceSecondaryAudioHintTypeKey: &'static ns::String;
+
+        #[api::available(ios = 17.2, tvos = 17.2)]
+        static AVAudioSessionRenderingModeNewRenderingModeKey: &'static ns::String;
+
+        #[api::available(ios = 18.2, visionos = 2.2)]
+        static AVAudioSessionMicrophoneInjectionIsAvailableKey: &'static ns::String;
+
+    }
+}
+
 #[link(name = "AVFAudio", kind = "framework")]
 #[api::weak]
 unsafe extern "C" {

@@ -29,6 +29,7 @@ Class AV_AUDIO_PLAYER;
 
 Class AV_AUDIO_ENGINE;
 Class AV_AUDIO_SESSION;
+Class AV_AUDIO_SESSION_ROUTE_DESCRIPTION;
 
 Class AV_AUDIO_CONNECTION_POINT;
 
@@ -199,6 +200,8 @@ static void av_initializer(void)
         AV_EXTERNAL_STORAGE_DEVICE_DISCOVERY_SESSION = NSClassFromString(@" AVExternalStorageDeviceDiscoverySession");
         
         AV_CAPTURE_PHOTO_SETTINGS = NSClassFromString(@"AVCapturePhotoSettings");
+        
+        AV_AUDIO_SESSION_ROUTE_DESCRIPTION = NSClassFromString(@"AVAudioSessionRouteDescription");
 
     }
 }

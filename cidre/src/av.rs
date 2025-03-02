@@ -9,10 +9,6 @@ pub use media_format::MediaType;
 pub use media_format::VideoRange;
 
 pub mod capture;
-pub use capture::device_notifications as capture_device_notifications;
-pub use capture::input_port_notifications as capture_input_port_notifications;
-pub use capture::session_err_key as capture_session_err_key;
-pub use capture::session_notifications as capture_session_notifications;
 pub use capture::AudioChannel as CaptureAudioChannel;
 pub use capture::AuthorizationStatus;
 pub use capture::AutoFocusSys as CaptureAutoFocusSys;
@@ -59,6 +55,10 @@ pub use capture::WbChromaticityValues as CaptureWbChromaticityValues;
 pub use capture::WbGains as CaptureWbGains;
 pub use capture::WbMode as CaptureWbMode;
 pub use capture::WbTempTintValues as CaptureWbTempTintValues;
+pub use capture::device_notifications as capture_device_notifications;
+pub use capture::input_port_notifications as capture_input_port_notifications;
+pub use capture::session_err_key as capture_session_err_key;
+pub use capture::session_notifications as capture_session_notifications;
 
 #[cfg(not(target_os = "macos"))]
 pub use capture::SysPressureFactors as CaptureSysPressureFactors;
@@ -191,11 +191,15 @@ pub use audio::SessionRecordPermission as AudioSessionRecordPermission;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use audio::SessionRouteChangeReason as AudioSessionRouteChangeReason;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionRouteDesc as AudioSessionRouteDesc;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use audio::SessionRouteSharingPolicy as AudioSessionRouteSharingPolicy;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use audio::SessionSetActiveOpts as AudioSessionSetActiveOpts;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use audio::SessionSilenceSecondaryAudioHintType as AudioSessionSilenceSecondaryAudioHintType;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::session_keys as audio_session_keys;
 
 pub use audio::App as AudioApp;
 pub use audio::AppRecordPermission as AudioAppRecordPermission;
@@ -211,8 +215,8 @@ pub use audio::SpeechSynthesizerDelegateImpl;
 pub use audio::SpeechUtterance;
 
 pub mod video;
-pub use video::settings_keys as video_settings_keys;
 pub use video::Codec as VideoCodec;
+pub use video::settings_keys as video_settings_keys;
 
 pub mod sample_buffer;
 pub use sample_buffer::DisplayLayer as SampleBufDisplayLayer;

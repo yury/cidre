@@ -280,13 +280,13 @@ impl Process {
 
     pub fn with_pid(pid: sys::Pid) -> os::Result<Self> {
         System::OBJ.prop_with_qualifier(
-            &PropSelector::HARDWARE_TRANSLATE_PID_TO_PROCESS_OBJ.global_addr(),
+            &PropSelector::HW_TRANSLATE_PID_TO_PROCESS_OBJ.global_addr(),
             &pid,
         )
     }
 
     pub fn list() -> os::Result<Vec<Self>> {
-        System::OBJ.prop_vec(&PropSelector::HARDWARE_PROCESS_OBJ_LIST.global_addr())
+        System::OBJ.prop_vec(&PropSelector::HW_PROCESS_OBJ_LIST.global_addr())
     }
 }
 
@@ -345,58 +345,58 @@ impl System {
 
     #[doc(alias = "kAudioHardwarePropertyDevices")]
     pub fn devices() -> os::Result<Vec<Device>> {
-        Self::OBJ.prop_vec(&PropSelector::HARDWARE_DEVICES.global_addr())
+        Self::OBJ.prop_vec(&PropSelector::HW_DEVICES.global_addr())
     }
 
     #[doc(alias = "kAudioHardwarePropertyDefaultInputDevice")]
     pub fn default_input_device() -> os::Result<Device> {
-        Self::OBJ.prop(&PropSelector::HARDWARE_DEFAULT_INPUT_DEVICE.global_addr())
+        Self::OBJ.prop(&PropSelector::HW_DEFAULT_INPUT_DEVICE.global_addr())
     }
 
     #[doc(alias = "kAudioHardwarePropertyDefaultOutputDevice")]
     pub fn default_output_device() -> os::Result<Device> {
-        Self::OBJ.prop(&PropSelector::HARDWARE_DEFAULT_OUTPUT_DEVICE.global_addr())
+        Self::OBJ.prop(&PropSelector::HW_DEFAULT_OUTPUT_DEVICE.global_addr())
     }
 
     pub fn default_sys_output_device() -> os::Result<Device> {
-        Self::OBJ.prop(&PropSelector::HARDWARE_DEFAULT_SYS_OUTPUT_DEVICE.global_addr())
+        Self::OBJ.prop(&PropSelector::HW_DEFAULT_SYS_OUTPUT_DEVICE.global_addr())
     }
 
     #[doc(alias = "kAudioHardwarePropertyClockDeviceList")]
     pub fn clocks() -> os::Result<Vec<Clock>> {
-        Self::OBJ.prop_vec(&PropSelector::HARDWARE_CLOCK_DEVICE_LIST.global_addr())
+        Self::OBJ.prop_vec(&PropSelector::HW_CLOCK_DEVICE_LIST.global_addr())
     }
 
     /// An array of AudioObjectIds that represent the Process objects for all client processes
     /// currently connected to the system.
     #[doc(alias = "kAudioHardwarePropertyProcessObjectList")]
     pub fn processes() -> os::Result<Vec<Process>> {
-        Self::OBJ.prop_vec(&PropSelector::HARDWARE_PROCESS_OBJ_LIST.global_addr())
+        Self::OBJ.prop_vec(&PropSelector::HW_PROCESS_OBJ_LIST.global_addr())
     }
 }
 
 /// AudioSystemObject Properties
 impl PropSelector {
     #[doc(alias = "kAudioHardwarePropertyProcessInputMute")]
-    pub const HARDWARE_PROCESS_INPUT_MUTE: Self = Self(u32::from_be_bytes(*b"pmin"));
+    pub const HW_PROCESS_INPUT_MUTE: Self = Self(u32::from_be_bytes(*b"pmin"));
 
     /// An array of the AudioObjectIds that represent all the devices currently
     /// available to the system.
     #[doc(alias = "kAudioHardwarePropertyDevices")]
-    pub const HARDWARE_DEVICES: Self = Self(u32::from_be_bytes(*b"dev#"));
+    pub const HW_DEVICES: Self = Self(u32::from_be_bytes(*b"dev#"));
 
     /// The AudioObjectId of the default input AudioDevice.
     #[doc(alias = "kAudioHardwarePropertyDefaultInputDevice")]
-    pub const HARDWARE_DEFAULT_INPUT_DEVICE: Self = Self(u32::from_be_bytes(*b"dIn "));
+    pub const HW_DEFAULT_INPUT_DEVICE: Self = Self(u32::from_be_bytes(*b"dIn "));
 
     /// The AudioObjectId of the default output AudioDevice.
     #[doc(alias = "kAudioHardwarePropertyDefaultOutputDevice")]
-    pub const HARDWARE_DEFAULT_OUTPUT_DEVICE: Self = Self(u32::from_be_bytes(*b"dOut"));
+    pub const HW_DEFAULT_OUTPUT_DEVICE: Self = Self(u32::from_be_bytes(*b"dOut"));
 
     /// The AudioObjectId of the output AudioDevice to use for system related sound
     /// from the alert sound to digital call progress.
     #[doc(alias = "kAudioHardwarePropertyDefaultSystemOutputDevice")]
-    pub const HARDWARE_DEFAULT_SYS_OUTPUT_DEVICE: Self = Self(u32::from_be_bytes(*b"sOut"));
+    pub const HW_DEFAULT_SYS_OUTPUT_DEVICE: Self = Self(u32::from_be_bytes(*b"sOut"));
 
     /// This property fetches the AudioObjectId that corresponds to the AudioDevice
     /// that has the given UID. The UID is passed in via the qualifier as a cf::String
@@ -405,12 +405,12 @@ impl PropSelector {
     /// to any AudioDevices. Rather, this property will return kAudioObjectUnknown
     /// as the value of the property.
     #[doc(alias = "kAudioHardwarePropertyTranslateUIDToDevice")]
-    pub const HARDWARE_TRANSLATE_UID_TO_DEVICE: Self = Self(u32::from_be_bytes(*b"uidd"));
+    pub const HW_TRANSLATE_UID_TO_DEVICE: Self = Self(u32::from_be_bytes(*b"uidd"));
 
     /// An array of AudioObjectIds that represent the Process objects for all client processes
     /// currently connected to the system.
     #[doc(alias = "kAudioHardwarePropertyProcessObjectList")]
-    pub const HARDWARE_PROCESS_OBJ_LIST: Self = Self(u32::from_be_bytes(*b"prs#"));
+    pub const HW_PROCESS_OBJ_LIST: Self = Self(u32::from_be_bytes(*b"prs#"));
 
     /// This property fetches the AudioObjectID that corresponds to the Process object
     /// that has the given PID. The PID is passed in via the qualifier as a pid_t
@@ -419,16 +419,16 @@ impl PropSelector {
     /// to any Process. Rather, this property will return kAudioObjectUnknown
     /// as the value of the property.
     #[doc(alias = "kAudioHardwarePropertyTranslatePIDToProcessObject")]
-    pub const HARDWARE_TRANSLATE_PID_TO_PROCESS_OBJ: Self = Self(u32::from_be_bytes(*b"id2p"));
+    pub const HW_TRANSLATE_PID_TO_PROCESS_OBJ: Self = Self(u32::from_be_bytes(*b"id2p"));
 
     /// An array of AudioObjectIDs that represent all the AudioClockDevice objects
     /// currently provided by the system.
     #[doc(alias = "kAudioHardwarePropertyClockDeviceList")]
-    pub const HARDWARE_CLOCK_DEVICE_LIST: Self = Self(u32::from_be_bytes(*b"clk#"));
+    pub const HW_CLOCK_DEVICE_LIST: Self = Self(u32::from_be_bytes(*b"clk#"));
 
     /// An array of AudioObjectIDs that represent the Tap objects on the system.
     #[doc(alias = "kAudioHardwarePropertyTapList")]
-    pub const HARDWARE_TAP_LIST: Self = Self(u32::from_be_bytes(*b"tps#"));
+    pub const HW_TAP_LIST: Self = Self(u32::from_be_bytes(*b"tps#"));
 }
 
 /// AudioAggregateDevice Properties
@@ -498,7 +498,7 @@ impl std::ops::DerefMut for Device {
 impl Device {
     pub fn with_uid(uid: arc::R<cf::String>) -> os::Result<Self> {
         System::OBJ.prop_with_qualifier(
-            &PropSelector::HARDWARE_TRANSLATE_UID_TO_DEVICE.global_addr(),
+            &PropSelector::HW_TRANSLATE_UID_TO_DEVICE.global_addr(),
             &uid,
         )
     }
@@ -1742,10 +1742,10 @@ mod tests {
 
     #[test]
     fn list_devices() {
-        let addr = PropSelector::HARDWARE_DEFAULT_INPUT_DEVICE.global_addr();
+        let addr = PropSelector::HW_DEFAULT_INPUT_DEVICE.global_addr();
         let _device: Device = System::OBJ.prop(&addr).unwrap();
 
-        let addr = PropSelector::HARDWARE_DEVICES.input_addr();
+        let addr = PropSelector::HW_DEVICES.input_addr();
         let devices: Vec<Device> = System::OBJ.prop_vec(&addr).unwrap();
 
         assert!(!devices.is_empty());

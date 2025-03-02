@@ -288,7 +288,7 @@ impl Array {
     /// assert_eq!(type_id, 19);
     ///
     /// unsafe {
-    ///     let type_desc = cf::copy_type_id_desc(type_id).unwrap();
+    ///     let type_desc = cf::type_id_desc(type_id).unwrap();
     ///     assert_eq!("CFArray", type_desc.to_string());
     /// }
     /// ```

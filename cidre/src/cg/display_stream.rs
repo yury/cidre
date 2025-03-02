@@ -1,12 +1,12 @@
 use crate::{arc, cf, cg, define_cf_type};
 
-#[cfg(all(feature = "io", any(feature = "blocks", feature = "dispatch")))]
+#[cfg(all(feature = "io_surface", any(feature = "blocks", feature = "dispatch")))]
 use crate::io;
 
-#[cfg(all(feature = "blocks", feature = "io"))]
+#[cfg(all(feature = "blocks", feature = "io_surface"))]
 use crate::blocks;
 
-#[cfg(all(feature = "dispatch", feature = "io"))]
+#[cfg(all(feature = "dispatch", feature = "io_surface"))]
 use crate::dispatch;
 
 define_cf_type!(
@@ -55,7 +55,7 @@ pub enum FrameStatus {
 }
 
 #[doc(alias = "CGDisplayStreamFrameAvailableHandler")]
-#[cfg(all(feature = "blocks", feature = "io"))]
+#[cfg(all(feature = "blocks", feature = "io_surface"))]
 pub type FrameAvailableHandler<Attr> =
     blocks::Block<fn(FrameStatus, u64, Option<&io::Surf>, Option<&Update>), Attr>;
 
@@ -179,7 +179,7 @@ impl DisplayStream {
         unsafe { CGDisplayStreamGetTypeID() }
     }
 
-    #[cfg(all(feature = "blocks", feature = "io"))]
+    #[cfg(all(feature = "blocks", feature = "io_surface"))]
     pub fn with_runloop(
         display: cg::DirectDisplayId,
         output_width: usize,
@@ -204,7 +204,7 @@ impl DisplayStream {
     /// 'l10r' Packed Little Endian ARGB2101010
     /// '420v' 2-plane "video" range YCbCr 4:2:0
     /// '420f' 2-plane "full" range YCbCr 4:2:0
-    #[cfg(all(feature = "blocks", feature = "dispatch", feature = "io"))]
+    #[cfg(all(feature = "blocks", feature = "dispatch", feature = "io_surface"))]
     pub fn with_dispatch_queue(
         display: cg::DirectDisplayId,
         output_width: usize,
@@ -288,7 +288,7 @@ unsafe extern "C-unwind" {
 
     fn CGDisplayStreamGetTypeID() -> cf::TypeId;
 
-    #[cfg(all(feature = "blocks", feature = "io"))]
+    #[cfg(all(feature = "blocks", feature = "io_surface"))]
     fn CGDisplayStreamCreate(
         display: cg::DirectDisplayId,
         output_width: usize,
@@ -298,7 +298,7 @@ unsafe extern "C-unwind" {
         handler: Option<&mut FrameAvailableHandler<blocks::Esc>>,
     ) -> Option<arc::R<DisplayStream>>;
 
-    #[cfg(all(feature = "dispatch", feature = "blocks", feature = "io"))]
+    #[cfg(all(feature = "dispatch", feature = "blocks", feature = "io_surface"))]
     fn CGDisplayStreamCreateWithDispatchQueue(
         display: cg::DirectDisplayId,
         output_width: usize,
@@ -320,7 +320,7 @@ mod tests {
     use std::{thread::sleep, time::Duration};
 
     #[test]
-    #[cfg(all(feature = "blocks", feature = "io", feature = "dispatch"))]
+    #[cfg(all(feature = "blocks", feature = "io_surface", feature = "dispatch"))]
     fn basics() {
         use crate::{blocks, cg, dispatch};
 

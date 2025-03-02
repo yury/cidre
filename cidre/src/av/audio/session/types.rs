@@ -505,6 +505,17 @@ pub enum RouteChangeReason {
     RouteCfgChange = 8,
 }
 
+impl From<u32> for RouteChangeReason {
+    fn from(value: u32) -> Self {
+        if value <= 8 {
+            let v = value as usize;
+            unsafe { std::mem::transmute(v) }
+        } else {
+            Self::Unknown
+        }
+    }
+}
+
 define_opts!(
     #[doc(alias = "AVAudioSessionCategoryOptions")]
     pub CategoryOpts(usize)

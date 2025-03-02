@@ -2,7 +2,7 @@ use std::ffi::c_void;
 
 use crate::{arc, cf, cv, define_opts, four_cc_fmt_debug, os};
 
-#[cfg(feature = "io")]
+#[cfg(feature = "io_surface")]
 use crate::io;
 
 #[cfg(feature = "ns")]
@@ -195,19 +195,19 @@ impl PixelBuf {
         }
     }
 
-    #[cfg(feature = "io")]
+    #[cfg(feature = "io_surface")]
     #[inline]
     pub fn io_surf(&self) -> Option<&io::Surf> {
         unsafe { CVPixelBufferGetIOSurface(self) }
     }
 
-    #[cfg(feature = "io")]
+    #[cfg(feature = "io_surface")]
     #[inline]
     pub fn io_surf_mut(&mut self) -> Option<&mut io::Surf> {
         unsafe { std::mem::transmute(CVPixelBufferGetIOSurface(self)) }
     }
 
-    #[cfg(feature = "io")]
+    #[cfg(feature = "io_surface")]
     #[inline]
     pub fn with_io_surf(
         surface: &io::Surf,
@@ -217,7 +217,7 @@ impl PixelBuf {
     }
 
     /// Call to create a single cv::PixelBuf for a passed-in 'io::Surf'.
-    #[cfg(feature = "io")]
+    #[cfg(feature = "io_surface")]
     #[inline]
     pub fn with_io_surf_in(
         surface: &io::Surf,
@@ -690,10 +690,10 @@ unsafe extern "C-unwind" {
         lock_flags: LockFlags,
     ) -> cv::Return;
 
-    #[cfg(feature = "io")]
+    #[cfg(feature = "io_surface")]
     fn CVPixelBufferGetIOSurface(pixel_buffer: &PixelBuf) -> Option<&io::Surf>;
 
-    #[cfg(feature = "io")]
+    #[cfg(feature = "io_surface")]
     fn CVPixelBufferCreateWithIOSurface(
         allocator: Option<&cf::Allocator>,
         surface: &io::Surf,

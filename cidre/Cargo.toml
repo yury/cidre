@@ -53,7 +53,8 @@ full = [
   "ui",
   "ut",
   "un",
-  "io",
+  "io_surface",
+  "io_kit",
   "nw",
   "core_motion",
   "core_audio",
@@ -100,7 +101,8 @@ objc = []
 ns = ["objc", "cg"]
 nl = ["ns"]
 vt = ["cf", "cv", "cg", "cm"]
-io = ["cf"]
+io_surface = ["cf"]
+io_kit = []
 sn = ["ns"]
 sec = ["cf"]
 vn = ["ns"]
@@ -222,7 +224,8 @@ watchos_3_0 = ["watchos_2_0"]
 watchos_5_0 = ["watchos_3_0"]
 watchos_6_0 = ["watchos_5_0"]
 watchos_7_0 = ["watchos_6_0"]
-watchos_8_0 = ["watchos_7_0"]
+watchos_7_3 = ["watchos_7_0"]
+watchos_8_0 = ["watchos_7_3"]
 watchos_9_0 = ["watchos_8_0"]
 watchos_10_0 = ["watchos_8_0"]
 watchos_10_2 = ["watchos_10_0"]

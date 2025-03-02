@@ -40,7 +40,7 @@ impl ColorSpace {
     /// let type_id = cg::ColorSpace::type_id();
     ///
     /// unsafe {
-    ///     let type_desc = cf::copy_type_id_desc(type_id).unwrap();
+    ///     let type_desc = cf::type_id_desc(type_id).unwrap();
     ///     assert_eq!("CGColorSpace", type_desc.to_string());
     /// }
     /// ```
@@ -272,7 +272,7 @@ pub mod names {
     pub fn itur_2020_srgb_gamma() -> &'static cf::String {
         unsafe { kCGColorSpaceITUR_2020_sRGBGamma }
     }
-    
+
     #[doc(alias = "kCGColorSpaceROMMRGB")]
     #[inline]
     pub fn rommrgb() -> &'static cf::String {

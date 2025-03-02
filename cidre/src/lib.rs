@@ -68,8 +68,6 @@ pub mod dispatch;
 #[cfg(feature = "da")]
 pub mod da;
 
-/// IOSurface
-#[cfg(feature = "io")]
 pub mod io;
 
 /// cidre vision of obj-c blocks impl in rust

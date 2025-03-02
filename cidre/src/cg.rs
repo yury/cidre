@@ -98,7 +98,7 @@ pub use path::PathMut;
 mod display_stream;
 #[cfg(target_os = "macos")]
 pub use display_stream::DisplayStream;
-#[cfg(all(target_os = "macos", feature = "blocks", feature = "io"))]
+#[cfg(all(target_os = "macos", feature = "blocks", feature = "io_surface"))]
 pub use display_stream::FrameAvailableHandler as DisplayStreamFrameAvailableHandler;
 #[cfg(target_os = "macos")]
 pub use display_stream::FrameStatus as DisplayStreamFrameStatus;

@@ -1,4 +1,4 @@
-use crate::{arc, av, define_obj_type, ns, objc};
+use crate::{arc, av, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(
     /// The location of a data source on an iOS device.
@@ -235,9 +235,16 @@ define_obj_type!(
 );
 
 impl RouteDesc {
+    define_cls!(AV_AUDIO_SESSION_ROUTE_DESCRIPTION);
+
     #[objc::msg_send(inputs)]
     pub fn inputs(&self) -> arc::R<ns::Array<PortDesc>>;
 
     #[objc::msg_send(outputs)]
     pub fn outputs(&self) -> arc::R<ns::Array<PortDesc>>;
+}
+
+#[link(name = "av", kind = "static")]
+unsafe extern "C" {
+    static AV_AUDIO_SESSION_ROUTE_DESCRIPTION: &'static objc::Class<RouteDesc>;
 }

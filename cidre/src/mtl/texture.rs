@@ -1,6 +1,6 @@
 use crate::{arc, cf, define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
-#[cfg(feature = "io")]
+#[cfg(feature = "io_surface")]
 use crate::io;
 
 /// Describes the dimensionality of each image, and if multiple images are arranged into an array or cube.
@@ -294,7 +294,7 @@ impl Texture {
     #[objc::msg_send(bufferBytesPerRow)]
     pub fn buf_bytes_per_row(&self) -> usize;
 
-    #[cfg(feature = "io")]
+    #[cfg(feature = "io_surface")]
     #[objc::msg_send(iosurface)]
     pub fn io_surf(&self) -> Option<&io::Surf>;
 

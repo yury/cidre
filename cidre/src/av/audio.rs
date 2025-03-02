@@ -90,6 +90,8 @@ pub use session::RecordPermission as SessionRecordPermission;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use session::RouteChangeReason as SessionRouteChangeReason;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::RouteDesc as SessionRouteDesc;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use session::RouteSharingPolicy as SessionRouteSharingPolicy;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use session::Session;
@@ -99,6 +101,8 @@ pub use session::SetActiveOpts as SessionSetActiveOpts;
 pub use session::SilenceSecondaryAudioHintType as SessionSilenceSecondaryAudioHintType;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use session::StereoOrientation;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::keys as session_keys;
 
 mod buffer;
 pub use buffer::Buf;
@@ -128,11 +132,11 @@ pub use converter::PrimeInfo as ConverterPrimeInfo;
 pub use converter::PrimeMethod as ConverterPrimeMethod;
 
 pub mod settings;
+pub use settings::Quality;
 pub use settings::all_formats_keys;
 pub use settings::bit_rate_strategy;
 pub use settings::file_keys;
 pub use settings::linear_pcm_keys;
-pub use settings::Quality;
 
 pub mod speech_synthesis;
 pub use speech_synthesis::Delegate as SpeechSynthesizerDelegate;

@@ -1,6 +1,6 @@
 use crate::{api, arc, blocks, define_obj_type, define_opts, mtl, ns, objc};
 
-#[cfg(feature = "io")]
+#[cfg(feature = "io_surface")]
 use crate::io;
 
 use super::{Buf, CmdQueue, Event, Fence, Lib, Size, event::SharedEvent};
@@ -146,7 +146,7 @@ impl Device {
     #[objc::msg_send(newTextureWithDescriptor:)]
     pub fn new_texture(&self, descriptor: &mtl::TextureDesc) -> Option<arc::R<mtl::Texture>>;
 
-    #[cfg(feature = "io")]
+    #[cfg(feature = "io_surface")]
     #[objc::msg_send(newTextureWithDescriptor:iosurface:plane:)]
     pub fn new_texture_with_surf(
         &self,

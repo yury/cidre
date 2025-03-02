@@ -69,7 +69,7 @@ pub enum ComparisonResult {
 /// let s = cf::Number::from_i32(10);//from_static_string("hello").unwrap();
 /// let t = s.get_type_id();
 /// unsafe {
-///     let desc = cf::copy_type_id_desc(t).unwrap();
+///     let desc = cf::type_id_desc(t).unwrap();
 ///     assert_eq!("CFNumber", desc.to_string());
 /// }
 /// ```
