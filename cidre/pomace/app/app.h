@@ -18,6 +18,7 @@ Class NS_COLOR_SPACE;
 Class NS_RESPONDER;
 Class NS_VIEW_CONTROLLER;
 Class NS_WORKSPACE;
+Class NS_WORKSPACE_OPEN_CONFIGURATION;
 Class NS_TEXT_ATTACHMENT;
 Class NS_IMAGE;
 Class NS_EVENT;
@@ -39,10 +40,12 @@ static void app_initializer(void)
         NS_RESPONDER = [NSResponder class];
         NS_VIEW_CONTROLLER = [NSViewController class];
         NS_WORKSPACE = [NSWorkspace class];
+        NS_WORKSPACE_OPEN_CONFIGURATION = [NSWorkspaceOpenConfiguration class];
         
         NS_TEXT_ATTACHMENT = [NSTextAttachment class];
         NS_IMAGE = [NSImage class];
         NS_EVENT = [NSEvent class];
+        
     }
 }
 

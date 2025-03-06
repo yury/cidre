@@ -54,8 +54,43 @@ impl App {
 
     #[objc::msg_send(sharedApplication)]
     pub fn shared_mut() -> &'static mut Self;
+
+    //- (void)openURL:(NSURL*)url options:(NSDictionary<UIApplicationOpenExternalURLOptionsKey, id> *)options completionHandler:(void (^ __nullable NS_SWIFT_UI_ACTOR)(BOOL success))completion API_AVAILABLE(ios(10.0)) API_UNAVAILABLE(watchos);
+    //
+    // pub fn open_url_ch_block(&self, url: &ns::Url, options: )
+
+    #[doc(alias = "UIApplicationOpenSettingsURLString")]
+    #[api::available = 8.0]
+    pub fn open_settings_url_string() -> &'static ns::String {
+        unsafe { UIApplicationOpenSettingsURLString }
+    }
+
+    #[doc(alias = "UIApplicationOpenDefaultApplicationsSettingsURLString")]
+    #[api::available = 18.3]
+    pub fn open_default_apps_settings_url_string() -> &'static ns::String {
+        unsafe { UIApplicationOpenDefaultApplicationsSettingsURLString }
+    }
+
+    #[doc(alias = "UIApplicationOpenNotificationSettingsURLString")]
+    #[api::available = 15.4]
+    pub fn open_notifications_settings_url_string() -> &'static ns::String {
+        unsafe { UIApplicationOpenNotificationSettingsURLString }
+    }
 }
 
 unsafe extern "C" {
     static UI_APPLICATION: &'static objc::Class<App>;
+}
+
+#[link(name = "UIKit", kind = "framework")]
+#[api::weak]
+unsafe extern "C" {
+    #[api::available(ios = 8.0)]
+    static UIApplicationOpenSettingsURLString: &'static ns::String;
+
+    #[api::available(ios = 18.3)]
+    static UIApplicationOpenDefaultApplicationsSettingsURLString: &'static ns::String;
+
+    #[api::available(ios = 15.4)]
+    static UIApplicationOpenNotificationSettingsURLString: &'static ns::String;
 }

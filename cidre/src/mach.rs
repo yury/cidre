@@ -43,6 +43,9 @@ pub use message::err as msg_err;
 pub use message::msg;
 pub use message::msg_overwrite;
 
+pub mod machine;
+pub use machine::*;
+
 pub mod vm_types;
 pub use vm_types::Addr as VmAddr;
 pub use vm_types::Integer;

@@ -22,6 +22,7 @@ pub mod workspace;
 pub use workspace::Authorization as WorkspaceAuthorization;
 pub use workspace::AuthorizationType as WorkspaceAuthorizationType;
 pub use workspace::Workspace;
+pub use workspace::WorkspaceOpenCfg;
 
 mod dock_title;
 pub use dock_title::DockTile;
