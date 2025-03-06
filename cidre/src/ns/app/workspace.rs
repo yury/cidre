@@ -186,6 +186,7 @@ unsafe extern "C" {
 
 #[cfg(test)]
 mod tests {
+    use crate::mach::CpuType;
     use crate::ns;
 
     #[test]
@@ -200,6 +201,7 @@ mod tests {
         assert!(!cfg.creates_new_app_inst());
         assert!(cfg.args().is_empty());
         assert!(cfg.env().is_empty());
+        assert_eq!(cfg.arch(), CpuType::ANY);
         assert!(!cfg.requires_universal_links());
     }
 }
