@@ -60,19 +60,19 @@ impl App {
     // pub fn open_url_ch_block(&self, url: &ns::Url, options: )
 
     #[doc(alias = "UIApplicationOpenSettingsURLString")]
-    #[api::available = 8.0]
+    #[api::available(ios = 8.0)]
     pub fn open_settings_url_string() -> &'static ns::String {
         unsafe { UIApplicationOpenSettingsURLString }
     }
 
     #[doc(alias = "UIApplicationOpenDefaultApplicationsSettingsURLString")]
-    #[api::available = 18.3]
+    #[api::available(ios = 18.3)]
     pub fn open_default_apps_settings_url_string() -> &'static ns::String {
         unsafe { UIApplicationOpenDefaultApplicationsSettingsURLString }
     }
 
     #[doc(alias = "UIApplicationOpenNotificationSettingsURLString")]
-    #[api::available = 15.4]
+    #[api::available(ios = 15.4)]
     pub fn open_notifications_settings_url_string() -> &'static ns::String {
         unsafe { UIApplicationOpenNotificationSettingsURLString }
     }
