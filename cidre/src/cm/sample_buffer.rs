@@ -1,4 +1,4 @@
-use std::{ffi::c_void, ptr::slice_from_raw_parts};
+use std::ffi::c_void;
 
 use crate::{arc, cf, cm, define_cf_type, define_opts, os};
 
@@ -7,6 +7,8 @@ use crate::cv;
 
 #[cfg(feature = "cat")]
 use crate::cat;
+#[cfg(feature = "cat")]
+use std::ptr::slice_from_raw_parts;
 
 define_opts!(
     #[doc(alias = "CMSampleBufferFlag")]

@@ -1,4 +1,4 @@
-use std::{ffi::c_void, mem::transmute};
+use std::mem::transmute;
 
 use crate::{
     FourCharCode, api, arc,
@@ -11,6 +11,9 @@ use crate::cv;
 
 #[cfg(feature = "cat")]
 use crate::cat;
+
+#[cfg(feature = "cat")]
+use std::ffi::c_void;
 
 #[doc(alias = "CMPixelFormatType")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
