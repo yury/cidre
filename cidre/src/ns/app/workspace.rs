@@ -1,6 +1,5 @@
 use crate::{arc, define_cls, define_obj_type, mach::CpuType, ns, objc};
 
-#[cfg(feature = "blocks")]
 use crate::blocks;
 
 define_obj_type!(
@@ -20,6 +19,37 @@ impl Workspace {
     /// Open a URL, using the default handler for the URL's scheme.
     #[objc::msg_send(openURL:)]
     pub fn open_url(&self, url: &ns::Url) -> bool;
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(openURL:configuration:completionHandler:)]
+    pub fn open_url_with_cfg_ch_block(
+        &self,
+        url: &ns::Url,
+        configuration: &WorkspaceOpenCfg,
+        ch: Option<&mut blocks::ResultCh<ns::RunningApp>>,
+    );
+
+    #[cfg(feature = "blocks")]
+    pub fn open_url_with_cfg_ch(
+        &self,
+        url: &ns::Url,
+        configuration: &WorkspaceOpenCfg,
+        ch: impl FnMut(Option<&ns::RunningApp>, Option<&ns::Error>) + 'static,
+    ) {
+        let mut block = blocks::ResultCh::new2(ch);
+        self.open_url_with_cfg_ch_block(url, configuration, Some(&mut block));
+    }
+
+    #[cfg(feature = "async")]
+    pub async fn open_url_with_cfg(
+        &self,
+        url: &ns::Url,
+        configuration: &WorkspaceOpenCfg,
+    ) -> Result<arc::R<ns::RunningApp>, arc::R<ns::Error>> {
+        let (comp, mut block) = blocks::result();
+        self.open_url_with_cfg_ch_block(url, configuration, Some(&mut block));
+        comp.await
+    }
 }
 
 #[doc(alias = "NSWorkspaceAuthorizationType")]
@@ -203,5 +233,17 @@ mod tests {
         assert!(cfg.env().is_empty());
         assert_eq!(cfg.arch(), CpuType::ANY);
         assert!(!cfg.requires_universal_links());
+    }
+
+    #[tokio::test]
+    async fn open_url() {
+        let mut cfg = ns::WorkspaceOpenCfg::new();
+        cfg.set_prompts_user_if_needed(false);
+
+        let res = ns::Workspace::shared()
+            .open_url_with_cfg(&ns::Url::with_str("unknwonwn_url").unwrap(), &cfg)
+            .await;
+
+        assert!(res.is_err());
     }
 }

@@ -24,6 +24,9 @@ pub use workspace::AuthorizationType as WorkspaceAuthorizationType;
 pub use workspace::Workspace;
 pub use workspace::WorkspaceOpenCfg;
 
+pub mod running_application;
+pub use running_application::RunningApp;
+
 mod dock_title;
 pub use dock_title::DockTile;
 
