@@ -486,18 +486,8 @@ mod xcode {
 
         let product = if args.dep.is_some() {
             &Product {
-                path: None,
                 name: args.dep.clone(),
-                test: false,
-                doctest: false,
-                bench: false,
-                doc: false,
-                plugin: false,
-                proc_macro: false,
-                harness: true,
-                edition: None,
-                crate_type: vec![],
-                required_features: vec![],
+                ..Default::default()
             }
         } else {
             let Some((_man, product)) = find_product(&mans, &args) else {
