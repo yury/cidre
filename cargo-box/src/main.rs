@@ -187,7 +187,7 @@ mod runner {
             panic!("{err}");
         };
 
-        if folder.to_os_string() == std::ffi::OsStr::new("target") {
+        if folder == "target" {
             parent = parent.parent().unwrap();
         }
 
@@ -238,23 +238,18 @@ mod runner {
 
         project.push("box.xcodeproj");
 
-        xcode::build(
-            project.to_str().unwrap(),
-            platform,
-            config,
-            target.to_str().unwrap(),
-        );
+        xcode::build(&project, "box", platform, config, &target);
 
         target.push("Build");
         target.push("Products");
 
-        target.push(&format!("{config}-{sdk}"));
-        target.push(&format!("{name}.app"));
+        target.push(format!("{config}-{sdk}"));
+        target.push(format!("{name}.app"));
 
         let box_org_id = std::env::var("BOX_ORG_ID").unwrap();
         let device_id = std::env::var("DEVICE_ID").unwrap();
 
-        device_ctl::install_app(&device_id, target.to_str().unwrap());
+        device_ctl::install_app(&device_id, &target);
         device_ctl::run_app(&device_id, &format!("{box_org_id}.{name}"), &args.args[3..]);
     }
 }
@@ -352,7 +347,7 @@ mod cargo {
             if let Some(ws) = res.workspace {
                 let mut vec = Vec::with_capacity(ws.members.len());
                 for member in ws.members.iter() {
-                    path = path.join(&format!("{member}/Cargo.toml"));
+                    path = path.join(format!("{member}/Cargo.toml"));
                     let mut man = Manifest::from_path(&path).unwrap();
                     path.pop();
                     man.complete_from_path(&path).unwrap();
@@ -389,19 +384,19 @@ mod cargo {
 }
 
 mod xcode {
-    use std::fs;
+    use std::{fs, path::Path};
 
     use cargo_toml::{Manifest, Product};
 
     use crate::cargo;
 
-    pub(crate) fn build(project: &str, platform: &str, conf: &str, target: &str) {
+    pub(crate) fn build(project: &Path, scheme: &str, platform: &str, conf: &str, target: &Path) {
         std::process::Command::new("xcodebuild")
-            .args(["-project", project])
+            .args(["-project".as_ref(), project.as_os_str()])
             .args(["-destination", &format!("generic/platform={platform}")])
             .args(["-configuration", conf])
-            .args(["-scheme", "box", "-quiet"])
-            .args(["-derivedDataPath", target])
+            .args(["-scheme", scheme, "-quiet"])
+            .args(["-derivedDataPath".as_ref(), target.as_os_str()])
             // .args(env_args)
             .status()
             .unwrap();
@@ -439,15 +434,10 @@ mod xcode {
             )
         };
 
-        let products = |man: &'a Manifest| -> &'a [Product] {
-            if is_bin {
-                &man.bin
-            } else {
-                &man.example
-            }
-        };
+        let products =
+            |man: &'a Manifest| -> &'a [Product] { if is_bin { &man.bin } else { &man.example } };
 
-        if let Some(product_name) = name.as_ref() {
+        if let Some(product_name) = name {
             let mut count = 0;
             for man in mans {
                 for product in products(man) {
@@ -464,7 +454,7 @@ mod xcode {
                 println!("{available}");
                 for man in mans {
                     for product in products(man) {
-                        if let Some(name) = product.name.as_ref() {
+                        if let Some(ref name) = product.name {
                             println!("\t{name}");
                         }
                     }
@@ -489,6 +479,11 @@ mod xcode {
 
     pub(crate) fn proj(args: ProjArgs) {
         let (mut path, mans, _ws) = cargo::manifests().unwrap();
+
+        path.push(".box");
+        _ = dotenv::from_filename(".box");
+        path.pop();
+
         let product = if args.dep.is_some() {
             &Product {
                 path: None,
@@ -510,10 +505,6 @@ mod xcode {
             };
             product
         };
-
-        path.push(".box");
-        _ = dotenv::from_filename(".box");
-        path.pop();
 
         let Ok(box_org_id) = std::env::var("BOX_ORG_ID") else {
             println!("BOX_ORG_ID env is required. You can add it .box file");
@@ -575,7 +566,7 @@ BOX_ORG_ID = {box_org_id}
 }
 
 mod device_ctl {
-    use std::{env, fs, process};
+    use std::{env, fs, path::Path, process};
 
     fn run_cmd(args: &[&str]) -> String {
         let json_output_path = env::temp_dir().join(format!("devicectl-{}.json", process::id()));
@@ -591,8 +582,15 @@ mod device_ctl {
         buf
     }
 
-    pub(crate) fn install_app(device_id: &str, bundle: &str) {
-        run_cmd(&["device", "install", "app", "-d", device_id, bundle]);
+    pub(crate) fn install_app(device_id: &str, bundle: &Path) {
+        run_cmd(&[
+            "device",
+            "install",
+            "app",
+            "-d",
+            device_id,
+            bundle.to_str().unwrap(),
+        ]);
     }
 
     pub(crate) fn run_app(device_id: &str, id: &str, args: &[String]) {
@@ -607,7 +605,7 @@ mod device_ctl {
             id,
         ];
         for s in args {
-            args_vec.push(&s);
+            args_vec.push(s);
         }
         let buf = run_cmd(&args_vec);
         let run = serde_json::from_str::<json::AppRun>(&buf).unwrap();
@@ -625,6 +623,7 @@ mod device_ctl {
         println!("{:#?}", list.result.devices);
     }
 
+    #[allow(unused)]
     mod json {
         use serde::Deserialize;
         use std::borrow::Cow;

@@ -88,6 +88,7 @@ impl std::error::Error for Error {}
 
 pub type Result<Ok = ()> = std::result::Result<Ok, Error>;
 
+#[allow(unused)]
 #[inline]
 pub(crate) unsafe fn result_unchecked<T, R>(op: impl FnOnce(&mut Option<T>) -> R) -> Result<T>
 where
