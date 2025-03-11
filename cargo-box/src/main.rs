@@ -46,7 +46,7 @@ fn main() {
     match Cli::parse_from(args).cmd {
         Cmd::Teams => teams::list(),
         Cmd::Devices => device_ctl::list_devices(),
-        Cmd::Proj(args) => xcode::proj(args),
+        Cmd::Proj(args) => _ = xcode::proj(args),
         _ => panic!("unknown command"),
     }
 }
@@ -202,11 +202,7 @@ mod runner {
             }
         }
 
-        let mut proj_args = xcode::ProjArgs {
-            bin: None,
-            example: None,
-            dep: None,
-        };
+        let mut proj_args = xcode::ProjArgs::default();
 
         if is_example {
             proj_args.example = Some(name.clone());
@@ -216,9 +212,10 @@ mod runner {
             proj_args.dep = Some(name.clone());
         }
 
-        xcode::proj(proj_args);
+        let xcode_proj = xcode::proj(proj_args);
 
         let mut project = PathBuf::from("./target/boxes");
+
         if is_example {
             project.push("examples");
         }
@@ -232,25 +229,22 @@ mod runner {
         project.push(&name);
         project.push(&name);
 
-        // TODO: if is_binary, try replace with BOX_BIN_PATH instead of copy
-        std::fs::copy(binary, &project).unwrap();
-        project.pop();
+        if xcode_proj.replace_binary {
+            // TODO: if is_binary, try replace with BOX_BIN_PATH instead of copy
+            std::fs::copy(binary, &project).unwrap();
+        }
 
-        project.push("box.xcodeproj");
-
-        xcode::build(&project, "box", platform, config, &target);
+        xcode::build(&xcode_proj, platform, config, &target);
 
         target.push("Build");
         target.push("Products");
 
         target.push(format!("{config}-{sdk}"));
         target.push(format!("{name}.app"));
-
-        let box_org_id = std::env::var("BOX_ORG_ID").unwrap();
         let device_id = std::env::var("DEVICE_ID").unwrap();
 
         device_ctl::install_app(&device_id, &target);
-        device_ctl::run_app(&device_id, &format!("{box_org_id}.{name}"), &args.args[3..]);
+        device_ctl::run_app(&device_id, &xcode_proj.bundle_id, &args.args[3..]);
     }
 }
 
@@ -384,25 +378,28 @@ mod cargo {
 }
 
 mod xcode {
-    use std::{fs, path::Path};
+    use std::{
+        fs,
+        path::{Path, PathBuf},
+    };
 
     use cargo_toml::{Manifest, Product};
 
     use crate::cargo;
 
-    pub(crate) fn build(project: &Path, scheme: &str, platform: &str, conf: &str, target: &Path) {
+    pub(crate) fn build(project: &Proj, platform: &str, conf: &str, target: &Path) {
         std::process::Command::new("xcodebuild")
-            .args(["-project".as_ref(), project.as_os_str()])
+            .args(["-project".as_ref(), project.path.as_os_str()])
             .args(["-destination", &format!("generic/platform={platform}")])
             .args(["-configuration", conf])
-            .args(["-scheme", scheme, "-quiet"])
+            .args(["-scheme", &project.scheme, "-quiet"])
             .args(["-derivedDataPath".as_ref(), target.as_os_str()])
             // .args(env_args)
             .status()
             .unwrap();
     }
 
-    #[derive(clap::Args, Debug)]
+    #[derive(clap::Args, Debug, Default)]
     pub(crate) struct ProjArgs {
         #[arg(long)]
         pub(crate) bin: Option<String>,
@@ -410,6 +407,14 @@ mod xcode {
         pub(crate) example: Option<String>,
         #[arg(long)]
         pub(crate) dep: Option<String>,
+    }
+
+    #[derive(Debug)]
+    pub(crate) struct Proj {
+        pub(crate) path: PathBuf,
+        pub(crate) scheme: String,
+        pub(crate) bundle_id: String,
+        pub(crate) replace_binary: bool,
     }
 
     fn find_product<'a>(
@@ -434,8 +439,13 @@ mod xcode {
             )
         };
 
-        let products =
-            |man: &'a Manifest| -> &'a [Product] { if is_bin { &man.bin } else { &man.example } };
+        let products = |man: &'a Manifest| -> &'a [Product] {
+            if is_bin {
+                &man.bin
+            } else {
+                &man.example
+            }
+        };
 
         if let Some(product_name) = name {
             let mut count = 0;
@@ -477,12 +487,49 @@ mod xcode {
         None
     }
 
-    pub(crate) fn proj(args: ProjArgs) {
+    pub(crate) fn proj(args: ProjArgs) -> Proj {
         let (mut path, mans, _ws) = cargo::manifests().unwrap();
 
         path.push(".box");
         _ = dotenv::from_filename(".box");
         path.pop();
+
+        if let Some(uppercase_name) = args.bin.as_deref().map(str::to_ascii_uppercase) {
+            // check binary replacement xcode project
+
+            // BOX_YOML_XCODE_PROJECT
+            // BOX_YOML_XCODE_SCHEME
+            // BOX_YOML_BUNDLE_ID
+
+            let project = std::env::var(format!("BOX_{uppercase_name}_XCODE_PROJECT"));
+            let scheme = std::env::var(format!("BOX_{uppercase_name}_XCODE_SCHEME"));
+            let bundle_id = std::env::var(format!("BOX_{uppercase_name}_BUNDLE_ID"));
+
+            if let (Ok(project), Ok(scheme), Ok(bundle_id)) = (project, scheme, bundle_id) {
+                path.push(project);
+
+                let proj = Proj {
+                    path,
+                    scheme,
+                    bundle_id,
+                    replace_binary: false,
+                };
+
+                println!("found configured {proj:#?}");
+
+                return proj;
+            }
+        }
+
+        let Ok(box_org_id) = std::env::var("BOX_ORG_ID") else {
+            panic!("BOX_ORG_ID env is required. You can add it .box file");
+        };
+        let Ok(dev_team_id) = std::env::var("DEVELOPMENT_TEAM") else {
+            panic!(
+                "DEVELOPMENT_TEAM env is required. You can add it .box file\n
+use cidre-box teams command to list available team ids"
+            );
+        };
 
         let product = if args.dep.is_some() {
             &Product {
@@ -491,19 +538,9 @@ mod xcode {
             }
         } else {
             let Some((_man, product)) = find_product(&mans, &args) else {
-                return;
+                panic!("product not found");
             };
             product
-        };
-
-        let Ok(box_org_id) = std::env::var("BOX_ORG_ID") else {
-            println!("BOX_ORG_ID env is required. You can add it .box file");
-            return;
-        };
-        let Ok(dev_team_id) = std::env::var("DEVELOPMENT_TEAM") else {
-            println!("DEVELOPMENT_TEAM env is required. You can add it .box file");
-            println!("use cidre-box teams command to list available team ids");
-            return;
         };
 
         path.push("target/boxes");
@@ -552,6 +589,16 @@ BOX_ORG_ID = {box_org_id}
             include_str!("../box/box.xcodeproj/xcshareddata/xcschemes/box.xcscheme"),
         )
         .unwrap();
+        path.pop();
+        path.pop(); // xcshareddata
+        path.pop(); // box.xcodeproj
+
+        Proj {
+            path,
+            scheme: "box".to_owned(),
+            bundle_id: format!("{box_org_id}.{product_name}"),
+            replace_binary: true,
+        }
     }
 }
 
