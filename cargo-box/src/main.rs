@@ -55,6 +55,7 @@ mod runner {
     use std::{
         env,
         path::{Path, PathBuf},
+        process,
     };
 
     use clap::Parser;
@@ -248,10 +249,10 @@ mod runner {
 
         if sdk == "macos" {
             target.push(format!("Contents/MacOS/{name}"));
-            std::process::Command::new(&target)
+            process::Command::new(&target)
                 .args(&args.args[3..])
-                .stdout(std::process::Stdio::inherit()) // Inherit stdout from parent
-                .stderr(std::process::Stdio::inherit()) // Inherit stderr from parent
+                .stdout(process::Stdio::inherit()) // Inherit stdout from parent
+                .stderr(process::Stdio::inherit()) // Inherit stderr from parent
                 .status()
                 .unwrap();
         } else {
@@ -396,6 +397,7 @@ mod xcode {
     use std::{
         fs,
         path::{Path, PathBuf},
+        process,
     };
 
     use cargo_toml::{Manifest, Product};
@@ -403,7 +405,7 @@ mod xcode {
     use crate::cargo;
 
     pub(crate) fn build(project: &Proj, platform: &str, conf: &str, target: &Path) {
-        std::process::Command::new("xcodebuild")
+        process::Command::new("xcodebuild")
             .args(["-project".as_ref(), project.path.as_os_str()])
             .args(["-destination", &format!("generic/platform={platform}")])
             .args(["-configuration", conf])
@@ -500,9 +502,8 @@ mod xcode {
     pub(crate) fn proj(args: ProjArgs) -> Proj {
         let (mut path, mans, _ws) = cargo::manifests().unwrap();
 
-        path.push(".box");
         _ = dotenv::from_filename(".box");
-        path.pop();
+        _ = dotenv::from_filename(".box.local");
 
         if let Some(uppercase_name) = args.bin.as_deref().map(str::to_ascii_uppercase) {
             // check binary replacement xcode project
@@ -661,7 +662,7 @@ mod device_ctl {
             (None, Some(code)) => code,
             _ => 0,
         };
-        std::process::exit(code);
+        process::exit(code);
     }
 
     pub(crate) fn list_devices() {
