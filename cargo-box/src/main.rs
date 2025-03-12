@@ -503,6 +503,7 @@ mod xcode {
         let (mut path, mans, _ws) = cargo::manifests().unwrap();
 
         _ = dotenv::from_filename(".box");
+        // devs can add .box.local to git ignore and override their DEVICE_IDs and other env vars
         _ = dotenv::from_filename(".box.local");
 
         if let Some(uppercase_name) = args.bin.as_deref().map(str::to_ascii_uppercase) {
