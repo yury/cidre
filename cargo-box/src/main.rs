@@ -239,12 +239,27 @@ mod runner {
         target.push("Build");
         target.push("Products");
 
-        target.push(format!("{config}-{sdk}"));
+        if sdk == "macos" {
+            target.push(config);
+        } else {
+            target.push(format!("{config}-{sdk}"));
+        }
         target.push(format!("{name}.app"));
-        let device_id = std::env::var("DEVICE_ID").unwrap();
 
-        device_ctl::install_app(&device_id, &target);
-        device_ctl::run_app(&device_id, &xcode_proj.bundle_id, &args.args[3..]);
+        if sdk == "macos" {
+            target.push(format!("Contents/MacOS/{name}"));
+            std::process::Command::new(&target)
+                .args(&args.args[3..])
+                .stdout(std::process::Stdio::inherit()) // Inherit stdout from parent
+                .stderr(std::process::Stdio::inherit()) // Inherit stderr from parent
+                .status()
+                .unwrap();
+        } else {
+            let device_id = std::env::var("DEVICE_ID").unwrap();
+
+            device_ctl::install_app(&device_id, &target);
+            device_ctl::run_app(&device_id, &xcode_proj.bundle_id, &args.args[3..]);
+        }
     }
 }
 
@@ -439,13 +454,8 @@ mod xcode {
             )
         };
 
-        let products = |man: &'a Manifest| -> &'a [Product] {
-            if is_bin {
-                &man.bin
-            } else {
-                &man.example
-            }
-        };
+        let products =
+            |man: &'a Manifest| -> &'a [Product] { if is_bin { &man.bin } else { &man.example } };
 
         if let Some(product_name) = name {
             let mut count = 0;
