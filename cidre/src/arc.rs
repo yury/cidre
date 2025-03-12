@@ -84,7 +84,7 @@ impl<T: Retain> Retained<T> {
     }
 
     #[must_use]
-    pub unsafe fn return_ar<'ar>(self) -> &'ar mut T
+    pub unsafe fn return_ar(self) -> Rar<T>
     where
         T: objc::Obj,
     {

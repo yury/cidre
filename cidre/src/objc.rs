@@ -63,11 +63,11 @@ macro_rules! init_with_default {
         {
             fn init_fn(&self) -> Option<extern "C" fn()> {
                 extern "C" fn impl_init<T: Default>(
-                    s: &mut $NewType,
+                    s: *mut $NewType,
                     _sel: Option<$crate::objc::Sel>,
                 ) -> $crate::arc::R<$NewType> {
                     unsafe {
-                        let ptr: *mut u8 = std::mem::transmute(s);
+                        let ptr: *mut u8 = s.cast();
                         let d_ptr: *mut std::mem::ManuallyDrop<T> =
                             ptr.add($crate::objc::NS_OBJECT_SIZE) as _;
                         *d_ptr = std::mem::ManuallyDrop::new(T::default());
@@ -93,17 +93,14 @@ macro_rules! init_with_default {
 
 impl<T: Obj, I: Sized> ClassInstExtra<T, I> {
     #[inline]
-    pub fn alloc_init(&self, var: I) -> Option<arc::R<T>> {
+    pub fn alloc_init(&self, var: I) -> arc::R<T> {
         unsafe {
             let inst = class_createInstance(std::mem::transmute(self), std::mem::size_of::<I>());
-            let Some(a) = inst else {
-                return None;
-            };
 
             // we may skip init?
-            // let a = a.init();
+            // let inst = inst.init();
 
-            let ptr: *mut u8 = std::mem::transmute(a);
+            let ptr: *mut u8 = std::mem::transmute(inst);
             let d_ptr: *mut std::mem::ManuallyDrop<I> = ptr.add(NS_OBJECT_SIZE) as _;
             *d_ptr = std::mem::ManuallyDrop::new(var);
 
@@ -114,7 +111,7 @@ impl<T: Obj, I: Sized> ClassInstExtra<T, I> {
 
 impl<T: Obj, I: Sized + Default> ClassInstExtra<T, I> {
     pub fn new(&self) -> arc::R<T> {
-        unsafe { self.alloc_init(Default::default()).unwrap_unchecked() }
+        self.alloc_init(Default::default())
     }
 }
 
@@ -314,7 +311,7 @@ unsafe extern "C-unwind" {
 
     // fn objc_msgSend();
 
-    fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> Option<arc::A<Id>>;
+    pub fn class_createInstance(cls: &Class<Id>, extra_bytes: usize) -> arc::A<Id>;
     fn class_getMethodImplementation(cls: &Class<Id>, name: &Sel) -> *const c_void;
     fn class_addProtocol(cls: &Class<Id>, protocol: &Protocol) -> bool;
     fn objc_autorelease<'ar>(id: &mut Id) -> &'ar mut Id;
@@ -344,6 +341,7 @@ unsafe extern "C-unwind" {
         name: *const u8,
         extra_bytes: usize,
     ) -> Option<&'static Class<Id>>;
+    pub fn object_getClass(obj: Option<&Id>) -> Option<&Class<Id>>;
     pub fn objc_registerClassPair(cls: &Class<Id>);
     pub fn objc_getClass(name: *const u8) -> Option<&'static Class<Id>>;
     pub fn objc_getProtocol(name: *const i8) -> Option<&'static Protocol>;
@@ -483,6 +481,21 @@ macro_rules! define_obj_type {
                         let sel = $crate::objc::sel_reg_name(c"init".as_ptr() as _);
                         let imp: extern "C" fn() = init_fn_ptr;
                         $crate::objc::class_addMethod(cls, sel, imp, std::ptr::null());
+
+                        let sel = $crate::objc::sel_reg_name(c"alloc".as_ptr() as _);
+                        let meta_cls = $crate::objc::object_getClass(Some(std::mem::transmute(cls))).unwrap();
+
+                        extern "C" fn alloc_impl(cls: &$crate::objc::Class<$crate::ns::Id>) -> $crate::arc::A<$NewType> {
+                            unsafe {
+                                let inst = $crate::objc::class_createInstance(cls, std::mem::size_of::<$InnerType>());
+                                std::mem::transmute(inst)
+                            }
+
+                        }
+
+
+                        $crate::objc::class_addMethod(meta_cls, sel, std::mem::transmute(alloc_impl as *const u8), std::ptr::null());
+
                     }
                 }
 
@@ -519,7 +532,7 @@ macro_rules! define_obj_type {
 
             #[allow(dead_code)]
             pub fn with(inner: $InnerType) -> $crate::arc::R<Self> {
-                unsafe { Self::cls().alloc_init(inner).unwrap_unchecked() }
+                Self::cls().alloc_init(inner)
             }
         }
     };
@@ -699,10 +712,10 @@ where
 mod tests {
 
     use super::ar_pool;
-    use crate::{cf, dispatch, return_ar};
+    use crate::{arc, cf, dispatch, return_ar};
     use std;
 
-    fn autorelease_example_ar<'ar>() -> &'ar dispatch::Queue {
+    fn autorelease_example_ar() -> arc::Rar<dispatch::Queue> {
         let q = dispatch::Queue::new();
         return_ar!(q)
     }

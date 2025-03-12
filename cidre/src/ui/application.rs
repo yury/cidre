@@ -8,12 +8,12 @@ pub trait AppDelegate {
 
     #[objc::optional]
     #[objc::msg_send(application:configurationForConnectingSceneSession:options:)]
-    fn app_cfg_for_connecting_scene_session<'ar>(
+    fn app_cfg_for_connecting_scene_session(
         &mut self,
         app: &App,
         session: &ui::SceneSession,
         options: &ui::SceneConnectionOpts,
-    ) -> &'ar mut ui::SceneCfg;
+    ) -> arc::Rar<ui::SceneCfg>;
 
     #[objc::optional]
     #[objc::msg_send(window)]

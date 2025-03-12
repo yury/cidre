@@ -7,7 +7,7 @@ define_obj_type!(pub ExceptionName(ns::String));
 #[doc(alias = "NSStringFromSelector")]
 #[inline]
 pub fn string_from_selector(sel: &ns::objc::Sel) -> arc::R<ns::String> {
-    unsafe { NSStringFromSelector(sel) }
+    unsafe { arc::rar_retain(NSStringFromSelector(sel)) }
 }
 
 #[doc(alias = "NSSelectorFromString")]
@@ -19,7 +19,7 @@ pub fn selector_from_ns_string(name: &ns::String) -> Option<&'static ns::objc::S
 #[doc(alias = "NSStringFromClass")]
 #[inline]
 pub fn string_from_class<T: Obj>(cls: &ns::objc::Class<T>) -> arc::R<ns::String> {
-    unsafe { NSStringFromClass(cls as *const ns::objc::Class<T> as _) }
+    unsafe { arc::rar_retain(NSStringFromClass(cls as *const ns::objc::Class<T> as _)) }
 }
 
 #[doc(alias = "NSClassFromString")]
@@ -37,18 +37,18 @@ pub fn protocol_from_ns_string(name: &ns::String) -> Option<&'static ns::objc::P
 #[doc(alias = "NSStringFromProtocol")]
 #[inline]
 pub fn string_from_protocol(proto: &ns::objc::Protocol) -> arc::R<ns::String> {
-    unsafe { NSStringFromProtocol(proto) }
+    unsafe { arc::rar_retain(NSStringFromProtocol(proto)) }
 }
 
 #[link(name = "Foundation", kind = "framework")]
 unsafe extern "C-unwind" {
-    fn NSStringFromSelector(sel: &ns::objc::Sel) -> arc::R<ns::String>;
+    fn NSStringFromSelector(sel: &ns::objc::Sel) -> arc::Rar<ns::String>;
     fn NSSelectorFromString(name: &ns::String) -> Option<&'static ns::objc::Sel>;
 
-    fn NSStringFromClass(cls: *const c_void) -> arc::R<ns::String>;
+    fn NSStringFromClass(cls: *const c_void) -> arc::Rar<ns::String>;
     fn NSClassFromString(name: &ns::String) -> *const c_void;
     fn NSProtocolFromString(name: &ns::String) -> Option<&'static ns::objc::Protocol>;
-    fn NSStringFromProtocol(proto: &ns::objc::Protocol) -> arc::R<ns::String>;
+    fn NSStringFromProtocol(proto: &ns::objc::Protocol) -> arc::Rar<ns::String>;
 }
 
 #[cfg(target_arch = "aarch64")]

@@ -1,4 +1,5 @@
 mod application;
+
 pub use application::App;
 pub use application::AppDelegate;
 pub use application::AppDelegateImpl;
@@ -54,26 +55,26 @@ pub use window_scene::WindowScene;
 pub use window_scene::WindowSceneDelegate;
 pub use window_scene::WindowSceneDelegateImpl;
 
+#[inline]
 pub fn app_main(
     principal_class_name: Option<&crate::ns::String>,
     delegate_class_name: Option<&crate::ns::String>,
 ) -> std::ffi::c_int {
-    // TODO: pass original args
-    unsafe {
-        UIApplicationMain(
-            0,
-            std::ptr::null(),
-            principal_class_name,
-            delegate_class_name,
-        )
+    // may be make them public
+    unsafe extern "C" {
+        fn _NSGetArgc() -> *mut std::ffi::c_int;
+        fn _NSGetArgv() -> *mut *mut *mut std::ffi::c_char;
+        fn UIApplicationMain(
+            argc: std::ffi::c_int,
+            argv: *mut *mut std::ffi::c_char,
+            principal_class_name: Option<&crate::ns::String>,
+            delegate_class_name: Option<&crate::ns::String>,
+        ) -> std::ffi::c_int;
     }
-}
 
-unsafe extern "C" {
-    fn UIApplicationMain(
-        argc: std::ffi::c_int,
-        argv: *const *const std::ffi::c_char,
-        principal_class_name: Option<&crate::ns::String>,
-        delegate_class_name: Option<&crate::ns::String>,
-    ) -> std::ffi::c_int;
+    unsafe {
+        let argc = *_NSGetArgc();
+        let argv = *_NSGetArgv();
+        UIApplicationMain(argc, argv, principal_class_name, delegate_class_name)
+    }
 }

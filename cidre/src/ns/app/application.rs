@@ -6,7 +6,29 @@ define_obj_type!(
 );
 
 #[objc::protocol(NSApplicationDelegate)]
-pub trait Delegate {}
+pub trait Delegate {
+    // Notifications
+
+    #[objc::optional]
+    #[objc::msg_send(applicationWillFinishLaunching:)]
+    fn app_will_finish_launching(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationDidFinishLaunching:)]
+    fn app_did_finish_launching(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationWillTerminate:)]
+    fn app_will_terminate(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationWillHide:)]
+    fn app_will_hide(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationDidHide:)]
+    fn app_did_hide(&mut self, n: &ns::Notification);
+}
 
 impl App {
     define_cls!(NS_APPLICATION);
