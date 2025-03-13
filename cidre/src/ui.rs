@@ -1,5 +1,4 @@
 mod application;
-
 pub use application::App;
 pub use application::AppDelegate;
 pub use application::AppDelegateImpl;
@@ -49,6 +48,8 @@ pub use scene_session::SceneSession;
 
 mod scene_options;
 pub use scene_options::SceneConnectionOpts;
+
+mod screen;
 
 mod window_scene;
 pub use window_scene::WindowScene;
