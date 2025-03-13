@@ -7,6 +7,9 @@ mod cell;
 pub use cell::Cell;
 pub use cell::CellType;
 
+mod color_space;
+pub use color_space::ColorSpace;
+
 mod view;
 pub use view::View;
 
@@ -36,6 +39,9 @@ pub use dock_title::DockTile;
 mod responder;
 pub use responder::Responder;
 
+mod screen;
+pub use screen::Screen;
+
 mod view_controller;
 pub use view_controller::ViewController;
 
@@ -46,6 +52,8 @@ pub mod color;
 pub use color::Color;
 
 mod graphics;
+pub use graphics::EdgeInsets;
+pub use graphics::WindowDepth;
 pub use graphics::WindowOrderingMode;
 
 mod event;

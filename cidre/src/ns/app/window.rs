@@ -99,11 +99,17 @@ impl WindowLevel {
 
 define_obj_type!(
    #[doc(alias = "NSWindow")]
-   pub Window(ns::Id),
+   pub Window(ns::Responder),
    NS_WINDOW
 );
 
 impl Window {
+    #[objc::msg_send(title)]
+    pub fn title(&self) -> arc::R<ns::String>;
+
+    #[objc::msg_send(setTitle:)]
+    pub fn set_title(&mut self, val: &ns::String);
+
     #[objc::msg_send(frame)]
     pub fn frame(&self) -> ns::Rect;
 

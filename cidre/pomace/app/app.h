@@ -11,11 +11,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 Class NS_APPLICATION;
 Class NS_CELL;
+Class NS_COLOR_SPACE;
 Class NS_VIEW;
 Class NS_COLOR;
 Class NS_WINDOW;
 Class NS_COLOR_SPACE;
 Class NS_RESPONDER;
+Class NS_SCREEN;
 Class NS_VIEW_CONTROLLER;
 Class NS_WINDOW_CONTROLLER;
 Class NS_WORKSPACE;
@@ -35,11 +37,13 @@ static void app_initializer(void)
         
         NS_APPLICATION = [NSApplication class];
         NS_CELL = [NSCell class];
+        NS_COLOR_SPACE = [NSColorSpace class];
         NS_VIEW = [NSView class];
         NS_COLOR = [NSColor class];
         NS_WINDOW = [NSWindow class];
         NS_COLOR_SPACE = [NSColorSpace class];
         NS_RESPONDER = [NSResponder class];
+        NS_SCREEN = [NSScreen class];
         NS_VIEW_CONTROLLER = [NSViewController class];
         NS_WINDOW_CONTROLLER = [NSWindowController class];
         NS_WORKSPACE = [NSWorkspace class];

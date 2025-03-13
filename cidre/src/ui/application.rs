@@ -55,6 +55,12 @@ impl App {
     #[objc::msg_send(sharedApplication)]
     pub fn shared_mut() -> &'static mut Self;
 
+    #[objc::msg_send(isIdleTimerDisabled)]
+    pub fn is_idle_timer_disabled(&self) -> bool;
+
+    #[objc::msg_send(setIdleTimerDisabled:)]
+    pub fn set_idle_timer_disabled(&mut self, val: bool);
+
     //- (void)openURL:(NSURL*)url options:(NSDictionary<UIApplicationOpenExternalURLOptionsKey, id> *)options completionHandler:(void (^ __nullable NS_SWIFT_UI_ACTOR)(BOOL success))completion API_AVAILABLE(ios(10.0)) API_UNAVAILABLE(watchos);
     //
     // pub fn open_url_ch_block(&self, url: &ns::Url, options: )
