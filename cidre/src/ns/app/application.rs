@@ -18,16 +18,64 @@ pub trait Delegate {
     fn app_did_finish_launching(&mut self, n: &ns::Notification);
 
     #[objc::optional]
-    #[objc::msg_send(applicationWillTerminate:)]
-    fn app_will_terminate(&mut self, n: &ns::Notification);
-
-    #[objc::optional]
     #[objc::msg_send(applicationWillHide:)]
     fn app_will_hide(&mut self, n: &ns::Notification);
 
     #[objc::optional]
     #[objc::msg_send(applicationDidHide:)]
     fn app_did_hide(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationWillUnhide:)]
+    fn app_will_unhide(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationDidUnhide:)]
+    fn app_did_unhide(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationWillBecomeActive:)]
+    fn app_will_become_active(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationDidBecomeActive:)]
+    fn app_did_become_active(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationWillResignActive:)]
+    fn app_will_resign_active(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationDidResignActive:)]
+    fn app_did_resign_active(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationWillUpdate:)]
+    fn app_will_update(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationDidUpdate:)]
+    fn app_did_update(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationWillTerminate:)]
+    fn app_will_terminate(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationDidChangeScreenParameters:)]
+    fn app_did_change_screen_params(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationDidChangeOcclusionState:)]
+    fn app_did_change_occlusion_state(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationProtectedDataWillBecomeUnavailable:)]
+    fn app_protected_data_will_become_unavailable(&mut self, n: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationProtectedDataDidBecomeAvailable:)]
+    fn app_protected_data_did_become_available(&mut self, n: &ns::Notification);
 }
 
 impl App {
