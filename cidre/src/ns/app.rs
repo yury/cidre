@@ -18,6 +18,9 @@ pub use window::ToolbarStyle as WindowToolbarStyle;
 pub use window::Window;
 pub use window::WindowLevel;
 
+mod window_controller;
+pub use window_controller::WindowController;
+
 pub mod workspace;
 pub use workspace::Authorization as WorkspaceAuthorization;
 pub use workspace::AuthorizationType as WorkspaceAuthorizationType;

@@ -97,11 +97,21 @@ impl WindowLevel {
     pub const SCREEN_SAVER: Self = Self::with_cg(cg::WindowLevel::SCREEN_SAVER);
 }
 
-define_obj_type!(pub Window(ns::Id), NS_WINDOW);
+define_obj_type!(
+   #[doc(alias = "NSWindow")]
+   pub Window(ns::Id),
+   NS_WINDOW
+);
 
 impl Window {
     #[objc::msg_send(frame)]
     pub fn frame(&self) -> ns::Rect;
+
+    #[objc::msg_send(setFrame:)]
+    pub fn set_frame(&mut self, val: ns::Rect);
+
+    #[objc::msg_send(setFrame:display:)]
+    pub fn set_frame_display(&mut self, val: ns::Rect, display: bool);
 
     #[objc::msg_send(display)]
     pub fn display(&mut self);
@@ -114,6 +124,9 @@ impl Window {
 
     #[objc::msg_send(removeChildWindow:)]
     pub fn remove_child_window(&mut self, window: &ns::Window);
+
+    #[objc::msg_send(windowWithContentViewController:)]
+    pub fn with_content_vc(vc: &ns::ViewController) -> arc::R<Self>;
 }
 
 #[link(name = "app", kind = "static")]

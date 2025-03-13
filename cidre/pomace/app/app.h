@@ -17,6 +17,7 @@ Class NS_WINDOW;
 Class NS_COLOR_SPACE;
 Class NS_RESPONDER;
 Class NS_VIEW_CONTROLLER;
+Class NS_WINDOW_CONTROLLER;
 Class NS_WORKSPACE;
 Class NS_WORKSPACE_OPEN_CONFIGURATION;
 Class NS_RUNNING_APPLICATION;
@@ -40,9 +41,11 @@ static void app_initializer(void)
         NS_COLOR_SPACE = [NSColorSpace class];
         NS_RESPONDER = [NSResponder class];
         NS_VIEW_CONTROLLER = [NSViewController class];
+        NS_WINDOW_CONTROLLER = [NSWindowController class];
         NS_WORKSPACE = [NSWorkspace class];
         NS_WORKSPACE_OPEN_CONFIGURATION = [NSWorkspaceOpenConfiguration class];
         NS_RUNNING_APPLICATION = [NSRunningApplication class];
+    
         
         NS_TEXT_ATTACHMENT = [NSTextAttachment class];
         NS_IMAGE = [NSImage class];
