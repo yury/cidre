@@ -3,6 +3,9 @@ pub use display_link::DisplayLink;
 pub use display_link::Target as DisplayLinkTarget;
 pub use display_link::TargetImpl as DisplayLinkTargetImpl;
 
+mod edr_metadata;
+pub use edr_metadata::EdrMetadata;
+
 mod frame_rate_range;
 pub use frame_rate_range::FrameRateRange;
 

@@ -76,6 +76,12 @@ impl MetalLayer {
     #[objc::msg_send(setMaximumDrawableCount:)]
     pub fn set_maximum_drawable_count(&self, val: usize);
 
+    #[objc::msg_send(presentsWithTransaction)]
+    pub fn presents_with_transaction(&self) -> bool;
+
+    #[objc::msg_send(setPresentsWithTransaction:)]
+    pub fn set_presents_with_transaction(&mut self, val: bool);
+
     #[objc::msg_send(colorspace)]
     pub fn colorspace(&self) -> Option<&cg::ColorSpace>;
 
@@ -83,10 +89,44 @@ impl MetalLayer {
     pub fn set_colorspace(&mut self, val: Option<&cg::ColorSpace>);
 
     #[objc::msg_send(wantsExtendedDynamicRangeContent)]
+    #[objc::available(macos = 10.11, ios = 16.0, maccatalyst = 16.0)]
     pub fn wants_extended_dynamic_range_content(&self) -> bool;
 
     #[objc::msg_send(setWantsExtendedDynamicRangeContent:)]
+    #[objc::available(macos = 10.11, ios = 16.0, maccatalyst = 16.0)]
     pub fn set_wants_extended_dynamic_range_content(&mut self, val: bool);
+
+    #[objc::msg_send(EDRMetadata)]
+    #[objc::available(macos = 10.15, ios = 16.0)]
+    pub fn edr_metadata(&self) -> Option<arc::R<ca::EdrMetadata>>;
+
+    #[objc::msg_send(setEDRMetadata:)]
+    #[objc::available(macos = 10.15, ios = 16.0)]
+    pub fn set_edr_metadata(&mut self, val: Option<&ca::EdrMetadata>);
+
+    #[objc::msg_send(displaySyncEnabled)]
+    #[objc::available(macos = 10.13)]
+    pub fn display_sync_enabled(&self) -> bool;
+
+    #[objc::msg_send(setDisplaySyncEnabled:)]
+    #[objc::available(macos = 10.13)]
+    pub fn set_display_sync_enabled(&mut self, val: bool);
+
+    #[objc::msg_send(allowsNextDrawableTimeout)]
+    #[objc::available(macos = 10.13, ios = 11.0, tvos = 11.0)]
+    pub fn allows_next_drawable_timeout(&self) -> bool;
+
+    #[objc::msg_send(setAllowsNextDrawableTimeout:)]
+    #[objc::available(macos = 10.13, ios = 11.0, tvos = 11.0)]
+    pub fn set_allows_next_drawable_timeout(&mut self, val: bool);
+
+    #[objc::msg_send(developerHUDProperties)]
+    #[objc::available(macos = 13.0, ios = 16.0, tvos = 16.0)]
+    pub fn developer_hud_props(&self) -> Option<arc::R<ns::Dictionary<ns::String, ns::Id>>>;
+
+    #[objc::msg_send(setDeveloperHUDProperties:)]
+    #[objc::available(macos = 13.0, ios = 16.0, tvos = 16.0)]
+    pub fn set_developer_hud_props(&mut self, val: Option<&ns::Dictionary<ns::String, ns::Id>>);
 }
 
 #[link(name = "ca", kind = "static")]
