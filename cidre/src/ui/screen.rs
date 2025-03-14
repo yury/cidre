@@ -13,6 +13,24 @@ impl Screen {
     #[objc::msg_send(scale)]
     pub fn scale(&self) -> cg::Float;
 
+    #[objc::msg_send(availableModes)]
+    pub fn available_modes(&self) -> arc::R<ns::Array<ui::ScreenMode>>;
+
+    #[objc::msg_send(preferredMode)]
+    pub fn preferred_mode(&self) -> Option<arc::R<ui::ScreenMode>>;
+
+    #[objc::msg_send(currentMode)]
+    pub fn current_mode(&self) -> Option<arc::R<ui::ScreenMode>>;
+
+    #[objc::msg_send(setCurrentMode:)]
+    pub fn set_current_mode(&mut self, val: Option<&ui::ScreenMode>);
+
+    #[objc::msg_send(overscanCompensationInsets)]
+    pub fn overscan_compensation_insets(&self) -> ui::EdgeInsets;
+
+    #[objc::msg_send(mirroredScreen)]
+    pub fn mirrored_screen(&self) -> Option<arc::R<Self>>;
+
     #[objc::msg_send(brightness)]
     pub fn brightness(&self) -> cg::Float;
 

@@ -10,6 +10,10 @@ pub use device::Idiom;
 pub use device::Orientation as DeviceOrientation;
 pub use device::notifications as device_notifications;
 
+mod geometry;
+pub use geometry::EdgeInsets;
+pub use geometry::Offset;
+
 mod responder;
 pub use responder::Responder;
 
@@ -50,6 +54,10 @@ mod scene_options;
 pub use scene_options::SceneConnectionOpts;
 
 mod screen;
+pub use screen::Screen;
+
+mod screen_mode;
+pub use screen_mode::ScreenMode;
 
 mod window_scene;
 pub use window_scene::WindowScene;
