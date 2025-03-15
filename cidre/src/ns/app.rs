@@ -2,6 +2,7 @@ mod application;
 pub use application::App;
 pub use application::Delegate as AppDelegate;
 pub use application::DelegateImpl as AppDelegateImpl;
+pub use application::notifications as app_notifications;
 
 mod cell;
 pub use cell::Cell;

@@ -111,3 +111,112 @@ impl App {
 unsafe extern "C" {
     static NS_APPLICATION: &'static objc::Class<App>;
 }
+
+pub mod notifications {
+    use crate::{api, ns::NotificationName};
+
+    #[doc(alias = "NSApplicationDidBecomeActiveNotification")]
+    pub fn did_become_active() -> &'static NotificationName {
+        unsafe { NSApplicationDidBecomeActiveNotification }
+    }
+
+    #[doc(alias = "NSApplicationDidHideNotification")]
+    pub fn did_hide() -> &'static NotificationName {
+        unsafe { NSApplicationDidHideNotification }
+    }
+
+    #[doc(alias = "NSApplicationDidFinishLaunchingNotification")]
+    pub fn did_finish_launching() -> &'static NotificationName {
+        unsafe { NSApplicationDidFinishLaunchingNotification }
+    }
+
+    #[doc(alias = "NSApplicationDidResignActiveNotification")]
+    pub fn did_resign_active() -> &'static NotificationName {
+        unsafe { NSApplicationDidResignActiveNotification }
+    }
+
+    #[doc(alias = "NSApplicationDidUnhideNotification")]
+    pub fn did_unhide() -> &'static NotificationName {
+        unsafe { NSApplicationDidUnhideNotification }
+    }
+
+    #[doc(alias = "NSApplicationDidUpdateNotification")]
+    pub fn did_update() -> &'static NotificationName {
+        unsafe { NSApplicationDidUpdateNotification }
+    }
+
+    #[doc(alias = "NSApplicationWillBecomeActiveNotification")]
+    pub fn will_become_active() -> &'static NotificationName {
+        unsafe { NSApplicationWillBecomeActiveNotification }
+    }
+
+    #[doc(alias = "NSApplicationWillHideNotification")]
+    pub fn will_hide() -> &'static NotificationName {
+        unsafe { NSApplicationWillHideNotification }
+    }
+
+    #[doc(alias = "NSApplicationWillFinishLaunchingNotification")]
+    pub fn will_finish_launching() -> &'static NotificationName {
+        unsafe { NSApplicationWillFinishLaunchingNotification }
+    }
+
+    #[doc(alias = "NSApplicationWillResignActiveNotification")]
+    pub fn will_resign_active() -> &'static NotificationName {
+        unsafe { NSApplicationWillResignActiveNotification }
+    }
+    #[doc(alias = "NSApplicationWillUnhideNotification")]
+    pub fn will_unhide() -> &'static NotificationName {
+        unsafe { NSApplicationWillUnhideNotification }
+    }
+
+    #[doc(alias = "NSApplicationWillUpdateNotification")]
+    pub fn will_update() -> &'static NotificationName {
+        unsafe { NSApplicationWillUpdateNotification }
+    }
+
+    #[doc(alias = "NSApplicationWillTerminateNotification")]
+    pub fn will_terminate() -> &'static NotificationName {
+        unsafe { NSApplicationWillTerminateNotification }
+    }
+
+    #[doc(alias = "NSApplicationDidChangeScreenParametersNotification")]
+    pub fn did_change_screen_params() -> &'static NotificationName {
+        unsafe { NSApplicationDidChangeScreenParametersNotification }
+    }
+
+    #[doc(alias = "NSApplicationProtectedDataWillBecomeUnavailableNotification")]
+    #[api::available(macos = 12.0)]
+    pub fn protected_data_will_become_unavailable() -> &'static NotificationName {
+        unsafe { NSApplicationProtectedDataWillBecomeUnavailableNotification }
+    }
+
+    #[doc(alias = "NSApplicationProtectedDataDidBecomeAvailableNotification")]
+    #[api::available(macos = 12.0)]
+    pub fn protected_data_did_become_available() -> &'static NotificationName {
+        unsafe { NSApplicationProtectedDataDidBecomeAvailableNotification }
+    }
+
+    #[link(name = "AppKit", kind = "framework")]
+    #[api::weak]
+    unsafe extern "C" {
+        static NSApplicationDidBecomeActiveNotification: &'static NotificationName;
+        static NSApplicationDidHideNotification: &'static NotificationName;
+        static NSApplicationDidFinishLaunchingNotification: &'static NotificationName;
+        static NSApplicationDidResignActiveNotification: &'static NotificationName;
+        static NSApplicationDidUnhideNotification: &'static NotificationName;
+        static NSApplicationDidUpdateNotification: &'static NotificationName;
+        static NSApplicationWillBecomeActiveNotification: &'static NotificationName;
+        static NSApplicationWillHideNotification: &'static NotificationName;
+        static NSApplicationWillFinishLaunchingNotification: &'static NotificationName;
+        static NSApplicationWillResignActiveNotification: &'static NotificationName;
+        static NSApplicationWillUnhideNotification: &'static NotificationName;
+        static NSApplicationWillUpdateNotification: &'static NotificationName;
+        static NSApplicationWillTerminateNotification: &'static NotificationName;
+        static NSApplicationDidChangeScreenParametersNotification: &'static NotificationName;
+        #[api::available(macos = 12.0)]
+        static NSApplicationProtectedDataWillBecomeUnavailableNotification:
+            &'static NotificationName;
+        #[api::available(macos = 12.0)]
+        static NSApplicationProtectedDataDidBecomeAvailableNotification: &'static NotificationName;
+    }
+}
