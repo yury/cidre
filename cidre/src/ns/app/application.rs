@@ -196,6 +196,17 @@ pub mod notifications {
         unsafe { NSApplicationProtectedDataDidBecomeAvailableNotification }
     }
 
+    /// Upon receiving this notification, you can query the ns::App for its occlusion state.
+    ///
+    /// Note that this only notifies about changes in the state of the occlusion, not when the occlusion region changes.
+    /// You can use this notification to increase responsiveness and save power, by halting any expensive calculations
+    /// that the user can not see.
+    #[doc(alias = "NSApplicationDidChangeOcclusionStateNotification")]
+    #[api::available(macos = 10.9)]
+    pub fn did_change_occlusion_state() -> &'static NotificationName {
+        unsafe { NSApplicationDidChangeOcclusionStateNotification }
+    }
+
     #[link(name = "AppKit", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
@@ -218,5 +229,8 @@ pub mod notifications {
             &'static NotificationName;
         #[api::available(macos = 12.0)]
         static NSApplicationProtectedDataDidBecomeAvailableNotification: &'static NotificationName;
+
+        #[api::available(macos = 10.9)]
+        static NSApplicationDidChangeOcclusionStateNotification: &'static NotificationName;
     }
 }
