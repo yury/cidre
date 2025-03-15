@@ -7,7 +7,6 @@ mod device;
 pub use device::BatteryState as DeviceBatteryState;
 pub use device::Device;
 pub use device::Idiom;
-pub use device::Orientation as DeviceOrientation;
 pub use device::notifications as device_notifications;
 
 mod geometry;
@@ -42,6 +41,19 @@ pub use interaction::InteractionImpl;
 mod scene_definitions;
 pub use scene_definitions::SceneSessionRole;
 
+mod orientation;
+pub use orientation::DeviceOrientation;
+pub use orientation::Orientation;
+pub use orientation::OrientationMask;
+
+mod interface;
+pub use interface::BarStyle;
+pub use interface::DisplayGamut;
+pub use interface::LayoutDirection;
+pub use interface::SizeClass;
+pub use interface::Style;
+pub use interface::TraitEnvLayoutDirection;
+
 mod scene;
 pub use scene::AnySceneDelegate;
 pub use scene::Scene;
@@ -60,6 +72,9 @@ pub use screen::Screen;
 
 mod screen_mode;
 pub use screen_mode::ScreenMode;
+
+mod trait_collection;
+pub use trait_collection::TraitCollection;
 
 mod window_scene;
 pub use window_scene::WindowScene;

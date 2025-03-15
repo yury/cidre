@@ -20,7 +20,9 @@ Class UI_COLOR;
 Class UI_RESPONDER;
 Class UI_VIEW_CONTROLLER;
 Class UI_IMAGE;
+Class UI_TRAIT_COLLECTION;
 Class NS_TEXT_ATTACHMENT;
+
 
 
 
@@ -42,6 +44,7 @@ static void ui_initializer(void)
         UI_APPLICATION = NSClassFromString(@"UIApplication");
         UI_WINDOW = NSClassFromString(@"UIWindow");
         UI_IMAGE = [UIImage class];
+        UI_TRAIT_COLLECTION = [UITraitCollection class];
         
         NS_TEXT_ATTACHMENT = [NSTextAttachment class];
     }

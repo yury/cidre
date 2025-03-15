@@ -1,40 +1,4 @@
-use crate::{arc, define_cls, define_obj_type, ns, objc};
-
-#[doc(alias = "UIDeviceOrientation")]
-#[derive(Debug, PartialEq, Eq, Copy, Clone)]
-#[repr(isize)]
-pub enum Orientation {
-    Unknown,
-    /// Device oriented vertically, home button on the bottom
-    Portrait,
-    /// Device oriented vertically, home button on the top
-    PortraitUpsideDown,
-    /// Device oriented horizontally, home button on the right
-    LandscapeLeft,
-    /// Device oriented horizontally, home button on the left
-    LandscapeRight,
-    /// Device oriented flat, face up
-    FaceUp,
-    /// Device oriented flat, face down
-    FaceDown,
-}
-
-impl Orientation {
-    #[inline]
-    pub fn is_portrait(&self) -> bool {
-        *self == Self::Portrait || *self == Self::PortraitUpsideDown
-    }
-
-    #[inline]
-    pub fn is_landscape(&self) -> bool {
-        *self == Self::LandscapeLeft || *self == Self::LandscapeRight
-    }
-
-    #[inline]
-    pub fn is_flat(&self) -> bool {
-        *self == Self::FaceUp || *self == Self::FaceDown
-    }
-}
+use crate::{arc, define_cls, define_obj_type, ns, objc, ui};
 
 #[doc(alias = "UIDeviceBatteryState")]
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
@@ -165,7 +129,7 @@ impl Device {
     /// Returns current device orientation. This will return Orientation::Unknown
     /// unless device orientation notifications are being generated.
     #[objc::msg_send(orientation)]
-    pub fn orientation(&self) -> Orientation;
+    pub fn orientation(&self) -> ui::DeviceOrientation;
 }
 
 #[link(name = "ui", kind = "static")]

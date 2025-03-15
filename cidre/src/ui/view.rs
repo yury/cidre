@@ -98,6 +98,7 @@ define_obj_type!(
 );
 
 impl CoordinateSpace for AnyCoordinateSpace {}
+impl CoordinateSpace for View {}
 
 impl AnyCoordinateSpace {
     #[inline]
