@@ -1,6 +1,6 @@
 #[cfg(feature = "ca")]
 use crate::ca;
-use crate::{arc, define_obj_type, ns, objc, ui};
+use crate::{arc, cg, define_obj_type, ns, objc, ui};
 
 define_obj_type!(
     #[doc(alias = "UIView")]
@@ -23,6 +23,87 @@ impl View {
 
     #[objc::msg_send(setHidden:)]
     pub fn set_hidden(&self, val: bool);
+}
+
+#[objc::protocol(UICoordinateSpace)]
+pub trait CoordinateSpace: objc::Obj {
+    #[objc::msg_send(convertPoint:toCoordinateSpace:)]
+    fn _convert_point_to_coordinate_space(
+        &self,
+        point: cg::Point,
+        space: &AnyCoordinateSpace,
+    ) -> cg::Point;
+
+    #[inline]
+    fn convert_point_to_coordinate_space(
+        &self,
+        point: cg::Point,
+        space: &impl CoordinateSpace,
+    ) -> cg::Point {
+        self._convert_point_to_coordinate_space(point, AnyCoordinateSpace::new(space))
+    }
+
+    #[objc::msg_send(convertPoint:fromCoordinateSpace:)]
+    fn _convert_point_from_coordinate_space(
+        &self,
+        point: cg::Point,
+        to: &AnyCoordinateSpace,
+    ) -> cg::Point;
+
+    #[inline]
+    fn convert_point_from_coordinate_space(
+        &self,
+        point: cg::Point,
+        space: &impl CoordinateSpace,
+    ) -> cg::Point {
+        self._convert_point_from_coordinate_space(point, AnyCoordinateSpace::new(space))
+    }
+
+    #[objc::msg_send(convertRect:toCoordinateSpace:)]
+    fn _convert_rect_to_coordinate_space(
+        &self,
+        rect: cg::Rect,
+        space: &AnyCoordinateSpace,
+    ) -> cg::Rect;
+
+    fn convert_rect_to_coordinate_space(
+        &self,
+        rect: cg::Rect,
+        space: &impl CoordinateSpace,
+    ) -> cg::Rect {
+        self._convert_rect_to_coordinate_space(rect, AnyCoordinateSpace::new(space))
+    }
+
+    #[objc::msg_send(convertRect:fromCoordinateSpace:)]
+    fn _convert_rect_from_coordinate_space(
+        &self,
+        rect: cg::Rect,
+        to: &AnyCoordinateSpace,
+    ) -> cg::Rect;
+
+    fn convert_rect_from_coordinate_space(
+        &self,
+        rect: cg::Rect,
+        space: &impl CoordinateSpace,
+    ) -> cg::Rect {
+        self._convert_rect_from_coordinate_space(rect, AnyCoordinateSpace::new(space))
+    }
+
+    #[objc::msg_send(bounds)]
+    fn bounds(&self) -> cg::Rect;
+}
+
+define_obj_type!(
+    pub AnyCoordinateSpace(ns::Id)
+);
+
+impl CoordinateSpace for AnyCoordinateSpace {}
+
+impl AnyCoordinateSpace {
+    #[inline]
+    pub const fn new(other: &impl CoordinateSpace) -> &Self {
+        unsafe { std::mem::transmute(other) }
+    }
 }
 
 #[link(name = "ui", kind = "static")]

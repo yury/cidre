@@ -18,6 +18,8 @@ mod responder;
 pub use responder::Responder;
 
 mod view;
+pub use view::AnyCoordinateSpace;
+pub use view::CoordinateSpace;
 pub use view::View;
 
 mod window;
