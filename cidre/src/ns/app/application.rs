@@ -82,6 +82,10 @@ pub trait Delegate {
     fn app_protected_data_did_become_available(&mut self, n: &ns::Notification);
 }
 
+define_obj_type!(pub AnyDelegate(ns::Id));
+
+impl Delegate for AnyDelegate {}
+
 impl App {
     define_cls!(NS_APPLICATION);
 
@@ -90,6 +94,9 @@ impl App {
 
     #[objc::msg_send(setDelegate:)]
     pub fn set_delegate<D: Delegate>(&mut self, delegate: Option<&D>);
+
+    #[objc::msg_send(delegate)]
+    pub fn delegate(&self) -> Option<&AnyDelegate>;
 
     #[objc::msg_send(run)]
     pub fn run(&mut self);
@@ -105,6 +112,33 @@ impl App {
 
     #[objc::msg_send(keyWindow)]
     pub fn key_window(&self) -> Option<arc::R<ns::Window>>;
+
+    #[objc::msg_send(isActive)]
+    pub fn is_active(&self) -> bool;
+
+    #[objc::msg_send(isHidden)]
+    pub fn is_hidden(&self) -> bool;
+
+    #[objc::msg_send(isRunning)]
+    pub fn is_running(&self) -> bool;
+
+    #[objc::msg_send(setWindowsNeedUpdate:)]
+    pub fn set_windows_need_update(&mut self, needs_update: bool);
+
+    #[objc::msg_send(updateWindows)]
+    pub fn update_windows(&self);
+
+    #[objc::msg_send(mainMenu)]
+    pub fn main_menu(&self) -> Option<arc::R<ns::Menu>>;
+
+    #[objc::msg_send(setMainMenu:)]
+    pub fn set_main_menu(&mut self, val: Option<&ns::Menu>);
+
+    #[objc::msg_send(helpMenu)]
+    pub fn help_menu(&self) -> Option<arc::R<ns::Menu>>;
+
+    #[objc::msg_send(setHelpMenu:)]
+    pub fn set_help_menu(&mut self, val: Option<&ns::Menu>);
 }
 
 #[link(name = "app", kind = "static")]
