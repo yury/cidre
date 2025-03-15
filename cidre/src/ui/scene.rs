@@ -25,6 +25,18 @@ pub trait SceneDelegate: objc::Obj {
         session: &ui::SceneSession,
         options: &ui::SceneConnectionOpts,
     );
+
+    #[objc::optional]
+    #[objc::msg_send(sceneDidBecomeActive:)]
+    fn scene_did_become_active(&mut self, scene: &Scene);
+
+    #[objc::optional]
+    #[objc::msg_send(sceneWillResignActive:)]
+    fn scene_will_resign_active(&mut self, scene: &Scene);
+
+    #[objc::optional]
+    #[objc::msg_send(sceneDidEnterBackground:)]
+    fn scene_will_enter_foreground(&mut self, scene: &Scene);
 }
 
 define_obj_type!(

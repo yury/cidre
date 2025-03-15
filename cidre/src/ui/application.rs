@@ -4,7 +4,7 @@ use crate::{api, arc, define_obj_type, ns, objc, ui};
 pub trait AppDelegate {
     #[objc::optional]
     #[objc::msg_send(applicationDidFinishLaunching:)]
-    fn app_did_finish_launching(&mut self, app: &App);
+    fn app_did_finish_launching(&mut self, app: &mut App);
 
     #[objc::optional]
     #[objc::msg_send(application:configurationForConnectingSceneSession:options:)]
