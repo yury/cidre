@@ -347,9 +347,8 @@ fn main() {
         add_xc_target_args_from_features(&mut xc_target_args, &["core_audio"]);
     }
 
-    xc_build(&xc_target_args, sdk, arch, configuration, &versions);
-
     println!("cargo:rerun-if-changed=./pomace/");
+    xc_build(&xc_target_args, sdk, arch, configuration, &versions);
 }
 
 fn clang_link_search_path() -> String {
