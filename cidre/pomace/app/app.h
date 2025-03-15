@@ -26,6 +26,7 @@ Class NS_RUNNING_APPLICATION;
 Class NS_TEXT_ATTACHMENT;
 Class NS_IMAGE;
 Class NS_EVENT;
+Class NS_MENU;
 
 __attribute__((constructor))
 static void app_initializer(void)
@@ -54,7 +55,7 @@ static void app_initializer(void)
         NS_TEXT_ATTACHMENT = [NSTextAttachment class];
         NS_IMAGE = [NSImage class];
         NS_EVENT = [NSEvent class];
-        
+        NS_MENU = [NSMenu class];
     }
 }
 

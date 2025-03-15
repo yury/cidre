@@ -13,6 +13,9 @@ pub use color_space::ColorSpace;
 mod view;
 pub use view::View;
 
+mod menu;
+pub use menu::Menu;
+
 mod window;
 pub use window::CollectionBehavior as WindowCollectionBehavior;
 pub use window::StyleMask as WindowStyleMask;

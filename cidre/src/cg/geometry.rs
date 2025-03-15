@@ -14,8 +14,9 @@ pub struct Point {
 }
 
 impl Point {
-    pub fn zero() -> Self {
-        Default::default()
+    #[inline]
+    pub const fn zero() -> Self {
+        Self { x: 0.0, y: 0.0 }
     }
 
     /// ```
@@ -29,7 +30,7 @@ impl Point {
     }
 
     #[inline]
-    pub fn new(x: Float, y: Float) -> Self {
+    pub const fn new(x: Float, y: Float) -> Self {
         Self { x, y }
     }
 }
@@ -42,8 +43,12 @@ pub struct Size {
 }
 
 impl Size {
-    pub fn zero() -> Self {
-        Default::default()
+    #[inline]
+    pub const fn zero() -> Self {
+        Self {
+            width: 0.0,
+            height: 0.0,
+        }
     }
 
     /// ```
@@ -57,7 +62,7 @@ impl Size {
     }
 
     #[inline]
-    pub fn new(width: Float, height: Float) -> Self {
+    pub const fn new(width: Float, height: Float) -> Self {
         Self { width, height }
     }
 }
@@ -71,8 +76,11 @@ pub struct Rect {
 
 impl Rect {
     #[inline]
-    pub fn zero() -> Self {
-        Default::default()
+    pub const fn zero() -> Self {
+        Self {
+            origin: Point::zero(),
+            size: Size::zero(),
+        }
     }
 
     /// ```
@@ -86,7 +94,7 @@ impl Rect {
     }
 
     #[inline]
-    pub fn new(x: Float, y: Float, width: Float, height: Float) -> Self {
+    pub const fn new(x: Float, y: Float, width: Float, height: Float) -> Self {
         Self {
             origin: Point { x, y },
             size: Size { width, height },
@@ -94,7 +102,7 @@ impl Rect {
     }
 
     #[inline]
-    pub fn with_size(width: Float, height: Float) -> Self {
+    pub const fn with_size(width: Float, height: Float) -> Self {
         Self {
             origin: Point::zero(),
             size: Size { width, height },

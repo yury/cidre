@@ -26,6 +26,8 @@ impl TraitCollection {
 
     #[objc::msg_send(displayGamut)]
     pub fn display_gamut(&self) -> ui::DisplayGamut;
+
+    // pub fn scene_capture_state(&self) -> ui::SceneCa
 }
 
 unsafe extern "C" {
