@@ -1,6 +1,9 @@
 use crate::{arc, cg, define_obj_type, define_opts, ns, objc};
 
-define_opts!(pub StyleMask(usize));
+define_opts!(
+    #[doc(alias = "NSWindowStyleMask")]
+    pub StyleMask(usize)
+);
 
 impl StyleMask {
     pub const BORDERLESS: Self = Self(0);
@@ -38,7 +41,10 @@ impl StyleMask {
     pub const HUD_WINDOW: Self = Self(1 << 13);
 }
 
-define_opts!(pub CollectionBehavior(usize));
+define_opts!(
+    #[doc(alias = "NSWindowCollectionBehavior")]
+    pub CollectionBehavior(usize)
+);
 
 impl CollectionBehavior {
     pub const DEFAULT: Self = Self(0);
@@ -83,6 +89,7 @@ pub enum ToolbarStyle {
 pub struct WindowLevel(pub isize);
 
 impl WindowLevel {
+    #[inline]
     pub const fn with_cg(level: cg::WindowLevel) -> Self {
         Self(level.0 as _)
     }
@@ -113,9 +120,6 @@ impl Window {
     #[objc::msg_send(frame)]
     pub fn frame(&self) -> ns::Rect;
 
-    #[objc::msg_send(setFrame:)]
-    pub fn set_frame(&mut self, val: ns::Rect);
-
     #[objc::msg_send(setFrame:display:)]
     pub fn set_frame_display(&mut self, val: ns::Rect, display: bool);
 
@@ -133,7 +137,66 @@ impl Window {
 
     #[objc::msg_send(windowWithContentViewController:)]
     pub fn with_content_vc(vc: &ns::ViewController) -> arc::R<Self>;
+
+    #[objc::msg_send(collectionBehavior)]
+    pub fn collection_behavior(&self) -> CollectionBehavior;
+
+    #[objc::msg_send(setCollectionBehavior:)]
+    pub fn set_collection_behavior(&mut self, val: CollectionBehavior);
+
+    #[objc::msg_send(isOnActiveSpace)]
+    pub fn is_on_active_space(&self) -> bool;
+
+    #[objc::msg_send(toggleFullScreen:)]
+    pub fn toggle_full_screen(&self, sender: Option<&ns::Id>);
+
+    #[objc::msg_send(windowController)]
+    pub fn window_controller(&self) -> Option<arc::R<ns::WindowController>>;
+
+    #[objc::msg_send(setWindowController:)]
+    pub fn set_window_controller(&mut self, val: Option<&ns::WindowController>);
+
+    #[objc::msg_send(isExcludedFromWindowsMenu)]
+    pub fn is_excluded_from_windows_menu(&self) -> bool;
+
+    #[objc::msg_send(setExcludedFromWindowsMenu:)]
+    pub fn set_excluded_from_windows_menu(&mut self, val: bool);
+
+    #[objc::msg_send(delegate)]
+    pub fn delegate(&self) -> Option<arc::R<AnyWindowDelegate>>;
+
+    #[objc::msg_send(setDelegate:)]
+    pub fn set_delegate<D: WindowDelegate>(&mut self, val: Option<&D>);
+
+    #[objc::msg_send(windowNumber)]
+    pub fn window_number(&self) -> ns::Integer;
+
+    #[objc::msg_send(styleMask)]
+    pub fn style_mask(&self) -> ns::WindowStyleMask;
+
+    #[objc::msg_send(setStyleMask:)]
+    pub fn set_style_mask(&mut self, val: ns::WindowStyleMask);
+
+    #[objc::msg_send(center)]
+    pub fn center(&mut self);
 }
+
+#[objc::protocol(NSWindowDelegate)]
+pub trait WindowDelegate: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(windowShouldClose:)]
+    fn window_should_close(&mut self, sender: &ns::Window) -> bool;
+
+    #[objc::optional]
+    #[objc::msg_send(windowWillResize:toSize:)]
+    fn window_will_resize(&mut self, sender: &ns::Window, to_size: cg::Size) -> cg::Size;
+}
+
+define_obj_type!(
+    pub AnyWindowDelegate(ns::Id)
+);
+
+impl WindowDelegate for AnyWindowDelegate {}
 
 #[link(name = "app", kind = "static")]
 unsafe extern "C" {
