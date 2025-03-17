@@ -68,6 +68,9 @@ pub use scene_session::SceneSession;
 mod scene_options;
 pub use scene_options::SceneConnectionOpts;
 
+mod scene_windowing_behaviors;
+pub use scene_windowing_behaviors::SceneWindowingBehaviors;
+
 mod screen;
 pub use screen::Screen;
 
@@ -78,6 +81,7 @@ mod trait_collection;
 pub use trait_collection::TraitCollection;
 
 mod window_scene;
+pub use window_scene::SceneSizeRestrictions;
 pub use window_scene::WindowScene;
 pub use window_scene::WindowSceneDelegate;
 pub use window_scene::WindowSceneDelegateImpl;
