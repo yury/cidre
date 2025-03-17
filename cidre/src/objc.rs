@@ -221,6 +221,15 @@ pub trait Obj: Sized + arc::Retain {
         }
     }
 
+    #[inline]
+    fn try_cast_mut<T: Obj>(&mut self, cls: &crate::objc::Class<T>) -> Option<&mut T> {
+        if self.is_kind_of_class(cls) {
+            Some(unsafe { std::mem::transmute(self) })
+        } else {
+            None
+        }
+    }
+
     #[objc::msg_send(isMemberOfClass:)]
     fn is_member_of_class<T: Obj>(&self, cls: &crate::objc::Class<T>) -> bool;
 
