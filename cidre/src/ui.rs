@@ -59,6 +59,7 @@ pub use scene::AnySceneDelegate;
 pub use scene::Scene;
 pub use scene::SceneDelegate;
 pub use scene::SceneDelegateImpl;
+pub use scene::notifications as scene_notifications;
 
 mod scene_session;
 pub use scene_session::SceneCfg;

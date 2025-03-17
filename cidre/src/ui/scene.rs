@@ -49,3 +49,46 @@ impl SceneDelegate for AnySceneDelegate {}
 unsafe extern "C" {
     static UI_SCENE: &'static objc::Class<Scene>;
 }
+
+pub mod notifications {
+    use crate::ns;
+
+    #[doc(alias = "UISceneWillConnectNotification")]
+    pub fn will_connect() -> &'static ns::NotificationName {
+        unsafe { UISceneWillConnectNotification }
+    }
+
+    #[doc(alias = "UISceneDidDisconnectNotification")]
+    pub fn did_disconnect() -> &'static ns::NotificationName {
+        unsafe { UISceneDidDisconnectNotification }
+    }
+
+    #[doc(alias = "UISceneDidActivateNotification")]
+    pub fn did_activate() -> &'static ns::NotificationName {
+        unsafe { UISceneDidActivateNotification }
+    }
+
+    #[doc(alias = "UISceneWillDeactivateNotification")]
+    pub fn will_deactivate() -> &'static ns::NotificationName {
+        unsafe { UISceneWillDeactivateNotification }
+    }
+
+    #[doc(alias = "UISceneWillEnterForegroundNotification")]
+    pub fn will_enter_foreground() -> &'static ns::NotificationName {
+        unsafe { UISceneWillEnterForegroundNotification }
+    }
+
+    #[doc(alias = "UISceneDidEnterBackgroundNotification")]
+    pub fn did_enter_background() -> &'static ns::NotificationName {
+        unsafe { UISceneDidEnterBackgroundNotification }
+    }
+
+    unsafe extern "C" {
+        static UISceneWillConnectNotification: &'static ns::NotificationName;
+        static UISceneDidDisconnectNotification: &'static ns::NotificationName;
+        static UISceneDidActivateNotification: &'static ns::NotificationName;
+        static UISceneWillDeactivateNotification: &'static ns::NotificationName;
+        static UISceneWillEnterForegroundNotification: &'static ns::NotificationName;
+        static UISceneDidEnterBackgroundNotification: &'static ns::NotificationName;
+    }
+}
