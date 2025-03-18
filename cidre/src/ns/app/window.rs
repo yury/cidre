@@ -117,11 +117,38 @@ impl Window {
     #[objc::msg_send(setTitle:)]
     pub fn set_title(&mut self, val: &ns::String);
 
+    #[objc::msg_send(subtitle)]
+    pub fn subtitle(&self) -> arc::R<ns::String>;
+
+    #[objc::msg_send(setSubtitle:)]
+    pub fn set_subtitle(&mut self, val: &ns::String);
+
+    #[objc::msg_send(titleVisibility)]
+    pub fn title_visibility(&self) -> ns::WindowTitleVisibility;
+
+    #[objc::msg_send(setTitleVisibility:)]
+    pub fn set_title_visibility(&mut self, val: ns::WindowTitleVisibility);
+
+    #[objc::msg_send(titlebarAppearsTransparent)]
+    pub fn titlebar_appears_transparent(&self) -> bool;
+
+    #[objc::msg_send(setTitlebarAppearsTransparent:)]
+    pub fn set_titlebar_appears_transparent(&mut self, val: bool);
+
+    #[objc::msg_send(toolbarStyle)]
+    pub fn toolbar_style(&self) -> ns::WindowToolbarStyle;
+
+    #[objc::msg_send(setToolbarStyle:)]
+    pub fn set_toolbar_style(&mut self, val: ns::WindowToolbarStyle);
+
     #[objc::msg_send(frame)]
     pub fn frame(&self) -> ns::Rect;
 
     #[objc::msg_send(setFrame:display:)]
     pub fn set_frame_display(&mut self, val: ns::Rect, display: bool);
+
+    #[objc::msg_send(setFrame:display:animate:)]
+    pub fn set_frame_display_animate(&mut self, val: ns::Rect, display: bool, animate: bool);
 
     #[objc::msg_send(display)]
     pub fn display(&mut self);
@@ -176,6 +203,45 @@ impl Window {
 
     #[objc::msg_send(setStyleMask:)]
     pub fn set_style_mask(&mut self, val: ns::WindowStyleMask);
+
+    #[objc::msg_send(hasShadow)]
+    pub fn has_shadow(&self) -> bool;
+
+    #[objc::msg_send(setHasShadow:)]
+    pub fn set_has_shadow(&mut self, val: bool);
+
+    #[objc::msg_send(opaque)]
+    pub fn opaque(&self) -> bool;
+
+    #[objc::msg_send(setOpaque:)]
+    pub fn set_opaque(&mut self, val: bool);
+
+    #[objc::msg_send(level)]
+    pub fn level(&self) -> ns::WindowLevel;
+
+    #[objc::msg_send(setLevel:)]
+    pub fn set_level(&mut self, val: ns::WindowLevel);
+
+    #[objc::msg_send(close)]
+    pub fn close(&self);
+
+    #[objc::msg_send(hidesOnDeactivate)]
+    pub fn hides_on_decative(&self) -> bool;
+
+    #[objc::msg_send(setHidesOnDeactivate:)]
+    pub fn set_hides_on_decative(&mut self, val: bool);
+
+    #[objc::msg_send(isMovable)]
+    pub fn is_movable(&self) -> bool;
+
+    #[objc::msg_send(setMovable:)]
+    pub fn set_movable(&mut self, val: bool);
+
+    #[objc::msg_send(isMovableByWindowBackground)]
+    pub fn is_movable_by_window_background(&self) -> bool;
+
+    #[objc::msg_send(setMovableByWindowBackground:)]
+    pub fn set_movable_by_window_background(&mut self, val: bool);
 
     #[objc::msg_send(center)]
     pub fn center(&mut self);

@@ -20,6 +20,7 @@ mod view;
 pub use view::AnyCoordinateSpace;
 pub use view::CoordinateSpace;
 pub use view::View;
+pub use view::ViewAutoresizing;
 
 mod window;
 pub use window::Window;

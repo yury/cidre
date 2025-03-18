@@ -1,4 +1,4 @@
-use crate::{arc, cg, define_obj_type, objc, ui};
+use crate::{arc, cg, define_obj_type, ns, objc, ui};
 
 define_obj_type!(
     #[doc(alias = "UIViewController")]
@@ -15,6 +15,12 @@ impl ViewController {
 
     #[objc::msg_send(setPreferredContentSize:)]
     pub fn set_preferred_content_size(&mut self, val: cg::Size);
+
+    #[objc::msg_send(title)]
+    pub fn title(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(setTitle:)]
+    pub fn set_title(&mut self, val: Option<&ns::String>);
 }
 
 #[link(name = "ui", kind = "static")]
