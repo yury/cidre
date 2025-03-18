@@ -55,6 +55,9 @@ pub use interface::SizeClass;
 pub use interface::Style;
 pub use interface::TraitEnvLayoutDirection;
 
+mod layout_guide;
+pub use layout_guide::LayoutGuide;
+
 mod scene;
 pub use scene::AnySceneDelegate;
 pub use scene::Scene;

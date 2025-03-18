@@ -22,7 +22,7 @@ Class UI_VIEW_CONTROLLER;
 Class UI_IMAGE;
 Class UI_TRAIT_COLLECTION;
 Class NS_TEXT_ATTACHMENT;
-
+Class UI_LAYOUT_GUIDE;
 
 
 
@@ -47,6 +47,8 @@ static void ui_initializer(void)
         UI_TRAIT_COLLECTION = [UITraitCollection class];
         
         NS_TEXT_ATTACHMENT = [NSTextAttachment class];
+        
+        UI_LAYOUT_GUIDE = [UILayoutGuide class];
     }
 }
 
