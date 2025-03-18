@@ -15,7 +15,7 @@ use cidre::{
         self,
         stream::{Output, OutputImpl},
     },
-    vt::{self, compression::profile_level, compression_properties::keys, EncodeInfoFlags},
+    vt::{self, EncodeInfoFlags, compression::profile_level, compression_properties::keys},
 };
 
 #[repr(C)]
@@ -280,7 +280,7 @@ async fn main() {
 
     let queue = dispatch::Queue::serial_with_ar_pool();
     let content = sc::ShareableContent::current().await.expect("content");
-    let ref display = content.displays()[0];
+    let ref display = content.displays().get(0).unwrap();
     let mut cfg = sc::StreamCfg::new();
     cfg.set_minimum_frame_interval(cm::Time::new(1, FPS));
     cfg.set_width(display.width() as usize * 2);
