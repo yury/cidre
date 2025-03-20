@@ -84,3 +84,17 @@ impl SceneSizeRestrictions {
     #[objc::msg_send(setAllowsFullScreen:)]
     pub fn set_allows_full_screen(&mut self, val: bool);
 }
+
+impl ui::SceneSessionRole {
+    pub fn app() -> &'static Self {
+        unsafe { UIWindowSceneSessionRoleApplication }
+    }
+
+    pub fn external_display_non_interactive() -> &'static Self {
+        unsafe { UIWindowSceneSessionRoleExternalDisplayNonInteractive }
+    }
+}
+unsafe extern "C" {
+    static UIWindowSceneSessionRoleApplication: &'static ui::SceneSessionRole;
+    static UIWindowSceneSessionRoleExternalDisplayNonInteractive: &'static ui::SceneSessionRole;
+}
