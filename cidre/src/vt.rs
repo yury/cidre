@@ -34,5 +34,8 @@ pub mod video_encoder_list;
 pub mod utilities;
 pub use utilities::cg_image_from_cv_pixel_buf;
 
+#[cfg(target_os = "macos")]
+pub mod professional_video_workflow;
+
 #[link(name = "VideoToolbox", kind = "framework")]
 unsafe extern "C" {}
