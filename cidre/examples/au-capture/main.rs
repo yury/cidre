@@ -5,7 +5,7 @@ mod macos {
             self, au,
             audio::component::{InitializedState, UninitializedState},
         },
-        core_audio, os, vdsp,
+        os,
     };
 
     #[derive(Default)]
@@ -22,8 +22,7 @@ mod macos {
             output.set_should_allocate_output_buf(false)?;
             output.set_input_cb(Ctx::input_cb, self as *mut Self)?;
             let output = output.allocate_resources().unwrap();
-            let frames_per_slice = output.unit().max_frames_per_slice()? as usize;
-            self.data = vec![0f32; frames_per_slice * 2];
+            self.data = vec![0f32; output.unit().max_frames_per_slice()? as usize];
             self.output = Some(output);
             let output = unsafe { self.output.as_mut().unwrap_unchecked() };
             output.start()
@@ -50,7 +49,7 @@ mod macos {
 
             let mut buf_list = at::AudioBufList::<1>::new();
             buf_list.buffers[0] = at::AudioBuf {
-                number_channels: 2,
+                number_channels: 1,
                 data_bytes_size: std::mem::size_of_val(&ctx.data[..]) as u32,
                 data: ctx.data.as_mut_ptr() as *mut _,
             };
@@ -59,23 +58,17 @@ mod macos {
                 return e.status();
             }
 
-            let min_left = vdsp::min_stride_f32(&ctx.data[..in_number_frames as usize * 2], 2);
-            let min_right = vdsp::min_stride_f32(&ctx.data[1..in_number_frames as usize * 2], 2);
-            let max_left = vdsp::max_stride_f32(&ctx.data[..in_number_frames as usize * 2], 2);
-            let max_right = vdsp::max_stride_f32(&ctx.data[1..in_number_frames as usize * 2], 2);
-            println!("{min_left} {min_right} {max_left} {max_right}");
             os::Status::NO_ERR
         }
     }
 
     #[tokio::main]
     pub async fn main() {
-        let _input = core_audio::System::default_input_device().unwrap();
         let output = au::Output::new_apple_vp().unwrap();
         let input_device = output.input_device().unwrap();
         let asbd = output
-            .input_stream_format(0)
-            .expect("Failed to get output stream format");
+            .input_stream_format(1)
+            .expect("Failed to get input stream format");
 
         println!("format {:#?}", asbd);
 
@@ -88,12 +81,7 @@ mod macos {
 
         let mut ctx = Box::new(Ctx::default());
 
-        let _s = "_⎽⎼—⎻⎺‾";
-        let s = "▁▂▃▄▅▆▇█";
-
         ctx.start(output).unwrap();
-
-        println!("{s}");
 
         tokio::signal::ctrl_c().await.unwrap();
     }
