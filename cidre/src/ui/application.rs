@@ -1,6 +1,6 @@
 use crate::{api, arc, define_obj_type, ns, objc, ui};
 
-#[objc::protocol(UIApplication)]
+#[objc::protocol(UIApplicationDelegate)]
 pub trait AppDelegate {
     #[objc::optional]
     #[objc::msg_send(applicationDidFinishLaunching:)]
@@ -25,7 +25,25 @@ pub trait AppDelegate {
 
     #[objc::optional]
     #[objc::msg_send(applicationDidBecomeActive:)]
-    fn app_did_become_active(&mut self, app: &App);
+    fn app_did_become_active(&mut self, app: &mut App);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationWillResignActive:)]
+    fn app_will_resign_active(&mut self, app: &mut App);
+
+    // ...open url
+
+    #[objc::optional]
+    #[objc::msg_send(applicationDidReceiveMemoryWarning:)]
+    fn app_did_receive_mem_warning(&mut self, app: &mut App);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationWillTerminate:)]
+    fn app_will_terminate(&mut self, app: &mut App);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationSignificantTimeChange:)]
+    fn app_significant_time_change(&mut self, app: &mut App);
 }
 
 define_obj_type!(
