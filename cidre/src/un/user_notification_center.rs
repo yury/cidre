@@ -5,6 +5,8 @@ define_opts!(
 );
 
 impl AuthorizationOpts {
+    pub const NONE: Self = Self(0);
+
     /// The ability to update the app’s badge.
     pub const BADGE: Self = Self(1 << 0);
 
@@ -30,10 +32,10 @@ impl AuthorizationOpts {
 define_obj_type!(
     /// Should be used only from app with main bundle
     #[doc(alias = "UNUserNotificationCenter")]
-    pub UserNotificationCenter(ns::Id)
+    pub Center(ns::Id)
 );
 
-impl UserNotificationCenter {
+impl Center {
     define_cls!(UN_USER_NOTIFICATION_CENTER);
 
     #[objc::msg_send(supportsContentExtensions)]
@@ -45,5 +47,5 @@ impl UserNotificationCenter {
 
 #[link(name = "un", kind = "static")]
 unsafe extern "C" {
-    static UN_USER_NOTIFICATION_CENTER: &'static objc::Class<UserNotificationCenter>;
+    static UN_USER_NOTIFICATION_CENTER: &'static objc::Class<Center>;
 }
