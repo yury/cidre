@@ -4,11 +4,22 @@ pub use error::Code as ErrorCode;
 mod notification;
 pub use notification::Notification;
 
+#[cfg(not(target_os = "tvos"))]
+mod notification_attachment;
+#[cfg(not(target_os = "tvos"))]
+pub use notification_attachment::NotificationAttach;
+#[cfg(not(target_os = "tvos"))]
+pub use notification_attachment::NotificationAttachOpts;
+
 mod notification_action;
+#[cfg(not(target_os = "tvos"))]
 pub use notification_action::NotificationAction;
 pub use notification_action::NotificationActionOpts;
 #[cfg(not(target_os = "tvos"))]
 pub use notification_action::TextInputNotificationAction;
+
+mod notification_action_icon;
+pub use notification_action_icon::NotificationActionIcon;
 
 mod notification_sound;
 #[cfg(not(target_os = "tvos"))]

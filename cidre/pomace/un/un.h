@@ -15,6 +15,10 @@ Class UN_MUTABLE_NOTIFICATION_CONTENT;
 Class UN_NOTIFICATION_REQUEST;
 Class UN_NOTIFICATION_CATEGORY;
 Class UN_USER_NOTIFICATION_CENTER;
+Class UN_NOTIFICATION_ACTION;
+Class UN_TEXT_INPUT_NOTIFICATION_ACTION;
+Class UN_NOTIFICATION_ACTION_ICON;
+Class UN_NOTIFICATION_ATTACHMENT;
 
 __attribute__((constructor))
 static void un_initializer(void)
@@ -30,8 +34,12 @@ static void un_initializer(void)
 #else
         UN_NOTIFICATION_SOUND = [UNNotificationSound class];
         UN_NOTIFICATION_CATEGORY = [UNNotificationCategory class];
+        UN_NOTIFICATION_ACTION = [UNNotificationAction class];
+        UN_TEXT_INPUT_NOTIFICATION_ACTION = [UNTextInputNotificationAction class];
+        UN_NOTIFICATION_ATTACHMENT = [UNNotificationAttachment class];
 #endif
         UN_USER_NOTIFICATION_CENTER = [UNUserNotificationCenter class];
+        UN_NOTIFICATION_ACTION_ICON = [UNNotificationActionIcon class];
     }
 }
 
