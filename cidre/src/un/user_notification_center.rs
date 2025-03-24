@@ -1,4 +1,4 @@
-use crate::{define_cls, define_obj_type, define_opts, ns, objc};
+use crate::{blocks, define_cls, define_obj_type, define_opts, ns, objc, un};
 
 define_opts!(
     pub AuthorizationOpts(usize)
@@ -29,6 +29,19 @@ impl AuthorizationOpts {
     pub const PROVISIONAL: Self = Self(1 << 6);
 }
 
+define_opts!(
+    #[doc(alias = "UNNotificationPresentationOptions")]
+    pub NotificationPresentationOpts(usize)
+);
+
+impl NotificationPresentationOpts {
+    pub const NONE: Self = Self(0);
+    pub const BADGE: Self = Self(1 << 0);
+    pub const SOUND: Self = Self(1 << 1);
+    pub const LIST: Self = Self(1 << 3);
+    pub const BANNER: Self = Self(1 << 4);
+}
+
 define_obj_type!(
     /// Should be used only from app with main bundle
     #[doc(alias = "UNUserNotificationCenter")]
@@ -43,6 +56,35 @@ impl Center {
 
     #[objc::msg_send(currentNotificationCenter)]
     pub fn current() -> &'static mut Self;
+}
+
+#[objc::protocol(UNUserNotificationCenterDelegate)]
+pub trait CenterDelegate: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(userNotificationCenter:willPresentNotification:withCompletionHandler:)]
+    fn center_will_present_notification_ch_block(
+        &mut self,
+        center: &mut un::Center,
+        notification: &un::Notification,
+        ch: &mut blocks::EscBlock<fn(options: un::NotificationPresentationOpts)>,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)]
+    fn center_did_receive_notification_response(
+        &mut self,
+        center: &mut un::Center,
+        response: &un::NotificationResponse,
+        ch: &mut blocks::CompletionBlock,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(userNotificationCenter:openSettingsForNotification:)]
+    fn center_open_settings_for_notification(
+        &mut self,
+        center: &mut un::Center,
+        notification: &un::Notification,
+    );
 }
 
 #[link(name = "un", kind = "static")]

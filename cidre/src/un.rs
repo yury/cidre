@@ -35,6 +35,10 @@ pub use notification_content::NotificationInterruptionLevel;
 mod notification_request;
 pub use notification_request::NotificationRequest;
 
+mod notification_response;
+pub use notification_response::NotificationResponse;
+pub use notification_response::TextInputNotificationResponse;
+
 mod notification_settings;
 pub use notification_settings::AlertStyle;
 pub use notification_settings::AuthorizationStatus;
@@ -45,6 +49,9 @@ pub use notification_settings::ShowPreviewsSetting;
 mod user_notification_center;
 pub use user_notification_center::AuthorizationOpts;
 pub use user_notification_center::Center;
+pub use user_notification_center::CenterDelegate;
+pub use user_notification_center::CenterDelegateImpl;
+pub use user_notification_center::NotificationPresentationOpts;
 
 use crate::{arc, ns, objc};
 
