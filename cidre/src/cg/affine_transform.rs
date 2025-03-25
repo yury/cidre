@@ -123,6 +123,7 @@ impl PartialEq for AffineTransform {
 }
 
 impl cg::Point {
+    #[doc(alias = "CGPointApplyAffineTransform")]
     #[inline]
     pub fn apply_affine_transform(&self, t: &AffineTransform) -> Self {
         cg::Point {
@@ -133,6 +134,7 @@ impl cg::Point {
 }
 
 impl cg::Size {
+    #[doc(alias = "CGSizeApplyAffineTransform")]
     #[inline]
     pub fn apply_affine_transform(&self, t: &AffineTransform) -> Self {
         cg::Size {
@@ -143,6 +145,7 @@ impl cg::Size {
 }
 
 impl cg::Rect {
+    #[doc(alias = "CGRectApplyAffineTransform")]
     #[inline]
     pub fn apply_affine_transform(&self, t: &AffineTransform) -> Self {
         unsafe { CGRectApplyAffineTransform(*self, *t) }

@@ -145,6 +145,13 @@ impl Layer {
     #[objc::msg_send(setTransform:)]
     pub fn set_transform(&mut self, val: ca::Transform3d);
 
+    /// Convenience methods for accessing the `transform' property as an affine transform.
+    #[objc::msg_send(affineTransform)]
+    pub fn affine_transform(&self) -> cg::AffineTransform;
+
+    #[objc::msg_send(setAffineTransform:)]
+    pub fn set_affine_transform(&self, val: cg::AffineTransform);
+
     #[objc::msg_send(frame)]
     pub fn frame(&self) -> cg::Rect;
 
