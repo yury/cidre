@@ -51,6 +51,12 @@ pub use screen::Screen;
 mod view_controller;
 pub use view_controller::ViewController;
 
+mod split_view;
+pub use split_view::SplitView;
+
+mod split_view_controller;
+pub use split_view_controller::SplitViewController;
+
 mod image;
 pub use image::Image;
 
