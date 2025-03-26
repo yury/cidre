@@ -28,6 +28,25 @@ pub use window::Window;
 mod view_controller;
 pub use view_controller::ViewController;
 
+mod navigation_controller;
+pub use navigation_controller::NavController;
+
+mod tab;
+pub use tab::Tab;
+
+mod tab_bar;
+pub use tab_bar::TabBar;
+
+mod tab_bar_controller;
+pub use tab_bar_controller::AnyTabBarControllerDelegate;
+pub use tab_bar_controller::TabBarController;
+pub use tab_bar_controller::TabBarControllerDelegate;
+pub use tab_bar_controller::TabBarControllerDelegateImpl;
+pub use tab_bar_controller::TabBarControllerMode;
+
+mod tab_bar_controller_sidebar;
+pub use tab_bar_controller_sidebar::TabBarControllerSidebar;
+
 mod color;
 pub use color::Color;
 

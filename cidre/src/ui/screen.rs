@@ -1,4 +1,7 @@
-use crate::{arc, cf, cg, define_obj_type, ns, objc, ui};
+use crate::{arc, cg, define_obj_type, ns, objc, ui};
+
+#[cfg(target_os = "ios")]
+use crate::cf;
 
 define_obj_type!(
     #[doc(alias = "UIScreen")]

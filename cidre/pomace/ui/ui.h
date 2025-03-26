@@ -19,6 +19,7 @@ Class UI_SCREEN;
 Class UI_COLOR;
 Class UI_RESPONDER;
 Class UI_VIEW_CONTROLLER;
+Class UI_TAB_BAR_CONTROLLER;
 Class UI_IMAGE;
 Class UI_TRAIT_COLLECTION;
 Class NS_TEXT_ATTACHMENT;
@@ -41,6 +42,7 @@ static void ui_initializer(void)
         UI_COLOR = [UIColor class];
         UI_RESPONDER = NSClassFromString(@"UIResponder");
         UI_VIEW_CONTROLLER = NSClassFromString(@"UIViewController");
+        UI_TAB_BAR_CONTROLLER = NSClassFromString(@"UITabBarController");
         UI_APPLICATION = NSClassFromString(@"UIApplication");
         UI_WINDOW = NSClassFromString(@"UIWindow");
         UI_IMAGE = [UIImage class];
