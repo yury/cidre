@@ -52,7 +52,10 @@ mod view_controller;
 pub use view_controller::ViewController;
 
 mod split_view;
+pub use split_view::AnySplitViewDelegate;
 pub use split_view::SplitView;
+pub use split_view::SplitViewDelegate;
+pub use split_view::SplitViewDelegateImpl;
 
 mod split_view_controller;
 pub use split_view_controller::SplitViewController;
@@ -85,3 +88,6 @@ pub use touch::Touch;
 pub use touch::TouchPhase;
 pub use touch::TouchType;
 pub use touch::TouchTypeMask;
+
+mod layout_constraint;
+pub use layout_constraint::LayoutPriority;
