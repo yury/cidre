@@ -27,6 +27,7 @@ Class NS_TEXT_ATTACHMENT;
 Class NS_IMAGE;
 Class NS_EVENT;
 Class NS_MENU;
+Class NS_SPLIT_VIEW_ITEM;
 
 __attribute__((constructor))
 static void app_initializer(void)
@@ -56,6 +57,7 @@ static void app_initializer(void)
         NS_IMAGE = [NSImage class];
         NS_EVENT = [NSEvent class];
         NS_MENU = [NSMenu class];
+        NS_SPLIT_VIEW_ITEM = [NSSplitViewItem class];
     }
 }
 

@@ -104,6 +104,16 @@ impl WindowLevel {
     pub const SCREEN_SAVER: Self = Self::with_cg(cg::WindowLevel::SCREEN_SAVER);
 }
 
+#[doc(alias = "NSTitlebarSeparatorStyle")]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[repr(isize)]
+pub enum TitlebarSeparatorStyle {
+    Automatic,
+    None,
+    Line,
+    Shadow,
+}
+
 define_obj_type!(
    #[doc(alias = "NSWindow")]
    pub Window(ns::Responder),

@@ -21,6 +21,7 @@ mod window;
 pub use window::CollectionBehavior as WindowCollectionBehavior;
 pub use window::StyleMask as WindowStyleMask;
 pub use window::TitleVisibility as WindowTitleVisibility;
+pub use window::TitlebarSeparatorStyle;
 pub use window::ToolbarStyle as WindowToolbarStyle;
 pub use window::Window;
 pub use window::WindowDelegate;
@@ -50,6 +51,11 @@ pub use screen::Screen;
 
 mod view_controller;
 pub use view_controller::ViewController;
+
+mod split_view_item;
+pub use split_view_item::SplitViewItem;
+pub use split_view_item::SplitViewItemBehavior;
+pub use split_view_item::SplitViewItemCollapseBehavior;
 
 mod split_view;
 pub use split_view::AnySplitViewDelegate;
