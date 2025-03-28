@@ -52,6 +52,27 @@ impl Color {
     pub fn blue<'ar>(&self) -> Result<cg::Float, &'ar ns::Exception> {
         ns::try_catch(|| unsafe { self.blue_throws() })
     }
+
+    #[objc::msg_send(hueComponent)]
+    pub unsafe fn hue_throws(&self) -> cg::Float;
+
+    #[objc::msg_send(saturationComponent)]
+    pub unsafe fn saturation_throws(&self) -> cg::Float;
+
+    #[objc::msg_send(brightnessComponent)]
+    pub unsafe fn brightness_throws(&self) -> cg::Float;
+
+    pub fn hue<'ar>(&self) -> Result<cg::Float, &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.hue_throws() })
+    }
+
+    pub fn saturation<'ar>(&self) -> Result<cg::Float, &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.saturation_throws() })
+    }
+
+    pub fn brightness<'ar>(&self) -> Result<cg::Float, &'ar ns::Exception> {
+        ns::try_catch(|| unsafe { self.brightness_throws() })
+    }
 }
 
 unsafe impl Send for Color {}
@@ -75,5 +96,24 @@ mod tests {
         black.red().expect_err("should be err");
 
         assert!(ns::Color::named(ns::str!(c"foo")).is_none());
+    }
+
+    #[test]
+    fn hsb_components() {
+        let color = ns::Color::with_hsba(0.5, 0.75, 0.25, 1.0);
+
+        // Test hue component
+        assert!((color.hue().unwrap() - 0.5f64).abs() < f64::EPSILON);
+
+        // Test saturation component
+        assert!((color.saturation().unwrap() - 0.75).abs() < f64::EPSILON);
+
+        // Test brightness component
+        assert!((color.brightness().unwrap() - 0.25).abs() < f64::EPSILON);
+
+        // Test error case (color doesn't support HSB)
+        let gray = ns::Color::with_white_alpha(0.5, 1.0);
+        gray.hue()
+            .expect_err("gray color shouldn't have hue component");
     }
 }
