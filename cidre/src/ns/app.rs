@@ -12,6 +12,7 @@ mod color_space;
 pub use color_space::ColorSpace;
 
 mod view;
+pub use view::AutoresizingMaskOpts;
 pub use view::View;
 
 mod menu;
