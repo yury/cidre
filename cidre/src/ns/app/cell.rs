@@ -1,5 +1,15 @@
 use crate::{arc, define_obj_type, ns, objc};
 
+#[doc(alias = "NSControlSize")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(usize)]
+pub enum ControlSize {
+    Regular = 0,
+    Small = 1,
+    Mini = 2,
+    Large = 3,
+}
+
 #[doc(alias = "NSCellType")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]

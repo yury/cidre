@@ -10,9 +10,13 @@ pub use application::notifications as app_notifications;
 mod cell;
 pub use cell::Cell;
 pub use cell::CellType;
+pub use cell::ControlSize;
 
 mod color_space;
 pub use color_space::ColorSpace;
+
+mod control;
+pub use control::Control;
 
 mod view;
 pub use view::AutoresizingMaskOpts;
