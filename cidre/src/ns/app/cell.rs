@@ -54,6 +54,58 @@ impl Cell {
     pub fn set_tag(&mut self, val: isize);
 }
 
+#[doc(alias = "NSCellImagePosition")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(usize)]
+pub enum CellImagePos {
+    #[doc(alias = "NSNoImage")]
+    No = 0,
+
+    #[doc(alias = "NSImageOnly")]
+    Only = 1,
+
+    #[doc(alias = "NSImageLeft")]
+    Left = 2,
+
+    #[doc(alias = "NSImageRight")]
+    Right = 3,
+
+    #[doc(alias = "NSImageBelow")]
+    Below = 4,
+
+    #[doc(alias = "NSImageAbove")]
+    Above = 5,
+
+    #[doc(alias = "NSImageOverlaps")]
+    Overlaps = 6,
+
+    #[doc(alias = "NSImageLeading")]
+    Leading = 7,
+
+    Trailing = 8,
+}
+
+#[doc = "NSImageScaling"]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(usize)]
+pub enum ImageScaling {
+    ProportionallyDown = 0,
+    AxesIndependently = 1,
+    None = 2,
+    ProportionallyUpOrDown = 3,
+}
+
+#[doc(alias = "NSControlStateValue")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(transparent)]
+pub struct ControlStateValue(pub isize);
+
+impl ControlStateValue {
+    pub const MIXED: Self = Self(-1);
+    pub const OFF: Self = Self(0);
+    pub const ON: Self = Self(1);
+}
+
 #[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_CELL: &'static objc::Class<Cell>;

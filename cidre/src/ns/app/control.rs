@@ -1,6 +1,7 @@
 use crate::{arc, define_obj_type, ns, objc};
 
 define_obj_type!(
+    #[doc(alias = "NSControl")]
     pub Control(ns::View)
 );
 
@@ -148,4 +149,10 @@ impl Control {
 
     // #[objc::msg_send(setFont:)]
     // pub fn set_font(&mut self, val: Option<&ns::Font>);
+
+    // #[objc::msg_send(lineBreakMode)]
+    // pub fn line_break_mode(&self) -> ns::LineBreakMode;
+
+    // #[objc::msg_send(setLineBreakMode:)]
+    // pub fn set_line_break_mode(&mut self, val: ns::LineBreakMode);
 }

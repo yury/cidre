@@ -9,14 +9,24 @@ pub use application::notifications as app_notifications;
 
 mod cell;
 pub use cell::Cell;
+pub use cell::CellImagePos;
 pub use cell::CellType;
 pub use cell::ControlSize;
+pub use cell::ControlStateValue;
+pub use cell::ImageScaling;
 
 mod color_space;
 pub use color_space::ColorSpace;
 
 mod control;
 pub use control::Control;
+
+mod button;
+pub use button::Button;
+
+mod button_cell;
+pub use button_cell::BezelStyle;
+pub use button_cell::ButtonType;
 
 mod view;
 pub use view::AutoresizingMaskOpts;
@@ -41,6 +51,9 @@ pub use window_controller::WindowController;
 
 mod titlebar_accessory_view_controller;
 pub use titlebar_accessory_view_controller::TitlebarAccessoryViewController;
+
+mod sound;
+pub use sound::Sound;
 
 pub mod workspace;
 pub use workspace::Authorization as WorkspaceAuthorization;
@@ -79,6 +92,7 @@ pub use split_view_controller::SplitViewController;
 
 mod image;
 pub use image::Image;
+pub use image::ImageSymbolCfg;
 
 pub mod color;
 pub use color::Color;

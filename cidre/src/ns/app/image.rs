@@ -51,6 +51,11 @@ impl Image {
     pub fn set_size(&mut self, val: ns::Size);
 }
 
+define_obj_type!(
+    #[doc(alias = "NSImageSymbolConfiguration")]
+    pub ImageSymbolCfg(ns::Id)
+);
+
 #[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_IMAGE: &'static objc::Class<Image>;
