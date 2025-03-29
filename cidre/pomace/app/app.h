@@ -28,6 +28,7 @@ Class NS_IMAGE;
 Class NS_EVENT;
 Class NS_MENU;
 Class NS_SPLIT_VIEW_ITEM;
+Class NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER;
 
 __attribute__((constructor))
 static void app_initializer(void)
@@ -58,6 +59,7 @@ static void app_initializer(void)
         NS_EVENT = [NSEvent class];
         NS_MENU = [NSMenu class];
         NS_SPLIT_VIEW_ITEM = [NSSplitViewItem class];
+        NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER = [NSTitlebarAccessoryViewController class];
     }
 }
 

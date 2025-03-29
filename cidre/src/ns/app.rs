@@ -32,6 +32,9 @@ pub use window::WindowLevel;
 mod window_controller;
 pub use window_controller::WindowController;
 
+mod titlebar_accessory_view_controller;
+pub use titlebar_accessory_view_controller::TitlebarAccessoryViewController;
+
 pub mod workspace;
 pub use workspace::Authorization as WorkspaceAuthorization;
 pub use workspace::AuthorizationType as WorkspaceAuthorizationType;
@@ -97,4 +100,5 @@ pub use touch::TouchType;
 pub use touch::TouchTypeMask;
 
 mod layout_constraint;
+pub use layout_constraint::LayoutAttr;
 pub use layout_constraint::LayoutPriority;

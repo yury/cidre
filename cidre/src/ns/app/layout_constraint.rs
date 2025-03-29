@@ -25,3 +25,31 @@ impl LayoutPriority {
     #[doc(alias = "NSLayoutPriorityFittingSizeCompression")]
     pub const FITTING_SIZE_COMPRESSION: Self = Self(50.0);
 }
+
+#[doc(alias = "NSLayoutAttribute")]
+#[derive(Debug, PartialEq, Copy, Clone)]
+#[repr(isize)]
+pub enum LayoutAttr {
+    Left = 1,
+    Right,
+    Top,
+    Bottom,
+    Leading,
+    Trailing,
+    Width,
+    Height,
+    CenterX,
+    CenterY,
+    LastBaseline,
+    _Unused,
+    FirstBaseline,
+    LeftMargin,
+    RightMargin,
+    TopMargin,
+    BottomMargin,
+    LeadingMargin,
+    TrailingMargin,
+    CenterXWithinMargins,
+    CenterYWithinMargins,
+    NotAnAttribute = 0,
+}
