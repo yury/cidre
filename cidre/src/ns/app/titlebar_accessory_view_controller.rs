@@ -41,6 +41,11 @@ impl TitlebarAccessoryViewController {
     pub fn view_did_disappear(&mut self);
 }
 
+impl TitlebarAccessoryViewController {
+    #[objc::msg_send(animator)]
+    pub fn animator(&self) -> arc::R<Self>;
+}
+
 unsafe extern "C" {
     static NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER:
         &'static objc::Class<TitlebarAccessoryViewController>;
@@ -52,11 +57,16 @@ mod test {
 
     #[test]
     fn basics() {
-        let titlebar_vc = ns::TitlebarAccessoryViewController::new();
+        let mut titlebar_vc = ns::TitlebarAccessoryViewController::new();
         let attr = titlebar_vc.layout_attr();
         assert_eq!(attr, ns::LayoutAttr::Bottom);
         assert_eq!(titlebar_vc.full_screen_min_height(), 0.0);
         assert_eq!(titlebar_vc.is_hidden(), false);
         assert_eq!(titlebar_vc.automatically_adjusts_size(), true);
+
+        titlebar_vc.set_layout_attr(ns::LayoutAttr::TrailingMargin);
+        assert_eq!(titlebar_vc.layout_attr(), ns::LayoutAttr::TrailingMargin);
+
+        assert_eq!(titlebar_vc.animator().full_screen_min_height(), 0.0);
     }
 }
