@@ -1,5 +1,5 @@
-mod animatable_property_container;
-pub use animatable_property_container::AnimatablePropContainer;
+mod animation;
+pub use animation::AnimatablePropContainer;
 
 mod application;
 pub use application::App;
