@@ -204,6 +204,8 @@ impl View {
     pub fn display_if_needed(&mut self);
 }
 
+impl ns::AnimatablePropContainer for View {}
+
 #[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_VIEW: &'static objc::Class<View>;
@@ -211,7 +213,7 @@ unsafe extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::ns;
+    use crate::{ns, ns::AnimatablePropContainer};
 
     #[test]
     fn basics() {
@@ -226,5 +228,6 @@ mod tests {
         view.set_frame(frame);
         assert_eq!(view.frame(), frame);
         assert_eq!(view.needs_display(), false);
+        assert_eq!(view.animator().frame(), frame)
     }
 }

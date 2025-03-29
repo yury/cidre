@@ -32,6 +32,7 @@ pub enum SplitViewItemCollapseBehavior {
 }
 
 define_obj_type!(
+    #[doc(alias = "NSSplitViewItem")]
     pub SplitViewItem(ns::Id),
     NS_SPLIT_VIEW_ITEM
 );
@@ -127,6 +128,8 @@ impl SplitViewItem {
     #[objc::msg_send(setTitlebarSeparatorStyle:)]
     pub fn set_titlebar_separator_style(&mut self, val: ns::TitlebarSeparatorStyle);
 }
+
+impl ns::AnimatablePropContainer for SplitViewItem {}
 
 #[link(name = "app", kind = "static")]
 unsafe extern "C" {

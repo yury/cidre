@@ -41,7 +41,6 @@ pub enum LayoutAttr {
     CenterX,
     CenterY,
     LastBaseline,
-    _Unused,
     FirstBaseline,
     LeftMargin,
     RightMargin,

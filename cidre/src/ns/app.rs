@@ -1,3 +1,6 @@
+mod animatable_property_container;
+pub use animatable_property_container::AnimatablePropContainer;
+
 mod application;
 pub use application::App;
 pub use application::Delegate as AppDelegate;

@@ -41,10 +41,12 @@ impl TitlebarAccessoryViewController {
     pub fn view_did_disappear(&mut self);
 }
 
-impl TitlebarAccessoryViewController {
-    #[objc::msg_send(animator)]
-    pub fn animator(&self) -> arc::R<Self>;
-}
+// impl TitlebarAccessoryViewController {
+//     #[objc::msg_send(animator)]
+//     pub fn animator(&self) -> arc::R<Self>;
+// }
+
+impl ns::AnimatablePropContainer for TitlebarAccessoryViewController {}
 
 unsafe extern "C" {
     static NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER:
@@ -53,7 +55,7 @@ unsafe extern "C" {
 
 #[cfg(test)]
 mod test {
-    use crate::ns;
+    use crate::{ns, ns::AnimatablePropContainer};
 
     #[test]
     fn basics() {

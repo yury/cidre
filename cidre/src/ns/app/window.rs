@@ -151,6 +151,28 @@ impl Window {
     #[objc::msg_send(setToolbarStyle:)]
     pub fn set_toolbar_style(&mut self, val: ns::WindowToolbarStyle);
 
+    #[objc::msg_send(titlebarAccessoryViewControllers)]
+    pub fn titlebar_accessory_vcs(&self) -> arc::R<ns::Array<ns::TitlebarAccessoryViewController>>;
+
+    #[objc::msg_send(setTitlebarAccessoryViewControllers:)]
+    pub fn set_titlebar_accessory_vcs(
+        &mut self,
+        val: &ns::Array<ns::TitlebarAccessoryViewController>,
+    );
+
+    #[objc::msg_send(addTitlebarAccessoryViewController:)]
+    pub fn add_titlebar_accessory_vc(&mut self, val: &ns::TitlebarAccessoryViewController);
+
+    #[objc::msg_send(insertTitlebarAccessoryViewController:atIndex:)]
+    pub fn insert_titlebar_accessory_vc_at(
+        &mut self,
+        val: &ns::TitlebarAccessoryViewController,
+        index: isize,
+    );
+
+    #[objc::msg_send(removeTitlebarAccessoryViewControllerAtIndex:)]
+    pub fn remove_titlebar_accessory_vc_at(&mut self, index: isize);
+
     #[objc::msg_send(frame)]
     pub fn frame(&self) -> ns::Rect;
 
@@ -273,6 +295,8 @@ define_obj_type!(
 );
 
 impl WindowDelegate for AnyWindowDelegate {}
+
+impl ns::AnimatablePropContainer for Window {}
 
 #[link(name = "app", kind = "static")]
 unsafe extern "C" {
