@@ -93,3 +93,91 @@ impl ui::Color {
     #[objc::msg_send(systemCyanColor)]
     pub fn sys_cyan() -> arc::R<Self>;
 }
+
+/// Shades of gray. systemGray is the base gray color.
+impl ui::Color {
+    #[objc::msg_send(systemGray2Color)]
+    pub fn sys_gray2() -> arc::R<Self>;
+    #[objc::msg_send(systemGray3Color)]
+    pub fn sys_gray3() -> arc::R<Self>;
+    #[objc::msg_send(systemGray4Color)]
+    pub fn sys_gray4() -> arc::R<Self>;
+    #[objc::msg_send(systemGray5Color)]
+    pub fn sys_gray5() -> arc::R<Self>;
+    #[objc::msg_send(systemGray6Color)]
+    pub fn sys_gray6() -> arc::R<Self>;
+}
+
+/// Tint color
+impl ui::Color {
+    #[objc::msg_send(tintColor)]
+    pub fn tint() -> arc::R<Self>;
+}
+
+/// Foreground colors
+///
+/// Foreground colors for static text and related elements.
+impl ui::Color {
+    #[objc::msg_send(labelColor)]
+    pub fn label() -> arc::R<Self>;
+
+    #[objc::msg_send(secondaryLabelColor)]
+    pub fn secondary_label() -> arc::R<Self>;
+
+    #[objc::msg_send(tertiaryLabelColor)]
+    pub fn tertiary_label() -> arc::R<Self>;
+
+    #[objc::msg_send(quaternaryLabelColor)]
+    pub fn quaternary_label() -> arc::R<Self>;
+
+    #[objc::msg_send(linkColor)]
+    pub fn link() -> arc::R<Self>;
+
+    #[objc::msg_send(placeholderTextColor)]
+    pub fn placeholder_text() -> arc::R<Self>;
+
+    #[objc::msg_send(separatorColor)]
+    pub fn separator() -> arc::R<Self>;
+
+    #[objc::msg_send(opaqueSeparatorColor)]
+    pub fn opaque_separator() -> arc::R<Self>;
+}
+
+/// Background colors
+impl ui::Color {
+    #[objc::msg_send(systemBackgroundColor)]
+    pub fn sys_bg() -> arc::R<Self>;
+
+    #[objc::msg_send(secondarySystemBackgroundColor)]
+    pub fn sys_secondary_bg() -> arc::R<Self>;
+
+    #[objc::msg_send(tertiarySystemBackgroundColor)]
+    pub fn sys_tertiary_bg() -> arc::R<Self>;
+
+    #[objc::msg_send(systemGroupedBackgroundColor)]
+    pub fn sys_grouped_bg() -> arc::R<Self>;
+
+    #[objc::msg_send(secondarySystemGroupedBackgroundColor)]
+    pub fn sys_secondary_grouped_bg() -> arc::R<Self>;
+
+    #[objc::msg_send(tertiarySystemGroupedBackgroundColor)]
+    pub fn sys_tertiary_grouped_bg() -> arc::R<Self>;
+}
+
+/// Fill colors
+///
+/// Fill colors for UI elements.
+/// These are meant to be used over the background colors, since their alpha component is less than 1.
+impl ui::Color {
+    #[objc::msg_send(systemFillColor)]
+    pub fn sys_fill() -> arc::R<Self>;
+
+    #[objc::msg_send(secondarySystemFillColor)]
+    pub fn sys_secondary_fill() -> arc::R<Self>;
+
+    #[objc::msg_send(tertiarySystemFillColor)]
+    pub fn sys_tertiary_fill() -> arc::R<Self>;
+
+    #[objc::msg_send(quaternarySystemFillColor)]
+    pub fn sys_quaternary_fill() -> arc::R<Self>;
+}
