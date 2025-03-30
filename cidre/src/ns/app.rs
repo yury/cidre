@@ -13,6 +13,7 @@ pub use cell::CellImagePos;
 pub use cell::CellType;
 pub use cell::ControlSize;
 pub use cell::ControlStateValue;
+pub use cell::ControlTint;
 pub use cell::ImageScaling;
 
 mod color_space;
@@ -114,6 +115,7 @@ pub use image::ImageSymbolCfg;
 
 pub mod color;
 pub use color::Color;
+pub use color::ColorSysEffect;
 
 mod graphics;
 pub use graphics::EdgeInsets;

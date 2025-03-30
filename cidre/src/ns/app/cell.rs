@@ -10,6 +10,17 @@ pub enum ControlSize {
     Large = 3,
 }
 
+#[doc(alias = "NSControlTint")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[non_exhaustive]
+#[repr(usize)]
+pub enum ControlTint {
+    Default = 0,
+    Blue = 1,
+    Graphite = 6,
+    Clear = 7,
+}
+
 #[doc(alias = "NSCellType")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(usize)]
