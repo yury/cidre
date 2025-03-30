@@ -181,3 +181,14 @@ impl ui::Color {
     #[objc::msg_send(quaternarySystemFillColor)]
     pub fn sys_quaternary_fill() -> arc::R<Self>;
 }
+
+/// Overlay colors
+impl ui::Color {
+    /// for a dark background
+    #[objc::msg_send(lightTextColor)]
+    pub fn light_text() -> arc::R<Self>;
+
+    /// For a light background
+    #[objc::msg_send(darkTextColor)]
+    pub fn dark_text() -> arc::R<Self>;
+}
