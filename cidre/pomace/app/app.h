@@ -30,6 +30,7 @@ Class NS_MENU;
 Class NS_SPLIT_VIEW_ITEM;
 Class NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER;
 Class NS_BUTTON;
+Class NS_TEXT_FIELD;
 
 __attribute__((constructor))
 static void app_initializer(void)
@@ -62,6 +63,7 @@ static void app_initializer(void)
         NS_SPLIT_VIEW_ITEM = [NSSplitViewItem class];
         NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER = [NSTitlebarAccessoryViewController class];
         NS_BUTTON = [NSButton class];
+        NS_TEXT_FIELD = [NSTextField class];
     }
 }
 

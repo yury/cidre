@@ -35,6 +35,24 @@ pub use view::View;
 mod menu;
 pub use menu::Menu;
 
+mod text;
+pub use text::Text;
+
+mod text_field;
+pub use text_field::TextField;
+pub use text_field::TextFieldDelegate;
+pub use text_field::TextFieldDelegateImpl;
+
+mod text_field_cell;
+pub use text_field_cell::TextFieldBezelStyle;
+
+mod text_view;
+pub use text_view::TextView;
+
+mod paragraph_style;
+pub use paragraph_style::LineBreakMode;
+pub use paragraph_style::LineBreakStrategy;
+
 mod window;
 pub use window::CollectionBehavior as WindowCollectionBehavior;
 pub use window::StyleMask as WindowStyleMask;
