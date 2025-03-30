@@ -49,6 +49,7 @@ pub use tab_bar_controller_sidebar::TabBarControllerSidebar;
 
 mod color;
 pub use color::Color;
+pub use color::ColorProminence;
 
 mod image;
 pub use image::Image;
@@ -66,7 +67,7 @@ pub use orientation::DeviceOrientation;
 pub use orientation::Orientation;
 pub use orientation::OrientationMask;
 
-mod interface;
+pub mod interface;
 pub use interface::BarStyle;
 pub use interface::DisplayGamut;
 pub use interface::LayoutDirection;

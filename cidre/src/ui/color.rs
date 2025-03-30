@@ -1,5 +1,15 @@
 use crate::{arc, cg, define_obj_type, ns, objc};
 
+#[doc(alias = "UIColorProminence")]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+#[repr(isize)]
+pub enum ColorProminence {
+    Primary = 0,
+    Secondary = 1,
+    Tertiary = 2,
+    Quaternary = 3,
+}
+
 define_obj_type!(
     #[doc(alias = "UIColor")]
     pub Color(ns::Id),
@@ -28,6 +38,53 @@ impl Color {
     pub fn named(name: impl AsRef<ns::String>) -> Option<arc::R<Self>> {
         Self::color_named(name.as_ref())
     }
+}
+
+impl Color {
+    #[objc::msg_send(blackColor)]
+    pub fn black() -> arc::R<Self>;
+
+    #[objc::msg_send(darkGrayColor)]
+    pub fn dark_gray() -> arc::R<Self>;
+
+    #[objc::msg_send(lightGrayColor)]
+    pub fn light_gray() -> arc::R<Self>;
+
+    #[objc::msg_send(whiteColor)]
+    pub fn white() -> arc::R<Self>;
+
+    #[objc::msg_send(grayColor)]
+    pub fn gray() -> arc::R<Self>;
+
+    #[objc::msg_send(redColor)]
+    pub fn red() -> arc::R<Self>;
+
+    #[objc::msg_send(greenColor)]
+    pub fn green() -> arc::R<Self>;
+
+    #[objc::msg_send(blueColor)]
+    pub fn blue() -> arc::R<Self>;
+
+    #[objc::msg_send(cyanColor)]
+    pub fn cyan() -> arc::R<Self>;
+
+    #[objc::msg_send(yellowColor)]
+    pub fn yellow() -> arc::R<Self>;
+
+    #[objc::msg_send(magentaColor)]
+    pub fn magenta() -> arc::R<Self>;
+
+    #[objc::msg_send(orangeColor)]
+    pub fn orange() -> arc::R<Self>;
+
+    #[objc::msg_send(purpleColor)]
+    pub fn purple() -> arc::R<Self>;
+
+    #[objc::msg_send(brownColor)]
+    pub fn brown() -> arc::R<Self>;
+
+    #[objc::msg_send(clearColor)]
+    pub fn clear() -> arc::R<Self>;
 }
 
 #[link(name = "ui", kind = "static")]
