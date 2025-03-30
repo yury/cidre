@@ -150,6 +150,21 @@ impl TextField {
     pub fn with_string(val: &ns::String) -> arc::R<Self>;
 }
 
+/// NSTextFieldAttributedStringMethods
+impl TextField {
+    #[objc::msg_send(allowsEditingTextAttributes)]
+    pub fn allows_editing_text_attrs(&self) -> bool;
+
+    #[objc::msg_send(setAllowsEditingTextAttributes:)]
+    pub fn set_allows_editing_text_attrs(&mut self, val: bool);
+
+    #[objc::msg_send(importsGraphics)]
+    pub fn imports_graphics(&self) -> bool;
+
+    #[objc::msg_send(setImportsGraphics:)]
+    pub fn set_imports_graphics(&mut self, val: bool);
+}
+
 #[objc::protocol(NSTextFieldDelegate)]
 pub trait TextFieldDelegate {}
 
