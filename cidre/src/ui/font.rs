@@ -98,6 +98,16 @@ impl Font {
     pub fn descriptor(&self) -> arc::R<ui::FontDesc>;
 }
 
+#[cfg(all(
+    feature = "ct",
+    any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+))]
+impl Font {
+    pub fn as_ct(&self) -> &crate::ct::Font {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
 #[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_FONT: &'static objc::Class<Font>;
