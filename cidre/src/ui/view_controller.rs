@@ -20,7 +20,12 @@ impl ViewController {
     pub fn title(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(setTitle:)]
-    pub fn set_title(&mut self, val: Option<&ns::String>);
+    pub fn set_title_string(&mut self, val: Option<&ns::String>);
+
+    #[inline]
+    pub fn set_title<S: AsRef<ns::String>>(&mut self, val: Option<&S>) {
+        self.set_title_string(val.map(|s| s.as_ref()));
+    }
 }
 
 #[link(name = "ui", kind = "static")]
