@@ -29,6 +29,9 @@ mod button_cell;
 pub use button_cell::BezelStyle;
 pub use button_cell::ButtonType;
 
+mod font;
+pub use font::Font;
+
 mod view;
 pub use view::AutoresizingMaskOpts;
 pub use view::View;

@@ -144,11 +144,16 @@ impl Control {
     #[objc::msg_send(performClick:)]
     pub fn perform_click(&mut self, sender: Option<&ns::Id>);
 
-    // #[objc::msg_send(font)]
-    // pub fn font(&self) -> Option<arc::R<ns::Font>>;
+    #[objc::msg_send(font)]
+    pub fn font(&self) -> Option<arc::R<ns::Font>>;
 
-    // #[objc::msg_send(setFont:)]
-    // pub fn set_font(&mut self, val: Option<&ns::Font>);
+    #[objc::msg_send(setFont:)]
+    pub fn set_ns_font(&mut self, val: Option<&ns::Font>);
+
+    #[inline]
+    pub fn set_font<F: AsRef<ns::Font>>(&mut self, val: Option<&F>) {
+        self.set_ns_font(val.map(|f| f.as_ref()));
+    }
 
     // #[objc::msg_send(lineBreakMode)]
     // pub fn line_break_mode(&self) -> ns::LineBreakMode;

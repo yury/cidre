@@ -284,6 +284,7 @@ impl Font {
         unsafe { std::mem::transmute(self) }
     }
 }
+
 #[cfg(all(
     feature = "ui",
     any(target_os = "ios", target_os = "tvos", target_os = "visionos")
@@ -291,6 +292,20 @@ impl Font {
 impl AsRef<crate::ui::Font> for Font {
     fn as_ref(&self) -> &crate::ui::Font {
         self.as_ui()
+    }
+}
+
+#[cfg(all(feature = "app", target_os = "macos"))]
+impl Font {
+    pub fn as_ns(&self) -> &crate::ns::Font {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
+#[cfg(all(feature = "app", target_os = "macos"))]
+impl AsRef<crate::ns::Font> for Font {
+    fn as_ref(&self) -> &crate::ns::Font {
+        self.as_ns()
     }
 }
 
