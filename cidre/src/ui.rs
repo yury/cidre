@@ -9,6 +9,17 @@ pub use device::Device;
 pub use device::Idiom;
 pub use device::notifications as device_notifications;
 
+mod font;
+pub use font::Font;
+
+mod font_descriptor;
+pub use font_descriptor::FontDesc;
+pub use font_descriptor::FontDescClass;
+pub use font_descriptor::FontDescSymbolicTraits;
+pub use font_descriptor::FontWeight;
+pub use font_descriptor::FontWidth;
+pub use font_descriptor::TextStyle;
+
 mod geometry;
 pub use geometry::EdgeInsets;
 pub use geometry::Offset;
