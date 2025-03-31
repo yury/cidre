@@ -284,6 +284,15 @@ impl Font {
         unsafe { std::mem::transmute(self) }
     }
 }
+#[cfg(all(
+    feature = "ui",
+    any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+))]
+impl AsRef<crate::ui::Font> for Font {
+    fn as_ref(&self) -> &crate::ui::Font {
+        self.as_ui()
+    }
+}
 
 define_opts!(pub Opts(usize));
 impl Opts {

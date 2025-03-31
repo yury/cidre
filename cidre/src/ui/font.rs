@@ -108,6 +108,16 @@ impl Font {
     }
 }
 
+#[cfg(all(
+    feature = "ct",
+    any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+))]
+impl AsRef<crate::ct::Font> for Font {
+    fn as_ref(&self) -> &crate::ct::Font {
+        self.as_ct()
+    }
+}
+
 #[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_FONT: &'static objc::Class<Font>;
