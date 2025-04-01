@@ -11,6 +11,10 @@ pub use mac_types::four_cc_to_string;
 #[cfg(all(target_os = "macos", feature = "am"))]
 pub mod am;
 
+pub mod api;
+
+pub mod arc;
+
 /// Audio Toolkit
 #[cfg(feature = "at")]
 pub mod at;
@@ -19,60 +23,75 @@ pub mod at;
 #[cfg(feature = "av")]
 pub mod av;
 
+/// Accessibility
+#[cfg(all(target_os = "macos", feature = "ax"))]
+pub mod ax;
+
+/// cidre vision of obj-c blocks impl in rust
+#[cfg(feature = "blocks")]
+pub mod blocks;
+
 /// Core Animation
 #[cfg(not(target_os = "watchos"))]
 #[cfg(feature = "ca")]
 pub mod ca;
 
-/// Core Image
-#[cfg(feature = "ci")]
-pub mod ci;
+/// CoreAudioTypes
+#[cfg(feature = "cat")]
+pub mod cat;
 
 /// Core Foundation
 #[cfg(feature = "cf")]
 pub mod cf;
 
-/// Core Text
-#[cfg(feature = "ct")]
-pub mod ct;
-
 /// Core Graphics
 #[cfg(feature = "cg")]
 pub mod cg;
 
+/// Core Image
+#[cfg(feature = "ci")]
+pub mod ci;
+
+/// Core Location
+#[cfg(feature = "cl")]
+pub mod cl;
+
 /// Core Media
 #[cfg(feature = "cm")]
 pub mod cm;
+
+#[cfg(all(target_os = "macos", feature = "core_audio"))]
+pub mod core_audio;
 
 /// Core Motion
 #[cfg(not(target_os = "tvos"))]
 #[cfg(feature = "core_motion")]
 pub mod core_motion;
 
-#[cfg(all(target_os = "macos", feature = "core_audio"))]
-pub mod core_audio;
+/// Core Text
+#[cfg(feature = "ct")]
+pub mod ct;
 
 /// Core Video
 #[cfg(feature = "cv")]
 pub mod cv;
-
-#[cfg(feature = "cl")]
-pub mod cl;
-
-/// Grand Central Dispatch
-#[cfg(feature = "dispatch")]
-pub mod dispatch;
 
 /// Disk Arbitration
 #[cfg(target_os = "macos")]
 #[cfg(feature = "da")]
 pub mod da;
 
-pub mod io;
+/// Grand Central Dispatch
+#[cfg(feature = "dispatch")]
+pub mod dispatch;
 
-/// cidre vision of obj-c blocks impl in rust
-#[cfg(feature = "blocks")]
-pub mod blocks;
+pub mod dns_sd;
+
+/// Game Controller
+#[cfg(feature = "gc")]
+pub mod gc;
+
+pub mod io;
 
 /// mach
 pub mod mach;
@@ -113,10 +132,6 @@ pub mod nw;
 #[cfg(feature = "ns")]
 pub mod objc;
 
-/// Game Controller
-#[cfg(feature = "gc")]
-pub mod gc;
-
 pub mod os;
 pub mod sys;
 
@@ -140,10 +155,6 @@ pub mod sc;
 #[cfg(feature = "sn")]
 pub mod sn;
 
-/// CoreAudioTypes
-#[cfg(feature = "cat")]
-pub mod cat;
-
 #[cfg(all(
     any(
         target_os = "ios",
@@ -165,8 +176,6 @@ pub mod un;
 
 pub mod time;
 
-pub mod dns_sd;
-
 #[cfg(feature = "simd")]
 pub mod simd;
 
@@ -183,10 +192,6 @@ pub mod wc;
 #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 #[cfg(feature = "wk")]
 pub mod wk;
-
-pub mod arc;
-
-pub mod api;
 
 #[macro_export]
 macro_rules! define_opts {

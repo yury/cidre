@@ -49,8 +49,12 @@ pub struct Range {
 
 impl Range {
     #[inline]
-    pub fn new(loc: Index, len: Index) -> Self {
+    pub const fn new(loc: Index, len: Index) -> Self {
         Self { loc, len }
+    }
+
+    pub const fn zero() -> Self {
+        Self { loc: 0, len: 0 }
     }
 }
 

@@ -20,6 +20,7 @@ full = [
   "app",
   "am",
   "at",
+  "ax",
   "ca",
   "ci",
   "cl",
@@ -79,6 +80,7 @@ async = ["blocks", "dep:parking_lot"]
 ### blocks runtime
 blocks = []
 
+ax = ["cf"]
 ### Core Foundation framework
 cf = []
 cat = []
