@@ -118,6 +118,11 @@ pub mod attr {
         cf::str!(c"AXChildren").as_ref()
     }
 
+    #[doc(alias = "kAXChildrenInNavigationOrder")]
+    pub fn children_in_nav_order() -> &'static Attr {
+        cf::str!(c"AXChildrenInNavigationOrder").as_ref()
+    }
+
     #[doc(alias = "kAXSelectedChildrenAttribute")]
     pub fn selected_children() -> &'static Attr {
         cf::str!(c"AXSelectedChildren").as_ref()
@@ -139,7 +144,7 @@ pub mod attr {
     }
 
     #[doc(alias = "kAXPositionAttribute")]
-    pub fn position() -> &'static Attr {
+    pub fn pos() -> &'static Attr {
         cf::str!(c"AXPosition").as_ref()
     }
 

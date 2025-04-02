@@ -143,8 +143,36 @@ impl UiElement {
         unsafe { self.attr(ax::attr::children()) }
     }
 
+    pub fn children_in_nav_order(&self) -> os::Result<arc::R<cf::ArrayOf<Self>>> {
+        unsafe { self.attr(ax::attr::children_in_nav_order()) }
+    }
+
     pub fn frame(&self) -> os::Result<arc::R<ax::Value>> {
         unsafe { self.attr(ax::attr::frame()) }
+    }
+
+    pub fn parent(&self) -> os::Result<arc::R<Self>> {
+        unsafe { self.attr(ax::attr::parent()) }
+    }
+
+    pub fn is_enabled(&self) -> os::Result<arc::R<cf::Boolean>> {
+        unsafe { self.attr(ax::attr::enabled()) }
+    }
+
+    pub fn is_selected(&self) -> os::Result<arc::R<cf::Boolean>> {
+        unsafe { self.attr(ax::attr::selected()) }
+    }
+
+    pub fn pos(&self) -> os::Result<arc::R<ax::Value>> {
+        unsafe { self.attr(ax::attr::pos()) }
+    }
+
+    pub fn size(&self) -> os::Result<arc::R<ax::Value>> {
+        unsafe { self.attr(ax::attr::size()) }
+    }
+
+    pub fn window(&self) -> os::Result<arc::R<Self>> {
+        unsafe { self.attr(ax::attr::window()) }
     }
 }
 
