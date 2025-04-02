@@ -103,6 +103,10 @@ impl UiElement {
     pub fn is_settable(&self, attr: &ax::Attr) -> os::Result<bool> {
         os::result_init(|res| unsafe { AXUIElementIsAttributeSettable(self, attr, res) })
     }
+
+    pub fn perform_action(&self, action: &ax::Action) -> os::Result {
+        unsafe { AXUIElementPerformAction(self, action).result() }
+    }
 }
 
 /// Shortcuts for attributes
@@ -244,7 +248,7 @@ define_cf_type!(
 
 #[doc(alias = "AXObserverCallback")]
 pub type ObserverCb = extern "C" fn(
-    observer: &mut Observer,
+    observer: &mut ax::Observer,
     elem: &mut ax::UiElement,
     notification: &ax::Notification,
     context: *mut std::ffi::c_void,
@@ -252,7 +256,7 @@ pub type ObserverCb = extern "C" fn(
 
 #[doc(alias = "AXObserverCallbackWithInfo")]
 pub type ObserverInfoCb = extern "C" fn(
-    observer: &mut Observer,
+    observer: &mut ax::Observer,
     elem: &mut ax::UiElement,
     notification: &ax::Notification,
     info: &cf::DictionaryOf<cf::String, cf::Type>,
@@ -334,6 +338,8 @@ unsafe extern "C" {
         elem: &UiElement,
         names: *mut Option<arc::R<cf::ArrayOf<ax::ParamAttr>>>,
     ) -> ax::Error;
+
+    fn AXUIElementPerformAction(elem: &UiElement, action: &ax::Action) -> ax::Error;
 
     fn AXUIElementSetMessagingTimeout(elem: &UiElement, timeout_in_seconds: f32) -> ax::Error;
 
