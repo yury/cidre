@@ -13,7 +13,21 @@ struct Args {
 
 fn print_tree(elem: &ax::UiElement, depth: usize, prefix: &mut String, children_attr: &ax::Attr) {
     if prefix.len() < depth {
-        prefix.push_str("                        ");
+        prefix.push_str("                                    ");
+    }
+
+    std::io::stdout()
+        .write_all(prefix[0..depth].as_bytes())
+        .unwrap();
+    println!("|");
+
+    if let Ok(actions) = elem.actions() {
+        for action in actions.iter() {
+            std::io::stdout()
+                .write_all(prefix[0..depth].as_bytes())
+                .unwrap();
+            println!("action: {}", action.to_string());
+        }
     }
 
     if let Ok(attrs) = elem.attrs() {
