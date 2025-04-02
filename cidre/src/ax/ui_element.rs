@@ -89,6 +89,7 @@ impl UiElement {
         unsafe { os::result_unchecked(|res| AXUIElementCopyActionDescription(self, action, res)) }
     }
 
+    #[doc(alias = "AXUIElementSetMessagingTimeout")]
     #[inline]
     pub fn set_messaging_timeout_secs(&self, timeout_in_seconds: f32) -> os::Result {
         unsafe { AXUIElementSetMessagingTimeout(self, timeout_in_seconds).result() }
@@ -99,13 +100,20 @@ impl UiElement {
         self.set_messaging_timeout_secs(val.as_secs() as _)
     }
 
+    #[doc(alias = "AXUIElementIsAttributeSettable")]
     #[inline]
     pub fn is_settable(&self, attr: &ax::Attr) -> os::Result<bool> {
         os::result_init(|res| unsafe { AXUIElementIsAttributeSettable(self, attr, res) })
     }
 
+    #[doc(alias = "AXUIElementPerformAction")]
     pub fn perform_action(&self, action: &ax::Action) -> os::Result {
         unsafe { AXUIElementPerformAction(self, action).result() }
+    }
+
+    #[doc(alias = "AXUIElementCopyElementAtPosition")]
+    pub fn element_at_pos(&self, x: f32, y: f32) -> os::Result<arc::R<Self>> {
+        unsafe { os::result_unchecked(|res| AXUIElementCopyElementAtPosition(self, x, y, res)) }
     }
 }
 
@@ -311,7 +319,12 @@ unsafe extern "C-unwind" {
     fn AXUIElementCreateApplication(pid: Pid) -> arc::R<UiElement>;
     fn AXUIElementCreateSystemWide() -> arc::R<UiElement>;
     fn AXUIElementGetPid(elem: &UiElement, pid: *mut Pid) -> ax::Error;
-
+    fn AXUIElementCopyElementAtPosition(
+        app: &UiElement,
+        x: f32,
+        y: f32,
+        elem: *mut Option<arc::R<UiElement>>,
+    ) -> ax::Error;
     fn AXUIElementCopyAttributeNames(
         elem: &UiElement,
         names: *mut Option<arc::R<cf::ArrayOf<ax::Attr>>>,
