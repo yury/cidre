@@ -80,6 +80,17 @@ impl From<bool> for &'static Boolean {
     }
 }
 
+impl From<bool> for &'static cf::Type {
+    #[inline]
+    fn from(value: bool) -> Self {
+        if value {
+            Boolean::value_true()
+        } else {
+            Boolean::value_false()
+        }
+    }
+}
+
 impl PartialEq<bool> for &Boolean {
     /// ```
     /// use cidre::cf;

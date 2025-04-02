@@ -4,11 +4,9 @@ pub fn is_process_trusted() -> bool {
     is_process_trusted_with_opts(None)
 }
 
-pub fn is_process_trusted_with_prompt(prompt: &cf::String) -> bool {
-    let opts = cf::DictionaryOf::with_keys_values(
-        &[trusted_check_option_prompt()],
-        &[prompt.as_type_ref()],
-    );
+pub fn is_process_trusted_with_prompt(prompt: bool) -> bool {
+    let opts =
+        cf::DictionaryOf::with_keys_values(&[trusted_check_option_prompt()], &[prompt.into()]);
     is_process_trusted_with_opts(Some(&opts))
 }
 
@@ -109,6 +107,10 @@ impl UiElement {
 
 /// Shortcuts for attributes
 impl UiElement {
+    pub fn ax_value(&self, attr: &ax::Attr) -> os::Result<arc::R<ax::Value>> {
+        unsafe { self.attr(attr) }
+    }
+
     pub fn role(&self) -> os::Result<arc::R<ax::Role>> {
         unsafe { self.attr(ax::attr::role()) }
     }
@@ -123,6 +125,14 @@ impl UiElement {
 
     pub fn focused_ui_element(&self) -> os::Result<arc::R<Self>> {
         unsafe { self.attr(ax::attr::focused_ui_element()) }
+    }
+
+    pub fn children(&self) -> os::Result<arc::R<cf::ArrayOf<Self>>> {
+        unsafe { self.attr(ax::attr::children()) }
+    }
+
+    pub fn frame(&self) -> os::Result<arc::R<ax::Value>> {
+        unsafe { self.attr(ax::attr::frame()) }
     }
 }
 

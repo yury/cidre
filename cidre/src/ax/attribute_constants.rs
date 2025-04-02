@@ -24,6 +24,10 @@ impl AsRef<Attr> for cf::String {
 pub mod attr {
     use crate::{ax::Attr, cf};
 
+    pub fn frame() -> &'static Attr {
+        cf::str!(c"AXFrame").as_ref()
+    }
+
     /// Identifies the basic type of an element.
     #[doc(alias = "kAXRoleAttribute")]
     pub fn role() -> &'static Attr {
