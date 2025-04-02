@@ -8,10 +8,10 @@ struct Args {
 }
 
 extern "C" fn observer_cb(
-    observer: &mut ax::Observer,
-    elem: &mut ax::UiElement,
+    _observer: &mut ax::Observer,
+    _elem: &mut ax::UiElement,
     notification: &ax::Notification,
-    context: *mut std::ffi::c_void,
+    _context: *mut std::ffi::c_void,
 ) {
     println!("{:?}", notification);
 }
