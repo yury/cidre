@@ -1,3 +1,15 @@
+/// # AX Observer Example
+///
+/// This example demonstrates how to observe accessibility notifications from an application using macOS's
+/// Accessibility API through the cidre crate.
+///
+/// Key features:
+///
+/// - Checks and requests accessibility permissions
+/// - Attaches to a target application by PID
+/// - Observes application activation/deactivation events
+/// - Runs in a Core Foundation run loop to receive notifications
+///
 use cidre::{ax, cf};
 use clap::Parser;
 
