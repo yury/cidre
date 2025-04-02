@@ -28,6 +28,8 @@ define_cf_type!(
     UiElement(cf::Type)
 );
 
+unsafe impl Send for UiElement {}
+
 impl UiElement {
     #[doc(alias = "AXUIElementGetTypeID")]
     #[inline]
@@ -124,6 +126,164 @@ impl UiElement {
     }
 }
 
+define_cf_type!(
+    #[doc(alias = "AXTextMarkerRef")]
+    TextMarker(cf::Type)
+);
+
+impl TextMarker {
+    #[doc(alias = "AXTextMarkerGetTypeID")]
+    #[inline]
+    pub fn type_id() -> cf::TypeId {
+        unsafe { AXTextMarkerGetTypeID() }
+    }
+
+    #[inline]
+    pub fn from_slice(bytes: &[u8]) -> Option<arc::R<Self>> {
+        unsafe { Self::from_bytes_in(bytes.as_ptr(), bytes.len() as isize, None) }
+    }
+
+    pub unsafe fn from_bytes_in(
+        bytes: *const u8,
+        length: isize,
+        allocator: Option<&cf::Allocator>,
+    ) -> Option<arc::R<Self>> {
+        unsafe { AXTextMarkerCreate(allocator, bytes, length) }
+    }
+
+    #[inline]
+    pub fn length(&self) -> isize {
+        unsafe { AXTextMarkerGetLength(self) }
+    }
+
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.length() as usize
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.length() == 0
+    }
+
+    #[inline]
+    pub fn bytes(&self) -> &[u8] {
+        unsafe { std::slice::from_raw_parts(self.bytes_ptr(), self.len()) }
+    }
+
+    #[inline]
+    pub fn bytes_ptr(&self) -> *const u8 {
+        unsafe { AXTextMarkerGetBytePtr(self) }
+    }
+}
+
+define_cf_type!(
+    #[doc(alias = "AXTextMarkerRangeRef")]
+    TextMarkerRange(cf::Type)
+);
+
+impl TextMarkerRange {
+    #[doc(alias = "AXTextMarkerRangeGetTypeID")]
+    #[inline]
+    pub fn type_id() -> cf::TypeId {
+        unsafe { AXTextMarkerRangeGetTypeID() }
+    }
+
+    pub unsafe fn from_bytes_in(
+        start_marker_bytes: *const u8,
+        start_marker_length: isize,
+        end_marker_bytes: *const u8,
+        end_marker_length: isize,
+        allocator: Option<&cf::Allocator>,
+    ) -> Option<arc::R<Self>> {
+        unsafe {
+            AXTextMarkerRangeCreateWithBytes(
+                allocator,
+                start_marker_bytes,
+                start_marker_length,
+                end_marker_bytes,
+                end_marker_length,
+            )
+        }
+    }
+
+    pub fn with_markers(start: &TextMarker, end: &TextMarker) -> Option<arc::R<Self>> {
+        Self::with_markers_in(start, end, None)
+    }
+
+    pub fn with_markers_in(
+        start: &TextMarker,
+        end: &TextMarker,
+        allocator: Option<&cf::Allocator>,
+    ) -> Option<arc::R<Self>> {
+        unsafe { AXTextMarkerRangeCreate(allocator, start, end) }
+    }
+
+    pub fn start(&self) -> arc::R<TextMarker> {
+        unsafe { AXTextMarkerRangeCopyStartMarker(self) }
+    }
+
+    pub fn end(&self) -> arc::R<TextMarker> {
+        unsafe { AXTextMarkerRangeCopyEndMarker(self) }
+    }
+}
+
+define_cf_type!(
+    #[doc(alias = "AXObserverRef")]
+    Observer(cf::Type)
+);
+
+#[doc(alias = "AXObserverCallback")]
+pub type ObserverCb = extern "C" fn(
+    observer: &mut Observer,
+    elem: &mut ax::UiElement,
+    notification: &ax::Notification,
+    context: *mut std::ffi::c_void,
+);
+
+#[doc(alias = "AXObserverCallbackWithInfo")]
+pub type ObserverInfoCb = extern "C" fn(
+    observer: &mut Observer,
+    elem: &mut ax::UiElement,
+    notification: &ax::Notification,
+    info: &cf::DictionaryOf<cf::String, cf::Type>,
+    context: *mut std::ffi::c_void,
+);
+
+impl Observer {
+    #[doc(alias = "AXObserverGetTypeID")]
+    #[inline]
+    pub fn type_id() -> cf::TypeId {
+        unsafe { AXObserverGetTypeID() }
+    }
+
+    pub fn with_cb(pid: Pid, cb: ObserverCb) -> os::Result<arc::R<Self>> {
+        unsafe { os::result_unchecked(|res| AXObserverCreate(pid, cb, res)) }
+    }
+
+    pub fn with_info_cb(pid: Pid, cb: ObserverInfoCb) -> os::Result<arc::R<Self>> {
+        unsafe { os::result_unchecked(|res| AXObserverCreateWithInfoCallback(pid, cb, res)) }
+    }
+
+    pub fn add_notification(
+        &mut self,
+        elem: &ax::UiElement,
+        notification: &ax::Notification,
+        context: *mut std::ffi::c_void,
+    ) -> os::Result {
+        unsafe { AXObserverAddNotification(self, elem, notification, context).result() }
+    }
+    pub fn remove_notification(
+        &mut self,
+        elem: &ax::UiElement,
+        notification: &ax::Notification,
+    ) -> os::Result {
+        unsafe { AXObserverRemoveNotification(self, elem, notification).result() }
+    }
+    pub fn run_loop_src(&self) -> &cf::RunLoopSrc {
+        unsafe { AXObserverGetRunLoopSource(self) }
+    }
+}
+
 #[link(name = "ApplicationServices", kind = "framework")]
 unsafe extern "C" {
     fn AXIsProcessTrustedWithOptions(
@@ -172,6 +332,65 @@ unsafe extern "C" {
         attr: &ax::Attr,
         val: *mut bool,
     ) -> ax::Error;
+
+    fn AXTextMarkerGetTypeID() -> cf::TypeId;
+
+    fn AXTextMarkerCreate(
+        allocator: Option<&cf::Allocator>,
+        bytes: *const u8,
+        length: isize,
+    ) -> Option<arc::R<TextMarker>>;
+
+    fn AXTextMarkerGetLength(marker: &TextMarker) -> isize;
+    fn AXTextMarkerGetBytePtr(marker: &TextMarker) -> *const u8;
+
+    fn AXTextMarkerRangeGetTypeID() -> cf::TypeId;
+
+    fn AXTextMarkerRangeCreate(
+        allocator: Option<&cf::Allocator>,
+        start_marker: &TextMarker,
+        end_marker: &TextMarker,
+    ) -> Option<arc::R<TextMarkerRange>>;
+
+    fn AXTextMarkerRangeCreateWithBytes(
+        allocator: Option<&cf::Allocator>,
+        start_marker_bytes: *const u8,
+        start_marker_length: isize,
+        end_marker_bytes: *const u8,
+        end_marker_length: isize,
+    ) -> Option<arc::R<TextMarkerRange>>;
+
+    fn AXTextMarkerRangeCopyStartMarker(range: &TextMarkerRange) -> arc::R<TextMarker>;
+    fn AXTextMarkerRangeCopyEndMarker(range: &TextMarkerRange) -> arc::R<TextMarker>;
+
+    fn AXObserverGetTypeID() -> cf::TypeId;
+
+    fn AXObserverCreate(
+        application: Pid,
+        callback: ObserverCb,
+        observer: *mut Option<arc::R<Observer>>,
+    ) -> ax::Error;
+
+    fn AXObserverCreateWithInfoCallback(
+        application: Pid,
+        callback: ObserverInfoCb,
+        observer: *mut Option<arc::R<Observer>>,
+    ) -> ax::Error;
+
+    fn AXObserverAddNotification(
+        observer: &mut Observer,
+        element: &ax::UiElement,
+        notification: &ax::Notification,
+        context: *mut std::ffi::c_void,
+    ) -> ax::Error;
+
+    fn AXObserverRemoveNotification(
+        observer: &mut Observer,
+        element: &ax::UiElement,
+        notification: &ax::Notification,
+    ) -> ax::Error;
+
+    fn AXObserverGetRunLoopSource(observer: &Observer) -> &cf::RunLoopSrc;
 }
 
 #[cfg(test)]
@@ -179,7 +398,7 @@ mod tests {
     use crate::{ax, cf};
 
     #[test]
-    fn basics() {
+    fn ui_element_basics() {
         let sys_wide = ax::UiElement::sys_wide();
         sys_wide
             .set_messaging_timeout(std::time::Duration::from_secs(10))
@@ -209,5 +428,60 @@ mod tests {
 
         let err = sys_wide.param_attrs().err().unwrap();
         assert_eq!(err, ax::err::INVALID_UI_ELEMENT);
+    }
+
+    #[test]
+    fn text_marker_basics() {
+        let bytes = b"hello";
+        let marker = ax::TextMarker::from_slice(bytes).unwrap();
+
+        println!("marker {marker:?}");
+
+        assert_eq!(bytes, marker.bytes());
+        assert_ne!(bytes.as_ptr(), marker.bytes_ptr());
+
+        let marker = ax::TextMarker::from_slice(&[]);
+
+        assert!(marker.is_none());
+    }
+
+    #[test]
+    fn text_marker_range_basics() {
+        let hello = b"hello";
+        let world = b"world";
+        let a = ax::TextMarker::from_slice(hello).unwrap();
+        let b = ax::TextMarker::from_slice(world).unwrap();
+        let range = ax::TextMarkerRange::with_markers(&a, &b).unwrap();
+
+        let a_from_range = range.start();
+        let b_from_range = range.end();
+        unsafe {
+            assert_ne!(a.as_type_ptr(), a_from_range.as_type_ptr());
+            assert_ne!(b.as_type_ptr(), b_from_range.as_type_ptr());
+        }
+    }
+
+    #[test]
+    fn observer_basics() {
+        extern "C" fn callback(
+            _observer: &mut ax::Observer,
+            _elem: &mut ax::UiElement,
+            _notification: &ax::Notification,
+            _context: *mut std::ffi::c_void,
+        ) {
+        }
+        let pid = std::process::id() as i32;
+
+        let _app = ax::UiElement::with_app_pid(pid);
+
+        let _observer = ax::Observer::with_cb(pid as i32, callback).unwrap();
+
+        // observer
+        //     .add_notification(
+        //         &element,
+        //         ax::notification::app_shown(),
+        //         std::ptr::null_mut(),
+        //     )
+        //     .unwrap();
     }
 }

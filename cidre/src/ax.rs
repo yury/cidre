@@ -25,6 +25,11 @@ pub use role_constants::role;
 pub use role_constants::sub_role;
 
 mod ui_element;
+pub use ui_element::Observer;
+pub use ui_element::ObserverCb;
+pub use ui_element::ObserverInfoCb;
+pub use ui_element::TextMarker;
+pub use ui_element::TextMarkerRange;
 pub use ui_element::UiElement;
 pub use ui_element::is_process_trusted;
 pub use ui_element::is_process_trusted_with_opts;
