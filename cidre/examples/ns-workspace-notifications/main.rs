@@ -4,7 +4,7 @@
 /// It registers observers for various application events (hiding, launching, activating, and deactivating)
 /// and prints information about these events when they occur.
 ///
-use cidre::{blocks, ns, objc::Obj};
+use cidre::{blocks, ns, ns::workspace::notification as wsn, objc::Obj};
 
 fn main() {
     let block = |n: &ns::Notification| {
@@ -12,23 +12,9 @@ fn main() {
         println!("{:?}", n.name());
         let user_info = n.user_info().unwrap();
 
-        if let Some(app) = user_info.get(ns::workspace::notification::app_key()) {
+        if let Some(app) = user_info.get(wsn::app_key()) {
             if let Some(app) = app.try_cast(ns::RunningApp::cls()) {
                 println!("{app:?}");
-            }
-        }
-
-        let name = n.name().as_ref() as *const _;
-        use ns::workspace::notification as names;
-        match () {
-            _ if name == names::did_activate_app() as *const _ => {
-                println!("activating!");
-            }
-            _ if name == names::did_deactivate_app() as *const _ => {
-                println!("deactivating!");
-            }
-            _ => {
-                panic!("unknwon event");
             }
         }
     };
@@ -37,10 +23,10 @@ fn main() {
     let mut block = blocks::SyncBlock::new1(block);
 
     let notifications = [
-        ns::workspace::notification::did_hide_app(),
-        ns::workspace::notification::did_launch_app(),
-        ns::workspace::notification::did_activate_app(),
-        ns::workspace::notification::did_deactivate_app(),
+        wsn::did_hide_app(),
+        wsn::did_launch_app(),
+        wsn::did_activate_app(),
+        wsn::did_deactivate_app(),
     ];
     let mut observers = Vec::with_capacity(notifications.len());
 
