@@ -1,4 +1,4 @@
-use std::{ffi::c_void, intrinsics::transmute, path::PathBuf};
+use std::{ffi::c_void, mem::transmute, path::PathBuf};
 
 use crate::{arc, cf};
 
