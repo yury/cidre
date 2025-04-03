@@ -1,9 +1,16 @@
+/// # Workspace Notifications Example
+///
+/// This example demonstrates how to observe macOS workspace notifications using the cidre library.
+/// It registers observers for various application events (hiding, launching, activating, and deactivating)
+/// and prints information about these events when they occur.
+///
 use cidre::{blocks, ns, objc::Obj};
 
 fn main() {
     let block = |n: &ns::Notification| {
         println!("{:?}", n.name());
         let user_info = n.user_info().unwrap();
+
         if let Some(app) = user_info.get(ns::workspace::notification::app_key()) {
             if let Some(app) = app.try_cast(ns::RunningApp::cls()) {
                 println!("{app:?}");
@@ -11,6 +18,7 @@ fn main() {
         }
     };
 
+    // One block for all notifications
     let mut block = blocks::SyncBlock::new1(block);
 
     let notifications = [
