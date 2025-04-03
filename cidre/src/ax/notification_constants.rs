@@ -21,6 +21,18 @@ impl AsRef<Notification> for cf::String {
     }
 }
 
+impl std::cmp::PartialEq for Notification {
+    fn eq(&self, other: &Self) -> bool {
+        self.equal(other)
+    }
+}
+
+impl std::cmp::PartialEq<cf::String> for Notification {
+    fn eq(&self, other: &cf::String) -> bool {
+        self.equal(other)
+    }
+}
+
 pub mod notification {
     use crate::{ax::Notification, cf};
 
@@ -238,4 +250,23 @@ impl Priority {
     pub const LOW: Self = Self(10);
     pub const MEDIUM: Self = Self(50);
     pub const HIGH: Self = Self(90);
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::ax;
+
+    #[test]
+    pub fn basics() {
+        use ax::notification as axn;
+        let n = axn::app_activated();
+
+        let value = match () {
+            _ if n == axn::app_activated() => "matched",
+            _ if n == axn::app_deactivated() => "unmatched",
+            _ => panic!("failed"),
+        };
+
+        assert_eq!(value, "matched");
+    }
 }

@@ -17,6 +17,20 @@ fn main() {
                 println!("{app:?}");
             }
         }
+
+        let name = n.name().as_ref() as *const _;
+        use ns::workspace::notification as names;
+        match () {
+            _ if name == names::did_activate_app() as *const _ => {
+                println!("activating!");
+            }
+            _ if name == names::did_deactivate_app() as *const _ => {
+                println!("deactivating!");
+            }
+            _ => {
+                panic!("unknwon event");
+            }
+        }
     };
 
     // One block for all notifications
