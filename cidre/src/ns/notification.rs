@@ -116,6 +116,7 @@ impl NotificationCenter {
         self.add_observer_block(name, object, queue, &mut block)
     }
 
+    #[must_use]
     #[cfg(feature = "blocks")]
     pub fn add_observer_guard(
         &mut self,

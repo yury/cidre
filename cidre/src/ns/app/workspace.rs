@@ -209,6 +209,63 @@ impl WorkspaceOpenCfg {
     pub fn set_requires_universal_links(&mut self, val: bool);
 }
 
+pub mod notification {
+    use crate::ns;
+
+    #[doc(alias = "NSWorkspaceApplicationKey")]
+    pub fn app_key() -> &'static ns::String {
+        unsafe { NSWorkspaceApplicationKey }
+    }
+
+    #[doc(alias = "NSWorkspaceWillLaunchApplicationNotification")]
+    pub fn will_launch_app() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceWillLaunchApplicationNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceDidLaunchApplicationNotification")]
+    pub fn did_launch_app() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceDidLaunchApplicationNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceDidTerminateApplicationNotification")]
+    pub fn did_terminate_app() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceDidTerminateApplicationNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceDidHideApplicationNotification")]
+    pub fn did_hide_app() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceDidHideApplicationNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceDidUnhideApplicationNotification")]
+    pub fn did_unhide_app() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceDidUnhideApplicationNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceDidActivateApplicationNotification")]
+    pub fn did_activate_app() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceDidActivateApplicationNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceDidDeactivateApplicationNotification")]
+    pub fn did_deactivate_app() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceDidDeactivateApplicationNotification }
+    }
+
+    #[link(name = "AppKit", kind = "framework")]
+    unsafe extern "C" {
+        static NSWorkspaceApplicationKey: &'static ns::String;
+
+        static NSWorkspaceWillLaunchApplicationNotification: &'static ns::NotificationName;
+        static NSWorkspaceDidLaunchApplicationNotification: &'static ns::NotificationName;
+        static NSWorkspaceDidTerminateApplicationNotification: &'static ns::NotificationName;
+        static NSWorkspaceDidHideApplicationNotification: &'static ns::NotificationName;
+        static NSWorkspaceDidUnhideApplicationNotification: &'static ns::NotificationName;
+        static NSWorkspaceDidActivateApplicationNotification: &'static ns::NotificationName;
+        static NSWorkspaceDidDeactivateApplicationNotification: &'static ns::NotificationName;
+    }
+}
+
 unsafe extern "C" {
     static NS_WORKSPACE: &'static objc::Class<Workspace>;
     static NS_WORKSPACE_OPEN_CONFIGURATION: &'static objc::Class<WorkspaceOpenCfg>;
