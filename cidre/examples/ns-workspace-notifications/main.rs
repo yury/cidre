@@ -8,6 +8,7 @@ use cidre::{blocks, ns, objc::Obj};
 
 fn main() {
     let block = |n: &ns::Notification| {
+        // let workspace = n.id().try_cast(ns::Workspace::cls()).unwrap();
         println!("{:?}", n.name());
         let user_info = n.user_info().unwrap();
 

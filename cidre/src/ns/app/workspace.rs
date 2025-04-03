@@ -213,43 +213,105 @@ pub mod notification {
     use crate::ns;
 
     #[doc(alias = "NSWorkspaceApplicationKey")]
+    #[inline]
     pub fn app_key() -> &'static ns::String {
         unsafe { NSWorkspaceApplicationKey }
     }
 
     #[doc(alias = "NSWorkspaceWillLaunchApplicationNotification")]
+    #[inline]
     pub fn will_launch_app() -> &'static ns::NotificationName {
         unsafe { NSWorkspaceWillLaunchApplicationNotification }
     }
 
     #[doc(alias = "NSWorkspaceDidLaunchApplicationNotification")]
+    #[inline]
     pub fn did_launch_app() -> &'static ns::NotificationName {
         unsafe { NSWorkspaceDidLaunchApplicationNotification }
     }
 
     #[doc(alias = "NSWorkspaceDidTerminateApplicationNotification")]
+    #[inline]
     pub fn did_terminate_app() -> &'static ns::NotificationName {
         unsafe { NSWorkspaceDidTerminateApplicationNotification }
     }
 
     #[doc(alias = "NSWorkspaceDidHideApplicationNotification")]
+    #[inline]
     pub fn did_hide_app() -> &'static ns::NotificationName {
         unsafe { NSWorkspaceDidHideApplicationNotification }
     }
 
     #[doc(alias = "NSWorkspaceDidUnhideApplicationNotification")]
+    #[inline]
     pub fn did_unhide_app() -> &'static ns::NotificationName {
         unsafe { NSWorkspaceDidUnhideApplicationNotification }
     }
 
     #[doc(alias = "NSWorkspaceDidActivateApplicationNotification")]
+    #[inline]
     pub fn did_activate_app() -> &'static ns::NotificationName {
         unsafe { NSWorkspaceDidActivateApplicationNotification }
     }
 
     #[doc(alias = "NSWorkspaceDidDeactivateApplicationNotification")]
+    #[inline]
     pub fn did_deactivate_app() -> &'static ns::NotificationName {
         unsafe { NSWorkspaceDidDeactivateApplicationNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceWillPowerOffNotification")]
+    #[inline]
+    pub fn will_power_off() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceWillPowerOffNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceWillSleepNotification")]
+    #[inline]
+    pub fn will_sleep() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceWillSleepNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceDidWakeNotification")]
+    #[inline]
+    pub fn did_wake() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceDidWakeNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceScreensDidSleepNotification")]
+    #[inline]
+    pub fn screens_did_sleep() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceScreensDidSleepNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceScreensDidWakeNotification")]
+    #[inline]
+    pub fn screens_did_wake() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceScreensDidWakeNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceSessionDidBecomeActiveNotification")]
+    #[inline]
+    pub fn session_did_become_active() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceSessionDidBecomeActiveNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceSessionDidResignActiveNotification")]
+    #[inline]
+    pub fn session_did_resign_active() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceSessionDidResignActiveNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceDidChangeFileLabelsNotification")]
+    #[inline]
+    pub fn did_change_file_labels() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceDidChangeFileLabelsNotification }
+    }
+
+    #[doc(alias = "NSWorkspaceActiveSpaceDidChangeNotification")]
+    #[inline]
+    pub fn active_space_did_change() -> &'static ns::NotificationName {
+        unsafe { NSWorkspaceActiveSpaceDidChangeNotification }
     }
 
     #[link(name = "AppKit", kind = "framework")]
@@ -263,6 +325,17 @@ pub mod notification {
         static NSWorkspaceDidUnhideApplicationNotification: &'static ns::NotificationName;
         static NSWorkspaceDidActivateApplicationNotification: &'static ns::NotificationName;
         static NSWorkspaceDidDeactivateApplicationNotification: &'static ns::NotificationName;
+
+        static NSWorkspaceWillPowerOffNotification: &'static ns::NotificationName;
+        static NSWorkspaceWillSleepNotification: &'static ns::NotificationName;
+        static NSWorkspaceDidWakeNotification: &'static ns::NotificationName;
+        static NSWorkspaceScreensDidSleepNotification: &'static ns::NotificationName;
+        static NSWorkspaceScreensDidWakeNotification: &'static ns::NotificationName;
+        static NSWorkspaceSessionDidBecomeActiveNotification: &'static ns::NotificationName;
+        static NSWorkspaceSessionDidResignActiveNotification: &'static ns::NotificationName;
+
+        static NSWorkspaceDidChangeFileLabelsNotification: &'static ns::NotificationName;
+        static NSWorkspaceActiveSpaceDidChangeNotification: &'static ns::NotificationName;
     }
 }
 
