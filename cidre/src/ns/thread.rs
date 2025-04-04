@@ -27,6 +27,9 @@ impl Thread {
 
     #[objc::msg_send(isCancelled)]
     pub fn is_cancelled(&self) -> bool;
+
+    #[objc::msg_send(isMainThread)]
+    pub fn is_main() -> bool;
 }
 
 #[link(name = "ns", kind = "static")]
@@ -47,5 +50,7 @@ mod tests {
         assert_eq!(dict.as_type_ref().retain_count(), 1);
 
         assert!(ns::Thread::is_mutli_threaded());
+
+        assert!(!ns::Thread::is_main());
     }
 }

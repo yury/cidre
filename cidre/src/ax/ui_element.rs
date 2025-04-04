@@ -329,6 +329,10 @@ impl Observer {
     ) -> os::Result {
         unsafe { AXObserverRemoveNotification(self, elem, notification).result() }
     }
+
+    /// Returns the observer's run loop source.
+    ///
+    /// The observer must be added to a run loop before it can receive notifications. Note that releasing the ax::Observer ref automatically
     pub fn run_loop_src(&self) -> &cf::RunLoopSrc {
         unsafe { AXObserverGetRunLoopSource(self) }
     }
