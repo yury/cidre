@@ -182,7 +182,10 @@ define_obj_type!(pub ArrayType(BaseType));
 define_obj_type!(pub PointerType(BaseType));
 define_obj_type!(pub TextureRefType(BaseType));
 
-define_obj_type!(pub Arg(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLArgument")]
+    pub Arg(ns::Id)
+);
 
 impl Arg {
     #[objc::msg_send(name)]

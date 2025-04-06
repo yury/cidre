@@ -89,6 +89,7 @@ impl Rect {
     /// let d = cg::Rect::zero().dictionary_representaion();
     /// assert_eq!(d.len(), 4);
     /// ```
+    #[inline]
     pub fn dictionary_representaion(&self) -> arc::R<cf::Dictionary> {
         unsafe { CGRectCreateDictionaryRepresentation(*self) }
     }

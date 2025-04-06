@@ -100,13 +100,13 @@ impl Path {
 
     #[doc(alias = "CGPathCreateCopyByTransformingPath")]
     #[inline]
-    pub fn copy_transforming_path(&self, transform: Option<&cg::AffineTransform>) -> arc::R<Self> {
+    pub fn transforming_path(&self, transform: Option<&cg::AffineTransform>) -> arc::R<Self> {
         unsafe { CGPathCreateCopyByTransformingPath(self, transform) }
     }
 
     #[doc(alias = "CGPathCreateMutableCopyByTransformingPath")]
     #[inline]
-    pub fn copy_mut_transforming_path(
+    pub fn transforming_path_mut(
         &self,
         transform: Option<&cg::AffineTransform>,
     ) -> arc::R<PathMut> {
@@ -115,7 +115,7 @@ impl Path {
 
     #[doc(alias = "CGPathCreateCopyByDashingPath")]
     #[inline]
-    pub fn copy_dashing_path(
+    pub fn dashing_path(
         &self,
         transform: Option<&cg::AffineTransform>,
         phase: cg::Float,
@@ -128,7 +128,7 @@ impl Path {
 
     #[doc(alias = "CGPathCreateCopyByStrokingPath")]
     #[inline]
-    pub fn copy_stroking_path(
+    pub fn stroking_path(
         &self,
         transform: Option<&cg::AffineTransform>,
         line_width: cg::Float,
@@ -203,13 +203,14 @@ impl Path {
     pub fn bounding_box(&self) -> cg::Rect {
         unsafe { CGPathGetBoundingBox(self) }
     }
-    
+
     #[doc(alias = "CGPathGetPathBoundingBox")]
     #[inline]
     pub fn path_bounding_box(&self) -> cg::Rect {
         unsafe { CGPathGetPathBoundingBox(self) }
     }
 
+    #[doc(alias = "CGPathContainsPoint")]
     #[inline]
     pub fn contains_point(
         &self,
@@ -237,13 +238,20 @@ impl Path {
         unsafe { CGPathApplyWithBlock(self, block) }
     }
 
+    #[cfg(feature = "blocks")]
     #[inline]
-    pub fn copy_normalizing(&self, even_odd_fill_rule: bool) -> arc::R<Self> {
+    pub fn apply_mut(&self, mut f: impl FnMut(&cg::PathElement)) {
+        let mut block = unsafe { ApplyBlock::stack1(&mut f) };
+        self.apply_block(&mut block);
+    }
+
+    #[inline]
+    pub fn normalizing(&self, even_odd_fill_rule: bool) -> arc::R<Self> {
         unsafe { CGPathCreateCopyByNormalizing(self, even_odd_fill_rule) }
     }
 
     #[inline]
-    pub fn copy_unioning_path(
+    pub fn unioning_path(
         &self,
         mask_path: Option<&Path>,
         even_odd_fill_rule: bool,
@@ -252,7 +260,7 @@ impl Path {
     }
 
     #[inline]
-    pub fn copy_intersecting_path(
+    pub fn intersecting_path(
         &self,
         mask_path: Option<&Path>,
         even_odd_fill_rule: bool,
@@ -261,7 +269,7 @@ impl Path {
     }
 
     #[inline]
-    pub fn copy_subtructing_path(
+    pub fn subtructing_path(
         &self,
         mask_path: Option<&Path>,
         even_odd_fill_rule: bool,
@@ -270,7 +278,7 @@ impl Path {
     }
 
     #[inline]
-    pub fn copy_symmetric_diff_of_path(
+    pub fn symmetric_diff_of_path(
         &self,
         mask_path: Option<&Path>,
         even_odd_fill_rule: bool,
@@ -279,7 +287,7 @@ impl Path {
     }
 
     #[inline]
-    pub fn copy_line_by_substructing_path(
+    pub fn line_by_substructing_path(
         &self,
         mask_path: Option<&Path>,
         even_odd_fill_rule: bool,
@@ -287,7 +295,7 @@ impl Path {
         unsafe { CGPathCreateCopyOfLineBySubtractingPath(self, mask_path, even_odd_fill_rule) }
     }
     #[inline]
-    pub fn copy_line_by_intersecting_path(
+    pub fn line_by_intersecting_path(
         &self,
         mask_path: Option<&Path>,
         even_odd_fill_rule: bool,
@@ -301,7 +309,7 @@ impl Path {
     }
 
     #[inline]
-    pub fn copy_flattering(&self, flattening_threshold: cg::Float) -> arc::R<Self> {
+    pub fn flattering(&self, flattening_threshold: cg::Float) -> arc::R<Self> {
         unsafe { CGPathCreateCopyByFlattening(self, flattening_threshold) }
     }
 
@@ -312,6 +320,7 @@ impl Path {
 }
 
 impl PartialEq for Path {
+    #[inline]
     fn eq(&self, other: &Self) -> bool {
         self.equal(other)
     }
@@ -319,10 +328,12 @@ impl PartialEq for Path {
 
 define_cf_type!(PathMut(Path));
 impl PathMut {
+    #[inline]
     pub fn new() -> arc::R<Self> {
         unsafe { CGPathCreateMutable() }
     }
 
+    #[inline]
     pub fn add_rounded_rect(
         &mut self,
         transform: Option<&cg::AffineTransform>,
@@ -740,7 +751,7 @@ mod tests {
         let path = cg::Path::with_ellipse_in_rect(cg::Rect::zero(), None);
         path.show();
 
-        let path = path.copy_stroking_path(
+        let path = path.stroking_path(
             None,
             5.0f64,
             cg::LineCap::Round,
@@ -765,5 +776,11 @@ mod tests {
         path.curve_to(10, 20, 30, -40, 10, 20);
         path.close_subpath();
         path.show();
+
+        elements.clear();
+        path.apply_mut(|element| {
+            elements.push(element.type_);
+        });
+        assert!(!elements.is_empty());
     }
 }
