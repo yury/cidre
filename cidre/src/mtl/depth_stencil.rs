@@ -120,7 +120,7 @@ impl DepthStencilDesc {
     pub fn set_depth_write_enabled(&mut self, val: bool);
 
     #[objc::msg_send(frontFaceStencil)]
-    pub fn front_face_stenil(&self) -> &StencilDesc;
+    pub fn front_face_stenil(&self) -> arc::R<StencilDesc>;
 
     #[objc::msg_send(setFrontFaceStencil:)]
     fn _set_front_face_stencil(&mut self, val: Option<&StencilDesc>);
@@ -136,7 +136,7 @@ impl DepthStencilDesc {
     }
 
     #[objc::msg_send(backFaceStencil)]
-    pub fn back_face_stencil(&self) -> &StencilDesc;
+    pub fn back_face_stencil(&self) -> arc::R<StencilDesc>;
 
     #[objc::msg_send(setBackFaceStencil:)]
     fn _set_back_face_stencil(&mut self, val: Option<&StencilDesc>);

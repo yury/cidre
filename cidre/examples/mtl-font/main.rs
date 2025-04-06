@@ -1,4 +1,5 @@
 // port of https://github.com/evanw/theta/blob/master/src/core/font.sk
+// https://nilcoalescing.com/blog/RenderingQuadraticBezierCurvesWithMetal/
 
 use cidre::{cf, cg, ci, ct, mtl, ns, simd};
 
@@ -177,24 +178,24 @@ impl GlyphCompiler {
 extern "C" fn apply(compiler: *mut GlyphCompiler, element: *mut cg::PathElement) {
     let compiler = unsafe { &mut *compiler };
     let element = unsafe { &*element };
-    use cg::PathElementType::*;
+    use cg::PathElementType as pet;
     match element.type_ {
-        MoveToPoint => {
+        pet::MoveToPoint => {
             let point = element.points()[0];
             compiler.move_to(point.x as f32, point.y as f32);
         }
-        AddLineToPoint => {
+        pet::AddLineToPoint => {
             let point = element.points()[0];
             compiler.line_to(point.x as f32, point.y as f32);
         }
-        AddQuadCurveToPoint => {
+        pet::AddQuadCurveToPoint => {
             let points = element.points();
             let c = points[0];
             let p = points[1];
             compiler.curve_to(c.x as f32, c.y as f32, p.x as f32, p.y as f32);
         }
-        AddCurveToPoint => panic!("unexpected curve to"),
-        CloseSubpath => compiler.close(),
+        pet::AddCurveToPoint => panic!("unexpected curve to"),
+        pet::CloseSubpath => compiler.close(),
     }
 }
 
@@ -208,7 +209,7 @@ typedef struct {
 
 typedef struct {
     float4 position [[position]];
-    float2 coord2;
+    float2 uv [[sample_no_perspective]];
 } Varyings;
 
 vertex Varyings glyph_vertex(
@@ -219,17 +220,18 @@ vertex Varyings glyph_vertex(
     Varyings out;
     constant Vertex &v = verticies[vid];
     out.position = float4(matrix * float3(float2(v.position.xy), 1.0), 1.0);
-    out.coord2 = float2(v.position.zw);
+    out.uv = float2(v.position.zw);
 
     return out;
 }
 
+[[early_fragment_tests]]
 fragment float4 glyph_fragment(
     Varyings in [[stage_in]],
     bool is_front_face [[front_facing]],
     constant float4 &color [[buffer(0)]]
 ) {
-    if (in.coord2.x * in.coord2.x - in.coord2.y > 0.0) {
+    if (in.uv.x * in.uv.x - in.uv.y > 0.0) {
         discard_fragment();
     }
     // Upper 4 bits: front faces
@@ -251,14 +253,14 @@ fragment float4 glyph_fragment(
 /// data for offsets 0, +1/3, and +2/3 instead. That way the shader can get
 /// data for offsets -2/3 and -1/3 with only one additional texture lookup.
 ///
-const JITTER_PATTERN: [(f32, f32); 6] = [
-    (-1.0 / 12.0, -5.0 / 12.0),
-    (1.0 / 12.0, 1.0 / 12.0),
-    (3.0 / 12.0, -1.0 / 12.0),
-    (5.0 / 12.0, 5.0 / 12.0),
-    (7.0 / 12.0, -3.0 / 12.0),
-    (9.0 / 12.0, 3.0 / 12.0),
-];
+// const JITTER_PATTERN: [(f32, f32); 6] = [
+//     (-1.0 / 12.0, -5.0 / 12.0),
+//     (1.0 / 12.0, 1.0 / 12.0),
+//     (3.0 / 12.0, -1.0 / 12.0),
+//     (5.0 / 12.0, 5.0 / 12.0),
+//     (7.0 / 12.0, -3.0 / 12.0),
+//     (9.0 / 12.0, 3.0 / 12.0),
+// ];
 
 fn main() {
     let mut verticies = Vec::<f32>::new();
@@ -323,11 +325,26 @@ fn main() {
     ca.set_load_action(mtl::LoadAction::Clear);
     ca.set_store_action(mtl::StoreAction::Store);
     ca.set_texture(Some(&rgba_texture));
+
+    let depth_desc = mtl::DepthStencilDesc::new();
+    let mut front_face_stencil = depth_desc.front_face_stenil();
+    front_face_stencil.set_depth_stencil_op(mtl::StencilOp::Invert);
+    front_face_stencil.set_compare_fn(mtl::CompareFn::Always);
+    front_face_stencil.set_read_mask(0);
+
+    let mut back_face_stencil = depth_desc.front_face_stenil();
+    back_face_stencil.set_depth_stencil_op(mtl::StencilOp::Invert);
+    back_face_stencil.set_compare_fn(mtl::CompareFn::Always);
+    back_face_stencil.set_read_mask(0);
+
+    let depth_state = device.new_depth_stencil_state(&depth_desc).unwrap();
+
     let cmd_queue = device.new_cmd_queue().unwrap();
     let mut cmd_buf = cmd_queue.new_cmd_buf_unretained_refs().unwrap();
 
     cmd_buf.render(&render_pass_desc, |enc| {
         enc.set_render_ps(&render_ps);
+        enc.set_depth_stencil_state(Some(&depth_state));
         enc.set_vp(mtl::ViewPort {
             x: 0.0,
             y: 0.0,
@@ -337,27 +354,27 @@ fn main() {
             z_far: 1.0,
         });
         enc.set_front_facing_winding(mtl::Winding::Ccw);
-        // let t = simd::f32x3x3::translate(0.0, 0.0);
-        // enc.set_vertex_arg_at(&t, 1);
+        let t = simd::f32x3x3::translate(0.0, 0.0);
+        enc.set_vertex_arg_at(&t, 1);
         enc.set_vertex_buf_at(Some(&buf), 0, 0);
-        // let color = simd::f32x4::with_rgba(1.0, 0.0, 0.0, 1.0);
-        // enc.set_fragment_arg_at(&color, 0);
-        // enc.draw_primitives(mtl::PrimitiveType::Triangle, 0, nverticies[0]);
-        for j in 0..JITTER_PATTERN.len() {
-            let (tx, ty) = JITTER_PATTERN[j];
-            let t = simd::f32x3x3::translate(tx, ty);
-            enc.set_vertex_arg_at(&t, 1);
-            if j % 2 == 0 {
-                let color = simd::f32x4::with_rgba(
-                    if j == 0 { 1.0 } else { 0.0 },
-                    if j == 2 { 1.0 } else { 0.0 },
-                    if j == 4 { 1.0 } else { 0.0 },
-                    1.0,
-                );
-                enc.set_fragment_arg_at(&color, 0);
-            }
-            enc.draw_primitives(mtl::Primitive::Triangle, 0, nverticies[0]);
-        }
+        let color = simd::f32x4::with_rgba(1.0, 0.0, 0.0, 1.0);
+        enc.set_fragment_arg_at(&color, 0);
+        enc.draw_primitives(mtl::Primitive::Triangle, 0, nverticies[0]);
+        // for j in 0..JITTER_PATTERN.len() {
+        //     let (tx, ty) = JITTER_PATTERN[j];
+        //     let t = simd::f32x3x3::translate(tx, ty);
+        //     enc.set_vertex_arg_at(&t, 1);
+        //     if j % 2 == 0 {
+        //         let color = simd::f32x4::with_rgba(
+        //             if j == 0 { 1.0 } else { 0.0 },
+        //             if j == 2 { 1.0 } else { 0.0 },
+        //             if j == 4 { 1.0 } else { 0.0 },
+        //             1.0,
+        //         );
+        //         enc.set_fragment_arg_at(&color, 0);
+        //     }
+        //     enc.draw_primitives(mtl::Primitive::Triangle, 0, nverticies[0]);
+        // }
     });
 
     cmd_buf.commit();
