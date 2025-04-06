@@ -32,30 +32,10 @@ define_obj_type!(
 
 impl SampleBufAttachDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get(&self, attachment_index: usize) -> &SampleBufAttachDesc;
-
-    #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_mut(&mut self, attachment_index: usize) -> &mut SampleBufAttachDesc;
-
-    #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_at(&self, attachment_index: usize) -> arc::R<SampleBufAttachDesc>;
+    pub fn get(&self, attachment_index: usize) -> arc::R<SampleBufAttachDesc>;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
     pub fn set(&mut self, val: Option<&SampleBufAttachDesc>, attachment_index: usize);
-}
-
-impl std::ops::Index<usize> for SampleBufAttachDescArray {
-    type Output = SampleBufAttachDesc;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        self.get(index)
-    }
-}
-
-impl std::ops::IndexMut<usize> for SampleBufAttachDescArray {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        self.get_mut(index)
-    }
 }
 
 define_obj_type!(
@@ -68,10 +48,7 @@ define_obj_type!(
 impl Desc {
     /// An array of sample buffers and associated sample indices.
     #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buf_attaches(&self) -> &SampleBufAttachDescArray;
-
-    #[objc::msg_send(sampleBufferAttachments)]
-    pub fn sample_buf_attaches_mut(&mut self) -> &mut SampleBufAttachDescArray;
+    pub fn sample_buf_attaches(&self) -> arc::R<SampleBufAttachDescArray>;
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -85,9 +62,9 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut bpd = mtl::BlitPassDesc::new();
-        let attaches = bpd.sample_buf_attaches_mut();
-        let attach = &mut attaches[0];
+        let bpd = mtl::BlitPassDesc::new();
+        let attaches = bpd.sample_buf_attaches();
+        let mut attach = attaches.get(0);
         attach.set_start_of_encoder_sample_index(0);
         assert!(attach.sample_buf().is_none());
     }

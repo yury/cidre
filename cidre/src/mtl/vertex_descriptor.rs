@@ -282,30 +282,10 @@ define_obj_type!(
 
 impl VertexBufLayoutDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get(&self, index: usize) -> &VertexBufLayoutDesc;
-
-    #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_mut(&mut self, index: usize) -> &mut VertexBufLayoutDesc;
-
-    #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_at(&self, index: usize) -> arc::R<VertexBufLayoutDesc>;
+    pub fn get(&self, index: usize) -> arc::R<VertexBufLayoutDesc>;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
     pub fn set(&mut self, val: Option<&VertexBufLayoutDesc>, index: usize);
-}
-
-impl std::ops::Index<usize> for VertexBufLayoutDescArray {
-    type Output = VertexBufLayoutDesc;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        self.get(index)
-    }
-}
-
-impl std::ops::IndexMut<usize> for VertexBufLayoutDescArray {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        self.get_mut(index)
-    }
 }
 
 define_obj_type!(
@@ -341,30 +321,10 @@ define_obj_type!(
 
 impl VertexAttrDescArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get(&self, index: usize) -> &VertexAttrDesc;
-
-    #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_mut(&mut self, index: usize) -> &mut VertexAttrDesc;
-
-    #[objc::msg_send(objectAtIndexedSubscript:)]
-    pub fn get_at(&self, index: usize) -> arc::R<VertexAttrDesc>;
+    pub fn get(&self, index: usize) -> arc::R<VertexAttrDesc>;
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
     pub fn set(&mut self, val: Option<&VertexAttrDesc>, index: usize);
-}
-
-impl std::ops::Index<usize> for VertexAttrDescArray {
-    type Output = VertexAttrDesc;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        self.get(index)
-    }
-}
-
-impl std::ops::IndexMut<usize> for VertexAttrDescArray {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        self.get_mut(index)
-    }
 }
 
 define_obj_type!(
@@ -375,16 +335,10 @@ define_obj_type!(
 
 impl Desc {
     #[objc::msg_send(layouts)]
-    pub fn layouts(&self) -> &VertexBufLayoutDescArray;
-
-    #[objc::msg_send(layouts)]
-    pub fn layouts_mut(&mut self) -> &mut VertexBufLayoutDescArray;
+    pub fn layouts(&self) -> arc::R<VertexBufLayoutDescArray>;
 
     #[objc::msg_send(attributes)]
-    pub fn attrs(&self) -> &VertexAttrDescArray;
-
-    #[objc::msg_send(attributes)]
-    pub fn attrs_mut(&mut self) -> &mut VertexAttrDescArray;
+    pub fn attrs(&self) -> arc::R<VertexAttrDescArray>;
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -400,9 +354,9 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut descriptor = mtl::VertexDesc::new();
-        let attrs = descriptor.attrs_mut();
-        attrs[0].set_format(mtl::VertexFormat::U8x2);
+        let descriptor = mtl::VertexDesc::new();
+        let attrs = descriptor.attrs();
+        attrs.get(0).set_format(mtl::VertexFormat::U8x2);
         assert_eq!(descriptor.attrs().get(0).format(), mtl::VertexFormat::U8x2);
         let descriptor = mtl::VertexBufLayoutDesc::new();
         assert_eq!(descriptor.stride(), 0);
