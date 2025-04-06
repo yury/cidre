@@ -311,7 +311,7 @@ impl VertexAttrDesc {
     pub fn buf_index(&self) -> usize;
 
     #[objc::msg_send(setBufferIndex:)]
-    pub fn set_buf_index(&self, val: usize);
+    pub fn set_buf_index(&mut self, val: usize);
 }
 
 define_obj_type!(

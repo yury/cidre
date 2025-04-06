@@ -268,10 +268,10 @@ impl State {
     define_mtl!(gpu_res_id);
 
     #[objc::msg_send(device)]
-    pub fn device(&self) -> &mtl::Device;
+    pub fn device(&self) -> arc::R<mtl::Device>;
 
     #[objc::msg_send(label)]
-    pub fn label(&self) -> Option<&ns::String>;
+    pub fn label(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(maxTotalThreadsPerThreadgroup)]
     pub fn max_total_threads_per_threadgroup(&self) -> usize;
