@@ -275,6 +275,11 @@ name = "ns_array_from"
 harness = false
 
 [[bench]]
+name = "array_indexing"
+harness = false
+
+
+[[bench]]
 name = "cf_date_formatter"
 harness = false
 

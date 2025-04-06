@@ -111,6 +111,32 @@ impl<T: objc::Obj> Array<T> {
     pub fn get<'ear>(&self, index: usize) -> ns::ExResult<arc::R<T>> {
         unsafe { ns::try_catch(|| self.get_throws(index)) }
     }
+
+    #[cfg(feature = "cf")]
+    pub fn as_cf(&self) -> &crate::cf::ArrayOf<T> {
+        unsafe { std::mem::transmute(self) }
+    }
+
+    #[cfg(feature = "cf")]
+    pub fn as_cf_mut(&mut self) -> &mut crate::cf::ArrayOf<T> {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
+#[cfg(feature = "cf")]
+impl<T: objc::Obj> std::ops::Index<usize> for Array<T> {
+    type Output = T;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.as_cf()[index]
+    }
+}
+
+#[cfg(feature = "cf")]
+impl<T: objc::Obj> std::ops::IndexMut<usize> for Array<T> {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.as_cf_mut()[index]
+    }
 }
 
 impl<T: objc::Obj> arc::A<ArrayMut<T>> {
@@ -162,6 +188,32 @@ impl<T: objc::Obj> ArrayMut<T> {
     #[inline]
     pub fn insert(&mut self, index: usize, element: &T) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.insert_obj_throws(element, index) })
+    }
+
+    #[cfg(feature = "cf")]
+    pub fn as_cf(&self) -> &crate::cf::ArrayOf<T> {
+        unsafe { std::mem::transmute(self) }
+    }
+
+    #[cfg(feature = "cf")]
+    pub fn as_cf_mut(&mut self) -> &mut crate::cf::ArrayOfMut<T> {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
+#[cfg(feature = "cf")]
+impl<T: objc::Obj> std::ops::Index<usize> for ArrayMut<T> {
+    type Output = T;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.as_cf()[index]
+    }
+}
+
+#[cfg(feature = "cf")]
+impl<T: objc::Obj> std::ops::IndexMut<usize> for ArrayMut<T> {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.as_cf_mut()[index]
     }
 }
 
@@ -419,5 +471,18 @@ mod tests {
     fn exception() {
         let arr = ns::Array::<ns::Number>::new();
         arr.get(0).expect_err("Should be exception");
+    }
+
+    #[test]
+    fn cf_indexing() {
+        let one = ns::Number::with_i32(5);
+        let arr: &[&ns::Number] = &[&one, &one];
+        let arr = ns::Array::from_slice(arr);
+
+        let a = &arr[0];
+        let b = &arr[1];
+
+        assert_eq!(&one, a);
+        assert_eq!(b, a);
     }
 }
