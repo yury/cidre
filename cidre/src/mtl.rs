@@ -289,6 +289,7 @@ mod pipeline;
 pub use pipeline::Mutability;
 pub use pipeline::PipelineBufDesc;
 pub use pipeline::PipelineBufDescArray;
+pub use pipeline::ShaderValidation;
 
 mod capture_manager;
 pub use capture_manager::CaptureDesc;

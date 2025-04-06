@@ -246,6 +246,17 @@ impl Desc {
 
     #[objc::msg_send(setSupportIndirectCommandBuffers:)]
     pub fn set_support_icbs(&mut self, val: bool);
+
+    #[objc::msg_send(shaderValidation)]
+    #[objc::available(macos = 15.0, ios = 18.0)]
+    pub fn shader_validation(&self) -> mtl::ShaderValidation;
+
+    /// Toggle that determines whether Metal Shader Validation should be enabled or disabled for the pipeline.
+    ///
+    /// The value can be overridden using `MTL_SHADER_VALIDATION_ENABLE_PIPELINES` or `MTL_SHADER_VALIDATION_DISABLE_PIPELINES` Environment Variables.
+    #[objc::msg_send(setShaderValidation:)]
+    #[objc::available(macos = 15.0, ios = 18.0)]
+    pub fn set_shader_validation(&mut self, val: mtl::ShaderValidation);
 }
 
 #[link(name = "mtl", kind = "static")]
@@ -284,6 +295,10 @@ impl State {
 
     #[objc::msg_send(supportIndirectCommandBuffers)]
     pub fn support_indirect_cmd_bufs(&self) -> bool;
+
+    #[objc::msg_send(shaderValidation)]
+    #[objc::available(macos = 15.0, ios = 18.0)]
+    pub fn shader_validation(&self) -> mtl::ShaderValidation;
 }
 
 define_obj_type!(
@@ -340,7 +355,7 @@ define_obj_type!(
 );
 
 impl TileRenderPipelineDesc {
-    define_mtl!(set_label);
+    define_mtl!(set_label, reset);
 
     #[objc::msg_send(device)]
     pub fn device(&self) -> arc::R<mtl::Device>;
@@ -371,6 +386,17 @@ impl TileRenderPipelineDesc {
 
     #[objc::msg_send(tileBuffers)]
     pub fn tile_bufs(&self) -> arc::R<mtl::PipelineBufDescArray>;
+
+    #[objc::msg_send(shaderValidation)]
+    #[objc::available(macos = 15.0, ios = 18.0)]
+    pub fn shader_validation(&self) -> mtl::ShaderValidation;
+
+    /// Toggle that determines whether Metal Shader Validation should be enabled or disabled for the pipeline.
+    ///
+    /// The value can be overridden using `MTL_SHADER_VALIDATION_ENABLE_PIPELINES` or `MTL_SHADER_VALIDATION_DISABLE_PIPELINES` Environment Variables.
+    #[objc::msg_send(setShaderValidation:)]
+    #[objc::available(macos = 15.0, ios = 18.0)]
+    pub fn set_shader_validation(&mut self, val: mtl::ShaderValidation);
 }
 
 define_obj_type!(
@@ -519,6 +545,17 @@ impl MeshRenderPipelineDesc {
 
     #[objc::msg_send(setStencilAttachmentPixelFormat:)]
     pub fn set_stencil_attach_pixel_format(&mut self, val: PixelFormat);
+
+    #[objc::msg_send(shaderValidation)]
+    #[objc::available(macos = 15.0, ios = 18.0)]
+    pub fn shader_validation(&self) -> mtl::ShaderValidation;
+
+    /// Toggle that determines whether Metal Shader Validation should be enabled or disabled for the pipeline.
+    ///
+    /// The value can be overridden using `MTL_SHADER_VALIDATION_ENABLE_PIPELINES` or `MTL_SHADER_VALIDATION_DISABLE_PIPELINES` Environment Variables.
+    #[objc::msg_send(setShaderValidation:)]
+    #[objc::available(macos = 15.0, ios = 18.0)]
+    pub fn set_shader_validation(&mut self, val: mtl::ShaderValidation);
 }
 
 #[cfg(test)]
