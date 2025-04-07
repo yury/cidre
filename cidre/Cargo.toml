@@ -267,6 +267,11 @@ name = "blocks"
 harness = false
 
 [[bench]]
+name = "impl_call"
+harness = false
+
+
+[[bench]]
 name = "cf_string"
 harness = false
 
