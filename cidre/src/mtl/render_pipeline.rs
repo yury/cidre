@@ -569,5 +569,6 @@ mod tests {
         assert!(desc.fragment_fn().is_none());
 
         desc.reset();
+        assert_eq!(desc.shader_validation(), mtl::ShaderValidation::Default);
     }
 }
