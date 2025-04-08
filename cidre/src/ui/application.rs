@@ -59,19 +59,13 @@ impl AppDelegate for AnyAppDelegate {}
 
 impl App {
     #[objc::msg_send(delegate)]
-    pub fn delegate(&self) -> Option<&AnyAppDelegate>;
-
-    #[objc::msg_send(delegate)]
-    pub fn delegate_mut(&self) -> Option<&mut AnyAppDelegate>;
+    pub fn delegate(&self) -> Option<arc::R<AnyAppDelegate>>;
 
     #[objc::msg_send(setDelegate:)]
     pub fn set_delegate(&mut self, val: Option<&AnyAppDelegate>);
 
     #[objc::msg_send(sharedApplication)]
-    pub fn shared() -> &'static Self;
-
-    #[objc::msg_send(sharedApplication)]
-    pub fn shared_mut() -> &'static mut Self;
+    pub fn shared() -> arc::R<Self>;
 
     #[objc::msg_send(isIdleTimerDisabled)]
     pub fn is_idle_timer_disabled(&self) -> bool;
