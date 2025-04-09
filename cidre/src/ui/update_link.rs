@@ -40,7 +40,7 @@ impl UpdateLink {
     }
 
     /// Varitant with target+selector pair. It will create block inside
-    #[objc::msg_send(addActionToPhase:targer:selector:)]
+    #[objc::msg_send(addActionToPhase:target:selector:)]
     pub fn add_action_to_phase_selector(
         &mut self,
         phase: &ui::UpdateActionPhase,
@@ -99,6 +99,86 @@ impl UpdateLink {
     /// update.
     #[objc::msg_send(currentUpdateInfo)]
     pub fn current() -> Option<arc::R<Self>>;
+}
+
+/// Convenience
+impl UpdateLink {
+    /// Adds action to `ui::UpdateActionPhase.before_ca_display_link_dispatch` phase
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(addActionWithHandler:)]
+    pub fn add_action_block(
+        &mut self,
+        handler: &mut blocks::EscBlock<fn(update_link: &mut Self, update_info: &ui::UpdateInfo)>,
+    );
+
+    /// Adds action to `ui::UpdateActionPhase.before_ca_display_link_dispatch` phase
+    #[cfg(feature = "blocks")]
+    pub fn add_action(&mut self, handler: impl FnMut(&mut Self, &ui::UpdateInfo) + 'static) {
+        let mut handler = blocks::EscBlock::new2(handler);
+        self.add_action_block(&mut handler);
+    }
+
+    /// Adds action to `ui::UpdateActionPhase.before_ca_display_link_dispatch` phase
+    #[objc::msg_send(addActionWithTarget:selector:)]
+    pub fn add_action_selector(&mut self, target: &ns::Id, selector: &objc::Sel);
+
+    /// Adds action to `ui::UpdateActionPhase.before_ca_display_link_dispatch` phase
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(updateLinkForWindowScene:actionHandler:)]
+    #[api::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
+    pub fn with_window_scene_handler_block(
+        window_scene: &ui::WindowScene,
+        handler: &mut blocks::EscBlock<fn(update_link: &mut Self, update_info: &ui::UpdateInfo)>,
+    ) -> arc::R<Self>;
+
+    /// Adds action to `ui::UpdateActionPhase.before_ca_display_link_dispatch` phase
+    #[objc::msg_send(updateLinkForWindowScene:actionTarget:selector:)]
+    #[api::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
+    pub fn with_window_scene_selector(
+        window_scene: &ui::WindowScene,
+        action_target: &ns::Id,
+        selector: &objc::Sel,
+    ) -> arc::R<Self>;
+
+    /// Adds action to `ui::UpdateActionPhase.before_ca_display_link_dispatch` phase
+    #[cfg(feature = "blocks")]
+    #[api::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
+    pub fn with_window_scene_handler(
+        window_scene: &ui::WindowScene,
+        handler: impl FnMut(&mut Self, &ui::UpdateInfo) + 'static,
+    ) -> arc::R<Self> {
+        let mut handler = blocks::EscBlock::new2(handler);
+        Self::with_window_scene_handler_block(window_scene, &mut handler)
+    }
+
+    /// Adds action to `ui::UpdateActionPhase.before_ca_display_link_dispatch` phase
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(updateLinkForView:actionHandler:)]
+    #[api::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
+    pub fn with_view_handler_block(
+        view: &ui::View,
+        handler: &mut blocks::EscBlock<fn(update_link: &mut Self, update_info: &ui::UpdateInfo)>,
+    ) -> arc::R<Self>;
+
+    /// Adds action to `ui::UpdateActionPhase.before_ca_display_link_dispatch` phase
+    #[cfg(feature = "blocks")]
+    #[api::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
+    pub fn with_view_handler(
+        view: &ui::View,
+        handler: impl FnMut(&mut Self, &ui::UpdateInfo) + 'static,
+    ) -> arc::R<Self> {
+        let mut handler = blocks::EscBlock::new2(handler);
+        Self::with_view_handler_block(view, &mut handler)
+    }
+
+    /// Adds action to `ui::UpdateActionPhase.before_ca_display_link_dispatch` phase
+    #[objc::msg_send(updateLinkForView:actionTarget:selector:)]
+    #[api::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
+    pub fn with_view_selector(
+        view: &ui::View,
+        action_target: &ns::Id,
+        selector: &objc::Sel,
+    ) -> arc::R<Self>;
 }
 
 #[link(name = "ui", kind = "static")]
