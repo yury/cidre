@@ -86,6 +86,15 @@ pub use interface::SizeClass;
 pub use interface::Style;
 pub use interface::TraitEnvLayoutDirection;
 
+mod update_link;
+pub use update_link::UpdateLink;
+
+mod update_info;
+pub use update_info::UpdateInfo;
+
+mod update_action_phase;
+pub use update_action_phase::UpdateActionPhase;
+
 mod layout_guide;
 pub use layout_guide::LayoutGuide;
 

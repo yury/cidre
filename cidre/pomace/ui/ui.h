@@ -26,8 +26,9 @@ Class NS_TEXT_ATTACHMENT;
 Class UI_LAYOUT_GUIDE;
 Class UI_FONT;
 Class UI_FONT_DESCRIPTOR;
-
-
+Class UI_UPDATE_LINK;
+Class UI_UPDATE_ACTION_PHASE;
+Class UI_UPDATE_INFO;
 
 __attribute__((constructor))
 static void ui_initializer(void)
@@ -55,6 +56,9 @@ static void ui_initializer(void)
         UI_LAYOUT_GUIDE = [UILayoutGuide class];
         UI_FONT = [UIFont class];
         UI_FONT_DESCRIPTOR = [UIFontDescriptor class];
+        UI_UPDATE_LINK = NSClassFromString(@"UIUpdateLink");
+        UI_UPDATE_ACTION_PHASE = NSClassFromString(@"UIUpdateActionPhase");
+        UI_UPDATE_INFO = NSClassFromString(@"UIUpdateInfo");
     }
 }
 
