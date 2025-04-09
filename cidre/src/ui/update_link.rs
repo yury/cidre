@@ -1,4 +1,7 @@
-use crate::{api, arc, blocks, ca, define_cls, define_obj_type, ns, objc, ui};
+use crate::{api, arc, ca, define_cls, define_obj_type, ns, objc, ui};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 define_obj_type!(
     #[doc(alias = "UIUpdateLink")]
@@ -18,6 +21,7 @@ impl UpdateLink {
     #[api::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
     pub fn with_view(view: &ui::View) -> arc::R<Self>;
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(addActionToPhase:handler:)]
     pub fn add_action_to_phase_block(
         &mut self,
@@ -25,6 +29,7 @@ impl UpdateLink {
         handler: &mut blocks::EscBlock<fn(update_link: &mut Self, update_info: &ui::UpdateInfo)>,
     );
 
+    #[cfg(feature = "blocks")]
     pub fn add_action_to_phase(
         &mut self,
         phase: &ui::UpdateActionPhase,
@@ -34,6 +39,7 @@ impl UpdateLink {
         self.add_action_to_phase_block(phase, &mut handler);
     }
 
+    /// Varitant with target+selector pair. It will create block inside
     #[objc::msg_send(addActionToPhase:targer:selector:)]
     pub fn add_action_to_phase_selector(
         &mut self,
