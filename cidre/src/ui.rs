@@ -118,6 +118,9 @@ mod scene_session;
 pub use scene_session::SceneCfg;
 pub use scene_session::SceneSession;
 
+mod scene_session_activation_request;
+pub use scene_session_activation_request::SceneSessionActivationRequest;
+
 mod scene_options;
 pub use scene_options::SceneActivationRequestOpts;
 pub use scene_options::SceneCollectionJoinBehavior;

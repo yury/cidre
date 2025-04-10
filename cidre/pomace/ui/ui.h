@@ -33,6 +33,7 @@ Class UI_UPDATE_INFO;
 Class UI_WINDOW_SCENE_STANDARD_PLACEMENT;
 Class UI_WINDOW_SCENE_PROMINENT_PLACEMENT;
 Class UI_WINDOW_SCENE_ACTIVATION_REQUEST_OPTIONS;
+Class UI_SCENE_SESSION_ACTIVATION_REQUEST;
 
 __attribute__((constructor))
 static void ui_initializer(void)
@@ -67,6 +68,7 @@ static void ui_initializer(void)
         UI_WINDOW_SCENE_STANDARD_PLACEMENT = NSClassFromString(@"UIWindowSceneStandardPlacement");
         UI_WINDOW_SCENE_PROMINENT_PLACEMENT = NSClassFromString(@"UIWindowSceneProminentPlacement");
         UI_WINDOW_SCENE_ACTIVATION_REQUEST_OPTIONS = NSClassFromString(@"UIWindowSceneActivationRequestOptions");
+        UI_SCENE_SESSION_ACTIVATION_REQUEST = NSClassFromString(@"UISceneSessionActivationRequest");
     }
 }
 

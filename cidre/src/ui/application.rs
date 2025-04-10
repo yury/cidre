@@ -1,3 +1,5 @@
+#[cfg(feature = "blocks")]
+use crate::blocks;
 use crate::{api, arc, define_obj_type, ns, objc, ui};
 
 #[objc::protocol(UIApplicationDelegate)]
@@ -94,6 +96,66 @@ impl App {
     pub fn open_notifications_settings_url_string() -> &'static ns::String {
         unsafe { UIApplicationOpenNotificationSettingsURLString }
     }
+}
+
+/// Scenes
+#[cfg(not(target_os = "watchos"))]
+impl App {
+    /// All of the currently connected ui::Scene instances
+    #[objc::msg_send(connectedScenes)]
+    pub fn connected_scenes(&self) -> arc::R<ns::Set<ui::Scene>>;
+
+    /// All of the representations that currently have connected ui::Scene instances or had
+    /// their sessions persisted by the system (ex: visible in iOS' switcher)
+    #[objc::msg_send(openSessions)]
+    pub fn open_sessions(&self) -> arc::R<ns::Set<ui::SceneSession>>;
+
+    #[objc::msg_send(supportsMultipleScenes)]
+    pub fn supports_multiple_scenes(&self) -> bool;
+
+    /// Asks the system to activate an existing scene, or create a new scene and associate it with your app.
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(activateSceneSessionForRequest:errorHandler:)]
+    pub fn activate_scene_session_for_request_block(
+        &self,
+        request: &ui::SceneSessionActivationRequest,
+        block: Option<&mut blocks::ErrCh>,
+    );
+
+    /// Asks the system to activate an existing scene, or create a new scene and associate it with your app.
+    #[cfg(feature = "blocks")]
+    pub fn activate_scene_session_for_request(
+        &self,
+        request: &ui::SceneSessionActivationRequest,
+        block: impl FnMut(Option<&ns::Error>) + 'static,
+    ) {
+        let mut block = blocks::ErrCh::new1(block);
+        self.activate_scene_session_for_request_block(request, Some(&mut block));
+    }
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(requestSceneSessionDestruction:options:errorHandler:)]
+    pub fn request_scene_session_destruction_block(
+        &self,
+        session: &ui::SceneSession,
+        options: Option<&ui::SceneDestructionRequestOpts>,
+        block: Option<&mut blocks::ErrCh>,
+    );
+
+    #[cfg(feature = "blocks")]
+    pub fn request_scene_session_destruction(
+        &self,
+        session: &ui::SceneSession,
+        options: Option<&ui::SceneDestructionRequestOpts>,
+        block: impl FnMut(Option<&ns::Error>) + 'static,
+    ) {
+        let mut block = blocks::ErrCh::new1(block);
+        self.request_scene_session_destruction_block(session, options, Some(&mut block));
+    }
+
+    /// Requests that any system UI representing a scene be updated due to background updates or any other relevant model/state update.
+    #[objc::msg_send(requestSceneSessionRefresh:)]
+    pub fn request_scene_session_refresh(&self, session: &ui::SceneSession);
 }
 
 unsafe extern "C" {
