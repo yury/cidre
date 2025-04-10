@@ -36,6 +36,15 @@ pub use view::ViewAutoresizing;
 mod window;
 pub use window::Window;
 
+mod window_scene_placement;
+pub use window_scene_placement::WindowScenePlacement;
+
+mod window_scene_standard_placement;
+pub use window_scene_standard_placement::WindowSceneStandardPlacement;
+
+mod window_scene_prominent_placement;
+pub use window_scene_prominent_placement::WindowSceneProminentPlacement;
+
 mod view_controller;
 pub use view_controller::ViewController;
 
@@ -110,7 +119,10 @@ pub use scene_session::SceneCfg;
 pub use scene_session::SceneSession;
 
 mod scene_options;
+pub use scene_options::SceneActivationRequestOpts;
+pub use scene_options::SceneCollectionJoinBehavior;
 pub use scene_options::SceneConnectionOpts;
+pub use scene_options::SceneDestructionRequestOpts;
 
 mod scene_windowing_behaviors;
 pub use scene_windowing_behaviors::SceneWindowingBehaviors;
@@ -129,6 +141,9 @@ pub use window_scene::SceneSizeRestrictions;
 pub use window_scene::WindowScene;
 pub use window_scene::WindowSceneDelegate;
 pub use window_scene::WindowSceneDelegateImpl;
+
+mod window_scene_activation_request_options;
+pub use window_scene_activation_request_options::WindowSceneActivationRequestOpts;
 
 #[inline]
 pub fn app_main(

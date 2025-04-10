@@ -30,6 +30,10 @@ Class UI_UPDATE_LINK;
 Class UI_UPDATE_ACTION_PHASE;
 Class UI_UPDATE_INFO;
 
+Class UI_WINDOW_SCENE_STANDARD_PLACEMENT;
+Class UI_WINDOW_SCENE_PROMINENT_PLACEMENT;
+Class UI_WINDOW_SCENE_ACTIVATION_REQUEST_OPTIONS;
+
 __attribute__((constructor))
 static void ui_initializer(void)
 {
@@ -59,6 +63,10 @@ static void ui_initializer(void)
         UI_UPDATE_LINK = NSClassFromString(@"UIUpdateLink");
         UI_UPDATE_ACTION_PHASE = NSClassFromString(@"UIUpdateActionPhase");
         UI_UPDATE_INFO = NSClassFromString(@"UIUpdateInfo");
+        
+        UI_WINDOW_SCENE_STANDARD_PLACEMENT = NSClassFromString(@"UIWindowSceneStandardPlacement");
+        UI_WINDOW_SCENE_PROMINENT_PLACEMENT = NSClassFromString(@"UIWindowSceneProminentPlacement");
+        UI_WINDOW_SCENE_ACTIVATION_REQUEST_OPTIONS = NSClassFromString(@"UIWindowSceneActivationRequestOptions");
     }
 }
 
