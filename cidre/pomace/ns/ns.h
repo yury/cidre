@@ -83,6 +83,7 @@ Class NS_XPC_INTERFACE;
 Class NS_THREAD;
 Class NS_BUNDLE;
 
+Class NS_USER_ACTIVITY;
 Class NS_USER_DEFAULTS;
 
 typedef void cidre_change(
@@ -181,6 +182,7 @@ static void common_initializer(void)
         
         NS_THREAD = [NSThread class];
         NS_BUNDLE = [NSBundle class];
+        NS_USER_ACTIVITY = [NSUserActivity class];
         NS_USER_DEFAULTS = [NSUserDefaults class];
     }
 }

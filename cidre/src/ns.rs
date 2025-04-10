@@ -85,6 +85,12 @@ pub use url_cache::CachedUrlResponse;
 pub use url_cache::StoragePolicy as UrlCacheStoragePolicy;
 pub use url_cache::UrlCache;
 
+mod user_activity;
+pub use user_activity::UserActivity;
+pub use user_activity::UserActivityDelegate;
+pub use user_activity::UserActivityDelegateImpl;
+pub use user_activity::UserActivityPersistentId;
+
 mod user_defaults;
 pub use user_defaults::UserDefaults;
 

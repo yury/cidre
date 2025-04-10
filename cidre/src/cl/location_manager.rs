@@ -84,7 +84,7 @@ impl LocationManager {
 }
 
 #[objc::protocol(CLLocationManagerDelegate)]
-pub trait Delegate {
+pub trait Delegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(locationManager:didUpdateLocations:)]
     fn location_manager_did_update_locations(
