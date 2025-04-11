@@ -16,6 +16,13 @@ impl SceneConnectionOpts {
     /// The delegate callbacks will be invoked for this activity when it is available.
     #[objc::msg_send(handoffUserActivityType)]
     pub fn handoff_user_activity_type(&self) -> Option<arc::R<ns::String>>;
+
+    /// A set of available user activities to handle on connection.
+    /// For handoff, the user activity is not immediately available and will not be in this set,
+    /// a handoff user activity will instead be indicated via the handoff_user_activity_type property
+    /// above, and the application will receive a callback on their ui::SceneDelegate when the activity is fully loaded.
+    #[objc::msg_send(userActivities)]
+    pub fn user_activities(&self) -> ns::Set<ns::UserActivity>;
 }
 
 #[doc(alias = "UISceneCollectionJoinBehavior")]

@@ -14,6 +14,7 @@ impl WindowSceneProminentPlacement {
     pub fn new() -> arc::R<Self>;
 }
 
+#[cfg(target_os = "ios")]
 #[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_WINDOW_SCENE_PROMINENT_PLACEMENT: &'static objc::Class<WindowSceneProminentPlacement>;

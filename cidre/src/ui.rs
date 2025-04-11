@@ -3,6 +3,10 @@ pub use application::App;
 pub use application::AppDelegate;
 pub use application::AppDelegateImpl;
 
+mod blur_effect;
+pub use blur_effect::BlurEffect;
+pub use blur_effect::BlurEffectStyle;
+
 mod device;
 pub use device::BatteryState as DeviceBatteryState;
 pub use device::Device;
@@ -33,6 +37,9 @@ pub use view::CoordinateSpace;
 pub use view::View;
 pub use view::ViewAutoresizing;
 
+mod visual_effect;
+pub use visual_effect::VisualEffect;
+
 mod window;
 pub use window::Window;
 
@@ -47,6 +54,15 @@ pub use window_scene_prominent_placement::WindowSceneProminentPlacement;
 
 mod view_controller;
 pub use view_controller::ViewController;
+
+mod view_controller_transition;
+pub use view_controller_transition::ViewControllerTransition;
+pub use view_controller_transition::ZoomTransitionSrcViewProviderCtx;
+
+mod zoom_transition_options;
+pub use zoom_transition_options::ZoomTransitionAlignmentRectCtx;
+pub use zoom_transition_options::ZoomTransitionInteractionCtx;
+pub use zoom_transition_options::ZoomTransitionOpts;
 
 mod navigation_controller;
 pub use navigation_controller::NavController;

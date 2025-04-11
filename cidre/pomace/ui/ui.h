@@ -19,6 +19,7 @@ Class UI_SCREEN;
 Class UI_COLOR;
 Class UI_RESPONDER;
 Class UI_VIEW_CONTROLLER;
+Class UI_VIEW_CONTROLLER_TRANSITION;
 Class UI_TAB_BAR_CONTROLLER;
 Class UI_IMAGE;
 Class UI_TRAIT_COLLECTION;
@@ -35,6 +36,9 @@ Class UI_WINDOW_SCENE_PROMINENT_PLACEMENT;
 Class UI_WINDOW_SCENE_ACTIVATION_REQUEST_OPTIONS;
 Class UI_SCENE_SESSION_ACTIVATION_REQUEST;
 
+Class UI_BLUR_EFFECT;
+Class UI_ZOOM_TRANSITION_OPTIONS;
+
 __attribute__((constructor))
 static void ui_initializer(void)
 {
@@ -50,6 +54,7 @@ static void ui_initializer(void)
         UI_COLOR = [UIColor class];
         UI_RESPONDER = NSClassFromString(@"UIResponder");
         UI_VIEW_CONTROLLER = NSClassFromString(@"UIViewController");
+        UI_VIEW_CONTROLLER_TRANSITION = NSClassFromString(@"UIViewControllerTransition");
         UI_TAB_BAR_CONTROLLER = NSClassFromString(@"UITabBarController");
         UI_APPLICATION = NSClassFromString(@"UIApplication");
         UI_WINDOW = NSClassFromString(@"UIWindow");
@@ -69,6 +74,9 @@ static void ui_initializer(void)
         UI_WINDOW_SCENE_PROMINENT_PLACEMENT = NSClassFromString(@"UIWindowSceneProminentPlacement");
         UI_WINDOW_SCENE_ACTIVATION_REQUEST_OPTIONS = NSClassFromString(@"UIWindowSceneActivationRequestOptions");
         UI_SCENE_SESSION_ACTIVATION_REQUEST = NSClassFromString(@"UISceneSessionActivationRequest");
+        
+        UI_BLUR_EFFECT = NSClassFromString(@"UIBlurEffect");
+        UI_ZOOM_TRANSITION_OPTIONS = NSClassFromString(@"UIZoomTransitionOptions");
     }
 }
 

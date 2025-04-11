@@ -83,6 +83,11 @@ impl Rect {
         }
     }
 
+    #[inline]
+    pub fn null() -> Self {
+        unsafe { CGRectNull }
+    }
+
     /// ```
     /// use cidre::cg;
     ///
@@ -119,6 +124,8 @@ pub struct Vector {
 }
 
 unsafe extern "C" {
+    static CGRectNull: Rect;
+
     fn CGPointCreateDictionaryRepresentation(point: Point) -> arc::R<cf::Dictionary>;
     fn CGSizeCreateDictionaryRepresentation(size: Size) -> arc::R<cf::Dictionary>;
     fn CGRectCreateDictionaryRepresentation(rect: Rect) -> arc::R<cf::Dictionary>;
