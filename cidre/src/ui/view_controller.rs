@@ -26,6 +26,17 @@ impl ViewController {
     pub fn set_title<S: AsRef<ns::String>>(&mut self, val: Option<&S>) {
         self.set_title_string(val.map(|s| s.as_ref()));
     }
+
+    /// Preferred system provided transition to use when displaying this
+    /// view controller. Note that this only indicates a preference.
+    /// The provided transition may be ignored if not supported by the
+    /// current context. For example, `ui::NavController` supports
+    /// the .zoom transition, but not the .cover_vertical transition.
+    #[objc::msg_send(preferredTransition)]
+    pub fn preferred_transition(&self) -> Option<arc::R<ui::ViewControllerTransition>>;
+
+    #[objc::msg_send(setPreferredTransition:)]
+    pub fn set_preferred_transition(&mut self, val: Option<&ui::ViewControllerTransition>);
 }
 
 #[link(name = "ui", kind = "static")]
