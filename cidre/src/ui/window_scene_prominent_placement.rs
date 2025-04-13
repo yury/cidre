@@ -1,10 +1,14 @@
-use crate::{arc, define_obj_type, objc, ui};
+use crate::{define_obj_type, ui};
+
+#[cfg(target_os = "ios")]
+use crate::{arc, objc};
 
 define_obj_type!(
     #[doc(alias = "UIWindowSceneProminentPlacement")]
     pub WindowSceneProminentPlacement(ui::WindowScenePlacement)
 );
 
+#[cfg(target_os = "ios")]
 impl WindowSceneProminentPlacement {
     #[objc::available(ios = 17.0)]
     crate::define_cls!(UI_WINDOW_SCENE_PROMINENT_PLACEMENT);

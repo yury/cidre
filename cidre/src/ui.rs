@@ -28,8 +28,36 @@ mod geometry;
 pub use geometry::EdgeInsets;
 pub use geometry::Offset;
 
+mod gesture_recognizer;
+pub use gesture_recognizer::GestureRecognizer;
+
+mod pan_gesture_recognizer;
+pub use pan_gesture_recognizer::PanGestureRecognizer;
+
+mod tap_gesture_recognizer;
+pub use tap_gesture_recognizer::TapGestureRecognizer;
+
+mod navigation_bar;
+pub use navigation_bar::NavBar;
+
 mod responder;
 pub use responder::Responder;
+
+mod touch;
+pub use touch::ForceTouchCapability;
+pub use touch::Touch;
+pub use touch::TouchPhase;
+pub use touch::TouchProps;
+pub use touch::TouchType;
+
+mod press;
+pub use press::Press;
+
+mod event;
+pub use event::Event;
+
+mod key;
+pub use key::Key;
 
 mod view;
 pub use view::AnyCoordinateSpace;
@@ -66,6 +94,11 @@ pub use zoom_transition_options::ZoomTransitionOpts;
 
 mod navigation_controller;
 pub use navigation_controller::NavController;
+pub use navigation_controller::NavControllerDelegate;
+pub use navigation_controller::NavControllerDelegateImpl;
+
+mod toolbar;
+pub use toolbar::Toolbar;
 
 mod tab;
 pub use tab::Tab;

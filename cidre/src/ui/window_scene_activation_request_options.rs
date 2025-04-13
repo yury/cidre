@@ -7,6 +7,7 @@ define_obj_type!(
     #[api::available(ios = 15.0)]
 );
 
+#[cfg(target_os = "ios")]
 impl WindowSceneActivationRequestOpts {
     #[objc::msg_send(placement)]
     pub fn placement(&self) -> Option<arc::R<ui::WindowScenePlacement>>;
