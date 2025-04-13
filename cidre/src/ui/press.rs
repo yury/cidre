@@ -64,5 +64,6 @@ impl Press {
     #[objc::msg_send(force)]
     pub fn force(&self) -> cg::Float;
 
-    // pub fn key(&self) -> ui::Ke
+    #[objc::msg_send(key)]
+    pub fn key(&self) -> Option<arc::R<ui::Key>>;
 }

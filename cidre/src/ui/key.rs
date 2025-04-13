@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, ns, objc, ui};
 
 define_obj_type!(
     pub Key(ns::Id)
@@ -20,4 +20,7 @@ impl Key {
     /// taking shift key into account). If only a modifier key was pressed, this property will contain an empty string.
     #[objc::msg_send(charactersIgnoringModifiers)]
     pub fn characters_ignoring_modifiers(&self) -> arc::R<ns::String>;
+
+    #[objc::msg_send(modifierFlags)]
+    pub fn mod_flags(&self) -> ui::KeyModFlags;
 }

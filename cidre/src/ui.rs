@@ -59,6 +59,9 @@ pub use event::Event;
 mod key;
 pub use key::Key;
 
+mod command;
+pub use command::KeyModFlags;
+
 mod view;
 pub use view::AnyCoordinateSpace;
 pub use view::CoordinateSpace;
