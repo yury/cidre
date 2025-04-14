@@ -12,6 +12,10 @@ pub enum GestureRecognizerState {
     Failed,
 }
 
+impl GestureRecognizerState {
+    pub const RECOGNIZED: Self = Self::Ended;
+}
+
 define_obj_type!(
     #[doc(alias = "UIGestureRecognizer")]
     pub GestureRecognizer(ns::Id)

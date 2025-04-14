@@ -55,6 +55,8 @@ pub use press::Press;
 
 mod event;
 pub use event::Event;
+pub use event::EventButtonMask;
+pub use event::EventSubType;
 
 mod key;
 pub use key::Key;

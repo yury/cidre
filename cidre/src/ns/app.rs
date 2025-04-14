@@ -56,6 +56,13 @@ pub use graphics::EdgeInsets;
 pub use graphics::WindowDepth;
 pub use graphics::WindowOrderingMode;
 
+mod gesture_recognizer;
+pub use gesture_recognizer::AnyGestureRecognizerDelegate;
+pub use gesture_recognizer::GestureRecognizer;
+pub use gesture_recognizer::GestureRecognizerDelegate;
+pub use gesture_recognizer::GestureRecognizerDelegateImpl;
+pub use gesture_recognizer::GestureRecognizerState;
+
 mod image;
 pub use image::Image;
 pub use image::ImageSymbolCfg;
