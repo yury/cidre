@@ -11,7 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 Class NS_APPLICATION;
 Class NS_CELL;
-Class NS_COLOR_SPACE;
 Class NS_VIEW;
 Class NS_COLOR;
 Class NS_WINDOW;
@@ -32,6 +31,7 @@ Class NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER;
 Class NS_BUTTON;
 Class NS_TEXT_FIELD;
 Class NS_FONT;
+Class NS_FONT_MANAGER;
 Class NS_GESTURE_RECOGNIZER;
 
 __attribute__((constructor))
@@ -67,6 +67,7 @@ static void app_initializer(void)
         NS_BUTTON = [NSButton class];
         NS_TEXT_FIELD = [NSTextField class];
         NS_FONT = [NSFont class];
+        NS_FONT_MANAGER = [NSFontManager class];
         NS_GESTURE_RECOGNIZER = [NSGestureRecognizer class];
     }
 }

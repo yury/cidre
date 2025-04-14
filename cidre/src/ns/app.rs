@@ -51,6 +51,10 @@ pub use event::PointingDeviceType;
 mod font;
 pub use font::Font;
 
+mod font_manager;
+pub use font_manager::FontManager;
+pub use font_manager::FontTraitMask;
+
 mod graphics;
 pub use graphics::EdgeInsets;
 pub use graphics::WindowDepth;
