@@ -32,6 +32,7 @@ Class NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER;
 Class NS_BUTTON;
 Class NS_TEXT_FIELD;
 Class NS_FONT;
+Class NS_GESTURE_RECOGNIZER;
 
 __attribute__((constructor))
 static void app_initializer(void)
@@ -66,6 +67,7 @@ static void app_initializer(void)
         NS_BUTTON = [NSButton class];
         NS_TEXT_FIELD = [NSTextField class];
         NS_FONT = [NSFont class];
+        NS_GESTURE_RECOGNIZER = [NSGestureRecognizer class];
     }
 }
 

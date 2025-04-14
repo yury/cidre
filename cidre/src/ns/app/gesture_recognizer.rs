@@ -15,12 +15,26 @@ impl GestureRecognizerState {
     pub const RECOGNIZED: Self = Self::Ended;
 }
 
+impl arc::A<GestureRecognizer> {
+    #[objc::msg_send(initWithTarget:action:)]
+    pub fn init_with_target(
+        self,
+        target: Option<&ns::Id>,
+        action: Option<&objc::Sel>,
+    ) -> arc::R<GestureRecognizer>;
+}
+
 define_obj_type!(
     #[doc(alias = "NSGestureRecognizer")]
-    pub GestureRecognizer(ns::Id)
+    pub GestureRecognizer(ns::Id),
+    NS_GESTURE_RECOGNIZER
 );
 
 impl GestureRecognizer {
+    pub fn with_target(target: Option<&ns::Id>, action: Option<&objc::Sel>) -> arc::R<Self> {
+        Self::alloc().init_with_target(target, action)
+    }
+
     #[objc::msg_send(target)]
     pub fn target(&self) -> Option<arc::R<ns::Id>>;
 
@@ -141,3 +155,26 @@ define_obj_type!(
 );
 
 impl GestureRecognizerDelegate for AnyGestureRecognizerDelegate {}
+
+unsafe extern "C" {
+    static NS_GESTURE_RECOGNIZER: &'static objc::Class<GestureRecognizer>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::ns;
+
+    #[test]
+    fn basics() {
+        let gr = ns::GestureRecognizer::new();
+        assert!(gr.is_enabled());
+        assert!(gr.action().is_none());
+        assert!(gr.target().is_none());
+        assert!(gr.delegate().is_none());
+        let gr = ns::GestureRecognizer::with_target(None, None);
+        assert!(gr.is_enabled());
+        assert!(gr.action().is_none());
+        assert!(gr.target().is_none());
+        assert!(gr.delegate().is_none());
+    }
+}
