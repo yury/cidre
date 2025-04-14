@@ -59,6 +59,9 @@ pub use event::Event;
 mod key;
 pub use key::Key;
 
+mod key_constants;
+pub use key_constants::KeyboardHidUsage;
+
 mod command;
 pub use command::KeyModFlags;
 

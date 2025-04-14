@@ -92,8 +92,8 @@ impl GestureRecognizer {
     #[objc::msg_send(setName:)]
     pub fn set_name(&mut self, val: Option<&ns::String>);
 
-    // #[objc::msg_send(modifierFlags)]
-    // pub fn modifier_flags(&self) -> ui::KeyModifierFlags;
+    #[objc::msg_send(modifierFlags)]
+    pub fn modifier_flags(&self) -> ui::KeyModFlags;
 }
 
 #[objc::protocol(UIGestureRecognizerDelegate)]

@@ -21,6 +21,11 @@ impl Key {
     #[objc::msg_send(charactersIgnoringModifiers)]
     pub fn characters_ignoring_modifiers(&self) -> arc::R<ns::String>;
 
+    /// A bitfield representing which modifier keys are currently being held in addition to this key.
     #[objc::msg_send(modifierFlags)]
     pub fn mod_flags(&self) -> ui::KeyModFlags;
+
+    /// The raw HID usage code for the pressed key.
+    #[objc::msg_send(keyCode)]
+    pub fn key_code(&self) -> ui::KeyboardHidUsage;
 }

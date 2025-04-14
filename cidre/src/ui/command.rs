@@ -1,6 +1,7 @@
 use crate::define_opts;
 
 define_opts!(
+    #[doc(alias = "UIKeyModifierFlags")]
     pub KeyModFlags(isize)
 );
 
