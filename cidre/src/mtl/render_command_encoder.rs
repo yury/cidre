@@ -28,7 +28,7 @@ pub enum Primitive {
 }
 
 #[doc(alias = "MTLVisibilityResultMode")]
-#[derive(Copy, Clone, Eq, PartialEq, Debug)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(usize)]
 pub enum VisibilityResultMode {
     #[doc(alias = "MTLVisibilityResultModeDisabled")]
@@ -42,7 +42,7 @@ pub enum VisibilityResultMode {
 }
 
 #[doc(alias = "MTLScissorRect")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(C)]
 pub struct ScissorRect {
     pub x: usize,
@@ -53,7 +53,7 @@ pub struct ScissorRect {
 
 /// A 3D rectangular region for the viewport clipping.
 #[doc(alias = "MTLViewPort")]
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 #[repr(C)]
 pub struct ViewPort {
     /// The x coordinate of the upper-left corner of the viewport.
@@ -68,6 +68,20 @@ pub struct ViewPort {
     pub z_near: f64,
     /// The z coordinate of the far clipping plane of the viewport.
     pub z_far: f64,
+}
+
+impl ViewPort {
+    #[inline]
+    pub const fn with_scissor_rect(rect: &ScissorRect) -> Self {
+        Self {
+            x: rect.x as _,
+            y: rect.y as _,
+            width: rect.width as _,
+            height: rect.height as _,
+            z_near: 0.0,
+            z_far: 1.0,
+        }
+    }
 }
 
 /// The mode that determines whether to perform culling and which type of
@@ -233,6 +247,34 @@ impl RenderCmdEncoder {
             z_near: 0.into(),
             z_far: 1.into(),
         })
+    }
+
+    #[objc::msg_send(setViewport:count:)]
+    pub fn set_vps_count(&mut self, val: *const mtl::ViewPort, count: usize);
+
+    /// Specifies an array of viewports, which are used to transform vertices from normalized device
+    /// coordinates to window coordinates based on [[ viewport_array_index ]] value specified in
+    /// the vertex shader.
+    #[inline]
+    pub fn set_vps(&mut self, val: &[mtl::ViewPort]) {
+        self.set_vps_count(val.as_ptr(), val.len());
+    }
+
+    /// An mtl::ScissorRect instance that represents a rectangle that needs to lie completely within the current render attachment.
+    ///
+    /// Specifies a rectangle for a fragment scissor test.  All fragments outside of this rectangle are discarded.
+    #[objc::msg_send(setScissorRect:)]
+    pub fn set_scissor_rect(&mut self, val: mtl::ScissorRect);
+
+    #[objc::msg_send(setScissorRects:count:)]
+    pub fn set_scissor_rects_count(&mut self, val: *const mtl::ScissorRect, count: usize);
+
+    /// Specifies an array of rectangles for a fragment scissor test. The specific rectangle used is based
+    /// on the [[ viewport_array_index ]] value output by the vertex shader. Fragments that lie outside
+    /// the scissor rectangle are discarded.
+    #[inline]
+    pub fn set_scissor_rects(&mut self, val: &[mtl::ScissorRect]) {
+        self.set_scissor_rects_count(val.as_ptr(), val.len());
     }
 
     #[objc::msg_send(setTriangleFillMode:)]
