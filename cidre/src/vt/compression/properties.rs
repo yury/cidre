@@ -315,6 +315,23 @@ pub mod keys {
         unsafe { kVTCompressionPropertyKey_ExpectedFrameRate }
     }
 
+    /// Indicates the maximum real time rate at which frames could be submitted to the VTCompressionSession
+    /// CFNumber/Optional
+    ///
+    /// The frame rate is measured in frames per second.
+    /// This property can be used to inform the encoder of the maximum rate that frames could be submitted to the encoder during realtime
+    /// encoding.  This allows the encoder to configure itself to ensure this capability.
+    /// This property can only be used when kVTCompressionPropertyKey_RealTime has been set to true.
+    /// Unlike kVTCompressionPropertyKey_ExpectedFrameRate, this property informs the maximum possible rate that the
+    /// VTCompressionSession could see, not the average frame rate that is expected in normal operation.
+    /// By default, the property has a value of zero indicating "unknown".
+    #[doc(alias = "kVTCompressionPropertyKey_MaximumRealTimeFrameRate")]
+    #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0, visionos = 2.0)]
+    #[inline]
+    pub fn max_real_time_frame_rate() -> &'static cf::String {
+        unsafe { kVTCompressionPropertyKey_MaximumRealTimeFrameRate }
+    }
+
     /// An estimate of the expected size in bytes of a single encoded frame based
     /// on the current configuration.
     #[doc(alias = "kVTCompressionPropertyKey_EstimatedAverageBytesPerFrame")]
@@ -579,6 +596,9 @@ pub mod keys {
         static kVTCompressionPropertyKey_MaximizePowerEfficiency: &'static cf::String;
         static kVTCompressionPropertyKey_SourceFrameCount: &'static cf::String;
         static kVTCompressionPropertyKey_ExpectedFrameRate: &'static cf::String;
+
+        #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0, visionos = 2.0)]
+        static kVTCompressionPropertyKey_MaximumRealTimeFrameRate: &'static cf::String;
         static kVTCompressionPropertyKey_EstimatedAverageBytesPerFrame: &'static cf::String;
         static kVTCompressionPropertyKey_ConstantBitRate: &'static cf::String;
         static kVTCompressionPropertyKey_BaseLayerFrameRateFraction: &'static cf::String;
