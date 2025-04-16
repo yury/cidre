@@ -63,6 +63,9 @@ pub use path::Path;
 pub use path::Status as PathStatus;
 pub use path::UnsatisfiedReason as PathUnsatisfiedReason;
 
+pub mod path_monitor;
+pub use path_monitor::PathMonitor;
+
 mod protocol_options;
 pub use protocol_options::ProtocolDefinition;
 pub use protocol_options::ProtocolMetadata;
