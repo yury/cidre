@@ -127,13 +127,15 @@ unsafe extern "C-unwind" {
 mod tests {
     use std::sync::{Arc, atomic};
 
-    use crate::nw;
+    use crate::{dispatch, nw};
 
     #[test]
     fn basics() {
+        let queue = dispatch::Queue::new();
         let cancelled = Arc::new(atomic::AtomicBool::new(false));
         {
             let mut monitor = nw::PathMonitor::new();
+            monitor.set_queue(&queue);
             let block_cancelled = cancelled.clone();
 
             monitor
@@ -145,6 +147,7 @@ mod tests {
             monitor.set_cancel_handler_block(None);
             // cancel called on monitor drop actually
         }
+        queue.sync(|| {});
         let cancelled =
             Arc::try_unwrap(cancelled).expect("Arc is not released in cancel handler block");
         assert_eq!(true, cancelled.load(atomic::Ordering::SeqCst));
