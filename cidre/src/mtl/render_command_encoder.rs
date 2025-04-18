@@ -42,18 +42,18 @@ pub enum VisibilityResultMode {
 }
 
 #[doc(alias = "MTLScissorRect")]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
 #[repr(C)]
 pub struct ScissorRect {
     pub x: usize,
     pub y: usize,
-    pub width: usize,
-    pub height: usize,
+    pub w: usize,
+    pub h: usize,
 }
 
 /// A 3D rectangular region for the viewport clipping.
 #[doc(alias = "MTLViewPort")]
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Default, Debug, PartialEq, Copy, Clone)]
 #[repr(C)]
 pub struct ViewPort {
     /// The x coordinate of the upper-left corner of the viewport.
@@ -61,9 +61,9 @@ pub struct ViewPort {
     /// The y coordinate of the upper-left corner of the viewport.
     pub y: f64,
     /// The width of the viewport, in pixels.
-    pub width: f64,
+    pub w: f64,
     /// The height of the viewport, in pixels.
-    pub height: f64,
+    pub h: f64,
     /// The z coordinate of the near clipping plane of the viewport.
     pub z_near: f64,
     /// The z coordinate of the far clipping plane of the viewport.
@@ -76,8 +76,8 @@ impl ViewPort {
         Self {
             x: rect.x as _,
             y: rect.y as _,
-            width: rect.width as _,
-            height: rect.height as _,
+            w: rect.w as _,
+            h: rect.h as _,
             z_near: 0.0,
             z_far: 1.0,
         }
@@ -242,8 +242,8 @@ impl RenderCmdEncoder {
         self.set_vp(ViewPort {
             x: x.into(),
             y: y.into(),
-            width: width.into(),
-            height: height.into(),
+            w: width.into(),
+            h: height.into(),
             z_near: 0.into(),
             z_far: 1.into(),
         })
@@ -312,21 +312,21 @@ impl RenderCmdEncoder {
     pub fn set_stencil_store_action(&mut self, val: mtl::StoreAction);
 
     #[objc::msg_send(setVertexBytes:length:atIndex:)]
-    pub fn set_vertex_bytes_at(
+    pub fn copy_bytes_to_vertex_at(
         &mut self,
         bytes: *const u8,
         length: ns::UInteger,
-        index: ns::UInteger,
+        binding_index: ns::UInteger,
     );
 
     #[inline]
-    pub fn set_vertex_slice_at<T>(&mut self, slice: &[T], index: usize) {
-        self.set_vertex_bytes_at(slice.as_ptr().cast(), std::mem::size_of_val(slice), index)
+    pub fn copy_slice_to_vertex_at<T>(&mut self, slice: &[T], index: usize) {
+        self.copy_bytes_to_vertex_at(slice.as_ptr().cast(), std::mem::size_of_val(slice), index)
     }
 
     #[inline]
-    pub fn set_vertex_arg_at<T>(&mut self, val: &T, index: usize) {
-        self.set_vertex_bytes_at(val as *const T as _, std::mem::size_of::<T>(), index)
+    pub fn copy_to_vertex_at<T>(&mut self, val: &T, index: usize) {
+        self.copy_bytes_to_vertex_at(val as *const T as _, std::mem::size_of::<T>(), index)
     }
 
     #[objc::msg_send(setVertexBuffer:offset:atIndex:)]
@@ -422,11 +422,11 @@ impl RenderCmdEncoder {
     pub fn set_fragment_buf_at(&mut self, buf: Option<&mtl::Buf>, offset: usize, at_index: usize);
 
     #[objc::msg_send(setFragmentBytes:length:atIndex:)]
-    pub fn set_fragment_bytes_at(&mut self, bytes: *const u8, len: usize, at_index: usize);
+    pub fn copy_bytes_to_fragment_at(&mut self, bytes: *const u8, len: usize, at_index: usize);
 
     #[inline]
-    pub fn set_fragment_slice_at<T>(&mut self, slice: &[T], at_index: usize) {
-        self.set_fragment_bytes_at(
+    pub fn copy_slice_to_fragment_at<T>(&mut self, slice: &[T], at_index: usize) {
+        self.copy_bytes_to_fragment_at(
             slice.as_ptr().cast(),
             std::mem::size_of_val(slice),
             at_index,
@@ -434,8 +434,8 @@ impl RenderCmdEncoder {
     }
 
     #[inline]
-    pub fn set_fragment_arg_at<T>(&mut self, val: &T, index: usize) {
-        self.set_fragment_bytes_at(val as *const T as _, std::mem::size_of::<T>(), index)
+    pub fn copy_to_fragment_at<T>(&mut self, val: &T, index: usize) {
+        self.copy_bytes_to_fragment_at(val as *const T as _, std::mem::size_of::<T>(), index)
     }
 
     /// Set a global texture for all fragment shaders at the given bind point index.
@@ -565,6 +565,40 @@ impl RenderCmdEncoder {
     #[objc::msg_send(tileHeight)]
     #[api::available(macos = 11.0, maccatalyst = 14.0, ios = 11.0, tvos = 14.5)]
     pub fn tile_height(&self) -> usize;
+
+    /// Set the data (by copy) for a given tile buffer binding point.  This will remove any existing mtl::Buffer from the binding point.
+    ///
+    /// The method is equivalent to creating an mtl::Buffer instance that contains the same data as bytes and calling
+    /// the `set_tile_buf_at` method. However, this method avoids the overhead of creating a buffer to store your data;
+    /// instead, Metal manages the data.
+    ///
+    /// Important:
+    ///
+    /// Only call this method for single-use data that’s smaller than 4 KB.
+    #[objc::msg_send(setTileBytes:length:atIndex:)]
+    #[api::available(macos = 11.0, maccatalyst = 14.0, ios = 11.0, tvos = 14.5)]
+    pub fn copy_bytes_to_tile_at(
+        &mut self,
+        bytes: *const std::ffi::c_void,
+        len: ns::UInteger,
+        at_index: ns::UInteger,
+    );
+
+    #[inline]
+    #[api::available(macos = 11.0, maccatalyst = 14.0, ios = 11.0, tvos = 14.5)]
+    pub fn copy_slice_to_tile_at<T>(&mut self, slice: &[T], index: usize) {
+        self.copy_bytes_to_tile_at(slice.as_ptr().cast(), std::mem::size_of_val(slice), index)
+    }
+
+    #[inline]
+    #[api::available(macos = 11.0, maccatalyst = 14.0, ios = 11.0, tvos = 14.5)]
+    pub fn copy_to_tile_at<T>(&mut self, val: &T, index: usize) {
+        self.copy_bytes_to_tile_at(val as *const T as _, std::mem::size_of::<T>(), index)
+    }
+
+    #[objc::msg_send(setTileBuffer:offset:atIndex:)]
+    #[api::available(macos = 11.0, maccatalyst = 14.0, ios = 11.0, tvos = 14.5)]
+    pub fn set_tile_buf_at(&mut self, buf: Option<&mtl::Buf>, offset: usize, index: usize);
 
     #[objc::msg_send(setTileTexture:atIndex:)]
     #[api::available(macos = 11.0, maccatalyst = 14.0, ios = 11.0, tvos = 14.5)]

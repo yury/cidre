@@ -348,17 +348,17 @@ fn main() {
         enc.set_vp(mtl::ViewPort {
             x: 0.0,
             y: 0.0,
-            width: 1920.0,
-            height: 1080.0,
+            w: 1920.0,
+            h: 1080.0,
             z_near: 0.0,
             z_far: 1.0,
         });
         enc.set_front_facing_winding(mtl::Winding::Ccw);
         let t = simd::f32x3x3::translate(0.0, 0.0);
-        enc.set_vertex_arg_at(&t, 1);
+        enc.copy_to_vertex_at(&t, 1);
         enc.set_vertex_buf_at(Some(&buf), 0, 0);
         let color = simd::f32x4::with_rgba(1.0, 0.0, 0.0, 1.0);
-        enc.set_fragment_arg_at(&color, 0);
+        enc.copy_to_fragment_at(&color, 0);
         enc.draw_primitives(mtl::Primitive::Triangle, 0, nverticies[0]);
         // for j in 0..JITTER_PATTERN.len() {
         //     let (tx, ty) = JITTER_PATTERN[j];
