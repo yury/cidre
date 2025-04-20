@@ -325,3 +325,14 @@ impl DepthAttachDesc {
     #[objc::msg_send(setDepthResolveFilter:)]
     pub fn set_depth_resolve_filter(&mut self, val: MultisampleDepthResolveFilter);
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::mtl;
+    #[test]
+    fn basics() {
+        let mut rpd = mtl::RenderPassDesc::new();
+        // doesn't throw
+        rpd.set_tile_width(1024);
+    }
+}

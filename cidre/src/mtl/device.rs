@@ -158,6 +158,17 @@ impl Device {
     #[objc::msg_send(newDefaultLibrary)]
     pub fn new_default_lib(&self) -> Option<arc::R<Lib>>;
 
+    #[objc::msg_send(newDefaultLibraryWithBundle:error:)]
+    pub unsafe fn new_default_lib_with_bundle_err<'ear>(
+        &self,
+        bundle: &ns::Bundle,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<Lib>>;
+
+    pub fn new_default_lib_with_bundle(&self, bundle: &ns::Bundle) -> ns::Result<arc::R<Lib>> {
+        ns::if_none(|err| unsafe { self.new_default_lib_with_bundle_err(bundle, err) })
+    }
+
     #[objc::msg_send(newLibraryWithSource:options:error:)]
     pub unsafe fn new_lib_with_src_err<'ear>(
         &self,

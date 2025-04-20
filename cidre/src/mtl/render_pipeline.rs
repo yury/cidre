@@ -387,6 +387,14 @@ impl TileRenderPipelineDesc {
     #[objc::msg_send(tileBuffers)]
     pub fn tile_bufs(&self) -> arc::R<mtl::PipelineBufDescArray>;
 
+    #[objc::msg_send(maxTotalThreadsPerThreadgroup)]
+    #[objc::available(macos = 10.15, ios = 12.0)]
+    pub fn max_total_threads_per_threadgroup(&self) -> usize;
+
+    #[objc::msg_send(setMaxTotalThreadsPerThreadgroup:)]
+    #[objc::available(macos = 10.15, ios = 12.0)]
+    pub fn set_max_total_threads_per_threadgroup(&mut self, val: usize);
+
     #[objc::msg_send(shaderValidation)]
     #[objc::available(macos = 15.0, ios = 18.0)]
     pub fn shader_validation(&self) -> mtl::ShaderValidation;
@@ -397,6 +405,14 @@ impl TileRenderPipelineDesc {
     #[objc::msg_send(setShaderValidation:)]
     #[objc::available(macos = 15.0, ios = 18.0)]
     pub fn set_shader_validation(&mut self, val: mtl::ShaderValidation);
+
+    #[objc::msg_send(maxCallStackDepth)]
+    #[objc::available(macos = 12.0, ios = 15.0)]
+    pub fn max_call_stack_depth(&self) -> usize;
+
+    #[objc::msg_send(setMaxCallStackDepth:)]
+    #[objc::available(macos = 12.0, ios = 15.0)]
+    pub fn set_max_call_stack_depth(&mut self, val: usize);
 }
 
 define_obj_type!(
