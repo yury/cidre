@@ -24,6 +24,16 @@ impl FnConstValues {
         self.set_value_at(&val as *const u8 as *const _, mtl::DType::U8, at_index);
     }
 
+    pub fn set_u16_at(&mut self, val: u16, at_index: usize) {
+        debug_assert!(at_index <= u16::MAX as _);
+        self.set_value_at(&val as *const u16 as *const _, mtl::DType::U16, at_index);
+    }
+
+    pub fn set_u16x2_at(&mut self, val: &[u16; 2], at_index: usize) {
+        debug_assert!(at_index <= u16::MAX as _);
+        self.set_value_at(val.as_ptr() as *const _, mtl::DType::U16x2, at_index);
+    }
+
     #[objc::msg_send(setConstantValues:type:withRange:)]
     pub fn set_values(&mut self, values: *const c_void, type_: mtl::DType, with_range: ns::Range);
 
