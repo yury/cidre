@@ -121,6 +121,11 @@ impl IndirectCmdBuf {
         self.reset_with_range(ns::Range::new(range.start, range.len()))
     }
 
+    pub fn reset_all(&mut self) {
+        let len = self.len();
+        self.reset_with_range(ns::Range::new(0, len))
+    }
+
     #[objc::msg_send(indirectRenderCommandAtIndex:)]
     pub unsafe fn indirect_render_cmd_at_throws(
         &self,

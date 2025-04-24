@@ -249,7 +249,7 @@ impl RenderCmdEncoder {
         })
     }
 
-    #[objc::msg_send(setViewport:count:)]
+    #[objc::msg_send(setViewports:count:)]
     pub fn set_vps_count(&mut self, val: *const mtl::ViewPort, count: usize);
 
     /// Specifies an array of viewports, which are used to transform vertices from normalized device
