@@ -296,6 +296,9 @@ pub use capture_manager::CaptureDesc;
 pub use capture_manager::CaptureDst;
 pub use capture_manager::CaptureManager;
 
+mod capture_scope;
+pub use capture_scope::CaptureScope;
+
 #[macro_export]
 macro_rules! define_mtl {
     (set_label) => {
