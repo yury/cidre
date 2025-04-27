@@ -3,6 +3,9 @@ use crate::{api, arc, cg, define_cls, define_obj_type, ns, objc};
 #[cfg(feature = "mtl")]
 use crate::{cf, mtl};
 
+#[cfg(feature = "cv")]
+use crate::cv;
+
 define_obj_type!(
     /// A representation of an image to be processed or produced by Core Image filters.
     #[doc(alias = "CIImage")]
@@ -17,6 +20,22 @@ impl arc::A<Image> {
         texture: &mtl::Texture,
         options: Option<&cf::DictionaryOf<ImageOpt, cf::Type>>,
     ) -> Option<arc::Retained<Image>>;
+
+    #[cfg(feature = "cv")]
+    #[objc::msg_send(initWithCVImageBuffer:options:)]
+    pub fn init_with_cv_image_buf_options(
+        self,
+        image_buf: &cv::ImageBuf,
+        options: Option<&cf::DictionaryOf<ImageOpt, cf::Type>>,
+    ) -> Option<arc::Retained<Image>>;
+
+    #[cfg(feature = "cv")]
+    #[objc::msg_send(initWithCVPixelBuffer:options:)]
+    pub fn init_with_cv_pixel_buf_options(
+        self,
+        pixel_buf: &cv::PixelBuf,
+        options: Option<&cf::DictionaryOf<ImageOpt, cf::Type>>,
+    ) -> Option<arc::Retained<Image>>;
 }
 
 impl Image {
@@ -28,6 +47,22 @@ impl Image {
         options: Option<&cf::DictionaryOf<ImageOpt, cf::Type>>,
     ) -> Option<arc::R<Self>> {
         Self::alloc().init_with_mlt_texture_options(texture, options)
+    }
+
+    #[cfg(feature = "cv")]
+    pub fn with_cv_image_buf(
+        image_buf: &cv::ImageBuf,
+        options: Option<&cf::DictionaryOf<ImageOpt, cf::Type>>,
+    ) -> Option<arc::R<Self>> {
+        Self::alloc().init_with_cv_image_buf_options(image_buf, options)
+    }
+
+    #[cfg(feature = "cv")]
+    pub fn with_cv_pixel_buf(
+        pixel_buf: &cv::PixelBuf,
+        options: Option<&cf::DictionaryOf<ImageOpt, cf::Type>>,
+    ) -> Option<arc::R<Self>> {
+        Self::alloc().init_with_cv_pixel_buf_options(pixel_buf, options)
     }
 
     #[objc::msg_send(imageByClampingToRect:)]
