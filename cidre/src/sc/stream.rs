@@ -644,7 +644,7 @@ impl Stream {
     }
 
     #[objc::msg_send(addStreamOutput:type:sampleHandlerQueue:error:)]
-    fn add_stream_output_type_sample_handler_queue_err<D: Output>(
+    unsafe fn add_stream_output_type_sample_handler_queue_err<D: Output>(
         &self,
         output: &D,
         output_type: OutputType,
@@ -658,16 +658,66 @@ impl Stream {
         output_type: OutputType,
         queue: Option<&dispatch::Queue>,
     ) -> ns::Result {
-        let mut error = None;
-        if self.add_stream_output_type_sample_handler_queue_err(
-            output,
-            output_type,
-            queue,
-            &mut error,
-        ) {
-            return Ok(());
-        }
-        Err(error.unwrap())
+        ns::if_false(|err| unsafe {
+            self.add_stream_output_type_sample_handler_queue_err(output, output_type, queue, err)
+        })
+    }
+
+    #[objc::msg_send(removeStreamOutput:type:error:)]
+    unsafe fn remove_stream_output_err<'ear, D: Output>(
+        &self,
+        output: &D,
+        output_type: OutputType,
+        error: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    pub fn remove_stream_output<'ear, D: Output>(
+        &self,
+        output: &D,
+        output_type: OutputType,
+    ) -> ns::Result {
+        ns::if_false(|err| unsafe { self.remove_stream_output_err(output, output_type, err) })
+    }
+
+    #[objc::msg_send(updateContentFilter:completionHandler:)]
+    pub fn update_content_filter_ch_block(
+        &self,
+        filter: &ContentFilter,
+        ch: Option<&mut blocks::ErrCh>,
+    );
+
+    pub fn update_content_filter_ch(
+        &self,
+        filter: &ContentFilter,
+        ch: impl FnMut(Option<&ns::Error>) + 'static,
+    ) {
+        let mut block = blocks::ErrCh::new1(ch);
+        self.update_content_filter_ch_block(filter, Some(&mut block));
+    }
+
+    #[cfg(all(feature = "blocks", feature = "async"))]
+    pub async fn update_content_filter(
+        &self,
+        filter: &ContentFilter,
+    ) -> Result<(), arc::R<ns::Error>> {
+        let (future, mut block) = blocks::ok();
+        self.update_content_filter_ch_block(filter, Some(&mut block));
+        future.await
+    }
+
+    #[objc::msg_send(updateConfiguration:completionHandler:)]
+    pub fn update_cfg_ch_block(&self, cfg: &Cfg, ch: Option<&mut blocks::ErrCh>);
+
+    pub fn update_cfg_ch(&self, cfg: &Cfg, ch: impl FnMut(Option<&ns::Error>) + 'static) {
+        let mut block = blocks::ErrCh::new1(ch);
+        self.update_cfg_ch_block(cfg, Some(&mut block));
+    }
+
+    #[cfg(all(feature = "blocks", feature = "async"))]
+    pub async fn update_cfg(&self, cfg: &Cfg) -> Result<(), arc::R<ns::Error>> {
+        let (future, mut block) = blocks::ok();
+        self.update_cfg_ch_block(cfg, Some(&mut block));
+        future.await
     }
 
     #[objc::msg_send(startCaptureWithCompletionHandler:)]
@@ -780,7 +830,17 @@ mod tests {
         stream.start().await.expect("started");
         stream.start().await.expect_err("already started");
 
+        stream
+            .update_content_filter(&filter)
+            .await
+            .expect("Failed to update filter");
+        stream.update_cfg(&cfg).await.expect("Failed to update cfg");
+
         tokio::time::sleep(Duration::from_secs(2)).await;
+
+        stream
+            .remove_stream_output(delegate.as_ref(), sc::OutputType::Screen)
+            .unwrap();
 
         stream.stop().await.expect("stopped");
         stream.stop().await.expect_err("already stopped");
