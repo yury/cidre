@@ -52,10 +52,10 @@ pub struct ScissorRect {
 }
 
 /// A 3D rectangular region for the viewport clipping.
-#[doc(alias = "MTLViewPort")]
+#[doc(alias = "MTLViewport")]
 #[derive(Default, Debug, PartialEq, Copy, Clone)]
 #[repr(C)]
-pub struct ViewPort {
+pub struct Viewport {
     /// The x coordinate of the upper-left corner of the viewport.
     pub x: f64,
     /// The y coordinate of the upper-left corner of the viewport.
@@ -70,7 +70,7 @@ pub struct ViewPort {
     pub z_far: f64,
 }
 
-impl ViewPort {
+impl Viewport {
     #[inline]
     pub const fn with_scissor_rect(rect: &ScissorRect) -> Self {
         Self {
@@ -235,11 +235,11 @@ impl RenderCmdEncoder {
     pub fn set_render_ps(&mut self, val: &mtl::RenderPipelineState);
 
     #[objc::msg_send(setViewport:)]
-    pub fn set_vp(&mut self, val: mtl::ViewPort);
+    pub fn set_vp(&mut self, val: mtl::Viewport);
 
     #[inline]
     pub fn set_vp_rect<F: Into<f64>>(&mut self, x: F, y: F, width: F, height: F) {
-        self.set_vp(ViewPort {
+        self.set_vp(Viewport {
             x: x.into(),
             y: y.into(),
             w: width.into(),
@@ -250,13 +250,13 @@ impl RenderCmdEncoder {
     }
 
     #[objc::msg_send(setViewports:count:)]
-    pub fn set_vps_count(&mut self, val: *const mtl::ViewPort, count: usize);
+    pub fn set_vps_count(&mut self, val: *const mtl::Viewport, count: usize);
 
     /// Specifies an array of viewports, which are used to transform vertices from normalized device
     /// coordinates to window coordinates based on [[ viewport_array_index ]] value specified in
     /// the vertex shader.
     #[inline]
-    pub fn set_vps(&mut self, val: &[mtl::ViewPort]) {
+    pub fn set_vps(&mut self, val: &[mtl::Viewport]) {
         self.set_vps_count(val.as_ptr(), val.len());
     }
 

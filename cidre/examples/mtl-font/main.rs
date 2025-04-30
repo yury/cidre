@@ -345,7 +345,7 @@ fn main() {
     cmd_buf.render(&render_pass_desc, |enc| {
         enc.set_render_ps(&render_ps);
         enc.set_depth_stencil_state(Some(&depth_state));
-        enc.set_vp(mtl::ViewPort {
+        enc.set_vp(mtl::Viewport {
             x: 0.0,
             y: 0.0,
             w: 1920.0,

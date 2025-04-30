@@ -206,7 +206,7 @@ pub use render_command_encoder::ScissorRect;
 pub use render_command_encoder::TriangleFillMode;
 pub use render_command_encoder::TriangleTessellationFactorsHalf;
 pub use render_command_encoder::VertexAmplificationViewMapping;
-pub use render_command_encoder::ViewPort;
+pub use render_command_encoder::Viewport;
 pub use render_command_encoder::VisibilityResultMode;
 pub use render_command_encoder::Winding;
 
