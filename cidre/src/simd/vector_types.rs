@@ -151,7 +151,7 @@ macro_rules! accessors {
 
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
-pub struct Simd<T, const LANES: usize, const N: usize>([T; LANES]);
+pub struct Simd<T, const LANES: usize, const N: usize>(pub [T; LANES]);
 
 impl<T: Default + Copy, const LANES: usize, const N: usize> Default for Simd<T, LANES, N> {
     fn default() -> Self {
