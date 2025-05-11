@@ -14,9 +14,13 @@ use crate::cf;
 
 // block attributes
 
+#[derive(Debug)]
 pub struct NoEsc;
+#[derive(Debug)]
 pub struct Esc;
+#[derive(Debug)]
 pub struct Send;
+#[derive(Debug)]
 pub struct Sync;
 
 // attributted blocks
@@ -35,12 +39,15 @@ pub type ErrCh<E = ns::Error> = EscBlock<fn(error: Option<&E>)>;
 /// Result Completion Handler
 pub type ResultCh<T> = EscBlock<fn(Option<&T>, Option<&ns::Error>)>;
 
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct Block<Sig, Attr = NoEsc>(ns::Id, PhantomData<(Sig, Attr)>);
 
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct StackBlock<'a, Closure, Sig>(Layout1Mut<'a, Closure>, PhantomData<Sig>);
 
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct StaticBlock<Sig>(Layout1, PhantomData<Sig>);
 
@@ -298,12 +305,14 @@ impl Flags {
     const RETAINED_NEEDS_DROP: Self = Self(2 | Self::NEEDS_FREE.0 | Self::HAS_COPY_DISPOSE.0);
 }
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct Desc1 {
     reserved: usize,
     size: usize,
 }
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct Desc2<T: Sized> {
     descriptor1: Desc1,
@@ -311,6 +320,7 @@ pub struct Desc2<T: Sized> {
     dispose: extern "C" fn(literal: &mut T),
 }
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct Layout1 {
     isa: &'static objc::Class<ns::Id>,
@@ -320,6 +330,7 @@ pub struct Layout1 {
     descriptor: &'static Desc1,
 }
 
+#[derive(Debug)]
 #[repr(C)]
 pub struct Layout1Mut<'a, Closure> {
     isa: &'static objc::Class<ns::Id>,
@@ -330,6 +341,7 @@ pub struct Layout1Mut<'a, Closure> {
     closure: &'a mut Closure,
 }
 
+#[derive(Debug)]
 #[repr(C)]
 struct Layout2Mut<'a, F: Sized + 'a> {
     isa: &'static objc::Class<ns::Id>,
