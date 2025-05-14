@@ -25,10 +25,10 @@ define_obj_type!(
 impl View {
     #[cfg(feature = "ca")]
     #[objc::msg_send(layer)]
-    pub fn layer(&self) -> &ca::Layer;
+    pub fn layer(&self) -> arc::R<ca::Layer>;
 
     #[objc::msg_send(backgroundColor)]
-    pub fn background_color(&self) -> Option<&ui::Color>;
+    pub fn background_color(&self) -> Option<arc::R<ui::Color>>;
 
     #[objc::msg_send(setBackgroundColor:)]
     pub fn set_background_color(&mut self, val: Option<&ui::Color>);
