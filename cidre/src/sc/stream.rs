@@ -643,6 +643,14 @@ impl Stream {
         )
     }
 
+    pub fn new_with_delegate<D: Delegate>(
+        filter: &ContentFilter,
+        configuration: &Cfg,
+        delegate: Option<&D>,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_filter_configuration_delegate(filter, configuration, delegate)
+    }
+
     #[objc::msg_send(addStreamOutput:type:sampleHandlerQueue:error:)]
     unsafe fn add_stream_output_type_sample_handler_queue_err<D: Output>(
         &self,
@@ -782,7 +790,8 @@ mod tests {
     use std::time::Duration;
 
     use crate::{
-        cm, cv, define_obj_type, dispatch, ns, objc, sc, sc::stream::Output, sc::stream::OutputImpl,
+        cm, cv, define_obj_type, dispatch, ns, objc, sc, sc::stream::Delegate,
+        sc::stream::DelegateImpl, sc::stream::Output, sc::stream::OutputImpl,
     };
 
     define_obj_type!(
@@ -795,6 +804,20 @@ mod tests {
 
     #[objc::add_methods]
     impl OutputImpl for FrameCounter {}
+
+    define_obj_type!(MyDelegate + sc::stream::DelegateImpl, usize, MY_DELEGATE);
+
+    impl Delegate for MyDelegate {}
+
+    #[objc::add_methods]
+    impl DelegateImpl for MyDelegate {
+        extern "C" fn impl_stream_did_become_inactive(
+            &mut self,
+            _cmd: Option<&objc::Sel>,
+            _stream: &sc::Stream,
+        ) {
+        }
+    }
 
     #[test]
     fn basics() {
@@ -822,10 +845,11 @@ mod tests {
 
         let windows = ns::Array::new();
         let filter = sc::ContentFilter::with_display_excluding_windows(&display, &windows);
-        let stream = sc::Stream::new(&filter, &cfg);
-        let delegate = FrameCounter::with(0);
+        let delegate = MyDelegate::with(0);
+        let stream = sc::Stream::new_with_delegate(&filter, &cfg, Some(&*delegate));
+        let output = FrameCounter::with(0);
         stream
-            .add_stream_output(delegate.as_ref(), sc::OutputType::Screen, Some(&q))
+            .add_stream_output(output.as_ref(), sc::OutputType::Screen, Some(&q))
             .unwrap();
         stream.start().await.expect("started");
         stream.start().await.expect_err("already started");
@@ -839,7 +863,7 @@ mod tests {
         tokio::time::sleep(Duration::from_secs(2)).await;
 
         stream
-            .remove_stream_output(delegate.as_ref(), sc::OutputType::Screen)
+            .remove_stream_output(output.as_ref(), sc::OutputType::Screen)
             .unwrap();
 
         stream.stop().await.expect("stopped");
