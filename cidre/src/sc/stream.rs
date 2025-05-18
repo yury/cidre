@@ -623,16 +623,12 @@ impl arc::A<Stream> {
 impl Stream {
     define_cls!(SC_STREAM);
 
-    pub fn with_delegate<T, D: Delegate>(
+    pub fn with_delegate<D: Delegate>(
         filter: &ContentFilter,
         configuration: &Cfg,
         delegate: &D,
     ) -> arc::R<Self> {
-        Self::alloc().init_with_filter_configuration_delegate::<D>(
-            filter,
-            configuration,
-            Some(delegate),
-        )
+        Self::alloc().init_with_filter_configuration_delegate(filter, configuration, Some(delegate))
     }
 
     pub fn new(filter: &ContentFilter, configuration: &Cfg) -> arc::R<Self> {
