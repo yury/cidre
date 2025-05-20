@@ -50,7 +50,11 @@ impl WebViewCfg {
     #[objc::msg_send(setUserContentController:)]
     pub fn set_user_content_ctrl(&mut self, val: &wk::UserContentController);
 
-    // ...
+    #[objc::msg_send(websiteDataStore)]
+    pub fn website_data_store(&self) -> arc::R<wk::WebsiteDataStore>;
+
+    #[objc::msg_send(setWebsiteDataStore:)]
+    pub fn set_website_data_store(&mut self, val: &wk::WebsiteDataStore);
 
     #[objc::msg_send(suppressesIncrementalRendering)]
     pub fn suppresses_incremental_rendering(&self) -> bool;

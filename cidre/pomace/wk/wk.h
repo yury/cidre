@@ -15,6 +15,7 @@ Class WK_PROCESS_POOL;
 Class WK_PREFERENCES;
 Class WK_USER_CONTENT_CONTROLLER;
 Class WK_USER_SCRIPT;
+Class WK_WEBSITE_DATA_STORE;
 
 __attribute__((constructor))
 static void wk_initializer(void)
@@ -28,6 +29,7 @@ static void wk_initializer(void)
         WK_PREFERENCES = [WKPreferences class];
         WK_USER_CONTENT_CONTROLLER = [WKUserContentController class];
         WK_USER_SCRIPT = [WKUserScript class];
+        WK_WEBSITE_DATA_STORE = [WKWebsiteDataStore class];
     }
 }
 
