@@ -1,4 +1,4 @@
-use crate::{arc, blocks, define_obj_type, ns, objc, wk};
+use crate::{arc, blocks, cg, define_obj_type, ns, objc, wk};
 
 #[cfg(target_os = "ios")]
 define_obj_type!(pub WebView(crate::ui::View), WK_WEB_VIEW);
@@ -6,7 +6,16 @@ define_obj_type!(pub WebView(crate::ui::View), WK_WEB_VIEW);
 #[cfg(target_os = "macos")]
 define_obj_type!(pub WebView(ns::View), WK_WEB_VIEW);
 
+impl arc::A<WebView> {
+    #[objc::msg_send(initWithFrame:configuration:)]
+    pub fn init_with_frame_cfg(self, frame: cg::Rect, cfg: &wk::WebViewCfg) -> arc::R<WebView>;
+}
+
 impl WebView {
+    pub fn with_frame_cfg(frame: cg::Rect, cfg: &wk::WebViewCfg) -> arc::R<Self> {
+        Self::alloc().init_with_frame_cfg(frame, cfg)
+    }
+
     #[objc::msg_send(loadRequest:)]
     pub fn load_request(&mut self, request: &ns::UrlRequest) -> Option<arc::R<wk::Navigation>>;
 
