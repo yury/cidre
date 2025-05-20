@@ -10,6 +10,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 Class WK_WEB_VIEW;
+Class WK_WEB_VIEW_CONFIGURATION;
+Class WK_PROCESS_POOL;
+Class WK_PREFERENCES;
+Class WK_USER_CONTENT_CONTROLLER;
+Class WK_USER_SCRIPT;
 
 __attribute__((constructor))
 static void wk_initializer(void)
@@ -18,6 +23,11 @@ static void wk_initializer(void)
     if (!initialized) {
         initialized = 1;
         WK_WEB_VIEW = [WKWebView class];
+        WK_WEB_VIEW_CONFIGURATION = [WKWebViewConfiguration class];
+        WK_PROCESS_POOL = [WKProcessPool class];
+        WK_PREFERENCES = [WKPreferences class];
+        WK_USER_CONTENT_CONTROLLER = [WKUserContentController class];
+        WK_USER_SCRIPT = [WKUserScript class];
     }
 }
 
