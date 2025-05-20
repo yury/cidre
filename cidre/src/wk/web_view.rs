@@ -1,5 +1,31 @@
 use crate::{arc, blocks, cg, define_obj_type, ns, objc, wk};
 
+#[doc(alias = "WKMediaPlaybackState")]
+#[repr(isize)]
+pub enum MediaPlaybackState {
+    None,
+    Playing,
+    Paused,
+    Suspended,
+}
+
+#[doc(alias = "WKMediaCaptureState")]
+#[repr(isize)]
+pub enum MediaCaptureState {
+    None,
+    Active,
+    Muted,
+}
+
+#[doc(alias = "WKFullscreenState")]
+#[repr(isize)]
+pub enum FullscreenState {
+    NotInFullscreen,
+    EnteringFullscreen,
+    InFullscreen,
+    ExitingFullscreen,
+}
+
 #[cfg(target_os = "ios")]
 define_obj_type!(pub WebView(crate::ui::View), WK_WEB_VIEW);
 
@@ -12,6 +38,10 @@ impl arc::A<WebView> {
 }
 
 impl WebView {
+    /// A copy of the configuration with which the web view was initialized
+    #[objc::msg_send(configuration)]
+    pub fn cfg(&self) -> arc::R<wk::WebViewCfg>;
+
     pub fn with_frame_cfg(frame: cg::Rect, cfg: &wk::WebViewCfg) -> arc::R<Self> {
         Self::alloc().init_with_frame_cfg(frame, cfg)
     }
@@ -29,7 +59,7 @@ impl WebView {
     pub fn is_inpectable(&self) -> bool;
 
     #[objc::msg_send(setInspectable:)]
-    pub fn set_inpectable(&self, val: bool);
+    pub fn set_inpectable(&mut self, val: bool);
 
     #[objc::msg_send(URL)]
     pub fn url(&self) -> Option<arc::R<ns::Url>>;
@@ -59,6 +89,18 @@ impl WebView {
     pub fn eval_js_no_ch(&mut self, js: &ns::String) {
         self.eval_js_ch_block(js, None);
     }
+
+    #[objc::msg_send(cameraCaptureState)]
+    #[objc::available(macos = 12.0, ios = 15.0)]
+    pub fn cam_capture_state(&self) -> wk::MediaCaptureState;
+
+    #[objc::msg_send(microphoneCaptureState)]
+    #[objc::available(macos = 12.0, ios = 15.0)]
+    pub fn mic_capture_state(&self) -> wk::MediaCaptureState;
+
+    #[objc::msg_send(fullscreenState)]
+    #[objc::available(macos = 13.0, ios = 16.0)]
+    pub fn fullscreen_state(&self) -> wk::FullscreenState;
 }
 
 #[link(name = "wk", kind = "static")]

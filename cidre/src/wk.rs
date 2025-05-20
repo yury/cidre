@@ -2,6 +2,9 @@ pub mod navigation;
 pub use navigation::Navigation;
 
 pub mod web_view;
+pub use web_view::FullscreenState;
+pub use web_view::MediaCaptureState;
+pub use web_view::MediaPlaybackState;
 pub use web_view::WebView;
 
 mod web_view_configuration;
