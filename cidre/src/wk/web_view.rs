@@ -94,9 +94,59 @@ impl WebView {
     #[objc::available(macos = 12.0, ios = 15.0)]
     pub fn cam_capture_state(&self) -> wk::MediaCaptureState;
 
+    #[objc::msg_send(setCameraCaptureState:completionHandler:)]
+    pub fn set_cam_capture_state_ch_block(
+        &mut self,
+        val: wk::MediaCaptureState,
+        block: Option<&mut blocks::CompletionBlock>,
+    );
+
+    #[objc::available(macos = 12.0, ios = 15.0)]
+    pub fn set_cam_capture_state_ch(
+        &mut self,
+        val: wk::MediaCaptureState,
+        block: impl FnMut() + 'static + std::marker::Send,
+    ) {
+        let mut block = blocks::CompletionBlock::new0(block);
+        self.set_cam_capture_state_ch_block(val, Some(&mut block));
+    }
+
+    #[cfg(feature = "async")]
+    #[objc::available(macos = 12.0, ios = 15.0)]
+    pub async fn set_cam_capture_state(&mut self, val: wk::MediaCaptureState) {
+        let (fut, mut block) = blocks::comp0();
+        self.set_cam_capture_state_ch_block(val, Some(&mut block));
+        fut.await
+    }
+
     #[objc::msg_send(microphoneCaptureState)]
     #[objc::available(macos = 12.0, ios = 15.0)]
+
     pub fn mic_capture_state(&self) -> wk::MediaCaptureState;
+    #[objc::msg_send(setMicrophoneCaptureState:completionHandler:)]
+    pub fn set_mic_capture_state_ch_block(
+        &mut self,
+        val: wk::MediaCaptureState,
+        block: Option<&mut blocks::CompletionBlock>,
+    );
+
+    #[objc::available(macos = 12.0, ios = 15.0)]
+    pub fn set_mic_capture_state_ch(
+        &mut self,
+        val: wk::MediaCaptureState,
+        block: impl FnMut() + 'static + std::marker::Send,
+    ) {
+        let mut block = blocks::CompletionBlock::new0(block);
+        self.set_mic_capture_state_ch_block(val, Some(&mut block));
+    }
+
+    #[cfg(feature = "async")]
+    #[objc::available(macos = 12.0, ios = 15.0)]
+    pub async fn set_mic_capture_state(&mut self, val: wk::MediaCaptureState) {
+        let (fut, mut block) = blocks::comp0();
+        self.set_mic_capture_state_ch_block(val, Some(&mut block));
+        fut.await
+    }
 
     #[objc::msg_send(fullscreenState)]
     #[objc::available(macos = 13.0, ios = 16.0)]
