@@ -35,6 +35,7 @@ pub enum Status {
     End = 1,
 }
 
+#[doc(alias = "compression_encode_buffer")]
 #[inline]
 pub fn encode_buf(dst: &mut [u8], src: &[u8], algorithm: Algorithm) -> usize {
     unsafe {
@@ -49,6 +50,7 @@ pub fn encode_buf(dst: &mut [u8], src: &[u8], algorithm: Algorithm) -> usize {
     }
 }
 
+#[doc(alias = "compression_decode_buffer")]
 #[inline]
 pub fn decode_buf(dst: &mut [u8], src: &[u8], algorithm: Algorithm) -> usize {
     unsafe {
@@ -65,6 +67,9 @@ pub fn decode_buf(dst: &mut [u8], src: &[u8], algorithm: Algorithm) -> usize {
 
 const COMPRESSION_STREAM_FINALIZE: i32 = 0x0001;
 
+#[doc(alias = "compression_stream_init")]
+#[doc(alias = "compression_stream_process")]
+#[doc(alias = "compression_stream_destroy")]
 pub fn stream(op: StreamOp, src: &[u8], algorithm: Algorithm) -> Result<Vec<u8>, Status> {
     let size = if op == StreamOp::Encode {
         src.len() / 4
@@ -110,6 +115,7 @@ pub fn stream(op: StreamOp, src: &[u8], algorithm: Algorithm) -> Result<Vec<u8>,
 
 #[link(name = "compression", kind = "dylib")]
 unsafe extern "C" {
+    #[doc(alias = "compression_encode_scratch_buffer_size")]
     #[link_name = "compression_encode_scratch_buffer_size"]
     pub safe fn encode_scratch_buf_len(algorithm: Algorithm) -> usize;
 
@@ -122,6 +128,7 @@ unsafe extern "C" {
         algorithm: Algorithm,
     ) -> usize;
 
+    #[doc(alias = "compression_decode_scratch_buffer_size")]
     #[link_name = "compression_decode_scratch_buffer_size"]
     pub safe fn decode_scratch_buf_len(algorithm: Algorithm) -> usize;
 
