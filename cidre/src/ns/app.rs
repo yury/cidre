@@ -151,6 +151,8 @@ pub use window::Window;
 pub use window::WindowDelegate;
 pub use window::WindowDelegateImpl;
 pub use window::WindowLevel;
+pub use window::WindowOcclusionState;
+pub use window::notifications as window_notifications;
 
 pub mod workspace;
 pub use workspace::Authorization as WorkspaceAuthorization;

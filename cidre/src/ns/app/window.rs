@@ -42,6 +42,16 @@ impl StyleMask {
 }
 
 define_opts!(
+    #[doc(alias = "NSWindowOcclusionState")]
+    pub WindowOcclusionState(usize)
+);
+
+impl WindowOcclusionState {
+    #[doc(alias = "NSWindowOcclusionStateVisible")]
+    pub const VISIBLE: Self = Self(1 << 1);
+}
+
+define_opts!(
     #[doc(alias = "NSWindowCollectionBehavior")]
     pub CollectionBehavior(usize)
 );
@@ -173,6 +183,9 @@ impl Window {
     #[objc::msg_send(removeTitlebarAccessoryViewControllerAtIndex:)]
     pub fn remove_titlebar_accessory_vc_at(&mut self, index: isize);
 
+    #[objc::msg_send(occlusionState)]
+    pub fn occlusion_state(&self) -> ns::WindowOcclusionState;
+
     #[objc::msg_send(frame)]
     pub fn frame(&self) -> ns::Rect;
 
@@ -277,6 +290,48 @@ impl Window {
 
     #[objc::msg_send(center)]
     pub fn center(&mut self);
+
+    #[objc::msg_send(dockTile)]
+    pub fn dock_tile(&self) -> arc::R<ns::DockTile>;
+
+    #[objc::msg_send(isVisible)]
+    pub fn is_visible(&self) -> bool;
+
+    #[objc::msg_send(isKeyWindow)]
+    pub fn is_key_window(&self) -> bool;
+
+    #[objc::msg_send(isMainWindow)]
+    pub fn is_main_window(&self) -> bool;
+
+    #[objc::msg_send(canBecomeKeyWindow)]
+    pub fn can_become_key_window(&self) -> bool;
+
+    #[objc::msg_send(canBecomeMainWindow)]
+    pub fn can_become_main_window(&self) -> bool;
+
+    #[objc::msg_send(makeKeyWindow)]
+    pub fn make_key_window(&self);
+
+    #[objc::msg_send(makeMainWindow)]
+    pub fn make_main_window(&self);
+
+    #[objc::msg_send(becomeKeyWindow)]
+    pub fn become_key_window(&self);
+
+    #[objc::msg_send(resignKeyWindow)]
+    pub fn resign_key_window(&self);
+
+    #[objc::msg_send(becomeMainWindow)]
+    pub fn become_main_window(&self);
+
+    #[objc::msg_send(resignMainWindow)]
+    pub fn resign_main_window(&self);
+
+    #[objc::msg_send(backingScaleFactor)]
+    pub fn backing_scale_factor(&self) -> cg::Float;
+
+    #[objc::msg_send(isMiniaturized)]
+    pub fn is_miniaturized(&self) -> bool;
 }
 
 #[objc::protocol(NSWindowDelegate)]
@@ -301,4 +356,17 @@ impl ns::AnimatablePropContainer for Window {}
 #[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_WINDOW: &'static objc::Class<Window>;
+}
+
+pub mod notifications {
+    use crate::ns;
+
+    #[doc(alias = "NSWindowDidChangeOcclusionStateNotification")]
+    pub fn did_change_occlusion_state() -> &'static ns::NotificationName {
+        unsafe { NSWindowDidChangeOcclusionStateNotification }
+    }
+
+    unsafe extern "C" {
+        static NSWindowDidChangeOcclusionStateNotification: &'static ns::NotificationName;
+    }
 }
