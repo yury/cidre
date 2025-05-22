@@ -68,6 +68,9 @@ pub mod core_audio;
 #[cfg(feature = "core_motion")]
 pub mod core_motion;
 
+#[cfg(feature = "compression")]
+pub mod compression;
+
 /// Core Text
 #[cfg(feature = "ct")]
 pub mod ct;
