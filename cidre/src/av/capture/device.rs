@@ -103,7 +103,7 @@ impl Device {
     pub fn default_with_media(media_type: &av::MediaType) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(deviceWithUniqueID:)]
-    pub fn with_unique_id(unique_id: ns::String) -> Option<arc::R<Self>>;
+    pub fn with_unique_id(unique_id: &ns::String) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(uniqueID)]
     pub fn unique_id(&self) -> arc::R<ns::String>;
