@@ -48,6 +48,7 @@ pub use capture::Slider as CaptureSlider;
 pub use capture::SysExposureBiasSlider as CaptureSysExposureBiasSlider;
 pub use capture::SysZoomSlider as CaptureSysZoomSlider;
 pub use capture::TorchMode as CaptureTouchMode;
+pub use capture::VideoDataOutput as CaptureVideoDataOutput;
 pub use capture::VideoOrienation as CaptureVideoOrienation;
 pub use capture::VideoPreviewLayer as CaptureVideoPreviewLayer;
 pub use capture::VideoStabilizationMode as CaptureVideoStabilizationMode;
