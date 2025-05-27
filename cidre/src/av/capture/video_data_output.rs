@@ -90,7 +90,7 @@ impl VideoDataOutput {
     pub fn sample_buf_callback_queue(&self) -> Option<arc::R<dispatch::Queue>>;
 
     #[objc::msg_send(videoSettings)]
-    pub fn video_settings(&self) -> arc::R<ns::Dictionary<ns::String, ns::Id>>;
+    pub fn video_settings(&self) -> Option<arc::R<ns::Dictionary<ns::String, ns::Id>>>;
 
     #[objc::msg_send(setVideoSettings:)]
     pub unsafe fn set_video_settings_throws(
