@@ -21,8 +21,6 @@ pub use window_level::WindowLevel;
 
 pub mod direct_display;
 pub use direct_display::Id as DirectDisplayId;
-#[cfg(target_os = "macos")]
-pub use direct_display::main_display_id;
 
 pub mod affine_transform;
 pub use affine_transform::AffineTransform;

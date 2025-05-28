@@ -334,7 +334,7 @@ mod tests {
         let queue = dispatch::Queue::global(0).unwrap();
 
         let stream = cg::DisplayStream::with_dispatch_queue(
-            cg::main_display_id(),
+            cg::DirectDisplayId::main(),
             640,
             480,
             i32::from_be_bytes(*b"420f"),
