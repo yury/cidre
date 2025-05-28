@@ -574,7 +574,7 @@ pub trait Output: objc::Obj {
     fn stream_did_output_sample_buf(
         &mut self,
         stream: &Stream,
-        sample_bufer: &mut cm::SampleBuf,
+        sample_buf: &mut cm::SampleBuf,
         kind: OutputType,
     );
 }
