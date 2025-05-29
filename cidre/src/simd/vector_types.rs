@@ -284,5 +284,12 @@ pub mod tests {
 
         f[0][1] = 10.0;
         assert_eq!(f[0][1], 10.0);
+
+        let mut f = f32x4x4::identity();
+        f.set_tx(2.0);
+        f.set_ty(3.0);
+        f.set_tz(4.0);
+
+        assert_eq!(f, f32x4x4::translate(2.0, 3.0, 4.0));
     }
 }

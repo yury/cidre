@@ -87,7 +87,7 @@ impl f32x3x3 {
         ])
     }
 }
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 #[allow(non_camel_case_types)]
 #[repr(transparent)]
 pub struct f32x4x4(pub [f32x4; 4]);
@@ -113,41 +113,41 @@ impl f32x4x4 {
 
     pub const fn translate(tx: f32, ty: f32, tz: f32) -> Self {
         Self([
-            f32x4::with_xyzw_f32(1.0, 0.0, 0.0, tx),
-            f32x4::with_xyzw_f32(0.0, 1.0, 0.0, ty),
-            f32x4::with_xyzw_f32(0.0, 0.0, 1.0, tz),
-            f32x4::with_xyzw_f32(0.0, 0.0, 0.0, 1.0),
+            f32x4::with_xyzw_f32(1.0, 0.0, 0.0, 0.0),
+            f32x4::with_xyzw_f32(0.0, 1.0, 0.0, 0.0),
+            f32x4::with_xyzw_f32(0.0, 0.0, 1.0, 0.0),
+            f32x4::with_xyzw_f32(tx, ty, tz, 1.0),
         ])
     }
 
     #[inline]
     pub fn tx(&self) -> f32 {
-        self[0].w()
+        self[3].x()
     }
 
     #[inline]
     pub fn set_tx(&mut self, value: f32) {
-        self[0].set_w(value)
+        self[3].set_x(value)
     }
 
     #[inline]
     pub fn ty(&self) -> f32 {
-        self[1].w()
+        self[3].y()
     }
 
     #[inline]
     pub fn set_ty(&mut self, value: f32) {
-        self[1].set_w(value)
+        self[3].set_y(value)
     }
 
     #[inline]
     pub fn tz(&self) -> f32 {
-        self[2].w()
+        self[3].z()
     }
 
     #[inline]
     pub fn set_tz(&mut self, value: f32) {
-        self[2].set_w(value)
+        self[3].set_z(value)
     }
 
     #[inline]
