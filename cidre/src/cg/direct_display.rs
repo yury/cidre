@@ -1,6 +1,7 @@
 #[cfg(all(target_os = "macos", feature = "mtl"))]
 use crate::{arc, mtl};
 
+#[cfg(target_os = "macos")]
 use crate::cg;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
