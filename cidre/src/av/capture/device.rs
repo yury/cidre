@@ -167,6 +167,10 @@ impl Device {
     #[objc::msg_send(activeVideoMaxFrameDuration)]
     pub fn active_video_max_frame_duration(&self) -> cm::Time;
 
+    #[objc::msg_send(isAutoVideoFrameRateEnabled)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn is_auto_video_frame_rate_enabled(&self) -> bool;
+
     pub fn config_lock(&mut self) -> Result<ConfigLockGuard, arc::R<ns::Error>> {
         let mut error = None;
         unsafe {
@@ -190,13 +194,32 @@ impl Device {
     #[objc::msg_send(setActiveFormat:)]
     pub unsafe fn set_active_format(&mut self, val: &Format);
 
+    #[objc::msg_send(setAutoVideoFrameRateEnabled:)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub unsafe fn set_auto_video_frame_rate_enabled_throws(&mut self, val: bool);
+
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub unsafe fn set_auto_video_frame_rate_enabled(&mut self, val: bool) -> ns::ExResult {
+        ns::try_catch(|| unsafe { self.set_auto_video_frame_rate_enabled_throws(val) })
+    }
+
     #[cfg(feature = "cm")]
     #[objc::msg_send(setActiveVideoMinFrameDuration:)]
-    pub unsafe fn set_active_video_min_frame_duration(&mut self, val: cm::Time);
+    pub unsafe fn set_active_video_min_frame_duration_throws(&mut self, val: cm::Time);
+
+    #[cfg(feature = "cm")]
+    pub unsafe fn set_active_video_min_frame_duration(&mut self, val: cm::Time) -> ns::ExResult {
+        ns::try_catch(|| unsafe { self.set_active_video_min_frame_duration_throws(val) })
+    }
 
     #[cfg(feature = "cm")]
     #[objc::msg_send(setActiveVideoMaxFrameDuration:)]
-    pub unsafe fn set_active_video_max_frame_duration(&mut self, val: cm::Time);
+    pub unsafe fn set_active_video_max_frame_duration_throws(&mut self, val: cm::Time);
+
+    #[cfg(feature = "cm")]
+    pub unsafe fn set_active_video_max_frame_duration(&mut self, val: cm::Time) -> ns::ExResult {
+        ns::try_catch(|| unsafe { self.set_active_video_max_frame_duration_throws(val) })
+    }
 }
 
 #[doc(alias = "AVCaptureFlashMode")]
@@ -610,13 +633,18 @@ impl<'a> ConfigLockGuard<'a> {
         unsafe { self.device.set_active_format(val) }
     }
 
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn set_auto_video_frame_rate_enabled(&mut self, val: bool) -> ns::ExResult {
+        unsafe { self.device.set_auto_video_frame_rate_enabled(val) }
+    }
+
     #[cfg(feature = "cm")]
-    pub fn set_active_video_min_frame_duration(&mut self, val: cm::Time) {
+    pub fn set_active_video_min_frame_duration(&mut self, val: cm::Time) -> ns::ExResult {
         unsafe { self.device.set_active_video_min_frame_duration(val) }
     }
 
     #[cfg(feature = "cm")]
-    pub fn set_active_video_max_frame_duration(&mut self, val: cm::Time) {
+    pub fn set_active_video_max_frame_duration(&mut self, val: cm::Time) -> ns::ExResult {
         unsafe { self.device.set_active_video_max_frame_duration(val) }
     }
 
@@ -1933,6 +1961,13 @@ define_obj_type!(
     #[doc(alias = "AVCaptureDeviceFormat")]
     pub Format(ns::Id)
 );
+
+impl Format {
+    /// Indicates whether the device format supports auto video frame rate.
+    #[objc::msg_send(isAutoVideoFrameRateSupported)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn is_auto_video_frame_rate_supported(&self) -> bool;
+}
 
 /// # Determining Reaction Effects Support
 ///
