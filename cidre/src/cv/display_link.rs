@@ -37,7 +37,7 @@ impl DisplayLink {
     /// ```
     /// use cidre::{cv, cg};
     ///
-    /// let display_id = cg::main_display_id();
+    /// let display_id = cg::DirectDisplayId::main();
     /// let link = cv::DisplayLink::with_cg_display(display_id).unwrap();
     ///
     /// let err = link.start().unwrap_err();
