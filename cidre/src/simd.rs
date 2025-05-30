@@ -162,22 +162,22 @@ impl f32x4x4 {
 
     #[inline]
     pub fn sy(&self) -> f32 {
-        self[0].y()
+        self[1].y()
     }
 
     #[inline]
     pub fn set_sy(&mut self, value: f32) {
-        self[0].set_y(value)
+        self[1].set_y(value)
     }
 
     #[inline]
     pub fn sz(&self) -> f32 {
-        self[0].z()
+        self[2].z()
     }
 
     #[inline]
     pub fn set_sz(&mut self, value: f32) {
-        self[0].set_z(value)
+        self[2].set_z(value)
     }
 }
 
