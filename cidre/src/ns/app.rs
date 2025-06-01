@@ -138,6 +138,9 @@ mod view;
 pub use view::AutoresizingMaskOpts;
 pub use view::View;
 
+mod status_bar;
+pub use status_bar::StatusBar;
+
 mod window_controller;
 pub use window_controller::WindowController;
 
