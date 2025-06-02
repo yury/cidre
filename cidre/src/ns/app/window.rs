@@ -247,7 +247,11 @@ impl Window {
     pub fn style_mask(&self) -> ns::WindowStyleMask;
 
     #[objc::msg_send(setStyleMask:)]
-    pub fn set_style_mask(&mut self, val: ns::WindowStyleMask);
+    pub unsafe fn set_style_mask_throws(&mut self, val: ns::WindowStyleMask);
+
+    pub fn set_style_mask(&mut self, val: ns::WindowStyleMask) -> ns::ExResult {
+        ns::try_catch(|| unsafe { self.set_style_mask_throws(val) })
+    }
 
     #[objc::msg_send(hasShadow)]
     pub fn has_shadow(&self) -> bool;
