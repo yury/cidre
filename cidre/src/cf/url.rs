@@ -210,6 +210,13 @@ impl AsRef<ns::Url> for Url {
 }
 
 #[cfg(feature = "ns")]
+impl AsRef<ns::Url> for arc::R<Url> {
+    fn as_ref(&self) -> &ns::Url {
+        self.as_ns()
+    }
+}
+
+#[cfg(feature = "ns")]
 impl AsRef<ns::Id> for Url {
     fn as_ref(&self) -> &ns::Id {
         self.as_ns().as_id_ref()

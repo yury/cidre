@@ -71,6 +71,16 @@ impl Bundle {
     pub fn value_for_info_dictionary<'a>(&'a self, key: &cf::String) -> Option<&'a cf::Type> {
         unsafe { CFBundleGetValueForInfoDictionaryKey(self, key) }
     }
+
+    #[doc(alias = "CFBundleGetIdentifier")]
+    pub fn bundle_id(&self) -> Option<&cf::String> {
+        unsafe { CFBundleGetIdentifier(self) }
+    }
+
+    #[doc(alias = "CFBundleGetBundleWithIdentifier")]
+    pub fn with_id<'a>(bundle_id: &cf::String) -> Option<&'a Self> {
+        unsafe { CFBundleGetBundleWithIdentifier(bundle_id) }
+    }
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
@@ -95,4 +105,8 @@ unsafe extern "C-unwind" {
         bundle: &'a Bundle,
         key: &cf::String,
     ) -> Option<&'a cf::Type>;
+
+    fn CFBundleGetIdentifier(bundle: &Bundle) -> Option<&cf::String>;
+
+    fn CFBundleGetBundleWithIdentifier<'a>(bundle_id: &cf::String) -> Option<&'a cf::Bundle>;
 }

@@ -105,19 +105,23 @@ impl arc::A<Data> {
 
 impl Data {
     #[inline]
-    pub fn with_contents_of_file<'ear>(
-        path: &ns::String,
+    pub fn with_contents_of_file<'ear, P: AsRef<ns::String>>(
+        path: P,
         options: ReadOpts,
     ) -> Result<arc::R<Self>, &'ear ns::Error> {
-        ns::if_none(|err| Self::alloc().init_with_contents_of_file_opts_err(path, options, err))
+        ns::if_none(|err| {
+            Self::alloc().init_with_contents_of_file_opts_err(path.as_ref(), options, err)
+        })
     }
 
     #[inline]
-    pub fn with_contents_of_url<'ear>(
-        url: &ns::Url,
+    pub fn with_contents_of_url<'ear, U: AsRef<ns::Url>>(
+        url: U,
         options: ReadOpts,
     ) -> Result<arc::R<Self>, &'ear ns::Error> {
-        ns::if_none(|err| Self::alloc().init_with_contents_of_url_opts_err(url, options, err))
+        ns::if_none(|err| {
+            Self::alloc().init_with_contents_of_url_opts_err(url.as_ref(), options, err)
+        })
     }
 
     #[objc::msg_send(bytes)]

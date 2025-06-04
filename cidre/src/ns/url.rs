@@ -103,11 +103,21 @@ impl Url {
 
     #[objc::msg_send(stopAccessingSecurityScopedResource)]
     pub fn stop_accessing_security_scoped_resource(&self);
+}
 
-    #[cfg(feature = "cf")]
+#[cfg(feature = "cf")]
+impl Url {
     #[inline]
     pub fn as_cf(&self) -> &cf::Url {
         unsafe { std::mem::transmute(self) }
+    }
+}
+
+#[cfg(feature = "cf")]
+impl AsRef<cf::Url> for Url {
+    #[inline]
+    fn as_ref(&self) -> &cf::Url {
+        self.as_cf()
     }
 }
 
