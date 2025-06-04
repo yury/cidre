@@ -421,6 +421,22 @@ impl Session {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
+    #[objc::msg_send(setPrefersNoInterruptionsFromSystemAlerts:error:)]
+    pub unsafe fn set_prefers_no_interruptions_from_sys_alerts_err<'ear>(
+        &mut self,
+        val: bool,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    pub fn set_prefers_no_interruptions_from_sys_alerts(&mut self, val: bool) -> ns::Result {
+        ns::if_false(|err| unsafe {
+            self.set_prefers_no_interruptions_from_sys_alerts_err(val, err)
+        })
+    }
+
+    #[objc::msg_send(prefersNoInterruptionsFromSystemAlerts)]
+    pub fn prefers_no_interruptions_from_sys_alerts();
+
     /// Use this method to opt in or opt out of interruption on route disconnect policy.
     ///
     /// As described in the Audio Session Programming Guide, most media playback apps are expected
