@@ -57,9 +57,11 @@ use crate::{
 ///     a. append_data (EOF is signaled by passing a 0-sized buffer)
 ///     b. produce_packets
 /// 6. Close the codec component
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct Codec(audio::component::Instance);
 
+#[derive(Debug)]
 pub struct CodecRef<S>(&'static mut Codec, PhantomData<S>)
 where
     S: State<Codec>;

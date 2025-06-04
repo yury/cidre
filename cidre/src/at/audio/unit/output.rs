@@ -12,6 +12,7 @@ use crate::{
 #[cfg(all(target_os = "macos", feature = "core_audio"))]
 use crate::core_audio::Device;
 
+#[derive(Debug)]
 pub struct Output<S>(UnitRef<S>)
 where
     S: State<Unit>;

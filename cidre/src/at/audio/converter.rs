@@ -411,10 +411,12 @@ pub mod err {
     pub const NO_HARDWARE_PERMISSION: Error = Error::from_be_bytes(*b"perm");
 }
 
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct Converter(c_void);
 
 /// Useful link on formats <https://tech.ebu.ch/docs/techreview/trev_305-moser.pdf>
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct ConverterRef(NonNull<Converter>);
 

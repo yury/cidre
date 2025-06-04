@@ -8,6 +8,7 @@ use crate::{
     os,
 };
 
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct MultiChannelMixer<S>(UnitRef<S>)
 where

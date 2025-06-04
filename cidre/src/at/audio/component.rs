@@ -142,7 +142,10 @@ pub trait State<T> {
     }
 }
 
+#[derive(Debug)]
 pub struct UninitializedState;
+
+#[derive(Debug)]
 pub struct InitializedState;
 
 impl Component {

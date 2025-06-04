@@ -19,6 +19,7 @@ use super::{ParamInfo, RenderCbStruct};
 /// Useful links
 /// <https://github.com/apple/AudioUnitSDK/tree/main/>
 /// <https://developer.apple.com/library/archive/documentation/MusicAudio/Conceptual/AudioUnitHostingGuide_iOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009492-CH1-SW1>
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct Unit(audio::component::Instance);
 
@@ -30,6 +31,7 @@ impl State<Unit> for InitializedState {
     }
 }
 
+#[derive(Debug)]
 pub struct UnitRef<S>(&'static mut Unit, PhantomData<S>)
 where
     S: State<Unit>;
