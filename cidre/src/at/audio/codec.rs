@@ -633,6 +633,11 @@ impl CodecRef<UninitializedState> {
     pub fn set_quality(&mut self, val: u32) -> os::Result {
         self.0.set_quality(val)
     }
+
+    #[inline]
+    pub fn set_bit_rate_control_mode(&mut self, val: BitRateControlMode) -> os::Result {
+        self.0.set_bit_rate_control_mode(val)
+    }
 }
 
 impl<S: State<Codec>> Drop for CodecRef<S> {
