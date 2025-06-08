@@ -72,6 +72,8 @@ full = [
   "maccatalyst_18_0",
   "watchos_11_0",
   "visionos_2_0",
+
+  "half"
 ]
 
 # Turn on private API
@@ -132,6 +134,7 @@ gc = ["ns"]
 xpc = ["ns", "blocks"]
 custom-allocator = []
 classic-objc-retain-release = []
+half = ["dep:half"]
 
 # deployment targets
 
@@ -253,6 +256,7 @@ visionos_2_2 = ["visionos_2_1"]
 tokio = { optional = true, version = "1", default-features = false, features = ["macros", "rt", "rt-multi-thread", "time", "net", "process", "io-util"] }
 parking_lot = { optional = true, version = "0.12" }
 cidre-macros = { path = "../cidre-macros" }
+half = { optional = true, version = "2.6", default-feautres = false }
 
 [dev-dependencies]
 criterion = "0.5"

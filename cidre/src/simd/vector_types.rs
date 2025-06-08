@@ -1,4 +1,4 @@
-use std::hash::{Hash, Hasher};
+use std::hash::Hash;
 
 macro_rules! accessors {
     (x) => {
@@ -149,25 +149,13 @@ macro_rules! accessors {
     };
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 #[repr(C)]
 pub struct Simd<T, const LANES: usize, const N: usize>(pub [T; LANES]);
 
 impl<T: Default + Copy, const LANES: usize, const N: usize> Default for Simd<T, LANES, N> {
     fn default() -> Self {
         Self([T::default(); LANES])
-    }
-}
-
-impl<T: PartialEq, const LANES: usize, const N: usize> PartialEq for Simd<T, LANES, N> {
-    fn eq(&self, other: &Self) -> bool {
-        for i in 0..N {
-            if self.0[i] != other.0[i] {
-                // TODO: use abs
-                return false;
-            }
-        }
-        true
     }
 }
 
@@ -182,15 +170,6 @@ impl<T, const LANES: usize, const N: usize> std::ops::Index<usize> for Simd<T, L
 impl<T, const LANES: usize, const N: usize> std::ops::IndexMut<usize> for Simd<T, LANES, N> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         &mut self.0[index]
-    }
-}
-
-impl<const LANES: usize, const N: usize> Eq for Simd<f32, LANES, N> {}
-
-impl<const LANES: usize, const N: usize> Hash for Simd<f32, LANES, N> {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        let s = format!("{self:?}");
-        s.hash(state);
     }
 }
 
@@ -265,6 +244,19 @@ impl Simd<f32, 4, 4> {
 
     #[inline]
     pub const fn with_rgba_f32(r: f32, g: f32, b: f32, a: f32) -> Self {
+        Self([r, g, b, a])
+    }
+}
+
+#[cfg(feature = "half")]
+impl Simd<half::f16, 4, 4> {
+    #[inline]
+    pub const fn with_xyzw_f16(x: half::f16, y: half::f16, z: half::f16, w: half::f16) -> Self {
+        Self([x, y, z, w])
+    }
+
+    #[inline]
+    pub const fn with_rgba_f16(r: half::f16, g: half::f16, b: half::f16, a: half::f16) -> Self {
         Self([r, g, b, a])
     }
 }
