@@ -21,22 +21,22 @@ pub trait SceneDelegate: objc::Obj {
     #[objc::msg_send(scene:willConnectToSession:options:)]
     fn scene_will_connect_to_session(
         &mut self,
-        scene: &Scene,
+        scene: &mut Scene,
         session: &ui::SceneSession,
         options: &ui::SceneConnectionOpts,
     );
 
     #[objc::optional]
     #[objc::msg_send(sceneDidBecomeActive:)]
-    fn scene_did_become_active(&mut self, scene: &Scene);
+    fn scene_did_become_active(&mut self, scene: &mut Scene);
 
     #[objc::optional]
     #[objc::msg_send(sceneWillResignActive:)]
-    fn scene_will_resign_active(&mut self, scene: &Scene);
+    fn scene_will_resign_active(&mut self, scene: &mut Scene);
 
     #[objc::optional]
     #[objc::msg_send(sceneDidEnterBackground:)]
-    fn scene_will_enter_foreground(&mut self, scene: &Scene);
+    fn scene_will_enter_foreground(&mut self, scene: &mut Scene);
 }
 
 define_obj_type!(

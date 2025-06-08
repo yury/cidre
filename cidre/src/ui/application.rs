@@ -18,6 +18,22 @@ pub trait AppDelegate {
     ) -> arc::Rar<ui::SceneCfg>;
 
     #[objc::optional]
+    #[objc::msg_send(applicationDidEnterBackground:)]
+    fn app_did_enter_background(&mut self, app: &mut App);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationWillEnterForeground:)]
+    fn app_will_enter_foreground(&mut self, app: &mut App);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationProtectedDataWillBecomeUnavailable:)]
+    fn app_protected_data_will_become_unavailable(&mut self, app: &mut App);
+
+    #[objc::optional]
+    #[objc::msg_send(applicationProtectedDataDidBecomeAvailable:)]
+    fn app_protection_data_did_become_available(&mut self, app: &mut App);
+
+    #[objc::optional]
     #[objc::msg_send(window)]
     fn window(&self) -> Option<&ui::Window>;
 

@@ -665,13 +665,13 @@ impl CodecRef<InitializedState> {
     #[inline]
     pub fn append(&mut self, data: &[u8]) -> os::Result<u32> {
         let mut data_len: u32 = data.len() as _;
-        let mut packets_len: u32 = 0;
+        // let mut packets_len: u32 = 0;
         unsafe {
             AudioCodecAppendInputData(
                 &mut self.0,
                 data.as_ptr(),
                 &mut data_len,
-                &mut packets_len,
+                std::ptr::null_mut(),
                 std::ptr::null(),
             )
             .result()?;
@@ -1211,7 +1211,7 @@ unsafe extern "C-unwind" {
         in_codec: &mut Codec,
         in_input_data: *const u8,
         io_input_data_byte_size: &mut u32,
-        io_number_packets: &mut u32,
+        io_number_packets: *mut u32,
         in_packet_description: *const audio::StreamPacketDesc,
     ) -> os::Status;
 
