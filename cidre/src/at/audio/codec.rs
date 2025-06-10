@@ -638,6 +638,11 @@ impl CodecRef<UninitializedState> {
     pub fn set_bit_rate_control_mode(&mut self, val: BitRateControlMode) -> os::Result {
         self.0.set_bit_rate_control_mode(val)
     }
+
+    #[inline]
+    pub fn set_current_target_bit_rate(&mut self, val: u32) -> os::Result {
+        self.0.set_current_target_bit_rate(val)
+    }
 }
 
 impl<S: State<Codec>> Drop for CodecRef<S> {
@@ -665,7 +670,6 @@ impl CodecRef<InitializedState> {
     #[inline]
     pub fn append(&mut self, data: &[u8]) -> os::Result<u32> {
         let mut data_len: u32 = data.len() as _;
-        // let mut packets_len: u32 = 0;
         unsafe {
             AudioCodecAppendInputData(
                 &mut self.0,
@@ -904,7 +908,6 @@ impl Codec {
     pub fn set_quality(&mut self, val: u32) -> os::Result {
         unsafe { self.set_prop(InstancePropId::QUALITY_SETTING.0, &val) }
     }
-
     #[inline]
     pub fn bit_rate_control_mode(&self) -> os::Result<BitRateControlMode> {
         self.prop(InstancePropId::BIT_RATE_CONTROL_MODE.0)
@@ -1055,6 +1058,11 @@ where
     #[inline]
     pub fn applicable_bit_rate_range(&self) -> os::Result<Vec<audio::ValueRange>> {
         self.0.applicable_bit_rate_range()
+    }
+
+    #[inline]
+    pub fn current_target_bit_rate(&self) -> os::Result<u32> {
+        self.0.current_target_bit_rate()
     }
 
     #[inline]
