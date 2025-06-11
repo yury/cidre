@@ -1,7 +1,7 @@
 use crate::{api, define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
 /// The geometric primitive type for drawing commands.
-#[doc(alias = "MTLPrimitive")]
+#[doc(alias = "MTLPrimitiveType")]
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 #[repr(usize)]
 pub enum Primitive {
@@ -239,7 +239,7 @@ impl RenderCmdEncoder {
 
     #[inline]
     pub fn set_vp_rect<F: Into<f64>>(&mut self, x: F, y: F, width: F, height: F) {
-        self.set_vp(Viewport {
+        self.set_vp(mtl::Viewport {
             x: x.into(),
             y: y.into(),
             w: width.into(),
@@ -462,6 +462,14 @@ impl RenderCmdEncoder {
         self.set_fragment_textures_with_range(slice.as_ptr(), ns::Range::new(0, slice.len()));
     }
 
+    #[objc::msg_send(drawPrimitives:vertexStart:vertexCount:)]
+    pub fn draw_primitives(
+        &mut self,
+        primitive_type: Primitive,
+        vertex_start: usize,
+        vertex_count: usize,
+    );
+
     #[objc::msg_send(drawPrimitives:vertexStart:vertexCount:instanceCount:)]
     pub fn draw_primitives_instance_count(
         &mut self,
@@ -469,14 +477,6 @@ impl RenderCmdEncoder {
         vertex_start: usize,
         vertex_count: usize,
         instance_count: usize,
-    );
-
-    #[objc::msg_send(drawPrimitives:vertexStart:vertexCount:)]
-    pub fn draw_primitives(
-        &mut self,
-        primitive_type: Primitive,
-        vertex_start: usize,
-        vertex_count: usize,
     );
 
     #[objc::msg_send(drawIndexedPrimitives:indexCount:indexType:indexBuffer:indexBufferOffset:instanceCount:)]

@@ -127,6 +127,10 @@ impl MetalLayer {
     #[objc::msg_send(setDeveloperHUDProperties:)]
     #[objc::available(macos = 13.0, ios = 16.0, tvos = 16.0)]
     pub fn set_developer_hud_props(&mut self, val: Option<&ns::Dictionary<ns::String, ns::Id>>);
+
+    #[objc::msg_send(residencySet)]
+    #[objc::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn residency_set(&self) -> arc::R<mtl::ResidencySet>;
 }
 
 #[link(name = "ca", kind = "static")]

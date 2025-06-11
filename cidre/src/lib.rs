@@ -108,6 +108,9 @@ pub mod mc;
 #[cfg(feature = "mtl")]
 pub mod mtl;
 
+#[cfg(feature = "mtl")]
+pub mod mtl4;
+
 /// MetalKit
 #[cfg(feature = "mtk")]
 pub mod mtk;

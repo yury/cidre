@@ -73,14 +73,10 @@ impl IntersectionFnTable {
     );
 
     #[objc::msg_send(setFunction:atIndex:)]
-    pub fn set_fn_at<O: objc::Obj, H: mtl::FnHandle<O>>(
-        &mut self,
-        function: Option<&H>,
-        index: usize,
-    );
+    pub fn set_fn_at<H: mtl::FnHandle>(&mut self, function: Option<&H>, index: usize);
 
     #[objc::msg_send(setFunctions:withRange:)]
-    pub fn set_fns_with_range<O: objc::Obj, H: mtl::FnHandle<O>>(
+    pub fn set_fns_with_range<H: mtl::FnHandle>(
         &mut self,
         functions: *const Option<&H>,
         range: ns::Range,

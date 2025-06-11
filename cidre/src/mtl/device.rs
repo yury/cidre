@@ -1,4 +1,4 @@
-use crate::{api, arc, blocks, define_obj_type, define_opts, mtl, ns, objc};
+use crate::{api, arc, blocks, define_obj_type, define_opts, mtl, mtl4, ns, objc};
 
 #[cfg(feature = "io_surface")]
 use crate::io;
@@ -95,6 +95,7 @@ pub enum GpuFamily {
     Common3 = 3003,
 
     Metal3 = 5001,
+    Metal4 = 5002,
 }
 
 define_obj_type!(
@@ -110,7 +111,9 @@ impl Device {
     /// ```
     #[inline]
     pub fn sys_default() -> Option<arc::R<Device>> {
-        unsafe { MTLCreateSystemDefaultDevice() }
+        let retained = unsafe { MTLCreateSystemDefaultDevice() };
+        let retained = retained;
+        retained
     }
 
     #[objc::msg_send(name)]
@@ -413,6 +416,10 @@ impl Device {
     #[api::available(macos = 11.0, ios = 14.0)]
     pub fn supports_primitive_motion_blur(&self) -> bool;
 
+    #[objc::msg_send(maximumConcurrentCompilationTaskCount)]
+    #[api::available(macos = 13.3, ios = 26.0)]
+    pub fn max_concurrent_compilation_task_count(&self) -> usize;
+
     #[objc::msg_send(supportsFamily:)]
     #[api::available(macos = 10.15, ios = 13.0)]
     pub fn supports_family(&self, val: GpuFamily) -> bool;
@@ -464,6 +471,162 @@ impl Device {
         desc: &mtl::ResidencySetDesc,
     ) -> ns::Result<'ear, arc::R<mtl::ResidencySet>> {
         ns::if_none(|err| unsafe { self.new_residency_set_err(desc, err) })
+    }
+
+    /// Determines the size and alignment required to hold the data of a tensor you create with a descriptor in a buffer.
+    #[objc::msg_send(tensorSizeAndAlignWithDescriptor:)]
+    pub fn tensor_size_align_with_desc(&self, desc: &mtl::TensorDesc) -> mtl::SizeAlign;
+
+    #[objc::msg_send(newTensorWithDescriptor:error:)]
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub unsafe fn new_tensor_err<'ear>(
+        &self,
+        desc: &mtl::TensorDesc,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<mtl::Tensor>>;
+
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn new_tensor<'ear>(
+        &self,
+        desc: &mtl::TensorDesc,
+    ) -> ns::Result<'ear, arc::R<mtl::Tensor>> {
+        ns::if_none(|err| unsafe { self.new_tensor_err(desc, err) })
+    }
+
+    #[objc::msg_send(functionHandleWithFunction:)]
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn fn_handle(&self, f: &mtl::Fn) -> Option<arc::R<mtl::AnyFnHandle>>;
+
+    #[objc::msg_send(newCommandAllocator)]
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn new_cmd_allocator(&self) -> Option<arc::R<mtl4::CmdAllocator>>;
+
+    #[objc::msg_send(newCommandAllocatorWithDescriptor:error:)]
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub unsafe fn new_cmd_allocator_desc_err<'ear>(
+        &self,
+        desc: &mtl4::CmdAllocator,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<mtl4::CmdAllocator>>;
+
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn new_cmd_allocator_desc<'ear>(
+        &self,
+        desc: &mtl4::CmdAllocator,
+    ) -> ns::Result<'ear, arc::R<mtl4::CmdAllocator>> {
+        ns::if_none(|err| unsafe { self.new_cmd_allocator_desc_err(desc, err) })
+    }
+
+    #[objc::msg_send(newMTL4CommandQueue)]
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn new_mtl4_cmd_queue(&self) -> Option<arc::R<mtl4::CmdQueue>>;
+
+    #[objc::msg_send(newMTL4CommandQueueWithDescriptor:error:)]
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn new_mtl4_cmd_queue_desc_err<'ear>(
+        &self,
+        desc: &mtl4::CmdQueueDesc,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<mtl4::CmdQueue>>;
+
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn new_mtl4_cmd_queue_desc<'ear>(
+        &self,
+        desc: &mtl4::CmdQueueDesc,
+    ) -> ns::Result<'ear, arc::R<mtl4::CmdQueue>> {
+        ns::if_none(|err| unsafe { self.new_mtl4_cmd_queue_desc_err(desc, err) })
+    }
+
+    #[objc::msg_send(newCommandBuffer)]
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn new_cmd_buf(&self) -> Option<arc::R<mtl4::CmdBuf>>;
+
+    #[objc::msg_send(newArgumentTableWithDescriptor:error:)]
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub unsafe fn new_arg_table_err<'ear>(
+        &self,
+        desc: &mtl4::ArgTableDesc,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<mtl4::ArgTable>>;
+
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn new_arg_table<'ear>(
+        &self,
+        desc: &mtl4::ArgTableDesc,
+    ) -> ns::Result<'ear, arc::R<mtl4::ArgTable>> {
+        ns::if_none(|err| unsafe { self.new_arg_table_err(desc, err) })
     }
 
     /// Returns an array of all the Metal device instances in the system.

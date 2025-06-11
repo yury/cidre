@@ -73,6 +73,15 @@ pub enum StoreActionOpts {
     CustomSamplePositions = 1 << 0,
 }
 
+#[doc(alias = "MTLVisibilityResultType")]
+#[derive(Debug, Default, Eq, PartialEq, Copy, Clone)]
+#[repr(usize)]
+pub enum VisibilityResultType {
+    #[default]
+    Reset = 0,
+    Accumulate = 1,
+}
+
 #[doc(alias = "MTLClearColor")]
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[repr(C)]

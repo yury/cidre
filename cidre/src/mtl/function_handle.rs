@@ -1,6 +1,9 @@
-use crate::{arc, mtl, ns, objc, objc::Obj};
+use crate::{
+    arc, define_obj_type, mtl, ns,
+    objc::{self, Obj},
+};
 
-pub trait FnHandle<T: Obj>: Obj {
+pub trait FnHandle: Obj {
     #[objc::msg_send(functionType)]
     fn fn_type(&self) -> mtl::FnType;
 
@@ -10,3 +13,9 @@ pub trait FnHandle<T: Obj>: Obj {
     #[objc::msg_send(device)]
     fn device(&self) -> arc::R<mtl::Device>;
 }
+
+define_obj_type!(
+    pub AnyFnHandle(ns::Id)
+);
+
+impl FnHandle for AnyFnHandle {}

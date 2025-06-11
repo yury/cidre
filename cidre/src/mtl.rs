@@ -37,12 +37,21 @@ mod argument;
 pub use argument::Access as ArgAccess;
 pub use argument::ArrayType;
 pub use argument::BaseType;
+pub use argument::Binding;
 pub use argument::DType;
 pub use argument::PointerType;
 pub use argument::StructMember;
 pub use argument::StructType;
 pub use argument::TextureRefType;
 pub use argument::Type as ArgType;
+
+mod tensor;
+pub use tensor::TENSOR_MAX_RANK;
+pub use tensor::Tensor;
+pub use tensor::TensorDType;
+pub use tensor::TensorDesc;
+pub use tensor::TensorExtents;
+pub use tensor::TensorUsage;
 
 mod residency_set;
 pub use residency_set::ResidencySet;
@@ -63,6 +72,9 @@ pub use resource::HAZARD_TRACKING_MODE_MASK;
 pub use resource::HAZARD_TRACKING_MODE_SHIFT;
 pub use resource::STORAGE_MODE_MASK;
 pub use resource::STORAGE_MODE_SHIFT;
+
+mod resource_state_command_encoder;
+pub use resource_state_command_encoder::SparseTextureMappingMode;
 
 mod heap;
 pub use heap::Desc as HeapDesc;
@@ -116,6 +128,7 @@ mod function_constant_values;
 pub use function_constant_values::FnConstValues;
 
 mod function_handle;
+pub use function_handle::AnyFnHandle;
 pub use function_handle::FnHandle;
 
 mod function_stitching;
@@ -243,6 +256,7 @@ pub use render_pass::LoadAction;
 pub use render_pass::StencilAttachDesc as RenderPassStencilAttachDesc;
 pub use render_pass::StoreAction;
 pub use render_pass::StoreActionOpts;
+pub use render_pass::VisibilityResultType;
 
 mod compute_pass;
 pub use compute_pass::Desc as ComputePassDesc;

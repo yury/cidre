@@ -53,6 +53,19 @@ Class MTL_RESIDENCY_SET_DESCRIPTOR;
 
 Class MTL_SHARED_EVENT_LISTENER;
 
+Class MTL4_ARGUMENT_TABLE_DESCRIPTOR;
+Class MTL4_COMMAND_ALLOCATOR_DESCRIPTOR;
+Class MTL4_COUNTER_HEAP_DESCRIPTOR;
+Class MTL4_COMMIT_OPTIONS;
+Class MTL4_COMMAND_BUFFER_OPTIONS;
+Class MTL4_MACHINE_LEARNING_PIPELINE_DESCRIPTOR;
+Class MTL4_RENDER_PASS_DESCRIPTOR;
+Class MTL4_PIPELINE_OPTIONS;
+
+
+
+
+
 
 __attribute__((constructor))
 static void mtl_initializer(void)
@@ -105,6 +118,19 @@ static void mtl_initializer(void)
         MTL_SHARED_EVENT_LISTENER = [MTLSharedEventListener class];
         
         MTL_RESIDENCY_SET_DESCRIPTOR = NSClassFromString(@"MTLResidencySetDescriptor");
+        
+        // Metal 4
+        
+        MTL4_ARGUMENT_TABLE_DESCRIPTOR = NSClassFromString(@"MTL4ArgumentTableDescriptor");
+        MTL4_COMMAND_ALLOCATOR_DESCRIPTOR = NSClassFromString(@"MTL4CommandAllocatorDescriptor");
+        MTL4_COUNTER_HEAP_DESCRIPTOR = NSClassFromString(@"MTL4CounterHeapDescriptor");
+        MTL4_COMMIT_OPTIONS = NSClassFromString(@"MTL4CommitOptions");
+        MTL4_COMMAND_BUFFER_OPTIONS = NSClassFromString(@"MTL4CommandBufferOptions");
+        MTL4_MACHINE_LEARNING_PIPELINE_DESCRIPTOR = NSClassFromString(@"MTL4MachineLearningPipelineDescriptor");
+        MTL4_RENDER_PASS_DESCRIPTOR = NSClassFromString(@"MTL4RenderPassDescriptor");
+        MTL4_PIPELINE_OPTIONS = NSClassFromString(@"MTL4PipelineOptions");
+        
+        
     }
     
 }

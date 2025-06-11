@@ -143,6 +143,12 @@ pub enum DType {
     IntersectionFnTable = 116,
     PrimitiveAccStruct = 117,
     InstanceAccStruct = 118,
+
+    Bf16 = 121,
+    Bf16x2 = 122,
+    Bf16x3 = 123,
+    Bf16x4 = 124,
+    Tensor = 140,
 }
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -185,6 +191,11 @@ define_obj_type!(pub TextureRefType(BaseType));
 define_obj_type!(
     #[doc(alias = "MTLArgument")]
     pub Arg(ns::Id)
+);
+
+define_obj_type!(
+    #[doc(alias = "MTLBinding")]
+    pub Binding(ns::Id)
 );
 
 impl Arg {
