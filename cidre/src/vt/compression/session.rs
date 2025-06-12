@@ -310,3 +310,30 @@ unsafe extern "C" {
     #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, visionos = 1.0)]
     fn VTIsStereoMVHEVCEncodeSupported() -> bool;
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::{api, cm, vt};
+    #[test]
+    fn basics() {
+        let session = vt::CompressionSession::new::<()>(
+            1920,
+            1080,
+            cm::VideoCodec::HEVC,
+            None,
+            None,
+            None,
+            None,
+            std::ptr::null_mut(),
+        )
+        .unwrap();
+
+        if api::macos_available("26.0") {
+            let val = session
+                .prop(unsafe {
+                    vt::compression_properties::keys::supported_preset_dictionaries().unwrap()
+                })
+                .unwrap();
+        }
+    }
+}

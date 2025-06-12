@@ -4,19 +4,21 @@ define_cf_type!(Session(cf::Type));
 
 impl Session {
     #[inline]
-    pub fn property_in(
+    pub fn prop_in(
         &self,
         key: &cf::String,
         allocator: Option<&cf::Allocator>,
     ) -> os::Result<Option<arc::R<cf::Plist>>> {
-        let mut value = None;
-        unsafe { VTSessionCopyProperty(self, key, allocator, &mut value).result()? };
-        Ok(value)
+        let mut value = std::mem::MaybeUninit::uninit();
+        unsafe {
+            VTSessionCopyProperty(self, key, allocator, value.as_mut_ptr()).result()?;
+            Ok(value.assume_init())
+        }
     }
 
     #[inline]
-    pub fn property(&self, key: &cf::String) -> os::Result<Option<arc::R<cf::Plist>>> {
-        self.property_in(key, None)
+    pub fn prop(&self, key: &cf::String) -> os::Result<Option<arc::R<cf::Plist>>> {
+        self.prop_in(key, None)
     }
 
     /// # Safety

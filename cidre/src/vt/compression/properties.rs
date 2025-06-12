@@ -567,6 +567,13 @@ pub mod keys {
         unsafe { kVTCompressionPropertyKey_SpatialAdaptiveQPLevel }
     }
 
+    #[doc(alias = "kVTCompressionPropertyKey_SupportedPresetDictionaries")]
+    #[inline]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+    pub fn supported_preset_dictionaries() -> &'static cf::String {
+        unsafe { kVTCompressionPropertyKey_SupportedPresetDictionaries }
+    }
+
     #[link(name = "VideoToolbox", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
@@ -632,6 +639,9 @@ pub mod keys {
 
         #[api::available(macos = 15.0)]
         static kVTCompressionPropertyKey_SpatialAdaptiveQPLevel: &'static cf::String;
+
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        static kVTCompressionPropertyKey_SupportedPresetDictionaries: &'static cf::String;
     }
 }
 
@@ -1048,5 +1058,49 @@ pub mod frame_keys {
     unsafe extern "C" {
         static kVTEncodeFrameOptionKey_ForceKeyFrame: &'static cf::String;
         static kVTEncodeFrameOptionKey_BaseFrameQP: &'static cf::String;
+    }
+}
+
+pub mod preset_keys {
+    use crate::{api, cf};
+
+    #[doc(alias = "kVTCompressionPreset_HighQuality")]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+    pub fn hight_quality() -> &'static cf::String {
+        unsafe { kVTCompressionPreset_HighQuality }
+    }
+
+    #[doc(alias = "kVTCompressionPreset_Balanced")]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+    pub fn balanced() -> &'static cf::String {
+        unsafe { kVTCompressionPreset_Balanced }
+    }
+
+    #[doc(alias = "kVTCompressionPreset_HighSpeed")]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+    pub fn high_speed() -> &'static cf::String {
+        unsafe { kVTCompressionPreset_HighSpeed }
+    }
+
+    #[doc(alias = "kVTCompressionPreset_VideoConferencing")]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+    pub fn video_conferencing() -> &'static cf::String {
+        unsafe { kVTCompressionPreset_VideoConferencing }
+    }
+
+    #[link(name = "VideoToolbox", kind = "framework")]
+    #[api::weak]
+    unsafe extern "C" {
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        static kVTCompressionPreset_HighQuality: &'static cf::String;
+
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        static kVTCompressionPreset_Balanced: &'static cf::String;
+
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        static kVTCompressionPreset_HighSpeed: &'static cf::String;
+
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        static kVTCompressionPreset_VideoConferencing: &'static cf::String;
     }
 }
