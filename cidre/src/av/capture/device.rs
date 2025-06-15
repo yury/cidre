@@ -2207,6 +2207,94 @@ impl Format {
     ) -> Option<arc::R<av::FrameRateRange>>;
 }
 
+/// AVCaptureDeviceFormatCinematicVideoSupport
+impl Format {
+    #[objc::msg_send(isCinematicVideoCaptureSupported)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn is_cinematic_video_capture_supported(&self) -> bool;
+
+    #[objc::msg_send(defaultSimulatedAperture)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn default_simulated_aperture(&self) -> f32;
+
+    #[objc::msg_send(minSimulatedAperture)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn min_simulated_aperture(&self) -> f32;
+
+    #[objc::msg_send(maxSimulatedAperture)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn max_simulated_aperture(&self) -> f32;
+
+    #[objc::msg_send(videoMinZoomFactorForCinematicVideo)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn video_min_zoom_factor_for_cinematic_video(&self) -> f32;
+
+    #[objc::msg_send(videoMaxZoomFactorForCinematicVideo)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn video_max_zoom_factor_for_cinematic_video(&self) -> f32;
+
+    #[objc::msg_send(videoFrameRateRangeForCinematicVideo)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn video_frame_rate_range_for_cinematic_video(&self) -> Option<arc::R<av::FrameRateRange>>;
+}
+
+/// CameraLensSmudgeDetection
+impl Format {
+    #[objc::msg_send(isCameraLensSmudgeDetectionSupported)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn is_cam_lens_smudge_detection_supported(&self) -> bool;
+}
+
+/// CameraLensSmudgeDetection
+impl Device {
+    #[objc::msg_send(setCameraLensSmudgeDetectionEnabled:detectionInterval:)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub unsafe fn set_cam_lens_smudge_detection_enabled_throws(
+        &mut self,
+        val: bool,
+        detection_interval: cm::Time,
+    );
+
+    #[objc::msg_send(isCameraLensSmudgeDetectionEnabled)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn is_cam_lens_smudge_detection_enabled(&self) -> bool;
+
+    #[objc::msg_send(cameraLensSmudgeDetectionInterval)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn cam_lens_smudge_detection_interval(&self) -> cm::Time;
+
+    #[objc::msg_send(cameraLensSmudgeDetectionStatus)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn cam_lens_smudge_detection_status(&self) -> CamLensSmudgeDetectionStatus;
+}
+
+#[doc(alias = "AVCaptureCameraLensSmudgeDetectionStatus")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(isize)]
+pub enum CamLensSmudgeDetectionStatus {
+    Disabled = 0,
+    SmudgeNotDetected = 1,
+    Smudged = 2,
+    Unknown = 3,
+}
+
+/// CameraLensSmudgeDetection
+impl<'a> ConfigLockGuard<'a> {
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn set_cam_lens_smudge_detection_enabled<'ear>(
+        &mut self,
+        val: bool,
+        detection_interval: cm::Time,
+    ) -> ns::ExResult<'ear> {
+        unsafe {
+            ns::try_catch(|| {
+                self.device
+                    .set_cam_lens_smudge_detection_enabled_throws(val, detection_interval)
+            })
+        }
+    }
+}
+
 pub mod notifications {
     use crate::{api, ns};
 

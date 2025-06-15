@@ -130,6 +130,34 @@ impl DeviceInput {
     #[objc::msg_send(setWindNoiseRemovalEnabled:)]
     #[objc::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
     pub fn set_wind_noise_removal_enabled(&mut self, val: bool);
+
+    #[objc::msg_send(isCinematicVideoCaptureSupported)]
+    #[objc::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn is_cinematic_video_capture_supported(&self) -> bool;
+
+    #[objc::msg_send(isCinematicVideoCaptureEnabled)]
+    #[objc::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn is_cinematic_video_capture_enabled(&self) -> bool;
+
+    #[objc::msg_send(setCinematicVideoCaptureEnabled:)]
+    #[objc::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn set_cinematic_video_capture_enabled(&mut self, val: bool);
+
+    #[objc::msg_send(simulatedAperture)]
+    #[objc::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn simulated_aperture(&self) -> f32;
+
+    #[objc::msg_send(setSimulatedAperture:)]
+    #[objc::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub unsafe fn set_simulated_aperture_throws(&mut self, val: f32);
+
+    /// Shallow depth of field simulated aperture.
+    ///
+    /// When capturing a Cinematic Video, use this property to control the amount of blur in the simulated depth of field effect.
+    #[objc::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn set_simultated_aperture<'ear>(&mut self, val: f32) -> ns::ExResult<'ear> {
+        unsafe { ns::try_catch(|| self.set_simulated_aperture_throws(val)) }
+    }
 }
 
 #[cfg(any(target_os = "ios", target_os = "tvos"))]

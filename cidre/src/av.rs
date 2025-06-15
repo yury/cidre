@@ -12,6 +12,7 @@ pub mod capture;
 pub use capture::AudioChannel as CaptureAudioChannel;
 pub use capture::AuthorizationStatus;
 pub use capture::AutoFocusSys as CaptureAutoFocusSys;
+pub use capture::CamLensSmudgeDetectionStatus;
 pub use capture::CenterStageControlMode as CaptureCenterStageControlMode;
 pub use capture::ColorSpace as CaptureColorSpace;
 pub use capture::Connection as CaptureConnection;
