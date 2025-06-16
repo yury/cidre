@@ -82,6 +82,8 @@ pub use session::Mode as SessionMode;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use session::Port as SessionPort;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use session::PortExtensionBluetoothMic as SessionPortExtensionBluetoothMic;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use session::PortOverride as SessionPortOverride;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use session::PromptStyle as SessionPromptStyle;

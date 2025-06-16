@@ -186,6 +186,8 @@ pub use audio::SessionMode as AudioSessionMode;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use audio::SessionPort as AudioSessionPort;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+pub use audio::SessionPortExtensionBluetoothMic as AudioSessionPortExtensionBluetoothMic;
+#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use audio::SessionPortOverride as AudioSessionPortOverride;
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 pub use audio::SessionPromptStyle as AudioSessionPromptStyle;

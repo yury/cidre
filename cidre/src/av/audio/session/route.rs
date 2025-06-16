@@ -183,6 +183,29 @@ impl DataSrcDesc {
 }
 
 define_obj_type!(
+    #[doc(alias = "AVAudioSessionCapability")]
+    pub Capability(ns::Id)
+);
+
+impl Capability {
+    #[objc::msg_send(isSupported)]
+    pub fn is_supported(&self) -> bool;
+
+    #[objc::msg_send(isEnabled)]
+    pub fn is_enabled(&self) -> bool;
+}
+
+define_obj_type!(
+    #[doc(alias = "AVAudioSessionPortExtensionBluetoothMicrophone")]
+    pub PortExtensionBluetoothMic(ns::Id)
+);
+
+impl PortExtensionBluetoothMic {
+    #[objc::msg_send(highQualityRecording)]
+    pub fn high_quality_recording(&self) -> arc::R<Capability>;
+}
+
+define_obj_type!(
     #[doc(alias = "AVAudioSessionPortDescription")]
     pub PortDesc(ns::Id)
 );
@@ -227,6 +250,19 @@ impl PortDesc {
     pub fn set_preferred_data_src(&mut self, val: Option<&DataSrcDesc>) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_preferred_data_src_err(val, err) })
     }
+}
+
+/// BluetoothMicrophoneExtension
+impl PortDesc {
+    #[objc::msg_send(bluetoothMicrophoneExtension)]
+    #[objc::available(
+        ios = 26.0,
+        maccatalyst = 26.0,
+        watchos = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn bluetooth_mic_extension(&self) -> Option<arc::R<PortExtensionBluetoothMic>>;
 }
 
 define_obj_type!(

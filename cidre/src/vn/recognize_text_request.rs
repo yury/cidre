@@ -57,7 +57,9 @@ impl RecognizeTextRequest {
         tvos = 15.0,
         visionos = 1.0
     )]
-    pub fn supported_recognition_langs(&self) -> ns::Result<arc::R<ns::Array<ns::String>>> {
+    pub fn supported_recognition_langs<'ear>(
+        &self,
+    ) -> ns::Result<'ear, arc::R<ns::Array<ns::String>>> {
         ns::if_none(|err| unsafe { self.supported_recognition_langs_err(err) })
     }
 

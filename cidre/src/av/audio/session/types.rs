@@ -426,9 +426,16 @@ impl Mode {
     pub fn voice_prompt() -> &'static Self {
         unsafe { AVAudioSessionModeVoicePrompt }
     }
+
+    #[doc(alias = "AVAudioSessionModeShortFormVideo")]
+    #[api::available(ios = 26.0)]
+    pub fn short_form_video() -> &'static Self {
+        unsafe { AVAudioSessionModeShortFormVideo }
+    }
 }
 
 #[link(name = "AVFAudio", kind = "framework")]
+#[api::weak]
 unsafe extern "C" {
     static AVAudioSessionModeDefault: &'static Mode;
     static AVAudioSessionModeVoiceChat: &'static Mode;
@@ -439,6 +446,8 @@ unsafe extern "C" {
     static AVAudioSessionModeVideoChat: &'static Mode;
     static AVAudioSessionModeSpokenAudio: &'static Mode;
     static AVAudioSessionModeVoicePrompt: &'static Mode;
+    #[api::available(ios = 26.0)]
+    static AVAudioSessionModeShortFormVideo: &'static Mode;
 
 }
 
@@ -581,7 +590,8 @@ impl CategoryOpts {
     ///     AllowBluetooth defaults to false and cannot be changed. Enabling Bluetooth for input in
     ///     these categories is not allowed.
     #[doc(alias = "AVAudioSessionCategoryOptionAllowBluetooth")]
-    pub const ALLOW_BLUETOOTH: Self = Self(0x4);
+    #[doc(alias = "AVAudioSessionCategoryOptionAllowBluetoothHFP")]
+    pub const ALLOW_BLUETOOTH_HFP: Self = Self(0x4);
 
     /// Allows an application to change the default behavior of some audio session categories with
     /// regard to the audio route. The exact behavior depends on the category.
@@ -668,6 +678,10 @@ impl CategoryOpts {
     /// not the user has granted permission to use microphone input.
     #[doc(alias = "AVAudioSessionCategoryOptionOverrideMutedMicrophoneInterruption")]
     pub const OVERRIDE_MUTED_MICROPHONE_INTERRUPTION: Self = Self(0x80);
+
+    #[doc(alias = "AVAudioSessionCategoryOptionBluetoothHighQualityRecording")]
+    #[cfg(target_os = "ios")]
+    pub const BLUETOOTH_HIGHT_QUALITY_RECORDING: Self = Self(1 << 19);
 }
 
 /// Values for AVAudioSessionInterruptionTypeKey in AVAudioSessionInterruptionNotification's

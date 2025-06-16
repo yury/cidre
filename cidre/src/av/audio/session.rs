@@ -29,6 +29,7 @@ pub use route::Location;
 pub use route::Orientation;
 pub use route::PolarPattern;
 pub use route::PortDesc;
+pub use route::PortExtensionBluetoothMic;
 pub use route::RouteDesc;
 
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
@@ -586,6 +587,24 @@ impl Session {
     pub fn mic_injection_capabilities_change_notification() -> &'static ns::NotificationName {
         unsafe { AVAudioSessionMicrophoneInjectionCapabilitiesChangeNotification }
     }
+
+    #[doc(alias = "AVAudioSessionOutputMuteStateChangeNotification")]
+    #[api::available(macos = 26.0, ios = 26.0)]
+    pub fn output_mute_state_change_notification() -> &'static ns::NotificationName {
+        unsafe { AVAudioSessionOutputMuteStateChangeNotification }
+    }
+
+    #[doc(alias = "AVAudioSessionUserIntentToUnmuteOutputNotification")]
+    #[api::available(ios = 26.0)]
+    pub fn user_intent_to_unmute_output_notification() -> &'static ns::NotificationName {
+        unsafe { AVAudioSessionUserIntentToUnmuteOutputNotification }
+    }
+
+    #[doc(alias = "AVAudioSessionAvailableInputsChangeNotification")]
+    #[api::available(ios = 26.0)]
+    pub fn available_inputes_change_notification() -> &'static ns::NotificationName {
+        unsafe { AVAudioSessionAvailableInputsChangeNotification }
+    }
 }
 
 /// Keys for ns::Notification user_info dictionaries
@@ -659,6 +678,12 @@ pub mod keys {
         unsafe { AVAudioSessionMicrophoneInjectionIsAvailableKey }
     }
 
+    #[doc(alias = "AVAudioSessionMuteStateKey")]
+    #[api::available(macos = 26.0, ios = 26.0)]
+    pub fn mute_state() -> &'static ns::String {
+        unsafe { AVAudioSessionMuteStateKey }
+    }
+
     #[link(name = "AVFAudio", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
@@ -689,6 +714,9 @@ pub mod keys {
         #[api::available(ios = 18.2, visionos = 2.2)]
         static AVAudioSessionMicrophoneInjectionIsAvailableKey: &'static ns::String;
 
+        #[api::available(macos = 26.0, ios = 26.0)]
+        static AVAudioSessionMuteStateKey: &'static ns::String;
+
     }
 }
 
@@ -708,4 +736,13 @@ unsafe extern "C" {
     #[api::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
     static AVAudioSessionMicrophoneInjectionCapabilitiesChangeNotification:
         &'static ns::NotificationName;
+
+    #[api::available(macos = 26.0, ios = 26.0)]
+    static AVAudioSessionOutputMuteStateChangeNotification: &'static ns::NotificationName;
+
+    #[api::available(ios = 26.0)]
+    static AVAudioSessionUserIntentToUnmuteOutputNotification: &'static ns::NotificationName;
+
+    #[api::available(ios = 26.0)]
+    static AVAudioSessionAvailableInputsChangeNotification: &'static ns::NotificationName;
 }
