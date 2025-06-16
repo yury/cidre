@@ -14,6 +14,7 @@ pub use capture::AuthorizationStatus;
 pub use capture::AutoFocusSys as CaptureAutoFocusSys;
 pub use capture::CamLensSmudgeDetectionStatus;
 pub use capture::CenterStageControlMode as CaptureCenterStageControlMode;
+pub use capture::CinematicVideoFocusMode as CaptureCinematicVideoFocusMode;
 pub use capture::ColorSpace as CaptureColorSpace;
 pub use capture::Connection as CaptureConnection;
 pub use capture::Control as CaptureControl;

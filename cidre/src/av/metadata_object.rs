@@ -1,4 +1,4 @@
-use crate::{arc, cg, define_obj_type, ns, objc};
+use crate::{api, arc, av, cg, define_obj_type, ns, objc};
 
 #[cfg(feature = "cm")]
 use crate::cm;
@@ -177,8 +177,19 @@ impl Type {
     pub fn micro_pdf_417_code() -> &'static Type {
         unsafe { AVMetadataObjectTypeMicroPDF417Code }
     }
+
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn cat_head() -> &'static Type {
+        unsafe { AVMetadataObjectTypeCatHead }
+    }
+
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn dog_head() -> &'static Type {
+        unsafe { AVMetadataObjectTypeDogHead }
+    }
 }
 
+#[api::weak]
 unsafe extern "C" {
     static AVMetadataObjectTypeHumanBody: &'static Type;
     static AVMetadataObjectTypeHumanFullBody: &'static Type;
@@ -205,6 +216,12 @@ unsafe extern "C" {
     static AVMetadataObjectTypeGS1DataBarLimitedCode: &'static Type;
     static AVMetadataObjectTypeMicroQRCode: &'static Type;
     static AVMetadataObjectTypeMicroPDF417Code: &'static Type;
+
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    static AVMetadataObjectTypeCatHead: &'static Type;
+
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    static AVMetadataObjectTypeDogHead: &'static Type;
 }
 
 define_obj_type!(
@@ -248,6 +265,36 @@ impl Obj {
     /// with a matching type.
     #[objc::msg_send(type)]
     pub fn obj_type(&self) -> &Type;
+
+    /// A number associated with object groups (e.g., face and body) that is unique for each physical object
+    /// (e.g., a person whom the face and body belong to).
+    ///
+    /// The value of this property is an NSInteger indicating the unique identifier to combine objects (for instance,
+    /// face and body) into groups (a physical person). A human body and face for the same person will have the same group ID.
+    /// It is set to -1 when it's invalid or not available. When it's set to a value of >=0, it is unique across all object groups.
+    #[objc::msg_send(groupID)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn group_id(&self) -> isize;
+
+    /// A unique identifier for each detected object type (face, body, hands, heads and salient objects).
+    ///
+    /// Defaults to a value of -1 when it is invalid or not available. When a new object enters the picture,
+    /// it is assigned a new unique identifier. obj_idss are not re-used as objects leave the picture and new ones enter.
+    ///  Objects that leave the picture then re-enter are assigned a new objectID.
+    #[objc::msg_send(objectID)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn obj_id(&self) -> isize;
+}
+
+/// AVMetadataObjectCinematicVideoSupport
+impl Obj {
+    #[objc::msg_send(cinematicVideoFocusMode)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn cinematic_video_focus_mode(&self) -> av::CaptureCinematicVideoFocusMode;
+
+    #[objc::msg_send(isFixedFocus)]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
+    pub fn is_fixed_focus(&self) -> bool;
 }
 
 define_obj_type!(
@@ -263,10 +310,19 @@ define_obj_type!(
     #[doc(alias = "AVMetadataCatBodyObject")]
     pub CatBodyObj(BodyObj)
 );
+define_obj_type!(
+    #[doc(alias = "AVMetadataCatHeadObject")]
+    pub CatHeadObj(Obj)
+);
 
 define_obj_type!(
     #[doc(alias = "AVMetadataDogBodyObject")]
     pub DogBodyObj(BodyObj)
+);
+
+define_obj_type!(
+    #[doc(alias = "AVMetadataDogHeadObject")]
+    pub DogHeadObj(Obj)
 );
 
 define_obj_type!(

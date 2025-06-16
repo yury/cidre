@@ -19,6 +19,7 @@ pub use device::AutoFocusRangeRestriction;
 pub use device::AutoFocusSys;
 pub use device::CamLensSmudgeDetectionStatus;
 pub use device::CenterStageControlMode;
+pub use device::CinematicVideoFocusMode;
 pub use device::ColorSpace;
 pub use device::ConfigLockGuard as DeviceConfigurationLockGuard;
 pub use device::Device;

@@ -1016,6 +1016,20 @@ impl Device {
     pub fn minimum_focus_distance(&self) -> ns::Integer;
 }
 
+#[doc(alias = "AVCaptureCinematicVideoFocusMode")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum CinematicVideoFocusMode {
+    /// Indicates that no focus mode is specified, in which case weak focus is used as default.
+    None = 0,
+
+    /// Indicates that the subject should remain in focus until it exits the scene.
+    Strong = 1,
+
+    /// Indicates that the Cinematic Video algorithm should automatically adjust focus according to the prominence of the subjects in the scene.
+    Weak = 2,
+}
+
 #[doc(alias = "AVCaptureExposureMode")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
