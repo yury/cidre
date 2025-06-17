@@ -1,5 +1,6 @@
 use crate::{arc, define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
+#[doc(alias = "MTLIndirectCommandBufferExecutionRange")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(C)]
 pub struct ExecutionRange {
@@ -93,6 +94,23 @@ impl Desc {
 
     #[objc::msg_send(setSupportRayTracing:)]
     pub fn set_support_ray_tracing(&mut self, val: bool);
+
+    #[objc::msg_send(supportDynamicAttributeStride)]
+    #[objc::available(macos = 14.0, ios = 17.0)]
+    pub fn support_dynamic_attribute_stride(&self) -> bool;
+
+    #[objc::msg_send(setSupportDynamicAttributeStride:)]
+    #[objc::available(macos = 14.0, ios = 17.0)]
+    pub fn set_support_dynamic_attribute_stride(&mut self, val: bool);
+
+    #[objc::msg_send(supportColorAttachmentMapping)]
+    #[objc::available(macos = 26.0, ios = 26.0)]
+    pub fn support_color_attachment_mapping(&self) -> bool;
+
+    /// Specifies if the indirect command buffer should support color attachment mapping.
+    #[objc::msg_send(setSupportColorAttachmentMapping:)]
+    #[objc::available(macos = 26.0, ios = 26.0)]
+    pub fn set_support_color_attachment_mapping(&mut self, val: bool);
 }
 
 define_obj_type!(

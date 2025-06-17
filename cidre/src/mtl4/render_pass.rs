@@ -77,7 +77,7 @@ impl RenderPassDesc {
     pub fn stencil_attach(&self) -> arc::R<mtl::RenderPassStencilAttachDesc>;
 
     #[objc::msg_send(threadgroupMemoryLength)]
-    pub fn threadgroup_memory_len(&self) -> usize;
+    pub fn threadgroup_mem_len(&self) -> usize;
 
     #[objc::msg_send(tileHeight)]
     pub fn tile_height(&self) -> usize;

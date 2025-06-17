@@ -39,6 +39,46 @@ impl BarrierScope {
     pub const RENDER_TARGETS: Self = Self(1 << 2);
 }
 
+define_opts!(
+    #[doc(alias = "MTLStages")]
+    pub Stages(usize)
+);
+
+impl Stages {
+    /// Represents all vertex shader stage work in a render pass.
+    pub const VERTEX: Self = Self(1 << 0);
+
+    /// Represents all fragment shader stage work in a render pass.
+    pub const FRAGMENT: Self = Self(1 << 1);
+
+    /// Represents all tile shading stage work in a render pass.
+    pub const TILE: Self = Self(1 << 2);
+
+    /// Represents all object shader stage work in a render pass.
+    pub const OBJ: Self = Self(1 << 3);
+
+    /// Represents all mesh shader stage work work in a render pass.
+    pub const MESH: Self = Self(1 << 4);
+
+    /// Represents all sparse and placement sparse resource mapping updates.
+    pub const RES_STATE: Self = Self(1 << 26);
+
+    /// Represents all compute dispatches in a compute pass.
+    pub const DISPATCH: Self = Self(1 << 27);
+
+    /// Represents all blit operations in a pass.
+    pub const BLIT: Self = Self(1 << 28);
+
+    /// Represents all acceleration structure operations.
+    pub const ACCELERATION_STRUCTURE: Self = Self(1 << 29);
+
+    /// Represents all machine learning network dispatch operations.
+    pub const ML: Self = Self(1 << 30);
+
+    /// Convenience mask representing all stages of GPU work.
+    pub const ALL: Self = Self(usize::MAX);
+}
+
 define_obj_type!(
     /// An encoder that writes GPU commands into a command buffer.
     #[doc(alias = "MTLCommandEncoder")]

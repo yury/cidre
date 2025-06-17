@@ -39,8 +39,19 @@ pub use function_descriptor::FnDesc;
 mod render_command_encoder;
 pub use render_command_encoder::RenderCmdEncoder;
 pub use render_command_encoder::RenderEncoderOpts;
+
 mod render_pass;
 pub use render_pass::RenderPassDesc;
+
+mod render_pipeline;
+pub use render_pipeline::LogicalToPhysicalColorAttachMap;
+pub use render_pipeline::LogicalToPhysicalColorAttachMappingState;
+pub use render_pipeline::RenderPipelineColorAttachDesc;
+pub use render_pipeline::RenderPipelineColorAttachDescArray;
+pub use render_pipeline::RenderPipelineDesc;
+
+mod tile_render_pipeline;
+pub use tile_render_pipeline::TileRenderPipelineDesc;
 
 mod machine_learning_pipeline;
 pub use machine_learning_pipeline::MlPipelineDesc;

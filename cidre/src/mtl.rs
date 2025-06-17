@@ -200,6 +200,7 @@ mod command_encoder;
 pub use command_encoder::BarrierScope;
 pub use command_encoder::CmdEncoder;
 pub use command_encoder::ResUsage;
+pub use command_encoder::Stages;
 
 mod blit_command_encoder;
 pub use blit_command_encoder::BlitCmdEncoder;

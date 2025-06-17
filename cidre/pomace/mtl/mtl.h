@@ -65,8 +65,6 @@ Class MTL4_PIPELINE_OPTIONS;
 
 
 
-
-
 __attribute__((constructor))
 static void mtl_initializer(void)
 {
