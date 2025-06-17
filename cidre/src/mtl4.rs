@@ -36,6 +36,12 @@ pub use compute_command_encoder::ComputeCmdEncoder;
 mod function_descriptor;
 pub use function_descriptor::FnDesc;
 
+mod library_function_descriptor;
+pub use library_function_descriptor::LibFnDesc;
+
+mod specialized_function_descriptor;
+pub use specialized_function_descriptor::SpecializedFnDesc;
+
 mod render_command_encoder;
 pub use render_command_encoder::RenderCmdEncoder;
 pub use render_command_encoder::RenderEncoderOpts;
@@ -69,3 +75,5 @@ pub use pipeline_state::IndirectCmdBufSupportState;
 pub use pipeline_state::PipelineDesc;
 pub use pipeline_state::PipelineOpts;
 pub use pipeline_state::ShaderReflection;
+
+pub use crate::mtl::acceleration_structure_types::mtl4::BufRange;

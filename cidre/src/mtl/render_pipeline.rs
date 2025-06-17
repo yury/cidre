@@ -3,7 +3,7 @@ use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 use super::{Fn, PixelFormat, argument::Arg};
 
 #[doc(alias = "MTLBlendFactor")]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 #[repr(usize)]
 pub enum BlendFactor {
     Zero = 0,
@@ -25,10 +25,11 @@ pub enum BlendFactor {
     OneMinusSrc1Color = 16,
     Src1Alpha = 17,
     OneMinusSrc1Alpha = 18,
+    Unspecified = 19,
 }
 
 #[doc(alias = "MTLBlendOperation")]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 #[repr(usize)]
 pub enum BlendOp {
     Add = 0,
@@ -36,10 +37,11 @@ pub enum BlendOp {
     ReverseSubtract = 2,
     Min = 3,
     Max = 4,
+    Unspecified = 5,
 }
 
 #[doc(alias = "MTLColorWriteMask")]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 #[repr(usize)]
 pub enum ColorWriteMask {
     None = 0,
@@ -48,6 +50,7 @@ pub enum ColorWriteMask {
     Blue = 0x1 << 1,
     Alpha = 0x1 << 0,
     All = 0xf,
+    Unspecified = 0x10,
 }
 
 #[doc(alias = "MTLPrimitiveTopologyClass")]

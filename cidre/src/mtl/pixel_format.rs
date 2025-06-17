@@ -497,4 +497,7 @@ pub enum PixelFormat {
     /// and sample the texture view instead.
     #[doc(alias = "MTLPixelFormatX24_Stencil8")]
     X24Stencil8 = 262,
+
+    #[doc(alias = "MTLPixelFormatUnspecialized")]
+    Unspecialized = 263,
 }
