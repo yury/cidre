@@ -353,7 +353,7 @@ fn main() {
             z_near: 0.0,
             z_far: 1.0,
         });
-        enc.set_front_facing_winding(mtl::Winding::Ccw);
+        enc.set_ffw(mtl::Winding::Ccw);
         let t = simd::f32x3x3::translate(0.0, 0.0);
         enc.copy_to_vertex_at(&t, 1);
         enc.set_vertex_buf_at(Some(&buf), 0, 0);

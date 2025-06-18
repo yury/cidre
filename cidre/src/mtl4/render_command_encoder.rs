@@ -1,4 +1,4 @@
-use crate::{define_obj_type, define_opts, mtl, mtl4, objc};
+use crate::{define_obj_type, define_opts, mtl, mtl4, ns, objc};
 
 define_opts!(
     #[doc(alias = "MTL4RenderEncoderOptions")]
@@ -27,6 +27,9 @@ impl RenderCmdEncoder {
 
     #[objc::msg_send(tileHeight)]
     pub fn tile_height(&self) -> usize;
+
+    #[objc::msg_send(setColorAttachmentMap:)]
+    pub fn set_color_attach_map(&mut self, val: &mtl::LogicalToPhysicalColorAttachMap);
 
     #[objc::msg_send(setRenderPipelineState:)]
     pub fn set_render_ps(&mut self, val: &mtl::RenderPipelineState);
@@ -65,11 +68,33 @@ impl RenderCmdEncoder {
         self.set_scissor_rects_count(val.as_ptr(), val.len());
     }
 
+    #[objc::msg_send(setVertexAmplificationCount:viewMappings:)]
+    pub unsafe fn set_vertex_amplification_count(
+        &mut self,
+        count: usize,
+        view_mapping: *const mtl::VertexAmplificationViewMapping,
+    );
+
+    pub fn set_vertex_amplifications(&mut self, values: &[mtl::VertexAmplificationViewMapping]) {
+        unsafe {
+            self.set_vertex_amplification_count(values.len(), values.as_ptr());
+        }
+    }
+
     #[objc::msg_send(setCullMode:)]
     pub fn set_cull_mode(&mut self, val: mtl::CullMode);
 
+    #[objc::msg_send(setDepthClipMode:)]
+    pub fn set_depth_clip_mode(&mut self, val: mtl::DepthClipMode);
+
+    #[objc::msg_send(setDepthBias:slopeScale:clamp:)]
+    pub fn set_depth_bias(&mut self, depth_bias: f32, slope_scale: f32, clamp: f32);
+
     #[objc::msg_send(setTriangleFillMode:)]
     pub fn set_triangle_fill_mode(&mut self, val: mtl::TriangleFillMode);
+
+    #[objc::msg_send(setBlendColorRed:green:blue:alpha:)]
+    pub fn set_blend_color(&mut self, r: f32, g: f32, b: f32, a: f32);
 
     #[objc::msg_send(setDepthStencilState:)]
     pub fn set_depth_stencil_state(&mut self, val: Option<&mtl::DepthStencilState>);
@@ -122,4 +147,47 @@ impl RenderCmdEncoder {
         instance_count: usize,
         base_instance: usize,
     );
+
+    #[objc::msg_send(drawIndexedPrimitives:indexCount:indexType:indexBuffer:indexBufferLength:)]
+    pub fn draw_indexed_primitives(
+        &mut self,
+        primitive_type: mtl::Primitive,
+        index_count: usize,
+        index_type: mtl::IndexType,
+        index_buf: usize,
+        index_buf_len: usize,
+    );
+
+    #[objc::msg_send(drawIndexedPrimitives:indexCount:indexType:indexBuffer:indexBufferLength:instanceCount:)]
+    pub fn draw_indexed_primitives_instance_count(
+        &mut self,
+        primitive_type: mtl::Primitive,
+        index_count: usize,
+        index_type: mtl::IndexType,
+        index_buf: usize,
+        index_buf_len: usize,
+        instance_count: usize,
+    );
+
+    #[objc::msg_send(executeCommandsInBuffer:withRange:)]
+    pub fn exec_cmds_in_buf(&mut self, icb: &mtl::IndirectCmdBuf, range: ns::Range);
+
+    #[objc::msg_send(executeCommandsInBuffer:indirectBuffer:)]
+    pub fn exec_cmds_in_buf_indirect_range_buf(
+        &mut self,
+        icb: &mtl::IndirectCmdBuf,
+        indirect_range_buf: u64,
+    );
+
+    #[objc::msg_send(dispatchThreadsPerTile:)]
+    pub fn dispatch_threads_per_tile(&mut self, threads_per_tile: mtl::Size);
+
+    #[objc::msg_send(setThreadgroupMemoryLength:offset:atIndex:)]
+    pub fn set_threadgroup_mem_len(&mut self, length: usize, offset: usize, index: usize);
+
+    #[objc::msg_send(setArgumentTable:atStages:)]
+    pub fn set_arg_table(&mut self, table: &mtl4::ArgTable, stages: mtl::Stages);
+
+    #[objc::msg_send(setFrontFacingWinding:)]
+    pub fn set_ffw(&mut self, val: mtl::Winding);
 }

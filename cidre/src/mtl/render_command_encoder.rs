@@ -102,7 +102,7 @@ pub enum CullMode {
 
 /// The vertex winding rule that determines a front-facing primitive.
 #[doc(alias = "MTLWinding")]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 #[repr(usize)]
 pub enum Winding {
     /// Primitives whose vertices are specified in clockwise order are front-facing.
@@ -115,7 +115,7 @@ pub enum Winding {
 }
 
 #[doc(alias = "MTLDepthClipMode")]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 #[repr(usize)]
 pub enum DepthClipMode {
     Clip = 0,
@@ -123,7 +123,7 @@ pub enum DepthClipMode {
 }
 
 #[doc(alias = "MTLTriangleFillMode")]
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 #[repr(usize)]
 pub enum TriangleFillMode {
     #[doc(alias = "MTLTriangleFillModeFill")]
@@ -134,7 +134,7 @@ pub enum TriangleFillMode {
 }
 
 #[doc(alias = "MTLDrawPrimitivesIndirectArguments")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Hash, Copy, Clone)]
 #[repr(C)]
 pub struct DrawPrimitivesIndirectArgs {
     pub vertex_count: u32,
@@ -144,7 +144,7 @@ pub struct DrawPrimitivesIndirectArgs {
 }
 
 #[doc(alias = "MTLDrawIndexedPrimitivesIndirectArguments")]
-#[derive(Debug)]
+#[derive(Debug, Hash, Copy, Clone, Eq, PartialEq)]
 #[repr(C)]
 pub struct DrawIndexedPrimitivesIndirectArgs {
     pub index_count: u32,
@@ -155,7 +155,7 @@ pub struct DrawIndexedPrimitivesIndirectArgs {
 }
 
 #[doc(alias = "MTLVertexAmplificationViewMapping")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Hash, Copy, Clone)]
 #[repr(C)]
 pub struct VertexAmplificationViewMapping {
     pub viewport_array_index_offset: u32,
@@ -163,7 +163,7 @@ pub struct VertexAmplificationViewMapping {
 }
 
 #[doc(alias = "MTLDrawPatchIndirectArguments")]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Hash, Copy, Clone)]
 #[repr(C)]
 pub struct DrawPatchIndirectArgs {
     pub patch_count: u32,
@@ -173,7 +173,7 @@ pub struct DrawPatchIndirectArgs {
 }
 
 #[doc(alias = "MTLQuadTessellationFactorsHalf")]
-#[derive(Debug)]
+#[derive(Debug, Hash, Copy, Clone, Eq, PartialEq)]
 #[repr(C)]
 pub struct QuadTessellationFactorsHalf {
     /// NOTE: edge_tessellation_factor and inside_tessellation_factor are interpreted as half (16-bit floats)
@@ -182,7 +182,7 @@ pub struct QuadTessellationFactorsHalf {
 }
 
 #[doc(alias = "MTLTriangleTessellationFactorsHalf")]
-#[derive(Debug)]
+#[derive(Debug, Hash, Copy, Clone, Eq, PartialEq)]
 #[repr(C)]
 pub struct TriangleTessellationFactorsHalf {
     // NOTE: edge_tessellation_factor and inside_tessellation_factorare interpreted as half (16-bit floats) */
@@ -281,7 +281,7 @@ impl RenderCmdEncoder {
     pub fn set_triangle_fill_mode(&mut self, val: mtl::TriangleFillMode);
 
     #[objc::msg_send(setFrontFacingWinding:)]
-    pub fn set_front_facing_winding(&mut self, val: mtl::Winding);
+    pub fn set_ffw(&mut self, val: mtl::Winding);
 
     #[objc::msg_send(setCullMode:)]
     pub fn set_cull_mode(&mut self, val: mtl::CullMode);

@@ -181,6 +181,9 @@ pub use render_pipeline::TileRenderPipelineColorAttachDesc;
 pub use render_pipeline::TileRenderPipelineColorAttachDescArray;
 pub use render_pipeline::TileRenderPipelineDesc;
 
+pub use crate::mtl4::render_pipeline::LogicalToPhysicalColorAttachMap;
+pub use crate::mtl4::render_pipeline::LogicalToPhysicalColorAttachMappingState;
+
 mod fence;
 pub use fence::Fence;
 

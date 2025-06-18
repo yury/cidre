@@ -173,12 +173,12 @@ impl RenderPipelineDesc {
     pub fn set_input_primitive_topology(&mut self, val: mtl::PrimitiveTopologyClass);
 
     #[objc::msg_send(colorAttachmentMappingState)]
-    pub fn color_attach_mapping_state(&self) -> mtl4::LogicalToPhysicalColorAttachMappingState;
+    pub fn color_attach_mapping_state(&self) -> mtl::LogicalToPhysicalColorAttachMappingState;
 
     #[objc::msg_send(setColorAttachmentMappingState:)]
     pub fn set_color_attach_mapping_state(
         &mut self,
-        val: mtl4::LogicalToPhysicalColorAttachMappingState,
+        val: mtl::LogicalToPhysicalColorAttachMappingState,
     );
 
     #[objc::msg_send(supportIndirectCommandBuffers)]

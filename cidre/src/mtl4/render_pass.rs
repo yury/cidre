@@ -1,9 +1,10 @@
-use crate::{arc, define_obj_type, mtl, ns, objc};
+use crate::{api, arc, define_obj_type, mtl, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "MTL4RenderPassDescriptor")]
     pub RenderPassDesc(ns::Id),
-    MTL4_RENDER_PASS_DESCRIPTOR
+    MTL4_RENDER_PASS_DESCRIPTOR,
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0, visionos = 26.0)]
 );
 
 impl RenderPassDesc {
@@ -19,7 +20,7 @@ impl RenderPassDesc {
     pub fn depth_attach(&self) -> arc::R<mtl::RenderPassDepthAttachDesc>;
 
     #[objc::msg_send(imageblockSampleLength)]
-    pub fn image_block_sample_len(&self) -> usize;
+    pub fn imageblock_sample_len(&self) -> usize;
 
     #[objc::msg_send(renderTargetArrayLength)]
     pub fn render_target_array_len(&self) -> usize;
@@ -39,7 +40,7 @@ impl RenderPassDesc {
 
     /// Assigns the per-sample size, in bytes, of the largest explicit imageblock layout in the render pass.
     #[objc::msg_send(setImageblockSampleLength:)]
-    pub fn set_image_block_sample_len(&mut self, val: usize);
+    pub fn set_imageblock_sample_len(&mut self, val: usize);
 
     /// Assigns the number of layers that all attachments this descriptor references have.
     #[objc::msg_send(setRenderTargetArrayLength:)]

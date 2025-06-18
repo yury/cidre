@@ -49,9 +49,7 @@ pub use render_command_encoder::RenderEncoderOpts;
 mod render_pass;
 pub use render_pass::RenderPassDesc;
 
-mod render_pipeline;
-pub use render_pipeline::LogicalToPhysicalColorAttachMap;
-pub use render_pipeline::LogicalToPhysicalColorAttachMappingState;
+pub mod render_pipeline;
 pub use render_pipeline::RenderPipelineColorAttachDesc;
 pub use render_pipeline::RenderPipelineColorAttachDescArray;
 pub use render_pipeline::RenderPipelineDesc;
