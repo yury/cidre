@@ -281,7 +281,7 @@ impl Layer {
 }
 
 #[objc::protocol(CAAction)]
-pub trait Action {
+pub trait Action: objc::Obj {
     #[objc::msg_send(runActionForKey:object:arguments:)]
     fn run_action_for_key(
         &mut self,
