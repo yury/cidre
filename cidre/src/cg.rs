@@ -1,3 +1,6 @@
+mod context;
+pub use context::Context;
+
 mod geometry;
 pub use geometry::Float;
 pub use geometry::Point;

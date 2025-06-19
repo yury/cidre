@@ -113,7 +113,12 @@ impl CornerMask {
     pub const MAX_X_MAX_Y: Self = Self(1 << 3);
 }
 
-define_obj_type!(pub Layer(ns::Id), CA_LAYER);
+define_obj_type!(
+    #[doc(alias = "CALayer")]
+    pub Layer(ns::Id),
+    CA_LAYER
+);
+
 impl Layer {
     #[objc::msg_send(bounds)]
     pub fn bounds(&self) -> cg::Rect;
@@ -175,6 +180,12 @@ impl Layer {
 
     #[objc::msg_send(setName:)]
     pub fn set_name(&mut self, val: Option<&ns::String>);
+
+    #[objc::msg_send(delegate)]
+    pub fn delegate(&self) -> Option<arc::R<AnyLayerDelegate>>;
+
+    #[objc::msg_send(setDelegate:)]
+    pub fn set_delegate<D: LayerDelegate>(&mut self, val: Option<&D>);
 
     #[objc::msg_send(needsLayout)]
     pub fn needs_layout(&self) -> bool;
@@ -268,6 +279,58 @@ impl Layer {
     #[objc::msg_send(setWantsExtendedDynamicRangeContent:)]
     pub fn set_wants_extended_dynamic_range_content(&mut self, val: bool);
 }
+
+#[objc::protocol(CAAction)]
+pub trait Action {
+    #[objc::msg_send(runActionForKey:object:arguments:)]
+    fn run_action_for_key(
+        &mut self,
+        event: &ns::String,
+        obj: &ns::Id,
+        args: Option<&ns::Dictionary<ns::String, ns::Id>>,
+    );
+}
+
+impl Action for ns::Null {}
+
+define_obj_type!(
+    pub AnyAction(ns::Id)
+);
+
+impl Action for AnyAction {}
+
+#[objc::protocol(CALayerDelegate)]
+pub trait LayerDelegate: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(displayLayer:)]
+    fn display_layer(&mut self, layer: &mut Layer);
+
+    #[objc::optional]
+    #[objc::msg_send(drawLayer:inContext:)]
+    fn draw_layer(&mut self, layer: &mut Layer, context: &mut cg::Context);
+
+    #[objc::optional]
+    #[objc::msg_send(layerWillDraw:)]
+    fn layer_will_draw(&mut self, layer: &mut Layer);
+
+    #[objc::optional]
+    #[objc::msg_send(layoutSublayersOfLayer:)]
+    fn layout_sublayers_of_layer(&mut self, layer: &mut Layer);
+
+    #[objc::optional]
+    #[objc::msg_send(actionForLayer:forKey:)]
+    fn action_for_layer_for_key(
+        &mut self,
+        layer: &mut Layer,
+        key: &ns::String,
+    ) -> Option<arc::R<AnyAction>>;
+}
+
+define_obj_type!(
+    pub AnyLayerDelegate(ns::Id)
+);
+
+impl LayerDelegate for AnyLayerDelegate {}
 
 #[link(name = "ca", kind = "static")]
 unsafe extern "C" {

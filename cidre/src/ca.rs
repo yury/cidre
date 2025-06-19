@@ -23,6 +23,9 @@ mod transform3d;
 pub use transform3d::Transform3d;
 
 mod layer;
+pub use layer::Action;
+pub use layer::AnyAction;
+pub use layer::AnyLayerDelegate;
 pub use layer::AutoresizingMask;
 pub use layer::ContentsFilter as LayerContentsFilter;
 pub use layer::ContentsFormat as LayerContentsFormat;
@@ -31,6 +34,7 @@ pub use layer::CornerCurve as LayerCornerCurve;
 pub use layer::CornerMask;
 pub use layer::EdgeAntialiasingMask;
 pub use layer::Layer;
+pub use layer::LayerDelegate;
 pub use layer::ToneMapMode;
 
 #[cfg(feature = "mtl")]
