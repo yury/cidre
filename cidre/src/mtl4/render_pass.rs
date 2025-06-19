@@ -46,7 +46,7 @@ impl RenderPassDesc {
     #[objc::msg_send(setRenderTargetArrayLength:)]
     pub fn set_render_target_array_len(&mut self, val: usize);
 
-    #[objc::msg_send(setRenderTargeHeight:)]
+    #[objc::msg_send(setRenderTargetHeight:)]
     pub fn set_render_target_height(&mut self, val: usize);
 
     #[objc::msg_send(setRenderTargetWidth:)]
@@ -60,11 +60,11 @@ impl RenderPassDesc {
     pub fn set_threadgroup_memory_len(&mut self, val: usize);
 
     /// Sets the height, in pixels, of the tiles in which Metal divides the render attachments for tile-based rendering.
-    #[objc::msg_send(setRileHeight:)]
+    #[objc::msg_send(setTileHeight:)]
     pub fn set_tile_height(&mut self, val: usize);
 
     /// Sets the width, in pixels, of the tiles into which Metal divides the render attachments for tile-based rendering.
-    #[objc::msg_send(setRileWidth:)]
+    #[objc::msg_send(setTileWidth:)]
     pub fn set_tile_width(&mut self, val: usize);
 
     #[objc::msg_send(setVisibilityResultBuffer:)]
