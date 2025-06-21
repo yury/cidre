@@ -42,8 +42,9 @@ impl Object {
         unsafe { dispatch_set_finalizer_f(self, transmute(finalizer)) }
     }
 
+    /// Will panic if queue is initialized already
     #[inline]
-    pub fn set_qos_class_floor(&mut self, qos_class: QosClass, relative_priority: i32) {
+    pub unsafe fn set_qos_class_floor(&mut self, qos_class: QosClass, relative_priority: i32) {
         unsafe { dispatch_set_qos_class_floor(self, qos_class, relative_priority) }
     }
 

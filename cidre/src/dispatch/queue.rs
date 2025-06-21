@@ -372,6 +372,10 @@ impl Attr {
         unsafe { dispatch_queue_attr_make_with_qos_class(attr, qos_class, relative_priority) }
     }
 
+    pub fn serial_with_qos_class(qos_class: QosClass, relative_priority: i32) -> arc::R<Attr> {
+        Self::make_with_qos_class(Self::serial(), qos_class, relative_priority)
+    }
+
     #[inline]
     pub fn initially_inactive(&self) -> arc::R<Attr> {
         unsafe { dispatch_queue_attr_make_initially_inactive(Some(self)) }
