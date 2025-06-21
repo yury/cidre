@@ -66,6 +66,30 @@ impl Context {
     pub fn ctm(&self) -> cg::AffineTransform {
         unsafe { CGContextGetCTM(self) }
     }
+
+    #[doc(alias = "CGContextSetLineWidth")]
+    #[inline]
+    pub fn set_line_width(&mut self, val: cg::Float) {
+        unsafe {
+            CGContextSetLineWidth(self, val);
+        }
+    }
+
+    #[doc(alias = "CGContextSetLineCap")]
+    #[inline]
+    pub fn set_line_cap(&mut self, val: cg::LineCap) {
+        unsafe {
+            CGContextSetLineCap(self, val);
+        }
+    }
+
+    #[doc(alias = "CGContextSetLineJoin")]
+    #[inline]
+    pub fn set_line_join(&mut self, val: cg::LineJoin) {
+        unsafe {
+            CGContextSetLineJoin(self, val);
+        }
+    }
 }
 
 #[link(name = "CoreGraphics", kind = "framework")]
@@ -78,4 +102,7 @@ unsafe extern "C" {
     fn CGContextRotateCTM(ctx: *mut Context, angle: cg::Float);
     fn CGContextConcatCTM(ctx: *mut Context, transform: cg::AffineTransform);
     fn CGContextGetCTM(ctx: *const Context) -> cg::AffineTransform;
+    fn CGContextSetLineWidth(ctx: *mut Context, val: cg::Float);
+    fn CGContextSetLineCap(ctx: *mut Context, val: cg::LineCap);
+    fn CGContextSetLineJoin(ctx: *mut Context, val: cg::LineJoin);
 }
