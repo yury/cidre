@@ -362,6 +362,12 @@ mod tests {
         let valid = cm::Time::default();
         assert!(valid.is_valid());
         assert!(valid.is_numeric());
+
+        let zero = cm::Time::zero();
+        assert_eq!(zero.scale, 1);
+        assert_eq!(zero.value, 0);
+        assert_eq!(zero.epoch, 0);
+        assert_eq!(zero.flags, cm::TimeFlags::VALID);
     }
 }
 
