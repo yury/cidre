@@ -2,7 +2,6 @@
 name = "cidre"
 version = "0.7.0"
 edition = "2024"
-
 rust-version = "1.85"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -66,6 +65,7 @@ full = [
   "gc",
   "xpc",
   "vdsp",
+  "vimage",
 
   "macos_15_0",
   "ios_18_0",
@@ -113,6 +113,7 @@ sn = ["ns"]
 sec = ["cf"]
 vn = ["ns"]
 vdsp = []
+vimage = []
 nw = ["ns", "dispatch"]
 ui = ["ns"]
 ut = ["ns"]

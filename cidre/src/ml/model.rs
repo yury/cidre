@@ -81,7 +81,7 @@ mod tests {
         assert!(ml::Model::with_url(&url).is_err());
 
         // let url = ns::Url::with_fs_path_str(
-        //     "/Users/yury/Projects/MLModels/nvidia_parakeet-v2/TextDecoder.mlmodelc",
+        //     "/Users/yury/Projects/MLModels/nvidia_parakeet-v2/AudioEncoder.mlmodelc",
         //     false,
         // );
         // let model = ml::Model::with_url(&url).unwrap();

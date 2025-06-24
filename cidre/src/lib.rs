@@ -156,6 +156,9 @@ pub mod vt;
 #[cfg(feature = "vdsp")]
 pub mod vdsp;
 
+#[cfg(feature = "vdsp")]
+pub mod vimage;
+
 /// Screen Capture Kit
 #[cfg(all(target_os = "macos", feature = "sc"))]
 pub mod sc;
