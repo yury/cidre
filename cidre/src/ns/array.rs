@@ -420,9 +420,21 @@ unsafe extern "C" {
     static NS_MUTABLE_ARRAY: &'static objc::Class<ns::ArrayMut<ns::Id>>;
 }
 
+#[macro_export]
+macro_rules! nsarr {
+    () => (
+        $crate::ns::Array::::new()
+    );
+    ($($x:expr),+ $(,)?) => (
+        $crate::ns::Array::from_slice(&[$($x.as_ref()),+])
+    );
+}
+
+pub use nsarr as arr;
+
 #[cfg(test)]
 mod tests {
-    use crate::{ns, objc::Obj};
+    use crate::{arc, ns, objc::Obj};
 
     #[test]
     fn empty() {
@@ -450,6 +462,16 @@ mod tests {
         }
 
         assert_eq!(1, k);
+    }
+
+    #[test]
+    fn arr() {
+        fn foo(arr: &ns::Array<ns::Number>) {
+            assert_eq!(3, arr.len());
+        }
+        foo(&ns::arr![1, 2, 3]);
+        let arr: arc::R<ns::Array<ns::Id>> = ns::arr![1, 2, ns::str!(c"nice")];
+        assert_eq!(3, arr.len());
     }
 
     #[test]

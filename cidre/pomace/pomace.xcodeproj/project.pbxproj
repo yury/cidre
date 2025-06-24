@@ -54,6 +54,8 @@
 		D25387712C906096002122EB /* cl.m in Sources */ = {isa = PBXBuildFile; fileRef = D253876F2C906096002122EB /* cl.m */; };
 		D25387722C906096002122EB /* cl.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D253876E2C906096002122EB /* cl.h */; };
 		D27864ED2A0A2BBC00E64871 /* MLCompute.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D27864EB2A0A2A8600E64871 /* MLCompute.framework */; };
+		D27ADA642E094D3600A7D124 /* ml.m in Sources */ = {isa = PBXBuildFile; fileRef = D27ADA622E094D3600A7D124 /* ml.m */; };
+		D27ADA652E094D3600A7D124 /* ml.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D27ADA612E094D3600A7D124 /* ml.h */; };
 		D2BD41A62CF1AAEB000CF128 /* core_audio.m in Sources */ = {isa = PBXBuildFile; fileRef = D2BD41A42CF1AAEB000CF128 /* core_audio.m */; };
 		D2BD41A72CF1AAEB000CF128 /* core_audio.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2BD41A32CF1AAEB000CF128 /* core_audio.h */; };
 		D2C1FA3B2CCFAA7C008EFEDC /* mtk.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C1FA392CCFAA7C008EFEDC /* mtk.m */; };
@@ -210,6 +212,16 @@
 				D25387362C906096002122EB /* mlc.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
+		};
+		D27ADA552E094D2E00A7D124 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				D27ADA652E094D3600A7D124 /* ml.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D28CF5EA2BCD201B00ED6381 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -382,6 +394,9 @@
 		D26D52F12B27415D007D8074 /* libut.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libut.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D27864E22A0A29F400E64871 /* libmlc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmlc.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D27864EB2A0A2A8600E64871 /* MLCompute.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MLCompute.framework; path = System/Library/Frameworks/MLCompute.framework; sourceTree = SDKROOT; };
+		D27ADA572E094D2E00A7D124 /* libml.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libml.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D27ADA612E094D3600A7D124 /* ml.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ml.h; sourceTree = "<group>"; };
+		D27ADA622E094D3600A7D124 /* ml.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ml.m; sourceTree = "<group>"; };
 		D28CF5EC2BCD201B00ED6381 /* libnl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libnl.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2A52939283A1F5800E7B4C6 /* libca.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libca.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2A52946283A1F6A00E7B4C6 /* libci.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libci.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -503,6 +518,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				D27864ED2A0A2BBC00E64871 /* MLCompute.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D27ADA542E094D2E00A7D124 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -786,6 +808,15 @@
 			path = cl;
 			sourceTree = "<group>";
 		};
+		D27ADA632E094D3600A7D124 /* ml */ = {
+			isa = PBXGroup;
+			children = (
+				D27ADA612E094D3600A7D124 /* ml.h */,
+				D27ADA622E094D3600A7D124 /* ml.m */,
+			);
+			path = ml;
+			sourceTree = "<group>";
+		};
 		D2A5294F283A26B800E7B4C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -847,6 +878,7 @@
 				D25387662C906096002122EB /* nl */,
 				D25387482C906096002122EB /* av_kit */,
 				D2BD41A52CF1AAEB000CF128 /* core_audio */,
+				D27ADA632E094D3600A7D124 /* ml */,
 				D2FBEBF827CB653200FD974A /* Products */,
 				D2A5294F283A26B800E7B4C6 /* Frameworks */,
 			);
@@ -880,6 +912,7 @@
 				D25386522C9019D4002122EB /* libav_kit.a */,
 				D2C1FA2E2CCFAA6E008EFEDC /* libmtk.a */,
 				D2BD41992CF1AAE0000CF128 /* libcore_audio.a */,
+				D27ADA572E094D2E00A7D124 /* libml.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1144,6 +1177,25 @@
 			productReference = D27864E22A0A29F400E64871 /* libmlc.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		D27ADA562E094D2E00A7D124 /* ml */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D27ADA602E094D2E00A7D124 /* Build configuration list for PBXNativeTarget "ml" */;
+			buildPhases = (
+				D27ADA532E094D2E00A7D124 /* Sources */,
+				D27ADA542E094D2E00A7D124 /* Frameworks */,
+				D27ADA552E094D2E00A7D124 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ml;
+			packageProductDependencies = (
+			);
+			productName = ml;
+			productReference = D27ADA572E094D2E00A7D124 /* libml.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		D28CF5EB2BCD201B00ED6381 /* nl */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D28CF5F42BCD201B00ED6381 /* Build configuration list for PBXNativeTarget "nl" */;
@@ -1372,6 +1424,9 @@
 					D27864E12A0A29F400E64871 = {
 						CreatedOnToolsVersion = 14.3;
 					};
+					D27ADA562E094D2E00A7D124 = {
+						CreatedOnToolsVersion = 26.0;
+					};
 					D28CF5EB2BCD201B00ED6381 = {
 						CreatedOnToolsVersion = 15.3;
 					};
@@ -1442,6 +1497,7 @@
 				D28CF5EB2BCD201B00ED6381 /* nl */,
 				D25386512C9019D4002122EB /* av_kit */,
 				D2C1FA2D2CCFAA6E008EFEDC /* mtk */,
+				D27ADA562E094D2E00A7D124 /* ml */,
 			);
 		};
 /* End PBXProject section */
@@ -1564,6 +1620,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				D25387352C906096002122EB /* mlc.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D27ADA532E094D2E00A7D124 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D27ADA642E094D3600A7D124 /* ml.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2173,6 +2237,45 @@
 			};
 			name = Release;
 		};
+		D27ADA5D2E094D2E00A7D124 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FD6ZML48V9;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D27ADA5E2E094D2E00A7D124 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = FD6ZML48V9;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		D28CF5F22BCD201B00ED6381 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2736,6 +2839,15 @@
 			buildConfigurations = (
 				D27864E92A0A29F400E64871 /* Debug */,
 				D27864EA2A0A29F400E64871 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D27ADA602E094D2E00A7D124 /* Build configuration list for PBXNativeTarget "ml" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D27ADA5D2E094D2E00A7D124 /* Debug */,
+				D27ADA5E2E094D2E00A7D124 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

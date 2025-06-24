@@ -123,6 +123,9 @@ pub mod mlc;
 #[cfg(feature = "mps")]
 pub mod mps;
 
+#[cfg(feature = "ml")]
+pub mod ml;
+
 /// Foundation
 #[cfg(feature = "ns")]
 pub mod ns;

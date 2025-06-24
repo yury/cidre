@@ -108,6 +108,7 @@ pub use index_set::IndexSetMut;
 mod array;
 pub use array::Array;
 pub use array::ArrayMut;
+pub use array::arr;
 
 mod dictionary;
 pub use dictionary::Dictionary;

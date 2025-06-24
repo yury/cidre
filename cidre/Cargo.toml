@@ -38,6 +38,7 @@ full = [
   "sc",
   "sec",
   "mc",
+  "ml",
   "mtl",
   "mtk",
   "mlc",
@@ -118,6 +119,7 @@ ut = ["ns"]
 un = ["ns"]
 ct = ["cf", "cg"]
 mc = ["ns"]
+ml = ["ns", "cf", "blocks"]
 mtl = ["ns", "blocks"]
 mtk = ["mtl"] # optional blocks and async
 mlc = ["mtl"]
@@ -235,7 +237,8 @@ tvos_26_0 = ["tvos_18_2"]
 watchos_1_0 = []
 watchos_2_0 = ["watchos_1_0"]
 watchos_3_0 = ["watchos_2_0"]
-watchos_5_0 = ["watchos_3_0"]
+watchos_4_0 = ["watchos_3_0"]
+watchos_5_0 = ["watchos_4_0"]
 watchos_6_0 = ["watchos_5_0"]
 watchos_7_0 = ["watchos_6_0"]
 watchos_7_3 = ["watchos_7_0"]

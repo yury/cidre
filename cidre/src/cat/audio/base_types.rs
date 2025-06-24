@@ -433,14 +433,9 @@ impl AsRef<ns::Id> for Format {
 }
 
 impl AsRef<ns::Number> for Format {
+    #[inline]
     fn as_ref(&self) -> &'static ns::Number {
         self.to_ns_number()
-    }
-}
-
-impl AsRef<ns::Id> for u32 {
-    fn as_ref(&self) -> &ns::Id {
-        &ns::Number::tagged_u32(*self).as_id_ref()
     }
 }
 

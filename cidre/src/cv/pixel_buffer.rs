@@ -452,18 +452,18 @@ impl PixelFormat {
     pub const ONE_COMPONENT_8: Self = Self(os::Type::from_be_bytes(*b"L008"));
 
     #[doc(alias = "kCVPixelFormatType_OneComponent16Half")]
-    pub const ONE_COMPONENT_16_HALF: Self = Self(os::Type::from_be_bytes(*b"L00h"));
+    pub const ONE_COMPONENT_H16: Self = Self(os::Type::from_be_bytes(*b"L00h"));
 
     #[doc(alias = "kCVPixelFormatType_OneComponent32Float")]
-    pub const ONE_COMPONENT_32_FLOAT: Self = Self(os::Type::from_be_bytes(*b"L00f"));
+    pub const ONE_COMPONENT_F32: Self = Self(os::Type::from_be_bytes(*b"L00f"));
 
     /// 16 bit two component IEEE half-precision float, 16-bit little-endian samples
     #[doc(alias = "kCVPixelFormatType_TwoComponent16Half")]
-    pub const TWO_COMPONENT_16_HALF: Self = Self(os::Type::from_be_bytes(*b"2C0h"));
+    pub const TWO_COMPONENT_H16: Self = Self(os::Type::from_be_bytes(*b"2C0h"));
 
     /// 32 bit two component IEEE float, 32-bit little-endian samples
     #[doc(alias = "kCVPixelFormatType_TwoComponent32Float")]
-    pub const TWO_COMPONENT_32_FLOAT: Self = Self(os::Type::from_be_bytes(*b"2C0f"));
+    pub const TWO_COMPONENT_F32: Self = Self(os::Type::from_be_bytes(*b"2C0f"));
 
     /// 64 bit RGBA IEEE half-precision float, 16-bit little-endian samples
     #[doc(alias = "kCVPixelFormatType_64RGBAHalf")]
