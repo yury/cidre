@@ -215,9 +215,95 @@ pub struct YpCbCrPixelRange {
     pub cb_cr_min: i32,
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(C)]
 pub struct Error(pub std::num::NonZeroIsize);
+
+impl Error {
+    pub const fn new_unchcked(v: isize) -> Self {
+        Self(unsafe { std::num::NonZeroIsize::new_unchecked(v) })
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(C)]
+pub struct Status(pub isize);
+
+impl Status {
+    #[inline]
+    pub fn result(self) -> Result {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
+pub type Result<Ok = ()> = std::result::Result<Ok, Error>;
+
+impl From<Error> for Status {
+    fn from(value: Error) -> Self {
+        Self(value.0.get())
+    }
+}
+
+pub mod err {
+    use crate::vimage::Error;
+
+    #[doc(alias = "kvImageRoiLargerThanInputBuffer")]
+    pub const ROI_LARGER_THAN_INPUT_BUF: Error = Error::new_unchcked(-21766);
+
+    #[doc(alias = "kvImageInvalidKernelSize")]
+    pub const INVALID_KERNEL_SIZE: Error = Error::new_unchcked(-21767);
+
+    #[doc(alias = "kvImageInvalidEdgeStyle")]
+    pub const INVALID_EDGE_STYLE: Error = Error::new_unchcked(-21768);
+
+    #[doc(alias = "kvImageInvalidOffset_X")]
+    pub const INVALID_OFFSET_X: Error = Error::new_unchcked(-21769);
+
+    #[doc(alias = "kvImageInvalidOffset_Y")]
+    pub const INVALID_OFFSET_Y: Error = Error::new_unchcked(-21770);
+
+    #[doc(alias = "kvImageMemoryAllocationError")]
+    pub const MEMORY_ALLOCATION_ERR: Error = Error::new_unchcked(-21771);
+
+    #[doc(alias = "kvImageNullPointerArgument")]
+    pub const NULL_PTR_ARG: Error = Error::new_unchcked(-21772);
+
+    #[doc(alias = "kvImageInvalidParameter")]
+    pub const INVALID_PARAM: Error = Error::new_unchcked(-21773);
+
+    #[doc(alias = "kvImageBufferSizeMismatch")]
+    pub const BUF_SIZE_MISMATCH: Error = Error::new_unchcked(-21774);
+
+    #[doc(alias = "kvImageUnknownFlagsBit")]
+    pub const UNKNOWN_FLAGS_BIT: Error = Error::new_unchcked(-21775);
+
+    #[doc(alias = "kvImageInternalError")]
+    pub const INTERNAL_ERR: Error = Error::new_unchcked(-21776);
+
+    #[doc(alias = "kvImageInvalidRowBytes")]
+    pub const INVALID_ROW_BYTES: Error = Error::new_unchcked(-21777);
+
+    #[doc(alias = "kvImageInvalidImageFormat")]
+    pub const INVALID_IMAGE_FORMAT: Error = Error::new_unchcked(-21778);
+
+    #[doc(alias = "kvImageColorSyncIsAbsent")]
+    pub const COLOR_SYNC_IS_ABSENT: Error = Error::new_unchcked(-21779);
+
+    #[doc(alias = "kvImageOutOfPlaceOperationRequired")]
+    pub const OUT_OF_PLACE_OP_REQUIRED: Error = Error::new_unchcked(-21780);
+
+    #[doc(alias = "kvImageInvalidImageObject")]
+    pub const INVALID_IMAGE_OBJ: Error = Error::new_unchcked(-21781);
+
+    #[doc(alias = "kvImageInvalidCVImageFormat")]
+    pub const INVALID_CV_IMAGE_FORMAT: Error = Error::new_unchcked(-21782);
+
+    #[doc(alias = "kvImageUnsupportedConversion")]
+    pub const UNSUPPORTED_CONVERSION: Error = Error::new_unchcked(-21783);
+
+    #[doc(alias = "kvImageCoreVideoIsAbsent")]
+    pub const CORE_VIDEO_IS_ABSENT: Error = Error::new_unchcked(-21784);
+}
 
 #[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
