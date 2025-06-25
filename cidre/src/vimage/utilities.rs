@@ -104,7 +104,8 @@ mod tests {
         );
 
         println!("buf {:?}", buf);
-        buf.inplace_to_f16_from_f32().unwrap();
+        buf.inplace_to_f16_from_f32(vimage::Flags::DO_NOT_TILE)
+            .unwrap();
         // println!("{size:?}");
         // let size = buf.size();
         // assert_eq!(
