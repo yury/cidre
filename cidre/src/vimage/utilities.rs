@@ -52,22 +52,11 @@ impl vimage::Buf {
     }
 
     pub fn new() -> Self {
-        Self {
-            data: std::ptr::null_mut(),
-            h: 0,
-            w: 0,
-            row_bytes: 0,
-        }
+        Self::default()
     }
 
     pub fn alignment(&mut self, w: usize, h: usize, pixel_bits: u32) -> isize {
         unsafe { vImageBuffer_Init(self, h, w, pixel_bits, vimage::Flags::NO_ALLOCATE).0 }
-    }
-}
-
-impl Default for vimage::Buf {
-    fn default() -> Self {
-        Self::new()
     }
 }
 

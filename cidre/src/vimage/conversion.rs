@@ -1,4 +1,4 @@
-use crate::{am::Device, vimage};
+use crate::vimage;
 
 impl vimage::Buf {
     #[doc(alias = "vImageConvert_PlanarFtoPlanar16F")]

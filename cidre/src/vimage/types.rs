@@ -13,6 +13,17 @@ pub struct Buf {
     pub row_bytes: usize,
 }
 
+impl Default for Buf {
+    fn default() -> Self {
+        Self {
+            data: std::ptr::null_mut(),
+            h: 0,
+            w: 0,
+            row_bytes: 0,
+        }
+    }
+}
+
 #[doc(alias = "vImage_AffineTransform")]
 #[derive(Debug, PartialEq, Copy, Clone)]
 #[repr(C)]
