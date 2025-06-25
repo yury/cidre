@@ -101,7 +101,7 @@ impl ImageRequestHandler {
     ) -> bool;
 
     #[inline]
-    pub fn perform(&self, requests: &ns::Array<vn::Request>) -> ns::Result {
+    pub fn perform<'ear>(&self, requests: &ns::Array<vn::Request>) -> ns::Result<'ear> {
         unsafe { ns::if_false(|err| self.perform_request_err(requests, err)) }
     }
 }

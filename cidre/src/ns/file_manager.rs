@@ -252,12 +252,12 @@ impl FileManager {
     ) -> bool;
 
     #[inline]
-    pub fn set_ubiquitous_item(
+    pub fn set_ubiquitous_item<'ear>(
         &mut self,
         value: bool,
         item_at_url: &ns::Url,
         dest_url: &ns::Url,
-    ) -> ns::Result {
+    ) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe {
             self.set_ubiquitous_item_err(value, item_at_url, dest_url, err)
         })
@@ -273,7 +273,10 @@ impl FileManager {
         error: *mut Option<&'ar ns::Error>,
     ) -> bool;
 
-    pub fn start_downloading_ubquitous_item(&mut self, item_at_url: &ns::Url) -> ns::Result {
+    pub fn start_downloading_ubquitous_item<'ear>(
+        &mut self,
+        item_at_url: &ns::Url,
+    ) -> ns::Result<'ear> {
         ns::if_false(|err| self.start_downloading_ubquitous_item_err(item_at_url, err))
     }
 
@@ -285,7 +288,7 @@ impl FileManager {
     ) -> bool;
 
     #[inline]
-    pub fn evict_ubiquitous_item(&mut self, item_at_url: &ns::Url) -> ns::Result {
+    pub fn evict_ubiquitous_item<'ear>(&mut self, item_at_url: &ns::Url) -> ns::Result<'ear> {
         ns::if_false(|err| self.evict_ubiquitous_item_err(item_at_url, err))
     }
 

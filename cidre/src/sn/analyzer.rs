@@ -28,11 +28,11 @@ impl AudioStreamAnalyzer {
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn add_request_with_observer<O: sn::ResultsObserving>(
+    pub fn add_request_with_observer<'ear, O: sn::ResultsObserving>(
         &mut self,
         request: &sn::Request,
         observer: &O,
-    ) -> ns::Result {
+    ) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.add_request_with_observer_err(request, observer, err) })
     }
 
@@ -67,7 +67,7 @@ impl arc::A<AudioFileAnalyzer> {
 pub type FileCompletionHandler = blocks::Block<fn(bool), blocks::Send>;
 
 impl AudioFileAnalyzer {
-    pub fn with_url(url: &ns::Url) -> ns::Result<arc::R<Self>> {
+    pub fn with_url<'ear>(url: &ns::Url) -> ns::Result<'ear, arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_url_err(url, err) })
     }
 

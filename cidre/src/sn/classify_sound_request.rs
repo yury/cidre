@@ -17,7 +17,7 @@ impl arc::A<ClassifySoundRequest> {
 impl ClassifySoundRequest {
     define_cls!(SN_CLASSIFY_SOUND_REQUEST);
 
-    pub fn with_classifier_id(id: &sn::Id) -> ns::Result<arc::R<Self>> {
+    pub fn with_classifier_id<'ear>(id: &sn::Id) -> ns::Result<'ear, arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_classifier_id_err(id, err) })
     }
 
