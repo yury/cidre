@@ -149,11 +149,11 @@ impl SequenceRequestHandler {
     ) -> bool;
 
     #[inline]
-    pub fn perform_on_cm_sample_buf(
+    pub fn perform_on_cm_sample_buf<'ear>(
         &self,
         requests: &ns::Array<vn::Request>,
         sample_buf: &cm::SampleBuf,
-    ) -> ns::Result {
+    ) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe {
             self.perform_requests_on_cm_sample_buf_err(requests, sample_buf, err)
         })
