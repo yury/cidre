@@ -148,3 +148,93 @@ pub struct YpCbCrArgbMatrix {
     pub cb_g: f32,
     pub cb_b: f32,
 }
+
+impl YpCbCrArgbMatrix {
+    #[doc(alias = "kvImage_YpCbCrToARGBMatrix_ITU_R_601_4")]
+    pub fn itu_r_601_4() -> &'static Self {
+        unsafe { kvImage_YpCbCrToARGBMatrix_ITU_R_601_4 }
+    }
+
+    #[doc(alias = "kvImage_YpCbCrToARGBMatrix_ITU_R_709_2")]
+    pub fn itu_r_709_2() -> &'static Self {
+        unsafe { kvImage_YpCbCrToARGBMatrix_ITU_R_709_2 }
+    }
+}
+
+#[doc(alias = "vImage_YpCbCrToARGB")]
+#[derive(Debug, PartialEq, Copy, Clone)]
+#[repr(C)]
+pub struct YpCbCrToArgb {
+    opaque: [u8; 128],
+}
+
+#[doc(alias = "vImage_ARGBToYpCbCrMatrix")]
+#[derive(Debug, PartialEq, Copy, Clone)]
+#[repr(C)]
+pub struct ArgbToYpCbCrMatrix {
+    r_yp: f32,
+    g_yp: f32,
+    b_yp: f32,
+    r_cb: f32,
+    g_cb: f32,
+    b_cb_r_cr: f32,
+    g_cr: f32,
+    b_cr: f32,
+}
+
+impl ArgbToYpCbCrMatrix {
+    #[doc(alias = "kvImage_ARGBToYpCbCrMatrix_ITU_R_601_4")]
+    pub fn itu_r_601_4() -> &'static Self {
+        unsafe { kvImage_ARGBToYpCbCrMatrix_ITU_R_601_4 }
+    }
+
+    #[doc(alias = "kvImage_ARGBToYpCbCrMatrix_ITU_R_709_2")]
+    pub fn itu_r_709_2() -> &'static Self {
+        unsafe { kvImage_ARGBToYpCbCrMatrix_ITU_R_709_2 }
+    }
+}
+
+#[doc(alias = "vImage_ARGBToYpCbCr")]
+#[derive(Debug, PartialEq, Copy, Clone)]
+#[repr(C)]
+pub struct ArgbToYpCbCr {
+    opaque: [u8; 128],
+}
+
+#[doc(alias = "vImage_YpCbCrPixelRange")]
+#[derive(Debug, PartialEq, Copy, Clone)]
+#[repr(C)]
+pub struct YpCbCrPixelRange {
+    pub yp_bias: i32,
+    pub cb_cr_bias: i32,
+    pub yp_range_max: i32,
+    pub cb_cr_range_max: i32,
+    pub yp_max: i32,
+    pub yp_min: i32,
+    pub cb_cr_max: i32,
+    pub cb_cr_min: i32,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[repr(C)]
+pub struct Error(pub std::num::NonZeroIsize);
+
+#[link(name = "Accelerate", kind = "framework")]
+unsafe extern "C" {
+    static kvImage_YpCbCrToARGBMatrix_ITU_R_601_4: &'static YpCbCrArgbMatrix;
+    static kvImage_YpCbCrToARGBMatrix_ITU_R_709_2: &'static YpCbCrArgbMatrix;
+    static kvImage_ARGBToYpCbCrMatrix_ITU_R_601_4: &'static ArgbToYpCbCrMatrix;
+    static kvImage_ARGBToYpCbCrMatrix_ITU_R_709_2: &'static ArgbToYpCbCrMatrix;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::vimage;
+
+    #[test]
+    fn basics() {
+        let _m = *vimage::YpCbCrArgbMatrix::itu_r_709_2();
+        let _m = *vimage::YpCbCrArgbMatrix::itu_r_601_4();
+        // println!("{m:?}");
+    }
+}
