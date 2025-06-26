@@ -321,6 +321,10 @@ harness = false
 name = "dispatch_sync"
 harness = false
 
+[[bench]]
+name = "f32_to_f16"
+harness = false
+
 [[example]]
 name = "am-device-list"
 required-features = ["am"]
