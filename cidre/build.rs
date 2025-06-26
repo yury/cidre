@@ -230,6 +230,10 @@ fn parse_deployment_targets() -> DeploymentTargets {
 }
 
 fn main() {
+    if std::env::var("DOCS_RS").is_ok() {
+        return;
+    }
+
     let versions = parse_deployment_targets();
 
     let sdk = match env::var("TARGET").unwrap().as_ref() {
