@@ -44,7 +44,7 @@ jobs:
       run: ./build.sh
 
     - name: Test ns
-      run: 'cargo t --features="macos_14_0" ns::'
+      run: 'RUST_BACKTRACE=1 cargo t --features="macos_14_0" ns::'
 
     - name: Test cf
-      run: 'cargo t --features="macos_14_0" cf::'
+      run: 'RUST_BACKTRACE=1 cargo t --features="macos_14_0" cf::'
