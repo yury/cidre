@@ -41,6 +41,11 @@ pub fn criterion_benchmark(c: &mut Criterion) {
                 .unwrap();
         });
     });
+    c.bench_function("f32_to_f16::slice::1024", |b| {
+        let f32_buf = [0.5f32; WIDTH];
+        let mut f16_buf = [half::f16::ZERO; WIDTH];
+        b.iter(|| vimage::Buf::slice_f32_to_f16(&f32_buf, &mut f16_buf).unwrap());
+    });
     c.bench_function("f32_to_f16::half::1024", |b| {
         let f32_buf = [0.5f32; WIDTH];
         let mut f16_buf = [half::f16::ZERO; WIDTH];
