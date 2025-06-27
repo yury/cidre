@@ -438,7 +438,7 @@ unsafe extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{blocks, mtl, ns, objc::ar_pool};
+    use crate::{api, blocks, mtl, ns, objc::ar_pool};
 
     #[test]
     fn foo() {
@@ -526,7 +526,11 @@ mod tests {
         let src = ns::str!(c"kernel void function_a() {}");
         let lib = device.new_lib_with_src_blocking(src, None).unwrap();
 
-        assert!(lib.install_name().is_none());
+        if api::macos_available("26.0") {
+            assert_eq!(lib.install_name().unwrap().as_ref(), "default.metallib")
+        } else {
+            assert!(lib.install_name().is_none());
+        }
         assert_eq!(mtl::LibType::Executable, lib.type_());
     }
 }

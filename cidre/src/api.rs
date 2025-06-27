@@ -350,7 +350,7 @@ mod tests {
         assert!(api::macos_available("13.1.1"));
         assert!(api::version!(macos = 13.0, ios = 14.0));
         assert!(!api::version!(visionos = 1.0));
-        assert!(!api::version!(macos = 20.0));
+        assert!(!api::version!(macos = 40.0));
     }
 
     #[cfg(target_os = "ios")]
@@ -360,6 +360,6 @@ mod tests {
         assert!(api::ios_available("18.2"));
         assert!(api::version!(macos = 13.0, ios = 14.0));
         assert!(!api::version!(visionos = 1.0));
-        assert!(!api::version!(macos = 20.0));
+        assert!(!api::version!(macos = 40.0));
     }
 }

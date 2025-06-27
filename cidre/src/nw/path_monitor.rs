@@ -139,11 +139,11 @@ mod tests {
             let block_cancelled = cancelled.clone();
 
             monitor
-                .set_cancel_handler(move || block_cancelled.store(true, atomic::Ordering::Relaxed));
+                .set_cancel_handler(move || block_cancelled.store(true, atomic::Ordering::SeqCst));
             monitor.start();
-            assert_eq!(false, cancelled.load(atomic::Ordering::Relaxed));
+            assert_eq!(false, cancelled.load(atomic::Ordering::SeqCst));
             monitor.cancel();
-            assert_eq!(false, cancelled.load(atomic::Ordering::Relaxed));
+            assert_eq!(false, cancelled.load(atomic::Ordering::SeqCst));
             monitor.set_cancel_handler_block(None);
             // cancel called on monitor drop actually
         }

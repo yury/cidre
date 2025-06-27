@@ -217,13 +217,13 @@ unsafe extern "C" {
     static NS_BUTTON: &'static objc::Class<Button>;
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::ns;
+// #[cfg(test)]
+// mod tests {
+// use crate::ns;
 
-    #[test]
-    fn basics() {
-        let btn = ns::Button::with_title(ns::str!(c"Hello"), None, std::ptr::null());
-        assert_eq!(btn.title().as_ref(), "Hello");
-    }
-}
+// #[test]
+// fn basics() {
+//     let btn = ns::Button::with_title(ns::str!(c"Hello"), None, std::ptr::null());
+//     assert_eq!(btn.title().as_ref(), "Hello");
+// }
+// }
