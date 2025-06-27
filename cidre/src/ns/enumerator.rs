@@ -103,6 +103,9 @@ where
 
         let item = unsafe { self.state.items_ptr.add(self.index) };
         self.index += 1;
+        #[cfg(target_arch = "aarch64")]
+        let item = unsafe { item.read() };
+        #[cfg(not(target_arch = "aarch64"))]
         let item = unsafe { item.read_unaligned() };
         Some(unsafe { std::mem::transmute(item) })
     }
