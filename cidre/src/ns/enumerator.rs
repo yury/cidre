@@ -101,9 +101,10 @@ where
             self.index = 0;
         }
 
-        let item = unsafe { *self.state.items_ptr.add(self.index) };
+        let item = unsafe { self.state.items_ptr.add(self.index) };
         self.index += 1;
-        Some(unsafe { &*item })
+        let item = unsafe { item.read_unaligned() };
+        Some(unsafe { std::mem::transmute(item) })
     }
 }
 
