@@ -103,6 +103,30 @@ impl Url {
 
     #[objc::msg_send(stopAccessingSecurityScopedResource)]
     pub fn stop_accessing_security_scoped_resource(&self);
+
+    #[objc::msg_send(host)]
+    pub fn host(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(port)]
+    pub fn port(&self) -> Option<arc::R<ns::Number>>;
+
+    #[objc::msg_send(user)]
+    pub fn user(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(password)]
+    pub fn password(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(path)]
+    pub fn path(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(fragment)]
+    pub fn fragment(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(query)]
+    pub fn query(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(relative_path)]
+    pub fn relative_path(&self) -> Option<arc::R<ns::String>>;
 }
 
 #[cfg(feature = "cf")]
