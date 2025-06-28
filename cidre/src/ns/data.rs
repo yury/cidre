@@ -101,6 +101,9 @@ impl arc::A<Data> {
         options: ReadOpts,
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Data>>;
+
+    #[objc::msg_send(initWithBytes:length:)]
+    pub fn init_with_bytes(self, bytes: *const u8, length: usize) -> arc::R<Data>;
 }
 
 impl Data {
@@ -122,6 +125,11 @@ impl Data {
         ns::if_none(|err| {
             Self::alloc().init_with_contents_of_url_opts_err(url.as_ref(), options, err)
         })
+    }
+
+    #[inline]
+    pub fn with_bytes(bytes: &[u8]) -> arc::R<Self> {
+        Self::alloc().init_with_bytes(bytes.as_ptr(), bytes.len())
     }
 
     #[objc::msg_send(bytes)]
@@ -250,5 +258,11 @@ mod tests {
         data.increase_len_by(10);
 
         assert_eq!(10, data.len());
+
+        let arr = [5u32; 10];
+        let (_, arr, _) = unsafe { arr.align_to() };
+
+        let data = ns::Data::with_bytes(arr);
+        assert_eq!(40, data.len());
     }
 }
