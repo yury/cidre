@@ -4,7 +4,7 @@ use cidre::{
     at::{self, au, audio},
     av, os, vdsp,
 };
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, criterion_group, criterion_main};
 
 const N: usize = 1024;
 pub fn criterion_benchmark(c: &mut Criterion) {
@@ -118,6 +118,16 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     lr.fill(0.0f32);
 
+    #[cfg(target_arch = "aarch64")]
+    c.bench_function("interleave rust neon", |b| {
+        b.iter(|| {
+            unsafe { interleave_f32_neon(&l, &r, &mut lr) };
+        });
+        assert_eq!(lr, res);
+    });
+
+    lr.fill(0.0f32);
+
     let comp = lr.as_mut_ptr() as *mut vdsp::Complex<f32>;
     let mut comp = unsafe { std::slice::from_raw_parts_mut(comp, N) };
     c.bench_function("interleave vDSP", |b| {
@@ -126,6 +136,48 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         });
         assert_eq!(lr, res);
     });
+}
+
+#[cfg(target_arch = "aarch64")]
+use std::arch::aarch64::*;
+
+#[cfg(target_arch = "aarch64")]
+unsafe fn interleave_f32_neon(l: &[f32], r: &[f32], lr: &mut [f32]) {
+    // Ensure arrays have the same length and output is twice the length
+    // assert_eq!(
+    //     l.len(),
+    //     r.len(),
+    //     "Input arrays must have equal length"
+    // );
+    // assert_eq!(
+    //     lr.len(),
+    //     l.len() * 2,
+    //     "Output array must be twice the input length"
+    // );
+
+    let length = l.len();
+    let mut i = 0;
+
+    // Process 4 elements at a time using NEON
+    while i + 3 < length {
+        // Load 4 floats from each array into NEON registers
+        let vec1 = unsafe { vld1q_f32(l.as_ptr().add(i)) };
+        let vec2 = unsafe { vld1q_f32(r.as_ptr().add(i)) };
+
+        // Create a pair for interleaved store
+        let pair = float32x4x2_t(vec1, vec2);
+
+        // Store interleaved result to output
+        unsafe { vst2q_f32(lr.as_mut_ptr().add(2 * i), pair) };
+
+        i += 4;
+    }
+
+    // Handle remaining elements (if length is not a multiple of 4)
+    for j in i..length {
+        lr[2 * j] = l[j];
+        lr[2 * j + 1] = r[j];
+    }
 }
 
 criterion_group!(benches, criterion_benchmark);
