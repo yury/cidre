@@ -58,6 +58,16 @@ where
             .set_input_cb(au::Scope::GLOBAL, 0, cb, ref_con)
     }
 
+    pub fn set_render_cb<const N: usize, T>(
+        &mut self,
+        scope: au::Scope,
+        bus: u32,
+        cb: au::RenderCb<N, T>,
+        ref_con: *const T,
+    ) -> os::Result {
+        self.0.unit_mut().set_render_cb(scope, bus, cb, ref_con)
+    }
+
     #[inline]
     pub fn output_stream_format(&self, bus: u32) -> os::Result<audio::StreamBasicDesc> {
         self.unit().stream_format(Scope::INPUT, bus)
