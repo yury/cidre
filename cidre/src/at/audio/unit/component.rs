@@ -970,6 +970,40 @@ impl Unit {
         }
     }
 
+    pub fn add_prop_listener<T>(
+        &mut self,
+        prop_id: PropId,
+        proc: PropListenerProc<T>,
+        proc_user_data: *mut T,
+    ) -> os::Result {
+        unsafe {
+            AudioUnitAddPropertyListener(
+                self,
+                prop_id,
+                std::mem::transmute(proc),
+                proc_user_data as _,
+            )
+            .result()
+        }
+    }
+
+    pub fn remove_prop_listener<T>(
+        &mut self,
+        prop_id: PropId,
+        proc: PropListenerProc<T>,
+        proc_user_data: *mut T,
+    ) -> os::Result {
+        unsafe {
+            AudioUnitRemovePropertyListenerWithUserData(
+                self,
+                prop_id,
+                std::mem::transmute(proc),
+                proc_user_data as _,
+            )
+            .result()
+        }
+    }
+
     pub fn offline_render(&self) -> os::Result<bool> {
         let res: os::Result<u32> = self.prop(PropId::OFFLINE_RENDER, Scope::GLOBAL, Element::INPUT);
         res.map(|v| v == 1)
@@ -1419,6 +1453,20 @@ unsafe extern "C-unwind" {
         in_element: Element,
         in_value: ParamValue,
         in_buf_offset_in_frames: u32,
+    ) -> os::Status;
+
+    fn AudioUnitAddPropertyListener(
+        in_unit: &mut Unit,
+        id: PropId,
+        proc: PropListenerProc,
+        proc_user_data: *mut std::ffi::c_void,
+    ) -> os::Status;
+
+    fn AudioUnitRemovePropertyListenerWithUserData(
+        in_unit: &mut Unit,
+        id: PropId,
+        proc: PropListenerProc,
+        proc_user_data: *mut std::ffi::c_void,
     ) -> os::Status;
 }
 
