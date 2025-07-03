@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{api, arc, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "NSToolbarIdentifier")]
@@ -44,10 +44,94 @@ impl Toolbar {
 
     #[objc::msg_send(removeItemWithItemIdentifier:)]
     pub fn remove_item_with_id(&mut self, item_id: &ns::ToolbarItemId);
+
+    #[objc::msg_send(delegate)]
+    pub fn delegate(&self) -> Option<arc::R<AnyToolbarDelegate>>;
+
+    #[objc::msg_send(setDelegate:)]
+    pub fn set_delegate<D: ToolbarDelegate>(&mut self, val: Option<&D>);
+
+    #[objc::msg_send(isVisible)]
+    pub fn is_visible(&self) -> bool;
+
+    #[objc::msg_send(setVisible:)]
+    pub fn set_visible(&mut self, val: bool);
+
+    #[objc::msg_send(runCustomizationPalette:)]
+    pub fn run_customization_palette(&mut self, sender: Option<&ns::Id>);
+
+    #[objc::msg_send(customizationPaletteIsRunning)]
+    pub fn customization_palette_is_running(&self) -> bool;
+
+    #[objc::msg_send(displayMode)]
+    pub fn display_mode(&self) -> ns::ToolbarDisplayMode;
+
+    #[objc::msg_send(selectedItemIdentifier)]
+    pub fn selected_item_id(&self) -> Option<arc::R<ns::ToolbarItemId>>;
+
+    #[objc::msg_send(setSelectedItemIdentifier:)]
+    pub fn set_selected_item_id(&self, val: Option<&ns::ToolbarItemId>);
+
+    #[objc::msg_send(allowsUserCustomization)]
+    pub fn allows_user_customization(&self) -> bool;
+
+    #[objc::msg_send(setAllowsUserCustomization:)]
+    pub fn set_allows_user_customization(&mut self, val: bool);
+
+    #[objc::msg_send(allowsDisplayModeCustomization)]
+    #[api::available(macos = 15.0)]
+    pub fn allows_display_mode_customization(&self) -> bool;
+
+    #[objc::msg_send(setAllowsDisplayModeCustomization:)]
+    #[api::available(macos = 15.0)]
+    pub fn set_allows_display_mode_customization(&mut self, val: bool);
+}
+
+/// Accessing toolbar info
+impl Toolbar {
+    #[objc::msg_send(identifier)]
+    pub fn id(&self) -> arc::R<ns::ToolbarId>;
+
+    #[objc::msg_send(items)]
+    pub fn items(&self) -> arc::R<ns::Array<ns::ToolbarItem>>;
+
+    #[objc::msg_send(visibleItems)]
+    pub fn visible_items(&self) -> Option<arc::R<ns::Array<ns::ToolbarItem>>>;
+
+    #[objc::msg_send(itemIdentifiers)]
+    #[api::available(macos = 15.0)]
+    pub fn item_ids(&self) -> arc::R<ns::Array<ns::ToolbarItemId>>;
+
+    #[objc::msg_send(setItemIdentifiers:)]
+    #[api::available(macos = 15.0)]
+    pub fn set_item_ids(&mut self, val: &ns::Array<ns::ToolbarItemId>);
+
+    #[objc::msg_send(centeredItemIdentifiers)]
+    #[api::available(macos = 13.0)]
+    pub fn centered_item_ids(&self) -> arc::R<ns::Array<ns::ToolbarItemId>>;
+
+    #[objc::msg_send(setCenteredItemIdentifiers:)]
+    #[api::available(macos = 13.0)]
+    pub fn set_centered_item_ids(&mut self, val: &ns::Array<ns::ToolbarItemId>);
+
+    #[objc::msg_send(autosavesConfiguration)]
+    pub fn autosaves_cfg(&self) -> bool;
+
+    #[objc::msg_send(setAutosavesConfiguration:)]
+    pub fn set_autosaves_cfg(&mut self, val: bool);
+
+    #[objc::msg_send(validateVisibleItems)]
+    pub fn validate_visible_items(&mut self);
+
+    #[objc::msg_send(allowsExtensionItems)]
+    pub fn allows_extension_items(&self) -> bool;
+
+    #[objc::msg_send(setAllowsExtensionItems:)]
+    pub fn set_allows_extension_items(&mut self, val: bool);
 }
 
 #[objc::protocol(NSToolbarDelegate)]
-pub trait ToolbarDelegate {
+pub trait ToolbarDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:)]
     fn toolbar_item_for_id_will_be_inserted_ar(
@@ -100,6 +184,12 @@ pub trait ToolbarDelegate {
     #[objc::msg_send(toolbarDidRemoveItem:)]
     fn toolbar_did_remove_item(&mut self, n: &ns::Notification);
 }
+
+define_obj_type!(
+    pub AnyToolbarDelegate(ns::Id)
+);
+
+impl ToolbarDelegate for AnyToolbarDelegate {}
 
 #[link(name = "app", kind = "static")]
 unsafe extern "C" {

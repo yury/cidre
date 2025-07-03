@@ -338,6 +338,18 @@ impl Window {
     pub fn is_miniaturized(&self) -> bool;
 }
 
+/// Toolbar Support
+impl Window {
+    #[objc::msg_send(toolbar)]
+    pub fn toolbar(&self) -> Option<arc::R<ns::Toolbar>>;
+
+    #[objc::msg_send(setToolbar:)]
+    pub fn set_toolbar(&mut self, val: Option<&ns::Toolbar>);
+
+    #[objc::msg_send(toggleToolbarShown:)]
+    pub fn toggle_toolbar_shown(&mut self, sender: Option<&ns::Id>);
+}
+
 #[objc::protocol(NSWindowDelegate)]
 pub trait WindowDelegate: objc::Obj {
     #[objc::optional]

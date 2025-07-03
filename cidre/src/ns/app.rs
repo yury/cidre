@@ -138,7 +138,7 @@ mod view;
 pub use view::AutoresizingMaskOpts;
 pub use view::View;
 
-mod toolbar;
+pub mod toolbar;
 pub use toolbar::Toolbar;
 pub use toolbar::ToolbarDelegate;
 pub use toolbar::ToolbarDelegateImpl;
@@ -146,7 +146,7 @@ pub use toolbar::ToolbarDisplayMode;
 pub use toolbar::ToolbarId;
 pub use toolbar::ToolbarItemId;
 
-mod toolbar_item;
+pub mod toolbar_item;
 pub use toolbar_item::ToolbarItem;
 pub use toolbar_item::ToolbarItemStyle;
 pub use toolbar_item::ToolbarItemValidation;
