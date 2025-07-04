@@ -157,6 +157,7 @@ pub use compute_pipeline::State as ComputePipelineState;
 
 mod command_buffer;
 pub use command_buffer::CmdBuf;
+pub use command_buffer::CmdBufHandler;
 pub use command_buffer::DispatchType;
 pub use command_buffer::Error as CmdBufErr;
 pub use command_buffer::Status as CmdBufStatus;
