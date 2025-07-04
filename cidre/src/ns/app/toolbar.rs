@@ -1,4 +1,4 @@
-use crate::{api, arc, define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "NSToolbarIdentifier")]
@@ -66,6 +66,9 @@ impl Toolbar {
     #[objc::msg_send(displayMode)]
     pub fn display_mode(&self) -> ns::ToolbarDisplayMode;
 
+    #[objc::msg_send(setDisplayMode:)]
+    pub fn set_display_mode(&mut self, val: ns::ToolbarDisplayMode);
+
     #[objc::msg_send(selectedItemIdentifier)]
     pub fn selected_item_id(&self) -> Option<arc::R<ns::ToolbarItemId>>;
 
@@ -79,11 +82,11 @@ impl Toolbar {
     pub fn set_allows_user_customization(&mut self, val: bool);
 
     #[objc::msg_send(allowsDisplayModeCustomization)]
-    #[api::available(macos = 15.0)]
+    #[objc::available(macos = 15.0)]
     pub fn allows_display_mode_customization(&self) -> bool;
 
     #[objc::msg_send(setAllowsDisplayModeCustomization:)]
-    #[api::available(macos = 15.0)]
+    #[objc::available(macos = 15.0)]
     pub fn set_allows_display_mode_customization(&mut self, val: bool);
 }
 
@@ -99,19 +102,19 @@ impl Toolbar {
     pub fn visible_items(&self) -> Option<arc::R<ns::Array<ns::ToolbarItem>>>;
 
     #[objc::msg_send(itemIdentifiers)]
-    #[api::available(macos = 15.0)]
+    #[objc::available(macos = 15.0)]
     pub fn item_ids(&self) -> arc::R<ns::Array<ns::ToolbarItemId>>;
 
     #[objc::msg_send(setItemIdentifiers:)]
-    #[api::available(macos = 15.0)]
+    #[objc::available(macos = 15.0)]
     pub fn set_item_ids(&mut self, val: &ns::Array<ns::ToolbarItemId>);
 
     #[objc::msg_send(centeredItemIdentifiers)]
-    #[api::available(macos = 13.0)]
+    #[objc::available(macos = 13.0)]
     pub fn centered_item_ids(&self) -> arc::R<ns::Array<ns::ToolbarItemId>>;
 
     #[objc::msg_send(setCenteredItemIdentifiers:)]
-    #[api::available(macos = 13.0)]
+    #[objc::available(macos = 13.0)]
     pub fn set_centered_item_ids(&mut self, val: &ns::Array<ns::ToolbarItemId>);
 
     #[objc::msg_send(autosavesConfiguration)]
