@@ -304,6 +304,10 @@ harness = false
 name = "array_indexing"
 harness = false
 
+[[bench]]
+name = "dictionary"
+harness = false
+
 
 [[bench]]
 name = "cf_date_formatter"
