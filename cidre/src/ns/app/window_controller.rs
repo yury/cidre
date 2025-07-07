@@ -24,6 +24,15 @@ impl WindowController {
     #[objc::msg_send(showWindow:)]
     pub fn show_window(&self, sender: Option<&ns::Id>);
 
+    #[objc::msg_send(window)]
+    pub fn window(&self) -> Option<arc::R<ns::Window>>;
+
+    #[objc::msg_send(setWindow:)]
+    pub fn set_window(&mut self, val: Option<&ns::Window>);
+
+    #[objc::msg_send(isWindowLoaded)]
+    pub fn is_window_loaded(&self) -> bool;
+
     #[objc::msg_send(close)]
     pub fn close(&self);
 

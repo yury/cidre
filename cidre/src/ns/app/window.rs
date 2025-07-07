@@ -207,9 +207,6 @@ impl Window {
     #[objc::msg_send(removeChildWindow:)]
     pub fn remove_child_window(&mut self, window: &ns::Window);
 
-    #[objc::msg_send(windowWithContentViewController:)]
-    pub fn with_content_vc(vc: &ns::ViewController) -> arc::R<Self>;
-
     #[objc::msg_send(collectionBehavior)]
     pub fn collection_behavior(&self) -> CollectionBehavior;
 
@@ -336,6 +333,18 @@ impl Window {
 
     #[objc::msg_send(isMiniaturized)]
     pub fn is_miniaturized(&self) -> bool;
+}
+
+/// ns::ViewController Support
+impl Window {
+    #[objc::msg_send(contentViewController)]
+    pub fn content_vc(&self) -> Option<arc::R<ns::ViewController>>;
+
+    #[objc::msg_send(setContentViewController:)]
+    pub fn set_content_vc(&mut self, val: Option<&ns::ViewController>);
+
+    #[objc::msg_send(windowWithContentViewController:)]
+    pub fn with_content_vc(vc: &ns::ViewController) -> arc::R<Self>;
 }
 
 /// Toolbar Support
