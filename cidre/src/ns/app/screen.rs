@@ -1,4 +1,4 @@
-use crate::{arc, ca, define_obj_type, ns, objc};
+use crate::{arc, ca, cg, define_obj_type, ns, objc};
 
 define_obj_type!(
     pub Screen(ns::Id),
@@ -39,6 +39,17 @@ impl Screen {
     #[objc::msg_send(safeAreaInsets)]
     #[objc::available(macos = 12.0)]
     pub fn safe_area_insets(&self) -> ns::EdgeInsets;
+
+    #[objc::msg_send(auxiliaryTopLeftArea)]
+    #[objc::available(macos = 12.0)]
+    pub fn auxiliary_top_left_area(&self) -> ns::Rect;
+
+    #[objc::msg_send(auxiliaryTopRightArea)]
+    #[objc::available(macos = 12.0)]
+    pub fn auxiliary_top_right_area(&self) -> ns::Rect;
+
+    #[objc::msg_send(CGDirectDisplayID)]
+    pub fn cg_direct_display_id(&self) -> cg::DirectDisplayId;
 }
 
 /// Variable Rate Refresh
