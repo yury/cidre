@@ -99,9 +99,9 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         })
     });
 
-    lr.fill(0.0f32);
-
     c.bench_function("interleave rust", |b| {
+        lr.fill(0.0f32);
+
         b.iter(|| {
             assert!(l.len() >= N);
             assert!(r.len() >= N);
@@ -116,21 +116,21 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         assert_eq!(lr, res);
     });
 
-    lr.fill(0.0f32);
-
     #[cfg(target_arch = "aarch64")]
     c.bench_function("interleave rust neon", |b| {
+        lr.fill(0.0f32);
+
         b.iter(|| {
             unsafe { interleave_f32_neon(&l, &r, &mut lr) };
         });
         assert_eq!(lr, res);
     });
 
-    lr.fill(0.0f32);
-
-    let comp = lr.as_mut_ptr() as *mut vdsp::Complex<f32>;
-    let mut comp = unsafe { std::slice::from_raw_parts_mut(comp, N) };
     c.bench_function("interleave vDSP", |b| {
+        lr.fill(0.0f32);
+        let comp = lr.as_mut_ptr() as *mut vdsp::Complex<f32>;
+        let mut comp = unsafe { std::slice::from_raw_parts_mut(comp, N) };
+
         b.iter(|| {
             vdsp::ztoc_f32(&l, &r, &mut comp);
         });
