@@ -49,6 +49,7 @@ impl Screen {
     pub fn auxiliary_top_right_area(&self) -> ns::Rect;
 
     #[objc::msg_send(CGDirectDisplayID)]
+    #[objc::available(macos = 26.0)]
     pub fn cg_direct_display_id(&self) -> cg::DirectDisplayId;
 }
 
