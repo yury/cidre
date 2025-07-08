@@ -184,29 +184,29 @@ impl StringMut {
         with_string: &ns::String,
     );
 
-    pub fn replace_characters_in(
+    pub fn replace_characters_in<'ear>(
         &mut self,
         range: ns::Range,
         with_string: &ns::String,
-    ) -> ns::ExResult {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.replace_characters_in_throws(range, with_string) })
     }
 
     #[objc::msg_send(insertString:atIndex:)]
     pub unsafe fn insert_string_at_throws(&mut self, string: &ns::String, at_index: ns::UInteger);
 
-    pub fn insert_string_at(
+    pub fn insert_string_at<'ear>(
         &mut self,
         string: &ns::String,
         at_index: ns::UInteger,
-    ) -> ns::ExResult {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.insert_string_at_throws(string, at_index) })
     }
 
     #[objc::msg_send(deleteCharactersInRange:)]
     pub fn delete_characters_in_throws(&mut self, range: ns::Range);
 
-    pub fn delete_characters_in<'ar>(&mut self, range: ns::Range) -> ns::ExResult {
+    pub fn delete_characters_in<'ear>(&mut self, range: ns::Range) -> ns::ExResult<'ear> {
         ns::try_catch(|| self.delete_characters_in_throws(range))
     }
 

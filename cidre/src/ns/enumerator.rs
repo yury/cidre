@@ -37,7 +37,7 @@ pub trait FastEnum<T: objc::Obj>: objc::Obj {
     fn count_by_enum(&self, state: &mut FeState<T>, objects: *mut *const T, count: usize) -> usize;
 
     #[inline]
-    fn iter(&self) -> FeIterator<Self, T> {
+    fn iter(&self) -> FeIterator<'_, Self, T> {
         FeIterator::new(self)
     }
 }

@@ -171,7 +171,7 @@ impl Device {
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
     pub fn is_auto_video_frame_rate_enabled(&self) -> bool;
 
-    pub fn config_lock(&mut self) -> Result<ConfigLockGuard, arc::R<ns::Error>> {
+    pub fn config_lock(&mut self) -> Result<ConfigLockGuard<'_>, arc::R<ns::Error>> {
         let mut error = None;
         unsafe {
             let result = self.lock_for_config(&mut error);
@@ -199,7 +199,10 @@ impl Device {
     pub unsafe fn set_auto_video_frame_rate_enabled_throws(&mut self, val: bool);
 
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
-    pub unsafe fn set_auto_video_frame_rate_enabled(&mut self, val: bool) -> ns::ExResult {
+    pub unsafe fn set_auto_video_frame_rate_enabled<'ear>(
+        &mut self,
+        val: bool,
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_auto_video_frame_rate_enabled_throws(val) })
     }
 
@@ -208,7 +211,10 @@ impl Device {
     pub unsafe fn set_active_video_min_frame_duration_throws(&mut self, val: cm::Time);
 
     #[cfg(feature = "cm")]
-    pub unsafe fn set_active_video_min_frame_duration(&mut self, val: cm::Time) -> ns::ExResult {
+    pub unsafe fn set_active_video_min_frame_duration<'ear>(
+        &mut self,
+        val: cm::Time,
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_active_video_min_frame_duration_throws(val) })
     }
 
@@ -217,7 +223,10 @@ impl Device {
     pub unsafe fn set_active_video_max_frame_duration_throws(&mut self, val: cm::Time);
 
     #[cfg(feature = "cm")]
-    pub unsafe fn set_active_video_max_frame_duration(&mut self, val: cm::Time) -> ns::ExResult {
+    pub unsafe fn set_active_video_max_frame_duration<'ear>(
+        &mut self,
+        val: cm::Time,
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_active_video_max_frame_duration_throws(val) })
     }
 }
@@ -307,7 +316,7 @@ impl<'a> ConfigLockGuard<'a> {
         }
     }
 
-    pub fn set_torch_mode_on_with_level(&mut self, torch_level: f32) -> ns::Result {
+    pub fn set_torch_mode_on_with_level<'ear>(&mut self, torch_level: f32) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.set_torch_mode_on_with_level_err(torch_level, err) })
     }
 }
@@ -634,17 +643,23 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
-    pub fn set_auto_video_frame_rate_enabled(&mut self, val: bool) -> ns::ExResult {
+    pub fn set_auto_video_frame_rate_enabled<'ear>(&mut self, val: bool) -> ns::ExResult<'ear> {
         unsafe { self.device.set_auto_video_frame_rate_enabled(val) }
     }
 
     #[cfg(feature = "cm")]
-    pub fn set_active_video_min_frame_duration(&mut self, val: cm::Time) -> ns::ExResult {
+    pub fn set_active_video_min_frame_duration<'ear>(
+        &mut self,
+        val: cm::Time,
+    ) -> ns::ExResult<'ear> {
         unsafe { self.device.set_active_video_min_frame_duration(val) }
     }
 
     #[cfg(feature = "cm")]
-    pub fn set_active_video_max_frame_duration(&mut self, val: cm::Time) -> ns::ExResult {
+    pub fn set_active_video_max_frame_duration<'ear>(
+        &mut self,
+        val: cm::Time,
+    ) -> ns::ExResult<'ear> {
         unsafe { self.device.set_active_video_max_frame_duration(val) }
     }
 

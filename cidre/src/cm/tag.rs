@@ -131,16 +131,12 @@ impl Tag {
         Self::new(
             category,
             TagDataType::I64,
-            TagValue(unsafe { std::mem::transmute(val) }),
+            TagValue(i64::cast_unsigned(val)),
         )
     }
 
     pub fn with_f64(category: TagCategory, val: f64) -> Self {
-        Self::new(
-            category,
-            TagDataType::F64,
-            TagValue(unsafe { std::mem::transmute(val) }),
-        )
+        Self::new(category, TagDataType::F64, TagValue(f64::to_bits(val)))
     }
 
     pub fn with_os_type(category: TagCategory, val: os::Type) -> Self {
@@ -166,7 +162,7 @@ impl Tag {
 
     pub fn val_i64(&self) -> Option<i64> {
         if self.dtype == TagDataType::I64 {
-            unsafe { Some(std::mem::transmute(self.val.0)) }
+            Some(u64::cast_signed(self.val.0))
         } else {
             None
         }
@@ -174,7 +170,7 @@ impl Tag {
 
     pub fn val_f64(&self) -> Option<f64> {
         if self.dtype == TagDataType::F64 {
-            unsafe { Some(std::mem::transmute(self.val.0)) }
+            Some(f64::from_bits(self.val.0))
         } else {
             None
         }
@@ -198,12 +194,12 @@ impl Tag {
 
     pub fn set_val_i64(&mut self, val: i64) {
         self.dtype = TagDataType::I64;
-        self.val = TagValue(unsafe { std::mem::transmute(val) });
+        self.val = TagValue(i64::cast_unsigned(val));
     }
 
     pub fn set_val_f64(&mut self, val: f64) {
         self.dtype = TagDataType::F64;
-        self.val = TagValue(unsafe { std::mem::transmute(val) });
+        self.val = TagValue(f64::to_bits(val));
     }
 
     pub fn set_val_os_type(&mut self, val: os::Type) {

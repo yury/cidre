@@ -205,7 +205,7 @@ impl<const N: usize> BufList<N> {
         unsafe { &mut *slice_from_raw_parts_mut(self.buffers.as_mut_ptr(), N) }
     }
 
-    pub fn cursor(&mut self) -> BufListCursor<N> {
+    pub fn cursor(&mut self) -> BufListCursor<'_, N> {
         BufListCursor::new(self)
     }
 }

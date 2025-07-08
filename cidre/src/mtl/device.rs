@@ -168,7 +168,10 @@ impl Device {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Lib>>;
 
-    pub fn new_default_lib_with_bundle(&self, bundle: &ns::Bundle) -> ns::Result<arc::R<Lib>> {
+    pub fn new_default_lib_with_bundle<'ear>(
+        &self,
+        bundle: &ns::Bundle,
+    ) -> ns::Result<'ear, arc::R<Lib>> {
         ns::if_none(|err| unsafe { self.new_default_lib_with_bundle_err(bundle, err) })
     }
 

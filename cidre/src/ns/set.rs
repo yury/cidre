@@ -74,7 +74,7 @@ impl<T: Obj> Set<T> {
     }
 
     #[inline]
-    pub fn iter(&self) -> ns::FeIterator<Self, T> {
+    pub fn iter(&self) -> ns::FeIterator<'_, Self, T> {
         ns::FastEnum::iter(self)
     }
 

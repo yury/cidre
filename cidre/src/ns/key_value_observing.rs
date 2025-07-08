@@ -187,7 +187,11 @@ pub trait KvObserverRegistration {
         })
     }
 
-    fn remove_observer(&mut self, observer: &ns::Id, for_key_path: &ns::String) -> ns::ExResult {
+    fn remove_observer<'ear>(
+        &mut self,
+        observer: &ns::Id,
+        for_key_path: &ns::String,
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.remove_observer_throws(observer, for_key_path) })
     }
 }

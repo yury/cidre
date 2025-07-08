@@ -1,4 +1,7 @@
-use crate::{api, arc, define_obj_type, objc, ui};
+use crate::{api, define_obj_type, objc, ui};
+
+#[cfg(target_os = "ios")]
+use crate::arc;
 
 define_obj_type!(
     #[doc(alias = "UIWindowSceneActivationRequestOptions")]

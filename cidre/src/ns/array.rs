@@ -101,14 +101,14 @@ impl<T: objc::Obj> Array<T> {
     }
 
     #[inline]
-    pub fn iter(&self) -> ns::FeIterator<Self, T> {
+    pub fn iter(&self) -> ns::FeIterator<'_, Self, T> {
         ns::FastEnum::iter(self)
     }
 
     #[objc::msg_send(objectAtIndex:)]
     pub unsafe fn get_throws(&self, index: usize) -> arc::R<T>;
 
-    pub fn get<'ear>(&self, index: usize) -> ns::ExResult<arc::R<T>> {
+    pub fn get<'ear>(&self, index: usize) -> ns::ExResult<'ear, arc::R<T>> {
         unsafe { ns::try_catch(|| self.get_throws(index)) }
     }
 
@@ -175,7 +175,7 @@ impl<T: objc::Obj> ArrayMut<T> {
     pub unsafe fn remove_throws(&mut self, index: usize);
 
     #[inline]
-    pub fn remove(&mut self, index: usize) -> ns::ExResult {
+    pub fn remove<'ear>(&mut self, index: usize) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.remove_throws(index) })
     }
 
@@ -186,7 +186,7 @@ impl<T: objc::Obj> ArrayMut<T> {
     pub unsafe fn insert_obj_throws(&mut self, obj: &T, at_index: usize);
 
     #[inline]
-    pub fn insert(&mut self, index: usize, element: &T) -> ns::ExResult {
+    pub fn insert<'ear>(&mut self, index: usize, element: &T) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.insert_obj_throws(element, index) })
     }
 

@@ -110,12 +110,12 @@ impl Session {
     ) -> bool;
 
     /// Send a data message to a list of destination peers.
-    pub fn send_data(
+    pub fn send_data<'ear>(
         &mut self,
         data: &ns::Data,
         to_peers: &ns::Array<mc::PeerId>,
         mode: mc::SessionSendDataMode,
-    ) -> ns::Result {
+    ) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.send_data_err(data, to_peers, mode, err) })
     }
 

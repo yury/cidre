@@ -57,7 +57,7 @@ impl Writer {
     #[objc::msg_send(addInput:)]
     pub unsafe fn add_input_throws(&mut self, input: &WriterInput);
 
-    pub fn add_input(&mut self, input: &WriterInput) -> ns::ExResult {
+    pub fn add_input<'ear>(&mut self, input: &WriterInput) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.add_input_throws(input) })
     }
 
@@ -157,7 +157,7 @@ impl Writer {
 
     /// Closes the current segment and outputs it to the -assetWriter:didOutputSegmentData:segmentType:segmentReport:
     /// or -assetWriter:didOutputSegmentData:segmentType: delegate method.
-    pub fn flush_segment(&mut self) -> ns::ExResult {
+    pub fn flush_segment<'ear>(&mut self) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.flush_segment_throws() })
     }
 }

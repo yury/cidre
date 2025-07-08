@@ -97,7 +97,7 @@ impl File {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn read(&mut self, buffer: &mut av::audio::PcmBuf) -> ns::Result {
+    pub fn read<'ear>(&mut self, buffer: &mut av::audio::PcmBuf) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.read_err(buffer, err) })
     }
 
@@ -113,7 +113,7 @@ impl File {
         &mut self,
         buffer: &mut av::audio::PcmBuf,
         frame_count: av::AudioFrameCount,
-    ) -> ns::Result {
+    ) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.read_n_err(buffer, frame_count, err) })
     }
 
@@ -124,7 +124,7 @@ impl File {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn write<'ear>(&mut self, buffer: &av::audio::PcmBuf) -> ns::Result {
+    pub fn write<'ear>(&mut self, buffer: &av::audio::PcmBuf) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.write_err(buffer, err) })
     }
 

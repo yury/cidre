@@ -188,7 +188,7 @@ impl TextureLoader {
         &self,
         url: &ns::Url,
         options: Option<&Opts>,
-    ) -> ns::Result<arc::R<mtl::Texture>> {
+    ) -> ns::Result<'ear, arc::R<mtl::Texture>> {
         ns::if_none(|err| unsafe { self.new_texture_with_url_err(url, options, err) })
     }
 
@@ -222,7 +222,7 @@ impl TextureLoader {
         &self,
         data: &ns::Data,
         options: Option<&Opts>,
-    ) -> ns::Result<arc::R<mtl::Texture>> {
+    ) -> ns::Result<'ear, arc::R<mtl::Texture>> {
         ns::if_none(|err| unsafe { self.new_texture_with_data_err(data, options, err) })
     }
 
@@ -240,7 +240,7 @@ impl TextureLoader {
         &self,
         image: &cg::Image,
         options: Option<&Opts>,
-    ) -> ns::Result<arc::R<mtl::Texture>> {
+    ) -> ns::Result<'ear, arc::R<mtl::Texture>> {
         ns::if_none(|err| unsafe { self.new_texture_with_cg_image_err(image, options, err) })
     }
 
@@ -262,7 +262,7 @@ impl TextureLoader {
         scale_factor: cg::Float,
         bundle: Option<&ns::Bundle>,
         options: Option<&Opts>,
-    ) -> ns::Result<arc::R<mtl::Texture>> {
+    ) -> ns::Result<'ear, arc::R<mtl::Texture>> {
         ns::if_none(|err| unsafe {
             self.new_texture_with_name_err(name, scale_factor, bundle, options, err)
         })

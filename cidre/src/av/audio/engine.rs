@@ -134,7 +134,7 @@ impl Engine {
     pub unsafe fn start_and_return_err<'ar>(&self, error: *mut Option<&'ar ns::Error>) -> bool;
 
     #[inline]
-    pub fn start(&mut self) -> ns::Result {
+    pub fn start<'ear>(&mut self) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.start_and_return_err(err) })
     }
 
@@ -220,12 +220,12 @@ impl Engine {
     /// 2. Removes any taps previously installed on the input and output nodes.
     /// 3. Maintains all the engine connections as is.
     #[inline]
-    pub fn enable_manual_rendering_mode(
+    pub fn enable_manual_rendering_mode<'ear>(
         &mut self,
         mode: ManualRenderingMode,
         format: &av::AudioFormat,
         max_frame_count: av::AudioFrameCount,
-    ) -> ns::Result {
+    ) -> ns::Result<'ear> {
         ns::if_err(|err| unsafe {
             self.enable_manual_rendering_mode_err(mode, format, max_frame_count, err)
         })

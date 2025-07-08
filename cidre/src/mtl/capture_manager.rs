@@ -65,7 +65,7 @@ impl CaptureManager {
 
     // #[api::available(macos = 10.15, ios = 13.0)]
     #[inline]
-    pub fn start(&mut self, desc: &CaptureDesc) -> ns::Result {
+    pub fn start<'ear>(&mut self, desc: &CaptureDesc) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.start_with_descriptor_err(desc, err) })
     }
 

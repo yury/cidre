@@ -177,7 +177,10 @@ impl DataSrcDesc {
     /// setPreferredDataSource:error: to active the data source on the port.
     /// You must call setPreferredInputOrientation:error: on the AVAudioSession if you chose the
     /// AVAudioSessionPolarPatternStereo polar pattern.
-    pub fn set_preferred_polar_pattern<'ear>(&mut self, val: Option<&PolarPattern>) -> ns::Result {
+    pub fn set_preferred_polar_pattern<'ear>(
+        &mut self,
+        val: Option<&PolarPattern>,
+    ) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.set_preferred_polar_pattern_err(val, err) })
     }
 }
@@ -247,7 +250,7 @@ impl PortDesc {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_preferred_data_src(&mut self, val: Option<&DataSrcDesc>) -> ns::Result {
+    pub fn set_preferred_data_src<'ear>(&mut self, val: Option<&DataSrcDesc>) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.set_preferred_data_src_err(val, err) })
     }
 }

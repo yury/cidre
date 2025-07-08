@@ -134,7 +134,7 @@ macro_rules! with_fn {
 macro_rules! stack {
     ($name:ident, $invoke:ident: $($t:ident),*) => {
         #[inline]
-        pub unsafe fn $name<$($t,)* R, Closure>(closure: &mut Closure) -> StackBlock<Closure, Sig>
+        pub unsafe fn $name<$($t,)* R, Closure>(closure: &mut Closure) -> StackBlock<'_, Closure, Sig>
         where
             Sig: Fn($($t,)*) -> R, // guard for Block Sig
             for<'c> Closure: FnMut($($t,)*) -> R

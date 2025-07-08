@@ -149,11 +149,11 @@ impl WriterInput {
     );
 
     #[cfg(all(feature = "blocks", feature = "dispatch"))]
-    pub fn request_media_data_when_ready_on_queue(
+    pub fn request_media_data_when_ready_on_queue<'ear>(
         &self,
         queue: &dispatch::Queue,
         block: &mut blocks::CompletionBlock,
-    ) -> ns::ExResult {
+    ) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe {
             self.request_media_data_when_ready_on_queue_throws(queue, block)
         })

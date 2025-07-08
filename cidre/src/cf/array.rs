@@ -54,7 +54,7 @@ impl<T> ArrayOf<T> {
     }
 
     #[inline]
-    pub fn iter(&self) -> ArrayOfIterator<T> {
+    pub fn iter(&self) -> ArrayOfIterator<'_, T> {
         ArrayOfIterator {
             array: self,
             index: 0,
@@ -215,7 +215,7 @@ impl<T: Retain> ArrayOfMut<T> {
     }
 
     #[inline]
-    pub fn iter(&self) -> ArrayOfIterator<T> {
+    pub fn iter(&self) -> ArrayOfIterator<'_, T> {
         ArrayOfIterator {
             array: self,
             index: 0,

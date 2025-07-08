@@ -44,7 +44,7 @@ impl Reader {
     pub unsafe fn add_output_throws(&mut self, output: &av::AssetReaderOutput);
 
     #[inline]
-    pub fn add_output(&mut self, output: &av::AssetReaderOutput) -> ns::ExResult {
+    pub fn add_output<'ear>(&mut self, output: &av::AssetReaderOutput) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.add_output_throws(output) })
     }
 

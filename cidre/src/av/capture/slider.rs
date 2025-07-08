@@ -109,14 +109,14 @@ impl Slider {
     pub unsafe fn value_throws(&self) -> f32;
 
     /// The current value of the slider.
-    pub fn value(&self) -> ns::ExResult<f32> {
+    pub fn value<'ear>(&self) -> ns::ExResult<'ear, f32> {
         ns::try_catch(|| unsafe { self.value_throws() })
     }
 
     #[objc::msg_send(setValue:)]
     pub unsafe fn set_value_throws(&mut self, val: f32);
 
-    pub fn set_value(&mut self, val: f32) -> ns::ExResult {
+    pub fn set_value<'ear>(&mut self, val: f32) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_value_throws(val) })
     }
 

@@ -179,7 +179,7 @@ impl FileManager {
         url: &ns::Url,
         create_intermediates: bool,
         attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
-    ) -> ns::Result {
+    ) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe {
             self.create_dir_at_url_err(url, create_intermediates, attributes, err)
         })
@@ -200,7 +200,7 @@ impl FileManager {
         path: &ns::String,
         create_intermediates: bool,
         attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
-    ) -> ns::Result {
+    ) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe {
             self.create_dir_at_path_err(path, create_intermediates, attributes, err)
         })
@@ -214,7 +214,7 @@ impl FileManager {
     ) -> bool;
 
     #[inline]
-    pub fn remove_item_at_path<'ear>(&self, path: &ns::String) -> ns::Result {
+    pub fn remove_item_at_path<'ear>(&self, path: &ns::String) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.remove_item_at_path_err(path, err) })
     }
 

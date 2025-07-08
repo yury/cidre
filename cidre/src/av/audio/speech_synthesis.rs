@@ -287,7 +287,7 @@ impl Synthesizer {
     #[objc::msg_send(speakUtterance:)]
     pub unsafe fn speak_utterance_throws(&mut self, utterance: &Utterance);
 
-    pub fn speak_utterance(&mut self, utterance: &Utterance) -> ns::ExResult {
+    pub fn speak_utterance<'ear>(&mut self, utterance: &Utterance) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.speak_utterance_throws(utterance) })
     }
 

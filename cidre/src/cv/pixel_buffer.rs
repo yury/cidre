@@ -188,7 +188,7 @@ impl PixelBuf {
     }
 
     #[inline]
-    pub fn base_address_lock(&mut self, flags: LockFlags) -> os::Result<BaseAddrLockGuard> {
+    pub fn base_address_lock(&mut self, flags: LockFlags) -> os::Result<BaseAddrLockGuard<'_>> {
         unsafe {
             self.lock_base_addr(flags).result()?;
             Ok(BaseAddrLockGuard(self, flags))
