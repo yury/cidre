@@ -16,49 +16,49 @@ impl PropId {
     /// data that can be supplied via the AudioConverterInputProc or as the input to
     /// AudioConverterConvertBuffer
     #[doc(alias = "kAudioConverterPropertyMinimumInputBufferSize")]
-    pub const MINIMUM_INPUT_BUFFER_SIZE: Self = Self(u32::from_be_bytes(*b"mibs"));
+    pub const MIN_INPUT_BUF_SIZE: Self = Self(u32::from_be_bytes(*b"mibs"));
 
     /// A UInt32 that indicates the size in bytes of the smallest buffer of output
     /// data that can be supplied to AudioConverterFillComplexBuffer or as the output to
     /// AudioConverterConvertBuffer
     #[doc(alias = "kAudioConverterPropertyMinimumOutputBufferSize")]
-    pub const MINIMUM_OUTPUT_BUFFER_SIZE: Self = Self(u32::from_be_bytes(*b"mobs"));
+    pub const MIN_OUTPUT_BUF_SIZE: Self = Self(u32::from_be_bytes(*b"mobs"));
 
     /// a u32 that indicates the size in bytes of the largest single packet of
     /// data in the input format. This is mostly useful for variable bit rate
     /// compressed data (decoders).
     #[doc(alias = "kAudioConverterPropertyMaximumInputPacketSize")]
-    pub const MAXIMUM_INPUT_PACKET_SIZE: Self = Self(u32::from_be_bytes(*b"xips"));
+    pub const MAX_INPUT_PACKET_SIZE: Self = Self(u32::from_be_bytes(*b"xips"));
 
     /// a u32 that indicates the size in bytes of the largest single packet of
     /// data in the output format. This is mostly useful for variable bit rate
     /// compressed data (encoders).
     #[doc(alias = "kAudioConverterPropertyMaximumOutputPacketSize")]
-    pub const MAXIMUM_OUTPUT_PACKET_SIZE: Self = Self(u32::from_be_bytes(*b"xops"));
+    pub const MAX_OUTPUT_PACKET_SIZE: Self = Self(u32::from_be_bytes(*b"xops"));
 
     /// a u32 that on input holds a size in bytes that is desired for the output
     /// data. On output, it will hold the size in bytes of the input buffer required
     /// to generate that much output data. Note that some converters cannot do this
     /// calculation.
     #[doc(alias = "kAudioConverterPropertyCalculateInputBufferSize")]
-    pub const CALCULATE_INPUT_BUFFER_SIZE: Self = Self(u32::from_be_bytes(*b"cibs"));
+    pub const CALCULATE_INPUT_BUF_SIZE: Self = Self(u32::from_be_bytes(*b"cibs"));
 
     /// a u32 that on input holds a size in bytes that is desired for the input
     /// data. On output, it will hold the size in bytes of the output buffer
     /// required to hold the output data that will be generated. Note that some
     /// converters cannot do this calculation.
     #[doc(alias = "kAudioConverterPropertyCalculateOutputBufferSize")]
-    pub const CALCULATE_OUTPUT_BUFFER_SIZE: Self = Self(u32::from_be_bytes(*b"cobs"));
+    pub const CALCULATE_OUTPUT_BUF_SIZE: Self = Self(u32::from_be_bytes(*b"cobs"));
 
     /// The value of this property varies from format to format and is considered
     /// private to the format. It is treated as a buffer of untyped data.
     #[doc(alias = "kAudioConverterPropertyInputCodecParameters")]
-    pub const INPUT_CODEC_PARAMETERS: Self = Self(u32::from_be_bytes(*b"icdp"));
+    pub const INPUT_CODEC_PARAMS: Self = Self(u32::from_be_bytes(*b"icdp"));
 
     /// The value of this property varies from format to format and is considered
     /// private to the format. It is treated as a buffer of untyped data.
     #[doc(alias = "kAudioConverterPropertyOutputCodecParameters")]
-    pub const OUTPUT_CODEC_PARAMETERS: Self = Self(u32::from_be_bytes(*b"ocdp"));
+    pub const OUTPUT_CODEC_PARAMS: Self = Self(u32::from_be_bytes(*b"ocdp"));
 
     /// An os::Type that specifies the sample rate converter algorithm to use (as defined in
     /// AudioToolbox/AudioUnitProperties.h)
@@ -171,11 +171,11 @@ impl PropId {
     /// For example when encoding to AAC, your original output stream description
     /// will not have been completely filled out.
     #[doc(alias = "kAudioConverterCurrentOutputStreamDescription")]
-    pub const CURRENT_OUTPUT_STREAM_DESCRIPTION: Self = Self(u32::from_be_bytes(*b"acod"));
+    pub const CURRENT_OUTPUT_STREAM_DESC: Self = Self(u32::from_be_bytes(*b"acod"));
 
     /// Returns the current completely specified input AudioStreamBasicDescription.
     #[doc(alias = "kAudioConverterCurrentInputStreamDescription")]
-    pub const CURRENT_INPUT_STREAM_DESCRIPTION: Self = Self(u32::from_be_bytes(*b"acid"));
+    pub const CURRENT_INPUT_STREAM_DESC: Self = Self(u32::from_be_bytes(*b"acid"));
 
     /// Returns the a CFArray of property settings for converters.
     #[doc(alias = "kAudioConverterPropertySettings")]
@@ -480,6 +480,16 @@ pub type ComplexInputDataProc<const N: usize = 1, D = c_void> = extern "C-unwind
     in_user_data: *mut D,
 ) -> os::Status;
 
+#[doc(alias = "AudioConverterComplexInputDataProcRealtimeSafe")]
+pub type ComplexInputDataProcRealtimeSafe<const N: usize = 1, D = c_void> =
+    extern "C-unwind" fn(
+        converter: &Converter,
+        io_number_data_packets: &mut u32,
+        io_data: &mut audio::BufList<N>,
+        out_data_packet_descriptions: *mut *mut audio::StreamPacketDesc,
+        in_user_data: *mut D,
+    ) -> os::Status;
+
 impl ConverterRef {
     /// # Safety
     /// use `with_formats`
@@ -601,7 +611,7 @@ impl Converter {
 
     #[inline]
     pub fn max_output_packet_size(&self) -> os::Result<u32> {
-        unsafe { self.prop(PropId::MAXIMUM_OUTPUT_PACKET_SIZE) }
+        unsafe { self.prop(PropId::MAX_OUTPUT_PACKET_SIZE) }
     }
 
     #[inline]
@@ -651,12 +661,12 @@ impl Converter {
 
     #[inline]
     pub fn current_output_stream_desc(&self) -> os::Result<audio::StreamBasicDesc> {
-        unsafe { self.prop(PropId::CURRENT_OUTPUT_STREAM_DESCRIPTION) }
+        unsafe { self.prop(PropId::CURRENT_OUTPUT_STREAM_DESC) }
     }
 
     #[inline]
     pub fn current_input_stream_desc(&self) -> os::Result<audio::StreamBasicDesc> {
-        unsafe { self.prop(PropId::CURRENT_INPUT_STREAM_DESCRIPTION) }
+        unsafe { self.prop(PropId::CURRENT_INPUT_STREAM_DESC) }
     }
 
     #[inline]
@@ -702,6 +712,28 @@ impl Converter {
                 out_packet_description,
             )
             .result()
+        }
+    }
+
+    #[inline]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+    pub unsafe fn fill_complex_buffer_realtime_safe<const NI: usize, const NO: usize, D>(
+        &self,
+        in_input_data_proc: ComplexInputDataProcRealtimeSafe<NI, D>,
+        in_input_data_proc_user_data: *mut D,
+        io_output_data_packet_size: &mut u32,
+        out_output_data: &mut audio::BufList<NO>,
+        out_packet_description: *mut audio::StreamPacketDesc,
+    ) -> os::Status {
+        unsafe {
+            AudioConverterFillComplexBufferRealtimeSafe(
+                self,
+                std::mem::transmute(in_input_data_proc),
+                in_input_data_proc_user_data as _,
+                io_output_data_packet_size,
+                std::mem::transmute(out_output_data),
+                out_packet_description,
+            )
         }
     }
 
@@ -811,6 +843,28 @@ impl Converter {
     }
 
     #[inline]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+    pub fn fill_complex_buf_desc_realtime_safe<const NI: usize, const NO: usize, D>(
+        &self,
+        proc: ComplexInputDataProcRealtimeSafe<NI, D>,
+        user_data: &mut D,
+        io_output_data_packet_size: &mut u32,
+        out_output_data: &mut audio::BufList<NO>,
+        out_packet_description: &mut Vec<audio::StreamPacketDesc>,
+    ) -> os::Result {
+        unsafe {
+            self.fill_complex_buffer_realtime_safe(
+                proc,
+                user_data,
+                io_output_data_packet_size,
+                out_output_data,
+                out_packet_description.as_mut_ptr(),
+            )
+            .result()
+        }
+    }
+
+    #[inline]
     pub fn fill_complex_buf<const NI: usize, const NO: usize, D>(
         &self,
         proc: ComplexInputDataProc<NI, D>,
@@ -826,6 +880,27 @@ impl Converter {
                 out_output_data,
                 std::ptr::null_mut(),
             )
+        }
+    }
+
+    #[inline]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+    pub fn fill_complex_buf_realtime_safe<const NI: usize, const NO: usize, D>(
+        &self,
+        proc: ComplexInputDataProcRealtimeSafe<NI, D>,
+        user_data: &mut D,
+        io_output_data_packet_size: &mut u32,
+        out_output_data: &mut audio::BufList<NO>,
+    ) -> os::Result {
+        unsafe {
+            self.fill_complex_buffer_realtime_safe(
+                proc,
+                user_data,
+                io_output_data_packet_size,
+                out_output_data,
+                std::ptr::null_mut(),
+            )
+            .result()
         }
     }
 }
@@ -895,6 +970,16 @@ unsafe extern "C-unwind" {
     fn AudioConverterFillComplexBuffer(
         converter: &Converter,
         in_input_data_proc: ComplexInputDataProc,
+        in_input_data_proc_user_data: *mut c_void,
+        io_output_data_packet_size: &mut u32,
+        out_output_data: &mut audio::BufList,
+        out_packet_description: *mut audio::StreamPacketDesc,
+    ) -> os::Status;
+
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+    fn AudioConverterFillComplexBufferRealtimeSafe(
+        converter: &Converter,
+        in_input_data_proc: ComplexInputDataProcRealtimeSafe,
         in_input_data_proc_user_data: *mut c_void,
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufList,

@@ -311,6 +311,7 @@ unsafe extern "C" {
     fn VTIsStereoMVHEVCEncodeSupported() -> bool;
 }
 
+#[cfg(not(feature = "macos_26_0"))]
 #[cfg(test)]
 mod tests {
     use crate::{api, cm, vt};

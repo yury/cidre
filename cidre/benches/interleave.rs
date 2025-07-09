@@ -38,7 +38,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     list_b.buffers[0].data = lr.as_ptr() as _;
     list_b.buffers[0].data_bytes_size = (lr.len() * 4) as u32;
 
-    c.bench_function("interleave with audio format converter", |b| {
+    c.bench_function("interleave with audio format converter convert", |b| {
         b.iter(|| {
             converter
                 .convert_complex_buf(N as u32, &list_a, &mut list_b)
@@ -46,6 +46,55 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         });
         assert_eq!(lr, res);
     });
+
+    extern "C-unwind" fn input_proc(
+        _converter: &at::AudioConverter,
+        io_number_data_packets: &mut u32,
+        io_data: &mut audio::BufList<2>,
+        _out_data_packet_descriptions: *mut *mut audio::StreamPacketDesc,
+        in_user_data: *mut at::AudioBufList<2>,
+    ) -> os::Status {
+        *io_number_data_packets = N as u32;
+        let list_a = unsafe { in_user_data.as_ref().unwrap() };
+        io_data.number_buffers = list_a.number_buffers;
+        for i in 0..2 {
+            let a = &mut io_data.buffers[i];
+            let b = &list_a.buffers[i];
+            a.number_channels = b.number_channels;
+            a.data_bytes_size = b.data_bytes_size;
+            a.data = b.data;
+        }
+        os::Status::NO_ERR
+    }
+
+    c.bench_function("interleave with audio format converter fill", |b| {
+        b.iter(|| {
+            let mut output_size = N as u32;
+            converter
+                .fill_complex_buf(input_proc, &mut list_a, &mut output_size, &mut list_b)
+                .unwrap();
+        });
+        assert_eq!(lr, res);
+    });
+
+    #[cfg(feature = "macos_26_0")]
+    c.bench_function(
+        "interleave with audio format converter fill realtime safe",
+        |b| {
+            b.iter(|| {
+                let mut output_size = N as u32;
+                converter
+                    .fill_complex_buf_realtime_safe(
+                        input_proc,
+                        &mut list_a,
+                        &mut output_size,
+                        &mut list_b,
+                    )
+                    .unwrap()
+            });
+            assert_eq!(lr, res);
+        },
+    );
 
     let from_fmt = av::AudioFormat::with_asbd(&src_asbd).unwrap();
     let to_fmt = av::AudioFormat::with_asbd(&dst_asbd).unwrap();
