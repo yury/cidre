@@ -37,16 +37,6 @@ define_cf_type!(
     Timer(cf::Type)
 );
 
-#[cfg(feature = "ns")]
-use crate::ns;
-
-impl Timer {
-    #[cfg(feature = "ns")]
-    pub fn as_ns(&self) -> &ns::Timer {
-        unsafe { std::mem::transmute(self) }
-    }
-}
-
 impl RunLoop {
     #[doc(alias = "CFRunLoopRun")]
     #[inline]
@@ -273,9 +263,26 @@ unsafe extern "C-unwind" {
     fn CFRunLoopSourceSignal(source: &Src);
 }
 
+#[doc(alias = "CFRunLoopTimerContext")]
+#[repr(C)]
+pub struct TimerCtx<T: Send = std::ffi::c_void> {
+    pub version: cf::Index,
+    pub info: *mut T,
+    pub retain: Option<extern "C-unwind" fn(info: *mut T) -> *mut T>,
+    pub release: Option<extern "C-unwind" fn(info: *mut T)>,
+    pub desc: Option<extern "C-unwind" fn(info: *const T) -> arc::R<cf::String>>,
+}
+
+pub type TimerCb<T = std::ffi::c_void> = extern "C-unwind" fn(timer: &mut Timer, info: *mut T);
+
 impl Timer {
     #[inline]
-    pub fn invalidate(&self) {
+    pub fn type_id() -> cf::TypeId {
+        unsafe { CFRunLoopTimerGetTypeID() }
+    }
+
+    #[inline]
+    pub fn invalidate(&mut self) {
         unsafe { CFRunLoopTimerInvalidate(self) }
     }
 
@@ -298,15 +305,158 @@ impl Timer {
     pub fn set_tolerance(&self, value: cf::TimeInterval) {
         unsafe { CFRunLoopTimerSetTolerance(self, value) }
     }
+
+    #[inline]
+    pub fn next_fire_date(&self) -> cf::AbsTime {
+        unsafe { CFRunLoopTimerGetNextFireDate(self) }
+    }
+
+    #[inline]
+    pub fn set_next_fire_date(&mut self, val: cf::AbsTime) {
+        unsafe {
+            CFRunLoopTimerSetNextFireDate(self, val);
+        }
+    }
+
+    #[inline]
+    pub fn interval(&self) -> cf::TimeInterval {
+        unsafe { CFRunLoopTimerGetInterval(self) }
+    }
+
+    #[inline]
+    pub fn order(&self) -> cf::Index {
+        unsafe { CFRunLoopTimerGetOrder(self) }
+    }
+
+    #[inline]
+    pub unsafe fn create_in(
+        fire_date: cf::AbsTime,
+        interval: cf::TimeInterval,
+        flags: cf::OptionFlags,
+        order: cf::Index,
+        cb: TimerCb,
+        ctx: *mut TimerCtx,
+        allocator: Option<&cf::Allocator>,
+    ) -> Option<arc::R<Self>> {
+        unsafe { CFRunLoopTimerCreate(allocator, fire_date, interval, flags, order, cb, ctx) }
+    }
+
+    #[inline]
+    pub unsafe fn new<T: Send>(
+        fire_date: cf::AbsTime,
+        interval: cf::TimeInterval,
+        flags: cf::OptionFlags,
+        order: cf::Index,
+        cb: TimerCb<T>,
+        ctx: *mut TimerCtx<T>,
+    ) -> arc::R<Self> {
+        unsafe {
+            Self::create_in(
+                fire_date,
+                interval,
+                flags,
+                order,
+                std::mem::transmute(cb),
+                std::mem::transmute(ctx),
+                None,
+            )
+            .unwrap_unchecked()
+        }
+    }
+
+    #[inline]
+    pub fn new_without_ctx(
+        fire_date: cf::AbsTime,
+        interval: cf::TimeInterval,
+        flags: cf::OptionFlags,
+        order: cf::Index,
+        cb: TimerCb,
+    ) -> arc::R<Self> {
+        unsafe { Self::new(fire_date, interval, flags, order, cb, std::ptr::null_mut()) }
+    }
+}
+
+#[cfg(feature = "ns")]
+use crate::ns;
+
+impl Timer {
+    #[cfg(feature = "ns")]
+    pub fn as_ns(&self) -> &ns::Timer {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+#[cfg(feature = "blocks")]
+use crate::blocks;
+
+#[cfg(feature = "blocks")]
+impl Timer {
+    pub fn with_handler_block_in(
+        fire_date: cf::AbsTime,
+        interval: cf::TimeInterval,
+        flags: cf::OptionFlags,
+        order: cf::Index,
+        block: &mut blocks::SyncBlock<fn(timer: &mut Timer)>,
+        allocator: Option<&cf::Allocator>,
+    ) -> Option<arc::R<Self>> {
+        unsafe {
+            CFRunLoopTimerCreateWithHandler(allocator, fire_date, interval, flags, order, block)
+        }
+    }
+    pub fn with_handler_block(
+        fire_date: cf::AbsTime,
+        interval: cf::TimeInterval,
+        flags: cf::OptionFlags,
+        order: cf::Index,
+        block: &mut blocks::SyncBlock<fn(timer: &mut Timer)>,
+    ) -> arc::R<Self> {
+        unsafe {
+            Self::with_handler_block_in(fire_date, interval, flags, order, block, None)
+                .unwrap_unchecked()
+        }
+    }
+    pub fn with_handler(
+        fire_date: cf::AbsTime,
+        interval: cf::TimeInterval,
+        flags: cf::OptionFlags,
+        order: cf::Index,
+        block: impl FnMut(&mut Timer) + 'static + Sync,
+    ) -> arc::R<Self> {
+        let mut block = blocks::SyncBlock::new1(block);
+        Self::with_handler_block(fire_date, interval, flags, order, &mut block)
+    }
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
-    fn CFRunLoopTimerInvalidate(timer: &Timer);
+    fn CFRunLoopTimerGetTypeID() -> cf::TypeId;
+    fn CFRunLoopTimerCreate(
+        allocator: Option<&cf::Allocator>,
+        fire_date: cf::AbsTime,
+        interval: cf::TimeInterval,
+        flags: cf::OptionFlags,
+        order: cf::Index,
+        cb: TimerCb,
+        ctx: *mut TimerCtx,
+    ) -> Option<arc::R<Timer>>;
+
+    #[cfg(feature = "blocks")]
+    fn CFRunLoopTimerCreateWithHandler(
+        allocator: Option<&cf::Allocator>,
+        fire_date: cf::AbsTime,
+        interval: cf::TimeInterval,
+        flags: cf::OptionFlags,
+        order: cf::Index,
+        block: &mut blocks::SyncBlock<fn(timer: &mut Timer)>,
+    ) -> Option<arc::R<Timer>>;
+    fn CFRunLoopTimerInvalidate(timer: &mut Timer);
     fn CFRunLoopTimerIsValid(timer: &Timer) -> bool;
     fn CFRunLoopTimerDoesRepeat(timer: &Timer) -> bool;
     fn CFRunLoopTimerGetTolerance(timer: &Timer) -> cf::TimeInterval;
     fn CFRunLoopTimerSetTolerance(timer: &Timer, value: cf::TimeInterval);
+    fn CFRunLoopTimerGetNextFireDate(timer: &Timer) -> cf::AbsTime;
+    fn CFRunLoopTimerSetNextFireDate(timer: &mut Timer, val: cf::AbsTime);
+    fn CFRunLoopTimerGetInterval(timer: &Timer) -> cf::TimeInterval;
+    fn CFRunLoopTimerGetOrder(timer: &Timer) -> cf::Index;
 }
 
 impl Observer {
@@ -340,5 +490,27 @@ mod tests {
     #[test]
     fn runloop_main() {
         assert!(!cf::RunLoop::current().all_modes().is_empty());
+    }
+
+    #[test]
+    fn timer() {
+        extern "C-unwind" fn callback(_timer: &mut cf::RunLoopTimer, _info: *mut std::ffi::c_void) {
+        }
+        let timer = unsafe {
+            cf::RunLoopTimer::new(
+                0.0,
+                0.0,
+                Default::default(),
+                0,
+                callback,
+                std::ptr::null_mut(),
+            )
+        };
+
+        assert_eq!(cf::RunLoopTimer::type_id(), timer.get_type_id());
+
+        let timer = cf::RunLoopTimer::with_handler(0.0, 0.0, Default::default(), 1, |_timer| {});
+
+        assert_eq!(cf::RunLoopTimer::type_id(), timer.get_type_id());
     }
 }

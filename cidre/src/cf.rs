@@ -113,6 +113,8 @@ pub use run_loop::RunLoop;
 pub use run_loop::RunResult as RunLoopRunResult;
 pub use run_loop::Src as RunLoopSrc;
 pub use run_loop::Timer as RunLoopTimer;
+pub use run_loop::TimerCb as RunLoopTimerCb;
+pub use run_loop::TimerCtx as RunLoopTimerCtx;
 
 pub mod socket;
 pub use socket::Cb as SocketCb;
