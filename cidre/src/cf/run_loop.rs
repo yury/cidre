@@ -37,6 +37,16 @@ define_cf_type!(
     Timer(cf::Type)
 );
 
+#[cfg(feature = "ns")]
+use crate::ns;
+
+impl Timer {
+    #[cfg(feature = "ns")]
+    pub fn as_ns(&self) -> &ns::Timer {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
 impl RunLoop {
     #[doc(alias = "CFRunLoopRun")]
     #[inline]

@@ -330,6 +330,10 @@ impl SubType {
     /// An audio unit that can be used to isolate a specified sound type
     #[doc(alias = "kAudioUnitSubType_AUSoundIsolation")]
     pub const SOUND_ISOLATION: Self = Self(u32::from_be_bytes(*b"vois"));
+
+    /// An audio unit that supports AudioMix separate-and-remix functionality
+    #[doc(alias = "kAudioUnitSubType_AUAudioMix")]
+    pub const AUDIO_MIX: Self = Self(u32::from_be_bytes(*b"amix"));
 }
 
 /// Apple effect audio unit sub types (macOS only)
