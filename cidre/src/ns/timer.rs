@@ -1,4 +1,7 @@
-use crate::{arc, blocks, define_cls, define_obj_type, ns, objc};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 define_obj_type!(
     #[doc(alias = "NSTimer")]
@@ -6,6 +9,7 @@ define_obj_type!(
 );
 
 impl arc::A<Timer> {
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(initWithFireDate:interval:repeats:block:)]
     pub fn init_with_fire_date_block(
         self,
@@ -30,6 +34,7 @@ impl arc::A<Timer> {
 impl Timer {
     define_cls!(NS_TIMER);
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(scheduledTimerWithTimeInterval:repeats:block:)]
     pub fn scheduled_with_block(
         interval: ns::TimeInterval,
@@ -37,6 +42,7 @@ impl Timer {
         block: &mut blocks::SyncBlock<fn(timer: &mut ns::Timer)>,
     ) -> arc::R<Self>;
 
+    #[cfg(feature = "blocks")]
     pub fn scheduled(
         interval: ns::TimeInterval,
         repeats: bool,
@@ -55,6 +61,7 @@ impl Timer {
         repeats: bool,
     ) -> arc::R<Self>;
 
+    #[cfg(feature = "blocks")]
     pub fn with_fire_date_block(
         date: &ns::Date,
         interval: ns::TimeInterval,
@@ -64,6 +71,7 @@ impl Timer {
         Self::alloc().init_with_fire_date_block(date, interval, repeats, block)
     }
 
+    #[cfg(feature = "blocks")]
     pub fn with_fire_date(
         date: &ns::Date,
         interval: ns::TimeInterval,
