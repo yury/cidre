@@ -659,6 +659,26 @@ pub struct f16quat(pub f16x4);
 #[repr(transparent)]
 pub struct f32quat(pub f32x4);
 
+impl std::ops::Deref for f32quat {
+    type Target = f32x4;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for f32quat {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl f32quat {
+    pub fn load(vals: &[f32; 4]) -> Self {
+        Self(f32x4::load(vals))
+    }
+}
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[allow(non_camel_case_types)]
 #[repr(transparent)]
