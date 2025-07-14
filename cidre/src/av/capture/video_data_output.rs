@@ -56,7 +56,7 @@ impl VideoDataOutput {
     pub fn automatically_configures_output_buf_dimensions(&self) -> bool;
 
     #[objc::msg_send(setAutomaticallyConfiguresOutputBufferDimensions:)]
-    pub fn set_automatically_configures_output_buf_dimensions(&mut self, value: bool);
+    pub fn set_automatically_configures_output_buf_dims(&mut self, value: bool);
 
     #[objc::msg_send(deliversPreviewSizedOutputBuffers)]
     pub fn delivers_preview_sized_output_bufs(&self) -> bool;

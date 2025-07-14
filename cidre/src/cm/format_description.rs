@@ -367,7 +367,7 @@ impl VideoFormatDesc {
     /// This does not take into account pixel aspect ratio or clean aperture tags.
     #[doc(alias = "CMVideoFormatDescriptionGetDimensions")]
     #[inline]
-    pub fn dimensions(&self) -> VideoDimensions {
+    pub fn dims(&self) -> VideoDimensions {
         unsafe { CMVideoFormatDescriptionGetDimensions(self) }
     }
 
