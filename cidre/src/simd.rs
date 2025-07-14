@@ -673,6 +673,7 @@ impl std::ops::DerefMut for f32quat {
     }
 }
 
+#[cfg(target_arch = "aarch64")]
 impl f32quat {
     pub fn load(vals: &[f32; 4]) -> Self {
         Self(f32x4::load(vals))
