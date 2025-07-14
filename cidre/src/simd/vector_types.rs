@@ -194,6 +194,10 @@ impl<T: Copy> Simd<T, 2, 2> {
     }
 
     accessors!(x, y);
+
+    pub fn load(vals: &[T; 2]) -> Self {
+        Self(*vals)
+    }
 }
 
 impl<T: Default + Copy> Simd<T, 4, 3> {
@@ -234,6 +238,10 @@ impl<T: Copy> Simd<T, 4, 4> {
     }
 
     accessors!(x, y, z, w);
+
+    pub fn load(vals: &[T; 4]) -> Self {
+        Self(*vals)
+    }
 }
 
 impl Simd<f32, 4, 4> {
@@ -272,10 +280,10 @@ pub mod tests {
         assert_eq!(f.r(), 10.0);
 
         let mut f = f32x4x4::identity();
-        assert_eq!(f[0][0], 1.0);
+        assert_eq!(f[0].x(), 1.0);
 
-        f[0][1] = 10.0;
-        assert_eq!(f[0][1], 10.0);
+        f[0].set_y(10.0);
+        assert_eq!(f[0].y(), 10.0);
 
         let mut f = f32x4x4::identity();
         f.set_tx(2.0);
