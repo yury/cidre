@@ -92,6 +92,28 @@ pub struct ClearColor {
     pub a: f64,
 }
 
+impl<T: Into<f64> + Copy> From<&[T; 4]> for ClearColor {
+    fn from(value: &[T; 4]) -> Self {
+        Self {
+            r: value[0].into(),
+            g: value[1].into(),
+            b: value[2].into(),
+            a: value[3].into(),
+        }
+    }
+}
+
+impl<T: Into<f64> + Copy> From<&[T; 3]> for ClearColor {
+    fn from(value: &[T; 3]) -> Self {
+        Self {
+            r: value[0].into(),
+            g: value[1].into(),
+            b: value[2].into(),
+            a: 1.0,
+        }
+    }
+}
+
 impl ClearColor {
     pub const fn new(r: f64, g: f64, b: f64, a: f64) -> Self {
         Self { r, g, b, a }
@@ -304,7 +326,11 @@ impl ColorAttachDesc {
     pub fn clear_color(&self) -> ClearColor;
 
     #[objc::msg_send(setClearColor:)]
-    pub fn set_clear_color(&mut self, val: ClearColor);
+    pub fn set_clear_color_value(&mut self, val: ClearColor);
+
+    pub fn set_clear_color(&mut self, val: impl Into<mtl::ClearColor>) {
+        self.set_clear_color_value(val.into());
+    }
 }
 
 #[doc(alias = "MTLMultisampleStencilResolveFilter")]

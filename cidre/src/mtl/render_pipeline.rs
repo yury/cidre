@@ -244,6 +244,12 @@ impl Desc {
     #[objc::msg_send(setStencilAttachmentPixelFormat:)]
     pub fn set_stencil_attach_pixel_format(&mut self, val: PixelFormat);
 
+    #[objc::msg_send(vertexBuffers)]
+    pub fn vertex_bufs(&self) -> arc::R<mtl::PipelineBufDescArray>;
+
+    #[objc::msg_send(fragmentBuffers)]
+    pub fn fragment_bufs(&self) -> arc::R<mtl::PipelineBufDescArray>;
+
     #[objc::msg_send(supportIndirectCommandBuffers)]
     pub fn support_icbs(&self) -> bool;
 
