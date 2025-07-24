@@ -554,6 +554,9 @@ impl RenderCmdEncoder {
     #[objc::msg_send(updateFence:afterStages:)]
     pub fn update_fence_after_stages(&self, fence: &mtl::Fence, stages: mtl::RenderStages);
 
+    #[objc::msg_send(waitForFence:beforeStages:)]
+    pub fn wait_fence_before_stages(&self, fence: &mtl::Fence, stages: mtl::RenderStages);
+
     #[objc::msg_send(dispatchThreadsPerTile:)]
     #[api::available(macos = 11.0, maccatalyst = 14.0, ios = 11.0, tvos = 14.5)]
     pub fn dispatch_threads_per_tile(&self, val: mtl::Size);
