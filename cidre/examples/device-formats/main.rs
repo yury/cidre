@@ -25,7 +25,7 @@ fn main() {
     let formats = device.formats();
     for f in formats.iter() {
         let format_description = f.format_desc();
-        let resolution = format_description.dimensions();
+        let resolution = format_description.dims();
         println!("resolution: {:?}", resolution);
 
         let ranges = f.video_supported_frame_rate_ranges();
