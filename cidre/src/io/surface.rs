@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_cf_type, define_opts, os, sys::_types::MachPort};
+use crate::{arc, cf, define_cf_type, define_opts, mach::KernReturn, os, sys::_types::MachPort};
 
 #[doc(alias = "SurfaceID")]
 pub type SurfId = u32;
@@ -75,6 +75,8 @@ define_cf_type!(
     #[doc(alias = "IOSurfaceRef")]
     Surf(cf::Type)
 );
+
+unsafe impl Send for Surf {}
 
 impl Surf {
     /// ```
@@ -260,6 +262,18 @@ impl Surf {
     pub fn pixel_format(&self) -> os::Type {
         unsafe { IOSurfaceGetPixelFormat(self) }
     }
+
+    #[doc(alias = "IOSurfaceLock")]
+    #[inline]
+    pub unsafe fn lock(&mut self, opts: LockOpts, seed: *mut u32) -> os::Result {
+        unsafe { IOSurfaceLock(self, opts, seed).result() }
+    }
+
+    #[doc(alias = "IOSurfaceUnlock")]
+    #[inline]
+    pub unsafe fn unlock(&mut self, opts: LockOpts, seed: *mut u32) -> os::Result {
+        unsafe { IOSurfaceUnlock(self, opts, seed).result() }
+    }
 }
 
 unsafe extern "C-unwind" {
@@ -294,6 +308,9 @@ unsafe extern "C-unwind" {
 
     fn IOSurfaceGetBytesPerRow(buffer: &Surf) -> usize;
     fn IOSurfaceGetPixelFormat(buffer: &Surf) -> os::Type;
+
+    fn IOSurfaceLock(buffer: &mut Surf, options: LockOpts, seed: *mut u32) -> KernReturn;
+    fn IOSurfaceUnlock(buffer: &mut Surf, options: LockOpts, seed: *mut u32) -> KernReturn;
 
 }
 
