@@ -44,10 +44,10 @@ mod tests {
     #[test]
     fn basics() {
         let thread = ns::Thread::current();
-        assert_eq!(thread.as_type_ref().retain_count(), 1);
+        assert_eq!(thread.as_type_ref().retain_count(), 2);
         assert!(thread.is_executing());
         let dict = thread.thread_dictionary();
-        assert_eq!(dict.as_type_ref().retain_count(), 1);
+        assert_eq!(dict.as_type_ref().retain_count(), 2);
 
         assert!(ns::Thread::is_mutli_threaded());
 
