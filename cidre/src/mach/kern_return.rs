@@ -1,5 +1,6 @@
 use crate::os;
 
+#[doc(alias = "kern_return_t")]
 pub type KernReturn = os::Status;
 
 pub mod err {
