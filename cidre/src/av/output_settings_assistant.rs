@@ -1,4 +1,4 @@
-use crate::{arc, av, define_cls, define_obj_type, ns, objc};
+use crate::{api, arc, av, define_cls, define_obj_type, ns, objc};
 
 #[cfg(feature = "cm")]
 use crate::cm;
@@ -63,9 +63,15 @@ impl OutputSettingsPreset {
         unsafe { AVOutputSettingsPresetHEVC3840x2160WithAlpha }
     }
 
+    #[doc(alias = "AVOutputSettingsPresetHEVC4320x2160")]
+    #[api::available(macos = 26.0, ios = 26.0, visionos = 26.0)]
+    pub fn hevc_4320x2160() -> &'static Self {
+        unsafe { AVOutputSettingsPresetHEVC4320x2160 }
+    }
+
     /// A preset for HEVC video at 7680 by 4320 pixels.
-    #[cfg(target_os = "macos")]
     #[doc(alias = "AVOutputSettingsPresetHEVC7680x4320")]
+    #[api::available(macos = 12.1, ios = 26.0, visionos = 26.0)]
     pub fn hevc_7680x4320() -> &'static Self {
         unsafe { AVOutputSettingsPresetHEVC7680x4320 }
     }
@@ -81,9 +87,19 @@ impl OutputSettingsPreset {
     pub fn mv_hevc_1440x1440() -> &'static Self {
         unsafe { AVOutputSettingsPresetMVHEVC1440x1440 }
     }
+
+    #[api::available(macos = 26.0, ios = 26.0, visionos = 26.0)]
+    pub fn mv_hevc_4320x4320() -> &'static Self {
+        unsafe { AVOutputSettingsPresetMVHEVC4320x4320 }
+    }
+    #[api::available(macos = 26.0, ios = 26.0, visionos = 26.0)]
+    pub fn mv_hevc_7680x7680() -> &'static Self {
+        unsafe { AVOutputSettingsPresetMVHEVC7680x7680 }
+    }
 }
 
 #[link(name = "AVFoundation", kind = "framework")]
+#[api::weak]
 unsafe extern "C" {
     static AVOutputSettingsPreset640x480: &'static OutputSettingsPreset;
     static AVOutputSettingsPreset960x540: &'static OutputSettingsPreset;
@@ -94,10 +110,17 @@ unsafe extern "C" {
     static AVOutputSettingsPresetHEVC1920x1080WithAlpha: &'static OutputSettingsPreset;
     static AVOutputSettingsPresetHEVC3840x2160: &'static OutputSettingsPreset;
     static AVOutputSettingsPresetHEVC3840x2160WithAlpha: &'static OutputSettingsPreset;
-    #[cfg(target_os = "macos")]
+    #[api::available(macos = 26.0, ios = 26.0, visionos = 26.0)]
+    static AVOutputSettingsPresetHEVC4320x2160: &'static OutputSettingsPreset;
+    #[api::available(macos = 12.1, ios = 26.0, visionos = 26.0)]
     static AVOutputSettingsPresetHEVC7680x4320: &'static OutputSettingsPreset;
     static AVOutputSettingsPresetMVHEVC960x960: &'static OutputSettingsPreset;
     static AVOutputSettingsPresetMVHEVC1440x1440: &'static OutputSettingsPreset;
+    #[api::available(macos = 26.0, ios = 26.0, visionos = 26.0)]
+    static AVOutputSettingsPresetMVHEVC4320x4320: &'static OutputSettingsPreset;
+    #[api::available(macos = 26.0, ios = 26.0, visionos = 26.0)]
+    static AVOutputSettingsPresetMVHEVC7680x7680: &'static OutputSettingsPreset;
+
 }
 
 define_obj_type!(
