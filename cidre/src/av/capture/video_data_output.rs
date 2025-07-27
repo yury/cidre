@@ -53,7 +53,7 @@ impl VideoDataOutput {
 
     /// Indicates whether the receiver automatically configures the size of output buffers.
     #[objc::msg_send(automaticallyConfiguresOutputBufferDimensions)]
-    pub fn automatically_configures_output_buf_dimensions(&self) -> bool;
+    pub fn automatically_configures_output_buf_dims(&self) -> bool;
 
     #[objc::msg_send(setAutomaticallyConfiguresOutputBufferDimensions:)]
     pub fn set_automatically_configures_output_buf_dims(&mut self, value: bool);
@@ -61,8 +61,16 @@ impl VideoDataOutput {
     #[objc::msg_send(deliversPreviewSizedOutputBuffers)]
     pub fn delivers_preview_sized_output_bufs(&self) -> bool;
 
+    /// Throws unless automatically_configures_output_buf_dims has been set to false.
     #[objc::msg_send(setDeliversPreviewSizedOutputBuffers:)]
-    pub fn set_delivers_preview_sized_output_bufs(&mut self, value: bool);
+    pub unsafe fn set_delivers_preview_sized_output_bufs_throws(&mut self, value: bool);
+
+    pub fn set_delivers_preview_sized_output_bufs<'ear>(
+        &mut self,
+        value: bool,
+    ) -> ns::ExResult<'ear> {
+        unsafe { ns::try_catch(|| self.set_delivers_preview_sized_output_bufs_throws(value)) }
+    }
 
     /// Indicates whether the receiver should prepare the cellular radio for imminent network activity.
     ///
