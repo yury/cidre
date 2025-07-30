@@ -509,10 +509,6 @@ impl Connection {
     pub fn active_video_stabilization_mode(&self) -> av::CaptureVideoStabilizationMode;
 
     #[cfg(any(target_os = "ios", target_os = "tvos"))]
-    #[objc::msg_send(setActiveVideoStabilizationMode:)]
-    pub fn set_active_video_stabilization_mode(&mut self, val: av::CaptureVideoStabilizationMode);
-
-    #[cfg(any(target_os = "ios", target_os = "tvos"))]
     #[objc::msg_send(isCameraIntrinsicMatrixDeliverySupported)]
     pub fn is_camera_intrinsic_matrix_delivery_supported(&self) -> bool;
 
