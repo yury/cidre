@@ -233,12 +233,12 @@ impl Src {
     }
 
     #[inline]
-    pub fn set_event_handler_f<T>(&mut self, handler: Option<&dispatch::Fn<T>>) {
+    pub fn set_event_handler_f<T>(&mut self, handler: Option<dispatch::Fn<T>>) {
         unsafe { dispatch_source_set_event_handler_f(self, transmute(handler)) }
     }
 
     #[inline]
-    pub fn set_cancel_handler_f<T>(&mut self, handler: Option<&dispatch::Fn<T>>) {
+    pub fn set_cancel_handler_f<T>(&mut self, handler: Option<dispatch::Fn<T>>) {
         unsafe { dispatch_source_set_cancel_handler_f(self, transmute(handler)) }
     }
 
