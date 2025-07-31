@@ -494,6 +494,50 @@ impl SampleBuf {
         )
     }
 
+    #[cfg(feature = "cat")]
+    #[doc(alias = "CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer")]
+    #[inline]
+    pub fn audio_buf_list_n<'a>(
+        &self,
+        list: &'a mut cat::AudioBufListN,
+    ) -> os::Result<BlockBufAudioBufListN<'a>> {
+        let mut buf_list_size = 0usize;
+        unsafe {
+            CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
+                self,
+                &mut buf_list_size,
+                std::ptr::null_mut(),
+                0,
+                None,
+                None,
+                Flags::AUDIO_BUFFER_LIST_ASSURE_16_BYTE_ALIGNMENT,
+                std::ptr::null_mut(),
+            )
+            .result()?;
+        }
+
+        unsafe { list.resize(buf_list_size) };
+        let mut block_buf = None;
+
+        unsafe {
+            CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
+                self,
+                std::ptr::null_mut(),
+                std::mem::transmute(list.as_mut_ptr()),
+                buf_list_size,
+                None,
+                None,
+                Flags::AUDIO_BUFFER_LIST_ASSURE_16_BYTE_ALIGNMENT,
+                &mut block_buf,
+            )
+            .result()?;
+            Ok(BlockBufAudioBufListN::new(
+                list,
+                block_buf.unwrap_unchecked(),
+            ))
+        }
+    }
+
     /// Creates an audio::BufList containing the data from the cm::SampleBuf,
     /// and a cm::BlockBuf which references (and manages the lifetime of) the
     /// data in that audio::BufList. The data may or may not be copied,
@@ -510,7 +554,7 @@ impl SampleBuf {
         block_buffer_structure_allocator: Option<&cf::Allocator>,
         block_buffer_allocator: Option<&cf::Allocator>,
     ) -> os::Result<BlockBufAudioBufList<N>> {
-        let mut block_buff = None;
+        let mut block_buf = None;
         let mut list = cat::audio::BufList::<N>::default();
         unsafe {
             CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
@@ -521,13 +565,13 @@ impl SampleBuf {
                 block_buffer_structure_allocator,
                 block_buffer_allocator,
                 flags,
-                &mut block_buff,
+                &mut block_buf,
             )
             .result()?;
 
             Ok(BlockBufAudioBufList {
                 list,
-                block: block_buff.unwrap_unchecked(),
+                block: block_buf.unwrap_unchecked(),
             })
         }
     }
@@ -536,6 +580,19 @@ impl SampleBuf {
     #[inline]
     pub fn num_samples(&self) -> cf::Index {
         unsafe { CMSampleBufferGetNumSamples(self) }
+    }
+}
+#[cfg(feature = "cat")]
+#[derive(Debug)]
+pub struct BlockBufAudioBufListN<'a> {
+    list: &'a mut cat::AudioBufListN,
+    block: arc::R<cm::BlockBuf>,
+}
+
+#[cfg(feature = "cat")]
+impl<'a> BlockBufAudioBufListN<'a> {
+    pub fn new(list: &'a mut cat::AudioBufListN, block: arc::R<cm::BlockBuf>) -> Self {
+        Self { list, block }
     }
 }
 

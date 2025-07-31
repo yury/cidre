@@ -56,6 +56,8 @@ pub mod sample_buffer;
 
 #[cfg(feature = "cat")]
 pub use sample_buffer::BlockBufAudioBufList;
+#[cfg(feature = "cat")]
+pub use sample_buffer::BlockBufAudioBufListN;
 pub use sample_buffer::Flags as SampleBufFlags;
 pub use sample_buffer::SampleBuf;
 pub use sample_buffer::SampleTimingInfo;

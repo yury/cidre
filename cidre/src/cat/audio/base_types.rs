@@ -88,7 +88,7 @@ pub struct BufListN {
 
 impl BufListN {
     pub fn new(size: usize) -> Self {
-        assert!(size > std::mem::size_of::<u32>());
+        assert!(size >= std::mem::size_of::<u32>());
         Self {
             inner: vec![0; size],
         }
@@ -107,6 +107,28 @@ impl BufListN {
 
     pub fn as_mut_ptr(&mut self) -> *mut u8 {
         self.inner.as_mut_ptr()
+    }
+
+    pub unsafe fn resize(&mut self, new_len: usize) {
+        self.inner.resize(new_len, 0);
+    }
+
+    pub fn bytes_len(&self) -> usize {
+        self.inner.len()
+    }
+
+    pub unsafe fn as_buf_list<const N: usize>(&self) -> &BufList<N> {
+        unsafe { std::mem::transmute(self.inner.as_ptr()) }
+    }
+
+    pub unsafe fn as_buf_list_mut<const N: usize>(&mut self) -> &BufList<N> {
+        unsafe { std::mem::transmute(self.as_mut_ptr()) }
+    }
+}
+
+impl Default for BufListN {
+    fn default() -> Self {
+        Self::new(std::mem::size_of::<BufList<1>>())
     }
 }
 
