@@ -20,4 +20,4 @@ pub use audio::UInteger as AudioUInteger;
 
 pub use audio::SessionErrorCode as AudioSessionErrorCode;
 pub use audio::SessionId as AudioSessionId;
-pub use audio::StreamBasicDesc as AudioBasicStreamDesc;
+pub use audio::StreamBasicDesc as AudioStreamBasicDesc;

@@ -1,7 +1,7 @@
 use crate::{
     arc,
     at::{AudioBufList, AudioChannelLayout, audio},
-    cat::AudioBasicStreamDesc,
+    cat::AudioStreamBasicDesc,
     cf, define_cf_type, os,
 };
 
@@ -105,7 +105,7 @@ impl ExtAudioFile {
     pub fn create(
         url: &cf::Url,
         file_type: audio::FileTypeId,
-        stream_desc: &AudioBasicStreamDesc,
+        stream_desc: &AudioStreamBasicDesc,
         channel_layout: *const AudioChannelLayout<1>,
         flags: u32,
     ) -> os::Result<arc::R<Self>> {
@@ -172,7 +172,7 @@ unsafe extern "C" {
     fn ExtAudioFileCreateWithURL(
         url: &cf::Url,
         file_type: audio::FileTypeId,
-        stream_desc: &AudioBasicStreamDesc,
+        stream_desc: &AudioStreamBasicDesc,
         channel_layout: *const AudioChannelLayout<1>,
         flags: u32,
         audio_file: *mut Option<arc::R<ExtAudioFile>>,

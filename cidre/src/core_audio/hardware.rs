@@ -3,7 +3,7 @@ use std::ffi::c_void;
 use crate::{
     arc,
     at::{AudioBufListN, audio::ValueRange},
-    cat::{self, AudioBasicStreamDesc},
+    cat::{self, AudioStreamBasicDesc},
     cf,
     core_audio::{
         Class, DeviceTransportType, Obj, PropAddr, PropElement, PropScope, PropSelector,
@@ -524,18 +524,18 @@ impl Device {
         self.prop(&PropSelector::DEVICE_ACTUAL_SAMPLE_RATE.global_addr())
     }
 
-    pub fn asbd(&self, scope: PropScope) -> os::Result<AudioBasicStreamDesc> {
+    pub fn asbd(&self, scope: PropScope) -> os::Result<AudioStreamBasicDesc> {
         // NOTE: this is depricated property for device, but it is working well
         self.prop(&PropSelector::STREAM_VIRTUAL_FORMAT.addr(scope, PropElement::MAIN))
     }
 
     #[inline]
-    pub fn input_asbd(&self) -> os::Result<AudioBasicStreamDesc> {
+    pub fn input_asbd(&self) -> os::Result<AudioStreamBasicDesc> {
         self.asbd(PropScope::INPUT)
     }
 
     #[inline]
-    pub fn output_asbd(&self) -> os::Result<AudioBasicStreamDesc> {
+    pub fn output_asbd(&self) -> os::Result<AudioStreamBasicDesc> {
         self.asbd(PropScope::OUTPUT)
     }
 
@@ -1312,12 +1312,12 @@ impl Stream {
     /// the AudioStream. The virtual format refers to the data format in which all
     /// IOProcs for the owning AudioDevice will perform IO transactions.
     #[doc(alias = "kAudioStreamPropertyVirtualFormat")]
-    pub fn virtual_format(&self) -> os::Result<cat::AudioBasicStreamDesc> {
+    pub fn virtual_format(&self) -> os::Result<cat::AudioStreamBasicDesc> {
         self.prop(&PropSelector::STREAM_VIRTUAL_FORMAT.global_addr())
     }
 
     #[doc(alias = "kAudioStreamPropertyVirtualFormat")]
-    pub fn set_virtual_format(&self, val: &cat::AudioBasicStreamDesc) -> os::Result {
+    pub fn set_virtual_format(&self, val: &cat::AudioStreamBasicDesc) -> os::Result {
         self.set_prop(&PropSelector::STREAM_VIRTUAL_FORMAT.global_addr(), val)
     }
 
@@ -1330,12 +1330,12 @@ impl Stream {
     /// the AudioStream. The physical format refers to the data format in which the
     /// hardware for the owning AudioDevice performs its IO transactions.
     #[doc(alias = "kAudioStreamPropertyPhysicalFormat")]
-    pub fn physical_format(&self) -> os::Result<cat::AudioBasicStreamDesc> {
+    pub fn physical_format(&self) -> os::Result<cat::AudioStreamBasicDesc> {
         self.prop(&PropSelector::STREAM_PHYSICAL_FORMAT.global_addr())
     }
 
     #[doc(alias = "kAudioStreamPropertyPhysicalFormat")]
-    pub fn set_physical_format(&self, val: &cat::AudioBasicStreamDesc) -> os::Result {
+    pub fn set_physical_format(&self, val: &cat::AudioStreamBasicDesc) -> os::Result {
         self.set_prop(&PropSelector::STREAM_PHYSICAL_FORMAT.global_addr(), val)
     }
 

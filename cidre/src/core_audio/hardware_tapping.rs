@@ -62,7 +62,7 @@ impl Tap {
     /// the tap. This is the format of that data that will be accessible in any aggregate
     /// device that contains the tap.
     #[doc(alias = "kAudioTapPropertyFormat")]
-    pub fn asbd(&self) -> os::Result<cat::AudioBasicStreamDesc> {
+    pub fn asbd(&self) -> os::Result<cat::AudioStreamBasicDesc> {
         self.prop(&PropSelector::TAP_FORMAT.global_addr())
     }
 }
