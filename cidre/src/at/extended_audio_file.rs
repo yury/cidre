@@ -1,8 +1,7 @@
 use crate::{
-    arc,
     at::{AudioBufList, AudioChannelLayout, audio},
     cat::AudioStreamBasicDesc,
-    cf, define_cf_type, os,
+    cf, os,
 };
 
 #[derive(Copy, Clone, Eq, PartialEq)]
@@ -88,13 +87,42 @@ pub mod err {
     pub const ASYNC_WRITE_BUF_OVERFLOW: Error = Error::new_unchecked(-66570);
 }
 
-define_cf_type!(
-    #[doc(alias = "ExtAudioFileRef")]
-    ExtAudioFile(cf::Type)
-);
+// define_cf_type!(
+//     #[doc(alias = "ExtAudioFileRef")]
+//     ExtAudioFile(cf::Type)
+// );
+
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct ExtAudioFile(std::ffi::c_void);
+
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct ExtAudioFileRef(&'static mut ExtAudioFile);
+
+impl std::ops::Deref for ExtAudioFileRef {
+    type Target = ExtAudioFile;
+
+    fn deref(&self) -> &Self::Target {
+        self.0
+    }
+}
+
+impl std::ops::DerefMut for ExtAudioFileRef {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.0
+    }
+}
+
+impl Drop for ExtAudioFileRef {
+    fn drop(&mut self) {
+        let res = unsafe { self.0.dispose() };
+        debug_assert!(res.is_ok());
+    }
+}
 
 impl ExtAudioFile {
-    pub fn open(url: &cf::Url) -> os::Result<arc::R<Self>> {
+    pub fn open(url: &cf::Url) -> os::Result<ExtAudioFileRef> {
         unsafe {
             let mut res = None;
             ExtAudioFileOpenURL(url, &mut res).result()?;
@@ -108,7 +136,7 @@ impl ExtAudioFile {
         stream_desc: &AudioStreamBasicDesc,
         channel_layout: *const AudioChannelLayout<1>,
         flags: u32,
-    ) -> os::Result<arc::R<Self>> {
+    ) -> os::Result<ExtAudioFileRef> {
         unsafe {
             let mut res = None;
             ExtAudioFileCreateWithURL(url, file_type, stream_desc, channel_layout, flags, &mut res)
@@ -117,7 +145,7 @@ impl ExtAudioFile {
         }
     }
 
-    pub fn dispose(&mut self) -> os::Result {
+    pub unsafe fn dispose(&mut self) -> os::Result {
         unsafe { ExtAudioFileDispose(self).result() }
     }
 
@@ -164,10 +192,7 @@ impl ExtAudioFile {
 }
 
 unsafe extern "C" {
-    fn ExtAudioFileOpenURL(
-        url: &cf::Url,
-        audio_file: *mut Option<arc::R<ExtAudioFile>>,
-    ) -> os::Status;
+    fn ExtAudioFileOpenURL(url: &cf::Url, audio_file: *mut Option<ExtAudioFileRef>) -> os::Status;
 
     fn ExtAudioFileCreateWithURL(
         url: &cf::Url,
@@ -175,7 +200,7 @@ unsafe extern "C" {
         stream_desc: &AudioStreamBasicDesc,
         channel_layout: *const AudioChannelLayout<1>,
         flags: u32,
-        audio_file: *mut Option<arc::R<ExtAudioFile>>,
+        audio_file: *mut Option<ExtAudioFileRef>,
     ) -> os::Status;
 
     fn ExtAudioFileDispose(audio_file: &mut ExtAudioFile) -> os::Status;

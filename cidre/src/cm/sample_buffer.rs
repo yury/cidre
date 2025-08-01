@@ -611,6 +611,11 @@ impl<const N: usize> BlockBufAudioBufList<N> {
     }
 
     #[inline]
+    pub fn list_mut(&mut self) -> &mut cat::audio::BufList<N> {
+        &mut self.list
+    }
+
+    #[inline]
     pub fn block(&self) -> &cm::BlockBuf {
         &self.block
     }
