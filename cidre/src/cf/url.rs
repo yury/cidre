@@ -60,14 +60,14 @@ impl Url {
     }
 
     #[inline]
-    pub fn with_path(path: &Path, is_dir: bool) -> Option<arc::R<Url>> {
-        let path = unsafe { cf::String::from_str_no_copy(path.to_str()?) };
+    pub fn with_path<P: AsRef<Path>>(path: P, is_dir: bool) -> Option<arc::R<Url>> {
+        let path = unsafe { cf::String::from_str_no_copy(path.as_ref().to_str()?) };
         cf::Url::with_fs_path_in(&path, PathStyle::Posix, is_dir, None)
     }
 
     #[inline]
-    pub fn with_file_path(path: &Path) -> Option<arc::R<Url>> {
-        Self::with_path(path.into(), false)
+    pub fn with_file_path<P: AsRef<Path>>(path: P) -> Option<arc::R<Url>> {
+        Self::with_path(path, false)
     }
 
     /// ```

@@ -567,6 +567,9 @@ define_obj_type!(
     pub Stream(ns::Id)
 );
 
+unsafe impl Send for Stream {}
+unsafe impl Sync for Stream {}
+
 #[objc::protocol(SCStreamOutput)]
 pub trait Output: objc::Obj {
     #[objc::optional]
