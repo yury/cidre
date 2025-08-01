@@ -868,7 +868,7 @@ impl Converter {
     pub fn fill_complex_buf<const NI: usize, const NO: usize, D>(
         &self,
         proc: ComplexInputDataProc<NI, D>,
-        user_data: &mut D,
+        user_data: *mut D,
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufList<NO>,
     ) -> os::Result {
@@ -888,7 +888,7 @@ impl Converter {
     pub fn fill_complex_buf_realtime_safe<const NI: usize, const NO: usize, D>(
         &self,
         proc: ComplexInputDataProcRealtimeSafe<NI, D>,
-        user_data: &mut D,
+        user_data: *mut D,
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufList<NO>,
     ) -> os::Result {
