@@ -135,7 +135,7 @@ impl ExtAudioFile {
         file_type: audio::FileTypeId,
         stream_desc: &AudioStreamBasicDesc,
         channel_layout: *const AudioChannelLayout<1>,
-        flags: u32,
+        flags: audio::FileFlags,
     ) -> os::Result<ExtAudioFileRef> {
         unsafe {
             let mut res = None;
@@ -199,7 +199,7 @@ unsafe extern "C" {
         file_type: audio::FileTypeId,
         stream_desc: &AudioStreamBasicDesc,
         channel_layout: *const AudioChannelLayout<1>,
-        flags: u32,
+        flags: audio::FileFlags,
         audio_file: *mut Option<ExtAudioFileRef>,
     ) -> os::Status;
 
