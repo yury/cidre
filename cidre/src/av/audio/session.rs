@@ -489,7 +489,10 @@ impl Session {
 
     /// Set the preferred form of audio injection into another app's input stream
     #[objc::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
-    pub fn set_preferred_mic_injection_mode<'ear>(&mut self, val: MicInjectionMode) -> ns::Result {
+    pub fn set_preferred_mic_injection_mode<'ear>(
+        &mut self,
+        val: MicInjectionMode,
+    ) -> ns::Result<'ear> {
         let if_false =
             ns::if_false(|err| unsafe { self.set_preferred_mic_injection_mode_err(val, err) });
         let if_false = if_false;
@@ -529,7 +532,7 @@ impl Session {
     /// After an audio session goes active, `isEchoCancelledInputEnabled` property can be queried to check if the option was honored.
     /// Note that the enabled state may change after route changes, e.g. if user plugs in a headset, that route might not support echo cancellation.
     #[api::available(ios = 18.2, maccatalyst = 18.2)]
-    pub fn set_prefers_echo_cancelled_input(&mut self, val: bool) -> ns::Result {
+    pub fn set_prefers_echo_cancelled_input<'ear>(&mut self, val: bool) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.set_prefers_echo_cancelled_input_err(val, err) })
     }
 

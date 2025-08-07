@@ -246,7 +246,7 @@ impl Window {
     #[objc::msg_send(setStyleMask:)]
     pub unsafe fn set_style_mask_throws(&mut self, val: ns::WindowStyleMask);
 
-    pub fn set_style_mask(&mut self, val: ns::WindowStyleMask) -> ns::ExResult {
+    pub fn set_style_mask<'ear>(&mut self, val: ns::WindowStyleMask) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_style_mask_throws(val) })
     }
 
