@@ -539,6 +539,12 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
         println!("option: {option}, gen_rar_version {gen_rar_version} ret: {ret}");
     }
 
+    let msg_send_fn = if x86_64 {
+        choose_msg_send_fn(&ret_full)
+    } else {
+        ""
+    };
+
     let fn_args = args.to_string();
 
     let (class, vars) = fn_args_from_stream(args.stream());
@@ -625,7 +631,7 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
     #[inline]
     {pre} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
         extern \"C\" {{
-            #[link_name = \"objc_msgSend\"]
+            #[link_name = \"{msg_send_fn}\"]
             fn msg_send();
         }}
         extern \"C-unwind\" {{
@@ -668,7 +674,7 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
     #[inline]
     {pre} {unsafe_str} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
         extern \"C\" {{
-            #[link_name = \"objc_msgSend\"]
+            #[link_name = \"{msg_send_fn}\"]
             fn msg_send();
 
         }}
@@ -1600,6 +1606,76 @@ fn upper_case(str: &str) -> String {
     }
 
     String::from_utf8(res).unwrap()
+}
+
+fn choose_msg_send_fn(ret: &str) -> &'static str {
+    const MSG_SEND: &'static str = "objc_msgSend";
+    const MSG_SEND_FPRET: &'static str = "objc_msgSend_fpret";
+    const MSG_SEND_STRET: &'static str = "objc_msgSend_stret";
+
+    if ret.is_empty()
+        || ret.starts_with("-> arc :: ")
+        || ret.starts_with("-> Option <")
+        || ret.starts_with("-> * const ")
+        || ret.starts_with("-> * mut ")
+        || ret.starts_with("-> & ")
+    {
+        return MSG_SEND;
+    }
+
+    match ret {
+        "-> bool"
+        | "-> i8"
+        | "-> u8"
+        | "-> i16"
+        | "-> u16"
+        | "-> f32"
+        | "-> u32"
+        | "-> i32"
+        | "-> u64"
+        | "-> i64"
+        | "-> isize"
+        | "-> usize"
+        | "-> ns :: Integer"
+        | "-> ns :: UInteger"
+        | "-> std :: ffi :: c_int"
+        | "-> mps :: DType"
+        | "-> crate :: mtl :: ResId"
+        | "-> mach :: Port"
+        | "-> os :: Type"
+        | "-> vn :: Confidence"
+        | "-> vn :: AspectRatio"
+        | "-> vn :: Degrees"
+        | "-> sys :: Pid" => MSG_SEND,
+
+        // known structs
+        "-> ns :: Rect"
+        | "-> cg :: Rect"
+        | "-> cm :: Time"
+        | "-> cm :: TimeRange"
+        | "-> cg :: AffineTransform"
+        | "-> cg :: Size"
+        | "-> cg :: Point"
+        | "-> ns :: Size"
+        | "-> ns :: Point"
+        | "-> cm :: RotationRate"
+        | "-> cm :: Acceleration"
+        | "-> ca :: Transform3d"
+        | "-> mtl :: Size" => MSG_SEND_STRET,
+
+        // known floats
+        "-> f64"
+        | "-> cg :: Float"
+        | "-> ns :: Float"
+        | "-> ns :: Range"
+        | "-> cf :: TimeInterval"
+        | "-> ns :: TimeInterval" => MSG_SEND_FPRET,
+        _x => {
+            // TODO: do actual structure size check
+            // println!("unknown {x}");
+            MSG_SEND
+        }
+    }
 }
 
 // fn is_upper_case(str: &str) -> bool {
