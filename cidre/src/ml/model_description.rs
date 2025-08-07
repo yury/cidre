@@ -22,7 +22,7 @@ impl ModelDesc {
     pub fn predicted_probabilities_name(&self) -> Option<arc::R<ns::String>>;
 
     #[objc::msg_send(metadata)]
-    pub fn metadata(&self) -> ns::Dictionary<ns::String, ns::Id>;
+    pub fn metadata(&self) -> arc::R<ns::Dictionary<ns::String, ns::Id>>;
 
     #[objc::msg_send(classLabels)]
     pub fn class_labels(&self) -> Option<arc::R<ns::Array<ns::Id>>>;

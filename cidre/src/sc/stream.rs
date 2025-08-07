@@ -252,10 +252,10 @@ impl Cfg {
     pub fn set_show_mouse_clicks(&mut self, val: bool);
 
     #[objc::msg_send(backgroundColor)]
-    pub fn background_color(&self) -> cg::Color;
+    pub fn background_color(&self) -> &cg::Color;
 
     #[objc::msg_send(setBackgroundColor:)]
-    pub fn set_background_color(&mut self, val: cg::Color);
+    pub fn set_background_color(&mut self, val: &cg::Color);
 
     #[objc::msg_send(sourceRect)]
     pub fn src_rect(&self) -> cg::Rect;

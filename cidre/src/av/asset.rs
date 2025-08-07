@@ -120,7 +120,7 @@ impl UrlAsset {
     ///
     /// The asset uses this value to set as the X-Playback-Session-Id header of HTTP requests that it creates.
     #[objc::msg_send(httpSessionIdentifier)]
-    pub fn http_session_id(&self) -> ns::Uuid;
+    pub fn http_session_id(&self) -> arc::R<ns::Uuid>;
 
     #[objc::msg_send(audiovisualTypes)]
     pub fn av_types() -> arc::R<ns::Array<av::FileType>>;

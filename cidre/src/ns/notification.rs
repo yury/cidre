@@ -134,6 +134,7 @@ impl NotificationCenter {
     }
 }
 
+#[derive(Debug)]
 pub struct NotificationGuard {
     token: arc::R<ns::Id>,
     center: arc::R<ns::NotificationCenter>,

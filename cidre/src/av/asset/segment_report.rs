@@ -44,7 +44,7 @@ impl TrackReport {
     pub fn track_id(&self) -> cm::PersistentTrackId;
 
     #[objc::msg_send(mediaType)]
-    pub fn media_type(&self) -> av::MediaType;
+    pub fn media_type(&self) -> arc::R<av::MediaType>;
 
     /// Indicates the earliest presentation timestamp (PTS) for this track.
     /// The value is kCMTimeInvalid if there is no information available.
