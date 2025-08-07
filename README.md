@@ -4,16 +4,18 @@
 
 - Performance 
 - Zero cost objc interop
+- Mobile devices support
 - No legacy platforms support
-- ML friendly
 - Rusty API (ObjC and C) 
+- ML friendly
 - API Availability checks
-- Buttle tested in own apps. (StreamChamp.app for recording, Yoml to be released)
+- Async API support
+- Battle tested in own apps. (StreamChamp.app for recording, Yoml.app to be released, but it is a beast)
 
 ### Performance 
 
-- Developer can finish critical path without deallocations.
-- Zero cost selectors calls (XCode 14.3) [WWDC video 3:10](https://developer.apple.com/videos/play/wwdc2022/110363/)
+- Developer can finish critical path without deallocations (mtl render pass).
+- Zero cost selectors calls on arm (XCode 14.3) [WWDC video 3:10](https://developer.apple.com/videos/play/wwdc2022/110363/)
 - Integrated async blocks
 - Zero cost Apple's C API interfaces
 - Static `cf::String` and `ns::String` refs (`ns::str!(c"hello")`) 
@@ -78,4 +80,4 @@ Default features: `macos_15_0`, `ios_18_0`, `tvos_18_0`, `maccatalyst_18_0`, `wa
 
 ## About
 
-This is personal research project. With this project I learn Apple SDK's and rust.
+This is personal research project. With this project I learn Apple SDK's and rust and build new streaming app.
