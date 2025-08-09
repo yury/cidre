@@ -36,9 +36,10 @@ impl SessionPreset {
         unsafe { AVCaptureSessionPresetLow }
     }
 
+    #[cfg(target_os = "macos")]
     #[doc(alias = "AVCaptureSessionPreset320x240")]
     #[inline]
-    pub fn _320_240() -> &'static Self {
+    pub fn _320x240() -> &'static Self {
         unsafe { AVCaptureSessionPreset320x240 }
     }
 
@@ -54,6 +55,7 @@ impl SessionPreset {
         unsafe { AVCaptureSessionPreset640x480 }
     }
 
+    #[cfg(target_os = "macos")]
     #[doc(alias = "AVCaptureSessionPreset960x540")]
     #[inline]
     pub fn _960x540() -> &'static Self {
