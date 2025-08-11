@@ -324,6 +324,27 @@ impl PartialEq for Time {
 
 impl Eq for Time {}
 
+impl Ord for Time {
+    #[inline]
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        unsafe { std::mem::transmute(CMTimeCompare(*self, *other) as i8) }
+    }
+
+    fn max(self, other: Self) -> Self
+    where
+        Self: Sized,
+    {
+        Self::max(self, other)
+    }
+
+    fn min(self, other: Self) -> Self
+    where
+        Self: Sized,
+    {
+        Self::min(self, other)
+    }
+}
+
 impl PartialOrd for Time {
     /// ```
     /// use cidre::cm;
@@ -337,7 +358,7 @@ impl PartialOrd for Time {
     /// ```
     #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        unsafe { std::mem::transmute(CMTimeCompare(*self, *other) as i8) }
+        Some(self.cmp(other))
     }
 }
 
@@ -371,6 +392,14 @@ mod tests {
         assert_eq!(zero.value, 0);
         assert_eq!(zero.epoch, 0);
         assert_eq!(zero.flags, cm::TimeFlags::VALID);
+
+        let zero_epoch_1 = cm::Time::with_epoch(0, 1, 1);
+
+        assert_ne!(zero, zero_epoch_1);
+        assert!(zero < zero_epoch_1);
+        assert!(zero_epoch_1 == zero_epoch_1);
+
+        assert_eq!(zero, zero.min(zero_epoch_1))
     }
 }
 
