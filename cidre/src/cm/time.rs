@@ -137,11 +137,6 @@ impl Time {
         unsafe { kCMTimeInvalid }
     }
 
-    #[inline]
-    pub const fn is_indefinite(&self) -> bool {
-        self.is_valid() && (self.flags.0 & TimeFlags::INDEFINITE.0) != 0
-    }
-
     /// ```
     /// use cidre::cm;
     ///
@@ -159,6 +154,7 @@ impl Time {
     ///
     /// assert!(cm::Time::neg_infinity().is_neg_infinity())
     /// ```
+    #[doc(alias = "CMTIME_IS_NEGATIVE_INFINITY")]
     #[inline]
     pub const fn is_neg_infinity(&self) -> bool {
         self.is_valid() && (self.flags.0 & TimeFlags::NEG_INFINITY.0) != 0
@@ -169,15 +165,30 @@ impl Time {
     ///
     /// assert!(cm::Time::infinity().is_pos_infinity());
     /// ```
+    #[doc(alias = "CMTIME_IS_POSITIVE_INFINITY")]
     #[inline]
     pub const fn is_pos_infinity(&self) -> bool {
         self.is_valid() && (self.flags.0 & TimeFlags::POS_INFINITY.0) != 0
     }
 
+    #[doc(alias = "CMTIME_IS_INDEFINITE")]
+    #[inline]
+    pub const fn is_indefinite(&self) -> bool {
+        self.is_valid() && (self.flags.0 & TimeFlags::INDEFINITE.0) != 0
+    }
+
+    #[doc(alias = "CMTIME_IS_NUMERIC")]
     #[inline]
     pub const fn is_numeric(&self) -> bool {
         (self.flags.0 & (TimeFlags::VALID.0 | TimeFlags::IMPLIED_VALUE_FLAGS_MASK.0))
             == TimeFlags::VALID.0
+    }
+
+    /// Returns true if the cm::Time has been rounded, false if it is completely accurate.
+    #[doc(alias = "CMTIME_HAS_BEEN_ROUNDED")]
+    #[inline]
+    pub const fn has_been_rounded(&self) -> bool {
+        self.is_numeric() && (self.flags.0 & TimeFlags::HAS_BEEN_ROUNDED.0) != 0
     }
 
     /// Returns Time from a f64 number of seconds, and a preferred timescale.
