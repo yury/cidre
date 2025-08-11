@@ -12,6 +12,11 @@ pub type TimeValue = i64;
 #[doc(alias = "CMTimeScale")]
 pub type TimeScale = i32;
 
+/// Note: cm::TIME_SCALE_MAX is NOT a good choice of timescale for movie files.  
+/// (Recommended timescales for movie files range from 600 to 90000.)
+#[doc(alias = "kCMTimeMaxTimescale")]
+pub const TIME_SCALE_MAX: TimeScale = 0x7fffffff;
+
 /// The epoch is typically 0, but you can use a different value — for example to denote a particular iteration of a loop.
 #[doc(alias = "CMTimeEpoch")]
 pub type TimeEpoch = i64;
@@ -399,7 +404,8 @@ mod tests {
         assert!(zero < zero_epoch_1);
         assert!(zero_epoch_1 == zero_epoch_1);
 
-        assert_eq!(zero, zero.min(zero_epoch_1))
+        assert_eq!(zero, zero.min(zero_epoch_1));
+        assert_eq!(zero_epoch_1, zero_epoch_1.min(zero_epoch_1));
     }
 }
 

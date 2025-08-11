@@ -43,6 +43,7 @@ pub use tagged_buffer_group::TaggedBufGroup;
 pub use tagged_buffer_group::err as tagged_buf_group_err;
 
 mod time;
+pub use time::TIME_SCALE_MAX;
 pub use time::Time;
 pub use time::TimeEpoch;
 pub use time::TimeFlags;
