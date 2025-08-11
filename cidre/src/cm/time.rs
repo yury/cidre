@@ -4,12 +4,15 @@ pub mod range;
 pub use range::Mapping as TimeMapping;
 pub use range::Range as TimeRange;
 
+/// An integer time value.
 #[doc(alias = "CMTimeValue")]
 pub type TimeValue = i64;
 
+/// Timescales must be positive.
 #[doc(alias = "CMTimeScale")]
 pub type TimeScale = i32;
 
+/// The epoch is typically 0, but you can use a different value — for example to denote a particular iteration of a loop.
 #[doc(alias = "CMTimeEpoch")]
 pub type TimeEpoch = i64;
 
