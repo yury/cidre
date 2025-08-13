@@ -79,10 +79,7 @@ impl Device {
     define_cls!(UI_DEVICE);
 
     #[objc::msg_send(currentDevice)]
-    pub fn current() -> &'static Device;
-
-    #[objc::msg_send(currentDevice)]
-    pub fn current_mut() -> &'static mut Device;
+    pub fn current() -> arc::R<Device>;
 
     #[objc::msg_send(userInterfaceIdiom)]
     pub fn idiom(&self) -> Idiom;
