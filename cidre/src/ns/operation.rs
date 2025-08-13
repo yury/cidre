@@ -154,7 +154,15 @@ impl OpQueue {
 
     #[cfg(feature = "dispatch")]
     #[objc::msg_send(setUnderlyingQueue:)]
-    pub fn set_underlying_queue(&mut self, val: Option<&dispatch::Queue>);
+    pub unsafe fn set_underlying_queue_throws(&mut self, val: Option<&dispatch::Queue>);
+
+    #[cfg(feature = "dispatch")]
+    pub fn set_underlying_queue<'ear>(
+        &mut self,
+        val: Option<&dispatch::Queue>,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe { self.set_underlying_queue_throws(val) })
+    }
 
     #[objc::msg_send(currentQueue)]
     pub fn current() -> Option<arc::R<Self>>;
@@ -189,7 +197,7 @@ mod tests {
         );
         assert!(queue.underlying_queue().is_none());
         let dqueue = dispatch::Queue::new();
-        queue.set_underlying_queue(Some(&dqueue));
+        queue.set_underlying_queue(Some(&dqueue)).unwrap();
         assert_eq!(queue.underlying_queue().as_ref(), Some(&dqueue));
         assert_eq!(-1, queue.max_concurrent_ops());
         queue.set_max_concurrent_ops(10);
