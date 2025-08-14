@@ -15,6 +15,9 @@ impl Node {
     #[objc::msg_send(inputFormatForBus:)]
     pub fn input_format_for_bus(&self, bus: av::AudioNodeBus) -> arc::R<av::AudioFormat>;
 
+    #[objc::msg_send(outputFormatForBus:)]
+    pub fn output_format_for_bus(&self, bus: av::AudioNodeBus) -> arc::R<av::AudioFormat>;
+
     /// Gets the name of the input bus you specify.
     #[objc::msg_send(nameForInputBus:)]
     pub fn name_for_input_bus(&self, bus: av::AudioNodeBus) -> Option<arc::R<ns::String>>;
@@ -53,7 +56,7 @@ impl Node {
     /// NOTE: `remove_tap_on_bus` if you have already installed tap
     #[cfg(feature = "blocks")]
     #[objc::msg_send(installTapOnBus:bufferSize:format:block:)]
-    pub fn install_tap_on_bus_block(
+    pub unsafe fn install_tap_on_bus_block_throws(
         &mut self,
         bus: av::AudioNodeBus,
         buffer_size: av::AudioFrameCount,
@@ -63,7 +66,7 @@ impl Node {
 
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn install_tap_on_bus(
+    pub unsafe fn install_tap_on_bus_throws(
         &mut self,
         bus: av::AudioNodeBus,
         buffer_size: av::AudioFrameCount,
@@ -71,9 +74,28 @@ impl Node {
         tap_block: impl FnMut(&av::AudioPcmBuf, &av::AudioTime) + 'static,
     ) {
         let mut tap_block = AudioNodeTapBlock::<blocks::Esc>::new2(tap_block);
-        self.install_tap_on_bus_block(bus, buffer_size, format, &mut tap_block)
+        unsafe { self.install_tap_on_bus_block_throws(bus, buffer_size, format, &mut tap_block) }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[inline]
+    pub fn install_tap_on_bus<'ear>(
+        &mut self,
+        bus: av::AudioNodeBus,
+        buffer_size: av::AudioFrameCount,
+        format: Option<&av::AudioFormat>,
+        tap_block: impl FnMut(&av::AudioPcmBuf, &av::AudioTime) + 'static,
+    ) -> ns::ExResult<'ear> {
+        let mut tap_block = AudioNodeTapBlock::<blocks::Esc>::new2(tap_block);
+        ns::try_catch(|| unsafe {
+            self.install_tap_on_bus_block_throws(bus, buffer_size, format, &mut tap_block)
+        })
     }
 
     #[objc::msg_send(removeTapOnBus:)]
-    pub fn remove_tap_on_bus(&mut self, bus: av::AudioNodeBus);
+    pub unsafe fn remove_tap_on_bus_throws(&mut self, bus: av::AudioNodeBus);
+
+    pub fn remove_tap_on_bus<'ear>(&mut self, bus: av::AudioNodeBus) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe { self.remove_tap_on_bus_throws(bus) })
+    }
 }

@@ -52,6 +52,15 @@ impl arc::A<Format> {
         layout: &ChannelLayout,
     ) -> arc::R<Format>;
 
+    #[objc::msg_send(initWithCommonFormat:sampleRate:channels:interleaved:)]
+    pub fn init_with_common_format_sample_rate_channels_interleaved(
+        self,
+        format: CommonFormat,
+        sample_rate: f64,
+        channels: ChannelCount,
+        interleaved: bool,
+    ) -> Option<arc::R<Format>>;
+
     #[objc::msg_send(initWithCommonFormat:sampleRate:interleaved:channelLayout:)]
     pub fn init_with_common_format_sample_rate_interleaved_channel_layout(
         self,
@@ -102,6 +111,20 @@ impl Format {
         layout: &ChannelLayout,
     ) -> arc::R<Self> {
         Self::alloc().init_standard_with_sample_rate_channel_layout(sample_rate, layout)
+    }
+
+    pub fn with_common_format_sample_rate_channels_interleaved(
+        format: CommonFormat,
+        sample_rate: f64,
+        channels: ChannelCount,
+        interleaved: bool,
+    ) -> Option<arc::R<Format>> {
+        Self::alloc().init_with_common_format_sample_rate_channels_interleaved(
+            format,
+            sample_rate,
+            channels,
+            interleaved,
+        )
     }
 
     /// Initialize to float with the specified sample rate, channel layout and interleavedness.

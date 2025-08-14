@@ -342,6 +342,11 @@ required-features = ["am"]
 name = "sc-record"
 required-features = ["custom-allocator"]
 
+[[example]]
+name = "av-audio-engine"
+required-features = ["av"]
+
+
 [package.metadata.playground]
 features = ["full"]
 
