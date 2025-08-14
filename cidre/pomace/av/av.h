@@ -44,6 +44,7 @@ Class AV_ASSET_IMAGE_GENERATOR;
 Class AV_OUTPUT_SETTINGS_ASSISTANT;
 
 Class AV_AUDIO_TIME;
+Class AV_AUDIO_MIXER_NODE;
 
 Class AV_AUDIO_UNIT_EQ;
 Class AV_AUDIO_UNIT_EFFECT;
@@ -149,6 +150,7 @@ static void av_initializer(void)
         
         AV_AUDIO_ENGINE = [AVAudioEngine class];
         AV_AUDIO_TIME = [AVAudioTime class];
+        AV_AUDIO_MIXER_NODE = [AVAudioMixerNode class];
         
 #if TARGET_OS_WATCH
 #else
