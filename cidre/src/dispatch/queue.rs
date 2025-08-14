@@ -219,14 +219,14 @@ impl Queue {
 
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn sync_mut(&self, mut f: impl FnMut() + Sync) {
+    pub fn sync_mut(&self, mut f: impl FnMut()) {
         let mut block = unsafe { dispatch::Block::<blocks::NoEsc>::stack0(&mut f) };
         self.sync_b(&mut block);
     }
 
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn sync<R: std::marker::Sync>(&self, mut f: impl FnMut() -> R + Sync) -> R {
+    pub fn sync<R>(&self, mut f: impl FnMut() -> R) -> R {
         let mut result = None;
         let closure = || {
             result.replace(f());
