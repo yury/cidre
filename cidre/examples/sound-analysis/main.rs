@@ -76,7 +76,9 @@ async fn main() {
         });
     };
 
-    input.install_tap_on_bus(0, 8192, None, tap);
+    input
+        .install_tap_on_bus(0, 8192, None, tap)
+        .expect("tap installed");
 
     engine.start().unwrap();
 
