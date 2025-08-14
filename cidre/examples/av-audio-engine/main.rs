@@ -23,7 +23,7 @@ fn main() {
     )
     .expect("valid format");
 
-    engine.connect_node_to_node(&input_node, &down_mixer, Some(format.as_ref()));
+    engine.connect_node_to_node(&input_node, &down_mixer, Some(&format));
     engine.connect_node_to_node(&down_mixer, &output_node, Some(&format_16kh_mono));
 
     engine.prepare();
