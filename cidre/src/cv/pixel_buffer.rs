@@ -733,10 +733,18 @@ pub mod keys {
     }
 
     #[doc(alias = "kCVPixelBufferMetalCompatibilityKey")]
+    #[deprecated = "Prefer `keys::metal_compatibility` instead of `keys::metal_compatability`"]
     #[inline]
     pub fn metal_compatability() -> &'static cf::String {
         unsafe { kCVPixelBufferMetalCompatibilityKey }
     }
+
+    #[doc(alias = "kCVPixelBufferMetalCompatibilityKey")]
+    #[inline]
+    pub fn metal_compatibility() -> &'static cf::String {
+        unsafe { kCVPixelBufferMetalCompatibilityKey }
+    }
+
 
     #[doc(alias = "kCVPixelBufferPlaneAlignmentKey")]
     #[inline]
