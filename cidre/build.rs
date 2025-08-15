@@ -293,7 +293,7 @@ fn main() {
 
     add_xc_target_args_from_features(
         &mut xc_target_args,
-        &["ut", "un", "sn", "ns", "av", "cl", "nl", "ml"],
+        &["ut", "un", "sn", "ns", "av", "cl", "nl", "ml", "at"],
     );
 
     if sdk != "watchos" && sdk != "watchsimulator" {

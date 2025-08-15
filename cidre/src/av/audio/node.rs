@@ -1,4 +1,4 @@
-use crate::{arc, av, define_obj_type, ns, objc};
+use crate::{arc, at::au, av, define_obj_type, ns, objc};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
@@ -39,6 +39,9 @@ impl Node {
     /// output node.
     #[objc::msg_send(lastRenderTime)]
     pub fn last_render_time(&self) -> Option<av::AudioTime>;
+
+    #[objc::msg_send(AUAudioUnit)]
+    pub fn audio_unit(&self) -> arc::R<au::AudioUnit>;
 
     /// The processing latency of the node, in seconds.
     ///

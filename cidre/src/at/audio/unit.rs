@@ -1,6 +1,4 @@
 mod component;
-pub use component::component_err;
-pub use component::err;
 pub use component::Element;
 pub use component::InputSamplesInOutputCb;
 pub use component::Manufacturer;
@@ -20,6 +18,15 @@ pub use component::SubType;
 pub use component::Type;
 pub use component::Unit;
 pub use component::UnitRef;
+pub use component::component_err;
+pub use component::err;
+
+mod audio_unit;
+pub use audio_unit::AudioUnit;
+pub use audio_unit::AudioUnitBus;
+pub use audio_unit::AudioUnitBusArray;
+pub use audio_unit::AudioUnitBusType;
+pub use audio_unit::AudioUnitStatus;
 
 mod multi_channel_mixer;
 pub use multi_channel_mixer::MultiChannelMixer;
@@ -31,9 +38,6 @@ mod output;
 pub use output::Output;
 
 mod properties;
-pub use properties::preset_key;
-pub use properties::sample_rate_converter_complexity;
-pub use properties::voice_io_other_audio_ducking_level;
 pub use properties::ChannelInfo;
 pub use properties::Connection;
 pub use properties::ExternalBuf;
@@ -56,6 +60,9 @@ pub use properties::StartAtTimeParams as OutputStartAtTimeParams;
 pub use properties::VoiceIoMutedSpeechActivityEventListener;
 pub use properties::VoiceIoOtherAudioDuckingCfg;
 pub use properties::VoiceIoSpeechActivityEvent;
+pub use properties::preset_key;
+pub use properties::sample_rate_converter_complexity;
+pub use properties::voice_io_other_audio_ducking_level;
 
 mod parameters;
 pub use parameters::NBandEQFilterType;

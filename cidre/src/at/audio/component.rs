@@ -64,7 +64,7 @@ impl InstantiationOpts {
 
 /// A structure describing the unique and identifying IDs of an audio component
 #[doc(alias = "AudioComponentDescription")]
-#[derive(Default, Debug)]
+#[derive(Default)]
 #[repr(C)]
 pub struct Desc {
     /// A 4-char code identifying the generic type of an audio component.
@@ -84,6 +84,26 @@ pub struct Desc {
 
     /// Must be set to zero unless a known specific value is requested.
     pub flags_mask: u32,
+}
+
+impl std::fmt::Debug for Desc {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut type_ = self.type_.to_be_bytes();
+        let type_ = crate::four_cc_to_str(&mut type_);
+
+        let mut sub_type = self.sub_type.to_be_bytes();
+        let sub_type = crate::four_cc_to_str(&mut sub_type);
+
+        let mut manufacturer = self.manufacturer.to_be_bytes();
+        let manufacturer = crate::four_cc_to_str(&mut manufacturer);
+        f.debug_struct("AudioComponentDescription")
+            .field("type_", &type_)
+            .field("sub_type", &sub_type)
+            .field("manufacturer", &manufacturer)
+            .field("flags", &self.flags)
+            .field("flags_mask", &self.flags_mask)
+            .finish()
+    }
 }
 
 impl Desc {
