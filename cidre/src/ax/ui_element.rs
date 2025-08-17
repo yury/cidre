@@ -106,6 +106,12 @@ impl UiElement {
         os::result_init(|res| unsafe { AXUIElementIsAttributeSettable(self, attr, res) })
     }
 
+    #[doc(alias = "AXUIElementSetAttributeValue")]
+    #[inline]
+    pub fn set_attr(&mut self, attr: &ax::Attr, val: &cf::Type) -> os::Result {
+        unsafe { AXUIElementSetAttributeValue(self, attr, val).result() }
+    }
+
     #[doc(alias = "AXUIElementPerformAction")]
     pub fn perform_action(&self, action: &ax::Action) -> os::Result {
         unsafe { AXUIElementPerformAction(self, action).result() }
@@ -392,6 +398,12 @@ unsafe extern "C-unwind" {
         elem: &UiElement,
         attr: &ax::Attr,
         val: *mut bool,
+    ) -> ax::Error;
+
+    fn AXUIElementSetAttributeValue(
+        elem: &mut UiElement,
+        attr: &ax::Attr,
+        val: &cf::Type,
     ) -> ax::Error;
 
     fn AXTextMarkerGetTypeID() -> cf::TypeId;
