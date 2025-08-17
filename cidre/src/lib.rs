@@ -159,6 +159,11 @@ pub mod vdsp;
 #[cfg(feature = "vdsp")]
 pub mod vimage;
 
+#[cfg(feature = "cblas")]
+mod cblas_new;
+#[cfg(feature = "cblas")]
+pub use cblas_new::*;
+
 /// Screen Capture Kit
 #[cfg(all(target_os = "macos", feature = "sc"))]
 pub mod sc;
