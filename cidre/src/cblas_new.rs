@@ -7,3 +7,21 @@ pub mod cblas {
 
     }
 }
+
+pub mod catlas {
+
+    #[link(name = "Accelerate", kind = "framework")]
+    unsafe extern "C-unwind" {
+        #[link_name = "catlas_saxpby"]
+        pub fn _saxpby_f32(
+            n: isize,
+            alpha: f32,
+            x: *const f32,
+            inc_x: isize,
+            beta: f32,
+            y: *mut f32,
+            inc_y: isize,
+        );
+
+    }
+}

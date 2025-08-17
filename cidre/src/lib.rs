@@ -162,7 +162,9 @@ pub mod vimage;
 #[cfg(feature = "cblas")]
 mod cblas_new;
 #[cfg(feature = "cblas")]
-pub use cblas_new::*;
+pub use cblas_new::catlas;
+#[cfg(feature = "cblas")]
+pub use cblas_new::cblas;
 
 /// Screen Capture Kit
 #[cfg(all(target_os = "macos", feature = "sc"))]
