@@ -423,7 +423,7 @@ unsafe extern "C" {
 #[macro_export]
 macro_rules! nsarr {
     () => (
-        $crate::ns::Array::::new()
+        $crate::ns::Array::new()
     );
     ($($x:expr),+ $(,)?) => (
         $crate::ns::Array::from_slice(&[$($x.as_ref()),+])
