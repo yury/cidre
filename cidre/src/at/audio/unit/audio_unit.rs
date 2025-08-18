@@ -1,4 +1,6 @@
-use crate::{arc, at::audio, av, blocks, define_cls, define_obj_type, ns, objc, os};
+#[cfg(feature = "blocks")]
+use crate::blocks;
+use crate::{arc, at::audio, av, define_cls, define_obj_type, ns, objc, os};
 
 pub type AudioUnitStatus = os::Status;
 
@@ -42,6 +44,7 @@ impl AudioUnit {
         ns::if_none(|err| unsafe { Self::alloc().init_with_comp_desc_err(desc, err) })
     }
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(instantiateWithComponentDescription:options:completionHandler:)]
     pub fn instantiate_with_comp_desc_ch_block(
         desc: audio::ComponentDesc,
@@ -49,6 +52,7 @@ impl AudioUnit {
         block: &mut blocks::ResultCh<Self>,
     );
 
+    #[cfg(feature = "blocks")]
     pub fn instantiate_with_comp_desc_ch(
         desc: audio::ComponentDesc,
         opts: audio::ComponentInstantiationOpts,
