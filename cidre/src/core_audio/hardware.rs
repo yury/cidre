@@ -517,6 +517,7 @@ impl Device {
             &val,
         )
     }
+
     ///
     /// A f64 that indicates the current actual sample rate of the AudioDevice as measured by its time stamps.
     #[doc(alias = "kAudioDevicePropertyActualSampleRate")]
@@ -659,6 +660,10 @@ impl Device {
 
     pub fn buf_frame_size(&self) -> os::Result<u32> {
         self.prop(&PropSelector::DEVICE_BUF_FRAME_SIZE.global_addr())
+    }
+
+    pub fn set_buf_frame_size(&mut self, val: u32) -> os::Result {
+        self.set_prop(&PropSelector::DEVICE_BUF_FRAME_SIZE.global_addr(), &val)
     }
 
     pub fn buf_frame_size_range(&self) -> os::Result<ValueRange> {
