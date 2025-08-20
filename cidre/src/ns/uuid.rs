@@ -37,7 +37,7 @@ mod tests {
         let string = uuid.string();
         assert!(!string.is_empty());
 
-        let uuid =
+        let _uuid =
             ns::Uuid::with_string(ns::str!(c"F8B644CC-B944-4996-A321-CA129AFB18FE")).unwrap();
     }
 }

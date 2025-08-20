@@ -7,7 +7,7 @@ use crate::{
     cf,
     core_audio::{
         Class, DeviceTransportType, Obj, PropAddr, PropElement, PropScope, PropSelector,
-        StreamRangedDesc, StreamTerminalType,
+        StreamRangedDesc, StreamTerminalType, Tap,
     },
     os, sys,
 };
@@ -372,6 +372,11 @@ impl System {
     #[doc(alias = "kAudioHardwarePropertyProcessObjectList")]
     pub fn processes() -> os::Result<Vec<Process>> {
         Self::OBJ.prop_vec(&PropSelector::HW_PROCESS_OBJ_LIST.global_addr())
+    }
+
+    #[doc(alias = "kAudioHardwarePropertyTapList")]
+    pub fn taps() -> os::Result<Vec<Tap>> {
+        Self::OBJ.prop_vec(&PropSelector::HW_TAP_LIST.global_addr())
     }
 }
 
@@ -1762,6 +1767,9 @@ mod tests {
         let tap = desc.create_process_tap().unwrap();
         assert_eq!(tap.class().unwrap(), Class::TAP);
         assert_eq!(tap.base_class().unwrap(), Class::OBJECT);
+
+        let taps = System::taps().unwrap();
+        println!("{taps:?}");
     }
 
     #[test]
