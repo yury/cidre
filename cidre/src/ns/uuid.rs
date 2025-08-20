@@ -7,9 +7,18 @@ define_obj_type!(
 
 unsafe impl Send for Uuid {}
 
+impl arc::A<Uuid> {
+    #[objc::msg_send(initWithUUIDString:)]
+    fn init_with_uuid_string(self, str: &ns::String) -> Option<arc::R<Uuid>>;
+}
+
 impl Uuid {
     #[objc::msg_send(UUIDString)]
     pub fn string(&self) -> arc::R<ns::String>;
+
+    pub fn with_string(str: &ns::String) -> Option<arc::R<Self>> {
+        Self::alloc().init_with_uuid_string(str)
+    }
 }
 
 #[link(name = "ns", kind = "static")]
@@ -27,5 +36,8 @@ mod tests {
 
         let string = uuid.string();
         assert!(!string.is_empty());
+
+        let uuid =
+            ns::Uuid::with_string(ns::str!(c"F8B644CC-B944-4996-A321-CA129AFB18FE")).unwrap();
     }
 }
