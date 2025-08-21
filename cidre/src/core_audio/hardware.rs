@@ -1623,6 +1623,14 @@ impl Clock {
         self.prop(&PropSelector::CLOCK_DEVICE_NOMINAL_SAMPLE_RATE.global_addr())
     }
 
+    #[doc(alias = "kAudioClockDevicePropertyNominalSampleRate")]
+    pub fn set_nominal_sample_rate(&mut self, val: f64) -> os::Result {
+        self.set_prop(
+            &PropSelector::CLOCK_DEVICE_NOMINAL_SAMPLE_RATE.global_addr(),
+            &val,
+        )
+    }
+
     #[doc(alias = "kAudioClockDevicePropertyAvailableNominalSampleRates")]
     pub fn available_nominal_sample_rates(&self) -> os::Result<Vec<ValueRange>> {
         self.prop_vec(&PropSelector::CLOCK_DEVICE_AVAILABLE_NOMINAL_SAMPLE_RATES.global_addr())
