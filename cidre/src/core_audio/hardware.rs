@@ -6,7 +6,7 @@ use crate::{
     cat::{self, AudioStreamBasicDesc},
     cf,
     core_audio::{
-        Class, DeviceTransportType, Obj, PropAddr, PropElement, PropScope, PropSelector,
+        self, Class, DeviceTransportType, Obj, PropAddr, PropElement, PropScope, PropSelector,
         StreamRangedDesc, StreamTerminalType, Tap,
     },
     os, sys,
@@ -1537,9 +1537,19 @@ impl AggregateDevice {
         self.cf_prop(&PropSelector::AGGREGATE_DEVICE_FULL_SUB_DEVICE_LIST.global_addr())
     }
 
+    #[doc(alias = "kAudioAggregateDevicePropertyActiveSubDeviceList")]
+    pub fn active_sub_device_list(&self) -> os::Result<Vec<Obj>> {
+        self.prop_vec(&PropSelector::AGGREGATE_DEVICE_ACTIVE_SUB_DEVICE_LIST.global_addr())
+    }
+
     #[doc(alias = "kAudioAggregateDevicePropertyMainSubDevice")]
     pub fn main_sub_device(&self) -> os::Result<arc::R<cf::String>> {
         self.cf_prop(&PropSelector::AGGREGATE_DEVICE_MAIN_SUB_DEVICE.global_addr())
+    }
+
+    #[doc(alias = "kAudioAggregateDevicePropertyClockDevice")]
+    pub fn clock_device(&self) -> os::Result<arc::R<cf::String>> {
+        self.cf_prop(&PropSelector::AGGREGATE_DEVICE_CLOCK_DEVICE.global_addr())
     }
 
     #[doc(alias = "kAudioAggregateDevicePropertyMainSubDevice")]
@@ -1852,8 +1862,11 @@ mod tests {
 
         let _proc_id = agg_device.create_io_proc_id(proc, None).unwrap();
 
-        // let input = agg_device.output_asbd().unwrap();
-        // println!("input {input:?}");
+        let objs = agg_device.active_sub_device_list().unwrap();
+        for o in objs {
+            assert_eq!(Class::DEVICE, o.class().unwrap());
+            assert_eq!(Class::OBJECT, o.base_class().unwrap());
+        }
 
         // let streams = agg_device.streams().unwrap();
         // println!("streams {streams:?}");

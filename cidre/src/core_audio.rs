@@ -3,9 +3,6 @@ pub use hardware_base::*;
 
 pub mod hardware;
 
-pub use hardware::aggregate_device_keys;
-pub use hardware::device_start;
-pub use hardware::sub_device_keys;
 pub use hardware::AggregateDevice;
 pub use hardware::Device;
 #[cfg(all(feature = "blocks", feature = "dispatch"))]
@@ -17,6 +14,9 @@ pub use hardware::Process;
 pub use hardware::PropListenerBlock;
 pub use hardware::PropListenerFn;
 pub use hardware::System;
+pub use hardware::aggregate_device_keys;
+pub use hardware::device_start;
+pub use hardware::sub_device_keys;
 
 mod tap_description;
 pub use tap_description::TapDesc;
