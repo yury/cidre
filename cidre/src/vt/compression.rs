@@ -22,7 +22,7 @@ mod tests {
 
         image_attrs.insert(cv::pixel_buffer::keys::io_surf_props(), &empty_dict);
         image_attrs.insert(
-            cv::pixel_buffer::keys::metal_compatability(),
+            cv::pixel_buffer::keys::metal_compatibility(),
             &cf::Boolean::value_true(),
         );
         image_attrs.insert(cv::pixel_buffer::keys::pixel_format(), &pixel_format);

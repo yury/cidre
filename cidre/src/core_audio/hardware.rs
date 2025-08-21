@@ -6,7 +6,7 @@ use crate::{
     cat::{self, AudioStreamBasicDesc},
     cf,
     core_audio::{
-        self, Class, DeviceTransportType, Obj, PropAddr, PropElement, PropScope, PropSelector,
+        Class, DeviceTransportType, Obj, PropAddr, PropElement, PropScope, PropSelector,
         StreamRangedDesc, StreamTerminalType, Tap,
     },
     os, sys,
