@@ -59,6 +59,23 @@ impl Default for ValueRange {
     }
 }
 
+impl ValueRange {
+    #[inline]
+    pub fn contains(&self, item: &f64) -> bool {
+        <Self as std::ops::RangeBounds<f64>>::contains(self, item)
+    }
+}
+
+impl std::ops::RangeBounds<f64> for ValueRange {
+    fn start_bound(&self) -> std::ops::Bound<&f64> {
+        std::ops::Bound::Included(&self.min)
+    }
+
+    fn end_bound(&self) -> std::ops::Bound<&f64> {
+        std::ops::Bound::Included(&self.max)
+    }
+}
+
 /// A structure to hold a buffer of audio data.
 #[doc(alias = "AudioBuffer")]
 #[derive(Debug, Copy, Clone)]
