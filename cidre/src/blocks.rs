@@ -123,7 +123,7 @@ macro_rules! new {
 
 macro_rules! with_fn {
     ($name:ident: $($t:ident),* ) => {
-        pub fn $name<$($t,)* R>(func: extern "C" fn (*const c_void, $($t,)*) -> R) -> StaticBlock<Sig>
+        pub const fn $name<$($t,)* R>(func: extern "C" fn (*const c_void, $($t,)*) -> R) -> StaticBlock<Sig>
         {
             let res = Layout1::with(func as _);
             StaticBlock(res, PhantomData)
@@ -134,7 +134,7 @@ macro_rules! with_fn {
 macro_rules! stack {
     ($name:ident, $invoke:ident: $($t:ident),*) => {
         #[inline]
-        pub unsafe fn $name<$($t,)* R, Closure>(closure: &mut Closure) -> StackBlock<'_, Closure, Sig>
+        pub const unsafe fn $name<$($t,)* R, Closure>(closure: &mut Closure) -> StackBlock<'_, Closure, Sig>
         where
             Sig: Fn($($t,)*) -> R, // guard for Block Sig
             for<'c> Closure: FnMut($($t,)*) -> R
@@ -358,7 +358,7 @@ impl Layout1 {
         size: std::mem::size_of::<Self>(),
     };
 
-    pub fn with(invoke: *const c_void) -> Self {
+    pub const fn with(invoke: *const c_void) -> Self {
         Self {
             isa: unsafe { &_NSConcreteStackBlock },
             flags: Flags::NONE,
@@ -388,10 +388,10 @@ impl<'a, Closure> Layout1Mut<'a, Closure> {
     invoke! {invoke5: a: A, b: B, c: C, d: D, e: E}
     invoke! {invoke6: a: A, b: B, c: C, d: D, e: E, f: F}
 
-    fn new(invoke: *const c_void, f: &'a mut Closure) -> Self {
+    const fn new(invoke: *const c_void, f: &'a mut Closure) -> Self {
         Self {
             isa: unsafe { &_NSConcreteStackBlock },
-            flags: Default::default(),
+            flags: Flags::NONE,
             reserved: 0,
             invoke,
             descriptor: &Self::DESCRIPTOR_1,
@@ -555,7 +555,7 @@ pub struct Completion<R>(Arc<Mutex<Shared<R>>>);
 
 #[cfg(feature = "async")]
 impl<R> Completion<R> {
-    pub(crate) fn new(r: Arc<Mutex<Shared<R>>>) -> Self {
+    pub(crate) const fn new(r: Arc<Mutex<Shared<R>>>) -> Self {
         Self(r)
     }
 }

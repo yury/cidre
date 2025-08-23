@@ -292,6 +292,33 @@ impl Queue {
         unsafe { dispatch_barrier_sync_f(self, context as _, std::mem::transmute(work)) }
     }
 
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "dispatch_barrier_sync")]
+    #[inline]
+    pub fn barrier_sync_b(&self, block: &mut dispatch::Block<blocks::NoEsc>) {
+        unsafe {
+            dispatch_barrier_sync(self, block);
+        }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[inline]
+    pub fn barrier_sync_mut(&self, mut f: impl FnMut()) {
+        let mut block = unsafe { dispatch::Block::<blocks::NoEsc>::stack0(&mut f) };
+        self.barrier_sync_b(&mut block);
+    }
+
+    #[cfg(feature = "blocks")]
+    #[inline]
+    pub fn barrier_sync<R>(&self, mut f: impl FnMut() -> R) -> R {
+        let mut result = None;
+        let closure = || {
+            result.replace(f());
+        };
+        self.barrier_sync_mut(closure);
+        unsafe { result.unwrap_unchecked() }
+    }
+
     #[doc(alias = "dispatch_barrier_async_and_wait_f")]
     #[inline]
     pub fn barrier_async_and_wait_f<T>(&self, context: *mut T, work: dispatch::Fn<T>) {
@@ -420,6 +447,8 @@ unsafe extern "C-unwind" {
         context: *mut c_void,
         work: dispatch::Fn<c_void>,
     );
+    #[cfg(feature = "blocks")]
+    fn dispatch_barrier_sync(queue: &Queue, block: &mut dispatch::Block<blocks::NoEsc>);
     fn dispatch_barrier_async_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);
     fn dispatch_barrier_sync_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);
     fn dispatch_barrier_async_and_wait_f(
