@@ -1298,6 +1298,23 @@ impl std::ops::DerefMut for Stream {
     }
 }
 
+#[derive(Debug, Eq, PartialEq, Hash)]
+#[repr(transparent)]
+pub struct StreamDir(pub u32);
+
+impl StreamDir {
+    pub const OUTPUT: Self = Self(0);
+    pub const INPUT: Self = Self(1);
+
+    pub fn is_output(&self) -> bool {
+        self == &Self::OUTPUT
+    }
+
+    pub fn is_input(&self) -> bool {
+        self == &Self::INPUT
+    }
+}
+
 impl Stream {
     /// A bool value indicates that the stream is enabled and
     /// doing IO.
@@ -1310,6 +1327,11 @@ impl Stream {
     /// and a value of 1 means that it is an input stream.
     #[doc(alias = "kAudioStreamPropertyDirection")]
     pub fn direction(&self) -> os::Result<u32> {
+        self.prop(&PropSelector::STREAM_DIRECTION.global_addr())
+    }
+
+    #[doc(alias = "kAudioStreamPropertyDirection")]
+    pub fn dir(&self) -> os::Result<StreamDir> {
         self.prop(&PropSelector::STREAM_DIRECTION.global_addr())
     }
 
@@ -1921,6 +1943,7 @@ mod tests {
         assert_eq!(stream.base_class().unwrap(), Class::OBJECT);
 
         assert_eq!(stream.direction(), Ok(1));
+        assert!(stream.dir().unwrap().is_input());
         assert_eq!(stream.is_active(), Ok(true));
         println!("terminal_type {:?}", stream.terminal_type().unwrap());
         let format = stream.virtual_format().unwrap();

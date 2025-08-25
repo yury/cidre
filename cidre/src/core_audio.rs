@@ -13,6 +13,8 @@ pub use hardware::Process;
 #[cfg(all(feature = "blocks", feature = "dispatch"))]
 pub use hardware::PropListenerBlock;
 pub use hardware::PropListenerFn;
+pub use hardware::Stream;
+pub use hardware::StreamDir;
 pub use hardware::System;
 pub use hardware::aggregate_device_keys;
 pub use hardware::device_start;
