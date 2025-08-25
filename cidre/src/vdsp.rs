@@ -2028,6 +2028,12 @@ unsafe extern "C-unwind" {
         __ID: Stride,
         __N: Len,
     );
+
+    /// Root-mean-square of vector.
+    #[doc(alias = "vDSP_rmsqv")]
+    #[link_name = "vDSP_rmsqv"]
+    pub fn _rmsq_f32(__A: *const f32, __IA: Stride, __C: *mut f32, __CI: Stride, __N: Len);
+
 }
 
 #[cfg(test)]
