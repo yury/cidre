@@ -1453,26 +1453,71 @@ mod common_keys {
     pub fn name() -> &'static cf::String {
         cf::str!(c"name")
     }
+
+    pub fn drift_compensation() -> &'static cf::String {
+        cf::str!(c"drift")
+    }
+
+    pub fn drift_quality() -> &'static cf::String {
+        cf::str!(c"drift quality")
+    }
+
+    pub fn latency_in() -> &'static cf::String {
+        cf::str!(c"latency-in")
+    }
+
+    pub fn latency_out() -> &'static cf::String {
+        cf::str!(c"latency-out")
+    }
 }
 
 pub mod sub_tap_keys {
-    use crate::cf;
-
     #[doc(alias = "kAudioSubTapUIDKey")]
     pub use super::common_keys::uid;
 
     #[doc(alias = "kAudioSubTapDriftCompensationKey")]
-    pub fn drift_compensation() -> &'static cf::String {
-        cf::str!(c"drift")
-    }
+    pub use super::common_keys::drift_compensation;
+
+    #[doc(alias = "kAudioSubTapDriftCompensationQualityKey")]
+    pub use super::common_keys::drift_quality;
+
+    #[doc(alias = "kAudioSubTapExtraInputLatencyKey")]
+    pub use super::common_keys::latency_in;
+
+    #[doc(alias = "kAudioSubTapExtraOutputLatencyKey")]
+    pub use super::common_keys::latency_out;
 }
 
 pub mod sub_device_keys {
+    use crate::cf;
+
     #[doc(alias = "kAudioSubDeviceUIDKey")]
     pub use super::common_keys::uid;
 
     #[doc(alias = "kAudioSubDeviceNameKey")]
     pub use super::common_keys::name;
+
+    #[doc(alias = "kAudioSubDeviceDriftCompensationKey")]
+    pub use super::common_keys::drift_compensation;
+
+    #[doc(alias = "kAudioSubDeviceDriftCompensationQualityKey")]
+    pub use super::common_keys::drift_quality;
+
+    #[doc(alias = "kAudioSubDeviceInputChannelsKey")]
+    pub fn channels_in() -> &'static cf::String {
+        cf::str!(c"channels-in")
+    }
+
+    #[doc(alias = "kAudioSubDeviceOutputChannelsKey")]
+    pub fn channels_out() -> &'static cf::String {
+        cf::str!(c"channels-out")
+    }
+
+    #[doc(alias = "kAudioSubDeviceExtraInputLatencyKey")]
+    pub use super::common_keys::latency_in;
+
+    #[doc(alias = "kAudioSubDeviceExtraOutputLatencyKey")]
+    pub use super::common_keys::latency_out;
 }
 
 pub mod aggregate_device_keys {
