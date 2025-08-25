@@ -17,6 +17,9 @@ pub mod cblas {
             inc_y: isize,
         );
 
+        #[link_name = "cblas_sdot"]
+        #[doc(alias = "cblas_sdot")]
+        pub fn _dot_f32(n: isize, x: *const f32, inc_x: isize, y: *const f32, inc_y: isize) -> f32;
     }
 }
 
