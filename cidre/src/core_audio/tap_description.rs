@@ -132,6 +132,14 @@ impl TapDesc {
     #[objc::msg_send(setProcesses:)]
     pub fn set_processes(&mut self, val: &ns::Array<ns::Number>);
 
+    #[objc::msg_send(bundleIDs)]
+    #[objc::available(macos = 26.0)]
+    pub fn bundle_ids(&self) -> arc::R<ns::Array<ns::String>>;
+
+    #[objc::msg_send(setBundleIDs:)]
+    #[objc::available(macos = 26.0)]
+    pub fn set_bundle_ids(&mut self, val: &ns::Array<ns::String>);
+
     /// True if this description is a mono mixdown of channels.
     #[objc::msg_send(isMono)]
     pub fn is_mono(&self) -> bool;
@@ -159,6 +167,15 @@ impl TapDesc {
 
     #[objc::msg_send(setPrivate:)]
     pub fn set_private(&mut self, val: bool);
+
+    #[objc::msg_send(isProcessRestoreEnabled)]
+    #[objc::available(macos = 26.0)]
+    pub fn is_process_restore_enabled(&self) -> bool;
+
+    /// True if this tap should save tapped processes by bundle ID when they exit, and restore them to the tap when they start up again.
+    #[objc::msg_send(setProcessRestoreEnabled:)]
+    #[objc::available(macos = 26.0)]
+    pub fn set_process_restore_enabled(&mut self, val: bool);
 
     #[objc::msg_send(isMuted)]
     pub fn mute_behavior(&self) -> TapMuteBehavior;
