@@ -1,4 +1,4 @@
-use std::ffi::c_void;
+use std::{ffi, mem};
 
 use crate::{
     arc,
@@ -16,7 +16,7 @@ use crate::{
 use crate::{blocks, dispatch};
 
 #[doc(alias = "AudioObjectPropertyListenerProc")]
-pub type PropListenerFn<T = c_void> = extern "C-unwind" fn(
+pub type PropListenerFn<T = ffi::c_void> = extern "C-unwind" fn(
     obj_id: Obj,
     number_addresses: u32,
     addresses: *const PropAddr,
@@ -1392,15 +1392,41 @@ impl Stream {
 }
 
 pub struct StartedDevice<D: AsRef<Device>> {
-    device: D,
+    device: mem::ManuallyDrop<D>,
     proc_id: Option<DeviceIoProcId>,
+}
+
+impl<D: AsRef<Device>> std::ops::Deref for StartedDevice<D> {
+    type Target = D;
+
+    fn deref(&self) -> &Self::Target {
+        &self.device
+    }
+}
+
+impl<D: AsRef<Device>> std::ops::DerefMut for StartedDevice<D> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.device
+    }
 }
 
 impl<D: AsRef<Device>> Drop for StartedDevice<D> {
     fn drop(&mut self) {
         let device = Device(self.device.as_ref().0);
         let res = unsafe { AudioDeviceStop(device, self.proc_id) };
+        unsafe { mem::ManuallyDrop::drop(&mut self.device) };
         debug_assert!(res.is_ok());
+    }
+}
+
+impl<D: AsRef<Device>> StartedDevice<D> {
+    pub fn stop(self) -> os::Result<D> {
+        let device = Device(self.device.as_ref().0);
+        unsafe { AudioDeviceStop(device, self.proc_id).result()? };
+
+        let mut md = mem::ManuallyDrop::new(self);
+        let device = unsafe { mem::ManuallyDrop::take(&mut md.device) };
+        Ok(device)
     }
 }
 
@@ -1411,7 +1437,10 @@ pub fn device_start<D: AsRef<Device>>(
 ) -> os::Result<StartedDevice<D>> {
     let dev = Device(device.as_ref().0);
     unsafe { AudioDeviceStart(dev, proc_id).result()? }
-    Ok(StartedDevice { device, proc_id })
+    Ok(StartedDevice {
+        device: mem::ManuallyDrop::new(device),
+        proc_id,
+    })
 }
 
 mod common_keys {
@@ -1686,25 +1715,25 @@ unsafe extern "C-unwind" {
         objectId: Obj,
         address: *const PropAddr,
         qualifier_data_size: u32,
-        qualifier_data: *const c_void,
+        qualifier_data: *const ffi::c_void,
         data_size: *mut u32,
-        data: *mut c_void,
+        data: *mut ffi::c_void,
     ) -> os::Status;
 
     fn AudioObjectSetPropertyData(
         objectId: Obj,
         address: *const PropAddr,
         qualifier_data_size: u32,
-        qualifier_data: *const c_void,
+        qualifier_data: *const ffi::c_void,
         data_size: u32,
-        data: *const c_void,
+        data: *const ffi::c_void,
     ) -> os::Status;
 
     fn AudioObjectGetPropertyDataSize(
         objectId: Obj,
         address: *const PropAddr,
         qualifier_data_size: u32,
-        qualifier_data: *const c_void,
+        qualifier_data: *const ffi::c_void,
         data_size: *mut u32,
     ) -> os::Status;
 
@@ -1712,14 +1741,14 @@ unsafe extern "C-unwind" {
         objectId: Obj,
         address: *const PropAddr,
         listener: PropListenerFn,
-        client_data: *mut c_void,
+        client_data: *mut ffi::c_void,
     ) -> os::Status;
 
     fn AudioObjectRemovePropertyListener(
         objectId: Obj,
         address: *const PropAddr,
         listener: PropListenerFn,
-        client_data: *mut c_void,
+        client_data: *mut ffi::c_void,
     ) -> os::Status;
 
     #[cfg(all(feature = "blocks", feature = "dispatch"))]
