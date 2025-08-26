@@ -147,15 +147,9 @@ impl<T> arc::Retain for ArrayOf<T> {
     }
 }
 
-impl<T: arc::Retain> AsRef<Self> for arc::R<ArrayOf<T>> {
-    fn as_ref(&self) -> &Self {
+impl<T: arc::Retain> AsRef<ArrayOf<T>> for arc::R<ArrayOfMut<T>> {
+    fn as_ref(&self) -> &ArrayOf<T> {
         self
-    }
-}
-
-impl<T: arc::Retain> AsRef<arc::R<ArrayOf<T>>> for arc::R<ArrayOfMut<T>> {
-    fn as_ref(&self) -> &arc::R<ArrayOf<T>> {
-        unsafe { std::mem::transmute(self) }
     }
 }
 

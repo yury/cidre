@@ -476,6 +476,20 @@ where
     pub fn new() -> arc::R<Self> {
         unsafe { std::mem::transmute(Dictionary::new()) }
     }
+
+    pub fn retained(&self) -> arc::R<Self> {
+        unsafe { std::mem::transmute(self.0.retained()) }
+    }
+}
+
+impl<K, V> AsRef<DictionaryOf<K, V>> for arc::R<DictionaryOfMut<K, V>>
+where
+    K: arc::Retain,
+    V: arc::Retain,
+{
+    fn as_ref(&self) -> &DictionaryOf<K, V> {
+        self
+    }
 }
 
 #[cfg(feature = "objc")]

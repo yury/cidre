@@ -1620,17 +1620,28 @@ impl AggregateDevice {
     #[doc(alias = "kAudioAggregateDevicePropertyComposition")]
     pub fn set_composition(
         &mut self,
-        val: arc::R<cf::DictionaryOf<cf::String, cf::Type>>,
+        val: impl AsRef<cf::DictionaryOf<cf::String, cf::Type>>,
     ) -> os::Result {
         self.set_prop(
             &PropSelector::AGGREGATE_DEVICE_COMPOSITION.global_addr(),
-            &val,
+            &val.as_ref(),
         )
     }
 
     #[doc(alias = "kAudioAggregateDevicePropertyFullSubDeviceList")]
     pub fn full_sub_device_list(&self) -> os::Result<arc::R<cf::ArrayOf<cf::String>>> {
         self.cf_prop(&PropSelector::AGGREGATE_DEVICE_FULL_SUB_DEVICE_LIST.global_addr())
+    }
+
+    #[doc(alias = "kAudioAggregateDevicePropertyFullSubDeviceList")]
+    pub fn set_full_sub_device_list(
+        &mut self,
+        val: impl AsRef<cf::ArrayOf<cf::String>>,
+    ) -> os::Result {
+        self.set_prop(
+            &PropSelector::AGGREGATE_DEVICE_FULL_SUB_DEVICE_LIST.global_addr(),
+            &val.as_ref(),
+        )
     }
 
     #[doc(alias = "kAudioAggregateDevicePropertyActiveSubDeviceList")]
@@ -1649,21 +1660,10 @@ impl AggregateDevice {
     }
 
     #[doc(alias = "kAudioAggregateDevicePropertyMainSubDevice")]
-    pub fn set_main_sub_device(&mut self, val: arc::R<cf::String>) -> os::Result {
+    pub fn set_main_sub_device(&mut self, val: &cf::String) -> os::Result {
         self.set_prop(
             &PropSelector::AGGREGATE_DEVICE_MAIN_SUB_DEVICE.global_addr(),
             &val,
-        )
-    }
-
-    #[doc(alias = "kAudioAggregateDevicePropertyFullSubDeviceList")]
-    pub fn set_full_sub_device_list<V>(&mut self, val: V) -> os::Result
-    where
-        V: AsRef<arc::R<cf::ArrayOf<cf::String>>>,
-    {
-        self.set_prop(
-            &PropSelector::AGGREGATE_DEVICE_FULL_SUB_DEVICE_LIST.global_addr(),
-            val.as_ref(),
         )
     }
 
@@ -1673,8 +1673,11 @@ impl AggregateDevice {
     }
 
     #[doc(alias = "kAudioAggregateDevicePropertyTapList")]
-    pub fn set_tap_list(&mut self, val: arc::R<cf::ArrayOf<cf::String>>) -> os::Result {
-        self.set_prop(&PropSelector::AGGREGATE_DEVICE_TAP_LIST.global_addr(), &val)
+    pub fn set_tap_list(&mut self, val: impl AsRef<cf::ArrayOf<cf::String>>) -> os::Result {
+        self.set_prop(
+            &PropSelector::AGGREGATE_DEVICE_TAP_LIST.global_addr(),
+            &val.as_ref(),
+        )
     }
 }
 
@@ -1933,20 +1936,22 @@ mod tests {
         let device = System::default_output_device().unwrap();
         let device_uid = device.uid().unwrap();
 
-        agg_device.set_main_sub_device(device_uid.clone()).unwrap();
+        agg_device.set_main_sub_device(&device_uid).unwrap();
 
         // not is list of sub devices so it should be empty
         let main_sub_device = agg_device.main_sub_device().unwrap();
         assert!(main_sub_device.is_empty());
 
-        let composition = agg_device.composition().unwrap();
-        agg_device.set_composition(composition).unwrap();
+        let composition = agg_device.composition().unwrap().retained();
+        agg_device.set_composition(&composition).unwrap();
 
         // add subdevice
         let sub_devices = agg_device.full_sub_device_list().unwrap();
         let mut sub_devices = sub_devices.copy_mut().unwrap();
         sub_devices.push(&device_uid);
-        agg_device.set_full_sub_device_list(sub_devices).unwrap();
+        agg_device
+            .set_full_sub_device_list(sub_devices.clone())
+            .unwrap();
 
         // now we should have main sub device
         let main_sub_device = agg_device.main_sub_device().unwrap();
