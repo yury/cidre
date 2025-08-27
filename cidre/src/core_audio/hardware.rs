@@ -1645,7 +1645,7 @@ impl AggregateDevice {
     }
 
     #[doc(alias = "kAudioAggregateDevicePropertyActiveSubDeviceList")]
-    pub fn active_sub_device_list(&self) -> os::Result<Vec<Obj>> {
+    pub fn active_sub_device_list(&self) -> os::Result<Vec<Device>> {
         self.prop_vec(&PropSelector::AGGREGATE_DEVICE_ACTIVE_SUB_DEVICE_LIST.global_addr())
     }
 

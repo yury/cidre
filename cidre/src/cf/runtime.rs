@@ -2,7 +2,7 @@ use std::{ffi::c_void, ptr::NonNull};
 
 use super::TypeId;
 
-use crate::arc;
+use crate::{arc, cf};
 
 // #[derive(Debug)]
 #[repr(transparent)]
@@ -109,6 +109,24 @@ macro_rules! define_cf_type {
             }
         }
     };
+}
+
+impl Type {
+    pub fn try_as_number(&self) -> Option<&cf::Number> {
+        if self.get_type_id() == cf::Number::type_id() {
+            Some(unsafe { std::mem::transmute(self) })
+        } else {
+            None
+        }
+    }
+
+    pub fn try_as_string(&self) -> Option<&cf::String> {
+        if self.get_type_id() == cf::String::type_id() {
+            Some(unsafe { std::mem::transmute(self) })
+        } else {
+            None
+        }
+    }
 }
 
 #[link(name = "CoreFoundation", kind = "framework")]
