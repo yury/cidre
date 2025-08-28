@@ -226,6 +226,20 @@ impl Queue {
 
     #[cfg(feature = "blocks")]
     #[inline]
+    pub fn sync_once<R>(&self, f: impl FnOnce() -> R) -> R {
+        let mut closure = Some(f);
+        let mut result = None;
+
+        self.sync_mut(|| {
+            let closure = unsafe { closure.take().unwrap_unchecked() };
+            result.replace(closure());
+        });
+
+        unsafe { result.unwrap_unchecked() }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[inline]
     pub fn sync<R>(&self, mut f: impl FnMut() -> R) -> R {
         let mut result = None;
         let closure = || {
