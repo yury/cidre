@@ -501,7 +501,7 @@ impl std::ops::DerefMut for Device {
 }
 
 impl Device {
-    pub fn with_uid(uid: arc::R<cf::String>) -> os::Result<Self> {
+    pub fn with_uid(uid: &cf::String) -> os::Result<Self> {
         System::OBJ.prop_with_qualifier(
             &PropSelector::HW_TRANSLATE_UID_TO_DEVICE.global_addr(),
             &uid,
@@ -1856,7 +1856,7 @@ mod tests {
     #[test]
     fn device() {
         let uid = cf::str!(c"BuiltInSpeakerDevice");
-        let device = Device::with_uid(uid.retained()).unwrap();
+        let device = Device::with_uid(uid).unwrap();
         let uid_from_device = device.uid().unwrap();
         assert_eq!(uid, uid_from_device.as_ref());
         unsafe { assert_ne!(uid.as_type_ptr(), uid_from_device.as_type_ptr()) };
