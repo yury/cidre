@@ -8,6 +8,7 @@ use crate::{
 #[repr(transparent)]
 pub struct Tap(Obj);
 
+#[derive(Debug)]
 pub struct TapGuard(Tap);
 
 impl std::ops::Deref for TapGuard {
