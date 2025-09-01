@@ -76,6 +76,22 @@ impl Obj {
         })
     }
 
+    #[doc(alias = "AudioObjectGetPropertyData")]
+    pub fn prop_mut<T: Sized>(&self, address: &PropAddr, val: &mut T) -> os::Result {
+        let mut data_size = std::mem::size_of::<T>() as u32;
+        unsafe {
+            AudioObjectGetPropertyData(
+                *self,
+                address,
+                0,
+                std::ptr::null(),
+                &mut data_size,
+                val as *mut T as _,
+            )
+            .result()
+        }
+    }
+
     pub fn bool_prop(&self, address: &PropAddr) -> os::Result<bool> {
         let res: u32 = self.prop(address)?;
         Ok(res != 0)
@@ -695,6 +711,40 @@ impl Device {
 
     pub fn vad_state(&self) -> os::Result<bool> {
         self.bool_prop(&PropSelector::DEVICE_VOICE_ACTIVITY_DETECTION_STATE.input_addr())
+    }
+
+    pub fn input_volume_scalar(&self) -> os::Result<f32> {
+        self.prop(&PropSelector::DEVICE_VOLUME_SCALAR.input_addr())
+    }
+
+    pub fn set_input_volume_scalar(&mut self, val: f32) -> os::Result {
+        self.set_prop(&PropSelector::DEVICE_VOLUME_SCALAR.input_addr(), &val)
+    }
+
+    pub fn input_volume_db(&self) -> os::Result<f32> {
+        self.prop(&PropSelector::DEVICE_VOLUME_DECIBELS.input_addr())
+    }
+
+    pub fn set_input_volume_db(&mut self, val: f32) -> os::Result {
+        self.set_prop(&PropSelector::DEVICE_VOLUME_DECIBELS.input_addr(), &val)
+    }
+
+    pub fn input_volume_db_range(&self) -> os::Result<ValueRange> {
+        self.prop(&PropSelector::DEVICE_VOLUME_RANGE_DECIBELS.input_addr())
+    }
+
+    pub fn input_volume_scalar_to_db(&self, val: &mut f32) -> os::Result {
+        self.prop_mut(
+            &PropSelector::DEVICE_VOLUME_SCALAR_TO_DECIBELS.input_addr(),
+            val,
+        )
+    }
+
+    pub fn input_volume_db_to_scalar(&self, val: &mut f32) -> os::Result {
+        self.prop_mut(
+            &PropSelector::DEVICE_VOLUME_DECIBELS_TO_SCALAR.input_addr(),
+            val,
+        )
     }
 }
 
@@ -1865,6 +1915,18 @@ mod tests {
 
         assert_eq!(device.class().unwrap(), Class::DEVICE);
         assert_eq!(device.base_class().unwrap(), Class::OBJECT);
+
+        let input_device = System::default_input_device().unwrap();
+        let range = input_device.input_volume_db_range().unwrap();
+        let volume_db = input_device.input_volume_db().unwrap();
+        let volume_scalar = input_device.input_volume_scalar().unwrap();
+
+        assert!(range.contains(&(volume_db as f64)));
+        let mut value = volume_scalar;
+        input_device.input_volume_scalar_to_db(&mut value).unwrap();
+        assert_eq!(value, volume_db);
+
+        // println!("range {range:?} {volume_db:?} {volume_scalar:?}");
     }
 
     #[test]
