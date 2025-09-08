@@ -103,6 +103,14 @@ impl Default for PropAddr {
     }
 }
 
+/// The error constants unique to the HAL.
+///
+/// These are the error constants that are unique to the HAL. Note that the HAL's
+/// functions can and will return other codes that are not listed here. While these
+/// constants give a general idea of what might have gone wrong during the execution
+/// of an API call, if an API call returns anything other than os::Status::NO_ERR
+/// it is to be viewed as the same failure regardless of what constant is actually
+/// returned.
 pub mod hardware_err {
     use crate::os::Error;
 
