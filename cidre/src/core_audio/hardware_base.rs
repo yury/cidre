@@ -103,6 +103,61 @@ impl Default for PropAddr {
     }
 }
 
+pub mod hardware_err {
+    use crate::os::Error;
+
+    /// The function call requires that the hardware be running but it isn't.
+    #[doc(alias = "kAudioHardwareNotRunningError")]
+    pub const NOT_RUNNING: Error = Error::new_unchecked(i32::from_be_bytes(*b"stop"));
+
+    /// The function call failed while doing something that doesn't provide any
+    /// error messages.
+    #[doc(alias = "kAudioHardwareUnspecifiedError")]
+    pub const UNSPECIFIED: Error = Error::new_unchecked(i32::from_be_bytes(*b"what"));
+
+    /// The AudioObject doesn't know about the property at the given address.
+    #[doc(alias = "kAudioHardwareUnknownPropertyError")]
+    pub const UNKNOWN_PROP: Error = Error::new_unchecked(i32::from_be_bytes(*b"who?"));
+
+    /// An improperly sized buffer was provided when accessing the data of a
+    /// property.
+    #[doc(alias = "kAudioHardwareBadPropertySizeError")]
+    pub const BAD_PROP_SIZE: Error = Error::new_unchecked(i32::from_be_bytes(*b"!siz"));
+
+    /// The requested operation couldn't be completed.
+    #[doc(alias = "kAudioHardwareIllegalOperationError")]
+    pub const ILLEGAL_OP: Error = Error::new_unchecked(i32::from_be_bytes(*b"nope"));
+
+    /// The AudioObjectID passed to the function doesn't map to a valid AudioObject.
+    #[doc(alias = "kAudioHardwareBadObjectError")]
+    pub const BAD_OBJ: Error = Error::new_unchecked(i32::from_be_bytes(*b"!obj"));
+
+    /// The AudioObjectID passed to the function doesn't map to a valid AudioDevice.
+    #[doc(alias = "kAudioHardwareBadDeviceError")]
+    pub const BAD_DEVICE: Error = Error::new_unchecked(i32::from_be_bytes(*b"!dev"));
+
+    /// The AudioObjectID passed to the function doesn't map to a valid AudioStream.
+    #[doc(alias = "kAudioHardwareBadStreamError")]
+    pub const BAD_STREAM: Error = Error::new_unchecked(i32::from_be_bytes(*b"!str"));
+
+    /// The AudioObject doesn't support the requested operation.
+    #[doc(alias = "kAudioHardwareUnsupportedOperationError")]
+    pub const UNSUPPORTED_OP: Error = Error::new_unchecked(i32::from_be_bytes(*b"unop"));
+
+    /// The AudioObject isn't ready to do the requested operation.
+    #[doc(alias = "kAudioHardwareNotReadyError")]
+    pub const NOT_READY: Error = Error::new_unchecked(i32::from_be_bytes(*b"nrdy"));
+
+    /// The AudioStream doesn't support the requested format.
+    #[doc(alias = "kAudioDeviceUnsupportedFormatError")]
+    pub const UNSUPPORTED_FORMAT: Error = Error::new_unchecked(i32::from_be_bytes(*b"!dat"));
+
+    /// The requested operation can't be completed because the process doesn't have
+    /// permission.
+    #[doc(alias = "kAudioDevicePermissionsError")]
+    pub const PERMISSIONS: Error = Error::new_unchecked(i32::from_be_bytes(*b"!hog"));
+}
+
 impl Obj {
     /// This is the sentinel value. No object will have an ID whose value is 0.
     #[doc(alias = "kAudioObjectUnknown")]

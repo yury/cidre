@@ -1,4 +1,5 @@
 mod hardware_base;
+pub use hardware_base::hardware_err;
 pub use hardware_base::*;
 
 pub mod hardware;
