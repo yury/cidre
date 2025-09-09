@@ -20,6 +20,10 @@ pub mod cblas {
         #[link_name = "cblas_sdot"]
         #[doc(alias = "cblas_sdot")]
         pub fn _dot_f32(n: isize, x: *const f32, inc_x: isize, y: *const f32, inc_y: isize) -> f32;
+
+        #[link_name = "cblas_isamax"]
+        #[doc(alias = "cblas_isamax")]
+        pub fn _i_abs_max_f32(n: isize, x: *const f32, inc_x: isize) -> isize;
     }
 }
 
