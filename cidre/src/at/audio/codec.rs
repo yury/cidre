@@ -683,6 +683,21 @@ impl CodecRef<InitializedState> {
         Ok(data_len)
     }
 
+    #[doc(alias = "AudioCodecAppendInputData")]
+    #[inline]
+    pub unsafe fn append_input(&mut self, data_ptr: *const u8, data_len: &mut u32) -> os::Result {
+        unsafe {
+            AudioCodecAppendInputData(
+                &mut self.0,
+                data_ptr,
+                data_len,
+                std::ptr::null_mut(),
+                std::ptr::null(),
+            )
+            .result()
+        }
+    }
+
     /// Append as much of the given data to the codec's input buffer as possible
     /// and return in (data_len, packets_len) the amount of data and packets used.
     #[doc(alias = "AudioCodecAppendInputData")]
@@ -1218,7 +1233,7 @@ unsafe extern "C-unwind" {
     fn AudioCodecAppendInputData(
         in_codec: &mut Codec,
         in_input_data: *const u8,
-        io_input_data_byte_size: &mut u32,
+        io_input_data_byte_size: *mut u32,
         io_number_packets: *mut u32,
         in_packet_description: *const audio::StreamPacketDesc,
     ) -> os::Status;
@@ -1227,7 +1242,7 @@ unsafe extern "C-unwind" {
         in_codec: &mut Codec,
         out_output_data: *mut u8,
         io_output_data_byte_size: &mut u32,
-        io_number_packets: &mut u32,
+        io_number_packets: *mut u32,
         out_packet_description: *mut audio::StreamPacketDesc,
         out_status: &mut ProduceOutputPacketStatus,
     ) -> os::Status;
