@@ -643,6 +643,20 @@ impl CodecRef<UninitializedState> {
     pub fn set_current_target_bit_rate(&mut self, val: u32) -> os::Result {
         self.0.set_current_target_bit_rate(val)
     }
+
+    pub fn input_formats_for_output_format(
+        &self,
+        output_format: &audio::StreamBasicDesc,
+    ) -> os::Result<Vec<audio::StreamBasicDesc>> {
+        self.0.input_formats_for_output_format(output_format)
+    }
+
+    pub fn output_formats_for_input_format(
+        &self,
+        input_format: &audio::StreamBasicDesc,
+    ) -> os::Result<Vec<audio::StreamBasicDesc>> {
+        self.0.output_formats_for_input_format(input_format)
+    }
 }
 
 impl<S: State<Codec>> Drop for CodecRef<S> {
@@ -1022,9 +1036,51 @@ impl Codec {
         unsafe { self.prop_vec(GlobalPropId::SUPPORTED_INPUT_FORMATS.0) }
     }
 
+    pub fn input_formats_for_output_format(
+        &self,
+        output_format: &audio::StreamBasicDesc,
+    ) -> os::Result<Vec<audio::StreamBasicDesc>> {
+        let prop_id = GlobalPropId::INPUT_FORMATS_FOR_OUTPUT_FORMAT.0;
+
+        let (mut size, _) = self.prop_info(prop_id)?;
+        if size == 0 {
+            return Ok(vec![]);
+        }
+        let mut vec = vec![
+            audio::StreamBasicDesc::default();
+            size as usize / std::mem::size_of::<audio::StreamBasicDesc>()
+        ];
+        vec[0] = *output_format;
+        unsafe {
+            AudioCodecGetProperty(self, prop_id, &mut size, vec.as_mut_ptr() as _).result()?;
+        }
+        Ok(vec)
+    }
+
     #[inline]
     pub fn supported_output_formats(&self) -> os::Result<Vec<audio::StreamBasicDesc>> {
         unsafe { self.prop_vec(GlobalPropId::SUPPORTED_OUTPUT_FORMATS.0) }
+    }
+
+    pub fn output_formats_for_input_format(
+        &self,
+        input_format: &audio::StreamBasicDesc,
+    ) -> os::Result<Vec<audio::StreamBasicDesc>> {
+        let prop_id = GlobalPropId::OUTPUT_FORMATS_FOR_INPUT_FORMAT.0;
+
+        let (mut size, _) = self.prop_info(prop_id)?;
+        if size == 0 {
+            return Ok(vec![]);
+        }
+        let mut vec = vec![
+            audio::StreamBasicDesc::default();
+            size as usize / std::mem::size_of::<audio::StreamBasicDesc>()
+        ];
+        vec[0] = *input_format;
+        unsafe {
+            AudioCodecGetProperty(self, prop_id, &mut size, vec.as_mut_ptr() as _).result()?;
+        }
+        Ok(vec)
     }
 
     /// Flushes all the data in the codec and clears the input buffer. Note that
@@ -1115,6 +1171,19 @@ where
             .result()?;
         }
         Ok(value)
+    }
+
+    #[inline]
+    pub fn set_current_input_format(&mut self, val: &audio::StreamBasicDesc) -> os::Result {
+        unsafe {
+            AudioCodecSetProperty(
+                &mut self.0,
+                InstancePropId::CURRENT_INPUT_FORMAT.0,
+                std::mem::size_of::<audio::StreamBasicDesc>() as u32,
+                val as *const audio::StreamBasicDesc as _,
+            )
+            .result()
+        }
     }
 
     #[inline]
