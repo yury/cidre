@@ -1,9 +1,12 @@
 use std::{marker::PhantomData, mem::MaybeUninit};
 
 use crate::{
-    at::audio,
-    at::audio::component::{InitializedState, State, UninitializedState},
-    os,
+    arc,
+    at::audio::{
+        self,
+        component::{InitializedState, State, UninitializedState},
+    },
+    cf, os,
 };
 
 /// AudioCodec components translate audio data from one format to another. There
@@ -913,6 +916,13 @@ impl Codec {
         Ok(vec)
     }
 
+    pub fn cf_prop<T: arc::Release>(&self, prop_id: u32) -> os::Result<arc::R<T>> {
+        let mut size = std::mem::size_of::<arc::R<T>>() as u32;
+        os::result_init(|res| unsafe {
+            AudioCodecGetProperty(self, prop_id, &mut size, res as *mut u8)
+        })
+    }
+
     #[doc(alias = "AudioCodecGetProperty")]
     pub fn prop<T: Sized>(&self, prop_id: u32) -> os::Result<T> {
         let mut size = std::mem::size_of::<T>() as u32;
@@ -931,6 +941,10 @@ impl Codec {
     #[inline]
     pub fn quality(&self) -> os::Result<u32> {
         self.prop(InstancePropId::QUALITY_SETTING.0)
+    }
+
+    pub fn settings(&self) -> os::Result<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> {
+        self.cf_prop(InstancePropId::SETTINGS.0)
     }
 
     #[inline]
@@ -1219,6 +1233,10 @@ where
     #[inline]
     pub fn quality(&self) -> os::Result<u32> {
         self.0.quality()
+    }
+
+    pub fn settings(&self) -> os::Result<arc::R<cf::DictionaryOf<cf::String, cf::Type>>> {
+        self.0.settings()
     }
 }
 
