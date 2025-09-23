@@ -750,22 +750,22 @@ impl CodecRef<InitializedState> {
         data: &mut [u8],
     ) -> os::Result<(u32, ProduceOutputPacketStatus)> {
         let mut data_len: u32 = data.len() as _;
-        let mut packets_len: u32 = 1;
-        let mut status = ProduceOutputPacketStatus::Failure;
+        let mut packets_n: u32 = 1;
+        let mut status = MaybeUninit::uninit();
 
         unsafe {
             AudioCodecProduceOutputPackets(
                 &mut self.0,
                 data.as_mut_ptr(),
                 &mut data_len,
-                &mut packets_len,
+                &mut packets_n,
                 std::ptr::null_mut(),
-                &mut status,
+                status.as_mut_ptr(),
             )
             .result()?;
         }
 
-        Ok((data_len, status))
+        Ok((data_len, unsafe { status.assume_init() }))
     }
 
     #[doc(alias = "AudioCodecProduceOutputPackets")]
@@ -1331,7 +1331,7 @@ unsafe extern "C-unwind" {
         io_output_data_byte_size: &mut u32,
         io_number_packets: *mut u32,
         out_packet_description: *mut audio::StreamPacketDesc,
-        out_status: &mut ProduceOutputPacketStatus,
+        out_status: *mut ProduceOutputPacketStatus,
     ) -> os::Status;
 
     fn AudioCodecAppendInputBufferList(
