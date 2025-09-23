@@ -100,7 +100,7 @@ unsafe extern "C-unwind" {
 pub mod attachment {
 
     pub mod keys {
-        use crate::cf;
+        use crate::{api, cf};
 
         #[doc(alias = "kCVImageBufferCGColorSpaceKey")]
         #[inline]
@@ -174,6 +174,35 @@ pub mod attachment {
             unsafe { kCVImageBufferTransferFunctionKey }
         }
 
+        #[doc(alias = "kCVImageBufferLogTransferFunctionKey")]
+        #[inline]
+        #[api::available(macos = 14.2, ios = 17.2, tvos = 17.2, watchos = 10.2, visionos = 1.1)]
+        pub fn log_transfer_fn() -> &'static cf::String {
+            unsafe { kCVImageBufferLogTransferFunctionKey }
+        }
+
+        #[doc(alias = "kCVImageBufferDisplayMaskRectangleKey")]
+        #[inline]
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        pub fn display_mask_rect() -> &'static cf::String {
+            unsafe { kCVImageBufferDisplayMaskRectangleKey }
+        }
+
+        #[doc(alias = "kCVImageBufferDisplayMaskRectangleStereoLeftKey")]
+        #[inline]
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        pub fn display_mask_rect_stereo_left() -> &'static cf::String {
+            unsafe { kCVImageBufferDisplayMaskRectangleStereoLeftKey }
+        }
+
+        #[doc(alias = "kCVImageBufferDisplayMaskRectangleStereoRightKey")]
+        #[inline]
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        pub fn display_mask_rect_stereo_right() -> &'static cf::String {
+            unsafe { kCVImageBufferDisplayMaskRectangleStereoRightKey }
+        }
+
+        #[api::weak]
         unsafe extern "C" {
             static kCVImageBufferCGColorSpaceKey: &'static cf::String;
             static kCVImageBufferCleanApertureKey: &'static cf::String;
@@ -188,6 +217,37 @@ pub mod attachment {
             static kCVImageBufferYCbCrMatrixKey: &'static cf::String;
             static kCVImageBufferColorPrimariesKey: &'static cf::String;
             static kCVImageBufferTransferFunctionKey: &'static cf::String;
+
+            #[api::available(macos = 14.2, ios = 17.2, tvos = 17.2, watchos = 10.2, visionos = 1.1)]
+            static kCVImageBufferLogTransferFunctionKey: &'static cf::String;
+
+            #[api::available(
+                macos = 26.0,
+                ios = 26.0,
+                tvos = 26.0,
+                watchos = 26.0,
+                visionos = 26.0
+            )]
+            static kCVImageBufferDisplayMaskRectangleKey: &'static cf::String;
+
+            #[api::available(
+                macos = 26.0,
+                ios = 26.0,
+                tvos = 26.0,
+                watchos = 26.0,
+                visionos = 26.0
+            )]
+            static kCVImageBufferDisplayMaskRectangleStereoLeftKey: &'static cf::String;
+
+            #[api::available(
+                macos = 26.0,
+                ios = 26.0,
+                tvos = 26.0,
+                watchos = 26.0,
+                visionos = 26.0
+            )]
+            static kCVImageBufferDisplayMaskRectangleStereoRightKey: &'static cf::String;
+
         }
     }
 
@@ -460,6 +520,160 @@ pub mod attachment {
             static kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ: &'static cf::String;
             static kCVImageBufferTransferFunction_ITU_R_2100_HLG: &'static cf::String;
             static kCVImageBufferTransferFunction_Linear: &'static cf::String;
+        }
+    }
+
+    pub mod log_transfer_fn {
+        use crate::{api, cf};
+
+        #[api::available(macos = 14.2, ios = 17.2, tvos = 17.2, watchos = 10.2, visionos = 1.1)]
+        #[doc(alias = "kCVImageBufferLogTransferFunction_AppleLog")]
+        pub fn apple_log() -> &'static cf::String {
+            unsafe { kCVImageBufferLogTransferFunction_AppleLog }
+        }
+
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        #[doc(alias = "kCVImageBufferLogTransferFunction_AppleLog2")]
+        pub fn apple_log2() -> &'static cf::String {
+            unsafe { kCVImageBufferLogTransferFunction_AppleLog2 }
+        }
+
+        #[api::weak]
+        unsafe extern "C" {
+            #[api::available(macos = 14.2, ios = 17.2, tvos = 17.2, watchos = 10.2, visionos = 1.1)]
+            static kCVImageBufferLogTransferFunction_AppleLog: &'static cf::String;
+            #[api::available(
+                macos = 26.0,
+                ios = 26.0,
+                tvos = 26.0,
+                watchos = 26.0,
+                visionos = 26.0
+            )]
+            static kCVImageBufferLogTransferFunction_AppleLog2: &'static cf::String;
+        }
+    }
+
+    pub mod display_mask_rect {
+        use crate::{api, cf};
+
+        /// Specifies the width in pixels of the 2D coordinate system to define the rectangle. 0,0 origin is the top-left.
+        /// The raster width value is a cf::Number of unsigned 16-bit integer.
+        /// Usually matches the width of the video or the output device.
+        #[doc(alias = "kCVImageBufferDisplayMaskRectangle_ReferenceRasterWidthKey")]
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        pub fn reference_raster_width() -> &'static cf::String {
+            unsafe { kCVImageBufferDisplayMaskRectangle_ReferenceRasterWidthKey }
+        }
+
+        /// Specifies the height in pixels of the 2D coordinate system to define the rectangle. 0,0 origin is the top-left.
+        /// The raster height value is a cf::Number of unsigned 16-bit integer. Usually matches the height of
+        /// the video or the output device.
+        #[doc(alias = "kCVImageBufferDisplayMaskRectangle_ReferenceRasterHeightKey")]
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        pub fn reference_raster_height() -> &'static cf::String {
+            unsafe { kCVImageBufferDisplayMaskRectangle_ReferenceRasterHeightKey }
+        }
+
+        /// Specifies the horizontal pixel offset of the rectangle from the left of the bounding raster.
+        /// The left offset value is a cf::Number of unsigned 16-bit integer that is less than the reference raster width value.
+        #[doc(alias = "kCVImageBufferDisplayMaskRectangle_RectangleLeftKey")]
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        pub fn rect_left() -> &'static cf::String {
+            unsafe { kCVImageBufferDisplayMaskRectangle_RectangleLeftKey }
+        }
+
+        /// Specifies the width of the rectangle starting at rectangle's left offset toward the rectangle's right edge.
+        /// The width value is a cf::Number of unsigned 16-bit integer.
+        #[doc(alias = "kCVImageBufferDisplayMaskRectangle_RectangleWidthKey")]
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        pub fn rect_width() -> &'static cf::String {
+            unsafe { kCVImageBufferDisplayMaskRectangle_RectangleWidthKey }
+        }
+
+        /// Specifies the vertical pixel offset of the rectangle from the top of the bounding raster.
+        /// The top offset value is a cf::Number of unsigned 16-bit integer that is less than the reference raster height value.
+        #[doc(alias = "kCVImageBufferDisplayMaskRectangle_RectangleTopKey")]
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        pub fn rect_top() -> &'static cf::String {
+            unsafe { kCVImageBufferDisplayMaskRectangle_RectangleTopKey }
+        }
+
+        #[doc(alias = "kCVImageBufferDisplayMaskRectangle_LeftEdgePointsKey")]
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        pub fn left_edge_points() -> &'static cf::String {
+            unsafe { kCVImageBufferDisplayMaskRectangle_LeftEdgePointsKey }
+        }
+
+        #[doc(alias = "kCVImageBufferDisplayMaskRectangle_RightEdgePointsKey")]
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
+        pub fn right_edge_points() -> &'static cf::String {
+            unsafe { kCVImageBufferDisplayMaskRectangle_RightEdgePointsKey }
+        }
+
+        #[api::weak]
+        unsafe extern "C" {
+            #[api::available(
+                macos = 26.0,
+                ios = 26.0,
+                tvos = 26.0,
+                watchos = 26.0,
+                visionos = 26.0
+            )]
+            static kCVImageBufferDisplayMaskRectangle_ReferenceRasterWidthKey: &'static cf::String;
+
+            #[api::available(
+                macos = 26.0,
+                ios = 26.0,
+                tvos = 26.0,
+                watchos = 26.0,
+                visionos = 26.0
+            )]
+            static kCVImageBufferDisplayMaskRectangle_ReferenceRasterHeightKey: &'static cf::String;
+
+            #[api::available(
+                macos = 26.0,
+                ios = 26.0,
+                tvos = 26.0,
+                watchos = 26.0,
+                visionos = 26.0
+            )]
+            static kCVImageBufferDisplayMaskRectangle_RectangleLeftKey: &'static cf::String;
+
+            #[api::available(
+                macos = 26.0,
+                ios = 26.0,
+                tvos = 26.0,
+                watchos = 26.0,
+                visionos = 26.0
+            )]
+            static kCVImageBufferDisplayMaskRectangle_RectangleWidthKey: &'static cf::String;
+
+            #[api::available(
+                macos = 26.0,
+                ios = 26.0,
+                tvos = 26.0,
+                watchos = 26.0,
+                visionos = 26.0
+            )]
+            static kCVImageBufferDisplayMaskRectangle_RectangleTopKey: &'static cf::String;
+
+            #[api::available(
+                macos = 26.0,
+                ios = 26.0,
+                tvos = 26.0,
+                watchos = 26.0,
+                visionos = 26.0
+            )]
+            static kCVImageBufferDisplayMaskRectangle_LeftEdgePointsKey: &'static cf::String;
+
+            #[api::available(
+                macos = 26.0,
+                ios = 26.0,
+                tvos = 26.0,
+                watchos = 26.0,
+                visionos = 26.0
+            )]
+            static kCVImageBufferDisplayMaskRectangle_RightEdgePointsKey: &'static cf::String;
         }
     }
 }

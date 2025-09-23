@@ -581,6 +581,7 @@ impl Device {
 
 #[doc(alias = "AVCaptureColorSpace")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[non_exhaustive]
 #[repr(isize)]
 pub enum ColorSpace {
     /// The sRGB color space (<https://www.w3.org/Graphics/Color/srgb>)
@@ -600,8 +601,11 @@ pub enum ColorSpace {
     /// and an Apple defined Log curve as a transfer function. When this is set as the active color
     /// space on an [`av::CaptureDevice`], any [`av::CapturePhotoOutput`] or [`av::CaptureStillImageOutput`]
     /// connected to the same 'av::CaptureDevice' will have its video connection disabled.
-    #[doc(alias = "AVCaptureColorSpace")]
+    #[doc(alias = "AVCaptureColorSpace_AppleLog")]
     AppleLog = 3,
+
+    #[doc(alias = "AVCaptureColorSpace_AppleLog2")]
+    AppleLog2 = 4,
 }
 
 impl ColorSpace {
