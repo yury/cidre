@@ -199,13 +199,19 @@ impl Capability {
 }
 
 define_obj_type!(
+    /// An object that describes capabilities of Bluetooth microphone ports.
     #[doc(alias = "AVAudioSessionPortExtensionBluetoothMicrophone")]
     pub PortExtensionBluetoothMic(ns::Id)
 );
 
 impl PortExtensionBluetoothMic {
+    /// Describes whether this port supports Bluetooth high-quality recording.
     #[objc::msg_send(highQualityRecording)]
     pub fn high_quality_recording(&self) -> arc::R<Capability>;
+
+    /// Describes whether this port supports far-field input capture.
+    #[objc::msg_send(farFieldCapture)]
+    pub fn far_field_capture(&self) -> arc::R<Capability>;
 }
 
 define_obj_type!(
