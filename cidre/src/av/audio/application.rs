@@ -62,6 +62,7 @@ define_obj_type!(
     pub App(ns::Id)
 );
 
+pub type MuteChangeHandler = blocks::EscBlock<fn(input_should_be_muted: bool) -> bool>;
 impl App {
     #[api::available(
         macos = 14.0,
@@ -125,11 +126,36 @@ impl App {
     pub fn record_permission(&self) -> av::AudioAppRecordPermission;
 
     #[cfg(all(target_os = "macos", feature = "blocks"))]
-    #[objc::msg_send(setInputMuteStateChangeHandler:)]
-    pub fn set_input_mute_state_change_handler(
+    #[objc::msg_send(setInputMuteStateChangeHandler:error:)]
+    #[objc::available(macos = 14.0)]
+    pub fn set_input_mute_state_change_handler_block_err<'ear>(
         &mut self,
-        handler: Option<&mut blocks::EscBlock<fn(input_should_be_muted: bool) -> bool>>,
-    );
+        handler: Option<&mut MuteChangeHandler>,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    #[cfg(all(target_os = "macos", feature = "blocks"))]
+    #[objc::available(macos = 14.0)]
+    pub fn set_input_mute_state_change_handler_block<'ear>(
+        &mut self,
+        handler: Option<&mut MuteChangeHandler>,
+    ) -> ns::Result<'ear> {
+        ns::if_false(|err| self.set_input_mute_state_change_handler_block_err(handler, err))
+    }
+
+    #[cfg(all(target_os = "macos", feature = "blocks"))]
+    #[objc::available(macos = 14.0)]
+    pub fn set_input_mute_state_change_handler<'ear>(
+        &mut self,
+        mut handler: Option<impl FnMut(bool) -> bool + 'static + Send>,
+    ) -> ns::Result<'ear> {
+        if let Some(block) = handler.take() {
+            let mut block = MuteChangeHandler::new1(block);
+            self.set_input_mute_state_change_handler_block(Some(&mut block))
+        } else {
+            self.set_input_mute_state_change_handler_block(None)
+        }
+    }
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(requestRecordPermissionWithCompletionHandler:)]

@@ -398,6 +398,9 @@ impl System {
 
 /// AudioSystemObject Properties
 impl PropSelector {
+    /// A u32 where a non-zero value indicates that all data coming into the process
+    /// for all devices will be silent. A value of 0 indicates that input data will be
+    /// received normally.
     #[doc(alias = "kAudioHardwarePropertyProcessInputMute")]
     pub const HW_PROCESS_INPUT_MUTE: Self = Self(u32::from_be_bytes(*b"pmin"));
 
