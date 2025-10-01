@@ -223,6 +223,12 @@ impl<T: Retain> ArrayOfMut<T> {
         self.0.push(unsafe { std::mem::transmute(val) });
     }
 
+    #[doc(alias = "CFArrayRemoveValueAtIndex")]
+    #[inline]
+    pub unsafe fn remove_unchecked(&mut self, index: isize) {
+        unsafe { self.0.remove_unchecked(index) };
+    }
+
     #[inline]
     pub fn copy(&self) -> Option<arc::R<ArrayOf<T>>> {
         unsafe { std::mem::transmute(self.0.copy()) }
@@ -470,6 +476,14 @@ impl ArrayMut {
         unsafe { self.append_value(val.as_type_ptr()) }
     }
 
+    #[doc(alias = "CFArrayRemoveValueAtIndex")]
+    #[inline]
+    pub unsafe fn remove_unchecked(&mut self, index: isize) {
+        unsafe {
+            CFArrayRemoveValueAtIndex(self, index);
+        }
+    }
+
     #[doc(alias = "CFArrayRemoveAllValues")]
     #[inline]
     pub fn remove_all_values(&mut self) {
@@ -553,6 +567,7 @@ unsafe extern "C-unwind" {
     fn CFArrayAppendValue(array: &mut ArrayMut, value: *const c_void);
 
     fn CFArrayRemoveAllValues(array: &mut ArrayMut);
+    fn CFArrayRemoveValueAtIndex(array: &mut ArrayMut, index: isize);
 
     fn CFArrayContainsValue(array: &Array, range: cf::Range, value: *const c_void) -> bool;
 }
