@@ -238,16 +238,6 @@ impl<T: objc::Obj> From<&[arc::R<T>]> for arc::R<Array<T>> {
     }
 }
 
-impl From<&[&str]> for arc::R<Array<ns::String>> {
-    fn from(value: &[&str]) -> Self {
-        let mut values = Vec::with_capacity(value.len());
-        for v in value {
-            values.push(ns::String::with_str(v));
-        }
-        ns::Array::from_slice_retained(&values[..])
-    }
-}
-
 impl From<&[i8]> for arc::R<ns::Array<ns::Number>> {
     fn from(value: &[i8]) -> Self {
         let mut values = Vec::with_capacity(value.len());
@@ -430,6 +420,30 @@ macro_rules! nsarr {
     );
 }
 
+impl<T: AsRef<str>> From<&[T]> for arc::R<ns::ArrayMut<ns::String>> {
+    fn from(value: &[T]) -> Self {
+        let mut arr = ns::ArrayMut::with_capacity(value.len());
+        for v in value.iter() {
+            let string = ns::String::with_str(v.as_ref());
+            arr.push(string.as_ref());
+        }
+
+        arr
+    }
+}
+
+impl<T: AsRef<str>> From<&[T]> for arc::R<ns::Array<ns::String>> {
+    fn from(value: &[T]) -> Self {
+        let mut arr = ns::ArrayMut::with_capacity(value.len());
+        for v in value.iter() {
+            let string = ns::String::with_str(v.as_ref());
+            arr.push(string.as_ref());
+        }
+
+        unsafe { std::mem::transmute(arr) }
+    }
+}
+
 pub use nsarr as arr;
 
 #[cfg(test)]
@@ -506,5 +520,13 @@ mod tests {
 
         assert_eq!(&one, a);
         assert_eq!(b, a);
+    }
+
+    #[test]
+    fn from_slice_of_string() {
+        let vec = vec!["copy".to_string(); 100];
+        let arr: arc::R<ns::ArrayMut<_>> = vec[..].into();
+        let arr = arr.copy();
+        assert_eq!(arr.len(), 100);
     }
 }
