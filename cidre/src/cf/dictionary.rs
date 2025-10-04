@@ -553,6 +553,7 @@ where
     }
 }
 
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct DictionaryOfMut<K, V>(DictionaryMut, marker::PhantomData<(K, V)>);
 
