@@ -314,6 +314,16 @@ impl Output<UninitializedState> {
 }
 
 impl Output<InitializedState> {
+    #[cfg(all(target_os = "macos", feature = "core_audio"))]
+    #[inline]
+    pub fn input_device(&self) -> os::Result<Device> {
+        self.unit().prop(
+            au::PropId::OUTPUT_CURRENT_DEVICE,
+            Scope::GLOBAL,
+            au::Element(1),
+        )
+    }
+
     #[inline]
     pub fn deallocate_resources(self) -> os::Result<Output<UninitializedState>> {
         Ok(Output(self.0.unintialize()?))

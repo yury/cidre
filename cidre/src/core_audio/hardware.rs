@@ -527,6 +527,10 @@ impl Device {
         )
     }
 
+    pub fn is_unknown(&self) -> bool {
+        self.0 == Obj::UNKNOWN
+    }
+
     pub fn uid(&self) -> os::Result<arc::R<cf::String>> {
         self.cf_prop(&PropSelector::DEVICE_UID.global_addr())
     }
