@@ -535,6 +535,16 @@ impl Device {
         self.cf_prop(&PropSelector::DEVICE_UID.global_addr())
     }
 
+    pub fn is_alive(&self) -> os::Result<bool> {
+        let res: u32 = self.prop(&PropSelector::DEVICE_IS_ALIVE.global_addr())?;
+        Ok(res == 1)
+    }
+
+    pub fn is_running(&self) -> os::Result<bool> {
+        let res: u32 = self.prop(&PropSelector::DEVICE_IS_RUNNING.global_addr())?;
+        Ok(res == 1)
+    }
+
     pub fn nominal_sample_rate(&self) -> os::Result<f64> {
         self.prop(&PropSelector::DEVICE_NOMINAL_SAMPLE_RATE.global_addr())
     }
