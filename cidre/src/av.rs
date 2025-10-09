@@ -283,3 +283,12 @@ pub use kit::PlayerViewControllerDelegateImpl;
 pub use kit::PlayerViewControllerSkippingBehavior;
 #[cfg(feature = "av_kit")]
 pub use kit::VideoFrameAnalysisType;
+
+#[cfg(all(feature = "av_kit", target_os = "ios"))]
+pub use kit::AnyInputPickerInteractionDelegate;
+#[cfg(all(feature = "av_kit", target_os = "ios"))]
+pub use kit::InputPickerInteraction;
+#[cfg(all(feature = "av_kit", target_os = "ios"))]
+pub use kit::InputPickerInteractionDelegate;
+#[cfg(all(feature = "av_kit", target_os = "ios"))]
+pub use kit::InputPickerInteractionDelegateImpl;

@@ -35,3 +35,13 @@ pub use playback_route_selecting::AudioSessionRouteSelection;
 
 mod playback_speed;
 pub use playback_speed::PlaybackSpeed;
+
+mod input_picker_interaction;
+#[cfg(target_os = "ios")]
+pub use input_picker_interaction::AnyInputPickerInteractionDelegate;
+#[cfg(target_os = "ios")]
+pub use input_picker_interaction::InputPickerInteraction;
+#[cfg(target_os = "ios")]
+pub use input_picker_interaction::InputPickerInteractionDelegate;
+#[cfg(target_os = "ios")]
+pub use input_picker_interaction::InputPickerInteractionDelegateImpl;

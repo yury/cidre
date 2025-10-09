@@ -62,6 +62,7 @@ define_obj_type!(
     pub App(ns::Id)
 );
 
+#[cfg(feature = "blocks")]
 pub type MuteChangeHandler = blocks::EscBlock<fn(input_should_be_muted: bool) -> bool>;
 impl App {
     #[api::available(
