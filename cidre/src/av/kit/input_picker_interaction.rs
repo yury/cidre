@@ -51,6 +51,9 @@ define_obj_type!(
     #[api::available(ios = 26.0)]
 );
 
+#[cfg(all(target_os = "ios", feature = "ui"))]
+impl crate::ui::Interaction for InputPickerInteraction {}
+
 #[cfg(target_os = "ios")]
 impl arc::A<InputPickerInteraction> {
     #[objc::msg_send(initWithAudioSession:)]
