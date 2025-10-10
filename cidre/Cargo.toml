@@ -41,6 +41,7 @@ full = [
   "sec",
   "mc",
   "ml",
+  "mt",
   "mtl",
   "mtk",
   "mlc",
@@ -126,6 +127,7 @@ un = ["ns"]
 ct = ["cf", "cg"]
 mc = ["ns"]
 ml = ["ns", "cf", "blocks"]
+mt = ["cm", "cat"]
 mtl = ["ns", "blocks"]
 mtk = ["mtl"] # optional blocks and async
 mlc = ["mtl"]
