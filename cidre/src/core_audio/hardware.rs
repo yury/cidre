@@ -1921,10 +1921,22 @@ mod tests {
     };
 
     #[test]
+    fn device_uid() {
+        let uid = cf::str!(c"BuiltInSpeakerDevice");
+        let device = Device::with_uid(uid).unwrap();
+        let uid0 = device.uid().unwrap();
+        let uid1 = device.uid().unwrap();
+
+        // uid is copied
+        unsafe { assert_ne!(uid0.as_type_ptr(), uid1.as_type_ptr()) };
+    }
+
+    #[test]
     fn device() {
         let uid = cf::str!(c"BuiltInSpeakerDevice");
         let device = Device::with_uid(uid).unwrap();
         let uid_from_device = device.uid().unwrap();
+
         assert_eq!(uid, uid_from_device.as_ref());
         unsafe { assert_ne!(uid.as_type_ptr(), uid_from_device.as_type_ptr()) };
         let uid2 = uid.retained();
