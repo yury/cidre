@@ -1,4 +1,7 @@
-use crate::{arc, av, blocks, cg, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, cg, cm, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 #[doc(alias = "AVPlayerItemStatus")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -121,6 +124,7 @@ impl Item {
     #[objc::msg_send(seekableTimeRanges)]
     pub fn seekable_time_ranges(&self) -> arc::R<ns::Array<ns::Value>>;
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(seekToTime:completionHandler:)]
     pub unsafe fn seek_to_time_ch_throws(
         &mut self,
@@ -128,6 +132,7 @@ impl Item {
         block: Option<&mut blocks::SendBlock<fn(finished: bool)>>,
     );
 
+    #[cfg(feature = "blocks")]
     pub fn seek_to_time_ch<'ear>(
         &mut self,
         val: cm::Time,
@@ -136,6 +141,7 @@ impl Item {
         unsafe { ns::try_catch(|| self.seek_to_time_ch_throws(val, block)) }
     }
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(seekToTime:toleranceBefore:toleranceAfter:completionHandler:)]
     pub unsafe fn seek_to_time_with_tolerance_ch_throws(
         &mut self,
@@ -145,6 +151,7 @@ impl Item {
         block: Option<&mut blocks::SendBlock<fn(finished: bool)>>,
     );
 
+    #[cfg(feature = "blocks")]
     pub fn seek_to_time_with_tolerance_ch<'ear>(
         &mut self,
         val: cm::Time,
