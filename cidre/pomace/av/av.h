@@ -62,6 +62,7 @@ Class AV_AUDIO_FILE;
 Class AV_AUDIO_CHANNEL_LAYOUT;
 
 Class AV_PLAYER;
+Class AV_QUEUE_PLAYER;
 Class AV_PLAYER_ITEM;
 
 Class AV_SAMPLE_BUFFER_DISPLAY_LAYER;
@@ -174,6 +175,7 @@ static void av_initializer(void)
         AV_URL_ASSET = [AVURLAsset class];
         
         AV_PLAYER_ITEM = [AVPlayerItem class];
+        
 #if TARGET_OS_WATCH
 #else
         AV_ASSET_WRITER = [AVAssetWriter class];
@@ -196,6 +198,7 @@ static void av_initializer(void)
         AV_AUDIO_CHANNEL_LAYOUT = [AVAudioChannelLayout class];
         
         AV_PLAYER = [AVPlayer class];
+        AV_QUEUE_PLAYER = [AVQueuePlayer class];
 
         AV_SPEECH_SYNTHESIS_VOICE = [AVSpeechSynthesisVoice class];
         AV_SPEECH_SYNTHESIZER = [AVSpeechSynthesizer class];

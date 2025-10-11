@@ -1,3 +1,4 @@
+use crate::av;
 use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 pub mod item;
@@ -76,9 +77,7 @@ impl Player {
         unsafe { Self::alloc().init_with_player_item_throws(item) }
     }
 
-    pub fn with_player_item<'ear>(
-        item: Option<&PlayerItem>,
-    ) -> Result<arc::R<Self>, &'ear ns::Exception> {
+    pub fn with_player_item<'ear>(item: Option<&PlayerItem>) -> ns::ExResult<'ear, arc::R<Self>> {
         ns::try_catch(|| unsafe { Self::with_player_item_throws(item) })
     }
 
@@ -96,12 +95,50 @@ impl Player {
 
 define_obj_type!(
     #[doc(alias = "AVQueuePlayer")]
-    pub QueuePlayer(Player)
+    pub QueuePlayer(Player),
+    AV_QUEUE_PLAYER
 );
+
+impl arc::A<QueuePlayer> {
+    #[objc::msg_send(initWithItems:)]
+    pub unsafe fn init_with_items_throws(
+        self,
+        items: &ns::Array<av::PlayerItem>,
+    ) -> arc::R<QueuePlayer>;
+}
+
+impl QueuePlayer {
+    pub fn with_items<'ear>(items: &ns::Array<av::PlayerItem>) -> ns::ExResult<'ear, arc::R<Self>> {
+        unsafe { ns::try_catch(|| Self::alloc().init_with_items_throws(items)) }
+    }
+
+    #[objc::msg_send(items)]
+    pub fn items(&self) -> arc::R<ns::Array<av::PlayerItem>>;
+
+    #[objc::msg_send(advanceToNextItem)]
+    pub fn advance_to_next_item(&mut self);
+
+    #[objc::msg_send(canInsertItem:afterItem:)]
+    pub fn can_insert_item_after(
+        &self,
+        item: &av::PlayerItem,
+        after: Option<&av::PlayerItem>,
+    ) -> bool;
+
+    #[objc::msg_send(insertItem:afterItem:)]
+    pub fn insert_item(&mut self, item: &av::PlayerItem, after: Option<&av::PlayerItem>);
+
+    #[objc::msg_send(removeItem:)]
+    pub fn remove_item(&mut self, item: &av::PlayerItem);
+
+    #[objc::msg_send(removeAllItems)]
+    pub fn remove_all_items(&mut self);
+}
 
 #[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_PLAYER: &'static objc::Class<Player>;
+    static AV_QUEUE_PLAYER: &'static objc::Class<QueuePlayer>;
 }
 
 impl ns::NotificationName {
