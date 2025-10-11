@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns};
+use crate::{arc, av, blocks, cg, cm, define_cls, define_obj_type, ns, objc};
 
 #[doc(alias = "AVPlayerItemStatus")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -13,6 +13,195 @@ define_obj_type!(
     #[doc(alias = "AVPlayerItem")]
     pub Item(ns::Id)
 );
+
+impl Item {
+    define_cls!(AV_PLAYER_ITEM);
+
+    #[objc::msg_send(playerItemWithURL:)]
+    pub fn with_url(val: &ns::Url) -> arc::R<Self>;
+
+    #[objc::msg_send(playerItemWithAsset:)]
+    pub fn with_asset(val: &av::Asset) -> arc::R<Self>;
+
+    #[objc::msg_send(playerItemWithAsset:automaticallyLoadedAssetKeys:)]
+    pub fn with_asset_auto_loaded_keys(
+        val: &av::Asset,
+        asset_keys: Option<&ns::Array<ns::String>>,
+    ) -> arc::R<Self>;
+
+    #[objc::msg_send(copy)]
+    pub fn copy(&self) -> arc::R<Self>;
+
+    #[objc::msg_send(status)]
+    pub fn status(&self) -> Status;
+
+    /// If the receiver's status is AVPlayerItemStatusFailed, this describes the error that caused the failure.
+    ///
+    /// The value of this property is an NSError that describes what caused the receiver to no longer be able to be played.
+    /// If the receiver's status is not AVPlayerItemStatusFailed, the value of this property is nil.
+    #[objc::msg_send(error)]
+    pub fn error(&self) -> Option<arc::R<ns::Error>>;
+}
+
+/// AVPlayerItemInspection
+impl Item {
+    /// Accessor for underlying av::Asset.
+    #[objc::msg_send(asset)]
+    pub fn asset(&self) -> arc::R<av::Asset>;
+
+    #[objc::msg_send(tracks)]
+    pub fn tracks(&self) -> arc::R<ns::Array<av::PlayerItemTrack>>;
+
+    #[objc::msg_send(duration)]
+    pub fn duration(&self) -> cm::Time;
+
+    #[objc::msg_send(presentationSize)]
+    pub fn presentation_size(&self) -> cg::Size;
+
+    #[objc::msg_send(automaticallyLoadedAssetKeys)]
+    pub fn auto_loaded_asset_keys(&self) -> arc::R<ns::Array<ns::String>>;
+}
+
+/// AVPlayerItemRateAndSteppingSupport
+impl Item {
+    #[objc::msg_send(canPlayFastForward)]
+    pub fn can_play_fast_forward(&self) -> bool;
+
+    #[objc::msg_send(canPlaySlowForward)]
+    pub fn can_play_slow_forward(&self) -> bool;
+
+    #[objc::msg_send(canPlayReverse)]
+    pub fn can_play_reverse(&self) -> bool;
+
+    #[objc::msg_send(canPlaySlowReverse)]
+    pub fn can_play_slow_reverse(&self) -> bool;
+
+    #[objc::msg_send(canPlayFastReverse)]
+    pub fn can_play_fast_reverse(&self) -> bool;
+
+    #[objc::msg_send(canStepForward)]
+    pub fn can_step_forward(&self) -> bool;
+
+    #[objc::msg_send(canStepBackward)]
+    pub fn can_step_backward(&self) -> bool;
+
+    #[objc::msg_send(configuredTimeOffsetFromLive)]
+    pub fn configured_time_offset_from_live(&self) -> bool;
+
+    #[objc::msg_send(setConfiguredTimeOffsetFromLive:)]
+    pub fn set_configured_time_offset_from_live(&mut self, val: cm::Time);
+
+    #[objc::msg_send(recommendedTimeOffsetFromLive)]
+    pub fn recommended_time_offset_from_live(&self) -> cm::Time;
+
+    #[objc::msg_send(automaticallyPreservesTimeOffsetFromLive)]
+    pub fn automatically_preserves_time_offset_from_live(&self) -> bool;
+
+    #[objc::msg_send(setAutomaticallyPreservesTimeOffsetFromLive:)]
+    pub fn set_automatically_preserves_time_offset_from_live(&mut self, val: bool);
+}
+
+/// AVPlayerItemTimeControl
+impl Item {
+    #[objc::msg_send(currentTime)]
+    pub fn current_time(&self) -> cm::Time;
+
+    #[objc::msg_send(forwardPlaybackEndTime)]
+    pub fn forward_playback_end_time(&self) -> cm::Time;
+
+    #[objc::msg_send(setForwardPlaybackEndTime:)]
+    pub fn set_forward_playback_end_time(&mut self, val: cm::Time);
+
+    #[objc::msg_send(reversePlaybackEndTime)]
+    pub fn reverse_playback_end_time(&self) -> cm::Time;
+
+    #[objc::msg_send(setReversePlaybackEndTime:)]
+    pub fn set_reverse_playback_end_time(&mut self, val: cm::Time);
+
+    #[objc::msg_send(seekableTimeRanges)]
+    pub fn seekable_time_ranges(&self) -> arc::R<ns::Array<ns::Value>>;
+
+    #[objc::msg_send(seekToTime:completionHandler:)]
+    pub unsafe fn seek_to_time_ch_throws(
+        &mut self,
+        val: cm::Time,
+        block: Option<&mut blocks::SendBlock<fn(finished: bool)>>,
+    );
+
+    pub fn seek_to_time_ch<'ear>(
+        &mut self,
+        val: cm::Time,
+        block: Option<&mut blocks::SendBlock<fn(finished: bool)>>,
+    ) -> ns::ExResult<'ear> {
+        unsafe { ns::try_catch(|| self.seek_to_time_ch_throws(val, block)) }
+    }
+
+    #[objc::msg_send(seekToTime:toleranceBefore:toleranceAfter:completionHandler:)]
+    pub unsafe fn seek_to_time_with_tolerance_ch_throws(
+        &mut self,
+        val: cm::Time,
+        tolerance_befor: cm::Time,
+        tolerance_after: cm::Time,
+        block: Option<&mut blocks::SendBlock<fn(finished: bool)>>,
+    );
+
+    pub fn seek_to_time_with_tolerance_ch<'ear>(
+        &mut self,
+        val: cm::Time,
+        tolerance_befor: cm::Time,
+        tolerance_after: cm::Time,
+        block: Option<&mut blocks::SendBlock<fn(finished: bool)>>,
+    ) -> ns::ExResult<'ear> {
+        unsafe {
+            ns::try_catch(|| {
+                self.seek_to_time_with_tolerance_ch_throws(
+                    val,
+                    tolerance_befor,
+                    tolerance_after,
+                    block,
+                )
+            })
+        }
+    }
+
+    #[objc::msg_send(cancelPendingSeeks)]
+    pub fn cancel_pending_seeks(&mut self);
+
+    #[objc::msg_send(currentDate)]
+    pub fn current_date(&self) -> Option<arc::R<ns::Date>>;
+
+    #[objc::msg_send(stepByCount:)]
+    pub fn step_by_count(&mut self, steps_count: ns::Integer);
+
+    #[objc::msg_send(timebase)]
+    pub fn timebase(&self) -> &cm::Timebase;
+}
+
+/// AVPlayerItemVisualPresentation
+impl Item {}
+
+/// AVPlayerItemAudioProcessing
+impl Item {
+    #[objc::msg_send(audioTimePitchAlgorithm)]
+    pub fn audio_time_pitch_algorithm(&self) -> Option<arc::R<av::AudioTimePitchAlgorithm>>;
+
+    #[objc::msg_send(setAudioTimePitchAlgorithm:)]
+    pub fn set_audio_time_pitch_algorithm(&mut self, val: Option<&av::AudioTimePitchAlgorithm>);
+
+    #[cfg(not(target_os = "watchos"))]
+    #[objc::msg_send(allowedAudioSpatializationFormats)]
+    pub fn allowed_audio_spatialization_formats(&self) -> av::AudioSpatializationFormats;
+
+    #[cfg(not(target_os = "watchos"))]
+    #[objc::msg_send(setAllowedAudioSpatializationFormats:)]
+    pub fn set_allowed_audio_spatialization_formats(&mut self, val: av::AudioSpatializationFormats);
+
+    #[objc::msg_send(audioMix)]
+    pub fn audio_mix(&self) -> Option<arc::R<av::AudioMix>>;
+
+    #[objc::msg_send(setAudioMix:)]
+    pub fn set_audio_mix(&mut self, val: Option<&av::AudioMix>);
+}
 
 impl ns::NotificationName {
     /// A notification the system posts when a player item’s time changes discontinuously.
@@ -113,4 +302,9 @@ unsafe extern "C" {
     static AVPlayerItemRecommendedTimeOffsetFromLiveDidChangeNotification:
         &'static ns::NotificationName;
     static AVPlayerItemMediaSelectionDidChangeNotification: &'static ns::NotificationName;
+}
+
+#[link(name = "av", kind = "static")]
+unsafe extern "C" {
+    static AV_PLAYER_ITEM: &'static objc::Class<Item>;
 }

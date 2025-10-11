@@ -4,6 +4,9 @@ pub mod item;
 pub use item::Item as PlayerItem;
 pub use item::Status as ItemStatus;
 
+pub mod item_track;
+pub use item_track::ItemTrack as PlayerItemTrack;
+
 #[doc(alias = "AVPlayerStatus")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]

@@ -33,6 +33,14 @@ pub use io_node::VpOtherAudioDuckingCfg;
 pub use io_node::VpOtherAudioDuckingLevel;
 pub use io_node::VpSpeechActivityEvent;
 
+mod mix;
+pub use mix::Mix;
+pub use mix::MixMut;
+
+mod processing_settings;
+pub use processing_settings::SpatializationFormats;
+pub use processing_settings::TimePitchAlgorithm;
+
 mod mixer_node;
 pub use mixer_node::MixerNode;
 

@@ -1,3 +1,4 @@
+use crate::arc;
 use crate::objc;
 
 pub type Result<'ear, R = (), E = &'ear Error> = std::result::Result<R, E>;
@@ -303,3 +304,18 @@ pub use text_attachment::TextAttachment;
 
 pub use objc::ns::Integer;
 pub use objc::ns::UInteger;
+
+mod zone;
+pub use zone::Zone;
+
+#[objc::protocol(NSCopying)]
+pub trait Copying {
+    #[objc::msg_send(copyWithZone:)]
+    unsafe fn copy_with_zone(&self, zone: *mut Zone) -> Option<arc::R<Id>>;
+}
+
+#[objc::protocol(NSMutableCopying)]
+pub trait CopyingMut {
+    #[objc::msg_send(mutableCopyWithZone:)]
+    unsafe fn copy_with_zone_mut(&self, zone: *mut Zone) -> Option<arc::R<Id>>;
+}
