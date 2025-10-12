@@ -20,3 +20,16 @@ unsafe extern "C-unwind" {
         sub_type: FourCharCode,
     ) -> arc::R<cf::String>;
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::cm;
+
+    #[test]
+    fn basics() {
+        let name = cm::MediaType(1).localized_name();
+        assert_eq!(name.to_string(), "");
+        let name = cm::MediaType::AUDIO.sub_type_localized_name(u32::from_be_bytes(*b"aac "));
+        assert_eq!(name.to_string(), "MPEG-4 AAC");
+    }
+}
