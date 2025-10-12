@@ -1,23 +1,19 @@
+/// Example of usage av::AudioMix and mt::AudioProcessingTap
+/// from [WWDC 2012 Session 517: Real-Time Media Effects and Processing during Playback](https://nonstrict.eu/wwdcindex/wwdc2012/517/)
+/// Speaker: Simon Goldrei
 use cidre::{av, cat, cm, mt, ns};
 
 fn main() {
-    let url = ns::Url::with_string(ns::str!(
-        c"https://samplelib.com/lib/preview/mp3/sample-15s.mp3"
-    ))
-    .unwrap();
+    let url = ns::Url::with_str("https://samplelib.com/lib/preview/mp3/sample-15s.mp3").unwrap();
 
     let mut item = av::PlayerItem::with_url(&url);
 
     let mut mix = av::AudioMixMut::new();
 
-    let callbacks = mt::AudioProcessingTapCbs::<1, std::ffi::c_void> {
-        version: mt::AudioProcessingTapCbsVersion::V0,
-        client_info: std::ptr::null_mut(),
-        init: None,
-        finalize: None,
+    let callbacks = mt::AudioProcessingTapCbs::<1, ()> {
         prepare: Some(prepare),
-        unprepare: None,
         process,
+        ..Default::default()
     };
     let tap = mt::AudioProcessingTap::with_callbacks(
         &callbacks,
@@ -26,7 +22,7 @@ fn main() {
     .unwrap();
 
     let mut params = av::AudioMixInputParamsMut::new();
-    params.set_audio_tap_processor(Some(&tap));
+    params.set_tap_processor(Some(&tap));
     mix.set_input_params_mut(&ns::arr![params]);
 
     item.set_audio_mix(Some(&mix));

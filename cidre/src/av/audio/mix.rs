@@ -67,11 +67,11 @@ impl InputParams {
     pub fn track_id(&self) -> cm::PersistentTrackId;
 
     #[objc::msg_send(audioTimePitchAlgorithm)]
-    pub fn audio_time_pitch_algorithm(&self) -> Option<arc::R<av::AudioTimePitchAlgorithm>>;
+    pub fn time_pitch_algorithm(&self) -> Option<arc::R<av::AudioTimePitchAlgorithm>>;
 
     #[cfg(all(feature = "mt", not(target_os = "watchos")))]
     #[objc::msg_send(audioTapProcessor)]
-    pub fn audio_tap_processor(&self) -> Option<&mt::AudioProcessingTap>;
+    pub fn tap_processor(&self) -> Option<&mt::AudioProcessingTap>;
 
     #[objc::msg_send(getVolumeRampForTime:startVolume:endVolume:timeRange:)]
     pub fn volume_ramp_for_time(
@@ -97,11 +97,11 @@ impl InputParamsMut {
     pub fn set_track_id(&mut self, val: cm::PersistentTrackId);
 
     #[objc::msg_send(setAudioTimePitchAlgorithm:)]
-    pub fn set_audio_time_pitch_algorithm(&mut self, val: Option<&av::AudioTimePitchAlgorithm>);
+    pub fn set_time_pitch_algorithm(&mut self, val: Option<&av::AudioTimePitchAlgorithm>);
 
     #[cfg(all(feature = "mt", not(target_os = "watchos")))]
     #[objc::msg_send(setAudioTapProcessor:)]
-    pub fn set_audio_tap_processor(&mut self, val: Option<&mt::AudioProcessingTap>);
+    pub fn set_tap_processor(&mut self, val: Option<&mt::AudioProcessingTap>);
 
     #[objc::msg_send(setVolumeRampFromStartVolume:toEndVolume:timeRange:)]
     pub unsafe fn set_volume_ramp_throws(

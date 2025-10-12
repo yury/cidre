@@ -158,6 +158,37 @@ pub struct Cbs<const N: usize, T> {
     pub process: ProcessCb,
 }
 
+impl<const N: usize, T> Default for Cbs<N, T> {
+    fn default() -> Self {
+        Self {
+            version: CbsVersion::V0,
+            client_info: std::ptr::null_mut(),
+            init: Default::default(),
+            finalize: Default::default(),
+            prepare: Default::default(),
+            unprepare: Default::default(),
+            process: default_process,
+        }
+    }
+}
+
+extern "C-unwind" fn default_process(
+    tap: &mut mt::AudioProcessingTap,
+    frames_n: cm::ItemCount,
+    _flags: mt::AudioProcessingTapFlags,
+    buf_list_in_out: &mut cat::AudioBufList,
+    frames_n_out: &mut cm::ItemCount,
+    flags_out: &mut mt::AudioProcessingTapFlags,
+) {
+    tap.src_audio_unchecked(
+        frames_n,
+        buf_list_in_out,
+        flags_out,
+        std::ptr::null_mut(),
+        frames_n_out,
+    );
+}
+
 #[cfg(not(target_os = "watchos"))]
 impl Tap {
     #[inline]
