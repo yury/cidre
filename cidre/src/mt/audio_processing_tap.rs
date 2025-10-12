@@ -208,6 +208,7 @@ impl Tap {
     }
 
     #[doc(alias = "MTAudioProcessingTapGetSourceAudio")]
+    #[inline]
     pub fn src_audio_unchecked<const N: usize>(
         &mut self,
         frames_n: cm::ItemCount,
@@ -226,6 +227,12 @@ impl Tap {
                 frames_n_out,
             )
         }
+    }
+
+    #[doc(alias = "MTAudioProcessingTapGetStorage")]
+    #[inline]
+    pub fn storage(&mut self) -> *mut std::ffi::c_void {
+        unsafe { MTAudioProcessingTapGetStorage(self) }
     }
 }
 
@@ -249,6 +256,8 @@ unsafe extern "C-unwind" {
         time_range_out: *mut cm::TimeRange,
         frames_n_out: *mut cm::ItemCount,
     ) -> os::Status;
+
+    fn MTAudioProcessingTapGetStorage(tap: &mut Tap) -> *mut std::ffi::c_void;
 }
 
 #[cfg(test)]
