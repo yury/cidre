@@ -1,7 +1,6 @@
-use crate::{arc, cat, cm, mt, os};
-use std::ptr::NonNull;
+use crate::{arc, cat, cf, cm, define_cf_type, define_opts, mt, os};
 
-use crate::{cf, define_cf_type, define_opts};
+use std::ptr::NonNull;
 
 #[cfg(not(target_os = "watchos"))]
 define_cf_type!(

@@ -210,6 +210,33 @@ impl Item {
     pub fn set_audio_mix(&mut self, val: Option<&av::AudioMix>);
 }
 
+/// AVPlayerItemPlayability
+impl Item {
+    #[objc::msg_send(loadedTimeRanges)]
+    pub fn loaded_time_ranges(&self) -> arc::R<ns::Array<ns::Value>>;
+
+    #[objc::msg_send(isPlaybackLikelyToKeepUp)]
+    pub fn is_playback_likely_to_keep_up(&self) -> bool;
+
+    #[objc::msg_send(isPlaybackBufferFull)]
+    pub fn is_playback_buffer_full(&self) -> bool;
+
+    #[objc::msg_send(isPlaybackBufferEmpty)]
+    pub fn is_playback_buffer_empty(&self) -> bool;
+
+    #[objc::msg_send(canUseNetworkResourcesForLiveStreamingWhilePaused)]
+    pub fn can_use_network_resources_for_live_streaming_while_paused(&self) -> bool;
+
+    #[objc::msg_send(setCanUseNetworkResourcesForLiveStreamingWhilePaused:)]
+    pub fn set_can_use_network_resources_for_live_streaming_while_paused(&mut self, val: bool);
+
+    #[objc::msg_send(preferredForwardBufferDuration)]
+    pub fn preferred_forward_buf_duration(&self) -> ns::TimeInterval;
+
+    #[objc::msg_send(setPreferredForwardBufferDuration:)]
+    pub fn set_preferred_forward_buf_duration(&mut self, val: ns::TimeInterval);
+}
+
 impl ns::NotificationName {
     /// A notification the system posts when a player item’s time changes discontinuously.
     ///
