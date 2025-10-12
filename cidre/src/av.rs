@@ -156,6 +156,8 @@ pub use audio::IoNode as AudioIoNode;
 #[cfg(feature = "blocks")]
 pub use audio::IoNodeInputBlock as AudioIoNodeInputBlock;
 pub use audio::Mix as AudioMix;
+pub use audio::MixInputParams as AudioMixInputParams;
+pub use audio::MixInputParamsMut as AudioMixInputParamsMut;
 pub use audio::MixMut as AudioMixMut;
 pub use audio::MixerNode as AudioMixerNode;
 pub use audio::Node as AudioNode;

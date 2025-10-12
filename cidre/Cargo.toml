@@ -350,6 +350,10 @@ required-features = ["custom-allocator"]
 name = "av-audio-engine"
 required-features = ["av"]
 
+[[example]]
+name = "av-player-item-tap"
+required-features = ["av"]
+
 
 [package.metadata.playground]
 features = ["full"]

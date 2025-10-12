@@ -10,3 +10,5 @@ pub use audio_processing_tap::PrepareCb as AudioProcessingTapPrepareCb;
 pub use audio_processing_tap::ProcessCb as AudioProcessingTapProcessCb;
 pub use audio_processing_tap::Tap as AudioProcessingTap;
 pub use audio_processing_tap::UnprepareCb as AudioProcessingTapUnprepareCb;
+
+pub mod format_names;

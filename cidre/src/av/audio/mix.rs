@@ -39,6 +39,9 @@ define_obj_type!(
 impl MixMut {
     #[objc::msg_send(setInputParameters:)]
     pub fn set_input_params(&mut self, val: &ns::Array<InputParams>);
+
+    #[objc::msg_send(setInputParameters:)]
+    pub fn set_input_params_mut(&mut self, val: &ns::Array<InputParamsMut>);
 }
 
 define_obj_type!(

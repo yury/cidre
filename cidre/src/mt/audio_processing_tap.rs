@@ -1,4 +1,4 @@
-use crate::{arc, cat, cm, os};
+use crate::{arc, cat, cm, mt, os};
 use std::ptr::NonNull;
 
 use crate::{cf, define_cf_type, define_opts};
@@ -47,17 +47,17 @@ impl Flags {
 
 #[doc(alias = "MTAudioProcessingTapInitCallback")]
 pub type InitCb<T = std::ffi::c_void> = extern "C-unwind" fn(
-    tap: &mut Tap,
+    tap: &mut mt::AudioProcessingTap,
     client_info: *mut T,
     tap_storage_out: *mut NonNull<std::ffi::c_void>,
 );
 
 #[doc(alias = "MTAudioProcessingTapFinalizeCallback")]
-pub type FinalizeCb = extern "C-unwind" fn(tap: &mut Tap);
+pub type FinalizeCb = extern "C-unwind" fn(tap: &mut mt::AudioProcessingTap);
 
 #[doc(alias = "MTAudioProcessingTapPrepareCallback")]
 pub type PrepareCb = extern "C-unwind" fn(
-    tap: &mut Tap,
+    tap: &mut mt::AudioProcessingTap,
     frames_max: cm::ItemCount,
     processing_format: &cat::AudioStreamBasicDesc,
 );
@@ -70,15 +70,69 @@ pub type PrepareCb = extern "C-unwind" fn(
 ///
 /// Process callbacks will only ever be called after the prepare callback returns, and before unprepare is called.
 #[doc(alias = "MTAudioProcessingTapUnprepareCallback")]
-pub type UnprepareCb = extern "C-unwind" fn(tap: &mut Tap);
+pub type UnprepareCb = extern "C-unwind" fn(tap: &mut mt::AudioProcessingTap);
 
+/// A function called when an audio track has data to be processed by its tap.
+///
+/// A processing callback is invoked when the audio track has data that can be processed by a
+/// given tap.
+///
+/// The processing callback will be called when there is sufficient input data to provide for
+/// processing. The callback should then go and request as much source data as it needs in order
+/// to produce the requested number of processed samples. When the callback requests source data,
+/// it may receive less data than it requests.
+///
+/// The tap must provide the same number of samples that are being requested. Under normal circumstances,
+/// the source data it requests should be satisfied (as the client running the audio queue is also
+/// providing the queue with the audio source material). If there is insufficient source data available
+/// (this is indicated by the numberFramesOut from the GetSourceAudio call), then the processing tap
+/// should cope as best as it can; it can either return less data than was requested, insert silence,
+/// insert noise, etc.
+/// If less data is returned than requested, the remainder will be filled with silence.
+///
+/// A processing tap is a real-time operation, so the general Core Audio limitations for real-time
+/// processing apply.  For example, care should be taken not to allocate memory or call into
+/// blocking system calls, as this will interfere with the real-time nature of audio playback.
+///
+/// Under normal operation, the source data will be continuous from the last time the callback was
+/// called, and the processed samples should be continuous from the previous samples returned. If
+/// there is any discontinuity between the last samples provided for processing, the audio queue will
+/// set the kMTAudioProcessingTapFlag_StartOfStream bit in the flags. After a discontinuity, the
+/// first sample that the processing tap outputs should correspond to the first sample that was
+/// provided in the source samples (so a reset + consequent process serves to re-anchor a
+/// relationship between the processing tap's source and processed samples). In this case, the
+/// processing tap will typically discard any previous state (for example, if a processing tap was
+/// adding a reverb to a signal, then the discontinuity flag would act the same as AudioUnitReset;
+/// any previous source information in the processing tap should be discarded).
+///
+/// The caller is responsible for absorbing any processing delays. For example, if the
+/// processing is to be done by an audio unit that reports a processing latency, then the caller
+/// should remove those latency samples from the audio unit's rendering and not return them to
+/// the tap.
+///
+/// The processing tap may operate on the provided source data in place ("in-place processing")
+/// and return pointers to that buffer, rather than its own. This is similar to audio
+/// unit render operations. The processing tap will be provided with a bufferList on input
+/// where the mData pointers are NULL.
+///
+/// When the output audio is stopped asynchronously, the processing tap will see the
+/// kMTAudioProcessingTapFlag_EndOfStream bit set on return from GetSourceAudio, and is responsible
+/// for propagating this bit from the callback when its processing has reached this point.
+///
+/// A processing tap will NEVER see the same source data again, so, it should keep its own copy,
+/// if it needs to keep it for further reference past the duration of this call. It also cannot
+/// assume that the pointers to the source data that it retrieves will remain valid AFTER the
+/// processing tap has executed.
+///
+/// Should the processing tap provide custom buffers in bufferListInOut, it should ensure that the
+/// data pointers remain valid until the tap is executed again.
 #[doc(alias = "MTAudioProcessingTapProcessCallback")]
 pub type ProcessCb<const N: usize = 1> = extern "C-unwind" fn(
-    tap: &mut Tap,
+    tap: &mut mt::AudioProcessingTap,
     frames_n: cm::ItemCount,
-    flags: Flags,
+    flags: mt::AudioProcessingTapFlags,
     buf_list_in_out: &mut cat::AudioBufList<N>,
-    out_frames_n: &mut cm::ItemCount,
+    frames_n_out: &mut cm::ItemCount,
     flags_out: &mut Flags,
 );
 
@@ -94,7 +148,7 @@ impl CbsVersion {
 
 #[doc(alias = "MTAudioProcessingTapCallbacks")]
 #[derive(Debug)]
-#[repr(C)]
+#[repr(C, packed(4))]
 pub struct Cbs<const N: usize, T> {
     pub version: CbsVersion,
     pub client_info: *mut T,
@@ -134,7 +188,27 @@ impl Tap {
     }
 
     #[doc(alias = "MTAudioProcessingTapGetSourceAudio")]
+    #[inline]
     pub fn src_audio<const N: usize>(
+        &mut self,
+        frames_n: cm::ItemCount,
+        buf_list_in_out: &mut cat::AudioBufList<N>,
+        flags: *mut Flags,
+        time_range_out: *mut cm::TimeRange,
+        frames_n_out: *mut cm::ItemCount,
+    ) -> os::Result {
+        self.src_audio_unchecked(
+            frames_n,
+            buf_list_in_out,
+            flags,
+            time_range_out,
+            frames_n_out,
+        )
+        .result()
+    }
+
+    #[doc(alias = "MTAudioProcessingTapGetSourceAudio")]
+    pub fn src_audio_unchecked<const N: usize>(
         &mut self,
         frames_n: cm::ItemCount,
         buf_list_in_out: &mut cat::AudioBufList<N>,

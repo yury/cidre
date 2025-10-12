@@ -34,6 +34,8 @@ pub use io_node::VpOtherAudioDuckingLevel;
 pub use io_node::VpSpeechActivityEvent;
 
 mod mix;
+pub use mix::InputParams as MixInputParams;
+pub use mix::InputParamsMut as MixInputParamsMut;
 pub use mix::Mix;
 pub use mix::MixMut;
 
