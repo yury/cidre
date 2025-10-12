@@ -1,5 +1,7 @@
-use crate::{arc, define_cls, define_obj_type, ns, objc};
-use crate::{av, cm};
+use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::{blocks, dispatch};
 
 pub mod item;
 pub use item::Item as PlayerItem;
@@ -7,6 +9,11 @@ pub use item::Status as ItemStatus;
 
 pub mod item_track;
 pub use item_track::ItemTrack as PlayerItemTrack;
+
+mod looper;
+pub use looper::Looper as PlayerLooper;
+pub use looper::LooperItemOrdering as PlayerLooperItemOrdering;
+pub use looper::LooperStatus as PlayerLooperStatus;
 
 #[doc(alias = "AVPlayerStatus")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -186,6 +193,116 @@ impl Player {
 
     #[objc::msg_send(seekToDate:)]
     pub fn seek_to_date(&mut self, date: &ns::Date);
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(seekToDate:completionHandler:)]
+    pub fn seek_to_date_ch(
+        &mut self,
+        date: &ns::Date,
+        block: &mut blocks::SendBlock<fn(finished: bool)>,
+    );
+
+    #[objc::msg_send(seekToTime:)]
+    pub fn seek_to_time(&mut self, val: cm::Time);
+
+    #[objc::msg_send(seekToTime:toleranceBefore:toleranceAfter:)]
+    pub fn seek_to_time_with_tolerance(
+        &mut self,
+        val: cm::Time,
+        tolerance_before: cm::Time,
+        tolerance_after: cm::Time,
+    );
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(seekToTime:completionHandler:)]
+    pub fn seek_to_time_ch(
+        &mut self,
+        time: cm::Time,
+        block: &mut blocks::SendBlock<fn(finished: bool)>,
+    );
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(seekToTime:toleranceBefore:toleranceAfter:completionHandler:)]
+    pub fn seek_to_time_with_tolerance_ch(
+        &mut self,
+        val: cm::Time,
+        tolerance_before: cm::Time,
+        tolerance_after: cm::Time,
+        block: &mut blocks::SendBlock<fn(finished: bool)>,
+    );
+}
+
+/// AVPlayerAdvancedRateControl
+impl Player {
+    #[objc::msg_send(automaticallyWaitsToMinimizeStalling)]
+    pub fn automatically_waits_to_minimize_stalling(&self) -> bool;
+
+    #[objc::msg_send(setAutomaticallyWaitsToMinimizeStalling:)]
+    pub fn set_automatically_waits_to_minimize_stalling(&mut self, val: bool);
+
+    #[objc::msg_send(setRate:time:atHostTime:)]
+    pub unsafe fn set_rate_time_throws(
+        &mut self,
+        rate: f32,
+        time: cm::Time,
+        at_host_clock_time: cm::Time,
+    );
+
+    pub fn set_rate_time<'ear>(
+        &mut self,
+        rate: f32,
+        time: cm::Time,
+        at_host_clock_time: cm::Time,
+    ) -> ns::ExResult<'ear> {
+        unsafe { ns::try_catch(|| self.set_rate_time_throws(rate, time, at_host_clock_time)) }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(prerollAtRate:completionHandler:)]
+    pub fn preroll_at_rate_ch(
+        &mut self,
+        rate: f32,
+        block: &mut blocks::SendBlock<fn(finished: bool)>,
+    );
+
+    #[objc::msg_send(cancelPendingPrerolls)]
+    pub fn cancel_pending_prerolls(&mut self);
+
+    #[objc::msg_send(sourceClock)]
+    pub fn src_clock(&self) -> Option<&cm::Clock>;
+
+    #[objc::msg_send(setSourceClock:)]
+    pub fn set_src_clock(&mut self, val: Option<&cm::Clock>);
+}
+
+/// AVPlayerTimeObservation
+impl Player {
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(addPeriodicTimeObserverForInterval:queue:usingBlock:)]
+    pub fn add_periodic_time_observer_for_interval(
+        &mut self,
+        interval: cm::Time,
+        queue: Option<&dispatch::Queue>,
+        block: &mut blocks::SyncBlock<fn(time: cm::Time)>,
+    ) -> arc::R<ns::Id>;
+
+    #[objc::msg_send(removeTimeObserver:)]
+    pub fn remove_time_observer(&mut self, observer: &ns::Id);
+}
+
+/// AVPlayerMediaControl
+impl Player {
+    #[objc::msg_send(volume)]
+    pub fn volume(&self) -> f32;
+
+    #[objc::msg_send(setVolume:)]
+    pub fn set_volume(&mut self, val: f32);
+
+    #[objc::msg_send(isMuted)]
+    pub fn is_muted(&self) -> bool;
+
+    #[objc::msg_send(setMuted:)]
+    pub fn set_muted(&mut self, val: bool);
 }
 
 define_obj_type!(

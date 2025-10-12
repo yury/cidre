@@ -64,6 +64,7 @@ Class AV_AUDIO_CHANNEL_LAYOUT;
 Class AV_PLAYER;
 Class AV_QUEUE_PLAYER;
 Class AV_PLAYER_ITEM;
+Class AV_PLAYER_LOOPER;
 
 Class AV_SAMPLE_BUFFER_DISPLAY_LAYER;
 Class AV_SAMPLE_BUFFER_VIDEO_RENDERER;
@@ -199,6 +200,7 @@ static void av_initializer(void)
         
         AV_PLAYER = [AVPlayer class];
         AV_QUEUE_PLAYER = [AVQueuePlayer class];
+        AV_PLAYER_LOOPER = [AVPlayerLooper class];
 
         AV_SPEECH_SYNTHESIS_VOICE = [AVSpeechSynthesisVoice class];
         AV_SPEECH_SYNTHESIZER = [AVSpeechSynthesizer class];
