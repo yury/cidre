@@ -12,3 +12,16 @@ pub use audio_processing_tap::Tap as AudioProcessingTap;
 pub use audio_processing_tap::UnprepareCb as AudioProcessingTapUnprepareCb;
 
 pub mod format_names;
+
+/// Allows the client to use media format readers appropriate for professional video workflows.
+#[doc(alias = "MTRegisterProfessionalVideoWorkflowFormatReaders")]
+#[cfg(target_os = "macos")]
+pub fn register_professional_video_workflow_format_readers() {
+    unsafe { MTRegisterProfessionalVideoWorkflowFormatReaders() }
+}
+
+#[cfg(target_os = "macos")]
+#[link(name = "MediaToolkit", kind = "framework")]
+unsafe extern "C" {
+    fn MTRegisterProfessionalVideoWorkflowFormatReaders();
+}
