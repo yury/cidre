@@ -8,8 +8,6 @@ fn main() {
 
     let mut item = av::PlayerItem::with_url(&url);
 
-    let mut mix = av::AudioMixMut::new();
-
     let callbacks = mt::AudioProcessingTapCbs::<1, ()> {
         prepare: Some(prepare),
         process,
@@ -22,7 +20,9 @@ fn main() {
     .unwrap();
 
     let mut params = av::AudioMixInputParamsMut::new();
-    params.set_tap_processor(Some(&tap));
+    params.set_tap(Some(&tap));
+
+    let mut mix = av::AudioMixMut::new();
     mix.set_input_params_mut(&ns::arr![params]);
 
     item.set_audio_mix(Some(&mix));

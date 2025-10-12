@@ -71,7 +71,7 @@ impl InputParams {
 
     #[cfg(all(feature = "mt", not(target_os = "watchos")))]
     #[objc::msg_send(audioTapProcessor)]
-    pub fn tap_processor(&self) -> Option<&mt::AudioProcessingTap>;
+    pub fn tap(&self) -> Option<&mt::AudioProcessingTap>;
 
     #[objc::msg_send(getVolumeRampForTime:startVolume:endVolume:timeRange:)]
     pub fn volume_ramp_for_time(
@@ -101,7 +101,7 @@ impl InputParamsMut {
 
     #[cfg(all(feature = "mt", not(target_os = "watchos")))]
     #[objc::msg_send(setAudioTapProcessor:)]
-    pub fn set_tap_processor(&mut self, val: Option<&mt::AudioProcessingTap>);
+    pub fn set_tap(&mut self, val: Option<&mt::AudioProcessingTap>);
 
     #[objc::msg_send(setVolumeRampFromStartVolume:toEndVolume:timeRange:)]
     pub unsafe fn set_volume_ramp_throws(
