@@ -223,14 +223,14 @@ impl Tap {
         &mut self,
         frames_n: cm::ItemCount,
         buf_list_in_out: &mut cat::AudioBufList<N>,
-        flags: *mut Flags,
+        flags_out: *mut Flags,
         time_range_out: *mut cm::TimeRange,
         frames_n_out: *mut cm::ItemCount,
     ) -> os::Result {
         self.src_audio_unchecked(
             frames_n,
             buf_list_in_out,
-            flags,
+            flags_out,
             time_range_out,
             frames_n_out,
         )
