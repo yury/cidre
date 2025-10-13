@@ -10,6 +10,12 @@ pub use item::Status as ItemStatus;
 pub mod item_track;
 pub use item_track::ItemTrack as PlayerItemTrack;
 
+pub mod item_output;
+pub use item_output::ItemOutput;
+pub use item_output::ItemOutputPullDelegate;
+pub use item_output::ItemOutputPullDelegateImpl;
+pub use item_output::ItemVideoOutput;
+
 mod looper;
 pub use looper::Looper as PlayerLooper;
 pub use looper::LooperItemOrdering as PlayerLooperItemOrdering;

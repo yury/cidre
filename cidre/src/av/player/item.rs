@@ -237,6 +237,21 @@ impl Item {
     pub fn set_preferred_forward_buf_duration(&mut self, val: ns::TimeInterval);
 }
 
+/// AVPlayerItemOutputs
+impl Item {
+    /// Adds the specified instance of AVPlayerItemOutput to the receiver's collection of outputs.
+    #[objc::msg_send(addOutput:)]
+    pub fn add_output(&mut self, output: &av::PlayerItemOutput);
+
+    /// Removes the specified instance of AVPlayerItemOutput from the receiver's collection of outputs.
+    #[objc::msg_send(removeOutput:)]
+    pub fn remove_output(&mut self, output: &av::PlayerItemOutput);
+
+    /// The collection of associated outputs.
+    #[objc::msg_send(outputs)]
+    pub fn outputs(&self) -> arc::R<ns::Array<av::PlayerItemOutput>>;
+}
+
 impl ns::NotificationName {
     /// A notification the system posts when a player item’s time changes discontinuously.
     ///
