@@ -78,6 +78,12 @@ pub use sync::Clock;
 pub use sync::ClockOrTimebase;
 pub use sync::Timebase;
 
+#[cfg(not(target_os = "macos"))]
+pub mod audio_clock;
+
+#[cfg(target_os = "macos")]
+pub mod audio_device_clock;
+
 pub mod memory_pool;
 pub use memory_pool::MemPool;
 pub use memory_pool::keys as memory_pool_options;

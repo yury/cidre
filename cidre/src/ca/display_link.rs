@@ -14,9 +14,11 @@ pub trait Target: objc::Obj {
 }
 
 impl DisplayLink {
+    #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(displayLinkWithTarget:selector:)]
     pub fn with_target_selector(target: &ns::Id, selector: &objc::Sel) -> arc::R<Self>;
 
+    #[cfg(not(target_os = "macos"))]
     pub fn with<D: TargetImpl>(target: &D) -> arc::R<Self> {
         Self::with_target_selector(target.as_id_ref(), D::sel_on_display_link())
     }
@@ -59,6 +61,12 @@ impl DisplayLink {
 
     #[objc::msg_send(setPreferredFrameRateRange:)]
     pub fn set_preferred_frame_rate_range(&mut self, val: ca::FrameRateRange);
+
+    #[objc::msg_send(isPaused)]
+    pub fn is_paused(&self) -> bool;
+
+    #[objc::msg_send(setPaused:)]
+    pub fn set_paused(&mut self, val: bool);
 }
 
 #[link(name = "ca", kind = "static")]

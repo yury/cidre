@@ -501,7 +501,7 @@ impl PropSelector {
     pub const AGGREGATE_DEVICE_SUB_TAP_LIST: Self = Self(u32::from_be_bytes(*b"atap"));
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(transparent)]
 pub struct Device(pub Obj);
 

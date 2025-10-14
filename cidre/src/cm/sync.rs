@@ -17,7 +17,7 @@ define_cf_type!(
     /// Additionally, the cm::Sync infrastructure monitors relative drift between cm::Clocks.
     #[doc(alias = "CMClock")]
     #[doc(alias = "CMClockRef")]
-    Clock(cf::Type)
+    Clock(ClockOrTimebase)
 );
 
 define_cf_type!(
@@ -37,7 +37,7 @@ define_cf_type!(
     /// the timebase's time changes relative to the ultimate source clock.
     #[doc(alias = "CMTimebase")]
     #[doc(alias = "CMTimebaseRef")]
-    Timebase(cf::Type)
+    Timebase(ClockOrTimebase)
 );
 
 define_cf_type!(
@@ -61,30 +61,6 @@ impl Clock {
     #[doc(alias = "CMClockGetHostTimeClock")]
     pub fn host_time_clock() -> &'static Clock {
         unsafe { CMClockGetHostTimeClock() }
-    }
-
-    /// Use `audio_clock`
-    #[cfg(not(target_os = "macos"))]
-    #[doc(alias = "CMAudioClockCreate")]
-    #[inline]
-    pub unsafe fn audio_clock_create_in(
-        allocator: Option<&cf::Allocator>,
-        clock_out: *mut Option<arc::R<Clock>>,
-    ) -> os::Result {
-        unsafe { CMAudioClockCreate(allocator, clock_out).result() }
-    }
-
-    /// Creates a clock that advances at the same rate as audio output.
-    ///
-    /// This clock will not drift from audio output, but may drift from cm::Clock::host_time_clock().
-    /// When audio output is completely stopped, the clock continues to advance, tracking cm::Clock::host_time_clock()
-    /// until audio output starts up again.
-    /// This clock is suitable for use as av::Player.master_clock when synchronizing video-only playback
-    /// with audio played through other APIs or objects.
-    #[cfg(not(target_os = "macos"))]
-    #[inline]
-    pub fn audio_clock() -> os::Result<arc::R<Clock>> {
-        unsafe { os::result_unchecked(|res| Self::audio_clock_create_in(None, res)) }
     }
 
     #[doc(alias = "CMClockGetTime")]
@@ -198,11 +174,6 @@ pub mod sync_err {
 unsafe extern "C-unwind" {
     fn CMClockGetTypeID() -> cf::TypeId;
     fn CMClockGetHostTimeClock() -> &'static Clock;
-    #[cfg(not(target_os = "macos"))]
-    fn CMAudioClockCreate(
-        allocator: Option<&cf::Allocator>,
-        clock_out: *mut Option<arc::R<Clock>>,
-    ) -> os::Status;
 
     fn CMClockGetTime(clock: &Clock) -> cm::Time;
     fn CMClockGetAnchorTime(

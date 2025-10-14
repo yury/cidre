@@ -51,6 +51,10 @@ impl arc::A<ItemVideoOutput> {
 impl ItemVideoOutput {
     define_cls!(AV_PLAYER_ITEM_VIDEO_OUTPUT);
 
+    pub fn new() -> arc::R<ItemVideoOutput> {
+        Self::with_pixel_buf_attrs(None)
+    }
+
     pub fn with_pixel_buf_attrs(
         pixel_buf_attrs: Option<ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<ItemVideoOutput> {
@@ -66,11 +70,20 @@ impl ItemVideoOutput {
     #[objc::msg_send(hasNewPixelBufferForItemTime:)]
     pub fn has_new_pixel_buf_for_item_time(&self, item_time: cm::Time) -> bool;
 
-    #[objc::msg_send(copyPixelBufferForItemTime:)]
+    #[objc::msg_send(copyPixelBufferForItemTime:itemTimeForDisplay:)]
+    pub fn pixel_buf_for_item_time_for_display(
+        &self,
+        item_time: cm::Time,
+        out_item_time_for_display: *mut cm::Time,
+    ) -> Option<arc::Retained<cv::PixelBuf>>;
+
+    #[inline]
     pub fn pixel_buf_for_item_time(
         &self,
         item_time: cm::Time,
-    ) -> Option<arc::Retained<cv::PixelBuf>>;
+    ) -> Option<arc::Retained<cv::PixelBuf>> {
+        self.pixel_buf_for_item_time_for_display(item_time, std::ptr::null_mut())
+    }
 
     #[objc::msg_send(setDelegate:queue:)]
     pub fn set_delegate<D: ItemOutputPullDelegate>(

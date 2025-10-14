@@ -81,11 +81,18 @@ impl Screen {
 impl Screen {
     #[objc::msg_send(displayLinkWithTarget:selector:)]
     #[objc::available(macos = 14.0)]
-    pub fn display_link_with_target(
+    pub fn display_link_with_target_selector(
         &self,
         target: &ns::Id,
-        selector: objc::Sel,
+        selector: &objc::Sel,
     ) -> arc::R<ca::DisplayLink>;
+
+    pub fn display_link_with_target<D: ca::DisplayLinkTargetImpl>(
+        &self,
+        target: &D,
+    ) -> arc::R<ca::DisplayLink> {
+        self.display_link_with_target_selector(target.as_id_ref(), D::sel_on_display_link())
+    }
 }
 
 unsafe extern "C" {

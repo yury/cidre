@@ -148,7 +148,7 @@ impl CbsVersion {
 #[doc(alias = "MTAudioProcessingTapCallbacks")]
 #[derive(Debug)]
 #[repr(C, packed(4))]
-pub struct Cbs<const N: usize, T> {
+pub struct Cbs<T, const N: usize = 1> {
     pub version: CbsVersion,
     pub client_info: *mut T,
     pub init: Option<InitCb<T>>,
@@ -158,7 +158,7 @@ pub struct Cbs<const N: usize, T> {
     pub process: ProcessCb,
 }
 
-impl<const N: usize, T> Default for Cbs<N, T> {
+impl<T, const N: usize> Default for Cbs<T, N> {
     fn default() -> Self {
         Self {
             version: CbsVersion::V0,
@@ -197,8 +197,8 @@ impl Tap {
     }
 
     #[doc(alias = "MTAudioProcessingTapCreate")]
-    pub fn with_callbacks_in<const N: usize, T>(
-        callbacks: &Cbs<N, T>,
+    pub fn with_callbacks_in<T, const N: usize>(
+        callbacks: &Cbs<T, N>,
         flags: CreationFlags,
         allocator: Option<&cf::Allocator>,
     ) -> os::Result<Option<arc::R<Tap>>> {
@@ -210,8 +210,8 @@ impl Tap {
     }
 
     #[doc(alias = "MTAudioProcessingTapCreate")]
-    pub fn with_callbacks<const N: usize, T>(
-        callbacks: &Cbs<N, T>,
+    pub fn with_callbacks<T, const N: usize>(
+        callbacks: &Cbs<T, N>,
         flags: CreationFlags,
     ) -> os::Result<arc::R<Tap>> {
         unsafe { std::mem::transmute(Self::with_callbacks_in(callbacks, flags, None)) }
@@ -273,7 +273,7 @@ unsafe extern "C-unwind" {
 
     fn MTAudioProcessingTapCreate(
         allocator: Option<&cf::Allocator>,
-        callbacks: *const Cbs<1, std::ffi::c_void>,
+        callbacks: *const Cbs<std::ffi::c_void>,
         flags: CreationFlags,
         tap_out: *mut Option<arc::R<Tap>>,
     ) -> os::Status;
@@ -281,7 +281,7 @@ unsafe extern "C-unwind" {
     fn MTAudioProcessingTapGetSourceAudio(
         tap: &mut Tap,
         frames_n: cm::ItemCount,
-        buf_list_in_out: &mut cat::AudioBufList<1>,
+        buf_list_in_out: &mut cat::AudioBufList,
         flags: *mut Flags,
         time_range_out: *mut cm::TimeRange,
         frames_n_out: *mut cm::ItemCount,
