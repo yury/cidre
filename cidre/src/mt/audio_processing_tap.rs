@@ -48,7 +48,7 @@ impl Flags {
 pub type InitCb<T = std::ffi::c_void> = extern "C-unwind" fn(
     tap: &mut mt::AudioProcessingTap,
     client_info: *mut T,
-    tap_storage_out: *mut NonNull<std::ffi::c_void>,
+    tap_storage_out: NonNull<*mut std::ffi::c_void>,
 );
 
 #[doc(alias = "MTAudioProcessingTapFinalizeCallback")]

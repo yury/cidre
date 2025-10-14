@@ -182,6 +182,9 @@ impl Item {
 
     #[objc::msg_send(timebase)]
     pub fn timebase(&self) -> &cm::Timebase;
+
+    #[objc::msg_send(timebase)]
+    pub fn timebase_mut(&mut self) -> &mut cm::Timebase;
 }
 
 /// AVPlayerItemVisualPresentation
