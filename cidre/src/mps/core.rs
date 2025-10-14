@@ -3,11 +3,15 @@ mod types;
 pub use types::AliasingStrategy;
 pub use types::DType;
 pub use types::DimensionSlice;
+pub use types::ImageCoordinate;
 pub use types::ImageEdgeMode;
 pub use types::ImageFeatureChannelFormat;
+pub use types::ImageRegion;
 pub use types::KernelOpts;
 pub use types::Offset;
 pub use types::Origin;
+pub use types::Region;
+pub use types::ScaleTransform;
 pub use types::Shape;
 pub use types::Size;
 

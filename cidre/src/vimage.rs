@@ -1,6 +1,7 @@
 mod types;
 pub use types::AffineTransformF32;
 pub use types::AffineTransformF64;
+pub use types::ArgbToYpCbCr;
 pub use types::ArgbToYpCbCrMatrix;
 pub use types::Buf;
 pub use types::CGAffineTransform;

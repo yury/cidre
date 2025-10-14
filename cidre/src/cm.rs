@@ -21,6 +21,7 @@ pub use format_description::VideoFormatDesc;
 mod format_description_bridge;
 pub use format_description_bridge::ImageDescFlavor;
 pub use format_description_bridge::SoundDescFlavor;
+pub use format_description_bridge::TextDescFlavor;
 pub use format_description_bridge::err as format_desc_bridge_err;
 pub use format_description_bridge::swap_be_image_desc_to_host;
 pub use format_description_bridge::swap_be_sound_desc_to_host;

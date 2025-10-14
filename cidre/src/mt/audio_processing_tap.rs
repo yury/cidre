@@ -261,7 +261,13 @@ impl Tap {
 
     #[doc(alias = "MTAudioProcessingTapGetStorage")]
     #[inline]
-    pub fn storage(&mut self) -> *mut std::ffi::c_void {
+    pub fn storage(&self) -> *const std::ffi::c_void {
+        unsafe { MTAudioProcessingTapGetStorage(self) }
+    }
+
+    #[doc(alias = "MTAudioProcessingTapGetStorage")]
+    #[inline]
+    pub fn storage_mut(&mut self) -> *mut std::ffi::c_void {
         unsafe { MTAudioProcessingTapGetStorage(self) }
     }
 }
@@ -287,7 +293,7 @@ unsafe extern "C-unwind" {
         frames_n_out: *mut cm::ItemCount,
     ) -> os::Status;
 
-    fn MTAudioProcessingTapGetStorage(tap: &mut Tap) -> *mut std::ffi::c_void;
+    fn MTAudioProcessingTapGetStorage(tap: &Tap) -> *mut std::ffi::c_void;
 }
 
 #[cfg(test)]

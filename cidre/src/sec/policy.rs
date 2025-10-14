@@ -1,11 +1,6 @@
-use crate::{api, arc, cf, define_cf_type};
+use crate::{api, arc, cf, sec};
 
-define_cf_type!(
-    #[doc(alias = "SecPolicyRef")]
-    Policy(cf::Type)
-);
-
-impl Policy {
+impl sec::Policy {
     #[doc(alias = "SecPolicyGetTypeID")]
     pub fn type_id() -> cf::TypeId {
         unsafe { SecPolicyGetTypeID() }
@@ -131,10 +126,10 @@ unsafe extern "C-unwind" {
     fn SecPolicyCreateWithProperties(
         policy_identifier: &cf::Type,
         props: Option<&cf::Dictionary>,
-    ) -> Option<arc::R<Policy>>;
-    fn SecPolicyCreateRevocation() -> Option<arc::R<Policy>>;
-    fn SecPolicyCreateSSL(server: bool, hostname: Option<&cf::String>) -> arc::R<Policy>;
-    fn SecPolicyCreateBasicX509() -> arc::R<Policy>;
+    ) -> Option<arc::R<sec::Policy>>;
+    fn SecPolicyCreateRevocation() -> Option<arc::R<sec::Policy>>;
+    fn SecPolicyCreateSSL(server: bool, hostname: Option<&cf::String>) -> arc::R<sec::Policy>;
+    fn SecPolicyCreateBasicX509() -> arc::R<sec::Policy>;
 
     static kSecPolicyAppleX509Basic: &'static cf::String;
     static kSecPolicyAppleSSL: &'static cf::String;
