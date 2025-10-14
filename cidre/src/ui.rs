@@ -202,7 +202,9 @@ pub use window_scene::WindowScene;
 pub use window_scene::WindowSceneDelegate;
 pub use window_scene::WindowSceneDelegateImpl;
 
+#[cfg(target_os = "ios")]
 mod window_scene_activation_request_options;
+#[cfg(target_os = "ios")]
 pub use window_scene_activation_request_options::WindowSceneActivationRequestOpts;
 
 #[inline]

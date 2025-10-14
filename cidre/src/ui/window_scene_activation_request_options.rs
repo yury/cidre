@@ -1,7 +1,5 @@
-use crate::{api, define_obj_type, objc, ui};
-
 #[cfg(target_os = "ios")]
-use crate::arc;
+use crate::{api, arc, define_obj_type, objc, ui};
 
 define_obj_type!(
     #[doc(alias = "UIWindowSceneActivationRequestOptions")]
@@ -19,6 +17,7 @@ impl WindowSceneActivationRequestOpts {
     pub fn set_placement(&mut self, val: Option<&ui::WindowScenePlacement>);
 }
 
+#[cfg(target_os = "ios")]
 #[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_WINDOW_SCENE_ACTIVATION_REQUEST_OPTIONS:
