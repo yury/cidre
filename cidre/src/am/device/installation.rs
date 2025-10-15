@@ -35,7 +35,7 @@ impl<'a> Session<'a> {
         }
     }
 
-    pub fn apps_lookup(&self) -> AppsLookupBuilder {
+    pub fn apps_lookup(&'a self) -> AppsLookupBuilder<'a> {
         AppsLookupBuilder {
             session: self,
             application_type: None,

@@ -28,7 +28,7 @@ impl Device {
     /// verify that the connection is still open.
     ///
     /// Returns Error::WRONG_DROID if the device is in the restore OS.
-    pub fn connected(&self) -> Result<Connected, Error> {
+    pub fn connected<'a>(&'a self) -> Result<Connected<'a>, Error> {
         unsafe {
             AMDeviceConnect(self).result()?;
             Ok(Connected(self))
@@ -264,7 +264,7 @@ impl<'a> Connected<'a> {
     ///
     /// To recover: AMDeviceConnect(), AMDeviceUnpair(), AMDevicePair() and try to start
     /// a session again.
-    pub fn start_session(&self) -> Result<Session, Error> {
+    pub fn start_session(&'a self) -> Result<Session<'a>, Error> {
         self.validate_pairing()?;
         unsafe {
             match AMDeviceStartSession(self.0).result() {
