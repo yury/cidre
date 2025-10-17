@@ -57,6 +57,12 @@ define_cf_type!(
     SampleBuf(cm::AttachBearer)
 );
 
+impl AsRef<cm::Buf> for SampleBuf {
+    fn as_ref(&self) -> &cm::Buf {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
 unsafe impl Send for SampleBuf {}
 
 /// An object that contains zero or more media samples of a uniform media type

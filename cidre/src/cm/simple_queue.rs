@@ -23,6 +23,7 @@ pub mod err {
 }
 
 impl SimpleQueue {
+    #[doc(alias = "CMSimpleQueueGetTypeID")]
     #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CMSimpleQueueGetTypeID() }
@@ -55,7 +56,13 @@ impl SimpleQueue {
     #[doc(alias = "CMSimpleQueueGetCount")]
     #[inline]
     pub fn len(&self) -> usize {
-        unsafe { CMSimpleQueueGetCount(self) as _ }
+        self.count() as _
+    }
+
+    #[doc(alias = "CMSimpleQueueGetCount")]
+    #[inline]
+    pub fn count(&self) -> i32 {
+        unsafe { CMSimpleQueueGetCount(self) }
     }
 
     #[inline]
@@ -93,6 +100,7 @@ impl SimpleQueue {
         unsafe { CMSimpleQueueGetCapacity(self) as _ }
     }
 
+    #[doc(alias = "CMSimpleQueueGetFullness")]
     #[inline]
     pub fn fullness(&self) -> f32 {
         unsafe {

@@ -56,6 +56,27 @@ pub use time::TimeValue;
 
 pub mod sample_buffer;
 
+pub mod buffer_queue;
+pub use buffer_queue::Buf;
+pub use buffer_queue::BufBoolCb;
+#[cfg(feature = "blocks")]
+pub use buffer_queue::BufBoolHandler;
+pub use buffer_queue::BufCompareCb;
+#[cfg(feature = "blocks")]
+pub use buffer_queue::BufCompareHandler;
+#[cfg(feature = "blocks")]
+pub use buffer_queue::BufHandlers;
+pub use buffer_queue::BufQueue;
+pub use buffer_queue::BufQueueOf;
+pub use buffer_queue::BufSizeCb;
+#[cfg(feature = "blocks")]
+pub use buffer_queue::BufSizeHandler;
+pub use buffer_queue::BufTimeCb;
+#[cfg(feature = "blocks")]
+pub use buffer_queue::BufTimeHandler;
+pub use buffer_queue::SampleBufQueue;
+pub use buffer_queue::err as buf_queue_err;
+
 #[cfg(feature = "cat")]
 pub use sample_buffer::BlockBufAudioBufList;
 #[cfg(feature = "cat")]
