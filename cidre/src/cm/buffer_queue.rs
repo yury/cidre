@@ -6,7 +6,7 @@ pub mod err {
     use crate::os::Error;
 
     #[doc(alias = "kCMBufferQueueError_AllocationFailed")]
-    pub const ALLOCATION_FAILED: Error = Error::new_unchecked(-12760);
+    pub const ALLOC_FAILED: Error = Error::new_unchecked(-12760);
 
     #[doc(alias = "kCMBufferQueueError_RequiredParameterMissing")]
     pub const REQUIRED_PARAM_MISSING: Error = Error::new_unchecked(-12761);
