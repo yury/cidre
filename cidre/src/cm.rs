@@ -31,7 +31,7 @@ pub use format_description_bridge::swap_host_sound_desc_to_be;
 mod tag;
 pub use tag::Tag;
 pub use tag::TagCategory;
-pub use tag::TagDataType;
+pub use tag::TagDType;
 pub use tag::err as tag_err;
 
 mod tag_collection;

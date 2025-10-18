@@ -83,7 +83,7 @@ impl std::fmt::Debug for TagCategory {
 #[doc(alias = "CMTagDataType")]
 #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(u32)]
-pub enum TagDataType {
+pub enum TagDType {
     /// Value is a sentinel data type indicating it is not valid. The value should not be treated as a value.
     #[doc(alias = "kCMTagDataType_Invalid")]
     #[default]
@@ -115,11 +115,12 @@ pub struct TagValue(pub u64);
 #[repr(C)]
 pub struct Tag {
     pub category: TagCategory,
-    dtype: TagDataType,
+    dtype: TagDType,
     val: TagValue,
 }
+
 impl Tag {
-    pub fn new(category: TagCategory, dtype: TagDataType, val: TagValue) -> Self {
+    pub fn new(category: TagCategory, dtype: TagDType, val: TagValue) -> Self {
         Self {
             category,
             dtype,
@@ -128,23 +129,19 @@ impl Tag {
     }
 
     pub fn with_i64(category: TagCategory, val: i64) -> Self {
-        Self::new(
-            category,
-            TagDataType::I64,
-            TagValue(i64::cast_unsigned(val)),
-        )
+        Self::new(category, TagDType::I64, TagValue(i64::cast_unsigned(val)))
     }
 
     pub fn with_f64(category: TagCategory, val: f64) -> Self {
-        Self::new(category, TagDataType::F64, TagValue(f64::to_bits(val)))
+        Self::new(category, TagDType::F64, TagValue(f64::to_bits(val)))
     }
 
     pub fn with_os_type(category: TagCategory, val: os::Type) -> Self {
-        Self::new(category, TagDataType::OsType, TagValue(val as u64))
+        Self::new(category, TagDType::OsType, TagValue(val as u64))
     }
 
     pub fn with_flags(category: TagCategory, val: u64) -> Self {
-        Self::new(category, TagDataType::Flags, TagValue(val))
+        Self::new(category, TagDType::Flags, TagValue(val))
     }
 
     #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
@@ -152,7 +149,7 @@ impl Tag {
         unsafe { CMTagMakeFromDictionary(dict) }
     }
 
-    pub fn dtype(&self) -> TagDataType {
+    pub fn dtype(&self) -> TagDType {
         self.dtype
     }
 
@@ -161,7 +158,7 @@ impl Tag {
     }
 
     pub fn val_i64(&self) -> Option<i64> {
-        if self.dtype == TagDataType::I64 {
+        if self.dtype == TagDType::I64 {
             Some(u64::cast_signed(self.val.0))
         } else {
             None
@@ -169,7 +166,7 @@ impl Tag {
     }
 
     pub fn val_f64(&self) -> Option<f64> {
-        if self.dtype == TagDataType::F64 {
+        if self.dtype == TagDType::F64 {
             Some(f64::from_bits(self.val.0))
         } else {
             None
@@ -177,7 +174,7 @@ impl Tag {
     }
 
     pub fn val_os_type(&self) -> Option<os::Type> {
-        if self.dtype == TagDataType::OsType {
+        if self.dtype == TagDType::OsType {
             unsafe { Some(std::mem::transmute(self.val.0 as u32)) }
         } else {
             None
@@ -185,7 +182,7 @@ impl Tag {
     }
 
     pub fn val_flags(&self) -> Option<u64> {
-        if self.dtype == TagDataType::Flags {
+        if self.dtype == TagDType::Flags {
             Some(self.val.0)
         } else {
             None
@@ -193,33 +190,33 @@ impl Tag {
     }
 
     pub fn set_val_i64(&mut self, val: i64) {
-        self.dtype = TagDataType::I64;
+        self.dtype = TagDType::I64;
         self.val = TagValue(i64::cast_unsigned(val));
     }
 
     pub fn set_val_f64(&mut self, val: f64) {
-        self.dtype = TagDataType::F64;
+        self.dtype = TagDType::F64;
         self.val = TagValue(f64::to_bits(val));
     }
 
     pub fn set_val_os_type(&mut self, val: os::Type) {
-        self.dtype = TagDataType::OsType;
+        self.dtype = TagDType::OsType;
         self.val = TagValue(val as u64);
     }
 
     pub fn set_val_flags(&mut self, val: u64) {
-        self.dtype = TagDataType::Flags;
+        self.dtype = TagDType::Flags;
         self.val = TagValue(val);
     }
 
     #[inline]
     pub const fn is_valid(&self) -> bool {
-        self.dtype as u32 != TagDataType::Invalid as u32
+        self.dtype as u32 != TagDType::Invalid as u32
     }
 
     #[inline]
     pub const fn is_invalid(&self) -> bool {
-        self.dtype as u32 == TagDataType::Invalid as u32
+        self.dtype as u32 == TagDType::Invalid as u32
     }
 
     #[doc(alias = "CMTagCopyDescription")]
@@ -320,7 +317,7 @@ mod tests {
     #[test]
     fn basics() {
         let mut tag = cm::Tag::with_i64(cm::TagCategory::TrackId, 0);
-        assert_eq!(tag.dtype(), cm::TagDataType::I64);
+        assert_eq!(tag.dtype(), cm::TagDType::I64);
         assert_eq!(tag.val_i64(), Some(0));
         assert_eq!(tag.val_f64(), None);
         assert_eq!(tag.val_os_type(), None);
