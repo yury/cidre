@@ -13,10 +13,10 @@ pub mod err {
     pub const ALLOC_FAILED: Error = Error::new_unchecked(-12770);
 
     /// NULL or 0 was passed for a required parameter.
-    pub const REQUIRED_PARAMETER_MISSING: Error = Error::new_unchecked(-12771);
+    pub const REQUIRED_PARAM_MISSING: Error = Error::new_unchecked(-12771);
 
     /// An out-of-range value was passed for a parameter with a restricted valid range.
-    pub const PARAMETER_OUT_OF_RANGE: Error = Error::new_unchecked(-12772);
+    pub const PARAM_OUT_OF_RANGE: Error = Error::new_unchecked(-12772);
 
     /// Operation failed because queue was full.
     pub const QUEUE_IS_FULL: Error = Error::new_unchecked(-12773);

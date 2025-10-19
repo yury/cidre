@@ -2,7 +2,7 @@ use crate::{arc, cf, define_cf_type};
 
 define_cf_type!(Bearer(cf::Type));
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Hash)]
 #[repr(u32)]
 pub enum Mode {
     NotPropagate = 0,

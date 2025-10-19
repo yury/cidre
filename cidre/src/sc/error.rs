@@ -45,11 +45,11 @@ pub mod code {
 
     /// Failed to start due to video/audio capture failure
     #[doc(alias = "SCStreamErrorInternalError")]
-    pub const INTERNAL_ERROR: cf::Index = -3811;
+    pub const INTERNAL_ERR: cf::Index = -3811;
 
     /// Failed due to invalid parameter
     #[doc(alias = "SCStreamErrorInvalidParameter")]
-    pub const INVALID_PARAMETER: cf::Index = -3812;
+    pub const INVALID_PARAM: cf::Index = -3812;
 
     /// Failed due to no window list
     #[doc(alias = "SCStreamErrorNoWindowList")]

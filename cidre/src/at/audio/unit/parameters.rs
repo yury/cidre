@@ -1060,7 +1060,7 @@ impl au::ParamId {
 impl au::ParamId {
     /// Global, indexed, 0 -> 5, read only
     pub const NET_SEND_STATUS: Self = Self(0);
-    pub const NET_SEND_NUM_PARAMETERS: Self = Self(1);
+    pub const NET_SEND_NUM_PARAMS: Self = Self(1);
 }
 
 #[cfg(target_os = "macos")]

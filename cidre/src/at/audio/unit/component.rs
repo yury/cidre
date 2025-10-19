@@ -503,7 +503,7 @@ pub mod err {
 
     /// The parameter is not supported
     #[doc(alias = "kAudioUnitErr_InvalidParameter")]
-    pub const INVALID_PARAMETER: Error = Error::new_unchecked(-10878);
+    pub const INVALID_PARAM: Error = Error::new_unchecked(-10878);
 
     /// The specified element is not valid
     #[doc(alias = "kAudioUnitErr_InvalidElement")]

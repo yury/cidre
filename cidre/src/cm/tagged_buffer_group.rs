@@ -12,7 +12,7 @@ pub mod err {
     pub const ALLOC_FAILED: Error = Error::new_unchecked(-15781);
 
     #[doc(alias = "kCMTaggedBufferGroupError_InternalError")]
-    pub const INTERNAL_ERR: Error = Error::new_unchecked(-15782);
+    pub const INTERNAL: Error = Error::new_unchecked(-15782);
 }
 
 define_cf_type!(

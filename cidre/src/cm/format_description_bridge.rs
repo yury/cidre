@@ -5,7 +5,7 @@ pub mod err {
 
     /// Invalid parameter.
     #[doc(alias = "kCMFormatDescriptionBridgeError_InvalidParameter")]
-    pub const INVALID_PARAMETER: Error = Error::new_unchecked(-12712);
+    pub const INVALID_PARAM: Error = Error::new_unchecked(-12712);
 
     /// Returned when an allocation fails.
     #[doc(alias = "kCMFormatDescriptionBridgeError_AllocationFailed")]

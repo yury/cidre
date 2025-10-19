@@ -573,7 +573,7 @@ pub mod err {
 
     /// The OCSP responder encountered an internal error.
     #[doc(alias = "errSecOCSPResponderInternalError")]
-    pub const OCSP_RESPONDER_INTERNAL_ERROR: Error = Error::new_unchecked(-67642);
+    pub const OCSP_RESPONDER_INTERNAL_ERR: Error = Error::new_unchecked(-67642);
 
     /// The OCSP responder is busy, try again later.
     #[doc(alias = "errSecOCSPResponderTryLater")]
@@ -679,11 +679,11 @@ pub mod err {
 
     /// An internal error has occurred.
     #[doc(alias = "errSecInternalError")]
-    pub const INTERNAL_ERROR: Error = Error::new_unchecked(-67671);
+    pub const INTERNAL_ERR: Error = Error::new_unchecked(-67671);
 
     /// A memory error has occurred.
     #[doc(alias = "errSecMemoryError")]
-    pub const MEMORY_ERROR: Error = Error::new_unchecked(-67672);
+    pub const MEMORY_ERR: Error = Error::new_unchecked(-67672);
 
     /// Invalid data was encountered.
     #[doc(alias = "errSecInvalidData")]
@@ -1768,7 +1768,7 @@ pub mod ssl_err {
 
     /// Internal error
     #[doc(alias = "errSSLPeerInternalError")]
-    pub const PEER_INTERNAL_ERROR: Error = Error::new_unchecked(-9838);
+    pub const PEER_INTERNAL_ERR: Error = Error::new_unchecked(-9838);
 
     /// User canceled
     #[doc(alias = "errSSLPeerUserCancelled")]

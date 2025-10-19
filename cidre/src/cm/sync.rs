@@ -122,16 +122,16 @@ pub mod clock_err {
     use crate::os::Error;
 
     #[doc(alias = "kCMClockError_MissingRequiredParameter")]
-    pub const MISSING_REQUIRED_PARAMETER: Error = Error::new_unchecked(-12745);
+    pub const MISSING_REQUIRED_PARAM: Error = Error::new_unchecked(-12745);
 
     #[doc(alias = "kCMClockError_InvalidParameter")]
-    pub const INVALID_PARAMETER: Error = Error::new_unchecked(-12746);
+    pub const INVALID_PARAM: Error = Error::new_unchecked(-12746);
 
     #[doc(alias = "kCMClockError_AllocationFailed")]
     pub const ALLOC_FAILED: Error = Error::new_unchecked(-12747);
 
     #[doc(alias = "kCMClockError_UnsupportedOperation")]
-    pub const UNSUPPORTED_OPERATION: Error = Error::new_unchecked(-12756);
+    pub const UNSUPPORTED_OP: Error = Error::new_unchecked(-12756);
 }
 
 /// cm::Timebase error codes
@@ -139,10 +139,10 @@ pub mod timebase_err {
     use crate::os::Error;
 
     #[doc(alias = "kCMTimebaseError_MissingRequiredParameter")]
-    pub const MISSING_REQUIRED_PARAMETER: Error = Error::new_unchecked(-12748);
+    pub const MISSING_REQUIRED_PARAM: Error = Error::new_unchecked(-12748);
 
     #[doc(alias = "kCMTimebaseError_InvalidParameter")]
-    pub const INVALID_PARAMETER: Error = Error::new_unchecked(-12749);
+    pub const INVALID_PARAM: Error = Error::new_unchecked(-12749);
 
     #[doc(alias = "kCMTimebaseError_AllocationFailed")]
     pub const ALLOC_FAILED: Error = Error::new_unchecked(-12750);

@@ -84,7 +84,7 @@ impl MatchFlags {
 
     /// Set when matching failed due to an internal error.
     #[doc(alias = "NSMatchingInternalError")]
-    pub const INTERNAL_ERROR: Self = Self(1 << 4);
+    pub const INTERNAL_ERR: Self = Self(1 << 4);
 }
 
 define_obj_type!(

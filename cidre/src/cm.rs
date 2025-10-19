@@ -54,8 +54,6 @@ pub use time::TimeRoundingMethod;
 pub use time::TimeScale;
 pub use time::TimeValue;
 
-pub mod sample_buffer;
-
 pub mod buffer_queue;
 pub use buffer_queue::Buf;
 pub use buffer_queue::BufBoolCb;
@@ -76,6 +74,8 @@ pub use buffer_queue::BufTimeCb;
 pub use buffer_queue::BufTimeHandler;
 pub use buffer_queue::SampleBufQueue;
 pub use buffer_queue::err as buf_queue_err;
+
+pub mod sample_buffer;
 
 #[cfg(feature = "cat")]
 pub use sample_buffer::BlockBufAudioBufList;
@@ -108,7 +108,7 @@ pub mod audio_device_clock;
 
 pub mod memory_pool;
 pub use memory_pool::MemPool;
-pub use memory_pool::keys as memory_pool_options;
+pub use memory_pool::keys as mem_pool_keys;
 
 pub mod simple_queue;
 pub use simple_queue::SimpleQueue;

@@ -15,7 +15,7 @@ pub mod err {
 
     //// Returned if some kind of internal implementation error occurred.
     #[doc(alias = "kCMTagCollectionError_InternalError")]
-    pub const INTERNAL_ERR: Error = Error::new_unchecked(-15742);
+    pub const INTERNAL: Error = Error::new_unchecked(-15742);
 
     /// Returned if the tag is kCMTagInvalid.
     #[doc(alias = "kCMTagCollectionError_InvalidTag")]
