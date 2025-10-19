@@ -11,6 +11,9 @@ define_obj_type!(
     pub Fence(ns::Id)
 );
 
+unsafe impl Send for Fence {}
+unsafe impl Sync for Fence {}
+
 impl Fence {
     define_mtl!(set_label);
 

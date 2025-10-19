@@ -96,6 +96,9 @@ pub enum LangVersion {
 
     #[doc(alias = "MTLLanguageVersion3_2")]
     _3_2 = (3 << 16) + 2,
+
+    #[doc(alias = "MTLLanguageVersion4_0")]
+    _4_0 = (4 << 16) + 0,
 }
 
 /// An enum to indicate if the compiler can perform optimizations for floating-point
@@ -254,6 +257,26 @@ impl CompileOpts {
 
     #[objc::msg_send(setMaxTotalThreadsPerThreadgroup:)]
     pub fn set_max_total_threads_per_threadgroup(&mut self, val: usize);
+
+    #[objc::msg_send(requiredThreadsPerThreadgroup)]
+    #[objc::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn required_threads_per_threadgroup(&self) -> mtl::Size;
+
+    #[objc::msg_send(setRequiredThreadsPerThreadgroup:)]
+    #[objc::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn set_required_threads_per_threadgroup(&self, val: mtl::Size);
 
     #[objc::msg_send(enableLogging)]
     #[objc::available(
