@@ -91,6 +91,8 @@ define_obj_type!(
     #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
 );
 
+impl ns::Copying for TensorDesc {}
+
 impl TensorDesc {
     #[objc::msg_send(dimensions)]
     pub fn dims(&self) -> arc::R<mtl::TensorExtents>;

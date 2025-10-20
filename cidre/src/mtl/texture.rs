@@ -148,6 +148,8 @@ define_obj_type!(
     MTL_TEXTURE_DESCRIPTOR
 );
 
+impl ns::Copying for Desc {}
+
 impl Desc {
     #[objc::msg_send(texture2DDescriptorWithPixelFormat:width:height:mipmapped:)]
     pub fn new_2d(

@@ -51,7 +51,12 @@ pub enum MatrixLayout {
     RowMajor,
 }
 
-define_obj_type!(pub Desc(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLAccelerationStructureDescriptor")]
+    pub Desc(ns::Id)
+);
+
+impl ns::Copying for Desc {}
 
 impl Desc {
     #[objc::msg_send(usage)]
@@ -62,9 +67,12 @@ impl Desc {
 }
 
 define_obj_type!(
+    #[doc(alias = "MTLAccelerationStructureDescriptor")]
     pub GeometryDesc(Desc),
     MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR
 );
+
+impl ns::Copying for GeometryDesc {}
 
 impl GeometryDesc {
     #[objc::msg_send(intersectionFunctionTableOffset)]
@@ -126,6 +134,7 @@ pub enum MotionBorderMode {
 }
 
 define_obj_type!(
+    #[doc(alias = "MTLAccelerationStructureTriangleGeometryDescriptor")]
     pub TriangleGeometryDesc(GeometryDesc),
     MTL_ACCELERATION_STRUCTURE_TRIANGLE_GEOMETRY_DESCRIPTOR
 );
@@ -193,13 +202,10 @@ impl TriangleGeometryDesc {
 }
 
 define_obj_type!(
+    #[doc(alias = "MTLAccelerationStructureMotionBoundingBoxGeometryDescriptor")]
     pub MotionBoundingBoxGeometryDesc(GeometryDesc),
     MTL_ACCELERATION_STRUCTURE_MOTION_BOUNDING_BOX_GEOMETRY_DESCRIPTOR
 );
-
-impl MotionBoundingBoxGeometryDesc {
-    //
-}
 
 define_obj_type!(pub AccelerationStruct(mtl::Res));
 
