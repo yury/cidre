@@ -4,15 +4,25 @@ use crate::{api, arc, define_obj_type, define_opts, mtl, ns, objc};
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
 pub enum TensorDType {
+    #[doc(alias = "MTLTensorDataTypeNone")]
     None = mtl::DType::None as _,
+    #[doc(alias = "MTLTensorDataTypeFloat32")]
     F32 = mtl::DType::F32 as _,
+    #[doc(alias = "MTLTensorDataTypeFloat16")]
     F16 = mtl::DType::F16 as _,
+    #[doc(alias = "MTLTensorDataTypeBFloat16")]
     Bf16 = mtl::DType::Bf16 as _,
+    #[doc(alias = "MTLTensorDataTypeInt8")]
     I8 = mtl::DType::I8 as _,
+    #[doc(alias = "MTLTensorDataTypeUInt8")]
     U8 = mtl::DType::U8 as _,
+    #[doc(alias = "MTLTensorDataTypeInt16")]
     I16 = mtl::DType::I16 as _,
+    #[doc(alias = "MTLTensorDataTypeUInt16")]
     U16 = mtl::DType::U16 as _,
+    #[doc(alias = "MTLTensorDataTypeInt32")]
     I32 = mtl::DType::I32 as _,
+    #[doc(alias = "MTLTensorDataTypeUInt32")]
     U32 = mtl::DType::U32 as _,
 }
 
@@ -64,8 +74,13 @@ define_opts!(
 );
 
 impl TensorUsage {
+    #[doc(alias = "MTLTensorUsageCompute")]
     pub const COMPUTE: Self = Self(1 << 0);
+
+    #[doc(alias = "MTLTensorUsageRender")]
     pub const RENDER: Self = Self(1 << 1);
+
+    #[doc(alias = "MTLTensorUsageMachineLearning")]
     pub const ML: Self = Self(1 << 2);
 }
 
