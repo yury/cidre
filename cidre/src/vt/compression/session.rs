@@ -91,14 +91,6 @@ impl Session {
     #[doc(alias = "VTCompressionSessionPrepareToEncodeFrames")]
     #[inline]
     pub fn prepare(&mut self) -> os::Result {
-        unsafe { self.prepare_to_encode_frames() }
-    }
-
-    /// #Safety
-    /// use `prepare`
-    #[doc(alias = "VTCompressionSessionPrepareToEncodeFrames")]
-    #[inline]
-    pub unsafe fn prepare_to_encode_frames(&mut self) -> os::Result {
         unsafe { VTCompressionSessionPrepareToEncodeFrames(self).result() }
     }
 
@@ -234,14 +226,8 @@ impl Session {
 
     #[doc(alias = "VTCompressionSessionCompleteFrames")]
     #[inline]
-    pub fn complete_frames(&self, complete_until_pts: cm::Time) -> os::Result {
-        unsafe { VTCompressionSessionCompleteFrames(self, complete_until_pts).result() }
-    }
-
-    #[doc(alias = "VTCompressionSessionCompleteFrames")]
-    #[inline]
-    pub fn complete_until_pts(&self, complete_until_pts: cm::Time) -> os::Result {
-        self.complete_frames(complete_until_pts)
+    pub fn complete_frames(&self, until_pts: cm::Time) -> os::Result {
+        unsafe { VTCompressionSessionCompleteFrames(self, until_pts).result() }
     }
 
     #[doc(alias = "VTCompressionSessionCompleteFrames")]
