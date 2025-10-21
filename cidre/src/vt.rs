@@ -8,7 +8,9 @@ pub use session::Session;
 
 pub mod compression;
 pub use compression::Session as CompressionSession;
+pub use compression::properties as compression_props;
 pub use compression::properties as compression_properties;
+pub use compression::properties::keys as compression_props_keys;
 
 pub mod decompression;
 #[cfg(feature = "blocks")]
