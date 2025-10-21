@@ -15,8 +15,8 @@ define_cf_type!(
 );
 
 pub type OutputCallback<T> = extern "C" fn(
-    output_callback_ref_con: *mut T,
-    source_frame_ref_con: *mut c_void,
+    output_cb_ref_con: *mut T,
+    src_frame_ref_con: *mut c_void,
     status: os::Status,
     info_flags: vt::EncodeInfoFlags,
     sample_buf: Option<&cm::SampleBuf>,
@@ -27,11 +27,11 @@ impl Session {
         width: u32,
         height: u32,
         codec: cm::VideoCodec,
-        encoder_specification: Option<&cf::Dictionary>,
-        source_image_buf_attrs: Option<&cf::Dictionary>,
+        encoder_spec: Option<&cf::Dictionary>,
+        src_image_buf_attrs: Option<&cf::Dictionary>,
         compressed_data_allocator: Option<&cf::Allocator>,
-        output_callback: Option<OutputCallback<T>>,
-        output_callback_ref_con: *mut T,
+        output_cb: Option<OutputCallback<T>>,
+        output_cb_ref_con: *mut T,
     ) -> os::Result<arc::R<Self>> {
         unsafe {
             os::result_unchecked(|res| {
@@ -39,11 +39,11 @@ impl Session {
                     width as _,
                     height as _,
                     codec,
-                    encoder_specification,
-                    source_image_buf_attrs,
+                    encoder_spec,
+                    src_image_buf_attrs,
                     compressed_data_allocator,
-                    std::mem::transmute(output_callback),
-                    std::mem::transmute(output_callback_ref_con),
+                    std::mem::transmute(output_cb),
+                    std::mem::transmute(output_cb_ref_con),
                     res,
                     None,
                 )
@@ -57,11 +57,11 @@ impl Session {
         width: i32,
         height: i32,
         codec_type: cm::VideoCodec,
-        encoder_specification: Option<&cf::Dictionary>,
-        source_image_buf_attrs: Option<&cf::Dictionary>,
+        encoder_spec: Option<&cf::Dictionary>,
+        src_image_buf_attrs: Option<&cf::Dictionary>,
         compressed_data_allocator: Option<&cf::Allocator>,
-        output_callback: Option<OutputCallback<c_void>>,
-        output_callback_ref_con: *mut c_void,
+        output_cb: Option<OutputCallback<c_void>>,
+        output_cb_ref_con: *mut c_void,
         compression_session_out: *mut Option<arc::R<Session>>,
         allocator: Option<&cf::Allocator>,
     ) -> os::Result {
@@ -71,11 +71,11 @@ impl Session {
                 width,
                 height,
                 codec_type,
-                encoder_specification,
-                source_image_buf_attrs,
+                encoder_spec,
+                src_image_buf_attrs,
                 compressed_data_allocator,
-                output_callback,
-                output_callback_ref_con,
+                output_cb,
+                output_cb_ref_con,
                 compression_session_out,
             )
             .result()
@@ -257,10 +257,10 @@ unsafe extern "C" {
         height: i32,
         codec_type: cm::VideoCodec,
         encoder_specification: Option<&cf::Dictionary>,
-        source_image_buf_attrs: Option<&cf::Dictionary>,
+        src_image_buf_attrs: Option<&cf::Dictionary>,
         compressed_data_allocator: Option<&cf::Allocator>,
-        output_callback: Option<OutputCallback<c_void>>,
-        output_callback_ref_con: *mut c_void,
+        output_cb: Option<OutputCallback<c_void>>,
+        output_cb_ref_con: *mut c_void,
         compression_session_out: *mut Option<arc::Retained<Session>>,
     ) -> os::Status;
 
@@ -272,7 +272,7 @@ unsafe extern "C" {
         pts: cm::Time,
         duration: cm::Time,
         frame_properties: Option<&cf::DictionaryOf<cf::String, cf::Type>>,
-        source_frame_ref_con: *mut c_void,
+        src_frame_ref_con: *mut c_void,
         info_flags_out: *mut Option<NonNull<vt::EncodeInfoFlags>>,
     ) -> os::Status;
 
@@ -318,7 +318,7 @@ mod tests {
         if api::macos_available("26.0") {
             let _val = session
                 .prop(unsafe {
-                    vt::compression_properties::keys::supported_preset_dictionaries().unwrap()
+                    vt::compression_props_keys::supported_preset_dictionaries().unwrap()
                 })
                 .unwrap();
         }
