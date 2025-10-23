@@ -1318,6 +1318,7 @@ pub type DeviceIoBlock<const IN: usize = 1, const ON: usize = 1> = blocks::EscBl
 
 pub type DeviceIoProcId = DeviceIoProc;
 
+#[derive(Debug, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct AggregateDevice(Device);
 
@@ -1458,6 +1459,7 @@ impl Stream {
     }
 }
 
+#[derive(Debug)]
 pub struct StartedDevice<D: AsRef<Device>> {
     device: mem::ManuallyDrop<D>,
     proc_id: Option<DeviceIoProcId>,

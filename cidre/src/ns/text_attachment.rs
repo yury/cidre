@@ -1,19 +1,34 @@
 use crate::{arc, cg, define_obj_type, ns, objc};
 
-#[cfg(any(target_os = "ios", target_os = "tvos", target_os = "watchos"))]
-#[cfg(feature = "ui")]
+#[cfg(all(
+    any(target_os = "ios", target_os = "tvos", target_os = "watchos"),
+    feature = "ui"
+))]
 use crate::ui::Image;
 
-#[cfg(target_os = "macos")]
-#[cfg(feature = "app")]
+#[cfg(all(target_os = "macos", feature = "app"))]
 use crate::ns::Image;
 
+#[cfg(any(
+    all(
+        any(target_os = "ios", target_os = "tvos", target_os = "watchos"),
+        feature = "ui"
+    ),
+    all(target_os = "macos", feature = "app")
+))]
 define_obj_type!(
     #[doc(alias = "NSTextAttachment")]
     pub TextAttachment(ns::Id),
     NS_TEXT_ATTACHMENT
 );
 
+#[cfg(any(
+    all(
+        any(target_os = "ios", target_os = "tvos", target_os = "watchos"),
+        feature = "ui"
+    ),
+    all(target_os = "macos", feature = "app")
+))]
 impl arc::A<TextAttachment> {
     #[objc::msg_send(initWithData:ofType:)]
     pub fn init_with_data(
@@ -23,6 +38,13 @@ impl arc::A<TextAttachment> {
     ) -> arc::R<TextAttachment>;
 }
 
+#[cfg(any(
+    all(
+        any(target_os = "ios", target_os = "tvos", target_os = "watchos"),
+        feature = "ui"
+    ),
+    all(target_os = "macos", feature = "app")
+))]
 impl TextAttachment {
     #[inline]
     pub fn with_data(data: Option<&ns::Data>, type_: Option<&ns::String>) -> arc::R<Self> {
@@ -70,19 +92,25 @@ impl TextAttachment {
     pub fn uses_text_attachment_view(&self) -> bool;
 }
 
+#[cfg(any(
+    all(
+        any(target_os = "ios", target_os = "tvos", target_os = "watchos"),
+        feature = "ui"
+    ),
+    all(target_os = "macos", feature = "app")
+))]
 impl ns::AttrString {
     #[objc::msg_send(attributedStringWithAttachment:)]
     pub fn with_attachment(attachment: &ns::TextAttachment) -> arc::R<Self>;
 }
 
-#[cfg(target_os = "macos")]
-#[cfg(feature = "app")]
-unsafe extern "C" {
-    static NS_TEXT_ATTACHMENT: &'static objc::Class<TextAttachment>;
-}
-
-#[cfg(any(target_os = "ios", target_os = "tvos", target_os = "watchos"))]
-#[cfg(feature = "ui")]
+#[cfg(any(
+    all(
+        any(target_os = "ios", target_os = "tvos", target_os = "watchos"),
+        feature = "ui"
+    ),
+    all(target_os = "macos", feature = "app")
+))]
 unsafe extern "C" {
     static NS_TEXT_ATTACHMENT: &'static objc::Class<TextAttachment>;
 }

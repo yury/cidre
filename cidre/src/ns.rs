@@ -297,9 +297,21 @@ pub enum ExErr<'ar> {
     Err(&'ar Error),
 }
 
-#[cfg(any(feature = "app", feature = "ui"))]
+#[cfg(any(
+    all(
+        any(target_os = "ios", target_os = "tvos", target_os = "watchos"),
+        feature = "ui"
+    ),
+    all(target_os = "macos", feature = "app")
+))]
 mod text_attachment;
-#[cfg(any(feature = "app", feature = "ui"))]
+#[cfg(any(
+    all(
+        any(target_os = "ios", target_os = "tvos", target_os = "watchos"),
+        feature = "ui"
+    ),
+    all(target_os = "macos", feature = "app")
+))]
 pub use text_attachment::TextAttachment;
 
 pub use objc::ns::Integer;
