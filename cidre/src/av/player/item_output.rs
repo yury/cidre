@@ -1,4 +1,7 @@
-use crate::{arc, av, cf, cm, cv, define_cls, define_obj_type, dispatch, ns, objc};
+use crate::{arc, av, cf, cm, cv, define_cls, define_obj_type, ns, objc};
+
+#[cfg(feature = "dispatch")]
+use crate::dispatch;
 
 define_obj_type!(
     #[doc(alias = "AVPlayerItemOutput")]
@@ -85,6 +88,7 @@ impl ItemVideoOutput {
         self.pixel_buf_for_item_time_for_display(item_time, std::ptr::null_mut())
     }
 
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(setDelegate:queue:)]
     pub fn set_delegate<D: ItemOutputPullDelegate>(
         &mut self,
@@ -101,6 +105,7 @@ impl ItemVideoOutput {
     #[objc::msg_send(delegate)]
     pub fn delegate(&self) -> Option<arc::R<AnyItemOutputPullDelegate>>;
 
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(delegateQueue)]
     pub fn delegate_queue(&self) -> Option<arc::R<dispatch::Queue>>;
 }

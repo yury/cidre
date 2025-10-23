@@ -352,7 +352,7 @@ required-features = ["av"]
 
 [[example]]
 name = "av-player-item-tap"
-required-features = ["av", "mt"]
+required-features = ["av", "mt", "dispatch"]
 
 
 [package.metadata.playground]
