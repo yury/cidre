@@ -103,6 +103,9 @@ define_obj_type!(
     pub ChannelDesc(ns::Id)
 );
 
+unsafe impl Send for ChannelDesc {}
+unsafe impl Sync for ChannelDesc {}
+
 impl ChannelDesc {
     /// A human-readable name for the channel.
     #[objc::msg_send(channelName)]
@@ -124,6 +127,9 @@ define_obj_type!(
     #[doc(alias = "AVAudioSessionDataSourceDescription")]
     pub DataSrcDesc(ns::Id)
 );
+
+unsafe impl Send for DataSrcDesc {}
+unsafe impl Sync for DataSrcDesc {}
 
 impl DataSrcDesc {
     // TODO: verify leak
@@ -190,6 +196,9 @@ define_obj_type!(
     pub Capability(ns::Id)
 );
 
+unsafe impl Send for Capability {}
+unsafe impl Sync for Capability {}
+
 impl Capability {
     #[objc::msg_send(isSupported)]
     pub fn is_supported(&self) -> bool;
@@ -203,6 +212,9 @@ define_obj_type!(
     #[doc(alias = "AVAudioSessionPortExtensionBluetoothMicrophone")]
     pub PortExtensionBluetoothMic(ns::Id)
 );
+
+unsafe impl Send for PortExtensionBluetoothMic {}
+unsafe impl Sync for PortExtensionBluetoothMic {}
 
 impl PortExtensionBluetoothMic {
     /// Describes whether this port supports Bluetooth high-quality recording.
@@ -218,6 +230,9 @@ define_obj_type!(
     #[doc(alias = "AVAudioSessionPortDescription")]
     pub PortDesc(ns::Id)
 );
+
+unsafe impl Send for PortDesc {}
+unsafe impl Sync for PortDesc {}
 
 impl PortDesc {
     #[objc::msg_send(portType)]
