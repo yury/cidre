@@ -226,12 +226,14 @@ pub struct OolDesc {
     pub size: Size,
 }
 
+#[derive(Debug)]
 #[doc(alias = "mach_msg_body_t")]
 #[repr(C, packed(4))]
 pub struct Body {
     pub descriptor_count: Size,
 }
 
+#[derive(Debug)]
 #[doc(alias = "mach_msg_header_t")]
 #[repr(C, packed(4))]
 pub struct Header {
@@ -462,31 +464,41 @@ define_opts!(
 );
 
 impl MsgOpt {
+    #[doc(alias = "MACH_MSG_OPTION_NONE")]
     pub const NONE: Self = Self(0x00000000);
 
+    #[doc(alias = "MACH_SEND_MSG")]
     pub const SEND_MSG: Self = Self(0x00000001);
+
     #[doc(alias = "MACH_RCV_MSG")]
     pub const RCV_MSG: Self = Self(0x00000002);
 
     /// report large message sizes
+    #[doc(alias = "MACH_RCV_LARGE")]
     pub const RCV_LARGE: Self = Self(0x00000004);
 
     /// identify source of large messages
+    #[doc(alias = "MACH_RCV_LARGE_IDENTITY")]
     pub const RCV_LARGE_IDENTITY: Self = Self(0x00000008);
 
     /// timeout value applies to send
+    #[doc(alias = "MACH_SEND_TIMEOUT")]
     pub const SEND_TIMEOUT: Self = Self(0x00000010);
 
     /// priority override for send
+    #[doc(alias = "MACH_SEND_OVERRIDE")]
     pub const SEND_OVERRIDE: Self = Self(0x00000020);
 
     /// don't restart interrupted sends
+    #[doc(alias = "MACH_SEND_INTERRUPT")]
     pub const SEND_INTERRUPT: Self = Self(0x00000040);
 
     /// arm send-possible notify
+    #[doc(alias = "MACH_SEND_NOTIFY")]
     pub const SEND_NOTIFY: Self = Self(0x00000080);
 
     /// ignore qlimits - kernel only
+    #[doc(alias = "MACH_SEND_ALWAYS")]
     pub const SEND_ALWAYS: Self = Self(0x00010000);
 
     /// rejection by message filter should return failure - user only
