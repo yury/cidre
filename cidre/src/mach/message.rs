@@ -502,60 +502,77 @@ impl MsgOpt {
     pub const SEND_ALWAYS: Self = Self(0x00010000);
 
     /// rejection by message filter should return failure - user only
+    #[doc(alias = "MACH_SEND_FILTER_NONFATAL")]
     pub const SEND_FILTER_NONFATA: Self = Self(0x00010000);
 
     /// sender-provided trailer
+    #[doc(alias = "MACH_SEND_TRAILER")]
     pub const SEND_TRAILER: Self = Self(0x00020000);
 
     ///  msg won't carry importance
+    #[doc(alias = "MACH_SEND_NOIMPORTANCE")]
     pub const SEND_NOIMPORTANCE: Self = Self(0x00040000);
 
+    #[doc(alias = "MACH_SEND_NODENAP")]
     pub const SEND_NODENAP: Self = Self::SEND_NOIMPORTANCE;
 
     /// msg carries importance - kernel only
+    #[doc(alias = "MACH_SEND_IMPORTANCE")]
     pub const SEND_IMPORTANCE: Self = Self(0x00080000);
 
     /// msg should do sync IPC override (on legacy kernels)
+    #[doc(alias = "MACH_SEND_SYNC_OVERRIDE")]
     pub const SEND_SYNC_OVERRIDE: Self = Self(0x00100000);
 
     /// IPC should propagate the caller's QoS
+    #[doc(alias = "MACH_SEND_PROPAGATE_QOS")]
     pub const SEND_PROPAGATE_QOS: Self = Self(0x00200000);
 
     // spub const SEND_SYNC_USE_THRPRI: Self = Self::SEND_PROPAGATE_QOS;
 
     /// full send from kernel space - kernel only
+    #[doc(alias = "MACH_SEND_KERNEL")]
     pub const SEND_KERNEL: Self = Self(0x00400000);
 
     /// special reply port should boost thread doing sync bootstrap checkin
+    #[doc(alias = "MACH_SEND_SYNC_BOOTSTRAP_CHECKIN")]
     pub const SEND_SYNC_BOOTSTRAP_CHECKIN: Self = Self(0x00800000);
 
     /// timeout value applies to receive
+    #[doc(alias = "MACH_RCV_TIMEOUT")]
     pub const RCV_TIMEOUT: Self = Self(0x00000100);
 
     /// legacy name (value was: 0x00000200)
+    #[doc(alias = "MACH_RCV_NOTIFY")]
     pub const RCV_NOTIFY: Self = Self(0x00000000);
 
     /// don't restart interrupted receive
+    #[doc(alias = "MACH_RCV_INTERRUPT")]
     pub const RCV_INTERRUPT: Self = Self(0x00000400);
 
     /// willing to receive voucher port     
+    #[doc(alias = "MACH_RCV_VOUCHER")]
     pub const RCV_VOUCHER: Self = Self(0x00000800);
 
     // scatter receive (deprecated)
     // pub const RCV_OVERWRITE: Self = Self(0x00000000);
 
     /// Can receive new guarded descriptor
+    #[doc(alias = "MACH_RCV_GUARDED_DESC")]
     pub const RCV_GUARDED_DESC: Self = Self(0x00001000);
 
     /// sync waiter waiting for rcv
+    #[doc(alias = "MACH_RCV_SYNC_WAIT")]
     pub const RCV_SYNC_WAIT: Self = Self(0x00004000);
 
     /// sync waiter waiting to peek
+    #[doc = "MACH_RCV_SYNC_PEEK"]
     pub const RCV_SYNC_PEEK: Self = Self(0x00008000);
 
     /// Enforce specific properties about the reply port, and
     /// the context in which a thread replies to a message
     /// This flag must be passed on both the SEND and RCV
+    #[doc = "MACH_MSG_STRICT_REPLY"]
     pub const MSG_STRICT_REPLY: Self = Self(0x00000200);
 }
 
