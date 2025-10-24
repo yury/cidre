@@ -176,7 +176,8 @@ impl DescType {
     pub const MAX: Self = Self::GuardedPort;
 }
 
-#[repr(C, align(4))]
+#[doc(alias = "mach_msg_type_descriptor_t")]
+#[repr(C, packed(4))]
 pub struct TypeDesc {
     pub pad1: Natural,
     pub pad2: Size,
@@ -184,7 +185,8 @@ pub struct TypeDesc {
     pub type_: DescType,
 }
 
-#[repr(C, align(4))]
+#[doc(alias = "mach_msg_port_descriptor_t")]
+#[repr(C, packed(4))]
 pub struct PortDesc {
     pub name: Port,
     pub pad1: Size,
@@ -193,7 +195,8 @@ pub struct PortDesc {
     pub type_: DescType,
 }
 
-#[repr(C, align(4))]
+#[doc(alias = "mach_msg_ool_descriptor32_t")]
+#[repr(C, packed(4))]
 pub struct OolDesc32 {
     pub address: u32,
     pub size: Size,
@@ -202,7 +205,8 @@ pub struct OolDesc32 {
     pub type_: DescType,
 }
 
-#[repr(C, align(4))]
+#[doc(alias = "mach_msg_ool_descriptor64_t")]
+#[repr(C, packed(4))]
 pub struct OolDesc64 {
     pub address: u64,
     pub size: Size,
@@ -211,7 +215,8 @@ pub struct OolDesc64 {
     pub type_: DescType,
 }
 
-#[repr(C, align(4))]
+#[doc(alias = "mach_msg_ool_descriptor_t")]
+#[repr(C, packed(4))]
 pub struct OolDesc {
     pub address: *mut c_void,
     pub deallocate: u8,
@@ -221,12 +226,14 @@ pub struct OolDesc {
     pub size: Size,
 }
 
-#[repr(C, align(4))]
+#[doc(alias = "mach_msg_body_t")]
+#[repr(C, packed(4))]
 pub struct Body {
     pub descriptor_count: Size,
 }
 
-#[repr(C, align(4))]
+#[doc(alias = "mach_msg_header_t")]
+#[repr(C, packed(4))]
 pub struct Header {
     pub bits: HeaderBits,
     pub size: Size,
@@ -236,20 +243,24 @@ pub struct Header {
     pub id: Id,
 }
 
-#[repr(C, align(4))]
+#[doc(alias = "mach_msg_base_t")]
+#[repr(C, packed(4))]
 pub struct Base {
     pub header: Header,
     pub body: Body,
 }
 
+#[doc(alias = "mach_msg_trailer_size_t")]
 pub type TrailerSize = u32;
 
+#[doc(alias = "mach_msg_trailer_type_t")]
 #[repr(u32)]
 pub enum TrailerType {
     Format0,
 }
 
-#[repr(C, align(4))]
+#[doc(alias = "mach_msg_trailer_t")]
+#[repr(C, packed(4))]
 pub struct Trailer {
     pub type_: TrailerType,
     pub size: TrailerSize,
