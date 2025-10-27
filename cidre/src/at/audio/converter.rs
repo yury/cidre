@@ -226,6 +226,7 @@ impl DitherAlgorithm {
     pub const NOISE_SHAPING: Self = Self(2);
 }
 
+#[doc(alias = "AudioConverterQuality")]
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(transparent)]
 pub struct Quality(pub u32);
@@ -259,6 +260,7 @@ impl Default for Quality {
     }
 }
 
+#[doc(alias = "AudioConverterSampleRateConverterComplexity")]
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 #[repr(transparent)]
 pub struct SampleRateConverterComplexity(pub u32);
@@ -620,8 +622,21 @@ impl Converter {
     }
 
     #[inline]
+    pub fn set_sample_rate_converter_quality(&mut self, val: Quality) -> os::Result {
+        unsafe { self.set_prop(PropId::SAMPLE_RATE_CONVERTER_QUALITY, &val) }
+    }
+
+    #[inline]
     pub fn sample_rate_converter_complexity(&self) -> os::Result<SampleRateConverterComplexity> {
         unsafe { self.prop(PropId::SAMPLE_RATE_CONVERTER_COMPLEXITY) }
+    }
+
+    #[inline]
+    pub fn set_sample_rate_converter_complexity(
+        &mut self,
+        val: SampleRateConverterComplexity,
+    ) -> os::Result {
+        unsafe { self.set_prop(PropId::SAMPLE_RATE_CONVERTER_COMPLEXITY, &val) }
     }
 
     #[inline]

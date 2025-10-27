@@ -22,6 +22,7 @@ pub use converter::Opts as ConverterOpts;
 pub use converter::PrimeInfo as ConverterPrimeInfo;
 pub use converter::PrimeMethod as ConverterPrimeMethod;
 pub use converter::Quality as ConverterQuality;
+pub use converter::SampleRateConverterComplexity as ConverterSampleRateConverterComplexity;
 pub use converter::err as converter_err;
 
 pub mod component;
