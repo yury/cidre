@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns};
+use crate::{api, define_obj_type, ns};
 
 define_obj_type!(
     #[doc(alias = "AVMediaType")]
@@ -320,11 +320,27 @@ define_obj_type!(
 impl FileType {
     /// A UTI for the QuickTime movie file format.
     ///
-    /// The value of this UTI is @"com.apple.quicktime-movie".
+    /// The value of this UTI is "com.apple.quicktime-movie".
     /// Files are identified with the .mov and .qt extensions.
     #[doc(alias = "AVFileTypeQuickTimeMovie")]
     pub fn qt() -> &'static Self {
         unsafe { AVFileTypeQuickTimeMovie }
+    }
+
+    /// A UTI for the QuickTime audio file format
+    ///
+    /// The value of this UTI is "com.apple.quicktime-audio". Files are identified with the .qta extension.
+    #[doc(alias = "AVFileTypeQuickTimeAudio")]
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        watchos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn qta() -> &'static Self {
+        unsafe { AVFileTypeQuickTimeAudio }
     }
 
     /// A UTI for the MPEG-4 file format.
@@ -560,8 +576,18 @@ impl FileTypeProfile {
 }
 
 #[link(name = "AVFoundation", kind = "framework")]
+#[api::weak]
 unsafe extern "C" {
     static AVFileTypeQuickTimeMovie: &'static FileType;
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        watchos = 26.0,
+        visionos = 26.0
+    )]
+    static AVFileTypeQuickTimeAudio: &'static FileType;
     static AVFileTypeMPEG4: &'static FileType;
     static AVFileTypeAppleM4V: &'static FileType;
     static AVFileTypeAppleM4A: &'static FileType;
