@@ -68,10 +68,10 @@ impl IndexSet {
     pub fn contains_indexes(&self, val: &ns::IndexSet) -> bool;
 
     #[objc::msg_send(mutableCopy)]
-    pub fn copy_mut(&self) -> arc::R<IndexSetMut>;
+    pub fn copy_mut(&self) -> arc::Retained<IndexSetMut>;
 
     #[objc::msg_send(copy)]
-    pub fn copy(&self) -> arc::R<IndexSet>;
+    pub fn copy(&self) -> arc::Retained<IndexSet>;
 }
 
 impl IndexSetMut {

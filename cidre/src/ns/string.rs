@@ -107,9 +107,8 @@ impl String {
     #[objc::msg_send(integerValue)]
     pub fn to_integer(&self) -> ns::Integer;
 
-    // TODO: check Rar
     #[objc::msg_send(mutableCopy)]
-    pub fn copy_mut(&self) -> arc::R<ns::StringMut>;
+    pub fn copy_mut(&self) -> arc::Retained<ns::StringMut>;
 
     #[objc::msg_send(substringWithRange:)]
     pub fn substring_with_range(&self, range: ns::Range) -> arc::R<Self>;

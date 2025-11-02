@@ -323,11 +323,11 @@ pub use zone::Zone;
 #[objc::protocol(NSCopying)]
 pub trait Copying {
     #[objc::msg_send(copyWithZone:)]
-    unsafe fn copy_with_zone(&self, zone: *mut Zone) -> Option<arc::R<Id>>;
+    unsafe fn copy_with_zone(&self, zone: *mut Zone) -> Option<arc::Retained<Id>>;
 }
 
 #[objc::protocol(NSMutableCopying)]
 pub trait CopyingMut {
     #[objc::msg_send(mutableCopyWithZone:)]
-    unsafe fn copy_with_zone_mut(&self, zone: *mut Zone) -> Option<arc::R<Id>>;
+    unsafe fn copy_with_zone_mut(&self, zone: *mut Zone) -> Option<arc::Retained<Id>>;
 }

@@ -241,10 +241,10 @@ impl AttrString {
     }
 
     #[objc::msg_send(copy)]
-    pub fn copy(&self) -> arc::R<AttrString>;
+    pub fn copy(&self) -> arc::Retained<AttrString>;
 
     #[objc::msg_send(mutableCopy)]
-    pub fn copy_mut(&self) -> arc::R<AttrStringMut>;
+    pub fn copy_mut(&self) -> arc::Retained<AttrStringMut>;
 }
 
 define_obj_type!(

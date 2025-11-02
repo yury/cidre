@@ -90,10 +90,10 @@ impl<T: objc::Obj> Array<T> {
     pub fn last(&self) -> Option<&T>;
 
     #[objc::msg_send(copy)]
-    pub fn copy(&self) -> arc::R<Self>;
+    pub fn copy(&self) -> arc::Retained<Self>;
 
     #[objc::msg_send(mutableCopy)]
-    pub fn copy_mut(&self) -> arc::R<ArrayMut<T>>;
+    pub fn copy_mut(&self) -> arc::Retained<ArrayMut<T>>;
 
     #[inline]
     pub fn is_empty(&self) -> bool {

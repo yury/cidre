@@ -125,7 +125,7 @@ impl UrlRequest {
     pub fn http_body(&self) -> Option<arc::R<ns::Data>>;
 
     #[objc::msg_send(mutableCopy)]
-    pub fn copy_mut(&self) -> arc::R<UrlRequestMut>;
+    pub fn copy_mut(&self) -> arc::Retained<UrlRequestMut>;
 }
 
 unsafe impl Send for UrlRequest {}
