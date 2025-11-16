@@ -59,6 +59,7 @@ Class NS_UUID;
 Class NS_VALUE;
 Class NS_ERROR;
 Class NS_NULL;
+Class NS_INDEX_PATH;
 Class NS_INDEX_SET;
 Class NS_MUTABLE_INDEX_SET;
 
@@ -160,6 +161,7 @@ static void common_initializer(void)
         NS_VALUE = [NSValue class];
         NS_ERROR = [NSError class];
         NS_NULL = [NSNull class];
+        NS_INDEX_PATH = [NSIndexPath class];
         NS_INDEX_SET = [NSIndexSet class];
         NS_MUTABLE_INDEX_SET = [NSMutableIndexSet class];
         

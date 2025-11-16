@@ -91,6 +91,8 @@ pub use window_scene_prominent_placement::WindowSceneProminentPlacement;
 mod view_controller;
 pub use view_controller::ViewController;
 
+pub mod index_path;
+
 mod view_controller_transition;
 pub use view_controller_transition::ViewControllerTransition;
 pub use view_controller_transition::ZoomTransitionSrcViewProviderCtx;

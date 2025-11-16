@@ -102,6 +102,9 @@ pub use value::Value;
 mod null;
 pub use null::Null;
 
+mod index_path;
+pub use index_path::IndexPath;
+
 mod index_set;
 pub use index_set::IndexSet;
 pub use index_set::IndexSetMut;
