@@ -23,6 +23,8 @@ pub use cell::ControlStateValue;
 pub use cell::ControlTint;
 pub use cell::ImageScaling;
 
+pub mod collection_view;
+
 mod color_space;
 pub use color_space::ColorSpace;
 
