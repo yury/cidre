@@ -156,6 +156,12 @@ impl String {
     }
 }
 
+impl Default for arc::R<String> {
+    fn default() -> Self {
+        ns::String::new()
+    }
+}
+
 // impl std::ops::Index<std::ops::Range<usize>> for String {
 //     type Output = arc::Rar<String>;
 
@@ -289,10 +295,12 @@ impl AsRef<cf::String> for ns::StringMut {
 
 #[cfg(test)]
 mod tests {
-    use crate::{ns, objc::ar_pool};
+    use crate::{arc, ns, objc::ar_pool};
 
     #[test]
     fn basics() {
+        let _default: arc::R<ns::String> = Default::default();
+
         ar_pool(|| {
             let m = ns::StringMut::new();
             assert!(m.is_empty());
