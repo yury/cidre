@@ -157,6 +157,7 @@ impl String {
 }
 
 impl Default for arc::R<String> {
+    #[inline]
     fn default() -> Self {
         ns::String::new()
     }
