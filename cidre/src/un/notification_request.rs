@@ -13,6 +13,13 @@ impl NotificationRequest {
 
     #[objc::msg_send(content)]
     pub fn content(&self) -> arc::R<un::NotificationContent>;
+
+    #[objc::msg_send(requestWithIdentifier:content:trigger:)]
+    pub fn with_trigger(
+        id: &ns::String,
+        content: &un::NotificationContent,
+        trigger: Option<&un::NotificationTrigger>,
+    ) -> arc::R<Self>;
 }
 
 unsafe extern "C" {

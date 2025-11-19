@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 Class CL_LOCATION;
 Class CL_LOCATION_MANAGER;
+Class CL_REGION;
 
 __attribute__((constructor))
 static void cl_initializer(void)
@@ -21,6 +22,7 @@ static void cl_initializer(void)
         
         CL_LOCATION = [CLLocation class];
         CL_LOCATION_MANAGER = [CLLocationManager class];
+        CL_REGION = [CLRegion class];
     }
 }
 

@@ -19,6 +19,11 @@ Class UN_NOTIFICATION_ACTION;
 Class UN_TEXT_INPUT_NOTIFICATION_ACTION;
 Class UN_NOTIFICATION_ACTION_ICON;
 Class UN_NOTIFICATION_ATTACHMENT;
+Class UN_NOTIFICATION_TRIGGER;
+Class UN_PUSH_NOTIFICATION_TRIGGER;
+Class UN_TIME_INTERVAL_NOTIFICATION_TRIGGER;
+Class UN_CALENDAR_NOTIFICATION_TRIGGER;
+Class UN_LOCATION_NOTIFICATION_TRIGGER;
 
 __attribute__((constructor))
 static void un_initializer(void)
@@ -40,6 +45,12 @@ static void un_initializer(void)
 #endif
         UN_USER_NOTIFICATION_CENTER = [UNUserNotificationCenter class];
         UN_NOTIFICATION_ACTION_ICON = [UNNotificationActionIcon class];
+        UN_NOTIFICATION_TRIGGER = [UNNotificationTrigger class];
+        UN_PUSH_NOTIFICATION_TRIGGER = [UNPushNotificationTrigger class];
+        UN_TIME_INTERVAL_NOTIFICATION_TRIGGER = [UNTimeIntervalNotificationTrigger class];
+        UN_CALENDAR_NOTIFICATION_TRIGGER = [UNCalendarNotificationTrigger class];
+
+        UN_LOCATION_NOTIFICATION_TRIGGER = NSClassFromString(@"UNLocationNotificationTrigger");
     }
 }
 

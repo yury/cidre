@@ -27,6 +27,13 @@ pub use notification_sound::NotificationSound;
 #[cfg(not(target_os = "tvos"))]
 pub use notification_sound::NotificationSoundName;
 
+mod notification_trigger;
+pub use notification_trigger::CalendarNotificationTrigger;
+pub use notification_trigger::LocationNotificationTrigger;
+pub use notification_trigger::NotificationTrigger;
+pub use notification_trigger::PushNotificationTrigger;
+pub use notification_trigger::TimeIntervalNotificationTrigger;
+
 mod notification_content;
 pub use notification_content::NotificationContent;
 pub use notification_content::NotificationContentMut;
