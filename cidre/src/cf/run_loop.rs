@@ -1,3 +1,5 @@
+#[cfg(any(target_os = "macos", target_os = "ios"))]
+use crate::mach;
 use crate::{arc, cf, define_cf_type};
 
 #[doc(alias = "CFRunLoopRunResult")]
@@ -229,7 +231,119 @@ unsafe extern "C" {
     static kCFRunLoopCommonModes: &'static Mode;
 }
 
+#[doc(alias = "CFRunLoopSourceContext")]
+#[repr(C)]
+pub struct SrcCtx<T> {
+    pub version: cf::Index,
+    pub info: *mut T,
+    pub retain: Option<extern "C-unwind" fn(info: *const T) -> *mut T>,
+    pub release: Option<extern "C-unwind" fn(info: *const T)>,
+    pub desc: Option<extern "C-unwind" fn(info: *const T) -> arc::R<cf::String>>,
+    pub equal: Option<extern "C-unwind" fn(info0: *const T, info1: *const T) -> bool>,
+    pub hash: Option<extern "C-unwind" fn(info: *const T) -> cf::HashCode>,
+    pub schedule:
+        Option<extern "C-unwind" fn(info: *mut T, rl: &cf::RunLoop, mode: cf::RunLoopMode)>,
+    pub cancel: Option<extern "C-unwind" fn(info: *mut T, rl: &cf::RunLoop, mode: cf::RunLoopMode)>,
+    pub perform: Option<extern "C-unwind" fn(info: *mut T)>,
+}
+
+impl<T> Default for SrcCtx<T> {
+    fn default() -> Self {
+        Self {
+            version: 0,
+            info: std::ptr::null_mut(),
+            retain: None,
+            release: None,
+            desc: None,
+            equal: None,
+            hash: None,
+            schedule: None,
+            cancel: None,
+            perform: None,
+        }
+    }
+}
+
+#[doc(alias = "CFRunLoopSourceContext1")]
+#[repr(C)]
+pub struct SrcCtx1<T> {
+    pub version: cf::Index,
+    pub info: *mut T,
+    pub retain: Option<extern "C-unwind" fn(info: *const T) -> *mut T>,
+    pub release: Option<extern "C-unwind" fn(info: *const T)>,
+    pub desc: Option<extern "C-unwind" fn(info: *const T) -> arc::R<cf::String>>,
+    pub equal: Option<extern "C-unwind" fn(info0: *const T, info1: *const T) -> bool>,
+    pub hash: Option<extern "C-unwind" fn(info: *const T) -> cf::HashCode>,
+    #[cfg(any(target_os = "macos", target_os = "ios"))]
+    pub port: Option<extern "C-unwind" fn(info: *mut T) -> mach::Port>,
+    #[cfg(any(target_os = "macos", target_os = "ios"))]
+    pub perform: Option<
+        extern "C-unwind" fn(
+            msg: *mut std::ffi::c_void,
+            size: cf::Index,
+            allocator: Option<&cf::Allocator>,
+            info: *mut T,
+        ) -> *mut std::ffi::c_void,
+    >,
+    #[cfg(not(any(target_os = "macos", target_os = "ios")))]
+    pub port: Option<extern "C-unwind" fn(info: *mut T) -> *mut std::ffi::c_void>,
+    #[cfg(not(any(target_os = "macos", target_os = "ios")))]
+    pub perform: Option<extern "C-unwind" fn(info: *mut T)>,
+}
+
+impl<T> Default for SrcCtx1<T> {
+    fn default() -> Self {
+        Self {
+            version: 1,
+            info: std::ptr::null_mut(),
+            retain: None,
+            release: None,
+            desc: None,
+            equal: None,
+            hash: None,
+            port: None,
+            perform: None,
+        }
+    }
+}
+
 impl Src {
+    #[doc(alias = "CFRunLoopSourceGetTypeID")]
+    #[inline]
+    pub fn type_id() -> cf::TypeId {
+        unsafe { CFRunLoopSourceGetTypeID() }
+    }
+
+    #[doc(alias = "CFRunLoopSourceCreate")]
+    pub fn with_ctx_in<T>(
+        order: cf::Index,
+        ctx: &mut SrcCtx<T>,
+        allocator: Option<&cf::Allocator>,
+    ) -> Option<arc::R<Self>> {
+        debug_assert_eq!(ctx.version, 0);
+        unsafe { CFRunLoopSourceCreate(allocator, order, std::mem::transmute(ctx)) }
+    }
+
+    #[doc(alias = "CFRunLoopSourceCreate")]
+    pub fn with_ctx_v1_in<T>(
+        order: cf::Index,
+        ctx: &mut SrcCtx1<T>,
+        allocator: Option<&cf::Allocator>,
+    ) -> Option<arc::R<Self>> {
+        debug_assert_eq!(ctx.version, 1);
+        unsafe { CFRunLoopSourceCreate(allocator, order, std::mem::transmute(ctx)) }
+    }
+
+    #[doc(alias = "CFRunLoopSourceCreate")]
+    pub fn with_ctx<T>(order: cf::Index, ctx: &mut SrcCtx<T>) -> Option<arc::R<Self>> {
+        Self::with_ctx_in(order, ctx, None)
+    }
+
+    #[doc(alias = "CFRunLoopSourceCreate")]
+    pub fn with_ctx_v1<T>(order: cf::Index, ctx: &mut SrcCtx1<T>) -> Option<arc::R<Self>> {
+        Self::with_ctx_v1_in(order, ctx, None)
+    }
+
     #[doc(alias = "CFRunLoopSourceInvalidate")]
     #[inline]
     pub fn invalidate(&self) {
@@ -257,6 +371,12 @@ impl Src {
 
 #[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
+    fn CFRunLoopSourceGetTypeID() -> cf::TypeId;
+    fn CFRunLoopSourceCreate(
+        allocator: Option<&cf::Allocator>,
+        order: cf::Index,
+        ctx: *mut SrcCtx<std::ffi::c_void>,
+    ) -> Option<arc::R<Src>>;
     fn CFRunLoopSourceInvalidate(source: &Src);
     fn CFRunLoopSourceIsValid(source: &Src) -> bool;
     fn CFRunLoopSourceGetOrder(source: &Src) -> cf::Index;
@@ -485,6 +605,8 @@ unsafe extern "C-unwind" {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::atomic::{AtomicU16, Ordering};
+
     use crate::cf;
 
     #[test]
@@ -512,5 +634,42 @@ mod tests {
         let timer = cf::RunLoopTimer::with_handler(0.0, 0.0, Default::default(), 1, |_timer| {});
 
         assert_eq!(cf::RunLoopTimer::type_id(), timer.get_type_id());
+    }
+
+    #[test]
+    fn src() {
+        static COUNTER: AtomicU16 = AtomicU16::new(0);
+
+        extern "C-unwind" fn perform(_info: *mut std::ffi::c_void) {
+            COUNTER.fetch_add(1, Ordering::SeqCst);
+            cf::RunLoop::current().stop();
+        }
+
+        let mut ctx = cf::RunLoopSrcCtx {
+            perform: Some(perform),
+            ..Default::default()
+        };
+
+        let src = cf::RunLoopSrc::with_ctx(1, &mut ctx).unwrap();
+        assert!(src.is_valid());
+        assert_eq!(src.order(), 1);
+
+        let rl = cf::RunLoop::current();
+        rl.add_src(&src, &cf::RunLoopMode::common());
+        assert!(rl.contains_src(&src, &cf::RunLoopMode::common()));
+
+        src.signal();
+        cf::RunLoop::run();
+
+        assert_eq!(1, COUNTER.load(Ordering::SeqCst));
+
+        src.signal();
+        cf::RunLoop::run();
+
+        assert_eq!(2, COUNTER.load(Ordering::SeqCst));
+
+        src.invalidate();
+        assert!(!src.is_valid());
+        assert!(!rl.contains_src(&src, &cf::RunLoopMode::common()));
     }
 }

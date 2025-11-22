@@ -2,7 +2,8 @@ use std::ffi::{c_uint, c_void};
 
 use crate::{
     define_opts,
-    mach::{Boolean, Integer, KernReturn, Natural, Port, PortName},
+    mach::{self, Boolean, Integer, KernReturn, Natural, Port, PortName},
+    os,
 };
 
 pub type Number = Natural;
@@ -51,7 +52,7 @@ impl HeaderBits {
     pub const CIRCULAR: Self = Self(0x10000000);
     pub const USED: Self = Self(0xb01f1f1f);
 
-    pub fn with_ports(remote: TypeName, local: TypeName, voucher: TypeName) -> Self {
+    pub const fn with_ports(remote: TypeName, local: TypeName, voucher: TypeName) -> Self {
         Self(
             (remote as u32 & Self::REMOTE_MASK.0)
                 | (((local as u32) << 8) & Self::LOCAL_MASK.0)
@@ -59,7 +60,7 @@ impl HeaderBits {
         )
     }
 
-    pub fn with(remote: TypeName, local: TypeName, voucher: TypeName, other: Self) -> Self {
+    pub const fn with(remote: TypeName, local: TypeName, voucher: TypeName, other: Self) -> Self {
         Self(Self::with_ports(remote, local, voucher).0 | (other.0 & (!Self::PORTS_MASK.0)))
     }
 }
@@ -226,14 +227,14 @@ pub struct OolDesc {
     pub size: Size,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 #[doc(alias = "mach_msg_body_t")]
 #[repr(C, packed(4))]
 pub struct Body {
     pub descriptor_count: Size,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 #[doc(alias = "mach_msg_header_t")]
 #[repr(C, packed(4))]
 pub struct Header {
@@ -255,12 +256,14 @@ pub struct Base {
 #[doc(alias = "mach_msg_trailer_size_t")]
 pub type TrailerSize = u32;
 
+#[derive(Debug, Copy, Clone)]
 #[doc(alias = "mach_msg_trailer_type_t")]
 #[repr(u32)]
 pub enum TrailerType {
     Format0,
 }
 
+#[derive(Debug, Copy, Clone)]
 #[doc(alias = "mach_msg_trailer_t")]
 #[repr(C, packed(4))]
 pub struct Trailer {
@@ -456,6 +459,60 @@ pub mod err {
     /// invalid receive arguments, receive has not started
     #[doc(alias = "MACH_RCV_INVALID_ARGUMENTS")]
     pub const RCV_INVALID_ARGUMENTS: Error = Error::new_unchecked(0x10004013);
+}
+
+#[doc(alias = "mach_msg_empty_send_t")]
+#[derive(Debug, Copy, Clone)]
+#[repr(C, packed(4))]
+pub struct MsgEmptySend {
+    pub header: Header,
+}
+
+impl MsgEmptySend {
+    pub const fn with_remote_port(remote_port: mach::Port) -> Self {
+        Self {
+            header: Header {
+                bits: HeaderBits::with_ports(TypeName::CopySend, TypeName::None, TypeName::None),
+                size: std::mem::size_of::<Header>() as u32,
+                remote_port: remote_port,
+                local_port: mach::Port::NULL,
+                voucher_port: mach::Port::NULL,
+                id: 0,
+            },
+        }
+    }
+
+    pub fn send(&mut self) -> os::Result {
+        msg(
+            &mut self.header,
+            MsgOpt::SEND_MSG,
+            std::mem::size_of::<Self>() as u32,
+            0,
+            mach::Port::NULL,
+            Timeout::NONE,
+            mach::Port::NULL,
+        )
+        .result()
+    }
+
+    pub fn send_to_remote(remote_port: mach::Port) -> os::Result {
+        Self::with_remote_port(remote_port).send()
+    }
+}
+
+#[doc(alias = "mach_msg_empty_rcv_t")]
+#[derive(Debug, Copy, Clone)]
+#[repr(C, packed(4))]
+pub struct MsgEmptyRcv {
+    pub header: Header,
+    pub trailer: Trailer,
+}
+
+#[doc(alias = "mach_msg_empty_t")]
+#[repr(C, packed(4))]
+pub union MsgEmpty {
+    pub send: MsgEmptySend,
+    pub rcv: MsgEmptyRcv,
 }
 
 define_opts!(

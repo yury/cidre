@@ -112,6 +112,8 @@ pub use run_loop::Observer as RunLoopObserver;
 pub use run_loop::RunLoop;
 pub use run_loop::RunResult as RunLoopRunResult;
 pub use run_loop::Src as RunLoopSrc;
+pub use run_loop::SrcCtx as RunLoopSrcCtx;
+pub use run_loop::SrcCtx1 as RunLoopSrcCtx1;
 pub use run_loop::Timer as RunLoopTimer;
 pub use run_loop::TimerCb as RunLoopTimerCb;
 pub use run_loop::TimerCtx as RunLoopTimerCtx;
@@ -128,6 +130,9 @@ pub use socket::Socket;
 
 mod mach_port;
 pub use mach_port::MachPort;
+pub use mach_port::MachPortCb;
+pub use mach_port::MachPortCtx;
+pub use mach_port::MachPortInvalidationCb;
 
 mod attributed_string;
 pub use attributed_string::AttrString;

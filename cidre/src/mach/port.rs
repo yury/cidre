@@ -14,6 +14,7 @@ impl Name {
     pub const DEAD: Self = Self(!0);
 }
 
+#[doc(alias = "mach_port_t")]
 pub type Port = Name;
 
 impl Port {
