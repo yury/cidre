@@ -10,11 +10,11 @@ define_cf_type!(
 #[doc(alias = "CFMachPortContext")]
 #[repr(C)]
 pub struct MachPortCtx<T> {
-    version: cf::Index,
-    info: *mut T,
-    retain: Option<extern "C-unwind" fn(*const T) -> *const T>,
-    release: Option<extern "C-unwind" fn(*const T)>,
-    desc: Option<extern "C-unwind" fn(*const T) -> arc::R<cf::String>>,
+    pub version: cf::Index,
+    pub info: *mut T,
+    pub retain: Option<extern "C-unwind" fn(*const T) -> *const T>,
+    pub release: Option<extern "C-unwind" fn(*const T)>,
+    pub desc: Option<extern "C-unwind" fn(*const T) -> arc::R<cf::String>>,
 }
 
 impl<T> Default for MachPortCtx<T> {
