@@ -469,6 +469,7 @@ pub struct MsgEmptySend {
 }
 
 impl MsgEmptySend {
+    #[inline]
     pub const fn with_remote_port(remote_port: mach::Port) -> Self {
         Self {
             header: Header {
@@ -482,6 +483,7 @@ impl MsgEmptySend {
         }
     }
 
+    #[inline]
     pub fn send(&mut self) -> os::Result {
         msg(
             &mut self.header,
@@ -495,8 +497,30 @@ impl MsgEmptySend {
         .result()
     }
 
+    #[inline]
+    pub fn overwrite(&mut self) -> os::Result {
+        msg_overwrite(
+            &mut self.header,
+            MsgOpt::SEND_MSG,
+            std::mem::size_of::<Self>() as u32,
+            0,
+            mach::Port::NULL,
+            Timeout::NONE,
+            mach::Port::NULL,
+            std::ptr::null_mut(),
+            0,
+        )
+        .result()
+    }
+
+    #[inline]
     pub fn send_to_remote(remote_port: mach::Port) -> os::Result {
         Self::with_remote_port(remote_port).send()
+    }
+
+    #[inline]
+    pub fn overwrite_remote(remote_port: mach::Port) -> os::Result {
+        Self::with_remote_port(remote_port).overwrite()
     }
 }
 
