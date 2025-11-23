@@ -17,6 +17,15 @@ pub struct MachPortCtx<T> {
     pub desc: Option<extern "C-unwind" fn(*const T) -> arc::R<cf::String>>,
 }
 
+impl<T> MachPortCtx<T> {
+    pub fn with_info(info: *mut T) -> Self {
+        Self {
+            info,
+            ..Default::default()
+        }
+    }
+}
+
 impl<T> Default for MachPortCtx<T> {
     fn default() -> Self {
         Self {
@@ -50,7 +59,7 @@ impl MachPort {
 
     #[doc(alias = "CFMachPortInvalidate")]
     #[inline]
-    pub fn invalidate(&self) {
+    pub fn invalidate(&mut self) {
         unsafe { CFMachPortInvalidate(self) }
     }
 
@@ -192,7 +201,7 @@ unsafe extern "C-unwind" {
         should_free_info: *mut bool,
     ) -> Option<arc::R<MachPort>>;
 
-    fn CFMachPortInvalidate(port: &MachPort);
+    fn CFMachPortInvalidate(port: &mut MachPort);
     fn CFMachPortIsValid(port: &MachPort) -> bool;
     fn CFMachPortCreateRunLoopSource(
         allocator: Option<&cf::Allocator>,
