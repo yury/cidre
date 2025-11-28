@@ -591,8 +591,8 @@ impl SampleBuf {
 #[cfg(feature = "cat")]
 #[derive(Debug)]
 pub struct BlockBufAudioBufListN<'a> {
-    list: &'a mut cat::AudioBufListN,
-    block: arc::R<cm::BlockBuf>,
+    pub list: &'a mut cat::AudioBufListN,
+    pub block: arc::R<cm::BlockBuf>,
 }
 
 #[cfg(feature = "cat")]

@@ -85,6 +85,56 @@ impl Color {
     pub fn brightness_component<'ar>(&self) -> Result<cg::Float, &'ar ns::Exception> {
         ns::try_catch(|| unsafe { self.brightness_component_throws() })
     }
+
+    #[objc::msg_send(colorSpace)]
+    pub unsafe fn color_space_throws(&self) -> arc::R<ns::ColorSpace>;
+
+    pub fn color_space<'ear>(&self) -> ns::ExResult<'ear, arc::R<ns::ColorSpace>> {
+        ns::try_catch(|| unsafe { self.color_space_throws() })
+    }
+
+    #[objc::msg_send(colorWithRed:green:blue:alpha:exposure:)]
+    #[objc::available(macos = 26.0)]
+    pub fn with_exposure(
+        r: cg::Float,
+        g: cg::Float,
+        b: cg::Float,
+        a: cg::Float,
+        exposure: cg::Float,
+    ) -> arc::R<Self>;
+
+    #[objc::msg_send(colorWithRed:green:blue:alpha:linearExposure:)]
+    #[objc::available(macos = 26.0)]
+    pub fn with_linear_exposure(
+        r: cg::Float,
+        g: cg::Float,
+        b: cg::Float,
+        a: cg::Float,
+        exposure: cg::Float,
+    ) -> arc::R<Self>;
+
+    /// Reinterpret the color by applying a new `content_headroom` without changing the color components.
+    /// Changing the `content_headroom` redefines the color relative to a different peak white, changing its behavior
+    /// under tone mapping and the result of calling `sdr`. The new color will have a `content_headroom` >= 1.0.
+    #[objc::msg_send(colorByApplyingContentHeadroom:)]
+    #[objc::available(macos = 26.0)]
+    pub fn applying_content_headroom(&self, content_headroom: cg::Float) -> arc::R<Self>;
+
+    /// The linear brightness multiplier that was applied when generating this color.
+    /// Colors created with an exposure by ui::Color create cg::Colors that are tagged with a contentHeadroom value.
+    /// While cg::Colors created without a contentHeadroom tag will return 0 from cg::Color::content_headroom, ui::Colors generated in a similar
+    /// fashion return a linear_exposure of 1.0.
+    #[objc::msg_send(linearExposure)]
+    #[objc::available(macos = 26.0)]
+    pub fn linear_exposure(&self) -> cg::Float;
+
+    #[objc::msg_send(standardDynamicRangeColor)]
+    #[objc::available(macos = 26.0)]
+    pub fn sdr(&self) -> arc::R<Self>;
+
+    #[cfg(feature = "cg")]
+    #[objc::msg_send(CGColor)]
+    pub fn cg_color(&self) -> Option<&crate::cg::Color>;
 }
 
 impl Color {
@@ -406,7 +456,7 @@ unsafe extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::ns;
+    use crate::{api, ns};
 
     #[test]
     fn basics() {
@@ -437,5 +487,25 @@ mod tests {
         let gray = ns::Color::with_white_alpha(0.5, 1.0);
         gray.hue_component()
             .expect_err("gray color shouldn't have hue component");
+    }
+
+    #[test]
+    fn hdr() {
+        let red = ns::Color::sys_red();
+        if api::macos_available("26.0") {
+            unsafe {
+                // we can't create hdr colors from system colors
+                let bright_red = red.applying_content_headroom(2.0);
+                assert_eq!(bright_red.linear_exposure(), 1.0);
+                assert!(bright_red.color_space().is_err());
+
+                let bright_red = ns::Color::with_linear_exposure(1.0, 0.0, 0.0, 1.0, 2.0);
+                assert_eq!(bright_red.linear_exposure(), 2.0);
+                assert!(bright_red.color_space().is_ok());
+
+                let red = bright_red.sdr();
+                assert_eq!(red.linear_exposure(), 1.0);
+            }
+        }
     }
 }

@@ -32,6 +32,79 @@ impl Color {
     #[objc::msg_send(colorWithRed:green:blue:alpha:)]
     pub fn with_rgba(r: cg::Float, g: cg::Float, b: cg::Float, a: cg::Float) -> arc::R<Self>;
 
+    #[objc::msg_send(colorWithRed:green:blue:alpha:exposure:)]
+    #[objc::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        watchos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn with_exposure(
+        r: cg::Float,
+        g: cg::Float,
+        b: cg::Float,
+        a: cg::Float,
+        exposure: cg::Float,
+    ) -> arc::R<Self>;
+
+    #[objc::msg_send(colorWithRed:green:blue:alpha:linearExposure:)]
+    #[objc::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        watchos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn with_linear_exposure(
+        r: cg::Float,
+        g: cg::Float,
+        b: cg::Float,
+        a: cg::Float,
+        exposure: cg::Float,
+    ) -> arc::R<Self>;
+
+    /// Reinterpret the color by applying a new `content_headroom` without changing the color components.
+    /// Changing the `content_headroom` redefines the color relative to a different peak white, changing its behavior
+    /// under tone mapping and the result of calling `sdr`. The new color will have a `content_headroom` >= 1.0.
+    #[objc::msg_send(colorByApplyingContentHeadroom:)]
+    #[objc::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        watchos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn applying_content_headroom(&self, content_headroom: cg::Float) -> arc::R<Self>;
+
+    /// The linear brightness multiplier that was applied when generating this color.
+    /// Colors created with an exposure by ui::Color create cg::Colors that are tagged with a contentHeadroom value.
+    /// While cg::Colors created without a contentHeadroom tag will return 0 from cg::Color::content_headroom, ui::Colors generated in a similar
+    /// fashion return a linear_exposure of 1.0.
+    #[objc::msg_send(linearExposure)]
+    #[objc::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        watchos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn linear_exposure(&self) -> cg::Float;
+
+    #[objc::msg_send(standardDynamicRangeColor)]
+    #[objc::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        watchos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn sdr(&self) -> arc::R<Self>;
+
+    #[cfg(feature = "cg")]
+    #[objc::msg_send(CGColor)]
+    pub fn cg_color(&self) -> Option<&crate::cg::Color>;
+
     #[objc::msg_send(colorNamed:)]
     pub fn color_named(name: &ns::String) -> Option<arc::R<Self>>;
 
