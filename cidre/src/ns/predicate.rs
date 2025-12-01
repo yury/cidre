@@ -25,7 +25,14 @@ impl Predicate {
 
     #[cfg(target_os = "macos")]
     #[objc::msg_send(predicateFromMetadataQueryString:)]
-    pub fn from_metadata_query_string(query: &ns::String) -> Option<arc::R<Self>>;
+    pub unsafe fn from_metadata_query_throws(query: &ns::String) -> Option<arc::R<Self>>;
+
+    #[cfg(target_os = "macos")]
+    pub fn from_metadata_query<'ear>(
+        query: &ns::String,
+    ) -> ns::ExResult<'ear, Option<arc::R<Self>>> {
+        ns::try_catch(|| unsafe { Self::from_metadata_query_throws(query) })
+    }
 
     #[objc::msg_send(predicateWithValue:)]
     pub fn with_value(value: bool) -> arc::R<Self>;
@@ -103,5 +110,8 @@ mod tests {
         let p = ns::Predicate::with_format(ns::str!(c"typeName CONTAINS 'Effect'"), None).unwrap();
         let format = p.format().unwrap();
         assert_eq!(format.as_ref(), "typeName CONTAINS \"Effect\"");
+
+        let p = ns::Predicate::from_metadata_query(ns::str!(c"!"));
+        assert!(p.is_err());
     }
 }
