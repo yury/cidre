@@ -11,7 +11,17 @@ impl ns::Copying for Predicate {}
 
 impl Predicate {
     #[objc::msg_send(predicateWithFormat:argumentArray:)]
-    pub fn with_format(format: &ns::String, args: Option<&ns::Array<ns::Id>>) -> arc::R<Self>;
+    pub unsafe fn with_format_throws(
+        format: &ns::String,
+        args: Option<&ns::Array<ns::Id>>,
+    ) -> arc::R<Self>;
+
+    pub fn with_format<'ear>(
+        format: &ns::String,
+        args: Option<&ns::Array<ns::Id>>,
+    ) -> ns::ExResult<'ear, arc::R<Self>> {
+        ns::try_catch(|| unsafe { Self::with_format_throws(format, args) })
+    }
 
     #[cfg(target_os = "macos")]
     #[objc::msg_send(predicateFromMetadataQueryString:)]
@@ -87,5 +97,11 @@ mod tests {
         let p = ns::Predicate::with_value(false);
         let format = p.format().unwrap();
         assert_eq!(format.as_ref(), "FALSEPREDICATE");
+
+        let p = ns::Predicate::with_format(ns::str!(c"!"), None);
+        assert!(p.is_err());
+        let p = ns::Predicate::with_format(ns::str!(c"typeName CONTAINS 'Effect'"), None).unwrap();
+        let format = p.format().unwrap();
+        assert_eq!(format.as_ref(), "typeName CONTAINS \"Effect\"");
     }
 }
