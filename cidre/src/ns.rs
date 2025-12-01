@@ -17,6 +17,9 @@ pub use process_info::OsVersion;
 pub use process_info::ProcessInfo;
 pub use process_info::ThermalState as ProcessInfoThermalState;
 
+mod predicate;
+pub use predicate::Predicate;
+
 mod formatter;
 pub use formatter::Formatter;
 

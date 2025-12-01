@@ -42,6 +42,7 @@ Class NS_NUMBER;
 Class NS_OBJECT;
 Class NS_PORT;
 Class NS_PROCESS_INFO;
+Class NS_PREDICATE;
 Class NS_REGULAR_EXPRESSION;
 Class NS_RUN_LOOP;
 Class NS_SET;
@@ -144,6 +145,7 @@ static void common_initializer(void)
         NS_OBJECT = [NSObject class];
         NS_PORT = [NSPort class];
         NS_PROCESS_INFO = [NSProcessInfo class];
+        NS_PREDICATE = [NSPredicate class];
         NS_REGULAR_EXPRESSION = [NSRegularExpression class];
         NS_RUN_LOOP = [NSRunLoop class];
         NS_SET = [NSSet class];
