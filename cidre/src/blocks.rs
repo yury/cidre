@@ -266,6 +266,24 @@ call!(a:A, b: B, c: C, d: D, e: E, f: F, g: G, h: H, i: I);
 call!(a:A, b: B, c: C, d: D, e: E, f: F, g: G, h: H, i: I, j: J);
 call!(a:A, b: B, c: C, d: D, e: E, f: F, g: G, h: H, i: I, j: J, k: K);
 
+impl<A, Attr> Block<fn(a: Option<&A>), Attr> {
+    pub fn complete(&mut self, a: Option<&A>) {
+        let layout: &Layout1 = unsafe { std::mem::transmute(&self.0) };
+        let f: extern "C" fn(literal: &mut Self, a: Option<&A>) =
+            unsafe { std::mem::transmute(layout.invoke) };
+        f(self, a)
+    }
+}
+
+impl<A, B, Attr> Block<fn(a: Option<&A>, b: Option<&B>), Attr> {
+    pub fn complete(&mut self, a: Option<&A>, b: Option<&B>) {
+        let layout: &Layout1 = unsafe { std::mem::transmute(&self.0) };
+        let f: extern "C" fn(literal: &mut Self, a: Option<&A>, b: Option<&B>) =
+            unsafe { std::mem::transmute(layout.invoke) };
+        f(self, a, b)
+    }
+}
+
 //         // TODO: revisit
 //         unsafe impl<'a, $($t,)* R> Send for $bl_name<'a$(, $t)*, R> {}
 //         unsafe impl<'a, $($t,)* R> Sync for $bl_name<'a$(, $t)*, R> {}
