@@ -307,6 +307,14 @@ pub unsafe fn sel_reg_name(str: *const i8) -> &'static Sel {
     unsafe { std::mem::transmute(sel_registerName(str)) }
 }
 
+#[doc(alias = "objc_super")]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct Super {
+    pub receiver: *mut Id,
+    pub super_class: *const Class<Id>,
+}
+
 #[link(name = "objc", kind = "dylib")]
 unsafe extern "C-unwind" {
     #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
@@ -355,6 +363,7 @@ unsafe extern "C-unwind" {
     pub fn objc_registerClassPair(cls: &Class<Id>);
     pub fn objc_getClass(name: *const u8) -> Option<&'static Class<Id>>;
     pub fn objc_getProtocol(name: *const i8) -> Option<&'static Protocol>;
+    pub fn objc_msgSendSuper(s: &Super, sel: &Sel);
     pub static NS_OBJECT: &'static crate::objc::Class<Id>;
     fn objc_exception_throw(exception: &Id) -> !;
 }
@@ -510,9 +519,16 @@ macro_rules! define_obj_type {
                 }
 
                 if std::mem::needs_drop::<$InnerType>() {
-                    extern "C" fn impl_dealloc(s: &mut $NewType, _sel: Option<$crate::objc::Sel>) {
+                    extern "C" fn impl_dealloc(s: &mut $NewType, sel: &$crate::objc::Sel) {
                         let ptr = s.inner_mut() as *mut _;
-                        unsafe { std::ptr::drop_in_place(ptr); }
+                        unsafe {
+                            std::ptr::drop_in_place(ptr);
+                            let sup = $crate::objc::Super {
+                                receiver: std::mem::transmute(s),
+                                super_class: $crate::objc::NS_OBJECT
+                            };
+                            $crate::objc::objc_msgSendSuper(&sup, sel);
+                        }
                     }
                     unsafe {
                         let sel = $crate::objc::sel_reg_name(c"dealloc".as_ptr() as _);
