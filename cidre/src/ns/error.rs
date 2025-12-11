@@ -268,20 +268,49 @@ pub mod user_info_keys {
     }
 }
 
+// for anyhow
+impl From<Box<dyn std::error::Error + Send + Sync + 'static>> for arc::R<Error> {
+    #[cold]
+    fn from(value: Box<dyn std::error::Error + Send + Sync + 'static>) -> Self {
+        if let Some(err) = value.downcast_ref::<std::io::Error>() {
+            return err.into();
+        }
+        let debug_desc = format!("{value:?}");
+        let debug_desc = ns::String::with_str(&debug_desc);
+
+        let user_info = ns::Dictionary::with_keys_values(
+            &[ns::error_user_info_keys::debug_desc()],
+            &[debug_desc.as_id_ref()],
+        );
+
+        ns::Error::with_posix(0, Some(user_info.as_ref()))
+    }
+}
+
 impl From<crate::os::Error> for arc::R<Error> {
+    #[cold]
     fn from(value: crate::os::Error) -> Self {
         ns::Error::with_domain(ns::ErrorDomain::os_status(), value.0.get() as _, None)
     }
 }
 
 impl From<ErrorKind> for arc::R<Error> {
+    #[cold]
     fn from(value: ErrorKind) -> Self {
         ns::Error::with_posix(posix_code(value), None)
     }
 }
 
 impl From<std::io::Error> for arc::R<Error> {
+    #[cold]
     fn from(value: std::io::Error) -> Self {
+        (&value).into()
+    }
+}
+
+impl From<&std::io::Error> for arc::R<Error> {
+    #[cold]
+    fn from(value: &std::io::Error) -> Self {
         if let Some(code) = value.raw_os_error() {
             return ns::Error::with_posix(code as _, None);
         }
@@ -380,5 +409,10 @@ mod tests {
 
         let debug_desc = debug_desc.try_cast(ns::String::cls()).unwrap();
         assert_eq!(debug_desc, error_debug_str.as_str());
+
+        let error: Box<dyn std::error::Error + Send + Sync + 'static> =
+            Box::new(std::io::Error::from_raw_os_error(20));
+        let error: arc::R<ns::Error> = error.into();
+        assert_eq!(error.code(), 20);
     }
 }
