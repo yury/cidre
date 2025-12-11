@@ -27,6 +27,7 @@ impl AudiovisualMediaTypes {
 }
 
 define_obj_type!(
+    #[doc(alias = "WKWebViewConfiguration")]
     pub WebViewCfg(ns::Id),
     WK_WEB_VIEW_CONFIGURATION
 );

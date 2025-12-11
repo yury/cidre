@@ -1,6 +1,7 @@
 use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(
+    #[doc(alias = "WKWebsiteDataStore")]
     pub WebsiteDataStore(ns::Id)
 );
 
@@ -27,7 +28,12 @@ impl WebsiteDataStore {
 
     #[objc::msg_send(dataStoreForIdentifier:)]
     #[objc::available(macos = 14.0, ios = 17.0)]
-    pub fn with_id(id: &ns::Uuid) -> arc::R<Self>;
+    pub unsafe fn with_id_throws(id: &ns::Uuid) -> arc::R<Self>;
+
+    #[objc::available(macos = 14.0, ios = 17.0)]
+    pub fn with_id<'ear>(id: &ns::Uuid) -> ns::ExResult<'ear, arc::R<Self>> {
+        ns::try_catch(|| unsafe { Self::with_id_throws(id) })
+    }
 }
 
 #[link(name = "wk", kind = "static")]
