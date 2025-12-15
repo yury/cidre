@@ -1,20 +1,40 @@
 #[cfg(target_os = "macos")]
 mod macos {
     use cidre::{
+        arc,
         at::{
             self, au,
             audio::component::{InitializedState, UninitializedState},
         },
-        os,
+        av, ns, os,
     };
 
-    #[derive(Default)]
     struct Ctx {
+        file: arc::R<av::AudioFile>,
+        format: arc::R<av::AudioFormat>,
         output: Option<au::Output<InitializedState>>,
         data: Vec<f32>,
     }
 
+    impl Drop for Ctx {
+        fn drop(&mut self) {
+            if let Some(mut output) = self.output.take() {
+                output.stop().unwrap();
+            }
+            self.file.close();
+        }
+    }
+
     impl Ctx {
+        fn new(file: arc::R<av::AudioFile>, format: arc::R<av::AudioFormat>) -> Self {
+            Self {
+                file,
+                format,
+                output: Default::default(),
+                data: Default::default(),
+            }
+        }
+
         fn start(&mut self, mut output: au::Output<UninitializedState>) -> os::Result<()> {
             output.set_io_enabled(au::Scope::INPUT, 1, true)?;
             output.set_io_enabled(au::Scope::OUTPUT, 0, false)?;
@@ -58,6 +78,9 @@ mod macos {
                 return e.status();
             }
 
+            let buf = av::AudioPcmBuf::with_buf_list_no_copy(&ctx.format, &buf_list, None).unwrap();
+            ctx.file.write(&buf).unwrap();
+
             os::Status::NO_ERR
         }
     }
@@ -70,6 +93,16 @@ mod macos {
             .input_stream_format(1)
             .expect("Failed to get input stream format");
 
+        let format = av::AudioFormat::with_asbd(&asbd).unwrap();
+        let url = ns::Url::with_fs_path_string(ns::str!(c"/tmp/record.aiff"), false);
+        let file = av::AudioFile::open_write_common_format(
+            &url,
+            &format.settings(),
+            av::audio::CommonFormat::PcmF32,
+            format.is_interleaved(),
+        )
+        .unwrap();
+
         println!("format {:#?}", asbd);
 
         let name = input_device.name().expect("Failed to device name property");
@@ -78,8 +111,9 @@ mod macos {
 
         let buf_list = input_device.input_stream_cfg().unwrap();
         println!("stream cfg: {:?}", buf_list);
+        println!("writing audio to {url:?}");
 
-        let mut ctx = Box::new(Ctx::default());
+        let mut ctx = Box::new(Ctx::new(file, format));
 
         ctx.start(output).unwrap();
 
