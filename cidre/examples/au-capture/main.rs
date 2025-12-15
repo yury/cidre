@@ -41,6 +41,8 @@ mod macos {
             output.set_should_allocate_input_buf(false)?;
             output.set_should_allocate_output_buf(false)?;
             output.set_input_cb(Ctx::input_cb, self as *mut Self)?;
+            // output.vp_set_bypass_voice_processing(true)?;
+
             let output = output.allocate_resources().unwrap();
             self.data = vec![0f32; output.unit().max_frames_per_slice()? as usize];
             self.output = Some(output);
