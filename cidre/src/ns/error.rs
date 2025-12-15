@@ -96,6 +96,14 @@ impl Error {
         Self::alloc().init_with_domain(ns::ErrorDomain::posix(), code, user_info)
     }
 
+    #[inline]
+    pub fn with_os_status(
+        code: ns::Integer,
+        user_info: Option<&ns::Dictionary<ns::String, ns::Id>>,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_domain(ns::ErrorDomain::os_status(), code, user_info)
+    }
+
     #[objc::msg_send(localizedDescription)]
     pub fn localized_desc(&self) -> arc::R<ns::String>;
 
