@@ -80,6 +80,7 @@ impl Error {
     pub fn domain(&self) -> arc::R<ns::ErrorDomain>;
 
     #[inline]
+    #[cold]
     pub fn with_domain(
         domain: &ns::ErrorDomain,
         code: ns::Integer,
@@ -93,7 +94,7 @@ impl Error {
         code: ns::Integer,
         user_info: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<Self> {
-        Self::alloc().init_with_domain(ns::ErrorDomain::posix(), code, user_info)
+        Self::with_domain(ns::ErrorDomain::posix(), code, user_info)
     }
 
     #[inline]
@@ -101,7 +102,7 @@ impl Error {
         code: ns::Integer,
         user_info: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<Self> {
-        Self::alloc().init_with_domain(ns::ErrorDomain::os_status(), code, user_info)
+        Self::with_domain(ns::ErrorDomain::os_status(), code, user_info)
     }
 
     #[objc::msg_send(localizedDescription)]
