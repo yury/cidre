@@ -3,7 +3,8 @@ mod macos {
     use cidre::{
         arc,
         at::{
-            self, au,
+            self,
+            au::{self, voice_io_other_audio_ducking_level},
             audio::component::{InitializedState, UninitializedState},
         },
         av, ns, os,
@@ -41,7 +42,11 @@ mod macos {
             output.set_should_allocate_input_buf(false)?;
             output.set_should_allocate_output_buf(false)?;
             output.set_input_cb(Ctx::input_cb, self as *mut Self)?;
-            // output.vp_set_bypass_voice_processing(true)?;
+            // output.vp_set_enable_agc(false)?;
+            output.vp_set_other_audio_ducking_cfg(&au::VoiceIoOtherAudioDuckingCfg {
+                enable_advanced_ducking: false,
+                ducking_level: voice_io_other_audio_ducking_level::MIN,
+            })?;
 
             let output = output.allocate_resources().unwrap();
             self.data = vec![0f32; output.unit().max_frames_per_slice()? as usize];

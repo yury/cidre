@@ -1438,10 +1438,20 @@ pub mod voice_io_other_audio_ducking_level {
 }
 
 #[doc(alias = "AUVoiceIOOtherAudioDuckingConfiguration")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(C)]
 pub struct VoiceIoOtherAudioDuckingCfg {
     pub enable_advanced_ducking: bool,
     pub ducking_level: u32,
+}
+
+impl Default for VoiceIoOtherAudioDuckingCfg {
+    fn default() -> Self {
+        Self {
+            enable_advanced_ducking: false,
+            ducking_level: voice_io_other_audio_ducking_level::DEFAULT,
+        }
+    }
 }
 
 impl au::PropId {

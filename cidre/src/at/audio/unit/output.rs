@@ -134,7 +134,7 @@ where
         )
     }
 
-    pub fn vp_mute_output(&mut self) -> os::Result<bool> {
+    pub fn vp_mute_output(&self) -> os::Result<bool> {
         let val: u32 = self.unit().prop(
             au::PropId::VOICE_IO_MUTE_OUTPUT,
             au::Scope::GLOBAL,
@@ -153,7 +153,7 @@ where
         )
     }
 
-    pub fn vp_enable_agc(&mut self) -> os::Result<bool> {
+    pub fn vp_enable_agc(&self) -> os::Result<bool> {
         let val: u32 = self.unit().prop(
             au::PropId::VOICE_IO_ENABLE_AGC,
             au::Scope::GLOBAL,
@@ -171,7 +171,7 @@ where
             &arg,
         )
     }
-    pub fn vp_bypass_voice_processing(&mut self) -> os::Result<bool> {
+    pub fn vp_bypass_voice_processing(&self) -> os::Result<bool> {
         let val: u32 = self.unit().prop(
             au::PropId::VOICE_IO_BYPASS_VOICE_PROCESSING,
             au::Scope::GLOBAL,
@@ -187,6 +187,26 @@ where
             au::Scope::GLOBAL,
             au::Element(1),
             &arg,
+        )
+    }
+
+    pub fn vp_other_audio_ducking_cfg(&mut self) -> os::Result<au::VoiceIoOtherAudioDuckingCfg> {
+        self.unit().prop(
+            au::PropId::VOICE_IO_OTHER_AUDIO_DUCKING_CFG,
+            au::Scope::GLOBAL,
+            au::Element(0),
+        )
+    }
+
+    pub fn vp_set_other_audio_ducking_cfg(
+        &mut self,
+        cfg: &au::VoiceIoOtherAudioDuckingCfg,
+    ) -> os::Result {
+        self.unit_mut().set_prop(
+            au::PropId::VOICE_IO_OTHER_AUDIO_DUCKING_CFG,
+            au::Scope::GLOBAL,
+            au::Element(0),
+            cfg,
         )
     }
 }
