@@ -87,11 +87,15 @@ impl Screen {
         selector: &objc::Sel,
     ) -> arc::R<ca::DisplayLink>;
 
+    #[objc::available(macos = 14.0)]
+    #[allow(unused_unsafe)]
     pub fn display_link_with_target<D: ca::DisplayLinkTargetImpl>(
         &self,
         target: &D,
     ) -> arc::R<ca::DisplayLink> {
-        self.display_link_with_target_selector(target.as_id_ref(), D::sel_on_display_link())
+        unsafe {
+            self.display_link_with_target_selector(target.as_id_ref(), D::sel_on_display_link())
+        }
     }
 }
 
