@@ -1437,11 +1437,17 @@ pub mod voice_io_other_audio_ducking_level {
     pub const MAX: u32 = 30;
 }
 
+/// The configuration of ducking other (i.e. non-voice) audio
+///
+/// See https://developer.apple.com/videos/play/wwdc2023/10235?time=199
 #[doc(alias = "AUVoiceIOOtherAudioDuckingConfiguration")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(C)]
 pub struct VoiceIoOtherAudioDuckingCfg {
+    /// Enables advanced ducking which ducks other audio based on the presence of voice activity from local and/or remote chat participants.
     pub enable_advanced_ducking: bool,
+
+    /// Ducking level of other audio
     pub ducking_level: u32,
 }
 
