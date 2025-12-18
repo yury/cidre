@@ -3,8 +3,7 @@ mod macos {
     use cidre::{
         arc,
         at::{
-            self,
-            au::{self, voice_io_other_audio_ducking_level},
+            self, au,
             audio::component::{InitializedState, UninitializedState},
         },
         av, ns, os,
@@ -44,8 +43,8 @@ mod macos {
             output.set_input_cb(Ctx::input_cb, self as *mut Self)?;
             // output.vp_set_enable_agc(false)?;
             output.vp_set_other_audio_ducking_cfg(&au::VoiceIoOtherAudioDuckingCfg {
-                enable_advanced_ducking: false,
-                ducking_level: voice_io_other_audio_ducking_level::MIN,
+                enable_advanced_ducking: true,
+                ducking_level: au::voice_io_other_audio_ducking_level::MIN,
             })?;
 
             let output = output.allocate_resources().unwrap();
