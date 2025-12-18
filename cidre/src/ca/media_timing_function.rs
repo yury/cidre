@@ -1,23 +1,32 @@
 use crate::{arc, define_cls, define_obj_type, ns, objc};
 
-define_obj_type!(pub Name(ns::String));
+define_obj_type!(
+    #[doc(alias = "CAMediaTimingFunctionName")]
+    pub Name(ns::String)
+);
+
 impl Name {
+    #[doc(alias = "kCAMediaTimingFunctionLinear")]
     pub fn linear() -> &'static Self {
         unsafe { kCAMediaTimingFunctionLinear }
     }
 
+    #[doc(alias = "kCAMediaTimingFunctionEaseIn")]
     pub fn ease_in() -> &'static Self {
         unsafe { kCAMediaTimingFunctionEaseIn }
     }
 
+    #[doc(alias = "kCAMediaTimingFunctionEaseOut")]
     pub fn ease_out() -> &'static Self {
         unsafe { kCAMediaTimingFunctionEaseOut }
     }
 
-    pub fn ease_in_out() -> &'static Self {
-        unsafe { kCAMediaTimingFunctionEaseInOut }
+    #[doc(alias = "kCAMediaTimingFunctionEaseInEaseOut")]
+    pub fn ease_in_ease_out() -> &'static Self {
+        unsafe { kCAMediaTimingFunctionEaseInEaseOut }
     }
 
+    #[doc(alias = "kCAMediaTimingFunctionDefault")]
     pub fn default() -> &'static Self {
         unsafe { kCAMediaTimingFunctionDefault }
     }
@@ -52,7 +61,7 @@ unsafe extern "C" {
     static kCAMediaTimingFunctionLinear: &'static Name;
     static kCAMediaTimingFunctionEaseIn: &'static Name;
     static kCAMediaTimingFunctionEaseOut: &'static Name;
-    static kCAMediaTimingFunctionEaseInOut: &'static Name;
+    static kCAMediaTimingFunctionEaseInEaseOut: &'static Name;
     static kCAMediaTimingFunctionDefault: &'static Name;
 }
 
