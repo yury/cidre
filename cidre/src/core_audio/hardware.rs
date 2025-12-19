@@ -1921,6 +1921,7 @@ unsafe extern "C-unwind" {
 
 impl Device {
     #[cfg(feature = "private")]
+    #[doc(alias = "AudioDeviceDuck")]
     pub fn duck(
         &self,
         in_ducked_level: f32,
@@ -1931,6 +1932,7 @@ impl Device {
     }
 
     #[cfg(not(feature = "private"))]
+    #[doc(alias = "AudioDeviceDuck")]
     pub fn duck(
         &self,
         in_ducked_level: f32,
