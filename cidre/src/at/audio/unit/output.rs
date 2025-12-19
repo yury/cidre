@@ -153,6 +153,28 @@ where
         )
     }
 
+    #[cfg(feature = "blocks")]
+    pub fn vp_set_muted_speech_activity_event_listener_block(
+        &mut self,
+        cb: Option<&mut au::VoiceIoMutedSpeechActivityEventListener>,
+    ) -> os::Result {
+        self.unit_mut().set_prop(
+            au::PropId::VOICE_IO_MUTED_SPEECH_ACTIVITY_EVENT_LISTENER,
+            au::Scope::GLOBAL,
+            au::Element(0),
+            &cb,
+        )
+    }
+
+    #[cfg(feature = "blocks")]
+    pub fn vp_set_muted_speech_activity_event_listener(
+        &mut self,
+        cb: impl FnMut(au::VoiceIoSpeechActivityEvent) + Send + 'static,
+    ) -> os::Result {
+        let mut block = au::VoiceIoMutedSpeechActivityEventListener::new1(cb);
+        self.vp_set_muted_speech_activity_event_listener_block(Some(&mut block))
+    }
+
     pub fn vp_enable_agc(&self) -> os::Result<bool> {
         let val: u32 = self.unit().prop(
             au::PropId::VOICE_IO_ENABLE_AGC,
@@ -484,6 +506,15 @@ mod tests {
         output_device.set_prop(&mute_addr, &1u32).unwrap();
 
         let mut output = output.allocate_resources().unwrap();
+
+        output
+            .vp_set_muted_speech_activity_event_listener(|event| {
+                println!("{event:?}");
+            })
+            .unwrap();
+        output
+            .vp_set_muted_speech_activity_event_listener_block(None)
+            .unwrap();
 
         assert_eq!(true, output.vp_mute_output().unwrap());
         output.vp_set_mute_output(false).unwrap();
