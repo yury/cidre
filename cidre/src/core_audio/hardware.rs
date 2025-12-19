@@ -2,7 +2,7 @@ use std::{ffi, mem};
 
 use crate::{
     arc,
-    at::{AudioBufListN, audio::ValueRange},
+    at::{AudioBufListN, AudioTimeStamp, audio::ValueRange},
     cat::{self, AudioStreamBasicDesc},
     cf,
     core_audio::{
@@ -1908,6 +1908,47 @@ unsafe extern "C-unwind" {
 
     fn AudioDeviceStart(device: Device, proc_id: Option<DeviceIoProcId>) -> os::Status;
     fn AudioDeviceStop(device: Device, proc_id: Option<DeviceIoProcId>) -> os::Status;
+
+    #[cfg(feature = "private")]
+    #[allow(dead_code)]
+    fn AudioDeviceDuck(
+        device: Device,
+        in_ducked_level: f32,
+        in_start_time: Option<&AudioTimeStamp>,
+        in_ramp_duration: f32,
+    ) -> os::Status;
+}
+
+impl Device {
+    #[cfg(feature = "private")]
+    pub fn duck(
+        &self,
+        in_ducked_level: f32,
+        in_start_time: Option<&AudioTimeStamp>,
+        in_ramp_duration: f32,
+    ) -> os::Result {
+        unsafe { AudioDeviceDuck(*self, in_ducked_level, in_start_time, in_ramp_duration).result() }
+    }
+
+    #[cfg(not(feature = "private"))]
+    pub fn duck(
+        &self,
+        in_ducked_level: f32,
+        in_start_time: Option<&AudioTimeStamp>,
+        in_ramp_duration: f32,
+    ) -> Option<os::Result> {
+        let sym = crate::api::DlSym::<
+            extern "C-unwind" fn(
+                device: Device,
+                in_ducked_level: f32,
+                in_start_time: Option<&AudioTimeStamp>,
+                in_ramp_duration: f32,
+            ) -> os::Status,
+        >::new(c"AudioDeviceDuck");
+
+        sym.get_fn()
+            .map(|f| f(*self, in_ducked_level, in_start_time, in_ramp_duration).result())
+    }
 }
 
 #[cfg(test)]

@@ -6,7 +6,7 @@ mod macos {
             self, au,
             audio::component::{InitializedState, UninitializedState},
         },
-        av, ns, os,
+        av, core_audio, ns, os,
     };
 
     struct Ctx {
@@ -51,7 +51,11 @@ mod macos {
             self.data = vec![0f32; output.unit().max_frames_per_slice()? as usize];
             self.output = Some(output);
             let output = unsafe { self.output.as_mut().unwrap_unchecked() };
-            output.start()
+            output.start()?;
+
+            let output_device = core_audio::System::default_output_device()?;
+            // unduck output device
+            output_device.duck(1.0, None, 0.0)
         }
 
         extern "C-unwind" fn input_cb(
