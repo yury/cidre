@@ -1,6 +1,6 @@
 [package]
 name = "cidre"
-version = "0.11.8"
+version = "0.11.9"
 edition = "2024"
 rust-version = "1.88"
 license = "MIT"
