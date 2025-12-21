@@ -29,6 +29,7 @@ impl Session {
         codec: cm::VideoCodec,
         encoder_spec: Option<&cf::Dictionary>,
         src_image_buf_attrs: Option<&cf::Dictionary>,
+        // apple don't use this allocator any more
         compressed_data_allocator: Option<&cf::Allocator>,
         output_cb: Option<OutputCallback<T>>,
         output_cb_ref_con: *mut T,

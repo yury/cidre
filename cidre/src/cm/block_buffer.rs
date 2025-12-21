@@ -111,7 +111,7 @@ impl BlockBuf {
     ///
     /// ```
     #[inline]
-    pub fn with_mem_block(
+    pub fn with_mem_block_in(
         len: usize,
         block_allocator: Option<&cf::Allocator>,
     ) -> os::Result<arc::R<BlockBuf>> {
@@ -120,6 +120,21 @@ impl BlockBuf {
                 std::ptr::null_mut(),
                 len,
                 block_allocator,
+                0,
+                len,
+                Flags::ASSURE_MEM_NOW,
+                None,
+            )
+        }
+    }
+
+    #[inline]
+    pub fn with_mem_block(len: usize) -> os::Result<arc::R<BlockBuf>> {
+        unsafe {
+            Self::create_with_mem_block_in(
+                std::ptr::null_mut(),
+                len,
+                None,
                 0,
                 len,
                 Flags::ASSURE_MEM_NOW,
