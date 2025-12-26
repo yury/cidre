@@ -334,10 +334,91 @@ pub mod keys {
 
     /// An estimate of the expected size in bytes of a single encoded frame based
     /// on the current configuration.
+    ///
+    /// When supported, this option is intended to allow clients to estimate the output file size for an encoded video stream.
+    /// This property is not implemented by all video encoders.
+    /// Read Only, CFNumber (bytes per frame)
     #[doc(alias = "kVTCompressionPropertyKey_EstimatedAverageBytesPerFrame")]
+    #[api::available(macos = 13.0, ios = 16.0, tvos = 16.0, visionos = 1.0)]
     #[inline]
     pub fn estimated_average_bytes_per_frame() -> &'static cf::String {
         unsafe { kVTCompressionPropertyKey_EstimatedAverageBytesPerFrame }
+    }
+
+    /// Requires that the encoder use a variable bitrate (VBR) rate control algorithm and specifies the desired variable bitrate in bits per second.
+    ///
+    /// The actual peak bitrate present in the bitstream may be above or below this value based on other parameters
+    /// such as kVTCompressionPropertyKey_VBVMaxBitRate.
+    /// This property key needs to be set to achieve Variable Bitrate (VBR) rate control.
+    /// This property key is not compatible with:
+    ///   1. kVTCompressionPropertyKey_AverageBitRate,
+    ///   2. kVTCompressionPropertyKey_ConstantBitRate,
+    ///   3. kVTCompressionPropertyKey_DataRateLimits,
+    ///   4. VTVideoEncoderSpecification_EnableLowLatencyRateControl = True.
+    ///
+    /// Read/write, CFNumber<u32>, Optional
+    #[doc(alias = "kVTCompressionPropertyKey_VariableBitRate")]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    #[inline]
+    pub fn variable_bit_rate() -> &'static cf::String {
+        unsafe { kVTCompressionPropertyKey_VariableBitRate }
+    }
+
+    /// Defines the maximum bitrate that can enter the video buffering verifier (VBV) model at any time in variable bitrate (VBR) mode.
+    ///
+    /// The value of this property must be greater than zero.
+    /// This property key is not compatible with:
+    ///   1. kVTCompressionPropertyKey_AverageBitRate,
+    ///   2. kVTCompressionPropertyKey_ConstantBitRate,
+    ///   3. kVTCompressionPropertyKey_DataRateLimits,
+    ///   4. VTVideoEncoderSpecification_EnableLowLatencyRateControl = True.
+    ///
+    /// Read/write, CFNumber<u32>, Optional
+    #[doc(alias = "kVTCompressionPropertyKey_VBVMaxBitRate")]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    #[inline]
+    pub fn vbv_max_bit_rate() -> &'static cf::String {
+        unsafe { kVTCompressionPropertyKey_VBVMaxBitRate }
+    }
+
+    /// Capacity of the video buffering verifier (VBV) model in seconds.
+    ///
+    /// VBV model allows for larger variations in bitrates while avoiding decoder-side overflows or underflows.
+    /// A larger VBV model size may improve compression quality, but it requires more memory and may introduce delay.
+    /// The value of this property must be greater than 0.0.
+    /// The default value is set as 2.5 seconds.
+    /// This property key is compatible with constant bitrate (CBR) or variable bitrate (VBR) rate control.
+    ///
+    /// This property key is not compatible with:
+    ///   1. kVTCompressionPropertyKey_AverageBitRate,
+    ///   2. kVTCompressionPropertyKey_DataRateLimits,
+    ///   3. VTVideoEncoderSpecification_EnableLowLatencyRateControl = True.
+    ///
+    /// Read/write, CFNumber<f32>, Optional
+    #[doc(alias = "kVTCompressionPropertyKey_VBVBufferDuration")]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    #[inline]
+    pub fn vbv_buf_duration() -> &'static cf::String {
+        unsafe { kVTCompressionPropertyKey_VBVBufferDuration }
+    }
+
+    /// Initial delay of the VBV model between storing the picture in the VBV buffer model and decoding of that picture, as a percentage of VBV buffer duration.
+    ///
+    /// This value should be specified as a number in the range of 0 to 100.
+    /// Larger value increases the delay but results in smoother playback.
+    /// Default value is 90, meaning 90% of the VBV buffer duration.
+    ///
+    /// This property key is not compatible with:
+    ///   1. kVTCompressionPropertyKey_AverageBitRate,
+    ///   2. kVTCompressionPropertyKey_DataRateLimits,
+    ///   3. VTVideoEncoderSpecification_EnableLowLatencyRateControl = True.
+    ///
+    /// Read/write, CFNumber<f32>, Optional
+    #[doc(alias = "kVTCompressionPropertyKey_VBVInitialDelayPercentage")]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    #[inline]
+    pub fn vbv_initial_delay_percentage() -> &'static cf::String {
+        unsafe { kVTCompressionPropertyKey_VBVInitialDelayPercentage }
     }
 
     #[doc(alias = "kVTCompressionPropertyKey_BaseLayerFrameRateFraction")]
@@ -606,7 +687,21 @@ pub mod keys {
 
         #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0, visionos = 2.0)]
         static kVTCompressionPropertyKey_MaximumRealTimeFrameRate: &'static cf::String;
+        #[api::available(macos = 13.0, ios = 16.0, tvos = 16.0, visionos = 1.0)]
         static kVTCompressionPropertyKey_EstimatedAverageBytesPerFrame: &'static cf::String;
+
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+        static kVTCompressionPropertyKey_VariableBitRate: &'static cf::String;
+
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+        static kVTCompressionPropertyKey_VBVMaxBitRate: &'static cf::String;
+
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+        static kVTCompressionPropertyKey_VBVBufferDuration: &'static cf::String;
+
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+        static kVTCompressionPropertyKey_VBVInitialDelayPercentage: &'static cf::String;
+
         static kVTCompressionPropertyKey_ConstantBitRate: &'static cf::String;
         static kVTCompressionPropertyKey_BaseLayerFrameRateFraction: &'static cf::String;
         static kVTCompressionPropertyKey_BaseLayerBitRateFraction: &'static cf::String;
