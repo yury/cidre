@@ -7,4 +7,5 @@ pub use session::OutputMultiImageCb;
 pub use session::Session;
 
 pub mod properties;
+pub use properties::decode_frame_option_keys;
 pub use properties::keys as property_keys;

@@ -256,3 +256,47 @@ pub mod video_decoder_specification {
         static kVTVideoDecoderSpecification_PreferredDecoderGPURegistryID: &'static cf::String;
     }
 }
+
+/// Per-frame Decoder Option Keys
+pub mod decode_frame_option_keys {
+    use crate::{api, cf};
+
+    /// Clockwise rotation (one of 0, 90, 180, 270) to be applied for proper display orientation.
+    ///
+    /// This value is used for content analysis to properly orient the image before analysis.
+    /// The value should be a CFNumber with values of 0, 90, 180, or 270, representing degrees of clockwise rotation.
+    /// This key is not used unless you have attached a ``SCVideoStreamAnalyzer`` to the decompression session.
+    ///
+    /// cf::Number, Optional
+    #[doc(alias = "kVTDecodeFrameOptionKey_ContentAnalyzerRotation")]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    #[inline]
+    pub fn content_analyzer_rotation() -> &'static cf::String {
+        unsafe { kVTDecodeFrameOptionKey_ContentAnalyzerRotation }
+    }
+
+    /// CGRect within the image to be used for content analysis, cropped before applying rotation.
+    ///
+    /// This value specifies a rectangle within the original frame that should be used for content analysis.
+    /// The cropping is applied before any rotation specified by kVTDecodeFrameOptionKey_ContentAnalyzerRotation.
+    /// The value should be a CFDictionary representing a CGRect created using CGRectCreateDictionaryRepresentation().
+    /// This key is not used unless you have attached a ``SCVideoStreamAnalyzer`` to the decompression session.
+    ///
+    /// cf::Dictionary with cg::Rect, Optional
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    #[doc(alias = "kVTDecodeFrameOptionKey_ContentAnalyzerCropRectangle")]
+    #[inline]
+    pub fn content_analyzer_crop_rect() -> &'static cf::String {
+        unsafe { kVTDecodeFrameOptionKey_ContentAnalyzerCropRectangle }
+    }
+
+    #[link(name = "VideoToolbox", kind = "framework")]
+    #[api::weak]
+    unsafe extern "C" {
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+        static kVTDecodeFrameOptionKey_ContentAnalyzerRotation: &'static cf::String;
+
+        #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+        static kVTDecodeFrameOptionKey_ContentAnalyzerCropRectangle: &'static cf::String;
+    }
+}
