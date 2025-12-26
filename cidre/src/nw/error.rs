@@ -47,7 +47,7 @@ impl Error {
 
     #[doc(alias = "nw_error_copy_cf_error")]
     #[inline]
-    pub fn cf_error(&self) -> arc::R<cf::Error> {
+    pub fn cf_error(&self) -> arc::Retained<cf::Error> {
         unsafe { nw_error_copy_cf_error(self) }
     }
 }
