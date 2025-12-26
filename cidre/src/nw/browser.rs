@@ -4,11 +4,12 @@ use crate::{arc, define_obj_type, dispatch, ns, nw};
 use crate::blocks;
 
 #[doc(alias = "nw_browser_state_changed_handler_t")]
-pub type StateChangedHandler = blocks::SyncBlock<fn(State, Option<&ns::Error>)>;
+pub type StateChangedHandler = blocks::SyncBlock<fn(state: State, err: Option<&ns::Error>)>;
 
 #[doc(alias = "nw_browser_browse_results_changed_handler_t")]
-pub type BrowseResultsChandedHandler =
-    blocks::SyncBlock<fn(&nw::BrowseResult, &nw::BrowseResult, bool)>;
+pub type BrowseResultsChandedHandler = blocks::SyncBlock<
+    fn(old_result: &nw::BrowseResult, new_result: &nw::BrowseResult, batch_complete: bool),
+>;
 
 #[doc(alias = "nw_browser_state_t")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
@@ -71,12 +72,18 @@ impl Browser {
         unsafe { nw_browser_set_queue(self, val) }
     }
 
+    /// Starts the browser, which begins browsing for available endpoints.
     #[inline]
     pub fn start(&mut self, queue: &dispatch::Queue) {
         self.set_queue(queue);
         unsafe { nw_browser_start(self) }
     }
 
+    /// Cancels the browser. The process of cancellation will be completed
+    /// asynchronously, and the final callback event delivered to the caller
+    /// will be a state update with a value of nw_browser_state_cancelled.
+    /// Once this update is delivered, the caller may clean up any associated
+    /// memory or objects.
     #[doc(alias = "nw_browser_cancel")]
     #[inline]
     pub fn cancel(&mut self) {
@@ -98,9 +105,34 @@ impl Browser {
     #[doc(alias = "nw_browser_set_state_changed_handler")]
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn set_state_changed_handler(&mut self, handler: Option<&mut StateChangedHandler>) {
+    pub fn set_state_changed_handler_block(&mut self, handler: Option<&mut StateChangedHandler>) {
         unsafe {
             nw_browser_set_state_changed_handler(self, handler);
+        }
+    }
+
+    #[doc(alias = "nw_browser_set_state_changed_handler")]
+    #[cfg(feature = "blocks")]
+    #[inline]
+    pub fn set_state_changed_handler(
+        &mut self,
+        handler: impl FnMut(State, Option<&ns::Error>) + Sync + 'static,
+    ) {
+        let mut block = StateChangedHandler::new2(handler);
+        unsafe {
+            nw_browser_set_state_changed_handler(self, Some(&mut block));
+        }
+    }
+
+    #[doc(alias = "nw_browser_set_browse_results_changed_handler")]
+    #[cfg(feature = "blocks")]
+    #[inline]
+    pub fn set_results_changed_handler_block(
+        &mut self,
+        handler: Option<&mut BrowseResultsChandedHandler>,
+    ) {
+        unsafe {
+            nw_browser_set_browse_results_changed_handler(self, handler);
         }
     }
 
@@ -109,10 +141,16 @@ impl Browser {
     #[inline]
     pub fn set_results_changed_handler(
         &mut self,
-        handler: Option<&mut BrowseResultsChandedHandler>,
+        handler: impl FnMut(
+            /* old_results: */ &nw::BrowseResult,
+            /* new_results: */ &nw::BrowseResult,
+            /* batch_completed: */ bool,
+        ) + Sync
+        + 'static,
     ) {
+        let mut block = BrowseResultsChandedHandler::new3(handler);
         unsafe {
-            nw_browser_set_browse_results_changed_handler(self, handler);
+            nw_browser_set_browse_results_changed_handler(self, Some(&mut block));
         }
     }
 }
@@ -149,15 +187,12 @@ mod tests {
         let queue = dispatch::Queue::new();
         let desc = nw::BrowseDesc::bonjour_service(c"_service._udp", None::<&std::ffi::CStr>);
         let mut browser = nw::Browser::with_desc(&desc, None);
-        let mut state_handler = nw::BrowserChangedHandler::new2(|state, error| {
+        browser.set_state_changed_handler(|state, error| {
             eprintln!("------ {:?} {:?}", state, error);
         });
-        browser.set_state_changed_handler(Some(&mut state_handler));
-        let mut changes_handler =
-            nw::BrowserBrowseResultsChandedHandler::new3(|old, new, _complete| {
-                eprintln!("------ {:?} {:?}", old, new);
-            });
-        browser.set_results_changed_handler(Some(&mut changes_handler));
+        browser.set_results_changed_handler(|old, new, _complete| {
+            eprintln!("------ {:?} {:?}", old, new);
+        });
 
         browser.start(&queue);
         eprintln!("browser {:?}", browser);
