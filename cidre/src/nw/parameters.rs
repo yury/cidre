@@ -47,6 +47,16 @@ impl Params {
         unsafe { nw_parameters_create_secure_udp(configure_dtls, configure_udp) }
     }
 
+    #[inline]
+    pub fn udp() -> Option<arc::R<Self>> {
+        unsafe {
+            nw_parameters_create_secure_udp(
+                nw::Params::disable_protocol(),
+                nw::Params::default_cfg(),
+            )
+        }
+    }
+
     #[doc(alias = "nw_parameters_create_custom_ip")]
     #[inline]
     pub fn secure_custom_ip(
@@ -81,6 +91,54 @@ impl Params {
     }
 }
 
+#[cfg(feature = "blocks")]
+pub type IterIfaceBlock = crate::blocks::NoEscBlock<fn(iface: &nw::Iface) -> bool>;
+
+/// Path Selection
+impl Params {
+    /// Require any connections or listeners using these parameters to use
+    /// the provided network interface, or none if None is passed.
+    #[doc(alias = "nw_parameters_require_interface")]
+    pub fn set_required_iface(&mut self, iface: Option<&nw::Iface>) {
+        unsafe {
+            nw_parameters_require_interface(self, iface);
+        }
+    }
+
+    #[doc(alias = "nw_parameters_copy_required_interface")]
+    #[inline]
+    pub fn required_iface(&self) -> Option<arc::R<nw::Iface>> {
+        unsafe { nw_parameters_copy_required_interface(self) }
+    }
+
+    #[doc(alias = "nw_parameters_prohibit_interface")]
+    #[inline]
+    pub fn prohibit_iface(&mut self, iface: &nw::Iface) {
+        unsafe { nw_parameters_prohibit_interface(self, iface) }
+    }
+
+    #[doc(alias = "nw_parameters_clear_prohibited_interfaces")]
+    #[inline]
+    pub fn clear_prohibit_ifaces(&mut self) {
+        unsafe { nw_parameters_clear_prohibited_interfaces(self) }
+    }
+
+    #[doc(alias = "nw_parameters_iterate_prohibited_interfaces")]
+    #[inline]
+    pub fn iterate_prohibit_iface_block(&self, block: &mut IterIfaceBlock) {
+        unsafe {
+            nw_parameters_iterate_prohibited_interfaces(self, block);
+        }
+    }
+
+    #[doc(alias = "nw_parameters_iterate_prohibited_interfaces")]
+    #[inline]
+    pub fn iterate_prohibit_iface(&self, mut f: impl FnMut(&nw::Iface) -> bool) {
+        let mut block = unsafe { IterIfaceBlock::stack1(&mut f) };
+        self.iterate_prohibit_iface_block(&mut block);
+    }
+}
+
 define_obj_type!(
     #[doc(alias = "nw_protocol_stack")]
     #[doc(alias = "nw_protocol_stack_t")]
@@ -90,7 +148,7 @@ define_obj_type!(
 #[link(name = "Network", kind = "framework")]
 unsafe extern "C-unwind" {
     fn nw_parameters_create() -> arc::R<Params>;
-    fn nw_parameters_copy(parameters: &Params) -> Option<arc::R<Params>>;
+    fn nw_parameters_copy(params: &Params) -> Option<arc::R<Params>>;
 
     fn nw_parameters_create_secure_tcp(
         configure_tls: &mut ParamsCfgProtocolBlock,
@@ -112,6 +170,14 @@ unsafe extern "C-unwind" {
     ) -> Option<arc::R<Params>>;
 
     fn nw_parameters_create_application_service() -> arc::R<Params>;
+
+    fn nw_parameters_require_interface(params: &mut Params, iface: Option<&nw::Iface>);
+    fn nw_parameters_copy_required_interface(params: &Params) -> Option<arc::R<nw::Iface>>;
+    fn nw_parameters_prohibit_interface(params: &mut Params, iface: &nw::Iface);
+    fn nw_parameters_clear_prohibited_interfaces(params: &mut Params);
+
+    #[cfg(feature = "blocks")]
+    fn nw_parameters_iterate_prohibited_interfaces(params: &Params, block: &mut IterIfaceBlock);
 
     static mut _nw_parameters_configure_protocol_default_configuration:
         &'static mut ParamsCfgProtocolBlock;
@@ -147,5 +213,17 @@ mod tests {
         }
         eprintln!("{:?}", nw::Params::default_cfg().debug_desc());
         eprintln!("{:?}", nw::Params::disable_protocol().debug_desc());
+    }
+
+    #[test]
+    fn paths() {
+        let udp_params = nw::Params::udp().unwrap();
+        let mut n = 0;
+        udp_params.iterate_prohibit_iface(|_iface| {
+            n += 1;
+            true
+        });
+
+        assert_eq!(n, 0);
     }
 }

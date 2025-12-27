@@ -3,12 +3,18 @@ use crate::{arc, define_obj_type, dispatch, ns, nw};
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
+#[cfg(feature = "blocks")]
 #[doc(alias = "nw_browser_state_changed_handler_t")]
-pub type StateChangedHandler = blocks::SyncBlock<fn(state: State, err: Option<&ns::Error>)>;
+pub type StateChangedHandler = blocks::SyncBlock<fn(state: State, err: Option<&nw::Error>)>;
 
+#[cfg(feature = "blocks")]
 #[doc(alias = "nw_browser_browse_results_changed_handler_t")]
 pub type BrowseResultsChandedHandler = blocks::SyncBlock<
-    fn(old_result: &nw::BrowseResult, new_result: &nw::BrowseResult, batch_complete: bool),
+    fn(
+        old_result: Option<&nw::BrowseResult>,
+        new_result: Option<&nw::BrowseResult>,
+        batch_complete: bool,
+    ),
 >;
 
 #[doc(alias = "nw_browser_state_t")]
@@ -116,7 +122,7 @@ impl Browser {
     #[inline]
     pub fn set_state_changed_handler(
         &mut self,
-        handler: impl FnMut(State, Option<&ns::Error>) + Sync + 'static,
+        handler: impl FnMut(State, Option<&nw::Error>) + Sync + 'static,
     ) {
         let mut block = StateChangedHandler::new2(handler);
         unsafe {
@@ -142,8 +148,8 @@ impl Browser {
     pub fn set_results_changed_handler(
         &mut self,
         handler: impl FnMut(
-            /* old_results: */ &nw::BrowseResult,
-            /* new_results: */ &nw::BrowseResult,
+            /* old_results: */ Option<&nw::BrowseResult>,
+            /* new_results: */ Option<&nw::BrowseResult>,
             /* batch_completed: */ bool,
         ) + Sync
         + 'static,

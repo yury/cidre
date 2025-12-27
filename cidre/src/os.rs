@@ -32,6 +32,14 @@ impl Error {
         Self(unsafe { NonZeroI32::new_unchecked(val) })
     }
 
+    #[inline]
+    pub const fn new(val: i32) -> Option<Self> {
+        match NonZeroI32::new(val) {
+            Some(v) => Some(Self(v)),
+            None => None,
+        }
+    }
+
     pub const fn from_be_bytes(bytes: [u8; std::mem::size_of::<Self>()]) -> Self {
         let val = i32::from_be_bytes(bytes);
         debug_assert!(val != 0);
