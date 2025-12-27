@@ -94,6 +94,9 @@ impl Params {
 #[cfg(feature = "blocks")]
 pub type IterIfaceBlock = crate::blocks::NoEscBlock<fn(iface: &nw::Iface) -> bool>;
 
+#[cfg(feature = "blocks")]
+pub type IterIfaceTypeBlock = crate::blocks::NoEscBlock<fn(iface_type: nw::IfaceType) -> bool>;
+
 /// Path Selection
 impl Params {
     /// Require any connections or listeners using these parameters to use
@@ -123,19 +126,94 @@ impl Params {
         unsafe { nw_parameters_clear_prohibited_interfaces(self) }
     }
 
+    #[cfg(feature = "blocks")]
     #[doc(alias = "nw_parameters_iterate_prohibited_interfaces")]
     #[inline]
-    pub fn iterate_prohibit_iface_block(&self, block: &mut IterIfaceBlock) {
+    pub fn iterate_prohibit_ifaces_block(&self, block: &mut IterIfaceBlock) {
         unsafe {
             nw_parameters_iterate_prohibited_interfaces(self, block);
         }
     }
 
+    #[cfg(feature = "blocks")]
     #[doc(alias = "nw_parameters_iterate_prohibited_interfaces")]
     #[inline]
-    pub fn iterate_prohibit_iface(&self, mut f: impl FnMut(&nw::Iface) -> bool) {
+    pub fn iterate_prohibit_ifaces(&self, mut f: impl FnMut(&nw::Iface) -> bool) {
         let mut block = unsafe { IterIfaceBlock::stack1(&mut f) };
-        self.iterate_prohibit_iface_block(&mut block);
+        self.iterate_prohibit_ifaces_block(&mut block);
+    }
+
+    #[doc(alias = "nw_parameters_set_required_interface_type")]
+    #[inline]
+    pub fn set_required_iface_type(&mut self, val: nw::IfaceType) {
+        unsafe {
+            nw_parameters_set_required_interface_type(self, val);
+        }
+    }
+
+    #[doc(alias = "nw_parameters_get_required_interface_type")]
+    #[inline]
+    pub fn required_iface_type(&self) -> nw::IfaceType {
+        unsafe { nw_parameters_get_required_interface_type(self) }
+    }
+
+    #[doc(alias = "nw_parameters_prohibit_interface_type")]
+    #[inline]
+    pub fn prohibit_iface_type(&mut self, val: nw::IfaceType) {
+        unsafe {
+            nw_parameters_prohibit_interface_type(self, val);
+        }
+    }
+
+    #[doc(alias = "nw_parameters_clear_prohibited_interface_types")]
+    #[inline]
+    pub fn clear_prohibited_iface_types(&mut self) {
+        unsafe { nw_parameters_clear_prohibited_interface_types(self) }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "nw_parameters_iterate_prohibited_interface_types")]
+    #[inline]
+    pub fn iterate_prohibit_iface_types_block(&self, block: &mut IterIfaceTypeBlock) {
+        unsafe {
+            nw_parameters_iterate_prohibited_interface_types(self, block);
+        }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "nw_parameters_iterate_prohibited_interface_types")]
+    #[inline]
+    pub fn iterate_prohibit_iface_types(&self, mut f: impl FnMut(nw::IfaceType) -> bool) {
+        let mut block = unsafe { IterIfaceTypeBlock::stack1(&mut f) };
+        self.iterate_prohibit_iface_types_block(&mut block);
+    }
+
+    #[doc(alias = "nw_parameters_set_prohibit_expensive")]
+    #[inline]
+    pub fn set_prohibit_expensive(&mut self, val: bool) {
+        unsafe {
+            nw_parameters_set_prohibit_expensive(self, val);
+        }
+    }
+
+    /// Returns true if expensive interfaces are prohibited, or
+    /// false otherwise.
+    #[doc(alias = "nw_parameters_get_prohibit_expensive")]
+    #[inline]
+    pub fn prohibit_expensive(&self) -> bool {
+        unsafe { nw_parameters_get_prohibit_expensive(self) }
+    }
+
+    #[doc(alias = "nw_parameters_get_prohibit_constrained")]
+    #[inline]
+    pub fn prohibit_constrained(&self) -> bool {
+        unsafe { nw_parameters_get_prohibit_constrained(self) }
+    }
+
+    #[doc(alias = "nw_parameters_set_prohibit_constrained")]
+    #[inline]
+    pub fn set_prohibit_constrained(&mut self, val: bool) {
+        unsafe { nw_parameters_set_prohibit_constrained(self, val) }
     }
 }
 
@@ -175,9 +253,24 @@ unsafe extern "C-unwind" {
     fn nw_parameters_copy_required_interface(params: &Params) -> Option<arc::R<nw::Iface>>;
     fn nw_parameters_prohibit_interface(params: &mut Params, iface: &nw::Iface);
     fn nw_parameters_clear_prohibited_interfaces(params: &mut Params);
-
     #[cfg(feature = "blocks")]
     fn nw_parameters_iterate_prohibited_interfaces(params: &Params, block: &mut IterIfaceBlock);
+    fn nw_parameters_set_required_interface_type(params: &mut Params, val: nw::IfaceType);
+    fn nw_parameters_get_required_interface_type(params: &Params) -> nw::IfaceType;
+    fn nw_parameters_prohibit_interface_type(params: &mut Params, val: nw::IfaceType);
+    fn nw_parameters_clear_prohibited_interface_types(params: &mut Params);
+    #[cfg(feature = "blocks")]
+    fn nw_parameters_iterate_prohibited_interface_types(
+        params: &Params,
+        block: &mut IterIfaceTypeBlock,
+    );
+
+    fn nw_parameters_set_prohibit_expensive(params: &mut Params, prohibit_expensive: bool);
+
+    fn nw_parameters_get_prohibit_expensive(params: &Params) -> bool;
+
+    fn nw_parameters_set_prohibit_constrained(params: &mut Params, prohibit_constrained: bool);
+    fn nw_parameters_get_prohibit_constrained(params: &Params) -> bool;
 
     static mut _nw_parameters_configure_protocol_default_configuration:
         &'static mut ParamsCfgProtocolBlock;
@@ -219,7 +312,7 @@ mod tests {
     fn paths() {
         let udp_params = nw::Params::udp().unwrap();
         let mut n = 0;
-        udp_params.iterate_prohibit_iface(|_iface| {
+        udp_params.iterate_prohibit_ifaces(|_iface| {
             n += 1;
             true
         });
