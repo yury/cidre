@@ -30,6 +30,9 @@ pub use content_context::ContentCtx;
 
 mod txt_record;
 pub use txt_record::TxtRecord;
+#[cfg(feature = "blocks")]
+pub use txt_record::TxtRecordAccessKey;
+pub use txt_record::TxtRecordFindKey;
 
 mod endpoint;
 pub use endpoint::Endpoint;
@@ -53,9 +56,15 @@ pub use listener::State as ListenerState;
 pub use listener::StateChangedHandler as ListenerStateChangedHandler;
 
 mod parameters;
+#[cfg(feature = "blocks")]
+pub use parameters::IterIfaceBlock;
+#[cfg(feature = "blocks")]
+pub use parameters::IterIfaceTypeBlock;
+pub use parameters::MultipathService;
 pub use parameters::Params;
 pub use parameters::ParamsCfgProtocolBlock;
 pub use parameters::ProtocolStack;
+pub use parameters::ServiceClass;
 
 mod path;
 pub use path::EnumerateIfaces as PathEnumerateIfaces;
