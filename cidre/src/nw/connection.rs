@@ -257,7 +257,7 @@ impl Connection {
 
     #[doc(alias = "nw_connection_copy_current_path")]
     #[inline]
-    pub fn current_path(&self) -> Option<arc::R<nw::Endpoint>> {
+    pub fn current_path(&self) -> Option<arc::R<nw::Path>> {
         unsafe { nw_connection_copy_current_path(self) }
     }
 
@@ -341,7 +341,7 @@ unsafe extern "C-unwind" {
         batch_block: &mut dispatch::Block<blocks::NoEsc>,
     );
 
-    fn nw_connection_copy_current_path(connection: &Connection) -> Option<arc::R<nw::Endpoint>>;
+    fn nw_connection_copy_current_path(connection: &Connection) -> Option<arc::R<nw::Path>>;
     fn nw_connection_copy_protocol_metadata(
         connection: &Connection,
     ) -> Option<arc::R<nw::ProtocolMetadata>>;

@@ -13,6 +13,7 @@ define_obj_type!(
 );
 
 #[doc(alias = "nw_path_status_t")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone, Hash)]
 #[repr(i32)]
 pub enum Status {
     /// The path is not valid
@@ -35,6 +36,7 @@ pub enum Status {
 }
 
 #[doc(alias = "nw_path_unsatisfied_reason_t")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone, Hash)]
 #[repr(i32)]
 pub enum UnsatisfiedReason {
     /// No reason is given
