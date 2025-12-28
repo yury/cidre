@@ -148,8 +148,8 @@ impl Browser {
     pub fn set_results_changed_handler(
         &mut self,
         handler: impl FnMut(
-            /* old_results: */ Option<&nw::BrowseResult>,
-            /* new_results: */ Option<&nw::BrowseResult>,
+            /* old_result: */ Option<&nw::BrowseResult>,
+            /* new_result: */ Option<&nw::BrowseResult>,
             /* batch_completed: */ bool,
         ) + Sync
         + 'static,
