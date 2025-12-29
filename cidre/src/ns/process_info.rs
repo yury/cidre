@@ -98,6 +98,17 @@ impl ProcessInfo {
     #[objc::available(macos = 10.5, ios = 2.0, watchos = 2.0, tvos = 9.0)]
     pub fn physical_mem(&self) -> usize;
 
+    #[objc::msg_send(isOperatingSystemAtLeastVersion:)]
+    #[objc::available(macos = 10.10, ios = 8.0, watchos = 2.0, tvos = 9.0)]
+    pub fn is_os_at_least_version(&self, ver: OsVersion) -> bool;
+
+    #[objc::msg_send(systemUptime)]
+    #[objc::available(macos = 10.6, ios = 4.0, watchos = 2.0, tvos = 9.0)]
+    pub fn system_uptime(&self) -> ns::TimeInterval;
+}
+
+/// NSProcessInfoPlatform
+impl ProcessInfo {
     #[objc::msg_send(isMacCatalystApp)]
     #[objc::available(macos = 10.15, ios = 13.0, watchos = 6.0, tvos = 13.0)]
     pub fn is_mac_catalyst_app(&self) -> bool;
@@ -106,13 +117,9 @@ impl ProcessInfo {
     #[objc::available(macos = 11.0, ios = 14.0, watchos = 7.0, tvos = 14.0)]
     pub fn is_ios_app_on_mac(&self) -> bool;
 
-    #[objc::msg_send(isOperatingSystemAtLeastVersion:)]
-    #[objc::available(macos = 10.10, ios = 8.0, watchos = 2.0, tvos = 9.0)]
-    pub fn is_os_at_least_version(&self, ver: OsVersion) -> bool;
-
-    #[objc::msg_send(systemUptime)]
-    #[objc::available(macos = 10.6, ios = 4.0, watchos = 2.0, tvos = 9.0)]
-    pub fn system_uptime(&self) -> ns::TimeInterval;
+    #[objc::msg_send(isiOSAppOnVision)]
+    #[objc::available(macos = 26.1, ios = 26.1, watchos = 26.1, tvos = 26.1, visionos = 26.1)]
+    pub fn is_ios_app_on_vision(&self) -> bool;
 }
 
 #[link(name = "ns", kind = "static")]
