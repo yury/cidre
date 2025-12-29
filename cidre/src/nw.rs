@@ -34,6 +34,8 @@ pub use txt_record::TxtRecord;
 pub use txt_record::TxtRecordAccessKey;
 pub use txt_record::TxtRecordFindKey;
 
+pub mod udp_options;
+
 mod endpoint;
 pub use endpoint::Endpoint;
 pub use endpoint::EndpointType;
