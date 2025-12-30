@@ -44,6 +44,17 @@ impl Id {
     pub fn pixels_high(self) -> usize {
         unsafe { CGDisplayPixelsHigh(self) }
     }
+
+    /// Move the mouse cursor to the specified point relative to the origin (the
+    /// upper-left corner) of display. No events are generated as a result of
+    /// the move. Points that lie outside the desktop are clipped to the
+    /// desktop.
+    #[inline]
+    pub fn move_cursor_to_point(self, point: cg::Point) {
+        unsafe {
+            CGDisplayMoveCursorToPoint(self, point);
+        }
+    }
 }
 
 pub type RefreshRate = f64;
@@ -58,35 +69,29 @@ unsafe extern "C-unwind" {
     fn CGDisplayBounds(display: Id) -> cg::Rect;
     fn CGDisplayPixelsWide(display: Id) -> usize;
     fn CGDisplayPixelsHigh(display: Id) -> usize;
+
+    fn CGDisplayMoveCursorToPoint(display: Id, point: cg::Point);
 }
 
 #[cfg(all(test, target_os = "macos"))]
 mod tests {
-    use super::Id;
+    use crate::{cg, ns};
 
     #[test]
     fn basics() {
-        let display = Id::main();
+        let display = cg::DirectDisplayId::main();
         let _device = display.current_mtl_device().expect("Failed to get device");
         let bounds = display.bounds();
         assert!(bounds.size.width > 0.0);
         assert!(bounds.size.height > 0.0);
     }
+
+    #[test]
+    fn cursor_control() {
+        let display = cg::DirectDisplayId::main();
+
+        display.move_cursor_to_point(cg::Point::zero());
+        let pos = ns::Event::mouse_location();
+        assert_eq!(pos.x, 0.0);
+    }
 }
-
-// typedef uint32_t CGDirectDisplayID;
-// typedef uint32_t CGOpenGLDisplayMask;
-// typedef double CGRefreshRate;
-
-// typedef struct CF_BRIDGED_TYPE(id) CGDisplayMode *CGDisplayModeRef;
-
-// #define kCGNullDirectDisplay ((CGDirectDisplayID)0)
-// #define kCGDirectMainDisplay CGMainDisplayID()
-
-// CF_IMPLICIT_BRIDGING_ENABLED
-
-// CF_ASSUME_NONNULL_BEGIN
-
-// /* Return the display ID of the current main display. */
-// CG_EXTERN CGDirectDisplayID CGMainDisplayID(void)
-//     CG_AVAILABLE_STARTING(10.2);
