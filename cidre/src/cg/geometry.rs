@@ -114,6 +114,106 @@ impl Rect {
             size: Size { width, height },
         }
     }
+
+    #[doc(alias = "CGRectGetMaxX")]
+    #[inline]
+    pub const fn max_x(&self) -> Float {
+        if self.size.width < 0.0 {
+            self.origin.x
+        } else {
+            self.origin.x + self.size.width
+        }
+    }
+
+    #[doc(alias = "CGRectGetMaxY")]
+    #[inline]
+    pub const fn max_y(&self) -> Float {
+        if self.size.height < 0.0 {
+            self.origin.y
+        } else {
+            self.origin.y + self.size.height
+        }
+    }
+
+    #[doc(alias = "CGRectGetMinX")]
+    #[inline]
+    pub const fn min_x(&self) -> Float {
+        if self.size.width < 0.0 {
+            self.origin.x + self.size.width
+        } else {
+            self.origin.x
+        }
+    }
+
+    #[doc(alias = "CGRectGetMinY")]
+    #[inline]
+    pub const fn min_y(&self) -> Float {
+        if self.size.height < 0.0 {
+            self.origin.y + self.size.height
+        } else {
+            self.origin.y
+        }
+    }
+
+    #[inline]
+    pub const fn x(&self) -> Float {
+        self.origin.x
+    }
+
+    #[inline]
+    pub const fn y(&self) -> Float {
+        self.origin.y
+    }
+
+    #[inline]
+    pub const fn width(&self) -> Float {
+        self.size.width
+    }
+
+    #[inline]
+    pub const fn height(&self) -> Float {
+        self.size.height
+    }
+
+    /// Standardize rect -- i.e., convert it to an equivalent rect which has
+    /// positive width and height.
+    #[doc(alias = "CGRectStandardize")]
+    #[must_use]
+    #[inline]
+    pub fn standardized(&self) -> Self {
+        unsafe { CGRectStandardize(*self) }
+    }
+
+    #[doc(alias = "CGRectContainsPoint")]
+    #[inline]
+    pub fn contains_point(&self, point: &Point) -> bool {
+        unsafe { CGRectContainsPoint(*self, *point) }
+    }
+
+    #[doc(alias = "CGRectContainsRect")]
+    #[inline]
+    pub fn contains_rect(&self, other: &Self) -> bool {
+        unsafe { CGRectContainsRect(*self, *other) }
+    }
+
+    #[doc(alias = "CGRectUnion")]
+    #[must_use]
+    #[inline]
+    pub fn union(&self, other: &Self) -> Rect {
+        unsafe { CGRectUnion(*self, *other) }
+    }
+
+    #[doc(alias = "CGRectIntersectsRect")]
+    #[inline]
+    pub fn intersects_rect(&self, other: &Self) -> bool {
+        unsafe { CGRectIntersectsRect(*self, *other) }
+    }
+
+    #[doc(alias = "CGRectEqualToRect")]
+    #[inline]
+    pub fn geometry_eq(&self, other: &Self) -> bool {
+        unsafe { CGRectEqualToRect(*self, *other) }
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Debug, Default)]
@@ -129,4 +229,38 @@ unsafe extern "C" {
     fn CGPointCreateDictionaryRepresentation(point: Point) -> arc::R<cf::Dictionary>;
     fn CGSizeCreateDictionaryRepresentation(size: Size) -> arc::R<cf::Dictionary>;
     fn CGRectCreateDictionaryRepresentation(rect: Rect) -> arc::R<cf::Dictionary>;
+
+    fn CGRectEqualToRect(rect1: Rect, rect2: Rect) -> bool;
+    fn CGRectIntersectsRect(rect1: Rect, rect2: Rect) -> bool;
+    fn CGRectUnion(rect1: Rect, rect2: Rect) -> Rect;
+    fn CGRectStandardize(rect: Rect) -> Rect;
+    fn CGRectContainsPoint(rect: Rect, point: Point) -> bool;
+    fn CGRectContainsRect(rect1: Rect, rect2: Rect) -> bool;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::cg;
+
+    #[test]
+    fn basics() {
+        let r = cg::Rect::new(10.0, 15.0, -100.0, -200.0);
+        assert_eq!(r.min_x(), -90.0);
+        assert_eq!(r.min_y(), -185.0);
+        assert_eq!(r.max_x(), 10.0);
+        assert_eq!(r.max_y(), 15.0);
+
+        let sr = r.standardized();
+        assert_eq!(sr.x(), -90.0);
+        assert_eq!(sr.y(), -185.0);
+        assert_eq!(sr.width(), 100.0);
+        assert_eq!(sr.height(), 200.0);
+        assert_eq!(sr.min_x(), -90.0);
+        assert_eq!(sr.min_y(), -185.0);
+        assert_eq!(sr.max_x(), 10.0);
+        assert_eq!(sr.max_y(), 15.0);
+
+        assert_ne!(r, sr);
+        assert!(r.geometry_eq(&sr))
+    }
 }
