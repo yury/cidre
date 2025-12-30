@@ -214,6 +214,23 @@ impl Rect {
     pub fn geometry_eq(&self, other: &Self) -> bool {
         unsafe { CGRectEqualToRect(*self, *other) }
     }
+
+    #[inline]
+    pub const fn is_empty(&self) -> bool {
+        self.size.width == 0.0 || self.size.height == 0.0
+    }
+
+    #[doc(alias = "CGRectIsInfinite")]
+    #[inline]
+    pub fn is_infinite(&self) -> bool {
+        unsafe { CGRectIsInfinite(*self) }
+    }
+
+    #[doc(alias = "CGRectIsNull")]
+    #[inline]
+    pub fn is_null(&self) -> bool {
+        unsafe { CGRectIsNull(*self) }
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, PartialOrd, Debug, Default)]
@@ -236,6 +253,8 @@ unsafe extern "C" {
     fn CGRectStandardize(rect: Rect) -> Rect;
     fn CGRectContainsPoint(rect: Rect, point: Point) -> bool;
     fn CGRectContainsRect(rect1: Rect, rect2: Rect) -> bool;
+    fn CGRectIsInfinite(rect: Rect) -> bool;
+    fn CGRectIsNull(rect: Rect) -> bool;
 }
 
 #[cfg(test)]
@@ -261,6 +280,11 @@ mod tests {
         assert_eq!(sr.max_y(), 15.0);
 
         assert_ne!(r, sr);
-        assert!(r.geometry_eq(&sr))
+        assert!(r.geometry_eq(&sr));
+
+        assert!(!r.is_empty());
+        assert!(!r.is_infinite());
+        assert!(!r.is_null());
+        assert!(cg::Rect::null().is_null());
     }
 }
