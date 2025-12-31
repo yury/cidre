@@ -69,7 +69,7 @@ impl BrowseResult {
         unsafe { nw_browse_result_copy_txt_record_object(self) }
     }
 
-    #[doc(alias = "nw_browse_result_copy_txt_record_object")]
+    #[doc(alias = "nw_browse_result_enumerate_interfaces")]
     #[inline]
     pub fn enumerate_ifaces<'a>(&self, enumerator: &mut EnumerateIface<blocks::NoEsc>) {
         unsafe { nw_browse_result_enumerate_interfaces(self, enumerator) }

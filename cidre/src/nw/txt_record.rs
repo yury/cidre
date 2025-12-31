@@ -26,7 +26,7 @@ pub enum TxtRecordFindKey {
 
 #[cfg(feature = "blocks")]
 #[doc(alias = "nw_txt_record_access_key_t")]
-pub type TxtRecordAccessKey = crate::blocks::EscBlock<
+pub type TxtRecordAccessKey = crate::blocks::NoEscBlock<
     fn(
         key: *const std::ffi::c_void,
         found: TxtRecordFindKey,
@@ -57,12 +57,27 @@ impl TxtRecord {
     }
 
     #[cfg(feature = "blocks")]
-    pub fn access_key<K: AsRef<CStr>>(
+    pub fn access_key_block<K: AsRef<CStr>>(
         &self,
         key: K,
         access_value: &mut TxtRecordAccessKey,
     ) -> bool {
         unsafe { nw_txt_record_access_key(self, key.as_ref().as_ptr(), access_value) }
+    }
+
+    #[cfg(feature = "blocks")]
+    pub fn access_key<K: AsRef<CStr>>(
+        &self,
+        key: K,
+        mut handler: impl FnMut(
+            /* key: */ *const std::ffi::c_void,
+            /* found: */ TxtRecordFindKey,
+            /* value: */ *const u8,
+            /* value_len: */ usize,
+        ) -> bool,
+    ) -> bool {
+        let mut block = unsafe { TxtRecordAccessKey::stack4(&mut handler) };
+        self.access_key_block(key, &mut block)
     }
 
     pub fn set_key<K: AsRef<CStr>>(&mut self, key: K, value: &[u8]) -> Result<(), ()> {

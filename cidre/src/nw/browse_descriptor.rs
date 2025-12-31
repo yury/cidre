@@ -42,6 +42,10 @@ impl BrowseDesc {
         }
     }
 
+    /// Set a flag to allow or prohibit the browser from querying for TXT records
+    /// while browsing. This flag should only be set if the client needs information
+    /// from the TXT record during browsing, and may increase network traffic. By
+    /// default, the browser will not automatically query for TXT records.
     #[doc(alias = "nw_browse_descriptor_set_include_txt_record")]
     #[inline]
     pub fn set_include_txt_record(&mut self, val: bool) {
