@@ -265,6 +265,18 @@ impl Queue {
 
     #[cfg(feature = "blocks")]
     #[inline]
+    pub fn async_once(&self, block: impl FnOnce() + Send + 'static) {
+        let mut block = Some(block);
+        let mut block = dispatch::Block::<blocks::Send>::new0(move || {
+            if let Some(block) = block.take() {
+                block();
+            }
+        });
+        self.async_b(&mut block);
+    }
+
+    #[cfg(feature = "blocks")]
+    #[inline]
     pub fn async_fn(&self, block: extern "C" fn(*const c_void)) {
         let mut block = blocks::StaticBlock::new0(block);
         self.async_b(block.as_send_mut());
