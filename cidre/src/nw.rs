@@ -32,6 +32,8 @@ mod txt_record;
 pub use txt_record::TxtRecord;
 #[cfg(feature = "blocks")]
 pub use txt_record::TxtRecordAccessKey;
+#[cfg(feature = "blocks")]
+pub use txt_record::TxtRecordApplier;
 pub use txt_record::TxtRecordFindKey;
 
 pub mod udp_options;

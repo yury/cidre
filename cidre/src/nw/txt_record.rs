@@ -28,12 +28,16 @@ pub enum TxtRecordFindKey {
 #[doc(alias = "nw_txt_record_access_key_t")]
 pub type TxtRecordAccessKey = crate::blocks::NoEscBlock<
     fn(
-        key: *const std::ffi::c_void,
+        key: *const std::ffi::c_char,
         found: TxtRecordFindKey,
         value: *const u8,
         value_len: usize,
     ) -> bool,
 >;
+
+#[cfg(feature = "blocks")]
+#[doc(alias = "nw_txt_record_applier_t")]
+pub type TxtRecordApplier = TxtRecordAccessKey;
 
 impl TxtRecord {
     #[doc(alias = "nw_txt_record_create_dictionary")]
@@ -70,7 +74,7 @@ impl TxtRecord {
         &self,
         key: K,
         mut handler: impl FnMut(
-            /* key: */ *const std::ffi::c_void,
+            /* key: */ *const std::ffi::c_char,
             /* found: */ TxtRecordFindKey,
             /* value: */ *const u8,
             /* value_len: */ usize,
@@ -98,6 +102,27 @@ impl TxtRecord {
                 Err(())
             }
         }
+    }
+
+    /// Apply the block to every key-value pair in the TXT record object.
+    #[cfg(feature = "blocks")]
+    pub fn apply_block(&self, applier: &mut TxtRecordApplier) -> bool {
+        unsafe { nw_txt_record_apply(self, applier) }
+    }
+
+    #[cfg(feature = "blocks")]
+    pub fn apply(
+        &self,
+        mut handler: impl FnMut(
+            /* key: */ *const std::ffi::c_char,
+            /* found: */ TxtRecordFindKey,
+            /* value: */ *const u8,
+            /* value_len: */ usize,
+        ) -> bool,
+    ) -> bool {
+        let mut block = unsafe { TxtRecordApplier::stack4(&mut handler) };
+
+        unsafe { nw_txt_record_apply(self, &mut block) }
     }
 
     pub fn is_equal(&self, other: Option<&Self>) -> bool {
@@ -142,4 +167,6 @@ unsafe extern "C-unwind" {
 
     fn nw_txt_record_is_equal(left: Option<&TxtRecord>, right: Option<&TxtRecord>) -> bool;
     fn nw_txt_record_is_dictionary(record: &TxtRecord) -> bool;
+    #[cfg(feature = "blocks")]
+    fn nw_txt_record_apply(record: &TxtRecord, applier: &mut TxtRecordApplier) -> bool;
 }
