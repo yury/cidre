@@ -10,10 +10,11 @@ pub type StateChangedHandler =
     blocks::SyncBlock<fn(state: nw::ListenerState, err: Option<&nw::Error>)>;
 
 #[doc(alias = "nw_listener_new_connection_handler_t")]
-pub type NewConnectionHandler = blocks::SyncBlock<fn(connection: &nw::Connection)>;
+pub type NewConnectionHandler = blocks::SyncBlock<fn(connection: &mut nw::Connection)>;
 
 #[doc(alias = "nw_listener_new_connection_group_handler_t")]
-pub type NewConnectionGroupHandler = blocks::SyncBlock<fn(connection_group: &nw::ConnectionGroup)>;
+pub type NewConnectionGroupHandler =
+    blocks::SyncBlock<fn(connection_group: &mut nw::ConnectionGroup)>;
 
 #[doc(alias = "nw_listener_advertised_endpoint_changed_handler_t")]
 pub type AdvertisedEndpointChangedHandler<'a> =
@@ -155,7 +156,7 @@ impl Listener {
     #[inline]
     pub fn set_new_connection_handler(
         &mut self,
-        handler: impl FnMut(&nw::Connection) + 'static + Send + Sync,
+        handler: impl FnMut(&mut nw::Connection) + 'static + Send + Sync,
     ) {
         let mut block = NewConnectionHandler::new1(handler);
         self.set_new_connection_handler_block(Some(&mut block));

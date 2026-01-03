@@ -46,6 +46,11 @@ mod error;
 pub use error::Error;
 pub use error::ErrorDomain;
 
+pub mod group_descriptor;
+pub use group_descriptor::EnumerateEndpointsBlock;
+pub use group_descriptor::GroupDesc;
+pub use group_descriptor::MulticastGroupDesc;
+
 mod interface;
 pub use interface::Iface;
 pub use interface::IfaceRadioType;

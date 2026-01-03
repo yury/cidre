@@ -9,6 +9,9 @@ define_obj_type!(
     pub BrowseResult(ns::Id)
 );
 
+unsafe impl Send for BrowseResult {}
+unsafe impl Sync for BrowseResult {}
+
 define_opts!(
     #[doc(alias = "nw_browse_result_change_t")]
     pub Change(u64)
