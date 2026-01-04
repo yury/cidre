@@ -12,6 +12,9 @@ define_obj_type!(
     pub Path(ns::Id)
 );
 
+unsafe impl Send for Path {}
+unsafe impl Sync for Path {}
+
 #[doc(alias = "nw_path_status_t")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Hash)]
 #[repr(i32)]

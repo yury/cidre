@@ -6,6 +6,9 @@ define_obj_type!(
     pub ConnectionGroup(ns::Id)
 );
 
+unsafe impl Send for ConnectionGroup {}
+unsafe impl Sync for ConnectionGroup {}
+
 #[doc(alias = "nw_connection_group_state_changed_handler_t")]
 #[cfg(feature = "blocks")]
 pub type ConnectionGroupStateChangeHandler =

@@ -8,6 +8,9 @@ define_obj_type!(
     pub Iface(ns::Id)
 );
 
+unsafe impl Send for Iface {}
+unsafe impl Sync for Iface {}
+
 #[doc(alias = "nw_interface_type_t")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]

@@ -8,6 +8,9 @@ define_obj_type!(
     pub Endpoint(ns::Id)
 );
 
+unsafe impl Send for Endpoint {}
+unsafe impl Sync for Endpoint {}
+
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
 pub enum EndpointType {

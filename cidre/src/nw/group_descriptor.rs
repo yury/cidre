@@ -6,11 +6,17 @@ define_obj_type!(
     pub GroupDesc(ns::Id)
 );
 
+unsafe impl Send for GroupDesc {}
+unsafe impl Sync for GroupDesc {}
+
 define_obj_type!(
     #[doc(alias = "nw_group_descriptor")]
     #[doc(alias = "nw_group_descriptor_t")]
     pub MulticastGroupDesc(GroupDesc)
 );
+
+unsafe impl Send for MulticastGroupDesc {}
+unsafe impl Sync for MulticastGroupDesc {}
 
 #[cfg(feature = "blocks")]
 pub type EnumerateEndpointsBlock = crate::blocks::NoEscBlock<fn(endpoint: &nw::Endpoint) -> bool>;

@@ -7,6 +7,9 @@ define_obj_type!(
     pub Error(ns::Id)
 );
 
+unsafe impl Send for Error {}
+unsafe impl Sync for Error {}
+
 #[doc(alias = "nw_error_domain_t")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[non_exhaustive]

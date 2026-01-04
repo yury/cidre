@@ -9,6 +9,9 @@ define_obj_type!(
     pub PathMonitor(ns::Id)
 );
 
+unsafe impl Send for PathMonitor {}
+unsafe impl Sync for PathMonitor {}
+
 #[cfg(feature = "blocks")]
 #[doc(alias = "nw_path_monitor_cancel_handler_t")]
 pub type CancelHandler = blocks::SyncBlock<fn()>;
