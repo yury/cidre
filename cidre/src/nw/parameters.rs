@@ -6,6 +6,9 @@ define_obj_type!(
     pub Params(ns::Id)
 );
 
+unsafe impl Send for Params {}
+unsafe impl Sync for Params {}
+
 #[doc(alias = "nw_parameters_configure_protocol_block_t")]
 pub type ParamsCfgProtocolBlock = blocks::SyncBlock<fn(options: &mut nw::ProtocolOpts)>;
 
