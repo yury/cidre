@@ -115,4 +115,5 @@ unsafe extern "C" {
     fn nw_multicast_group_descriptor_get_disable_unicast_traffic(
         mutlicast_desc: &GroupDesc,
     ) -> bool;
+
 }
