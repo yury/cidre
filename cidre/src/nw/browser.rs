@@ -117,6 +117,7 @@ impl Browser {
         }
     }
 
+    /// NOTE: txt_record is not available in old result when result removed
     #[doc(alias = "nw_browser_set_state_changed_handler")]
     #[cfg(feature = "blocks")]
     #[inline]
