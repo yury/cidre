@@ -21,6 +21,8 @@ pub use browser::StateChangedHandler as BrowserChangedHandler;
 pub mod connection;
 pub use connection::Connection;
 pub use connection::State as ConnectionState;
+#[cfg(feature = "blocks")]
+pub use connection::send_completion as connection_send_completion;
 
 pub mod connection_group;
 pub use connection_group::ConnectionGroup;

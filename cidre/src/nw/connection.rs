@@ -3,6 +3,7 @@ use crate::{arc, define_obj_type, dispatch, ns, nw};
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
+#[cfg(feature = "blocks")]
 #[doc(alias = "nw_connection_receive_completion_t")]
 pub type RecvCompletion = blocks::SyncBlock<
     fn(
@@ -13,15 +14,65 @@ pub type RecvCompletion = blocks::SyncBlock<
     ),
 >;
 
+#[cfg(feature = "blocks")]
 #[doc(alias = "nw_connection_state_changed_handler_t")]
 pub type StateChangedHandler =
     blocks::SyncBlock<fn(state: nw::ConnectionState, error: Option<&nw::Error>)>;
 
+#[cfg(feature = "blocks")]
 #[doc(alias = "nw_connection_boolean_event_handler_t")]
 pub type BoolEventHandler = blocks::SyncBlock<fn(value: bool)>;
 
+#[cfg(feature = "blocks")]
 #[doc(alias = "nw_connection_path_event_handler_t")]
 pub type PathEventHandler = blocks::SyncBlock<fn(path: &nw::Path)>;
+
+/// A send completion is invoked exactly once for a call to nw_connection_send().
+/// The completion indicates that the sent content has been processed by the stack
+/// (not necessarily that it has left the host), or else an error has occurred during
+/// sending.
+///
+/// An error will be sent if the associated content could not be fully sent before an
+/// error occurred. An error will be sent for any outstanding sends when the connection
+/// is cancelled.
+#[cfg(feature = "blocks")]
+#[doc(alias = "nw_connection_send_completion_t")]
+pub type SendCompletion = crate::blocks::SyncBlock<fn(error: Option<&nw::Error>)>;
+
+#[cfg(feature = "blocks")]
+pub mod send_completion {
+    use crate::{
+        arc,
+        nw::{self, connection::SendCompletion},
+    };
+
+    /// A send callback override that causes the write call to
+    /// be treated as idempotent. Idempotent content is allowed to be sent
+    /// before the connection is ready, and may be replayed across parallel connection
+    /// attempts. This content can be sent as part of fast-open protocols, which allows
+    /// the data to be sent out sooner than if it were required to wait for
+    /// connection establishment.
+    ///
+    /// This override intentionally disallows the client from receiving callbacks
+    /// for the write calls, since the content may be sent multiple times internally.
+    /// For any large content, or content that need to be sensitive to sending backpressure,
+    /// an explicit callback should be used.
+    #[doc(alias = "NW_CONNECTION_SEND_IDEMPOTENT_CONTENT")]
+    #[inline]
+    pub fn idempotent() -> &'static mut SendCompletion {
+        unsafe { _nw_connection_send_idempotent_content }
+    }
+
+    pub fn content_processed(
+        f: impl FnMut(Option<&nw::Error>) + 'static + Send + Sync,
+    ) -> arc::R<SendCompletion> {
+        SendCompletion::new1(f)
+    }
+
+    unsafe extern "C-unwind" {
+        static mut _nw_connection_send_idempotent_content: &'static mut SendCompletion;
+    }
+}
 
 /// Connection states sent by nw_connection_set_state_changed_handler.
 /// States generally progress forward and do not move backwards, with the
@@ -230,7 +281,7 @@ impl Connection {
         content: Option<&dispatch::Data>,
         context: &nw::ContentCtx,
         is_complete: bool,
-        completion: &mut blocks::ErrCh<nw::Error>,
+        completion: &mut SendCompletion,
     ) {
         unsafe { nw_connection_send(self, content, context, is_complete, completion) }
     }
@@ -244,7 +295,7 @@ impl Connection {
         is_complete: bool,
         completion: impl FnMut(Option<&nw::Error>) + 'static + std::marker::Sync,
     ) {
-        let mut completion = blocks::ErrCh::new1(completion);
+        let mut completion = SendCompletion::new1(completion);
         self.send_ch_block(content, context, is_complete, &mut completion);
     }
 
@@ -332,7 +383,7 @@ unsafe extern "C-unwind" {
         content: Option<&dispatch::Data>,
         context: &nw::ContentCtx,
         is_complete: bool,
-        completion: &mut blocks::ErrCh<nw::Error>,
+        completion: &mut SendCompletion,
     );
 
     #[cfg(feature = "blocks")]
@@ -347,5 +398,14 @@ unsafe extern "C-unwind" {
     ) -> Option<arc::R<nw::ProtocolMetadata>>;
 
     fn nw_connection_get_maximum_datagram_size(connection: &Connection) -> u32;
+}
 
+#[cfg(test)]
+mod tests {
+    use crate::nw;
+
+    #[test]
+    fn basics() {
+        let _completion = nw::connection::send_completion::idempotent();
+    }
 }
