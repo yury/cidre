@@ -68,7 +68,7 @@ impl BrowseResult {
 
     #[doc(alias = "nw_browse_result_copy_txt_record_object")]
     #[inline]
-    pub fn txt_record_obj(&self) -> Option<arc::R<nw::TxtRecord>> {
+    pub fn txt_record(&self) -> Option<arc::R<nw::TxtRecord>> {
         unsafe { nw_browse_result_copy_txt_record_object(self) }
     }
 
