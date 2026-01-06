@@ -74,7 +74,7 @@ impl BrowseResult {
 
     #[doc(alias = "nw_browse_result_enumerate_interfaces")]
     #[inline]
-    pub fn enumerate_ifaces<'a>(&self, enumerator: &mut EnumerateIface<blocks::NoEsc>) {
+    pub fn enumerate_ifaces(&self, enumerator: &mut EnumerateIface<blocks::NoEsc>) {
         unsafe { nw_browse_result_enumerate_interfaces(self, enumerator) }
     }
 }

@@ -427,6 +427,6 @@ mod tests {
         assert_eq!(error.code(), 20);
 
         let error = std::io::Error::new(std::io::ErrorKind::Other, "oh no!");
-        let error: arc::R<ns::Error> = error.into();
+        let _error: arc::R<ns::Error> = error.into();
     }
 }
