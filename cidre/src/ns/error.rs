@@ -1,6 +1,6 @@
 use std::io::ErrorKind;
 
-use crate::{arc, cf, define_cls, define_obj_type, ns, objc};
+use crate::{arc, cf, define_cls, define_obj_type, ns, objc, os};
 
 impl<'ear> From<&'ear ns::Error> for ns::ExErr<'ear> {
     fn from(value: &'ear ns::Error) -> Self {
@@ -306,7 +306,7 @@ impl From<crate::os::Error> for arc::R<Error> {
 impl From<ErrorKind> for arc::R<Error> {
     #[cold]
     fn from(value: ErrorKind) -> Self {
-        ns::Error::with_posix(posix_code(value), None)
+        ns::Error::with_posix(posix_code(value).0.get() as isize, None)
     }
 }
 
@@ -324,7 +324,7 @@ impl From<&std::io::Error> for arc::R<Error> {
             return ns::Error::with_posix(code as _, None);
         }
 
-        let code = posix_code(value.kind());
+        let code = posix_code(value.kind()).0.get() as isize;
 
         let debug_desc = format!("{value:?}");
         let debug_desc = ns::String::with_str(&debug_desc);
@@ -338,53 +338,55 @@ impl From<&std::io::Error> for arc::R<Error> {
     }
 }
 
-fn posix_code(value: ErrorKind) -> isize {
+fn posix_code(value: ErrorKind) -> os::Error {
     // http://fxr.watson.org/fxr/source/sys/errno.h
 
-    let code = match value {
-        ErrorKind::NotFound => 2,                               // ENOENT,
-        ErrorKind::PermissionDenied => 13,                      // EACCES,
-        ErrorKind::ConnectionRefused => 61,                     // ECONNREFUSED,
-        ErrorKind::ConnectionReset => 54,                       // ECONNRESET,
-        ErrorKind::HostUnreachable => 65,                       // EHOSTUNREACH
-        ErrorKind::NetworkUnreachable => 51,                    // ENETUNREACH
-        ErrorKind::ConnectionAborted => 53,                     // ECONNABORTED
-        ErrorKind::NotConnected => 57,                          // ENOTCONN
-        ErrorKind::AddrInUse => 48,                             // EADDRINUSE
-        ErrorKind::AddrNotAvailable => 49,                      // EADDRNOTAVAIL
-        ErrorKind::NetworkDown => 50,                           // ENETDOWN
-        ErrorKind::BrokenPipe => 32,                            // EPIPE
-        ErrorKind::AlreadyExists => 17,                         // EEXIST
-        ErrorKind::WouldBlock => 35,                            // EWOULDBLOCK
-        ErrorKind::NotADirectory => 20,                         // ENOTDIR
-        ErrorKind::IsADirectory => 21,                          // EISDIR
-        ErrorKind::DirectoryNotEmpty => 66,                     // ENOTEMPTY
-        ErrorKind::ReadOnlyFilesystem => 30,                    // EROFS
-        ErrorKind::StaleNetworkFileHandle => 70,                // ESTALE
-        ErrorKind::InvalidInput | ErrorKind::InvalidData => 22, // EINVAL
-        ErrorKind::TimedOut => 60,                              // ETIMEDOUT
-        ErrorKind::StorageFull => 28,                           // ENOSPC
-        ErrorKind::NotSeekable => 29,                           // ESPIPE
-        ErrorKind::QuotaExceeded => 69,                         // EDQUOT
-        ErrorKind::FileTooLarge => 27,                          // EFBIG
-        ErrorKind::ResourceBusy => 16,                          // EBUSY
-        ErrorKind::ExecutableFileBusy => 26,                    // ETXTBSY
-        ErrorKind::Deadlock => 11,                              // EDEADLK
-        ErrorKind::CrossesDevices => 18,                        // EXDEV
-        ErrorKind::TooManyLinks => 31,                          // EMLINK
-        ErrorKind::InvalidFilename => 63,                       // ENAMETOOLONG
-        ErrorKind::ArgumentListTooLong => 7,                    // E2BIG
-        ErrorKind::Interrupted => 4,                            // EINTR
-        ErrorKind::Unsupported => 78,                           // ENOSYS
-        ErrorKind::OutOfMemory => 12,                           // ENOMEM
-        //
-        // ErrorKind::InProgress => 36, // EINPROGRESS
-        // ErrorKind::Other => todo!(),
-        // ErrorKind::UnexpectedEof => todo!(),
+    use crate::sys::errno;
+
+    match value {
+        ErrorKind::NotFound => errno::ENOENT,
+        ErrorKind::PermissionDenied => errno::EACCES,
+        ErrorKind::ConnectionRefused => errno::ECONNREFUSED,
+        ErrorKind::ConnectionReset => errno::ECONNRESET,
+        ErrorKind::HostUnreachable => errno::EHOSTUNREACH,
+        ErrorKind::NetworkUnreachable => errno::ENETUNREACH,
+        ErrorKind::ConnectionAborted => errno::ECONNABORTED,
+        ErrorKind::NotConnected => errno::ENOTCONN,
+        ErrorKind::AddrInUse => errno::EADDRINUSE,
+        ErrorKind::AddrNotAvailable => errno::EADDRNOTAVAIL,
+        ErrorKind::NetworkDown => errno::ENETDOWN,
+        ErrorKind::BrokenPipe => errno::EPIPE,
+        ErrorKind::AlreadyExists => errno::EEXIST,
+        ErrorKind::WouldBlock => errno::EWOULDBLOCK,
+        ErrorKind::NotADirectory => errno::ENOTDIR,
+        ErrorKind::IsADirectory => errno::EISDIR,
+        ErrorKind::DirectoryNotEmpty => errno::ENOTEMPTY,
+        ErrorKind::ReadOnlyFilesystem => errno::EROFS,
+        ErrorKind::StaleNetworkFileHandle => errno::ESTALE,
+        ErrorKind::InvalidInput | ErrorKind::InvalidData => errno::EINVAL,
+        ErrorKind::TimedOut => errno::ETIMEDOUT,
+        ErrorKind::StorageFull => errno::ENOSPC,
+        ErrorKind::NotSeekable => errno::ESPIPE,
+        ErrorKind::QuotaExceeded => errno::EDQUOT,
+        ErrorKind::FileTooLarge => errno::EFBIG,
+        ErrorKind::ResourceBusy => errno::EBUSY,
+        ErrorKind::ExecutableFileBusy => errno::ETXTBSY,
+        ErrorKind::Deadlock => errno::EDEADLK,
+        ErrorKind::CrossesDevices => errno::EXDEV,
+        ErrorKind::TooManyLinks => errno::EMLINK,
+        ErrorKind::InvalidFilename => errno::ENAMETOOLONG,
+        ErrorKind::ArgumentListTooLong => errno::E2BIG,
+        ErrorKind::Interrupted => errno::EINTR,
+        ErrorKind::Unsupported => errno::ENOSYS,
+        ErrorKind::OutOfMemory => errno::ENOMEM,
+        // ErrorKind::FilesystemLoop => todo!(),
         // ErrorKind::WriteZero => todo!(),
-        _ => 0, // realy don't want to use zero here
-    };
-    code
+        // ErrorKind::UnexpectedEof => todo!(),
+        // ErrorKind::InProgress => todo!(),
+        // ErrorKind::Other => todo!(),
+        // _ => todo!(),
+        _ => os::Error::new_unchecked(errno::ELAST.0.get() + 1),
+    }
 }
 
 #[cfg(test)]
@@ -423,5 +425,8 @@ mod tests {
             Box::new(std::io::Error::from_raw_os_error(20));
         let error: arc::R<ns::Error> = error.into();
         assert_eq!(error.code(), 20);
+
+        let error = std::io::Error::new(std::io::ErrorKind::Other, "oh no!");
+        let error: arc::R<ns::Error> = error.into();
     }
 }
