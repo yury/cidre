@@ -1,6 +1,9 @@
 use std::io::ErrorKind;
 
-use crate::{arc, cf, define_cls, define_obj_type, ns, objc, os};
+use crate::{arc, define_cls, define_obj_type, ns, objc, os};
+
+#[cfg(feature = "cf")]
+use crate::cf;
 
 impl<'ear> From<&'ear ns::Error> for ns::ExErr<'ear> {
     fn from(value: &'ear ns::Error) -> Self {
@@ -28,17 +31,10 @@ where
     f(&mut err).ok_or_else(|| unsafe { err.unwrap_unchecked() })
 }
 
-pub fn if_err<'ear, F>(f: F) -> ns::Result<'ear>
-where
-    F: FnOnce(*mut Option<&'ear ns::Error>),
-{
+pub fn if_err<'ear>(f: impl FnOnce(*mut Option<&'ear ns::Error>)) -> ns::Result<'ear> {
     let mut err = None;
     f(&mut err);
-    if let Some(err) = err {
-        Err(err)
-    } else {
-        Ok(())
-    }
+    err.map_or(Ok(()), Err)
 }
 
 define_obj_type!(
@@ -55,8 +51,7 @@ impl std::error::Error for Error {}
 
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let desc = self.localized_desc();
-        desc.fmt(f)
+        self.localized_desc().fmt(f)
     }
 }
 

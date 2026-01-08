@@ -1,6 +1,9 @@
 use std::{ffi::c_void, ptr::slice_from_raw_parts};
 
-use crate::{arc, define_obj_type, dispatch, ns};
+use crate::{arc, define_obj_type, dispatch};
+
+#[cfg(feature = "ns")]
+use crate::ns;
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
@@ -57,6 +60,7 @@ impl Data {
         }
     }
 
+    #[cfg(feature = "ns")]
     #[inline]
     pub fn as_ns(&self) -> &ns::Data {
         unsafe { std::mem::transmute(self) }
