@@ -2,6 +2,9 @@ use std::ffi::c_void;
 
 use crate::{arc, define_obj_type, ns, objc::Obj};
 
+#[doc(alias = "NSNotFound")]
+pub const NOT_FOUND: ns::Integer = ns::Integer::MAX;
+
 define_obj_type!(pub ExceptionName(ns::String));
 
 #[doc(alias = "NSStringFromSelector")]
