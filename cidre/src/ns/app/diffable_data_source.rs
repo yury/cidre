@@ -1,6 +1,10 @@
 use std::marker::PhantomData;
 
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{
+    arc, define_obj_type,
+    ns::{self, Copying},
+    objc,
+};
 
 define_obj_type!(
     pub _DiffableDataSrcSnapshot(ns::Id),
@@ -544,6 +548,22 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     }
 }
 
+impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
+    pub fn copy(&self) -> Self {
+        Self(
+            unsafe { std::mem::transmute(self.0.copy_with_zone(std::ptr::null_mut())) },
+            self.1,
+            self.2,
+        )
+    }
+}
+
+impl<S: objc::Obj, I: objc::Obj> Clone for DiffableDataSrcSnapshot<S, I> {
+    fn clone(&self) -> Self {
+        self.copy()
+    }
+}
+
 unsafe extern "C" {
     static NS_DIFFABLE_DATA_SOURCE_SNAPSHOT: &'static objc::Class<_DiffableDataSrcSnapshot>;
 }
@@ -597,5 +617,8 @@ mod tests {
         snapshot
             .reload_sections_ids(&ns::arr![0u8])
             .expect("Failed to reload section with id 0");
+
+        let clone = snapshot.clone();
+        assert_eq!(clone.items_n(), snapshot.items_n());
     }
 }
