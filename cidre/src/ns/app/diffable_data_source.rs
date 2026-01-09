@@ -65,14 +65,68 @@ impl _DiffableDataSrcSnapshot {
         item_id: &ns::Id,
     );
 
+    #[objc::msg_send(deleteItemsWithIdentifiers:)]
+    pub unsafe fn delete_item_ids_throws(&mut self, item_ids: &ns::Array<ns::Id>);
+
     #[objc::msg_send(deleteAllItems)]
     pub fn delete_all_items(&mut self);
+
+    #[objc::msg_send(moveItemWithIdentifier:beforeItemWithIdentifier:)]
+    pub unsafe fn move_item_id_before_item_id_throws(
+        &mut self,
+        item_id: &ns::Id,
+        before_item_id: &ns::Id,
+    );
+
+    #[objc::msg_send(moveItemWithIdentifier:afterItemWithIdentifier:)]
+    pub unsafe fn move_item_id_after_item_id_throws(
+        &mut self,
+        item_id: &ns::Id,
+        after_item_id: &ns::Id,
+    );
+
+    #[objc::msg_send(reloadItemsWithIdentifiers:)]
+    pub unsafe fn reload_item_ids_throws(&mut self, item_ids: &ns::Array<ns::Id>);
 }
 
 /// Section operations
 impl _DiffableDataSrcSnapshot {
     #[objc::msg_send(appendSectionsWithIdentifiers:)]
     pub unsafe fn append_section_ids_throws(&mut self, section_ids: &ns::Array<ns::Id>);
+
+    #[objc::msg_send(insertSectionsWithIdentifiers:beforeSectionWithIdentifier:)]
+    pub unsafe fn insert_section_ids_before_section_id_throws(
+        &mut self,
+        section_ids: &ns::Array<ns::Id>,
+        before_section_id: &ns::Id,
+    );
+
+    #[objc::msg_send(insertSectionsWithIdentifiers:afterSectionWithIdentifier:)]
+    pub unsafe fn insert_section_ids_after_section_id_throws(
+        &mut self,
+        section_ids: &ns::Array<ns::Id>,
+        after_section_id: &ns::Id,
+    );
+
+    #[objc::msg_send(deleteSectionsWithIdentifiers:)]
+    pub unsafe fn delete_section_ids_throws(&mut self, section_ids: &ns::Array<ns::Id>);
+
+    #[objc::msg_send(moveSectionWithIdentifier:beforeSectionWithIdentifier:)]
+    pub unsafe fn move_section_id_before_section_id_throws(
+        &mut self,
+        section_id: &ns::Id,
+        before_section_id: &ns::Id,
+    );
+
+    #[objc::msg_send(moveSectionWithIdentifier:afterSectionWithIdentifier:)]
+    pub unsafe fn move_section_id_after_section_id_throws(
+        &mut self,
+        section_id: &ns::Id,
+        after_section_id: &ns::Id,
+    );
+
+    #[objc::msg_send(reloadSectionsWithIdentifiers:)]
+    pub unsafe fn reload_section_ids_throws(&mut self, section_ids: &ns::Array<ns::Id>);
 }
 
 impl ns::Copying for _DiffableDataSrcSnapshot {}
@@ -211,10 +265,142 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
             self.append_item_ids_to_section_id_throws(item_ids, section_id);
         })
     }
+
+    #[inline]
+    pub unsafe fn insert_item_ids_before_item_id_throws(
+        &mut self,
+        item_ids: &ns::Array<I>,
+        item_id: impl AsRef<I>,
+    ) {
+        unsafe {
+            self.0.insert_item_ids_before_item_id_throws(
+                std::mem::transmute(item_ids),
+                item_id.as_ref().as_id_ref(),
+            );
+        }
+    }
+
+    #[inline]
+    pub fn insert_item_ids_before_item_id<'ear>(
+        &mut self,
+        item_ids: &ns::Array<I>,
+        item_id: impl AsRef<I>,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.insert_item_ids_before_item_id_throws(item_ids, item_id);
+        })
+    }
+
+    #[inline]
+    pub unsafe fn insert_item_ids_after_item_id_throws(
+        &mut self,
+        item_ids: &ns::Array<I>,
+        item_id: impl AsRef<I>,
+    ) {
+        unsafe {
+            self.0.insert_item_ids_after_item_id_throws(
+                std::mem::transmute(item_ids),
+                item_id.as_ref().as_id_ref(),
+            );
+        }
+    }
+
+    #[inline]
+    pub fn insert_item_ids_after_item_id<'ear>(
+        &mut self,
+        item_ids: &ns::Array<I>,
+        item_id: impl AsRef<I>,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.insert_item_ids_after_item_id_throws(item_ids, item_id);
+        })
+    }
+
+    #[inline]
+    pub unsafe fn delete_item_ids_throws(&mut self, item_ids: &ns::Array<I>) {
+        unsafe {
+            self.0.delete_item_ids_throws(std::mem::transmute(item_ids));
+        }
+    }
+
+    #[inline]
+    pub fn delete_item_ids<'ear>(&mut self, item_ids: &ns::Array<I>) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.delete_item_ids_throws(item_ids);
+        })
+    }
+
+    #[inline]
+    pub fn delete_all_items(&mut self) {
+        self.0.delete_all_items();
+    }
+
+    #[inline]
+    pub unsafe fn move_item_id_before_item_id_throws(
+        &mut self,
+        item_id: impl AsRef<I>,
+        before_item_id: impl AsRef<I>,
+    ) {
+        unsafe {
+            self.0.move_item_id_before_item_id_throws(
+                item_id.as_ref().as_id_ref(),
+                before_item_id.as_ref().as_id_ref(),
+            );
+        }
+    }
+
+    #[inline]
+    pub fn move_item_id_before_item_id<'ear>(
+        &mut self,
+        item_id: impl AsRef<I>,
+        before_item_id: impl AsRef<I>,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.move_item_id_before_item_id_throws(item_id, before_item_id)
+        })
+    }
+
+    #[inline]
+    pub unsafe fn move_item_id_after_item_id_throws(
+        &mut self,
+        item_id: impl AsRef<I>,
+        after_item_id: impl AsRef<I>,
+    ) {
+        unsafe {
+            self.0.move_item_id_after_item_id_throws(
+                item_id.as_ref().as_id_ref(),
+                after_item_id.as_ref().as_id_ref(),
+            );
+        }
+    }
+
+    #[inline]
+    pub fn move_item_id_after_item_id<'ear>(
+        &mut self,
+        item_id: impl AsRef<I>,
+        after_item_id: impl AsRef<I>,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe { self.move_item_id_after_item_id_throws(item_id, after_item_id) })
+    }
+
+    #[inline]
+    pub unsafe fn reload_item_ids_throws(&mut self, item_ids: &ns::Array<I>) {
+        unsafe {
+            self.0.reload_item_ids_throws(std::mem::transmute(item_ids));
+        }
+    }
+
+    #[inline]
+    pub fn reload_item_ids<'ear>(&mut self, item_ids: &ns::Array<I>) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.reload_item_ids_throws(item_ids);
+        })
+    }
 }
 
 /// Section operations
 impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
+    #[inline]
     pub unsafe fn append_section_ids_throws(&mut self, section_ids: &ns::Array<S>) {
         unsafe {
             self.0
@@ -222,8 +408,139 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
         }
     }
 
+    #[inline]
     pub fn append_section_ids<'ear>(&mut self, section_ids: &ns::Array<S>) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.append_section_ids_throws(section_ids) })
+    }
+
+    #[inline]
+    pub unsafe fn insert_sections_ids_before_section_id_throws(
+        &mut self,
+        section_ids: &ns::Array<S>,
+        before_section_id: impl AsRef<S>,
+    ) {
+        unsafe {
+            self.0.insert_section_ids_before_section_id_throws(
+                std::mem::transmute(section_ids),
+                before_section_id.as_ref().as_id_ref(),
+            );
+        }
+    }
+
+    #[inline]
+    pub fn insert_sections_ids_before_section_id<'ear>(
+        &mut self,
+        section_ids: &ns::Array<S>,
+        before_section_id: impl AsRef<S>,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.insert_sections_ids_before_section_id_throws(section_ids, before_section_id);
+        })
+    }
+
+    #[inline]
+    pub unsafe fn insert_sections_ids_after_section_id_throws(
+        &mut self,
+        section_ids: &ns::Array<S>,
+        after_section_id: impl AsRef<S>,
+    ) {
+        unsafe {
+            self.0.insert_section_ids_after_section_id_throws(
+                std::mem::transmute(section_ids),
+                after_section_id.as_ref().as_id_ref(),
+            );
+        }
+    }
+
+    #[inline]
+    pub fn insert_sections_ids_after_section_id<'ear>(
+        &mut self,
+        section_ids: &ns::Array<S>,
+        after_section_id: impl AsRef<S>,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.insert_sections_ids_after_section_id_throws(section_ids, after_section_id);
+        })
+    }
+
+    #[inline]
+    pub unsafe fn delete_section_ids_throws(&mut self, section_ids: &ns::Array<S>) {
+        unsafe {
+            self.0
+                .delete_section_ids_throws(std::mem::transmute(section_ids));
+        }
+    }
+
+    #[inline]
+    pub fn delete_section_ids<'ear>(&mut self, section_ids: &ns::Array<S>) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.delete_section_ids_throws(section_ids);
+        })
+    }
+
+    #[inline]
+    pub unsafe fn move_section_id_before_section_id_throws(
+        &mut self,
+        section_id: impl AsRef<S>,
+        before_section_id: impl AsRef<S>,
+    ) {
+        unsafe {
+            self.0.move_section_id_before_section_id_throws(
+                section_id.as_ref().as_id_ref(),
+                before_section_id.as_ref().as_id_ref(),
+            )
+        }
+    }
+
+    #[inline]
+    pub fn move_section_id_before_section_id<'ear>(
+        &mut self,
+        section_id: impl AsRef<S>,
+        before_section_id: impl AsRef<S>,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.move_section_id_before_section_id_throws(section_id, before_section_id)
+        })
+    }
+
+    #[inline]
+    pub unsafe fn move_section_id_after_section_id_throws(
+        &mut self,
+        section_id: impl AsRef<S>,
+        after_section_id: impl AsRef<S>,
+    ) {
+        unsafe {
+            self.0.move_section_id_after_section_id_throws(
+                section_id.as_ref().as_id_ref(),
+                after_section_id.as_ref().as_id_ref(),
+            )
+        }
+    }
+
+    #[inline]
+    pub fn move_section_id_after_section_id<'ear>(
+        &mut self,
+        section_id: impl AsRef<S>,
+        after_section_id: impl AsRef<S>,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.move_section_id_after_section_id_throws(section_id, after_section_id)
+        })
+    }
+
+    #[inline]
+    pub unsafe fn reload_section_ids_throws(&mut self, section_ids: &ns::Array<S>) {
+        unsafe {
+            self.0
+                .reload_section_ids_throws(std::mem::transmute(section_ids));
+        }
+    }
+
+    #[inline]
+    pub fn reload_sections_ids<'ear>(&mut self, section_ids: &ns::Array<S>) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.reload_section_ids_throws(section_ids);
+        })
     }
 }
 
@@ -265,5 +582,20 @@ mod tests {
         snapshot
             .items_n_in_section(1u8)
             .expect_err("No section with id 1");
+
+        snapshot
+            .delete_item_ids(&ns::arr![ns::str!(c"b"), ns::str!(c"!"), ns::str!(c"!")])
+            .expect_err("Not unique id err");
+
+        snapshot
+            .reload_item_ids(&ns::arr![ns::str!(c"b"), ns::str!(c"!")])
+            .expect_err("b doesnt exists");
+
+        snapshot.reload_sections_ids(&ns::arr![10u8]).expect_err(
+            "Attempted to reload section identifier that does not exist in the snapshot: 10",
+        );
+        snapshot
+            .reload_sections_ids(&ns::arr![0u8])
+            .expect("Failed to reload section with id 0");
     }
 }
