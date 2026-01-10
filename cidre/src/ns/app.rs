@@ -36,7 +36,6 @@ mod control;
 pub use control::Control;
 
 mod diffable_data_source;
-pub use diffable_data_source::DiffableDataSrcSnapshot;
 
 mod dock_tile;
 pub use dock_tile::DockTile;

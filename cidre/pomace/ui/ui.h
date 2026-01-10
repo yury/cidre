@@ -39,6 +39,8 @@ Class UI_SCENE_SESSION_ACTIVATION_REQUEST;
 Class UI_BLUR_EFFECT;
 Class UI_ZOOM_TRANSITION_OPTIONS;
 
+Class NS_DIFFABLE_DATA_SOURCE_SNAPSHOT;
+
 __attribute__((constructor))
 static void ui_initializer(void)
 {
@@ -77,6 +79,8 @@ static void ui_initializer(void)
         
         UI_BLUR_EFFECT = NSClassFromString(@"UIBlurEffect");
         UI_ZOOM_TRANSITION_OPTIONS = NSClassFromString(@"UIZoomTransitionOptions");
+        
+        NS_DIFFABLE_DATA_SOURCE_SNAPSHOT = [NSDiffableDataSourceSnapshot class];
     }
 }
 

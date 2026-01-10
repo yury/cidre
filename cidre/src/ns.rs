@@ -256,6 +256,23 @@ pub use keyed_archiver::KeyedArchiver;
 mod keyed_unarchiver;
 pub use keyed_unarchiver::KeyedUnarchiver;
 
+#[cfg(any(
+    all(feature = "app", target_os = "macos"),
+    all(
+        feature = "ui",
+        any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+    )
+))]
+mod diffable_data_src_snapshot;
+#[cfg(any(
+    all(feature = "app", target_os = "macos"),
+    all(
+        feature = "ui",
+        any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+    )
+))]
+pub use diffable_data_src_snapshot::DiffableDataSrcSnapshot;
+
 pub fn log_string(str: &crate::ns::String) {
     unsafe {
         cidre_log(str);
