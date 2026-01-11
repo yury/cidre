@@ -24,6 +24,10 @@ pub use cell::ControlTint;
 pub use cell::ImageScaling;
 
 pub mod collection_view;
+pub use collection_view::AnyCollectionViewDataSrc;
+pub use collection_view::CollectionView;
+pub use collection_view::CollectionViewDataSrc;
+pub use collection_view::CollectionViewDataSrcImpl;
 
 mod color_space;
 pub use color_space::ColorSpace;
