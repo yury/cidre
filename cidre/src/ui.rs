@@ -42,6 +42,8 @@ pub use navigation_bar::NavBar;
 
 mod responder;
 pub use responder::Responder;
+pub use responder::ResponderStandardEditActions;
+pub use responder::ResponderStandardEditActionsImpl;
 
 mod touch;
 pub use touch::ForceTouchCapability;
