@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, ns, objc, ui};
 
 #[objc::protocol(UIResponderStandardEditActions)]
 pub trait ResponderStandardEditActions: objc::Obj {
@@ -184,6 +184,36 @@ impl ResponderStandardEditActions for Responder {}
 impl Responder {
     #[objc::msg_send(nextResponder)]
     pub fn next_responder(&self) -> Option<arc::R<Self>>;
+
+    #[objc::msg_send(canBecomeFirstResponder)]
+    pub fn can_become_first_responder(&self) -> bool;
+
+    #[objc::msg_send(becomeFirstResponder)]
+    pub fn become_first_responder(&mut self);
+
+    #[objc::msg_send(canResignFirstResponder)]
+    pub fn can_resign_first_responder(&self) -> bool;
+
+    #[objc::msg_send(resignFirstResponder)]
+    pub fn resign_first_responder(&mut self);
+
+    #[objc::msg_send(isFirstResponder)]
+    pub fn is_first_responder(&self) -> bool;
+
+    #[objc::msg_send(touchesBegan:withEvent:)]
+    pub fn touches_began(&mut self, touches: &ns::Set<ui::Touch>, event: Option<&ui::Event>);
+
+    #[objc::msg_send(touchesMoved:withEvent:)]
+    pub fn touches_moved(&mut self, touches: &ns::Set<ui::Touch>, event: Option<&ui::Event>);
+
+    #[objc::msg_send(touchesEnded:withEvent:)]
+    pub fn touches_ended(&mut self, touches: &ns::Set<ui::Touch>, event: Option<&ui::Event>);
+
+    #[objc::msg_send(touchesCancelled:withEvent:)]
+    pub fn touches_cancelled(&mut self, touches: &ns::Set<ui::Touch>, event: Option<&ui::Event>);
+
+    #[objc::msg_send(touchesEstimatedPropertiesUpdated:)]
+    pub fn touches_estimated_props_updated(&mut self, touches: &ns::Set<ui::Touch>);
 }
 
 #[link(name = "ui", kind = "static")]
