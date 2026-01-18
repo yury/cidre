@@ -60,6 +60,16 @@ impl Params {
         }
     }
 
+    #[inline]
+    pub fn tcp() -> Option<arc::R<Self>> {
+        unsafe {
+            nw_parameters_create_secure_tcp(
+                nw::Params::disable_protocol(),
+                nw::Params::default_cfg(),
+            )
+        }
+    }
+
     #[doc(alias = "nw_parameters_create_custom_ip")]
     #[inline]
     pub fn secure_custom_ip(
@@ -427,6 +437,8 @@ mod tests {
         }
         eprintln!("{:?}", nw::Params::default_cfg().debug_desc());
         eprintln!("{:?}", nw::Params::disable_protocol().debug_desc());
+
+        let _ = nw::Params::tcp().unwrap();
     }
 
     #[test]
