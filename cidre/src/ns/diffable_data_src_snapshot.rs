@@ -7,12 +7,13 @@ use crate::{
 };
 
 define_obj_type!(
-    pub _DiffableDataSrcSnapshot(ns::Id),
+    #[doc(alias = "NSDiffableDataSourceSnapshot")]
+    pub AnyDiffableDataSrcSnapshot(ns::Id),
     NS_DIFFABLE_DATA_SOURCE_SNAPSHOT,
     #[api::available(macos = 10.15, ios = 13.0, tvos = 13.0)]
 );
 
-impl _DiffableDataSrcSnapshot {
+impl AnyDiffableDataSrcSnapshot {
     #[objc::msg_send(numberOfItems)]
     pub fn items_n(&self) -> ns::Integer;
 
@@ -45,7 +46,7 @@ impl _DiffableDataSrcSnapshot {
 }
 
 /// Items operations
-impl _DiffableDataSrcSnapshot {
+impl AnyDiffableDataSrcSnapshot {
     #[objc::msg_send(appendItemsWithIdentifiers:)]
     pub unsafe fn append_item_ids_throws(&mut self, item_ids: &ns::Array<ns::Id>);
 
@@ -99,7 +100,7 @@ impl _DiffableDataSrcSnapshot {
 }
 
 /// Section operations
-impl _DiffableDataSrcSnapshot {
+impl AnyDiffableDataSrcSnapshot {
     #[objc::msg_send(appendSectionsWithIdentifiers:)]
     pub unsafe fn append_section_ids_throws(&mut self, section_ids: &ns::Array<ns::Id>);
 
@@ -138,10 +139,10 @@ impl _DiffableDataSrcSnapshot {
     pub unsafe fn reload_section_ids_throws(&mut self, section_ids: &ns::Array<ns::Id>);
 }
 
-impl ns::Copying for _DiffableDataSrcSnapshot {}
+impl ns::Copying for AnyDiffableDataSrcSnapshot {}
 
 pub struct DiffableDataSrcSnapshot<S, I>(
-    arc::R<_DiffableDataSrcSnapshot>,
+    arc::R<AnyDiffableDataSrcSnapshot>,
     PhantomData<S>,
     PhantomData<I>,
 );
@@ -149,7 +150,7 @@ pub struct DiffableDataSrcSnapshot<S, I>(
 impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     #[inline]
     pub fn new() -> Self {
-        Self(_DiffableDataSrcSnapshot::new(), PhantomData, PhantomData)
+        Self(AnyDiffableDataSrcSnapshot::new(), PhantomData, PhantomData)
     }
 
     #[inline]
@@ -230,6 +231,11 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     #[inline]
     pub fn index_of_section_id(&self, section_id: impl AsRef<S>) -> ns::Integer {
         self.0.index_of_section_id(section_id.as_ref().as_id_ref())
+    }
+
+    #[inline]
+    pub fn any_snapshot(&self) -> arc::R<AnyDiffableDataSrcSnapshot> {
+        self.0.retained()
     }
 }
 
@@ -572,7 +578,7 @@ impl<S: objc::Obj, I: objc::Obj> Clone for DiffableDataSrcSnapshot<S, I> {
 #[cfg(all(feature = "app", target_os = "macos"))]
 #[link(name = "app", kind = "static")]
 unsafe extern "C" {
-    static NS_DIFFABLE_DATA_SOURCE_SNAPSHOT: &'static objc::Class<_DiffableDataSrcSnapshot>;
+    static NS_DIFFABLE_DATA_SOURCE_SNAPSHOT: &'static objc::Class<AnyDiffableDataSrcSnapshot>;
 }
 
 #[cfg(all(
@@ -581,7 +587,7 @@ unsafe extern "C" {
 ))]
 #[link(name = "ui", kind = "static")]
 unsafe extern "C" {
-    static NS_DIFFABLE_DATA_SOURCE_SNAPSHOT: &'static objc::Class<_DiffableDataSrcSnapshot>;
+    static NS_DIFFABLE_DATA_SOURCE_SNAPSHOT: &'static objc::Class<AnyDiffableDataSrcSnapshot>;
 }
 
 #[cfg(test)]
@@ -635,6 +641,9 @@ mod tests {
             .expect("Failed to reload section with id 0");
 
         let clone = snapshot.clone();
+        assert_eq!(clone.items_n(), snapshot.items_n());
+
+        let snapshot = snapshot.any_snapshot();
         assert_eq!(clone.items_n(), snapshot.items_n());
     }
 }
