@@ -31,7 +31,7 @@ impl graph::Graph {
 
     #[objc::msg_send(roundWithTensor:name:)]
     pub fn round(&self, tensor: &graph::Tensor, name: Option<&ns::String>)
-        -> arc::R<graph::Tensor>;
+    -> arc::R<graph::Tensor>;
 
     #[objc::msg_send(squareRootWithTensor:name:)]
     pub fn square_root(

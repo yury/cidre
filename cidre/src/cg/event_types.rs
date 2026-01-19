@@ -103,7 +103,7 @@ define_opts!(
 impl EventFlags {
     #[doc(alias = "kCGEventFlagMaskAlphaShift")]
     pub const ALPHA_SHIFT: Self = Self(0x00010000);
-    
+
     #[doc(alias = "kCGEventFlagMaskShift")]
     pub const SHIFT: Self = Self(0x00020000);
 

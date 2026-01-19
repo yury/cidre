@@ -1,5 +1,5 @@
 use cidre::{cf, ns, objc::ar_pool};
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, criterion_group, criterion_main};
 
 // TODO: investigate why ns::Iso8601DateFormatter is faster...
 

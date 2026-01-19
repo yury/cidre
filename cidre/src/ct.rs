@@ -10,9 +10,9 @@ pub use font_descriptor::FontOrientation;
 pub use font_descriptor::FontPriority;
 
 mod font_traits;
+pub use font_traits::CLASS_MASK_SHIFT as FONT_CLASS_MASK_SHIFT;
 pub use font_traits::FontStylisticClass;
 pub use font_traits::FontSymbolicTraits;
-pub use font_traits::CLASS_MASK_SHIFT as FONT_CLASS_MASK_SHIFT;
 
 mod font_manager;
 pub use font_manager::FontManager;

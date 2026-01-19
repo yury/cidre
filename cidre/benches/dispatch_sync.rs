@@ -1,7 +1,7 @@
 use std::ffi::c_void;
 
 use cidre::dispatch;
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, criterion_group, criterion_main};
 
 extern "C-unwind" fn work(_ctx: *mut u8) {}
 

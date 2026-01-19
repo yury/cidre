@@ -19,7 +19,7 @@ pub trait PipSampleBufPlayerDelegate: objc::Obj {
 
     #[objc::msg_send(pictureInPictureControllerIsPlaybackPaused:)]
     fn pip_controller_is_playback_paused(&mut self, pip_controller: &mut av::PipController)
-        -> bool;
+    -> bool;
 
     #[objc::msg_send(pictureInPictureController:didTransitionToRenderSize:)]
     fn pip_controller_did_transition_to_render_size(

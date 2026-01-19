@@ -1,5 +1,5 @@
 use cidre::{cf, ns};
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, criterion_group, criterion_main};
 
 pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("cf::uuid", |b| {

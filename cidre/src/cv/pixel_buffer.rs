@@ -745,7 +745,6 @@ pub mod keys {
         unsafe { kCVPixelBufferMetalCompatibilityKey }
     }
 
-
     #[doc(alias = "kCVPixelBufferPlaneAlignmentKey")]
     #[inline]
     pub fn plane_aligment() -> &'static cf::String {

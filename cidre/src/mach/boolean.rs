@@ -10,10 +10,6 @@ impl Boolean {
 impl From<bool> for Boolean {
     #[inline]
     fn from(v: bool) -> Self {
-        if v {
-            Self::TRUE
-        } else {
-            Self::FALSE
-        }
+        if v { Self::TRUE } else { Self::FALSE }
     }
 }

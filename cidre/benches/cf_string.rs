@@ -1,5 +1,5 @@
 use cidre::cf;
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, black_box, criterion_group, criterion_main};
 
 pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("cf::String::from_str tagged", |b| {

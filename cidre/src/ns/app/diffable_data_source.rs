@@ -7,6 +7,4 @@ define_obj_type!(
 
 impl ns::CollectionViewDataSrc for _CollectionViewDiffableDataSrc {}
 
-
-impl _CollectionViewDiffableDataSrc {    
-}
+impl _CollectionViewDiffableDataSrc {}
