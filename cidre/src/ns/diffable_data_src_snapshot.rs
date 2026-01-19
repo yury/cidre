@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
 use crate::{
-    arc, define_cls,
+    api, arc, define_cls,
     ns::{self, Copying},
     objc,
 };
@@ -167,6 +167,12 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     #[objc::msg_send(reconfigureItemsWithIdentifiers:)]
     #[api::available(ios = 15.0, tvos = 15.0)]
     pub unsafe fn reconfigure_items_throws(&mut self, items: &ns::Array<I>);
+
+    #[inline]
+    #[api::available(ios = 15.0, tvos = 15.0)]
+    pub fn reconfigure_items<'ear>(&mut self, items: &ns::Array<I>) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe { self.reconfigure_items_throws(items) })
+    }
 
     #[objc::msg_send(appendSectionsWithIdentifiers:)]
     pub unsafe fn append_sections_throws(&mut self, sections: &ns::Array<S>);
