@@ -51,6 +51,7 @@ impl arc::A<TensorExtents> {
     feature = "visionos_26_0"
 ))]
 impl TensorExtents {
+    #[allow(unused_unsafe)]
     pub fn with_dims(dims: &[usize]) -> Option<arc::R<Self>> {
         if dims.is_empty() {
             unsafe { Self::alloc().init_with_rank(0, std::ptr::null()) }
