@@ -273,6 +273,25 @@ mod diffable_data_src_snapshot;
 ))]
 pub use diffable_data_src_snapshot::DiffableDataSrcSnapshot;
 
+#[cfg(all(
+    feature = "ui",
+    any(
+        all(target_os = "ios", feature = "ios_14_0"),
+        all(target_os = "tvos", feature = "tvos_14_0"),
+        all(target_os = "visionos", feature = "visionos_1_0")
+    )
+))]
+mod diffable_data_source_section_snapshot;
+#[cfg(all(
+    feature = "ui",
+    any(
+        all(target_os = "ios", feature = "ios_14_0"),
+        all(target_os = "tvos", feature = "tvos_14_0"),
+        all(target_os = "visionos", feature = "visionos_1_0")
+    )
+))]
+pub use diffable_data_source_section_snapshot::DiffableDataSrcSectionSnapshot;
+
 pub fn log_string(str: &crate::ns::String) {
     unsafe {
         cidre_log(str);
