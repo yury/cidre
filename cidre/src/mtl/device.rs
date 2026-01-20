@@ -587,6 +587,7 @@ impl Device {
         tvos = 26.0,
         visionos = 26.0
     )]
+    #[allow(unused_unsafe)]
     pub fn new_mtl4_cmd_queue_desc<'ear>(
         &self,
         desc: &mtl4::CmdQueueDesc,
