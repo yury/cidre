@@ -16,7 +16,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     ns_formatter.set_date_style(ns::DateFormatterStyle::No);
     ns_formatter.set_time_style(ns::DateFormatterStyle::Short);
 
-    let n = criterion::black_box(10);
+    let n = std::hint::black_box(10);
 
     c.bench_function("cf_iso_date_formatter_with_date", |b| {
         b.iter(|| {
