@@ -129,7 +129,7 @@ impl<T: objc::Obj> Array<T> {
 impl<T: objc::Obj> Array<T> {
     #[cfg(feature = "blocks")]
     #[objc::msg_send(differenceFromArray:withOptions:usingEquivalenceTest:)]
-    pub fn diff_from_array_opts_using_eq_test_block(
+    pub fn diff_from_array_using_eq_test_block(
         &self,
         other: &ns::Array<T>,
         options: ns::OrderedCollectionDiffCalcOpts,
@@ -137,14 +137,14 @@ impl<T: objc::Obj> Array<T> {
     ) -> arc::R<ns::OrderedCollectionDiff<T>>;
 
     #[cfg(feature = "blocks")]
-    pub fn diff_from_array_opts_using_eq_test(
+    pub fn diff_from_array_using_eq_test(
         &self,
         other: &ns::Array<T>,
         options: ns::OrderedCollectionDiffCalcOpts,
         block: impl FnMut(&T, &T) -> bool,
     ) -> arc::R<ns::OrderedCollectionDiff<T>> {
         let mut block = blocks::NoEscBlock::new2(block);
-        self.diff_from_array_opts_using_eq_test_block(other, options, &mut block)
+        self.diff_from_array_using_eq_test_block(other, options, &mut block)
     }
 
     #[objc::msg_send(differenceFromArray:withOptions:)]
@@ -158,9 +158,9 @@ impl<T: objc::Obj> Array<T> {
     pub fn diff_from_array(&self, other: &ns::Array<T>) -> arc::R<ns::OrderedCollectionDiff<T>>;
 
     #[objc::msg_send(arrayByApplyingDifference:)]
-    pub fn array_by_applying_difference(
+    pub fn array_by_applying_diff(
         &self,
-        difference: &ns::OrderedCollectionDiff<T>,
+        diff: &ns::OrderedCollectionDiff<T>,
     ) -> Option<arc::R<Self>>;
 }
 
@@ -581,7 +581,7 @@ mod tests {
         let diff = b.diff_from_array(&a);
         assert!(diff.has_changes());
 
-        let applied = a.array_by_applying_difference(&diff).unwrap();
+        let applied = a.array_by_applying_diff(&diff).unwrap();
         assert_eq!(applied.len(), b.len());
 
         let expected_first = ns::str!(c"b");
