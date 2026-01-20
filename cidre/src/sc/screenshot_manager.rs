@@ -67,6 +67,7 @@ impl ScreenshotManager {
     /// Returns an image containing the contents of the rectangle in points, specified in display space
     #[cfg(all(feature = "blocks", feature = "async"))]
     #[api::available(macos = 15.2)]
+    #[allow(unused_unsafe)]
     pub async fn capture_image_in_rect(
         rect: cg::Rect,
     ) -> Result<arc::R<cg::Image>, arc::R<ns::Error>> {
