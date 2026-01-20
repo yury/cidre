@@ -292,6 +292,11 @@ mod diffable_data_source_section_snapshot;
 ))]
 pub use diffable_data_source_section_snapshot::DiffableDataSrcSectionSnapshot;
 
+mod ordered_collection_change;
+
+pub use ordered_collection_change::CollectionChangeType;
+pub use ordered_collection_change::OrderedCollectionChange;
+
 pub fn log_string(str: &crate::ns::String) {
     unsafe {
         cidre_log(str);

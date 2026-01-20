@@ -64,6 +64,8 @@ Class NS_INDEX_PATH;
 Class NS_INDEX_SET;
 Class NS_MUTABLE_INDEX_SET;
 
+Class NS_ORDERED_COLLECTION_CHANGE;
+
 Class NS_FILE_MANAGER;
 Class NS_NOTIFICATION;
 Class NS_NOTIFICATION_CENTER;
@@ -188,6 +190,8 @@ static void common_initializer(void)
         NS_BUNDLE = [NSBundle class];
         NS_USER_ACTIVITY = [NSUserActivity class];
         NS_USER_DEFAULTS = [NSUserDefaults class];
+        
+        NS_ORDERED_COLLECTION_CHANGE = [NSOrderedCollectionChange class];
     }
 }
 NS_ASSUME_NONNULL_END
