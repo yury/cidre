@@ -65,6 +65,7 @@ Class NS_INDEX_SET;
 Class NS_MUTABLE_INDEX_SET;
 
 Class NS_ORDERED_COLLECTION_CHANGE;
+Class NS_ORDERED_COLLECTION_DIFFERENCE;
 
 Class NS_FILE_MANAGER;
 Class NS_NOTIFICATION;
@@ -191,6 +192,7 @@ static void common_initializer(void)
         NS_USER_ACTIVITY = [NSUserActivity class];
         NS_USER_DEFAULTS = [NSUserDefaults class];
         
+        NS_ORDERED_COLLECTION_DIFFERENCE = [NSOrderedCollectionDifference class];
         NS_ORDERED_COLLECTION_CHANGE = [NSOrderedCollectionChange class];
     }
 }

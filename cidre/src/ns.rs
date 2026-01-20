@@ -297,6 +297,10 @@ mod ordered_collection_change;
 pub use ordered_collection_change::CollectionChangeType;
 pub use ordered_collection_change::OrderedCollectionChange;
 
+mod ordered_collection_difference;
+
+pub use ordered_collection_difference::{OrderedCollectionDiff, OrderedCollectionDiffInverseOpts};
+
 pub fn log_string(str: &crate::ns::String) {
     unsafe {
         cidre_log(str);

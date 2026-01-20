@@ -1,8 +1,9 @@
-use std::marker::PhantomData;
+use std::{marker::PhantomData, ops::Deref};
 
 use crate::{arc, define_cls, ns, objc};
 
 #[doc(alias = "NSOrderedCollectionChange")]
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct OrderedCollectionChange<T: objc::Obj>(ns::Id, PhantomData<T>);
 
@@ -28,6 +29,14 @@ impl<T: objc::Obj> arc::A<OrderedCollectionChange<T>> {
 }
 
 impl<T: objc::Obj> objc::Obj for OrderedCollectionChange<T> {}
+
+impl<T: objc::Obj> Deref for OrderedCollectionChange<T> {
+    type Target = ns::Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 impl<T: objc::Obj> OrderedCollectionChange<T> {
     define_cls!(NS_ORDERED_COLLECTION_CHANGE);
