@@ -293,13 +293,13 @@ mod diffable_data_source_section_snapshot;
 pub use diffable_data_source_section_snapshot::DiffableDataSrcSectionSnapshot;
 
 mod ordered_collection_change;
-
 pub use ordered_collection_change::CollectionChangeType;
 pub use ordered_collection_change::OrderedCollectionChange;
 
 mod ordered_collection_difference;
-
-pub use ordered_collection_difference::{OrderedCollectionDiff, OrderedCollectionDiffInverseOpts};
+pub use ordered_collection_difference::OrderedCollectionDiff;
+pub use ordered_collection_difference::OrderedCollectionDiffCalcOpts;
+pub use ordered_collection_difference::OrderedCollectionDiffInverseOpts;
 
 pub fn log_string(str: &crate::ns::String) {
     unsafe {

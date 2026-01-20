@@ -1,6 +1,26 @@
 use std::marker::PhantomData;
 
-use crate::{arc, define_cls, ns, objc};
+use crate::{arc, define_cls, define_opts, ns, objc};
+
+define_opts!(
+    #[doc(alias = "NSOrderedCollectionDifferenceCalculationOptions")]
+    pub OrderedCollectionDiffCalcOpts(usize)
+);
+
+impl OrderedCollectionDiffCalcOpts {
+    /// Insertion changes do not store a reference to the inserted object.
+    #[doc(alias = "NSOrderedCollectionDifferenceCalculationOmitInsertedObjects")]
+    pub const OMIT_INSERTED_OBJS: Self = Self(1 << 0);
+
+    /// Insertion changes do not store a reference to the removed object.
+    #[doc(alias = "NSOrderedCollectionDifferenceCalculationOmitRemovedObjects")]
+    pub const OMIT_REMOVED_OBJS: Self = Self(1 << 1);
+
+    /// Assume objects that were uniquely removed and inserted were moved.
+    /// This is useful when diffing based on identity instead of equality.
+    #[doc(alias = "NSOrderedCollectionDifferenceCalculationInferMoves")]
+    pub const INFER_MOVES: Self = Self(1 << 2);
+}
 
 #[doc(alias = "NSOrderedCollectionDifference")]
 #[repr(transparent)]

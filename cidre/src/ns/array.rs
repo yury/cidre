@@ -4,6 +4,8 @@ use std::{
     ops::Deref,
 };
 
+#[cfg(feature = "blocks")]
+use crate::blocks;
 use crate::{arc, define_cls, ns, objc};
 
 #[doc(alias = "NSArray")]
@@ -121,6 +123,45 @@ impl<T: objc::Obj> Array<T> {
     pub fn as_cf_mut(&mut self) -> &mut crate::cf::ArrayOf<T> {
         unsafe { std::mem::transmute(self) }
     }
+}
+
+/// NSArrayDiffing
+impl<T: objc::Obj> Array<T> {
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(differenceFromArray:withOptions:usingEquivalenceTest:)]
+    pub fn diff_from_array_opts_using_eq_test_block(
+        &self,
+        other: &ns::Array<T>,
+        options: ns::OrderedCollectionDiffCalcOpts,
+        block: &mut blocks::NoEscBlock<fn(&T, &T) -> bool>,
+    ) -> arc::R<ns::OrderedCollectionDiff<T>>;
+
+    #[cfg(feature = "blocks")]
+    pub fn diff_from_array_opts_using_eq_test(
+        &self,
+        other: &ns::Array<T>,
+        options: ns::OrderedCollectionDiffCalcOpts,
+        block: impl FnMut(&T, &T) -> bool,
+    ) -> arc::R<ns::OrderedCollectionDiff<T>> {
+        let mut block = blocks::NoEscBlock::new2(block);
+        self.diff_from_array_opts_using_eq_test_block(other, options, &mut block)
+    }
+
+    #[objc::msg_send(differenceFromArray:withOptions:)]
+    pub fn diff_from_array_opts(
+        &self,
+        other: &ns::Array<T>,
+        options: ns::OrderedCollectionDiffCalcOpts,
+    ) -> arc::R<ns::OrderedCollectionDiff<T>>;
+
+    #[objc::msg_send(differenceFromArray:)]
+    pub fn diff_from_array(&self, other: &ns::Array<T>) -> arc::R<ns::OrderedCollectionDiff<T>>;
+
+    #[objc::msg_send(arrayByApplyingDifference:)]
+    pub fn array_by_applying_difference(
+        &self,
+        difference: &ns::OrderedCollectionDiff<T>,
+    ) -> Option<arc::R<Self>>;
 }
 
 #[cfg(feature = "cf")]
@@ -528,5 +569,24 @@ mod tests {
         let arr: arc::R<ns::ArrayMut<_>> = vec[..].into();
         let arr = arr.copy();
         assert_eq!(arr.len(), 100);
+    }
+
+    #[test]
+    fn diffing() {
+        let a: arc::R<ns::Array<ns::String>> =
+            ns::arr![ns::str!(c"a"), ns::str!(c"b"), ns::str!(c"c")];
+        let b: arc::R<ns::Array<ns::String>> =
+            ns::arr![ns::str!(c"b"), ns::str!(c"c"), ns::str!(c"d")];
+
+        let diff = b.diff_from_array(&a);
+        assert!(diff.has_changes());
+
+        let applied = a.array_by_applying_difference(&diff).unwrap();
+        assert_eq!(applied.len(), b.len());
+
+        let expected_first = ns::str!(c"b");
+        let expected_last = ns::str!(c"d");
+        assert!(applied.first().unwrap().eq_ns_string(&expected_first));
+        assert!(applied.last().unwrap().eq_ns_string(&expected_last));
     }
 }
