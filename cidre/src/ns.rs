@@ -263,7 +263,7 @@ pub use keyed_unarchiver::KeyedUnarchiver;
         any(target_os = "ios", target_os = "tvos", target_os = "visionos")
     )
 ))]
-mod diffable_data_src_snapshot;
+mod diffable_data_source_snapshot;
 #[cfg(any(
     all(feature = "app", target_os = "macos"),
     all(
@@ -271,7 +271,7 @@ mod diffable_data_src_snapshot;
         any(target_os = "ios", target_os = "tvos", target_os = "visionos")
     )
 ))]
-pub use diffable_data_src_snapshot::DiffableDataSrcSnapshot;
+pub use diffable_data_source_snapshot::DiffableDataSrcSnapshot;
 
 #[cfg(all(
     feature = "ui",

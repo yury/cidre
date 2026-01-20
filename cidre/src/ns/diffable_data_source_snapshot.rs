@@ -341,4 +341,24 @@ mod tests {
         let clone = snapshot.clone();
         assert_eq!(clone.items_n(), snapshot.items_n());
     }
+
+    #[cfg(target_os = "ios")]
+    #[test]
+    fn reconfigure_items() {
+        let mut snapshot = ns::DiffableDataSrcSnapshot::<ns::Number, ns::String>::new();
+        snapshot
+            .append_sections(&ns::arr![0])
+            .expect("Failed to add section");
+        snapshot
+            .append_items(&ns::arr![ns::str!(c"foo"), ns::str!(c"bar")])
+            .expect("Failed to append items");
+
+        assert_eq!(snapshot.items_n(), 2);
+
+        snapshot
+            .reconfigure_items(&ns::arr![ns::str!(c"foo")])
+            .expect("Failed to reconfigure item");
+
+        assert_eq!(snapshot.items_n(), 2);
+    }
 }
