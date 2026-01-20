@@ -8,6 +8,10 @@ use std::{
 use crate::blocks;
 use crate::{arc, define_cls, ns, objc};
 
+/// Objective-C `NSArray` wrapper.
+///
+/// Uses `arc::R` for retained objects and provides safe convenience helpers for
+/// common operations like iteration and bounds-checked access via `get`.
 #[doc(alias = "NSArray")]
 #[derive(Debug)]
 #[repr(transparent)]
@@ -17,6 +21,10 @@ unsafe impl<T: objc::Obj> Send for Array<T> where T: Send {}
 
 impl<T: objc::Obj> objc::Obj for Array<T> where T: objc::Obj {}
 
+/// Objective-C `NSMutableArray` wrapper.
+///
+/// Mutable API lives here; you can create a mutable array and `freeze` it into
+/// an immutable `Array<T>` when needed.
 #[doc(alias = "NSMutableArray")]
 #[derive(Debug)]
 #[repr(transparent)]
@@ -47,9 +55,14 @@ impl<T: objc::Obj> std::ops::DerefMut for ArrayMut<T> {
 }
 
 impl<T: objc::Obj> arc::A<Array<T>> {
+    /// Initializes an empty array.
     #[objc::msg_send(init)]
     pub fn init(self) -> arc::R<Array<T>>;
 
+    /// Initializes from a raw pointer to Objective-C object references.
+    ///
+    /// # Safety
+    /// `ptr` must point to `count` valid references for the duration of the call.
     #[objc::msg_send(initWithObjects:count:)]
     pub unsafe fn init_with_objs(self, ptr: *const &T, count: usize) -> arc::R<Array<T>>;
 }
@@ -57,59 +70,76 @@ impl<T: objc::Obj> arc::A<Array<T>> {
 impl<T: objc::Obj> Array<T> {
     define_cls!(NS_ARRAY);
 
+    /// Creates an empty array via `alloc` + `init`.
     #[inline]
     pub fn new() -> arc::R<Self> {
         Self::alloc().init()
     }
 
-    // use new() with uses alloc_init and it is faster
-    // _new() is slower
+    /// Alternate constructor using `NS_ARRAY.new()`.
+    ///
+    /// Prefer `new()`; this path is slower.
     #[inline]
     pub fn _new() -> arc::R<Self> {
         unsafe { transmute(NS_ARRAY.new()) }
     }
 
+    /// Builds an array from borrowed object references.
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
         unsafe { Self::alloc().init_with_objs(objs.as_ptr(), objs.len()) }
     }
 
+    /// Builds an array from retained objects.
     #[inline]
     pub fn from_slice_retained(objs: &[arc::R<T>]) -> arc::R<Self> {
         unsafe { Self::alloc().init_with_objs(objs.as_ptr() as _, objs.len()) }
     }
 
+    /// Returns `true` if `object` is present.
     #[objc::msg_send(containsObject:)]
     pub fn contains(&self, object: &T) -> bool;
 
+    /// Returns the number of elements.
     #[objc::msg_send(count)]
     pub fn len(&self) -> usize;
 
+    /// Returns the first element, or `None` if empty.
     #[objc::msg_send(firstObject)]
     pub fn first(&self) -> Option<&T>;
 
+    /// Returns the last element, or `None` if empty.
     #[objc::msg_send(lastObject)]
     pub fn last(&self) -> Option<&T>;
 
+    /// Returns an immutable retained copy.
     #[objc::msg_send(copy)]
     pub fn copy(&self) -> arc::Retained<Self>;
 
+    /// Returns a retained mutable copy.
     #[objc::msg_send(mutableCopy)]
     pub fn copy_mut(&self) -> arc::Retained<ArrayMut<T>>;
 
+    /// Returns `true` if `len() == 0`.
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
 
+    /// Returns a fast enumeration iterator.
     #[inline]
     pub fn iter(&self) -> ns::FeIterator<'_, Self, T> {
         ns::FastEnum::iter(self)
     }
 
+    /// Returns the object at `index`.
+    ///
+    /// # Safety
+    /// Throws an ObjC exception if `index` is out of bounds.
     #[objc::msg_send(objectAtIndex:)]
     pub unsafe fn get_throws(&self, index: usize) -> arc::R<T>;
 
+    /// Returns the object at `index`, capturing ObjC exceptions as `ExResult`.
     pub fn get<'ear>(&self, index: usize) -> ns::ExResult<'ear, arc::R<T>> {
         unsafe { ns::try_catch(|| self.get_throws(index)) }
     }
@@ -191,41 +221,57 @@ impl<T: objc::Obj> arc::A<ArrayMut<T>> {
 impl<T: objc::Obj> ArrayMut<T> {
     define_cls!(NS_MUTABLE_ARRAY);
 
+    /// Creates a mutable array with preallocated capacity.
     #[inline]
     pub fn with_capacity(capacity: usize) -> arc::R<Self> {
         Self::alloc().init_with_capacity(capacity)
     }
 
+    /// Builds a mutable array from borrowed object references.
     #[inline]
     pub fn from_slice(objs: &[&T]) -> arc::R<Self> {
         unsafe { Self::alloc().init_with_objs(objs.as_ptr(), objs.len()) }
     }
 
+    /// Builds a mutable array from retained objects.
     #[inline]
     pub fn from_slice_retained(objs: &[arc::R<T>]) -> arc::R<Self> {
         unsafe { Self::alloc().init_with_objs(objs.as_ptr() as _, objs.len()) }
     }
 
+    /// Appends an element.
     #[objc::msg_send(addObject:)]
     pub fn push(&mut self, obj: &T);
 
+    /// Removes the last element.
     #[objc::msg_send(removeLastObject)]
     pub fn remove_last(&mut self);
 
+    /// Removes the element at `index`.
+    ///
+    /// # Safety
+    /// Throws an ObjC exception if `index` is out of bounds.
     #[objc::msg_send(removeObjectAtIndex:)]
     pub unsafe fn remove_throws(&mut self, index: usize);
 
+    /// Removes the element at `index`, capturing ObjC exceptions as `ExResult`.
     #[inline]
     pub fn remove<'ear>(&mut self, index: usize) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.remove_throws(index) })
     }
 
+    /// Removes all elements.
     #[objc::msg_send(removeAllObjects)]
     pub fn clear(&mut self);
 
+    /// Inserts `obj` at `at_index`.
+    ///
+    /// # Safety
+    /// Throws an ObjC exception if `at_index` is out of bounds.
     #[objc::msg_send(insertObject:atIndex:)]
     pub unsafe fn insert_obj_throws(&mut self, obj: &T, at_index: usize);
 
+    /// Inserts `element` at `index`, capturing ObjC exceptions as `ExResult`.
     #[inline]
     pub fn insert<'ear>(&mut self, index: usize, element: &T) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.insert_obj_throws(element, index) })
@@ -259,6 +305,7 @@ impl<T: objc::Obj> std::ops::IndexMut<usize> for ArrayMut<T> {
 }
 
 impl<T: objc::Obj> arc::R<ArrayMut<T>> {
+    /// Converts a mutable array into an immutable array without copying.
     pub fn freeze(self) -> arc::R<Array<T>> {
         unsafe { std::mem::transmute(self) }
     }
@@ -452,6 +499,13 @@ unsafe extern "C" {
 }
 
 #[macro_export]
+/// Creates an `ns::Array` from inline arguments.
+///
+/// ```
+/// # use cidre::ns;
+/// let nums = ns::arr![1, 2, 3];
+/// assert_eq!(nums.len(), 3);
+/// ```
 macro_rules! nsarr {
     () => (
         $crate::ns::Array::new()
