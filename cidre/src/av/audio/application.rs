@@ -190,6 +190,7 @@ impl App {
 
     #[cfg(feature = "blocks")]
     #[objc::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
+    #[allow(unused_unsafe)]
     pub fn request_mic_injection_permission_ch(
         handler: impl FnMut(MicInjectionPermission) + 'static + std::marker::Send,
     ) {
@@ -199,6 +200,7 @@ impl App {
 
     #[cfg(feature = "async")]
     #[objc::available(ios = 18.2, maccatalyst = 18.2, visionos = 2.2)]
+    #[allow(unused_unsafe)]
     pub async fn request_mic_injection_permission() -> MicInjectionPermission {
         let (future, mut block) = blocks::comp1();
         unsafe { Self::request_mic_injection_permission_ch_block(&mut block) };
