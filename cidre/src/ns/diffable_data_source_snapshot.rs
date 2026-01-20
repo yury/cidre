@@ -301,7 +301,7 @@ mod tests {
         assert_eq!(index, ns::NOT_FOUND);
 
         snapshot
-            .append_items(&ns::arr!(ns::str!(c"foo")))
+            .append_items(&ns::arr![ns::str!(c"foo")])
             .expect_err("we need to add section first");
 
         snapshot
@@ -313,7 +313,7 @@ mod tests {
             .expect_err("we already have section with id 0");
 
         snapshot
-            .append_items(&ns::arr!(ns::str!(c"foo")))
+            .append_items(&ns::arr![ns::str!(c"foo")])
             .expect("Failed to append item in section");
 
         assert_eq!(snapshot.sections_n(), 1);
