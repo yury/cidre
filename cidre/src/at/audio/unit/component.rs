@@ -90,8 +90,8 @@ impl<S: State<Unit>> Drop for UnitRef<S> {
 pub struct Type(pub u32);
 
 impl Type {
-    /// An output unit can be used standalone or as part of an [`au::Graph`] or
-    /// [`av::AudioEngine`]. Apple provides a number of output units that interface
+    /// An output unit can be used standalone or as part of an `AUGraph` or
+    /// [`crate::av::AudioEngine`]. Apple provides a number of output units that interface
     /// directly with an audio device.
     #[doc(alias = "kAudioUnitType_Output")]
     pub const OUTPUT: Self = Self(u32::from_be_bytes(*b"auou"));

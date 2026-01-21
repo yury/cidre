@@ -253,7 +253,7 @@ impl RenderCmdEncoder {
     pub fn set_vps_count(&mut self, val: *const mtl::Viewport, count: usize);
 
     /// Specifies an array of viewports, which are used to transform vertices from normalized device
-    /// coordinates to window coordinates based on [[ viewport_array_index ]] value specified in
+    /// coordinates to window coordinates based on `[[ viewport_array_index ]]` value specified in
     /// the vertex shader.
     #[inline]
     pub fn set_vps(&mut self, val: &[mtl::Viewport]) {
@@ -270,7 +270,7 @@ impl RenderCmdEncoder {
     pub fn set_scissor_rects_count(&mut self, val: *const mtl::ScissorRect, count: usize);
 
     /// Specifies an array of rectangles for a fragment scissor test. The specific rectangle used is based
-    /// on the [[ viewport_array_index ]] value output by the vertex shader. Fragments that lie outside
+    /// on the `[[ viewport_array_index ]]` value output by the vertex shader. Fragments that lie outside
     /// the scissor rectangle are discarded.
     #[inline]
     pub fn set_scissor_rects(&mut self, val: &[mtl::ScissorRect]) {

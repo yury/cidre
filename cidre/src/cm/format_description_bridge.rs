@@ -54,7 +54,7 @@ impl ImageDescFlavor {
 
     /// Chooses the 3GP family sample description format.
     ///
-    /// This implies [`iso_family()`] and adds additional rules specific to the 3GP family.
+    /// This implies [`Self::iso_family`] and adds additional rules specific to the 3GP family.
     #[doc(alias = "kCMImageDescriptionFlavor_3GPFamily")]
     pub fn _3gp_family() -> &'static Self {
         unsafe { kCMImageDescriptionFlavor_3GPFamily }
@@ -62,7 +62,7 @@ impl ImageDescFlavor {
 
     /// Chooses the ISO family sample description format with use of Apple extensions where appropriate for M4V and M4A.
     ///
-    /// This implies [`iso_family()`] and adds additional rules specific to the .m4a, .m4b, and .m4v file formats.
+    /// This implies [`Self::iso_family`] and adds additional rules specific to the .m4a, .m4b, and .m4v file formats.
     #[doc(alias = "kCMImageDescriptionFlavor_ISOFamilyWithAppleExtensions")]
     pub fn iso_family_with_apple_exts() -> &'static Self {
         unsafe { kCMImageDescriptionFlavor_ISOFamilyWithAppleExtensions }

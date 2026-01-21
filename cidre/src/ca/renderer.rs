@@ -11,7 +11,7 @@ define_obj_type!(
 );
 
 impl OptKey {
-    /// The [`&cg::ColorSpace`] object defining the output color space.
+    /// The [`cg::ColorSpace`] object defining the output color space.
     #[doc(alias = "kCARendererColorSpace")]
     #[inline]
     pub fn color_space() -> &'static Self {

@@ -11,6 +11,7 @@ pub use mac_types::four_cc_to_string;
 #[cfg(all(target_os = "macos", feature = "am"))]
 pub mod am;
 
+/// Availability and versioning
 pub mod api;
 
 pub mod arc;

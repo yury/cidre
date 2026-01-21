@@ -1439,7 +1439,7 @@ pub mod voice_io_other_audio_ducking_level {
 
 /// The configuration of ducking other (i.e. non-voice) audio
 ///
-/// See https://developer.apple.com/videos/play/wwdc2023/10235?time=199
+/// See <https://developer.apple.com/videos/play/wwdc2023/10235?time=199>
 #[doc(alias = "AUVoiceIOOtherAudioDuckingConfiguration")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(C)]
@@ -1523,10 +1523,11 @@ impl au::PropId {
     ///
     /// So a matrix mixer that has 2 input channels and 2 output channels, will need a 3 x 3 array of Float32
     ///
-    /// Global volume is stored at volumes[2][2]
-    /// Input volumes are stored in the last column (volumes[0][2] for the first input channel,  volumes[1][2] for the second)
-    /// Output volumes are stored in the last row (volumes [2][0] and [2][1])
-    /// Cross point volumes are stored at their expected locations ([0][1], etc)
+    /// Global volume is stored at `volumes[2][2]`.
+    /// Input volumes are stored in the last column (`volumes[0][2]` for the first input channel,
+    /// `volumes[1][2]` for the second).
+    /// Output volumes are stored in the last row (`volumes[2][0]` and `volumes[2][1]`).
+    /// Cross point volumes are stored at their expected locations (`[0][1]`, etc).
     ///
     /// AUMultiChannelMixer
     /// Scope:      Input

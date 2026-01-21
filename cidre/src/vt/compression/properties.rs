@@ -356,7 +356,7 @@ pub mod keys {
     ///   3. kVTCompressionPropertyKey_DataRateLimits,
     ///   4. VTVideoEncoderSpecification_EnableLowLatencyRateControl = True.
     ///
-    /// Read/write, CFNumber<u32>, Optional
+    /// Read/write, `CFNumber<u32>`, Optional
     #[doc(alias = "kVTCompressionPropertyKey_VariableBitRate")]
     #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
     #[inline]
@@ -373,7 +373,7 @@ pub mod keys {
     ///   3. kVTCompressionPropertyKey_DataRateLimits,
     ///   4. VTVideoEncoderSpecification_EnableLowLatencyRateControl = True.
     ///
-    /// Read/write, CFNumber<u32>, Optional
+    /// Read/write, `CFNumber<u32>`, Optional
     #[doc(alias = "kVTCompressionPropertyKey_VBVMaxBitRate")]
     #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
     #[inline]
@@ -394,7 +394,7 @@ pub mod keys {
     ///   2. kVTCompressionPropertyKey_DataRateLimits,
     ///   3. VTVideoEncoderSpecification_EnableLowLatencyRateControl = True.
     ///
-    /// Read/write, CFNumber<f32>, Optional
+    /// Read/write, `CFNumber<f32>`, Optional
     #[doc(alias = "kVTCompressionPropertyKey_VBVBufferDuration")]
     #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
     #[inline]
@@ -413,7 +413,7 @@ pub mod keys {
     ///   2. kVTCompressionPropertyKey_DataRateLimits,
     ///   3. VTVideoEncoderSpecification_EnableLowLatencyRateControl = True.
     ///
-    /// Read/write, CFNumber<f32>, Optional
+    /// Read/write, `CFNumber<f32>`, Optional
     #[doc(alias = "kVTCompressionPropertyKey_VBVInitialDelayPercentage")]
     #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
     #[inline]

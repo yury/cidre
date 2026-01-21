@@ -761,7 +761,7 @@ impl Converter {
     ///
     /// # Safety
     ///
-    /// Use [`.convert_complex_buf()`].
+    /// Use [`Self::convert_complex_buf`].
     #[inline]
     pub unsafe fn convert_complex_buffer<const N1: usize, const N2: usize>(
         &self,

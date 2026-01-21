@@ -610,7 +610,7 @@ pub fn err_key() -> &'static ns::String {
 pub mod notifications {
     use crate::ns;
 
-    /// Posted when an unexpected error occurs while an [`av::CaptureSession`] instance is running.
+    /// Posted when an unexpected error occurs while a [`crate::av::CaptureSession`] instance is running.
     #[doc(alias = "AVCaptureSessionRuntimeErrorNotification")]
     #[inline]
     pub fn runtime_error() -> &'static ns::NotificationName {

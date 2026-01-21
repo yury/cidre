@@ -109,7 +109,7 @@ impl DataMut {
 
     /// # Safety
     ///
-    /// use [`.push_bytes()`]
+    /// use [`Self::push_bytes`]
     #[doc(alias = "CFDataAppendBytes")]
     #[inline]
     pub unsafe fn append_bytes(&mut self, bytes: *const u8, length: cf::Index) {

@@ -20,8 +20,8 @@ impl SessionPreset {
         unsafe { AVCaptureSessionPresetHigh }
     }
 
-    /// Clients may set an ['av::CaptureSession'] instance's sessionPreset to
-    /// [`av::CaptureSessionPreset::medium()`] to achieve output video and audio
+    /// Clients may set a [`crate::av::CaptureSession`] instance's sessionPreset to
+    /// [`crate::av::CaptureSessionPreset::medium`] to achieve output video and audio
     /// bitrates suitable for sharing over WiFi.
     #[doc(alias = "AVCaptureSessionPresetMedium")]
     #[inline]
@@ -29,7 +29,7 @@ impl SessionPreset {
         unsafe { AVCaptureSessionPresetMedium }
     }
 
-    /// An [`av::CaptureSession`] preset suitable for low quality output.
+    /// A [`crate::av::CaptureSession`] preset suitable for low quality output.
     #[doc(alias = "AVCaptureSessionPresetLow")]
     #[inline]
     pub fn low() -> &'static Self {

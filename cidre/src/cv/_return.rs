@@ -1,4 +1,4 @@
-/// Check error values with [`cv::err`] module
+/// Check error values with [`crate::cv::err`] module
 pub type Return = crate::os::Status;
 
 pub mod err {

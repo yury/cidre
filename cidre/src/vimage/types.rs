@@ -139,7 +139,7 @@ impl Flags {
     pub const HDR_CONTENT: Self = Self(1024);
 
     /// Pass to disable clamping is some conversions to floating point formats. Use this if the input data
-    /// may describe values outside [0,1] which should be preserved..
+    /// may describe values outside `[0,1]` which should be preserved.
     #[doc(alias = "kvImageDoNotClamp")]
     pub const DO_NOT_CLAMP: Self = Self(2048);
 
