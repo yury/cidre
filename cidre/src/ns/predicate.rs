@@ -110,7 +110,11 @@ mod tests {
         let p = ns::Predicate::with_format(ns::str!(c"typeName CONTAINS 'Effect'"), None).unwrap();
         let format = p.format().unwrap();
         assert_eq!(format.as_ref(), "typeName CONTAINS \"Effect\"");
+    }
 
+    #[cfg(traget_os = "macos")]
+    #[test]
+    fn metadata_query() {
         let p = ns::Predicate::from_metadata_query(ns::str!(c"!"));
         assert!(p.is_err());
     }

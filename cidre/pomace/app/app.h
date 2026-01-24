@@ -38,6 +38,7 @@ Class NS_GESTURE_RECOGNIZER;
 Class NS_STATUS_BAR;
 
 Class NS_DIFFABLE_DATA_SOURCE_SNAPSHOT;
+Class NS_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE;
 
 __attribute__((constructor))
 static void app_initializer(void)
@@ -79,6 +80,7 @@ static void app_initializer(void)
         NS_STATUS_BAR = [NSStatusBar class];
         
         NS_DIFFABLE_DATA_SOURCE_SNAPSHOT = [NSDiffableDataSourceSnapshot class];
+        NS_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE = [NSCollectionViewDiffableDataSource class];
     }
 }
 

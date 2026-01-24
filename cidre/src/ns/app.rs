@@ -64,6 +64,12 @@ mod control;
 pub use control::Control;
 
 mod diffable_data_source;
+pub use diffable_data_source::CollectionViewDiffableDataSrc;
+#[cfg(feature = "blocks")]
+pub use diffable_data_source::{
+    CollectionViewDiffableDataSrcItemProvider,
+    CollectionViewDiffableDataSrcSupplementaryViewProvider,
+};
 
 mod dock_tile;
 pub use dock_tile::DockTile;

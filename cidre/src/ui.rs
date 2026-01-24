@@ -73,6 +73,18 @@ mod data_source_translating;
 pub use data_source_translating::AnyDataSourceTranslating;
 pub use data_source_translating::DataSourceTranslating;
 
+mod diffable_data_source;
+pub use diffable_data_source::CollectionViewDiffableDataSrc;
+pub use diffable_data_source::CollectionViewDiffableDataSrcReorderingHandlers;
+pub use diffable_data_source::CollectionViewDiffableDataSrcSectionSnapshotHandlers;
+pub use diffable_data_source::DiffableDataSrcSectionTransaction;
+pub use diffable_data_source::DiffableDataSrcTransaction;
+#[cfg(feature = "blocks")]
+pub use diffable_data_source::{
+    CollectionViewDiffableDataSrcCellProvider,
+    CollectionViewDiffableDataSrcSupplementaryViewProvider,
+};
+
 mod context_menu_configuration;
 pub use context_menu_configuration::ContextMenuConfiguration;
 
