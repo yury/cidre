@@ -2,9 +2,7 @@ use crate::{define_obj_type, ns};
 
 define_obj_type!(
     #[doc(alias = "NSCollectionViewDiffableDataSource")]
-    pub _CollectionViewDiffableDataSrc(ns::Id)
+    pub CollectionViewDiffableDataSrc(ns::Id)
 );
 
-impl ns::CollectionViewDataSrc for _CollectionViewDiffableDataSrc {}
-
-impl _CollectionViewDiffableDataSrc {}
+impl ns::CollectionViewDataSrc for CollectionViewDiffableDataSrc {}
