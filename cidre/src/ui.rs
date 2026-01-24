@@ -69,11 +69,100 @@ pub use key_constants::KeyboardHidUsage;
 mod command;
 pub use command::KeyModFlags;
 
+mod data_source_translating;
+pub use data_source_translating::AnyDataSourceTranslating;
+pub use data_source_translating::DataSourceTranslating;
+
+mod context_menu_configuration;
+pub use context_menu_configuration::ContextMenuConfiguration;
+
+mod context_menu_interaction;
+pub use context_menu_interaction::ContextMenuInteraction;
+pub use context_menu_interaction::ContextMenuInteractionAnimating;
+pub use context_menu_interaction::AnyContextMenuInteractionAnimating;
+pub use context_menu_interaction::ContextMenuInteractionCommitAnimating;
+pub use context_menu_interaction::AnyContextMenuInteractionCommitAnimating;
+
+mod drag_item;
+pub use drag_item::DragItem;
+
+mod drag_interaction;
+pub use drag_interaction::AnyDragAnimating;
+pub use drag_interaction::DragAnimating;
+
+mod drag_session;
+pub use drag_session::AnyDragSession;
+pub use drag_session::DragSession;
+
+mod drag_preview_parameters;
+pub use drag_preview_parameters::DragPreviewParameters;
+
+mod drag_preview_target;
+pub use drag_preview_target::DragPreviewTarget;
+
+mod focus;
+pub use focus::FocusUpdateCtx;
+
+mod drop_interaction;
+pub use drop_interaction::DropOperation;
+pub use drop_interaction::DropProposal;
+
+mod drop_session;
+pub use drop_session::AnyDropSession;
+pub use drop_session::DropSession;
+
+mod focus_animation_coordinator;
+pub use focus_animation_coordinator::FocusAnimationCoordinator;
+
+mod targeted_preview;
+pub use targeted_preview::TargetedPreview;
+
 mod view;
 pub use view::AnyCoordinateSpace;
 pub use view::CoordinateSpace;
 pub use view::View;
 pub use view::ViewAutoresizing;
+
+mod collection_view;
+mod collection_view_cell;
+mod collection_view_item_registration;
+mod collection_view_layout;
+mod collection_view_transition_layout;
+mod spring_loaded_interaction_context;
+pub use collection_view::AnyCollectionViewDataSrc;
+pub use collection_view::AnyCollectionViewDataSrcPrefetching;
+pub use collection_view::AnyCollectionViewDelegate;
+pub use collection_view::AnyCollectionViewDragDelegate;
+pub use collection_view::AnyCollectionViewDropCoordinator;
+pub use collection_view::AnyCollectionViewDropDelegate;
+pub use collection_view::AnyCollectionViewDropItem;
+pub use collection_view::AnyCollectionViewDropPlaceholderCtx;
+pub use spring_loaded_interaction_context::AnySpringLoadedInteractionContext;
+pub use collection_view::CollectionView;
+pub use collection_view::CollectionViewDataSrc;
+pub use collection_view::CollectionViewDataSrcPrefetching;
+pub use collection_view::CollectionViewDelegate;
+pub use collection_view::CollectionViewDragDelegate;
+pub use collection_view::CollectionViewDropCoordinator;
+pub use collection_view::CollectionViewDropDelegate;
+pub use collection_view::CollectionViewDropIntent;
+pub use collection_view::CollectionViewDropItem;
+pub use collection_view::CollectionViewDropPlaceholder;
+pub use collection_view::CollectionViewDropPlaceholderCtx;
+pub use collection_view::CollectionViewDropProposal;
+pub use collection_view::CollectionViewFocusUpdateCtx;
+pub use collection_view::CollectionViewPlaceholder;
+pub use collection_view::CollectionViewReorderingCadence;
+pub use collection_view::CollectionViewScrollPos;
+pub use collection_view::CollectionViewSelfSizingInvalidation;
+pub use spring_loaded_interaction_context::SpringLoadedInteractionContext;
+pub use collection_view_cell::CollectionReusableView;
+pub use collection_view_cell::CollectionViewCell;
+pub use collection_view_item_registration::CollectionViewCellRegistration;
+pub use collection_view_item_registration::CollectionViewSupplementaryRegistration;
+pub use collection_view_layout::CollectionViewLayout;
+pub use collection_view_layout::CollectionViewLayoutAttrs;
+pub use collection_view_transition_layout::CollectionViewTransitionLayout;
 
 mod visual_effect;
 pub use visual_effect::VisualEffect;
@@ -210,6 +299,9 @@ pub use window_scene::WindowSceneDelegateImpl;
 mod window_scene_activation_request_options;
 #[cfg(target_os = "ios")]
 pub use window_scene_activation_request_options::WindowSceneActivationRequestOpts;
+
+mod window_scene_activation_configuration;
+pub use window_scene_activation_configuration::WindowSceneActivationConfiguration;
 
 #[inline]
 pub fn app_main(

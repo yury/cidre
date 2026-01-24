@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 Class UI_DEVICE;
 Class UI_APPLICATION;
 Class UI_VIEW;
+Class UI_COLLECTION_VIEW;
 Class UI_WINDOW;
 Class UI_SCENE;
 Class UI_SCENE_CONFIGURATION;
@@ -39,6 +40,10 @@ Class UI_SCENE_SESSION_ACTIVATION_REQUEST;
 Class UI_BLUR_EFFECT;
 Class UI_ZOOM_TRANSITION_OPTIONS;
 
+Class UI_COLLECTION_VIEW_DROP_PROPOSAL;
+Class UI_COLLECTION_VIEW_PLACEHOLDER;
+Class UI_COLLECTION_VIEW_DROP_PLACEHOLDER;
+
 Class NS_DIFFABLE_DATA_SOURCE_SNAPSHOT;
 Class NS_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT;
 
@@ -52,6 +57,7 @@ static void ui_initializer(void)
         UI_DEVICE = NSClassFromString(@"UIDevice");
         UI_SCENE = NSClassFromString(@"UIScene");
         UI_VIEW = NSClassFromString(@"UIView");
+        UI_COLLECTION_VIEW = NSClassFromString(@"UICollectionView");
         UI_SCENE_CONFIGURATION = NSClassFromString(@"UISceneConfiguration");
         UI_SCREEN = [UIScreen class];
         UI_COLOR = [UIColor class];
@@ -80,6 +86,10 @@ static void ui_initializer(void)
         
         UI_BLUR_EFFECT = NSClassFromString(@"UIBlurEffect");
         UI_ZOOM_TRANSITION_OPTIONS = NSClassFromString(@"UIZoomTransitionOptions");
+
+        UI_COLLECTION_VIEW_DROP_PROPOSAL = NSClassFromString(@"UICollectionViewDropProposal");
+        UI_COLLECTION_VIEW_PLACEHOLDER = NSClassFromString(@"UICollectionViewPlaceholder");
+        UI_COLLECTION_VIEW_DROP_PLACEHOLDER = NSClassFromString(@"UICollectionViewDropPlaceholder");
         
         NS_DIFFABLE_DATA_SOURCE_SNAPSHOT = [NSDiffableDataSourceSnapshot class];
         NS_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT = NSClassFromString(@" NSDiffableDataSourceSectionSnapshot");
