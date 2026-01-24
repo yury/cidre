@@ -1,7 +1,7 @@
-use std::{ffi::c_void, marker::PhantomData, mem::transmute, ops::Deref};
+use std::{ffi::c_void, marker::PhantomData, ops::Deref};
 
 use crate::{
-    arc, ns,
+    arc, define_cls, ns,
     objc::{self, Class, Obj},
 };
 
@@ -45,15 +45,7 @@ impl<T: Obj> arc::A<Set<T>> {
 }
 
 impl<T: Obj> Set<T> {
-    #[inline]
-    pub fn cls() -> &'static Class<Self> {
-        unsafe { transmute(NS_SET) }
-    }
-
-    #[inline]
-    pub fn alloc() -> arc::A<Self> {
-        Self::cls().alloc()
-    }
+    define_cls!(NS_SET);
 
     #[inline]
     pub fn new() -> arc::R<Self> {

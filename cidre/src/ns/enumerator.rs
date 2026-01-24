@@ -1,4 +1,17 @@
-use crate::objc;
+use crate::{define_opts, objc};
+
+define_opts!(
+    #[doc(alias = "NSEnumerationOptions")]
+    pub EnumerationOpts(usize)
+);
+
+impl EnumerationOpts {
+    #[doc(alias = "NSEnumerationConcurrent")]
+    pub const CONCURRENT: Self = Self(1 << 0);
+
+    #[doc(alias = "NSEnumerationReverse")]
+    pub const REVERSE: Self = Self(1 << 1);
+}
 
 static MUTATIONS_TARGET: std::ffi::c_ulong = 0;
 static MUTATIONS_PTR: &std::ffi::c_ulong = &MUTATIONS_TARGET;

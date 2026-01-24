@@ -25,9 +25,33 @@ pub use cell::ImageScaling;
 
 pub mod collection_view;
 pub use collection_view::AnyCollectionViewDataSrc;
+pub use collection_view::AnyCollectionViewDelegate;
+pub use collection_view::AnyCollectionViewPrefetching;
 pub use collection_view::CollectionView;
 pub use collection_view::CollectionViewDataSrc;
 pub use collection_view::CollectionViewDataSrcImpl;
+pub use collection_view::CollectionViewDelegate;
+pub use collection_view::CollectionViewDropOp;
+pub use collection_view::CollectionViewElement;
+pub use collection_view::CollectionViewItemHighlightState;
+pub use collection_view::CollectionViewPrefetching;
+pub use collection_view::CollectionViewScrollPos;
+pub use collection_view::CollectionViewSectionHeaderView;
+pub use collection_view::CollectionViewSupplementaryElementKind;
+
+mod collection_view_item;
+pub use collection_view_item::CollectionViewItem;
+
+mod collection_view_layout;
+pub use collection_view_layout::CollectionViewLayout;
+pub use collection_view_layout::CollectionViewLayoutAttrs;
+
+mod collection_view_transition_layout;
+pub use collection_view_transition_layout::CollectionViewTransitionLayout;
+
+mod user_interface_item_identification;
+pub use user_interface_item_identification::UiItemId;
+pub use user_interface_item_identification::UiItemIdentification;
 
 mod color_space;
 pub use color_space::ColorSpace;

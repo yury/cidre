@@ -123,6 +123,7 @@ pub use dictionary::Dictionary;
 pub use dictionary::DictionaryMut;
 
 mod enumerator;
+pub use enumerator::EnumerationOpts;
 pub use enumerator::FastEnum;
 pub use enumerator::FeIterator;
 pub use enumerator::FeState;
