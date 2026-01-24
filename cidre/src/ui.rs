@@ -77,11 +77,11 @@ mod context_menu_configuration;
 pub use context_menu_configuration::ContextMenuConfiguration;
 
 mod context_menu_interaction;
+pub use context_menu_interaction::AnyContextMenuInteractionAnimating;
+pub use context_menu_interaction::AnyContextMenuInteractionCommitAnimating;
 pub use context_menu_interaction::ContextMenuInteraction;
 pub use context_menu_interaction::ContextMenuInteractionAnimating;
-pub use context_menu_interaction::AnyContextMenuInteractionAnimating;
 pub use context_menu_interaction::ContextMenuInteractionCommitAnimating;
-pub use context_menu_interaction::AnyContextMenuInteractionCommitAnimating;
 
 mod drag_item;
 pub use drag_item::DragItem;
@@ -123,12 +123,26 @@ pub use view::CoordinateSpace;
 pub use view::View;
 pub use view::ViewAutoresizing;
 
-mod collection_view;
-mod collection_view_cell;
-mod collection_view_item_registration;
-mod collection_view_layout;
-mod collection_view_transition_layout;
 mod spring_loaded_interaction_context;
+pub use spring_loaded_interaction_context::AnySpringLoadedInteractionContext;
+pub use spring_loaded_interaction_context::SpringLoadedInteractionContext;
+
+mod collection_view_cell;
+pub use collection_view_cell::CollectionReusableView;
+pub use collection_view_cell::CollectionViewCell;
+
+mod collection_view_item_registration;
+pub use collection_view_item_registration::CollectionViewCellRegistration;
+pub use collection_view_item_registration::CollectionViewSupplementaryRegistration;
+
+mod collection_view_layout;
+pub use collection_view_layout::CollectionViewLayout;
+pub use collection_view_layout::CollectionViewLayoutAttrs;
+
+mod collection_view_transition_layout;
+pub use collection_view_transition_layout::CollectionViewTransitionLayout;
+
+mod collection_view;
 pub use collection_view::AnyCollectionViewDataSrc;
 pub use collection_view::AnyCollectionViewDataSrcPrefetching;
 pub use collection_view::AnyCollectionViewDelegate;
@@ -137,7 +151,6 @@ pub use collection_view::AnyCollectionViewDropCoordinator;
 pub use collection_view::AnyCollectionViewDropDelegate;
 pub use collection_view::AnyCollectionViewDropItem;
 pub use collection_view::AnyCollectionViewDropPlaceholderCtx;
-pub use spring_loaded_interaction_context::AnySpringLoadedInteractionContext;
 pub use collection_view::CollectionView;
 pub use collection_view::CollectionViewDataSrc;
 pub use collection_view::CollectionViewDataSrcPrefetching;
@@ -155,14 +168,6 @@ pub use collection_view::CollectionViewPlaceholder;
 pub use collection_view::CollectionViewReorderingCadence;
 pub use collection_view::CollectionViewScrollPos;
 pub use collection_view::CollectionViewSelfSizingInvalidation;
-pub use spring_loaded_interaction_context::SpringLoadedInteractionContext;
-pub use collection_view_cell::CollectionReusableView;
-pub use collection_view_cell::CollectionViewCell;
-pub use collection_view_item_registration::CollectionViewCellRegistration;
-pub use collection_view_item_registration::CollectionViewSupplementaryRegistration;
-pub use collection_view_layout::CollectionViewLayout;
-pub use collection_view_layout::CollectionViewLayoutAttrs;
-pub use collection_view_transition_layout::CollectionViewTransitionLayout;
 
 mod visual_effect;
 pub use visual_effect::VisualEffect;
