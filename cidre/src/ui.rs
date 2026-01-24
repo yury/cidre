@@ -127,9 +127,12 @@ mod spring_loaded_interaction_context;
 pub use spring_loaded_interaction_context::AnySpringLoadedInteractionContext;
 pub use spring_loaded_interaction_context::SpringLoadedInteractionContext;
 
+mod collection_reusable_view;
+pub use collection_reusable_view::CollectionReusableView;
+
 mod collection_view_cell;
-pub use collection_view_cell::CollectionReusableView;
 pub use collection_view_cell::CollectionViewCell;
+pub use collection_view_cell::CollectionViewCellDragState;
 
 mod collection_view_item_registration;
 pub use collection_view_item_registration::CollectionViewCellRegistration;
