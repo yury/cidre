@@ -74,6 +74,26 @@ impl<T: Retain> Retained<T> {
 #[must_use]
 pub unsafe fn return_opt_ar<T: objc::Obj>(val: Option<&T>) -> Option<Rar<T>> {
     unsafe {
+        let res = objc::objc_autoreleaseReturnValue(std::mem::transmute(val));
+        std::mem::transmute(res)
+    }
+}
+
+#[cfg(feature = "objc")]
+#[inline]
+#[must_use]
+pub unsafe fn return_rar<T: objc::Obj>(val: &T) -> Rar<T> {
+    unsafe {
+        let res = objc::objc_retainAutoreleaseReturnValue(std::mem::transmute(val));
+        std::mem::transmute(res)
+    }
+}
+
+#[cfg(feature = "objc")]
+#[inline]
+#[must_use]
+pub unsafe fn return_opt_rar<T: objc::Obj>(val: Option<&T>) -> Option<Rar<T>> {
+    unsafe {
         let res = objc::objc_retainAutoreleaseReturnValue(std::mem::transmute(val));
         std::mem::transmute(res)
     }
@@ -151,10 +171,25 @@ macro_rules! return_ar {
     };
 }
 
+/// return objc_autoreleaseReturnValue(objc_retain(value))
+#[macro_export]
+macro_rules! return_rar {
+    ($r:expr) => {
+        return unsafe { $crate::arc::return_rar($r) }
+    };
+}
+
 #[macro_export]
 macro_rules! return_opt_ar {
     ($r:expr) => {
         return unsafe { $crate::arc::return_opt_ar($r) }
+    };
+}
+
+#[macro_export]
+macro_rules! return_opt_rar {
+    ($r:expr) => {
+        return unsafe { $crate::arc::return_opt_rar($r) }
     };
 }
 

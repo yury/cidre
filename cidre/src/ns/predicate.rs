@@ -112,7 +112,7 @@ mod tests {
         assert_eq!(format.as_ref(), "typeName CONTAINS \"Effect\"");
     }
 
-    #[cfg(traget_os = "macos")]
+    #[cfg(target_os = "macos")]
     #[test]
     fn metadata_query() {
         let p = ns::Predicate::from_metadata_query(ns::str!(c"!"));

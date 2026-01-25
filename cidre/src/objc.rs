@@ -773,12 +773,23 @@ pub use cidre_macros::msg_send_x86_64 as msg_send;
 #[cfg(test)]
 mod tests2 {
 
-    use crate::objc::{self, Obj};
+    use crate::{
+        arc::{self},
+        ns,
+        objc::{self, Obj},
+        return_rar,
+    };
 
     #[objc::protocol(Foo)]
     trait Foo: objc::Obj {
         #[objc::msg_send(count)]
         fn count(&self) -> usize;
+
+        #[objc::msg_send(newObj)]
+        fn new_obj(&self) -> arc::R<ns::String>;
+
+        #[objc::msg_send(prop)]
+        fn prop(&self) -> arc::R<ns::String>;
 
         #[objc::optional]
         #[objc::msg_send(count2)]
@@ -806,6 +817,15 @@ mod tests2 {
         extern "C" fn impl_count(&self, _cmd: Option<&objc::Sel>) -> usize {
             0
         }
+
+        extern "C" fn impl_new_obj(&self, _cmd: Option<&objc::Sel>) -> arc::R<ns::String> {
+            ns::String::new()
+        }
+
+        extern "C" fn impl_prop_ar(&self, _cmd: Option<&objc::Sel>) -> arc::Rar<ns::String> {
+            let s = ns::str!(c"test");
+            return_rar!(s)
+        }
     }
 
     #[test]
@@ -815,6 +835,7 @@ mod tests2 {
         }
         {
             let d = Bla::with(D);
+            assert_eq!(d.prop().to_string(), "test");
             let _r = d.retained();
             let desc = d.desc();
             assert!(desc.to_string().starts_with("<BLA_USIZE: "));
