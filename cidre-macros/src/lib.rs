@@ -263,6 +263,10 @@ pub fn protocol(args: TokenStream, ts: TokenStream) -> TokenStream {
                         Cow::Owned(TokenStream::from_iter(generics.clone().into_iter()).to_string())
                     };
 
+                    let gen_rar_version = !sel.starts_with("new")
+                        && ret.contains("arc :: R <")
+                        && !sel.starts_with("initWith");
+
                     let impl_fn = if skip {
                         format!(
                             "
@@ -271,13 +275,23 @@ pub fn protocol(args: TokenStream, ts: TokenStream) -> TokenStream {
                                     "
                         )
                     } else {
-                        fn_names.push(fn_name.clone());
-                        format!(
-                            "
+                        fn_names.push((fn_name.clone(), gen_rar_version));
+                        if gen_rar_version {
+                            let ret = ret.replacen("arc :: R <", "arc :: Rar <", 1);
+                            format!(
+                                "
+        {ext}fn impl_{fn_name}_ar{gen}{fn_args_str}{ret} {fn_body}
+
+                                        "
+                            )
+                        } else {
+                            format!(
+                                "
     {ext}fn impl_{fn_name}{gen}{fn_args_str}{ret} {fn_body}
 
                                     "
-                        )
+                            )
+                        }
                     };
 
                     impl_trait_functions.push(impl_fn);
@@ -362,21 +376,22 @@ pub fn protocol(args: TokenStream, ts: TokenStream) -> TokenStream {
     original_trait
 }
 
-fn add_methods_fn(fns: &[String]) -> String {
+fn add_methods_fn(fns: &[(String, bool)]) -> String {
     let mut res = "
     fn cls_add_methods<O: objc::Obj>(cls: &objc::Class<O>) {
         let cls: &objc::Class<objc::Id> = unsafe { std::mem::transmute(cls) };
         "
     .to_string();
-    for f in fns {
+    for (f, ar) in fns {
+        let suffix = if *ar { "_ar" } else { "" };
         let add = format!(
             "
         let sel = Self::sel_{f}();
         unsafe {{
-            let imp: extern \"C\" fn() = std::mem::transmute(Self::impl_{f} as *const u8);
+            let imp: extern \"C\" fn() = std::mem::transmute(Self::impl_{f}{suffix} as *const u8);
             objc::class_addMethod(cls, sel, imp, std::ptr::null());
         }}
-            "
+            ",
         );
         res.push_str(&add);
     }
@@ -400,7 +415,12 @@ pub fn add_methods(_args: TokenStream, tr_impl: TokenStream) -> TokenStream {
                             let Some(TokenTree::Ident(f)) = body.next() else {
                                 panic!("expected function name");
                             };
-                            fns.push(f.to_string().replacen("impl_", "", 1));
+                            let f = f.to_string().replacen("impl_", "", 1);
+                            if let Some(f) = f.strip_suffix("_ar") {
+                                fns.push((f.to_string(), true));
+                            } else {
+                                fns.push((f, false));
+                            }
                         }
                         _ => continue,
                     }
