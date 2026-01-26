@@ -1,7 +1,8 @@
 use std::{ffi::c_void, marker::PhantomData, ops::Deref};
 
 use crate::{
-    arc, define_cls, ns,
+    arc, define_cls,
+    ns::{self, Copying, CopyingMut},
     objc::{self, Class, Obj},
 };
 
@@ -13,6 +14,9 @@ use crate::cf;
 pub struct Set<T: Obj>(ns::Id, PhantomData<T>);
 
 impl<T: Obj> Obj for Set<T> {}
+
+impl<T: Obj> ns::Copying for Set<T> {}
+impl<T: Obj> ns::CopyingMut for Set<T> {}
 
 #[derive(Debug)]
 #[repr(transparent)]
@@ -84,10 +88,59 @@ impl<T: Obj> Set<T> {
         self.member_obj(obj.as_ref())
     }
 
+    pub fn copy(&self) -> arc::R<Self> {
+        unsafe { std::mem::transmute(self.copy_with_zone(std::ptr::null_mut())) }
+    }
+
+    pub fn copy_mut(&self) -> arc::R<SetMut<T>> {
+        unsafe { std::mem::transmute(self.copy_with_zone_mut(std::ptr::null_mut())) }
+    }
+
     #[cfg(feature = "cf")]
     #[inline]
     pub fn as_cf(&self) -> &cf::Set {
         unsafe { std::mem::transmute(self) }
+    }
+}
+
+/// NSExtendedSet
+impl<T: Obj> Set<T> {
+    #[objc::msg_send(allObjects)]
+    pub fn all_objs(&self) -> arc::R<ns::Array<T>>;
+
+    #[objc::msg_send(anyObject)]
+    pub fn any_obj(&self) -> Option<arc::R<T>>;
+
+    #[objc::msg_send(containsObject:)]
+    pub fn contains_obj(&self, obj: &T) -> bool;
+
+    #[inline]
+    pub fn contains(&self, obj: impl AsRef<T>) -> bool {
+        self.contains_obj(obj.as_ref())
+    }
+
+    #[objc::msg_send(intersectsSet:)]
+    pub fn intersects_set(&self, val: &ns::Set<T>) -> bool;
+
+    #[inline]
+    pub fn intersects(&self, val: impl AsRef<ns::Set<T>>) -> bool {
+        self.intersects_set(val.as_ref())
+    }
+
+    #[objc::msg_send(isEqualToSet:)]
+    pub fn is_equal_to_set(&self, val: &ns::Set<T>) -> bool;
+
+    #[inline]
+    pub fn is_equal_to(&self, val: impl AsRef<ns::Set<T>>) -> bool {
+        self.is_equal_to_set(val.as_ref())
+    }
+
+    #[objc::msg_send(isSubsetOfSet:)]
+    pub fn is_subset_of_set(&self, val: &ns::Set<T>) -> bool;
+
+    #[inline]
+    pub fn is_subset_of(&self, val: impl AsRef<ns::Set<T>>) -> bool {
+        self.is_subset_of_set(val.as_ref())
     }
 }
 
@@ -201,6 +254,9 @@ mod tests {
         assert_eq!(1, set.len());
         let sum = set.iter().map(|v| v.as_i32()).sum();
         assert_eq!(10, sum);
+
+        let copy_mut = set.copy_mut();
+        copy_mut.is_subset_of(&set);
     }
 
     #[test]
@@ -217,5 +273,7 @@ mod tests {
 
         s.add(ns::Number::with_i8(0));
         assert_eq!(2, s.len());
+
+        assert!(s.is_subset_of(s.as_ref()));
     }
 }
