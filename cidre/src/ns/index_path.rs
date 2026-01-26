@@ -38,6 +38,10 @@ impl IndexPath {
     pub fn copy(&self) -> arc::R<Self> {
         unsafe { std::mem::transmute(ns::Copying::copy_with_zone(self, std::ptr::null_mut())) }
     }
+
+    /// Provides the value at a particular node in the index path.
+    #[objc::msg_send(indexAtPosition:)]
+    pub fn index_at(&self, pos: usize) -> usize;
 }
 
 impl From<&[usize]> for arc::R<IndexPath> {
