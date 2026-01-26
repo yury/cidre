@@ -207,11 +207,15 @@ mod tests {
     fn basics_mut() {
         let mut s = ns::SetMut::<ns::Number>::with_capacity(10);
         s.add(0u8);
+        s.add(0u8);
         s.add(10u8);
         assert_eq!(2, s.len());
 
         assert!(s.member(0u8).is_some());
         assert!(s.member(2u8).is_none());
         assert!(s.member(10u8).is_some());
+
+        s.add(ns::Number::with_i8(0));
+        assert_eq!(2, s.len());
     }
 }
