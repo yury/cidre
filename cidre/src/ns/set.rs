@@ -36,6 +36,12 @@ impl<T: Obj> Deref for SetMut<T> {
     }
 }
 
+impl<T: Obj> AsRef<Set<T>> for SetMut<T> {
+    fn as_ref(&self) -> &Set<T> {
+        self
+    }
+}
+
 impl<T: Obj> arc::A<Set<T>> {
     #[objc::msg_send(init)]
     pub fn init(self) -> arc::R<Set<T>>;
@@ -70,10 +76,107 @@ impl<T: Obj> Set<T> {
         ns::FastEnum::iter(self)
     }
 
+    #[objc::msg_send(member:)]
+    pub fn member_obj(&self, obj: &T) -> Option<arc::R<T>>;
+
+    #[inline]
+    pub fn member(&self, obj: impl AsRef<T>) -> Option<arc::R<T>> {
+        self.member_obj(obj.as_ref())
+    }
+
     #[cfg(feature = "cf")]
     #[inline]
     pub fn as_cf(&self) -> &cf::Set {
         unsafe { std::mem::transmute(self) }
+    }
+}
+
+impl<T: Obj> arc::A<SetMut<T>> {
+    #[objc::msg_send(init)]
+    pub fn init(self) -> arc::R<SetMut<T>>;
+
+    #[objc::msg_send(initWithCapacity:)]
+    pub fn init_with_capacity(self, capacity: usize) -> arc::R<SetMut<T>>;
+}
+
+impl<T: Obj> SetMut<T> {
+    define_cls!(NS_MUTABLE_SET);
+
+    #[inline]
+    pub fn new() -> arc::R<Self> {
+        Self::alloc().init()
+    }
+
+    #[inline]
+    pub fn with_capacity(capacity: usize) -> arc::R<Self> {
+        Self::alloc().init_with_capacity(capacity)
+    }
+
+    #[objc::msg_send(addObject:)]
+    pub fn add_obj(&mut self, val: &T);
+
+    #[inline]
+    pub fn add(&mut self, val: impl AsRef<T>) {
+        self.add_obj(val.as_ref());
+    }
+
+    #[objc::msg_send(removeObject:)]
+    pub fn remove_obj(&mut self, val: &T);
+
+    #[inline]
+    pub fn remove(&mut self, val: impl AsRef<T>) {
+        self.remove_obj(val.as_ref());
+    }
+
+    #[cfg(feature = "cf")]
+    #[inline]
+    pub fn as_cf(&self) -> &cf::SetMut {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
+/// NSExtendedMutableSet
+impl<T: Obj> SetMut<T> {
+    #[objc::msg_send(addObjectsFromArray:)]
+    pub fn add_objs_from_array(&mut self, val: &ns::Array<T>);
+
+    /// Removes from the receiving set each object that isn’t a member of another given set.
+    #[objc::msg_send(intersectSet:)]
+    pub fn intersect_set(&mut self, val: &ns::Set<T>);
+
+    #[inline]
+    pub fn intersect(&mut self, val: impl AsRef<ns::Set<T>>) {
+        self.intersect_set(val.as_ref());
+    }
+
+    /// Removes each object in another given set from the receiving set, if present.
+    #[objc::msg_send(minusSet:)]
+    pub fn minus_set(&mut self, val: &ns::Set<T>);
+
+    #[inline]
+    pub fn minus(&mut self, val: impl AsRef<ns::Set<T>>) {
+        self.minus_set(val.as_ref());
+    }
+
+    #[objc::msg_send(removeAllObjects)]
+    pub fn clear(&mut self);
+
+    /// Adds each object in another given set to the receiving set, if not present.
+    #[objc::msg_send(unionSet:)]
+    pub fn union_set(&mut self, val: &ns::Set<T>);
+
+    #[inline]
+    pub fn union(&mut self, val: impl AsRef<ns::Set<T>>) {
+        self.union_set(val.as_ref());
+    }
+
+    /// Empties the receiving set, then adds each object contained in another given set.
+    #[objc::msg_send(setSet:)]
+    pub fn set_set(&mut self, val: &ns::Set<T>);
+
+    #[inline]
+    pub fn set(&mut self, val: impl AsRef<ns::Set<T>>) {
+        self.set_set(val.as_ref());
     }
 }
 
@@ -83,11 +186,13 @@ impl<T> ns::FastEnum<T> for SetMut<T> where T: Obj {}
 #[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_SET: &'static Class<ns::Set<ns::Id>>;
+    static NS_MUTABLE_SET: &'static Class<ns::SetMut<ns::Id>>;
 }
 
 #[cfg(test)]
 mod tests {
     use crate::ns;
+
     #[test]
     fn basics() {
         let two = ns::Number::with_i32(10);
@@ -96,5 +201,17 @@ mod tests {
         assert_eq!(1, set.len());
         let sum = set.iter().map(|v| v.as_i32()).sum();
         assert_eq!(10, sum);
+    }
+
+    #[test]
+    fn basics_mut() {
+        let mut s = ns::SetMut::<ns::Number>::with_capacity(10);
+        s.add(0u8);
+        s.add(10u8);
+        assert_eq!(2, s.len());
+
+        assert!(s.member(0u8).is_some());
+        assert!(s.member(2u8).is_none());
+        assert!(s.member(10u8).is_some());
     }
 }

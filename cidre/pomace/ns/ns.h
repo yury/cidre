@@ -46,6 +46,7 @@ Class NS_PREDICATE;
 Class NS_REGULAR_EXPRESSION;
 Class NS_RUN_LOOP;
 Class NS_SET;
+Class NS_MUTABLE_SET;
 Class NS_STRING;
 Class NS_ATTRIBUTED_STRING;
 Class NS_MUTABLE_ATTRIBUTED_STRING;
@@ -152,6 +153,7 @@ static void common_initializer(void)
         NS_REGULAR_EXPRESSION = [NSRegularExpression class];
         NS_RUN_LOOP = [NSRunLoop class];
         NS_SET = [NSSet class];
+        NS_MUTABLE_SET = [NSMutableSet class];
         NS_STRING = [NSString class];
         NS_ATTRIBUTED_STRING = [NSAttributedString class];
         NS_MUTABLE_ATTRIBUTED_STRING = [NSMutableAttributedString class];
