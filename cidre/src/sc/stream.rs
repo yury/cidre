@@ -503,21 +503,124 @@ impl arc::A<ContentFilter> {
         display: &sc::Display,
         windows: &ns::Array<sc::Window>,
     ) -> arc::Retained<ContentFilter>;
+
+    /// Creates a content filter that includes only the specified windows on the given display.
+    ///
+    /// Use this initializer to capture specific windows from a display. Unlike
+    /// `init_with_desktop_independent_window`, this method works reliably for all
+    /// window types including regular application windows.
+    #[objc::msg_send(initWithDisplay:includingWindows:)]
+    #[api::available(macos = 12.3)]
+    pub fn init_with_display_including_windows(
+        self,
+        display: &sc::Display,
+        windows: &ns::Array<sc::Window>,
+    ) -> arc::Retained<ContentFilter>;
+
+    /// Creates a content filter that includes content from the specified applications,
+    /// optionally excluding specific windows.
+    #[objc::msg_send(initWithDisplay:includingApplications:exceptingWindows:)]
+    #[api::available(macos = 12.3)]
+    pub fn init_with_display_including_apps_excepting_windows(
+        self,
+        display: &sc::Display,
+        apps: &ns::Array<sc::RunningApp>,
+        excepting_windows: &ns::Array<sc::Window>,
+    ) -> arc::Retained<ContentFilter>;
+
+    /// Creates a content filter that excludes content from the specified applications,
+    /// optionally excepting specific windows that should still be included.
+    #[objc::msg_send(initWithDisplay:excludingApplications:exceptingWindows:)]
+    #[api::available(macos = 12.3)]
+    pub fn init_with_display_excluding_apps_excepting_windows(
+        self,
+        display: &sc::Display,
+        apps: &ns::Array<sc::RunningApp>,
+        excepting_windows: &ns::Array<sc::Window>,
+    ) -> arc::Retained<ContentFilter>;
 }
 
 impl ContentFilter {
     define_cls!(SC_CONTENT_FILTER);
 
-    /// Will create a sc::ContentFilter that captures just the independent window passed in.
+    /// Creates a content filter that captures just the independent window passed in.
+    ///
+    /// Note: This is intended for "desktop independent" windows like overlays or HUDs.
+    /// For regular application windows, use `with_display_including_windows` instead.
     pub fn with_desktop_independent_window(window: &sc::Window) -> arc::R<ContentFilter> {
         Self::alloc().init_with_desktop_independent_window(window)
     }
 
+    /// Creates a content filter for a display, excluding the specified windows.
     pub fn with_display_excluding_windows(
         display: &sc::Display,
         windows: &ns::Array<sc::Window>,
     ) -> arc::R<Self> {
         Self::alloc().init_with_display_excluding_windows(display, windows)
+    }
+
+    /// Creates a content filter that includes only the specified windows on the given display.
+    ///
+    /// This is the recommended method for capturing specific application windows.
+    /// Unlike `with_desktop_independent_window`, this works reliably for all window types.
+    ///
+    /// # Example
+    /// ```no_run
+    /// use cidre::{arc, ns, sc};
+    ///
+    /// async fn capture_window() {
+    ///     let content = sc::ShareableContent::current().await.unwrap();
+    ///     let displays = content.displays();
+    ///     let windows = content.windows();
+    ///
+    ///     if let (Some(display), Some(window)) = (displays.first(), windows.first()) {
+    ///         let window_array = ns::Array::from_slice_retained(&[window.retained()]);
+    ///         let filter = sc::ContentFilter::with_display_including_windows(display, &window_array);
+    ///         // Use filter with SCStream or SCScreenshotManager
+    ///     }
+    /// }
+    /// ```
+    #[api::available(macos = 12.3)]
+    pub fn with_display_including_windows(
+        display: &sc::Display,
+        windows: &ns::Array<sc::Window>,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_display_including_windows(display, windows)
+    }
+
+    /// Creates a content filter that includes content from the specified applications,
+    /// optionally excluding specific windows.
+    ///
+    /// Use this to capture all windows from specific applications while optionally
+    /// excluding certain windows.
+    #[api::available(macos = 12.3)]
+    pub fn with_display_including_apps_excepting_windows(
+        display: &sc::Display,
+        apps: &ns::Array<sc::RunningApp>,
+        excepting_windows: &ns::Array<sc::Window>,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_display_including_apps_excepting_windows(
+            display,
+            apps,
+            excepting_windows,
+        )
+    }
+
+    /// Creates a content filter that excludes content from the specified applications,
+    /// optionally excepting specific windows that should still be included.
+    ///
+    /// Use this to capture a display while hiding content from certain applications.
+    #[api::available(macos = 12.3)]
+    pub fn with_display_excluding_apps_excepting_windows(
+        display: &sc::Display,
+        apps: &ns::Array<sc::RunningApp>,
+        excepting_windows: &ns::Array<sc::Window>,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_display_excluding_apps_excepting_windows(
+            display,
+            apps,
+            excepting_windows,
+        )
     }
 
     #[objc::msg_send(style)]
@@ -850,5 +953,63 @@ mod tests {
         // );
 
         // assert!(d.delegate.counter() > 10, "{:?}", d.delegate.counter);
+    }
+
+    #[tokio::test]
+    async fn content_filter_with_display_including_windows() {
+        let content = sc::ShareableContent::current().await.expect("content");
+        let displays = content.displays();
+        let windows = content.windows();
+
+        let display = displays.first().expect("at least one display");
+
+        // Test with empty window array
+        let empty_windows = ns::Array::<sc::Window>::new();
+        let filter = sc::ContentFilter::with_display_including_windows(&display, &empty_windows);
+        // Filter should be created successfully
+        let _ = filter.content_rect();
+
+        // Test with actual windows if available
+        if let Some(window) = windows.first() {
+            let window_array = ns::Array::from_slice_retained(&[window.retained()]);
+            let filter = sc::ContentFilter::with_display_including_windows(&display, &window_array);
+            // Filter should be created successfully and have valid content rect
+            let rect = filter.content_rect();
+            assert!(rect.size.width > 0.0 || rect.size.height > 0.0);
+        }
+    }
+
+    #[tokio::test]
+    async fn content_filter_with_apps() {
+        let content = sc::ShareableContent::current().await.expect("content");
+        let displays = content.displays();
+        let apps = content.apps();
+
+        let display = displays.first().expect("at least one display");
+        let empty_windows = ns::Array::<sc::Window>::new();
+
+        // Test including apps
+        if let Some(app) = apps.first() {
+            let app_array = ns::Array::from_slice_retained(&[app.retained()]);
+            let filter = sc::ContentFilter::with_display_including_apps_excepting_windows(
+                &display,
+                &app_array,
+                &empty_windows,
+            );
+            // Filter should be created successfully
+            let _ = filter.content_rect();
+        }
+
+        // Test excluding apps
+        if let Some(app) = apps.first() {
+            let app_array = ns::Array::from_slice_retained(&[app.retained()]);
+            let filter = sc::ContentFilter::with_display_excluding_apps_excepting_windows(
+                &display,
+                &app_array,
+                &empty_windows,
+            );
+            // Filter should be created successfully
+            let _ = filter.content_rect();
+        }
     }
 }

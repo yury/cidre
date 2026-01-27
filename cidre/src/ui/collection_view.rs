@@ -777,10 +777,7 @@ impl CollectionView {
     pub fn prefetch_data_src(&self) -> Option<arc::R<AnyCollectionViewDataSrcPrefetching>>;
 
     #[objc::msg_send(setPrefetchDataSource:)]
-    pub fn set_prefetch_data_src<D: CollectionViewDataSrcPrefetching>(
-        &mut self,
-        val: Option<&D>,
-    );
+    pub fn set_prefetch_data_src<D: CollectionViewDataSrcPrefetching>(&mut self, val: Option<&D>);
 
     #[objc::msg_send(isPrefetchingEnabled)]
     pub fn is_prefetching_enabled(&self) -> bool;
@@ -986,10 +983,7 @@ impl CollectionView {
     ) -> Option<arc::R<ui::CollectionViewLayoutAttrs>>;
 
     #[objc::msg_send(indexPathForItemAtPoint:)]
-    pub fn index_path_for_item_at_point(
-        &self,
-        point: cg::Point,
-    ) -> Option<arc::R<ns::IndexPath>>;
+    pub fn index_path_for_item_at_point(&self, point: cg::Point) -> Option<arc::R<ns::IndexPath>>;
 
     #[objc::msg_send(indexPathForCell:)]
     pub fn index_path_for_cell(
@@ -1198,7 +1192,10 @@ impl CollectionViewPlaceholder {
     );
 
     #[cfg(feature = "blocks")]
-    pub fn set_cell_update_handler(&mut self, handler: impl FnMut(&ui::CollectionViewCell) + 'static) {
+    pub fn set_cell_update_handler(
+        &mut self,
+        handler: impl FnMut(&ui::CollectionViewCell) + 'static,
+    ) {
         let mut handler = blocks::EscBlock::new1(handler);
         self.set_cell_update_handler_block(Some(&mut handler));
     }
@@ -1221,15 +1218,17 @@ impl CollectionViewDropPlaceholder {
     pub fn set_preview_parameters_provider_block(
         &mut self,
         handler: Option<
-            &mut blocks::EscBlock<fn(&ui::CollectionViewCell) -> Option<arc::R<ui::DragPreviewParameters>>>,
+            &mut blocks::EscBlock<
+                fn(&ui::CollectionViewCell) -> Option<arc::R<ui::DragPreviewParameters>>,
+            >,
         >,
     );
 
     #[cfg(feature = "blocks")]
     pub fn set_preview_parameters_provider(
         &mut self,
-        handler:
-            impl FnMut(&ui::CollectionViewCell) -> Option<arc::R<ui::DragPreviewParameters>> + 'static,
+        handler: impl FnMut(&ui::CollectionViewCell) -> Option<arc::R<ui::DragPreviewParameters>>
+        + 'static,
     ) {
         let mut handler = blocks::EscBlock::new1(handler);
         self.set_preview_parameters_provider_block(Some(&mut handler));

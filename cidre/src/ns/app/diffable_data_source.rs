@@ -46,7 +46,7 @@ impl<S: objc::Obj, I: objc::Obj> CollectionViewDiffableDataSrc<S, I> {
             &ns::IndexPath,
             &I,
         ) -> Option<arc::R<ns::CollectionViewItem>>
-            + 'static,
+        + 'static,
     ) -> arc::R<Self> {
         let mut item_provider = CollectionViewDiffableDataSrcItemProvider::new3(item_provider);
         Self::alloc().init_with_collection_view_item_provider(collection_view, &mut item_provider)
@@ -89,7 +89,7 @@ impl<S: objc::Obj, I: objc::Obj> CollectionViewDiffableDataSrc<S, I> {
             &ns::CollectionViewSupplementaryElementKind,
             &ns::IndexPath,
         ) -> Option<arc::R<ns::View>>
-            + 'static,
+        + 'static,
     ) {
         let mut provider = CollectionViewDiffableDataSrcSupplementaryViewProvider::new3(provider);
         self.set_supplementary_view_provider_block(Some(&mut provider));
