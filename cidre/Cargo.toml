@@ -60,6 +60,7 @@ full = [
   "un",
   "io_surface",
   "io_kit",
+  "io_pm",
   "nw",
   "core_motion",
   "core_audio",
@@ -114,6 +115,7 @@ nl = ["ns"]
 vt = ["cf", "cv", "cg", "cm"]
 io_surface = ["cf"]
 io_kit = []
+io_pm = []
 sn = ["ns"]
 sec = ["cf"]
 vn = ["ns"]

@@ -21,7 +21,8 @@ unsafe extern "C" {}
 #[cfg(all(target_os = "macos", feature = "io_kit"))]
 mod kit;
 #[cfg(all(target_os = "macos", feature = "io_kit"))]
-pub use kit::audio;
-// we just define constants for now, so we don't need link yet
-// #[link(name = "IOKit", kind = "framework")]
-// unsafe extern "C" {}
+pub use kit::{Return, audio};
+
+/// Defines power management constants and keys used by both in-kernel and user space power management.
+#[cfg(all(target_os = "macos", feature = "io_kit", feature = "io_pm"))]
+pub use kit::pm;
