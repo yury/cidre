@@ -794,6 +794,8 @@ mod tests2 {
         #[objc::optional]
         #[objc::msg_send(count2)]
         fn count2(&self) -> usize;
+
+        fn direct_fn(&self);
     }
 
     static mut DROP_CALLED: bool = false;
@@ -810,7 +812,9 @@ mod tests2 {
 
     define_obj_type!(Bla + FooImpl, D, BLA_USIZE);
 
-    impl Foo for Bla {}
+    impl Foo for Bla {
+        fn direct_fn(&self) {}
+    }
 
     #[objc::add_methods]
     impl FooImpl for Bla {

@@ -282,7 +282,7 @@ visionos_26_1 = ["visionos_26_0"]
 tokio = { optional = true, version = "1", default-features = false, features = ["macros", "rt", "rt-multi-thread", "time", "net", "process", "io-util"] }
 parking_lot = { optional = true, version = "0.12" }
 # cidre-macros = { path = "../cidre-macros" }
-cidre-macros = { version = "0.4" }
+cidre-macros = { version = "0.5" }
 half = { optional = true, version = "2.6" }
 
 [dev-dependencies]
