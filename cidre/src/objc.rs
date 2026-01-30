@@ -274,6 +274,9 @@ impl Id {
 
     #[objc::msg_send(isEqual:)]
     pub fn is_equal(&self, other: &Self) -> bool;
+
+    #[objc::msg_send(hash)]
+    pub fn hash(&self) -> ns::UInteger;
 }
 
 impl Obj for Id {}
