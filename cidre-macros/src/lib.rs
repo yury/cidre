@@ -294,7 +294,9 @@ pub fn protocol(args: TokenStream, ts: TokenStream) -> TokenStream {
                         }
                     };
 
-                    impl_trait_functions.push(impl_fn);
+                    if !skip {
+                        impl_trait_functions.push(impl_fn);
+                    }
 
                     if !is_optional && !skip {
                         let impl_sel = format!(
