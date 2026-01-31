@@ -1,7 +1,7 @@
 use crate::{arc, ns, objc};
 
 #[doc(alias = "NSRange")]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
 #[repr(C)]
 pub struct Range {
     pub loc: ns::UInteger,

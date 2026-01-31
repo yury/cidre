@@ -112,6 +112,12 @@ impl IndexSetMut {
     pub fn remove_range(&mut self, val: ns::Range);
 }
 
+impl Default for arc::R<IndexSetMut> {
+    fn default() -> Self {
+        IndexSetMut::with_range(Default::default())
+    }
+}
+
 #[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_INDEX_SET: &'static objc::Class<IndexSet>;
