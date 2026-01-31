@@ -154,6 +154,9 @@ impl String {
     pub fn from_selector(sel: &objc::Sel) -> arc::R<Self> {
         ns::string_from_selector(sel)
     }
+
+    #[objc::msg_send(hash)]
+    pub fn hash(&self) -> ns::UInteger;
 }
 
 impl Default for arc::R<String> {
@@ -227,6 +230,9 @@ impl StringMut {
     pub fn as_cf_mut(&self) -> &cf::StringMut {
         unsafe { std::mem::transmute(self) }
     }
+
+    #[objc::msg_send(hash)]
+    pub fn hash(&self) -> ns::UInteger;
 }
 
 #[link(name = "ns", kind = "static")]
@@ -291,6 +297,34 @@ impl AsRef<ns::String> for ns::StringMut {
 impl AsRef<cf::String> for ns::StringMut {
     fn as_ref(&self) -> &cf::String {
         self.as_cf()
+    }
+}
+
+impl Eq for ns::String {}
+impl std::hash::Hash for ns::String {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.hash().hash(state);
+    }
+}
+
+impl Eq for arc::R<ns::String> {}
+impl std::hash::Hash for arc::R<ns::String> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.0.hash().hash(state);
+    }
+}
+
+impl Eq for ns::StringMut {}
+impl std::hash::Hash for ns::StringMut {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.hash().hash(state);
+    }
+}
+
+impl Eq for arc::R<ns::StringMut> {}
+impl std::hash::Hash for arc::R<ns::StringMut> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.0.hash().hash(state);
     }
 }
 

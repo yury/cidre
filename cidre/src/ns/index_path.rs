@@ -42,6 +42,12 @@ impl IndexPath {
     /// Provides the value at a particular node in the index path.
     #[objc::msg_send(indexAtPosition:)]
     pub fn index_at(&self, pos: usize) -> usize;
+
+    #[objc::msg_send(isEqual:)]
+    pub fn is_equal(&self, other: &Self) -> bool;
+
+    #[objc::msg_send(hash)]
+    pub fn hash(&self) -> ns::UInteger;
 }
 
 impl From<&[usize]> for arc::R<IndexPath> {
@@ -53,6 +59,20 @@ impl From<&[usize]> for arc::R<IndexPath> {
 impl From<[usize; 2]> for arc::R<IndexPath> {
     fn from(value: [usize; 2]) -> Self {
         IndexPath::with_indexes(&value)
+    }
+}
+
+impl Eq for IndexPath {}
+impl std::hash::Hash for IndexPath {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.hash().hash(state);
+    }
+}
+
+impl Eq for arc::R<IndexPath> {}
+impl std::hash::Hash for arc::R<IndexPath> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.0.hash().hash(state);
     }
 }
 

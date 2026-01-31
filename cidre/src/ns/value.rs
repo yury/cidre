@@ -227,6 +227,9 @@ impl Number {
     pub fn as_cf(&self) -> &cf::Number {
         unsafe { std::mem::transmute(self) }
     }
+
+    #[objc::msg_send(hash)]
+    pub fn hash(&self) -> ns::UInteger;
 }
 
 impl From<i8> for arc::R<Number> {
@@ -397,6 +400,19 @@ impl AsRef<ns::Number> for u32 {
 impl AsRef<ns::Number> for i32 {
     fn as_ref(&self) -> &ns::Number {
         &ns::Number::tagged_i32(*self)
+    }
+}
+
+impl std::hash::Hash for ns::Number {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.hash().hash(state);
+    }
+}
+
+impl Eq for arc::R<ns::Number> {}
+impl std::hash::Hash for arc::R<ns::Number> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.0.hash().hash(state);
     }
 }
 

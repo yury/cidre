@@ -683,6 +683,20 @@ impl PartialEq for Id {
     }
 }
 
+impl Eq for Id {}
+impl std::hash::Hash for Id {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.hash().hash(state);
+    }
+}
+
+impl Eq for arc::R<Id> {}
+impl std::hash::Hash for arc::R<Id> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.0.hash().hash(state);
+    }
+}
+
 /// Can throw any object. You may need ns::Exception::raise.
 /// [read more](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Exceptions/Tasks/HandlingExceptions.html)
 #[inline]
@@ -776,8 +790,10 @@ pub use cidre_macros::msg_send_x86_64 as msg_send;
 #[cfg(test)]
 mod tests2 {
 
+    use std::collections::HashMap;
+
     use crate::{
-        arc::{self},
+        arc::{self, Retain},
         ns,
         objc::{self, Obj},
         return_rar,
@@ -848,5 +864,18 @@ mod tests2 {
             assert!(desc.to_string().starts_with("<BLA_USIZE: "));
         }
         assert!(unsafe { DROP_CALLED });
+    }
+
+    #[test]
+    fn hash() {
+        fn foo() -> HashMap<arc::R<ns::Id>, arc::R<ns::String>> {
+            let a = ns::String::new();
+            let b = ns::String::new();
+            let mut map = HashMap::new();
+            let _v = map.insert(a.as_id_ref().retained(), b);
+            map
+        }
+
+        foo();
     }
 }
