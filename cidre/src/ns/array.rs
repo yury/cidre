@@ -260,10 +260,6 @@ impl<T: objc::Obj> ArrayMut<T> {
         ns::try_catch(|| unsafe { self.remove_throws(index) })
     }
 
-    /// Removes all elements.
-    #[objc::msg_send(removeAllObjects)]
-    pub fn clear(&mut self);
-
     /// Inserts `obj` at `at_index`.
     ///
     /// # Safety
@@ -285,6 +281,29 @@ impl<T: objc::Obj> ArrayMut<T> {
     #[cfg(feature = "cf")]
     pub fn as_cf_mut(&mut self) -> &mut crate::cf::ArrayOfMut<T> {
         unsafe { std::mem::transmute(self) }
+    }
+}
+
+/// NSExtendedMutableArray
+impl<T: objc::Obj> ArrayMut<T> {
+    #[objc::msg_send(addObjectsFromArray:)]
+    pub fn add_objs_from_array(&mut self, val: &ns::Array<T>);
+
+    /// Removes all elements.
+    #[objc::msg_send(removeAllObjects)]
+    pub fn clear(&mut self);
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(sortUsingComparator:)]
+    pub fn sort_using_comparator_block(
+        &mut self,
+        cmptr: &mut ns::Comparator<T, crate::blocks::NoEsc>,
+    );
+
+    #[cfg(feature = "blocks")]
+    pub fn sort_using_comparator(&mut self, mut cmptr: impl FnMut(&T, &T) -> ns::ComparisonResult) {
+        let mut block = unsafe { ns::Comparator::<T, crate::blocks::NoEsc>::stack2(&mut cmptr) };
+        self.sort_using_comparator_block(&mut block);
     }
 }
 

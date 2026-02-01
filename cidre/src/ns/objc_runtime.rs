@@ -2,6 +2,33 @@ use std::ffi::c_void;
 
 use crate::{arc, define_obj_type, ns, objc::Obj};
 
+#[doc(alias = "NSComparisonResult")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum ComparisonResult {
+    Ascending = -1,
+    Same = 0,
+    Descending = 1,
+}
+
+impl From<std::cmp::Ordering> for ComparisonResult {
+    fn from(value: std::cmp::Ordering) -> Self {
+        let value = value as i8 as isize;
+        unsafe { std::mem::transmute(value) }
+    }
+}
+
+impl From<ComparisonResult> for std::cmp::Ordering {
+    fn from(value: ComparisonResult) -> Self {
+        let value = value as isize as i8;
+        unsafe { std::mem::transmute(value) }
+    }
+}
+
+#[cfg(feature = "blocks")]
+#[doc(alias = "NSComparator")]
+pub type Comparator<T, Attr> = crate::blocks::Block<fn(a: &T, b: &T) -> ns::ComparisonResult, Attr>;
+
 #[doc(alias = "NSNotFound")]
 pub const NOT_FOUND: ns::Integer = ns::Integer::MAX;
 

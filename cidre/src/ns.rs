@@ -35,6 +35,7 @@ mod progress;
 pub use progress::Progress;
 
 pub mod objc_runtime;
+pub use objc_runtime::ComparisonResult;
 pub use objc_runtime::ExceptionName;
 pub use objc_runtime::NOT_FOUND;
 pub use objc_runtime::class_from_ns_string;
@@ -43,6 +44,9 @@ pub use objc_runtime::selector_from_ns_string;
 pub use objc_runtime::string_from_class;
 pub use objc_runtime::string_from_protocol;
 pub use objc_runtime::string_from_selector;
+
+#[cfg(feature = "blocks")]
+pub use objc_runtime::Comparator;
 
 pub mod exception;
 pub use exception::Exception;
