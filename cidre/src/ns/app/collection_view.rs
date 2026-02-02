@@ -435,27 +435,30 @@ impl CollectionView {
 pub trait CollectionViewDataSrc: objc::Obj {
     #[objc::msg_send(collectionView:numberOfItemsInSection:)]
     fn collection_view_items_n_in_section(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         section: ns::Integer,
     ) -> ns::Integer;
 
     #[objc::msg_send(collectionView:itemForRepresentedObjectAtIndexPath:)]
     fn collection_view_item_for_represented_obj_at(
         &mut self,
-        collection_view: &ns::CollectionView,
+        collection_view: &mut ns::CollectionView,
         index_path: &ns::IndexPath,
     ) -> arc::R<ns::CollectionViewItem>;
 
     #[objc::optional]
     #[objc::msg_send(numberOfSectionsInCollectionView:)]
-    fn collection_view_sections_n(&self, collection_view: &ns::CollectionView) -> ns::Integer;
+    fn collection_view_sections_n(
+        &mut self,
+        collection_view: &mut ns::CollectionView,
+    ) -> ns::Integer;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:viewForSupplementaryElementOfKind:atIndexPath:)]
     fn collection_view_view_for_supplementary_element_of_kind_at_index_path(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         kind: &ns::CollectionViewSupplementaryElementKind,
         index_path: &ns::IndexPath,
     ) -> arc::R<ns::View>;
@@ -471,16 +474,16 @@ impl CollectionViewDataSrc for AnyCollectionViewDataSrc {}
 pub trait CollectionViewPrefetching: objc::Obj {
     #[objc::msg_send(collectionView:prefetchItemsAtIndexPaths:)]
     fn collection_view_prefetch_items_at_index_paths(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         index_paths: &ns::Array<ns::IndexPath>,
     );
 
     #[objc::optional]
     #[objc::msg_send(collectionView:cancelPrefetchingForItemsAtIndexPaths:)]
     fn collection_view_cancel_prefetching_for_items_at_index_paths(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         index_paths: &ns::Array<ns::IndexPath>,
     );
 }
@@ -496,8 +499,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:canDragItemsAtIndexPaths:withEvent:)]
     fn collection_view_can_drag_items_at_index_paths_with_event(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         index_paths: &ns::Set<ns::IndexPath>,
         event: &ns::Event,
     ) -> bool;
@@ -505,8 +508,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:canDragItemsAtIndexes:withEvent:)]
     fn collection_view_can_drag_items_at_indexes_with_event(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         indexes: &ns::IndexSet,
         event: &ns::Event,
     ) -> bool;
@@ -514,8 +517,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:writeItemsAtIndexPaths:toPasteboard:)]
     fn collection_view_write_items_at_index_paths_to_pasteboard(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         index_paths: &ns::Set<ns::IndexPath>,
         pasteboard: &ns::Id,
     ) -> bool;
@@ -523,8 +526,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:writeItemsAtIndexes:toPasteboard:)]
     fn collection_view_write_items_at_indexes_to_pasteboard(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         indexes: &ns::IndexSet,
         pasteboard: &ns::Id,
     ) -> bool;
@@ -532,8 +535,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:namesOfPromisedFilesDroppedAtDestination:forDraggedItemsAtIndexPaths:)]
     fn collection_view_names_of_promised_files_dropped_at_destination_for_dragged_items_at_index_paths(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         drop_url: &ns::Url,
         index_paths: &ns::Set<ns::IndexPath>,
     ) -> arc::R<ns::Array<ns::String>>;
@@ -541,8 +544,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:namesOfPromisedFilesDroppedAtDestination:forDraggedItemsAtIndexes:)]
     fn collection_view_names_of_promised_files_dropped_at_destination_for_dragged_items_at_indexes(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         drop_url: &ns::Url,
         indexes: &ns::IndexSet,
     ) -> arc::R<ns::Array<ns::String>>;
@@ -550,8 +553,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:draggingImageForItemsAtIndexPaths:withEvent:offset:)]
     fn collection_view_dragging_image_for_items_at_index_paths_with_event_offset(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         index_paths: &ns::Set<ns::IndexPath>,
         event: &ns::Event,
         drag_image_offset: *mut ns::Point,
@@ -560,8 +563,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:draggingImageForItemsAtIndexes:withEvent:offset:)]
     fn collection_view_dragging_image_for_items_at_indexes_with_event_offset(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         indexes: &ns::IndexSet,
         event: &ns::Event,
         drag_image_offset: *mut ns::Point,
@@ -570,8 +573,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:validateDrop:proposedIndexPath:dropOperation:)]
     fn collection_view_validate_drop_proposed_index_path_drop_operation(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         dragging_info: &ns::Id,
         proposed_drop_index_path: *mut *mut ns::IndexPath,
         proposed_drop_operation: *mut CollectionViewDropOp,
@@ -580,8 +583,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:validateDrop:proposedIndex:dropOperation:)]
     fn collection_view_validate_drop_proposed_index_drop_operation(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         dragging_info: &ns::Id,
         proposed_drop_index: *mut ns::Integer,
         proposed_drop_operation: *mut CollectionViewDropOp,
@@ -590,8 +593,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:acceptDrop:indexPath:dropOperation:)]
     fn collection_view_accept_drop_index_path_drop_operation(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         dragging_info: &ns::Id,
         index_path: &ns::IndexPath,
         drop_operation: CollectionViewDropOp,
@@ -600,8 +603,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:acceptDrop:index:dropOperation:)]
     fn collection_view_accept_drop_index_drop_operation(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         dragging_info: &ns::Id,
         index: ns::Integer,
         drop_operation: CollectionViewDropOp,
@@ -610,24 +613,24 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:pasteboardWriterForItemAtIndexPath:)]
     fn collection_view_pasteboard_writer_for_item_at_index_path(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         index_path: &ns::IndexPath,
     ) -> Option<arc::R<ns::Id>>;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:pasteboardWriterForItemAtIndex:)]
     fn collection_view_pasteboard_writer_for_item_at_index(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         index: usize,
     ) -> Option<arc::R<ns::Id>>;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:draggingSession:willBeginAtPoint:forItemsAtIndexPaths:)]
     fn collection_view_dragging_session_will_begin_at_point_for_items_at_index_paths(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         session: &ns::Id,
         screen_point: ns::Point,
         index_paths: &ns::Set<ns::IndexPath>,
@@ -636,8 +639,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:draggingSession:willBeginAtPoint:forItemsAtIndexes:)]
     fn collection_view_dragging_session_will_begin_at_point_for_items_at_indexes(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         session: &ns::Id,
         screen_point: ns::Point,
         indexes: &ns::IndexSet,
@@ -646,8 +649,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:draggingSession:endedAtPoint:dragOperation:)]
     fn collection_view_dragging_session_ended_at_point_drag_operation(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         session: &ns::Id,
         screen_point: ns::Point,
         operation: ns::UInteger,
@@ -656,16 +659,16 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:updateDraggingItemsForDrag:)]
     fn collection_view_update_dragging_items_for_drag(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         dragging_info: &ns::Id,
     );
 
     #[objc::optional]
     #[objc::msg_send(collectionView:shouldChangeItemsAtIndexPaths:toHighlightState:)]
     fn collection_view_should_change_items_at_index_paths_to_highlight_state(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         index_paths: &ns::Set<ns::IndexPath>,
         highlight_state: CollectionViewItemHighlightState,
     ) -> arc::R<ns::Set<ns::IndexPath>>;
@@ -673,8 +676,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:didChangeItemsAtIndexPaths:toHighlightState:)]
     fn collection_view_did_change_items_at_index_paths_to_highlight_state(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         index_paths: &ns::Set<ns::IndexPath>,
         highlight_state: CollectionViewItemHighlightState,
     );
@@ -682,50 +685,50 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:shouldSelectItemsAtIndexPaths:)]
     fn collection_view_should_select_items_at_index_paths(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         index_paths: &ns::Set<ns::IndexPath>,
     ) -> arc::R<ns::Set<ns::IndexPath>>;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:shouldDeselectItemsAtIndexPaths:)]
     fn collection_view_should_deselect_items_at_index_paths(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         index_paths: &ns::Set<ns::IndexPath>,
     ) -> arc::R<ns::Set<ns::IndexPath>>;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:didSelectItemsAtIndexPaths:)]
     fn collection_view_did_select_items_at_index_paths(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         index_paths: &ns::Set<ns::IndexPath>,
     );
 
     #[objc::optional]
     #[objc::msg_send(collectionView:didDeselectItemsAtIndexPaths:)]
     fn collection_view_did_deselect_items_at_index_paths(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         index_paths: &ns::Set<ns::IndexPath>,
     );
 
     #[objc::optional]
     #[objc::msg_send(collectionView:willDisplayItem:forRepresentedObjectAtIndexPath:)]
     fn collection_view_will_display_item_for_represented_object_at_index_path(
-        &self,
-        collection_view: &ns::CollectionView,
-        item: &ns::CollectionViewItem,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
+        item: &mut ns::CollectionViewItem,
         index_path: &ns::IndexPath,
     );
 
     #[objc::optional]
     #[objc::msg_send(collectionView:willDisplaySupplementaryView:forElementKind:atIndexPath:)]
     fn collection_view_will_display_supplementary_view_for_element_kind_at_index_path(
-        &self,
-        collection_view: &ns::CollectionView,
-        view: &ns::View,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
+        view: &mut ns::View,
         element_kind: &ns::CollectionViewSupplementaryElementKind,
         index_path: &ns::IndexPath,
     );
@@ -733,18 +736,18 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:didEndDisplayingItem:forRepresentedObjectAtIndexPath:)]
     fn collection_view_did_end_displaying_item_for_represented_object_at_index_path(
-        &self,
-        collection_view: &ns::CollectionView,
-        item: &ns::CollectionViewItem,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
+        item: &mut ns::CollectionViewItem,
         index_path: &ns::IndexPath,
     );
 
     #[objc::optional]
     #[objc::msg_send(collectionView:didEndDisplayingSupplementaryView:forElementOfKind:atIndexPath:)]
     fn collection_view_did_end_displaying_supplementary_view_for_element_of_kind_at_index_path(
-        &self,
-        collection_view: &ns::CollectionView,
-        view: &ns::View,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
+        view: &mut ns::View,
         element_kind: &ns::CollectionViewSupplementaryElementKind,
         index_path: &ns::IndexPath,
     );
@@ -752,8 +755,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:transitionLayoutForOldLayout:newLayout:)]
     fn collection_view_transition_layout_for_old_layout_new_layout(
-        &self,
-        collection_view: &ns::CollectionView,
+        &mut self,
+        collection_view: &mut ns::CollectionView,
         from_layout: &ns::CollectionViewLayout,
         to_layout: &ns::CollectionViewLayout,
     ) -> arc::R<ns::CollectionViewTransitionLayout>;

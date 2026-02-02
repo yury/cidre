@@ -164,7 +164,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:shouldHighlightItemAtIndexPath:)]
     fn collection_view_should_highlight_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     ) -> bool;
 
@@ -172,7 +172,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:didHighlightItemAtIndexPath:)]
     fn collection_view_did_highlight_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     );
 
@@ -180,7 +180,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:didUnhighlightItemAtIndexPath:)]
     fn collection_view_did_unhighlight_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     );
 
@@ -188,7 +188,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:shouldSelectItemAtIndexPath:)]
     fn collection_view_should_select_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     ) -> bool;
 
@@ -196,7 +196,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:shouldDeselectItemAtIndexPath:)]
     fn collection_view_should_deselect_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     ) -> bool;
 
@@ -204,7 +204,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:didSelectItemAtIndexPath:)]
     fn collection_view_did_select_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     );
 
@@ -212,7 +212,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:didDeselectItemAtIndexPath:)]
     fn collection_view_did_deselect_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     );
 
@@ -220,7 +220,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:canPerformPrimaryActionForItemAtIndexPath:)]
     fn collection_view_can_perform_primary_action_for_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     ) -> bool;
 
@@ -228,7 +228,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:performPrimaryActionForItemAtIndexPath:)]
     fn collection_view_perform_primary_action_for_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     );
 
@@ -236,7 +236,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:willDisplayCell:forItemAtIndexPath:)]
     fn collection_view_will_display_cell_for_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         cell: &ui::CollectionViewCell,
         index_path: &ns::IndexPath,
     );
@@ -245,8 +245,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:willDisplaySupplementaryView:forElementKind:atIndexPath:)]
     fn collection_view_will_display_supplementary_view_for_element_kind_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
-        view: &ui::CollectionReusableView,
+        collection_view: &mut ui::CollectionView,
+        view: &mut ui::CollectionReusableView,
         element_kind: &ns::String,
         index_path: &ns::IndexPath,
     );
@@ -255,8 +255,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:didEndDisplayingCell:forItemAtIndexPath:)]
     fn collection_view_did_end_displaying_cell_for_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
-        cell: &ui::CollectionViewCell,
+        collection_view: &mut ui::CollectionView,
+        cell: &mut ui::CollectionViewCell,
         index_path: &ns::IndexPath,
     );
 
@@ -264,8 +264,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:didEndDisplayingSupplementaryView:forElementOfKind:atIndexPath:)]
     fn collection_view_did_end_displaying_supplementary_view_for_element_kind_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
-        view: &ui::CollectionReusableView,
+        collection_view: &mut ui::CollectionView,
+        view: &mut ui::CollectionReusableView,
         element_kind: &ns::String,
         index_path: &ns::IndexPath,
     );
@@ -274,7 +274,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:shouldShowMenuForItemAtIndexPath:)]
     fn collection_view_should_show_menu_for_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     ) -> bool;
 
@@ -282,7 +282,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:canPerformAction:forItemAtIndexPath:withSender:)]
     fn collection_view_can_perform_action_for_item_at_index_path_with_sender(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         action: &objc::Sel,
         index_path: &ns::IndexPath,
         sender: Option<&ns::Id>,
@@ -292,7 +292,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:performAction:forItemAtIndexPath:withSender:)]
     fn collection_view_perform_action_for_item_at_index_path_with_sender(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         action: &objc::Sel,
         index_path: &ns::IndexPath,
         sender: Option<&ns::Id>,
@@ -302,7 +302,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:transitionLayoutForOldLayout:newLayout:)]
     fn collection_view_transition_layout_for_old_layout_new_layout(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         from_layout: &ui::CollectionViewLayout,
         to_layout: &ui::CollectionViewLayout,
     ) -> arc::R<ui::CollectionViewTransitionLayout>;
@@ -311,7 +311,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:canFocusItemAtIndexPath:)]
     fn collection_view_can_focus_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     ) -> bool;
 
@@ -319,7 +319,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:shouldUpdateFocusInContext:)]
     fn collection_view_should_update_focus_in_context(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         context: &ui::CollectionViewFocusUpdateCtx,
     ) -> bool;
 
@@ -327,7 +327,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:didUpdateFocusInContext:withAnimationCoordinator:)]
     fn collection_view_did_update_focus_in_context_with_animation_coordinator(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         context: &ui::CollectionViewFocusUpdateCtx,
         coordinator: &ui::FocusAnimationCoordinator,
     );
@@ -336,14 +336,14 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(indexPathForPreferredFocusedViewInCollectionView:)]
     fn index_path_for_preferred_focused_view_in_collection_view(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
     ) -> Option<arc::R<ns::IndexPath>>;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:selectionFollowsFocusForItemAtIndexPath:)]
     fn collection_view_selection_follows_focus_for_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     ) -> bool;
 
@@ -351,7 +351,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:targetIndexPathForMoveOfItemFromOriginalIndexPath:atCurrentIndexPath:toProposedIndexPath:)]
     fn collection_view_target_index_path_for_move_of_item_from_original_index_path_at_current_index_path_to_proposed_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         original_index_path: &ns::IndexPath,
         current_index_path: &ns::IndexPath,
         proposed_index_path: &ns::IndexPath,
@@ -361,7 +361,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:targetIndexPathForMoveFromItemAtIndexPath:toProposedIndexPath:)]
     fn collection_view_target_index_path_for_move_from_item_at_index_path_to_proposed_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         current_index_path: &ns::IndexPath,
         proposed_index_path: &ns::IndexPath,
     ) -> arc::R<ns::IndexPath>;
@@ -370,7 +370,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:targetContentOffsetForProposedContentOffset:)]
     fn collection_view_target_content_offset_for_proposed_content_offset(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         proposed_content_offset: cg::Point,
     ) -> cg::Point;
 
@@ -378,7 +378,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:canEditItemAtIndexPath:)]
     fn collection_view_can_edit_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     ) -> bool;
 
@@ -386,7 +386,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:shouldSpringLoadItemAtIndexPath:withContext:)]
     fn collection_view_should_spring_load_item_at_index_path_with_context(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
         context: &ui::AnySpringLoadedInteractionContext,
     ) -> bool;
@@ -395,7 +395,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:shouldBeginMultipleSelectionInteractionAtIndexPath:)]
     fn collection_view_should_begin_multiple_selection_interaction_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     ) -> bool;
 
@@ -403,7 +403,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:didBeginMultipleSelectionInteractionAtIndexPath:)]
     fn collection_view_did_begin_multiple_selection_interaction_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     );
 
@@ -411,14 +411,14 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionViewDidEndMultipleSelectionInteraction:)]
     fn collection_view_did_end_multiple_selection_interaction(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
     );
 
     #[objc::optional]
     #[objc::msg_send(collectionView:contextMenuConfigurationForItemsAtIndexPaths:point:)]
     fn collection_view_context_menu_configuration_for_items_at_index_paths_point(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_paths: &ns::Array<ns::IndexPath>,
         point: cg::Point,
     ) -> Option<arc::R<ui::ContextMenuConfiguration>>;
@@ -427,8 +427,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:contextMenuConfiguration:highlightPreviewForItemAtIndexPath:)]
     fn collection_view_context_menu_configuration_highlight_preview_for_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
-        configuration: &ui::ContextMenuConfiguration,
+        collection_view: &mut ui::CollectionView,
+        configuration: &mut ui::ContextMenuConfiguration,
         index_path: &ns::IndexPath,
     ) -> Option<arc::R<ui::TargetedPreview>>;
 
@@ -436,8 +436,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:contextMenuConfiguration:dismissalPreviewForItemAtIndexPath:)]
     fn collection_view_context_menu_configuration_dismissal_preview_for_item_at_index_path(
         &mut self,
-        collection_view: &ui::CollectionView,
-        configuration: &ui::ContextMenuConfiguration,
+        collection_view: &mut ui::CollectionView,
+        configuration: &mut ui::ContextMenuConfiguration,
         index_path: &ns::IndexPath,
     ) -> Option<arc::R<ui::TargetedPreview>>;
 
@@ -445,8 +445,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:willPerformPreviewActionForMenuWithConfiguration:animator:)]
     fn collection_view_will_perform_preview_action_for_menu_with_configuration_animator(
         &mut self,
-        collection_view: &ui::CollectionView,
-        configuration: &ui::ContextMenuConfiguration,
+        collection_view: &mut ui::CollectionView,
+        configuration: &mut ui::ContextMenuConfiguration,
         animator: &ui::AnyContextMenuInteractionCommitAnimating,
     );
 
@@ -454,8 +454,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:willDisplayContextMenuWithConfiguration:animator:)]
     fn collection_view_will_display_context_menu_with_configuration_animator(
         &mut self,
-        collection_view: &ui::CollectionView,
-        configuration: &ui::ContextMenuConfiguration,
+        collection_view: &mut ui::CollectionView,
+        configuration: &mut ui::ContextMenuConfiguration,
         animator: Option<&ui::AnyContextMenuInteractionAnimating>,
     );
 
@@ -463,8 +463,8 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:willEndContextMenuInteractionWithConfiguration:animator:)]
     fn collection_view_will_end_context_menu_interaction_with_configuration_animator(
         &mut self,
-        collection_view: &ui::CollectionView,
-        configuration: &ui::ContextMenuConfiguration,
+        collection_view: &mut ui::CollectionView,
+        configuration: &mut ui::ContextMenuConfiguration,
         animator: Option<&ui::AnyContextMenuInteractionAnimating>,
     );
 
@@ -472,7 +472,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:sceneActivationConfigurationForItemAtIndexPath:point:)]
     fn collection_view_scene_activation_configuration_for_item_at_index_path_point(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
         point: cg::Point,
     ) -> Option<arc::R<ui::WindowSceneActivationConfiguration>>;
@@ -481,7 +481,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:contextMenuConfigurationForItemAtIndexPath:point:)]
     fn collection_view_context_menu_configuration_for_item_at_index_path_point(
         &mut self,
-        collection_view: &ui::CollectionView,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
         point: cg::Point,
     ) -> Option<arc::R<ui::ContextMenuConfiguration>>;
@@ -490,16 +490,16 @@ pub trait CollectionViewDelegate: objc::Obj {
     #[objc::msg_send(collectionView:previewForHighlightingContextMenuWithConfiguration:)]
     fn collection_view_preview_for_highlighting_context_menu_with_configuration(
         &mut self,
-        collection_view: &ui::CollectionView,
-        configuration: &ui::ContextMenuConfiguration,
+        collection_view: &mut ui::CollectionView,
+        configuration: &mut ui::ContextMenuConfiguration,
     ) -> Option<arc::R<ui::TargetedPreview>>;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:previewForDismissingContextMenuWithConfiguration:)]
     fn collection_view_preview_for_dismissing_context_menu_with_configuration(
         &mut self,
-        collection_view: &ui::CollectionView,
-        configuration: &ui::ContextMenuConfiguration,
+        collection_view: &mut ui::CollectionView,
+        configuration: &mut ui::ContextMenuConfiguration,
     ) -> Option<arc::R<ui::TargetedPreview>>;
 }
 
@@ -513,18 +513,18 @@ impl CollectionViewDelegate for AnyCollectionViewDelegate {}
 pub trait CollectionViewDragDelegate: objc::Obj {
     #[objc::msg_send(collectionView:itemsForBeginningDragSession:atIndexPath:)]
     fn collection_view_items_for_beginning_drag_session_at_index_path(
-        &self,
-        collection_view: &ui::CollectionView,
-        session: &ui::AnyDragSession,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
+        session: &mut ui::AnyDragSession,
         index_path: &ns::IndexPath,
     ) -> arc::R<ns::Array<ui::DragItem>>;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:itemsForAddingToDragSession:atIndexPath:point:)]
     fn collection_view_items_for_adding_to_drag_session_at_index_path_point(
-        &self,
-        collection_view: &ui::CollectionView,
-        session: &ui::AnyDragSession,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
+        session: &mut ui::AnyDragSession,
         index_path: &ns::IndexPath,
         point: cg::Point,
     ) -> arc::R<ns::Array<ui::DragItem>>;
@@ -532,40 +532,40 @@ pub trait CollectionViewDragDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:dragPreviewParametersForItemAtIndexPath:)]
     fn collection_view_drag_preview_parameters_for_item_at_index_path(
-        &self,
-        collection_view: &ui::CollectionView,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     ) -> Option<arc::R<ui::DragPreviewParameters>>;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:dragSessionWillBegin:)]
     fn collection_view_drag_session_will_begin(
-        &self,
-        collection_view: &ui::CollectionView,
-        session: &ui::AnyDragSession,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
+        session: &mut ui::AnyDragSession,
     );
 
     #[objc::optional]
     #[objc::msg_send(collectionView:dragSessionDidEnd:)]
     fn collection_view_drag_session_did_end(
-        &self,
-        collection_view: &ui::CollectionView,
-        session: &ui::AnyDragSession,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
+        session: &mut ui::AnyDragSession,
     );
 
     #[objc::optional]
     #[objc::msg_send(collectionView:dragSessionAllowsMoveOperation:)]
     fn collection_view_drag_session_allows_move_operation(
-        &self,
-        collection_view: &ui::CollectionView,
-        session: &ui::AnyDragSession,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
+        session: &mut ui::AnyDragSession,
     ) -> bool;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:dragSessionIsRestrictedToDraggingApplication:)]
     fn collection_view_drag_session_is_restricted_to_dragging_application(
-        &self,
-        collection_view: &ui::CollectionView,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
         session: &ui::AnyDragSession,
     ) -> bool;
 }
@@ -580,57 +580,57 @@ impl CollectionViewDragDelegate for AnyCollectionViewDragDelegate {}
 pub trait CollectionViewDropDelegate: objc::Obj {
     #[objc::msg_send(collectionView:performDropWithCoordinator:)]
     fn collection_view_perform_drop_with_coordinator(
-        &self,
-        collection_view: &ui::CollectionView,
-        coordinator: &ui::AnyCollectionViewDropCoordinator,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
+        coordinator: &mut ui::AnyCollectionViewDropCoordinator,
     );
 
     #[objc::optional]
     #[objc::msg_send(collectionView:canHandleDropSession:)]
     fn collection_view_can_handle_drop_session(
-        &self,
-        collection_view: &ui::CollectionView,
-        session: &ui::AnyDropSession,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
+        session: &mut ui::AnyDropSession,
     ) -> bool;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:dropSessionDidEnter:)]
     fn collection_view_drop_session_did_enter(
-        &self,
-        collection_view: &ui::CollectionView,
-        session: &ui::AnyDropSession,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
+        session: &mut ui::AnyDropSession,
     );
 
     #[objc::optional]
     #[objc::msg_send(collectionView:dropSessionDidUpdate:withDestinationIndexPath:)]
     fn collection_view_drop_session_did_update_with_destination_index_path(
-        &self,
-        collection_view: &ui::CollectionView,
-        session: &ui::AnyDropSession,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
+        session: &mut ui::AnyDropSession,
         destination_index_path: Option<&ns::IndexPath>,
     ) -> arc::R<ui::CollectionViewDropProposal>;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:dropSessionDidExit:)]
     fn collection_view_drop_session_did_exit(
-        &self,
-        collection_view: &ui::CollectionView,
-        session: &ui::AnyDropSession,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
+        session: &mut ui::AnyDropSession,
     );
 
     #[objc::optional]
     #[objc::msg_send(collectionView:dropSessionDidEnd:)]
     fn collection_view_drop_session_did_end(
-        &self,
-        collection_view: &ui::CollectionView,
-        session: &ui::AnyDropSession,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
+        session: &mut ui::AnyDropSession,
     );
 
     #[objc::optional]
     #[objc::msg_send(collectionView:dropPreviewParametersForItemAtIndexPath:)]
     fn collection_view_drop_preview_parameters_for_item_at_index_path(
-        &self,
-        collection_view: &ui::CollectionView,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     ) -> Option<arc::R<ui::DragPreviewParameters>>;
 }
