@@ -327,12 +327,12 @@ fn main() {
     ca.set_texture(Some(&rgba_texture));
 
     let depth_desc = mtl::DepthStencilDesc::new();
-    let mut front_face_stencil = depth_desc.front_face_stenil();
+    let mut front_face_stencil = depth_desc.front_face_stencil();
     front_face_stencil.set_depth_stencil_op(mtl::StencilOp::Invert);
     front_face_stencil.set_compare_fn(mtl::CompareFn::Always);
     front_face_stencil.set_read_mask(0);
 
-    let mut back_face_stencil = depth_desc.front_face_stenil();
+    let mut back_face_stencil = depth_desc.front_face_stencil();
     back_face_stencil.set_depth_stencil_op(mtl::StencilOp::Invert);
     back_face_stencil.set_compare_fn(mtl::CompareFn::Always);
     back_face_stencil.set_read_mask(0);
