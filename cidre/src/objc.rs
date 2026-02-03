@@ -341,6 +341,11 @@ unsafe extern "C-unwind" {
     pub fn objc_claimAutoreleasedReturnValue() -> Option<arc::R<Id>>;
     pub fn objc_autoreleaseReturnValue<'ar>(obj: Option<&Id>) -> Option<&'ar Id>;
 
+    pub fn objc_copyWeak<'ar>(dest: *mut *mut Id, src: *mut *mut Id) -> Option<&'ar Id>;
+    pub fn objc_destroyWeak(location: *mut *mut Id);
+    pub fn objc_storeWeak<'ar>(location: *mut *mut Id, value: Option<&Id>) -> Option<&'ar Id>;
+    pub fn objc_loadWeakRetained(location: *mut *mut Id) -> Option<arc::R<Id>>;
+
     pub fn object_getIndexedIvars(obj: *const c_void) -> *mut c_void;
     pub fn sel_registerName(str: *const i8) -> *const std::ffi::c_void;
     pub fn class_addMethod(
