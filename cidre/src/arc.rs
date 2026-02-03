@@ -3,10 +3,9 @@ use crate::objc;
 
 #[cfg(feature = "objc")]
 use std::{
-    cell::UnsafeCell,
     marker::PhantomData,
     ops::{Deref, DerefMut},
-    ptr::{NonNull, null_mut},
+    ptr::NonNull,
 };
 
 pub trait Release {
@@ -214,26 +213,36 @@ impl<T: Retain> Clone for Retained<T> {
 }
 
 #[cfg(feature = "objc")]
+#[derive(Debug)]
 pub struct Weak<T: objc::Obj> {
-    slot: Box<UnsafeCell<*mut objc::Id>>,
+    slot: Box<*mut objc::Id>,
     marker: PhantomData<T>,
 }
 
 #[cfg(feature = "objc")]
 impl<T: objc::Obj> Weak<T> {
     #[inline]
+    fn slot_ptr(&self) -> *mut *mut objc::Id {
+        self.slot.as_ref() as *const *mut objc::Id as *mut *mut objc::Id
+    }
+
+    #[inline]
     pub fn new() -> Self {
+        let slot = Box::new(std::ptr::null_mut());
+        // unsafe {
+        //     objc::objc_storeWeak(&mut *slot, None);
+        // }
         Self {
-            slot: Box::new(UnsafeCell::new(null_mut())),
+            slot,
             marker: PhantomData,
         }
     }
 
     #[inline]
     pub fn from_retained(val: &Retained<T>) -> Self {
-        let slot = Box::new(UnsafeCell::new(null_mut()));
+        let mut slot = Box::new(std::ptr::null_mut());
         unsafe {
-            objc::objc_storeWeak(slot.get(), Some(val.as_id_ref()));
+            objc::objc_storeWeak(&mut *slot, Some(val.as_id_ref()));
         }
         Self {
             slot,
@@ -243,7 +252,7 @@ impl<T: objc::Obj> Weak<T> {
 
     #[inline]
     pub fn upgrade(&self) -> Option<Retained<T>> {
-        unsafe { std::mem::transmute(objc::objc_loadWeakRetained(self.slot.get())) }
+        unsafe { std::mem::transmute(objc::objc_loadWeakRetained(self.slot_ptr())) }
     }
 }
 
@@ -259,13 +268,13 @@ impl<T: objc::Obj> Default for Weak<T> {
 impl<T: objc::Obj> Clone for Weak<T> {
     #[inline]
     fn clone(&self) -> Self {
-        let weak = Self {
-            slot: Box::new(UnsafeCell::new(null_mut())),
+        let mut weak = Self {
+            slot: Box::new(std::ptr::null_mut()),
             marker: PhantomData,
         };
 
         unsafe {
-            objc::objc_copyWeak(weak.slot.get(), self.slot.get());
+            objc::objc_copyWeak(&mut *weak.slot, self.slot_ptr());
         }
 
         weak
@@ -277,7 +286,7 @@ impl<T: objc::Obj> Drop for Weak<T> {
     #[inline]
     fn drop(&mut self) {
         unsafe {
-            objc::objc_storeWeak(self.slot.get(), None);
+            objc::objc_storeWeak(&mut *self.slot, None);
         }
     }
 }
@@ -314,6 +323,14 @@ pub type A<T> = Allocated<T>;
 pub type R<T> = Retained<T>;
 #[cfg(feature = "objc")]
 pub type Rar<T> = ReturnedAutoReleased<T>;
+#[cfg(feature = "objc")]
+pub type W<T> = Weak<T>;
+
+#[cfg(feature = "objc")]
+#[inline]
+pub fn downgrade<T: objc::Obj>(val: &Retained<T>) -> Weak<T> {
+    Weak::from_retained(val)
+}
 
 #[cfg(target_arch = "aarch64")]
 #[cfg(feature = "objc")]
@@ -382,17 +399,15 @@ pub fn rar_retain<T: objc::Obj>(id: Rar<T>) -> R<T> {
 mod tests {
     use crate::{arc, objc};
     use std::sync::{
-        Once,
         atomic::{AtomicBool, Ordering},
+        Arc, Once,
     };
 
-    static DROPPED: AtomicBool = AtomicBool::new(false);
-
-    struct D;
+    struct D(Arc<AtomicBool>);
 
     impl Drop for D {
         fn drop(&mut self) {
-            DROPPED.store(true, Ordering::SeqCst);
+            self.0.store(true, Ordering::SeqCst);
         }
     }
 
@@ -409,7 +424,8 @@ mod tests {
     #[test]
     fn weak_upgrades_while_strong_exists() {
         init_cls();
-        let o = WeakTestObj::with(D);
+        let dropped = Arc::new(AtomicBool::new(false));
+        let o = WeakTestObj::with(D(Arc::clone(&dropped)));
         let w = arc::Weak::from_retained(&o);
 
         let strong = w.upgrade();
@@ -419,30 +435,32 @@ mod tests {
     #[test]
     fn weak_clears_after_drop() {
         init_cls();
-        DROPPED.store(false, Ordering::SeqCst);
+        let dropped = Arc::new(AtomicBool::new(false));
+        let dropped_in = Arc::clone(&dropped);
         let w = objc::ar_pool(|| {
-            let o = WeakTestObj::with(D);
+            let o = WeakTestObj::with(D(dropped_in));
             let w = arc::Weak::from_retained(&o);
             assert!(w.upgrade().is_some());
             w
         });
 
-        assert!(DROPPED.load(Ordering::SeqCst));
+        assert!(dropped.load(Ordering::SeqCst));
         assert!(w.upgrade().is_none());
     }
 
     #[test]
     fn weak_clears_after_drop_no_ar_pool() {
         init_cls();
-        DROPPED.store(false, Ordering::SeqCst);
+        let dropped = Arc::new(AtomicBool::new(false));
+        let dropped_in = Arc::clone(&dropped);
         let w = {
-            let o = WeakTestObj::with(D);
+            let o = WeakTestObj::with(D(dropped_in));
             let w = arc::Weak::from_retained(&o);
             assert!(w.upgrade().is_some());
             w
         };
 
-        assert!(DROPPED.load(Ordering::SeqCst));
+        assert!(dropped.load(Ordering::SeqCst));
         assert!(w.upgrade().is_none());
     }
 
@@ -463,9 +481,10 @@ mod tests {
     #[test]
     fn weak_clone_tracks_slot() {
         init_cls();
-        DROPPED.store(false, Ordering::SeqCst);
+        let dropped = Arc::new(AtomicBool::new(false));
+        let dropped_in = Arc::clone(&dropped);
         let w = objc::ar_pool(|| {
-            let o = WeakTestObj::with(D);
+            let o = WeakTestObj::with(D(dropped_in));
             let w = arc::Weak::from_retained(&o);
             let w2 = w.clone();
 
@@ -476,7 +495,7 @@ mod tests {
         });
 
         let (w1, w2) = w;
-        assert!(DROPPED.load(Ordering::SeqCst));
+        assert!(dropped.load(Ordering::SeqCst));
         assert!(w1.upgrade().is_none());
         assert!(w2.upgrade().is_none());
     }
