@@ -318,6 +318,10 @@ name = "array_indexing"
 harness = false
 
 [[bench]]
+name = "index_path"
+harness = false
+
+[[bench]]
 name = "dictionary"
 harness = false
 

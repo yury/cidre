@@ -47,7 +47,7 @@ define_obj_type!(
 
 /// NSCollectionViewAdditions
 impl ns::IndexPath {
-    #[objc::msg_send(indexPathForItem:section:)]
+    #[objc::msg_send(indexPathForItem:inSection:)]
     pub fn with_item(item: ns::Integer, section: ns::Integer) -> arc::R<Self>;
 
     #[objc::msg_send(item)]
