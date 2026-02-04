@@ -235,10 +235,10 @@ mod tests {
         assert_eq!(range_set.len(), 100);
         assert_eq!(range_set.first_index(), 0);
         assert_eq!(range_set.last_index(), 99);
-        assert_eq!(range_set.index_greater_than(0), 1);
-        assert_eq!(range_set.index_less_than(50), 49);
-        assert_eq!(range_set.index_greater_than_or_equal(0), 0);
-        assert_eq!(range_set.index_less_than_or_equal(50), 50);
+        assert_eq!(range_set.index_gt(0), 1);
+        assert_eq!(range_set.index_lt(50), 49);
+        assert_eq!(range_set.index_ge(0), 0);
+        assert_eq!(range_set.index_le(50), 50);
         assert!(range_set.intersects_range(ns::Range::new(50, 10)));
         assert_eq!(range_set.count_in_range(ns::Range::new(10, 10)), 10);
         assert!(range_set.is_equal_to_index_set(&ns::IndexSet::with_range(ns::Range::new(0, 100))));
