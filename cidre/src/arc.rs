@@ -57,13 +57,6 @@ impl<T: Retain> AsRef<T> for Retained<T> {
     }
 }
 
-impl<T: Retain> std::borrow::Borrow<T> for Retained<T> {
-    #[inline]
-    fn borrow(&self) -> &T {
-        self.as_ref()
-    }
-}
-
 impl<T: Retain> AsMut<T> for Retained<T> {
     #[inline]
     fn as_mut(&mut self) -> &mut T {
@@ -328,7 +321,6 @@ impl<T: objc::Obj> DerefMut for ReturnedAutoReleased<T> {
 
 pub type A<T> = Allocated<T>;
 pub type R<T> = Retained<T>;
-pub type CowR<'a, T> = std::borrow::Cow<'a, Retained<T>>;
 #[cfg(feature = "objc")]
 pub type Rar<T> = ReturnedAutoReleased<T>;
 #[cfg(feature = "objc")]
@@ -405,7 +397,7 @@ pub fn rar_retain<T: objc::Obj>(id: Rar<T>) -> R<T> {
 
 #[cfg(all(test, feature = "objc"))]
 mod tests {
-    use crate::{arc, ns, objc};
+    use crate::{arc, objc};
     use std::sync::{
         atomic::{AtomicBool, Ordering},
         Arc, Once,
@@ -506,16 +498,5 @@ mod tests {
         assert!(dropped.load(Ordering::SeqCst));
         assert!(w1.upgrade().is_none());
         assert!(w2.upgrade().is_none());
-    }
-
-    #[test]
-    fn retained_borrow_and_cow() {
-        let s = ns::String::new();
-        let _: &ns::String = std::borrow::Borrow::borrow(&s);
-
-        let _cow: std::borrow::Cow<'_, arc::Retained<ns::String>> =
-            std::borrow::Cow::Borrowed(&s);
-        let _cow: std::borrow::Cow<'_, arc::Retained<ns::String>> =
-            std::borrow::Cow::Owned(s.retained());
     }
 }
