@@ -51,8 +51,8 @@ impl IndexSet {
     }
 
     #[inline]
-    pub fn with_index_set(val: &ns::IndexSet) -> arc::R<Self> {
-        Self::alloc().init_with_index_set(val)
+    pub fn with_index_set(val: impl AsRef<IndexSet>) -> arc::R<Self> {
+        Self::alloc().init_with_index_set(val.as_ref())
     }
 
     #[inline]
@@ -67,16 +67,16 @@ impl IndexSet {
     pub fn last_index(&self) -> usize;
 
     #[objc::msg_send(indexGreaterThanIndex:)]
-    pub fn index_greater_than(&self, val: usize) -> usize;
+    pub fn index_gt(&self, val: usize) -> usize;
 
     #[objc::msg_send(indexLessThanIndex:)]
-    pub fn index_less_than(&self, val: usize) -> usize;
+    pub fn index_lt(&self, val: usize) -> usize;
 
     #[objc::msg_send(indexGreaterThanOrEqualToIndex:)]
-    pub fn index_greater_than_or_equal(&self, val: usize) -> usize;
+    pub fn index_ge(&self, val: usize) -> usize;
 
     #[objc::msg_send(indexLessThanOrEqualToIndex:)]
-    pub fn index_less_than_or_equal(&self, val: usize) -> usize;
+    pub fn index_le(&self, val: usize) -> usize;
 
     #[objc::msg_send(containsIndex:)]
     pub fn contains_index(&self, val: usize) -> bool;
@@ -103,7 +103,6 @@ impl IndexSet {
     pub fn copy(&self) -> arc::Retained<IndexSet>;
 }
 
-/// NSExtendedIndexSet
 #[cfg(feature = "blocks")]
 impl IndexSet {
     #[objc::msg_send(enumerateIndexesUsingBlock:)]
