@@ -323,13 +323,24 @@ pub type A<T> = Allocated<T>;
 pub type R<T> = Retained<T>;
 #[cfg(feature = "objc")]
 pub type Rar<T> = ReturnedAutoReleased<T>;
-#[cfg(feature = "objc")]
-pub type W<T> = Weak<T>;
 
 #[cfg(feature = "objc")]
 #[inline]
 pub fn downgrade<T: objc::Obj>(val: &Retained<T>) -> Weak<T> {
     Weak::from_retained(val)
+}
+
+impl<T: Release> std::borrow::Borrow<T> for R<T> {
+    fn borrow(&self) -> &T {
+        &self
+    }
+}
+
+#[cfg(feature = "objc")]
+impl<T: objc::Obj> std::borrow::BorrowMut<T> for R<T> {
+    fn borrow_mut(&mut self) -> &mut T {
+        self.as_mut()
+    }
 }
 
 #[cfg(target_arch = "aarch64")]
@@ -399,8 +410,8 @@ pub fn rar_retain<T: objc::Obj>(id: Rar<T>) -> R<T> {
 mod tests {
     use crate::{arc, objc};
     use std::sync::{
-        atomic::{AtomicBool, Ordering},
         Arc, Once,
+        atomic::{AtomicBool, Ordering},
     };
 
     struct D(Arc<AtomicBool>);

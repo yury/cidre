@@ -62,6 +62,20 @@ impl From<[usize; 2]> for arc::R<IndexPath> {
     }
 }
 
+impl std::borrow::ToOwned for ns::IndexPath {
+    type Owned = arc::R<IndexPath>;
+
+    fn to_owned(&self) -> Self::Owned {
+        self.retained()
+    }
+}
+
+impl<'a> From<&'a ns::IndexPath> for std::borrow::Cow<'a, ns::IndexPath> {
+    fn from(value: &'a ns::IndexPath) -> Self {
+        std::borrow::Cow::Borrowed(value)
+    }
+}
+
 impl Eq for IndexPath {}
 impl std::hash::Hash for IndexPath {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
