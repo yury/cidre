@@ -153,6 +153,8 @@ pub use collection_view_item_registration::CollectionViewSupplementaryRegistrati
 mod collection_view_layout;
 pub use collection_view_layout::CollectionViewLayout;
 pub use collection_view_layout::CollectionViewLayoutAttrs;
+pub use collection_view_layout::CollectionViewScrollDir;
+pub use collection_view_layout::element_kind as collection_view_element_kind;
 
 mod collection_view_transition_layout;
 pub use collection_view_transition_layout::CollectionViewTransitionLayout;

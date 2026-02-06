@@ -40,10 +40,8 @@ impl CollectionViewScrollPos {
     pub const NEAREST_HORIZONTAL_EDGE: Self = Self(1 << 9);
 }
 
-define_obj_type!(
-    #[doc(alias = "NSCollectionViewSupplementaryElementKind")]
-    pub CollectionViewSupplementaryElementKind(ns::String)
-);
+#[doc(alias = "NSCollectionViewSupplementaryElementKind")]
+pub type CollectionViewElementKind = ns::String;
 
 /// NSCollectionViewAdditions
 impl ns::IndexPath {
@@ -181,7 +179,7 @@ impl CollectionView {
     #[objc::msg_send(layoutAttributesForSupplementaryElementOfKind:atIndexPath:)]
     pub fn layout_attributes_for_supplementary_element_of_kind_at_index_path(
         &self,
-        kind: &ns::CollectionViewSupplementaryElementKind,
+        kind: &ns::CollectionViewElementKind,
         index_path: &ns::IndexPath,
     ) -> Option<arc::R<ns::CollectionViewLayoutAttrs>>;
 
@@ -274,7 +272,7 @@ impl CollectionView {
     pub fn register_class_for_supplementary_view_of_kind_with_id(
         &mut self,
         view_class: Option<&objc::Class<ns::Id>>,
-        kind: &ns::CollectionViewSupplementaryElementKind,
+        kind: &ns::CollectionViewElementKind,
         identifier: &ns::UiItemId,
     );
 
@@ -282,7 +280,7 @@ impl CollectionView {
     pub fn register_nib_for_supplementary_view_of_kind_with_id(
         &mut self,
         nib: Option<&ns::Id>,
-        kind: &ns::CollectionViewSupplementaryElementKind,
+        kind: &ns::CollectionViewElementKind,
         identifier: &ns::UiItemId,
     );
 
@@ -296,7 +294,7 @@ impl CollectionView {
     #[objc::msg_send(makeSupplementaryViewOfKind:withIdentifier:forIndexPath:)]
     pub fn make_supplementary_view_of_kind_with_id_for_index_path(
         &self,
-        element_kind: &ns::CollectionViewSupplementaryElementKind,
+        element_kind: &ns::CollectionViewElementKind,
         identifier: &ns::UiItemId,
         index_path: &ns::IndexPath,
     ) -> arc::R<ns::View>;
@@ -328,20 +326,20 @@ impl CollectionView {
     #[objc::msg_send(supplementaryViewForElementKind:atIndexPath:)]
     pub fn supplementary_view_for_element_kind_at_index_path(
         &self,
-        element_kind: &ns::CollectionViewSupplementaryElementKind,
+        element_kind: &ns::CollectionViewElementKind,
         index_path: &ns::IndexPath,
     ) -> Option<arc::R<ns::View>>;
 
     #[objc::msg_send(visibleSupplementaryViewsOfKind:)]
     pub fn visible_supplementary_views_of_kind(
         &self,
-        element_kind: &ns::CollectionViewSupplementaryElementKind,
+        element_kind: &ns::CollectionViewElementKind,
     ) -> arc::R<ns::Array<ns::View>>;
 
     #[objc::msg_send(indexPathsForVisibleSupplementaryElementsOfKind:)]
     pub fn index_paths_for_visible_supplementary_elements_of_kind(
         &self,
-        element_kind: &ns::CollectionViewSupplementaryElementKind,
+        element_kind: &ns::CollectionViewElementKind,
     ) -> arc::R<ns::Set<ns::IndexPath>>;
 
     #[objc::msg_send(insertSections:)]
@@ -459,7 +457,7 @@ pub trait CollectionViewDataSrc: objc::Obj {
     fn collection_view_view_for_supplementary_element_of_kind_at_index_path(
         &mut self,
         collection_view: &mut ns::CollectionView,
-        kind: &ns::CollectionViewSupplementaryElementKind,
+        kind: &ns::CollectionViewElementKind,
         index_path: &ns::IndexPath,
     ) -> arc::R<ns::View>;
 }
@@ -729,7 +727,7 @@ pub trait CollectionViewDelegate: objc::Obj {
         &mut self,
         collection_view: &mut ns::CollectionView,
         view: &mut ns::View,
-        element_kind: &ns::CollectionViewSupplementaryElementKind,
+        element_kind: &ns::CollectionViewElementKind,
         index_path: &ns::IndexPath,
     );
 
@@ -748,7 +746,7 @@ pub trait CollectionViewDelegate: objc::Obj {
         &mut self,
         collection_view: &mut ns::CollectionView,
         view: &mut ns::View,
-        element_kind: &ns::CollectionViewSupplementaryElementKind,
+        element_kind: &ns::CollectionViewElementKind,
         index_path: &ns::IndexPath,
     );
 

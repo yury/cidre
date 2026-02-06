@@ -14,7 +14,7 @@ pub type CollectionViewDiffableDataSrcItemProvider<I> = blocks::EscBlock<
 pub type CollectionViewDiffableDataSrcSupplementaryViewProvider = blocks::EscBlock<
     fn(
         &ns::CollectionView,
-        &ns::CollectionViewSupplementaryElementKind,
+        &ns::CollectionViewElementKind,
         &ns::IndexPath,
     ) -> Option<arc::R<ns::View>>,
 >;
@@ -86,7 +86,7 @@ impl<S: objc::Obj, I: objc::Obj> CollectionViewDiffableDataSrc<S, I> {
         &mut self,
         provider: impl FnMut(
             &ns::CollectionView,
-            &ns::CollectionViewSupplementaryElementKind,
+            &ns::CollectionViewElementKind,
             &ns::IndexPath,
         ) -> Option<arc::R<ns::View>>
         + 'static,
