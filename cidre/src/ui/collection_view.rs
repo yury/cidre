@@ -1069,27 +1069,27 @@ impl CollectionView {
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(performBatchUpdates:completion:)]
-    pub fn perform_batch_updates_completion_block(
+    pub fn perform_batch_updates_ch(
         &mut self,
-        updates: Option<&mut blocks::EscBlock<fn()>>,
+        updates: Option<&mut blocks::NoEscBlock<fn()>>,
         completion: Option<&mut blocks::EscBlock<fn(bool)>>,
     );
 
     #[cfg(feature = "blocks")]
-    pub fn perform_batch_updates(&mut self, updates: impl FnMut() + 'static) {
-        let mut updates = blocks::EscBlock::new0(updates);
-        self.perform_batch_updates_completion_block(Some(&mut updates), None);
+    pub fn perform_batch_updates(&mut self, mut updates: impl FnMut()) {
+        let mut updates = unsafe { blocks::NoEscBlock::stack0(&mut updates) };
+        self.perform_batch_updates_ch(Some(&mut updates), None);
     }
 
     #[cfg(feature = "blocks")]
     pub fn perform_batch_updates_with_completion(
         &mut self,
-        updates: impl FnMut() + 'static,
+        mut updates: impl FnMut(),
         completion: impl FnMut(bool) + 'static,
     ) {
-        let mut updates = blocks::EscBlock::new0(updates);
+        let mut updates = unsafe { blocks::NoEscBlock::stack0(&mut updates) };
         let mut completion = blocks::EscBlock::new1(completion);
-        self.perform_batch_updates_completion_block(Some(&mut updates), Some(&mut completion));
+        self.perform_batch_updates_ch(Some(&mut updates), Some(&mut completion));
     }
 
     #[objc::msg_send(beginInteractiveMovementForItemAtIndexPath:)]
