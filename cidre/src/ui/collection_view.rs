@@ -69,27 +69,30 @@ define_obj_type!(
 pub trait CollectionViewDataSrc: objc::Obj {
     #[objc::msg_send(collectionView:numberOfItemsInSection:)]
     fn collection_view_items_n_in_section(
-        &self,
-        collection_view: &ui::CollectionView,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
         section: ns::Integer,
     ) -> ns::Integer;
 
     #[objc::msg_send(collectionView:cellForItemAtIndexPath:)]
     fn collection_view_cell_for_item_at_index_path(
-        &self,
-        collection_view: &ui::CollectionView,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     ) -> arc::R<ui::CollectionViewCell>;
 
     #[objc::optional]
     #[objc::msg_send(numberOfSectionsInCollectionView:)]
-    fn collection_view_sections_n(&self, collection_view: &ui::CollectionView) -> ns::Integer;
+    fn collection_view_sections_n(
+        &mut self,
+        collection_view: &mut ui::CollectionView,
+    ) -> ns::Integer;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:viewForSupplementaryElementOfKind:atIndexPath:)]
     fn collection_view_view_for_supplementary_element_of_kind_at_index_path(
-        &self,
-        collection_view: &ui::CollectionView,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
         kind: &ns::String,
         index_path: &ns::IndexPath,
     ) -> arc::R<ui::CollectionReusableView>;
@@ -97,16 +100,16 @@ pub trait CollectionViewDataSrc: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(collectionView:canMoveItemAtIndexPath:)]
     fn collection_view_can_move_item_at_index_path(
-        &self,
-        collection_view: &ui::CollectionView,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
     ) -> bool;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:moveItemAtIndexPath:toIndexPath:)]
     fn collection_view_move_item_at_index_path_to_index_path(
-        &self,
-        collection_view: &ui::CollectionView,
+        &mut self,
+        collection_view: &mut ui::CollectionView,
         source_index_path: &ns::IndexPath,
         destination_index_path: &ns::IndexPath,
     );
