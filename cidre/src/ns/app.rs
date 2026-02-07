@@ -31,11 +31,13 @@ pub use collection_view::CollectionView;
 pub use collection_view::CollectionViewDataSrc;
 pub use collection_view::CollectionViewDataSrcImpl;
 pub use collection_view::CollectionViewDelegate;
+pub use collection_view::CollectionViewDelegateImpl;
 pub use collection_view::CollectionViewDropOp;
 pub use collection_view::CollectionViewElement;
 pub use collection_view::CollectionViewElementKind;
 pub use collection_view::CollectionViewItemHighlightState;
 pub use collection_view::CollectionViewPrefetching;
+pub use collection_view::CollectionViewPrefetchingImpl;
 pub use collection_view::CollectionViewScrollPos;
 pub use collection_view::CollectionViewSectionHeaderView;
 
