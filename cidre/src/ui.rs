@@ -172,6 +172,7 @@ pub use collection_view::CollectionView;
 pub use collection_view::CollectionViewDataSrc;
 pub use collection_view::CollectionViewDataSrcImpl;
 pub use collection_view::CollectionViewDataSrcPrefetching;
+pub use collection_view::CollectionViewDataSrcPrefetchingImpl;
 pub use collection_view::CollectionViewDelegate;
 pub use collection_view::CollectionViewDelegateImpl;
 pub use collection_view::CollectionViewDragDelegate;
