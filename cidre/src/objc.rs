@@ -277,6 +277,10 @@ impl Id {
 
     #[objc::msg_send(hash)]
     pub fn hash(&self) -> ns::UInteger;
+
+    pub fn as_ptr(&self) -> *const Self {
+        self as *const Self
+    }
 }
 
 impl Obj for Id {}
