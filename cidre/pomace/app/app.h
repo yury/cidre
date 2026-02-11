@@ -36,6 +36,7 @@ Class NS_FONT;
 Class NS_FONT_MANAGER;
 Class NS_GESTURE_RECOGNIZER;
 Class NS_STATUS_BAR;
+Class NS_ANIMATION_CONTEXT;
 
 Class NS_DIFFABLE_DATA_SOURCE_SNAPSHOT;
 Class NS_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE;
@@ -78,6 +79,7 @@ static void app_initializer(void)
         NS_FONT_MANAGER = [NSFontManager class];
         NS_GESTURE_RECOGNIZER = [NSGestureRecognizer class];
         NS_STATUS_BAR = [NSStatusBar class];
+        NS_ANIMATION_CONTEXT = [NSAnimationContext class];
         
         NS_DIFFABLE_DATA_SOURCE_SNAPSHOT = [NSDiffableDataSourceSnapshot class];
         NS_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE = [NSCollectionViewDiffableDataSource class];
