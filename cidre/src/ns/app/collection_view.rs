@@ -429,6 +429,8 @@ impl CollectionView {
     ) -> arc::R<ns::Image>;
 }
 
+impl ns::AnimatablePropContainer for CollectionView {}
+
 #[objc::protocol(NSCollectionViewDataSource)]
 pub trait CollectionViewDataSrc: objc::Obj {
     #[objc::msg_send(collectionView:numberOfItemsInSection:)]
