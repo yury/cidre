@@ -571,14 +571,7 @@ impl<T> Shared<T> {
 }
 
 #[cfg(feature = "async")]
-pub struct Completion<R>(Arc<Mutex<Shared<R>>>);
-
-#[cfg(feature = "async")]
-impl<R> Completion<R> {
-    pub(crate) const fn new(r: Arc<Mutex<Shared<R>>>) -> Self {
-        Self(r)
-    }
-}
+pub struct Completion<R>(pub(crate) Arc<Mutex<Shared<R>>>);
 
 #[cfg(feature = "async")]
 impl<T> std::future::Future for Completion<T> {

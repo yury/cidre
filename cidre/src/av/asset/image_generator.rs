@@ -101,7 +101,7 @@ impl ImageGenerator {
         request_time: cm::Time,
     ) -> ns::Result<'ear, (arc::R<cg::Image>, cm::Time), arc::R<ns::Error>> {
         let shared = blocks::Shared::new();
-        let comp = blocks::Completion::new(shared.clone());
+        let comp = blocks::Completion(shared.clone());
         let mut block = blocks::EscBlock::new3(
             move |image: Option<&cg::Image>, actual_time: cm::Time, error: Option<&ns::Error>| {
                 if let Some(err) = error {
