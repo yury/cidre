@@ -24,6 +24,11 @@ pub mod at;
 #[cfg(feature = "av")]
 pub mod av;
 
+/// ARKit
+#[cfg(target_os = "ios")]
+#[cfg(feature = "ar")]
+pub mod ar;
+
 /// Accessibility
 #[cfg(all(target_os = "macos", feature = "ax"))]
 pub mod ax;

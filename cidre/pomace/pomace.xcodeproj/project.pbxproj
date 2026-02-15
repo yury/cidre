@@ -62,6 +62,8 @@
 		D2C1FA3C2CCFAA7C008EFEDC /* mtk.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2C1FA382CCFAA7C008EFEDC /* mtk.h */; };
 		D2FF55E52E4F17F500707A1D /* at.m in Sources */ = {isa = PBXBuildFile; fileRef = D2FF55E32E4F17F500707A1D /* at.m */; };
 		D2FF55E62E4F17F500707A1D /* at.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D2FF55E22E4F17F500707A1D /* at.h */; };
+		D3A100012E60000100A10001 /* ar.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A100062E60000100A10001 /* ar.m */; };
+		D3A100022E60000100A10001 /* ar.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D3A100052E60000100A10001 /* ar.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -335,6 +337,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D3A100032E60000100A10001 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				D3A100022E60000100A10001 /* ar.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -427,6 +439,9 @@
 		D2FF55D82E4F17E700707A1D /* libat.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libat.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2FF55E22E4F17F500707A1D /* at.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = at.h; sourceTree = "<group>"; };
 		D2FF55E32E4F17F500707A1D /* at.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = at.m; sourceTree = "<group>"; };
+		D3A100042E60000100A10001 /* libar.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libar.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D3A100052E60000100A10001 /* ar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ar.h; sourceTree = "<group>"; };
+		D3A100062E60000100A10001 /* ar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ar.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -614,6 +629,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D2FF55D52E4F17E700707A1D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D3A100072E60000100A10001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -902,6 +924,7 @@
 				D2BD41A52CF1AAEB000CF128 /* core_audio */,
 				D27ADA632E094D3600A7D124 /* ml */,
 				D2FF55E42E4F17F500707A1D /* at */,
+				D3A100082E60000100A10001 /* ar */,
 				D2FBEBF827CB653200FD974A /* Products */,
 				D2A5294F283A26B800E7B4C6 /* Frameworks */,
 			);
@@ -937,6 +960,7 @@
 				D2BD41992CF1AAE0000CF128 /* libcore_audio.a */,
 				D27ADA572E094D2E00A7D124 /* libml.a */,
 				D2FF55D82E4F17E700707A1D /* libat.a */,
+				D3A100042E60000100A10001 /* libar.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -948,6 +972,15 @@
 				D2FF55E32E4F17F500707A1D /* at.m */,
 			);
 			path = at;
+			sourceTree = "<group>";
+		};
+		D3A100082E60000100A10001 /* ar */ = {
+			isa = PBXGroup;
+			children = (
+				D3A100052E60000100A10001 /* ar.h */,
+				D3A100062E60000100A10001 /* ar.m */,
+			);
+			path = ar;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1422,6 +1455,23 @@
 			productReference = D2FF55D82E4F17E700707A1D /* libat.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		D3A100092E60000100A10001 /* ar */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D3A1000D2E60000100A10001 /* Build configuration list for PBXNativeTarget "ar" */;
+			buildPhases = (
+				D3A1000A2E60000100A10001 /* Sources */,
+				D3A100072E60000100A10001 /* Frameworks */,
+				D3A100032E60000100A10001 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ar;
+			productName = ar;
+			productReference = D3A100042E60000100A10001 /* libar.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1512,6 +1562,9 @@
 					D2FF55D72E4F17E700707A1D = {
 						CreatedOnToolsVersion = 26.0;
 					};
+					D3A100092E60000100A10001 = {
+						CreatedOnToolsVersion = 26.0;
+					};
 				};
 			};
 			buildConfigurationList = D2FBEBF227CB653200FD974A /* Build configuration list for PBXProject "pomace" */;
@@ -1554,6 +1607,7 @@
 				D2C1FA2D2CCFAA6E008EFEDC /* mtk */,
 				D27ADA562E094D2E00A7D124 /* ml */,
 				D2FF55D72E4F17E700707A1D /* at */,
+				D3A100092E60000100A10001 /* ar */,
 			);
 		};
 /* End PBXProject section */
@@ -1772,6 +1826,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2FF55E52E4F17F500707A1D /* at.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D3A1000A2E60000100A10001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D3A100012E60000100A10001 /* ar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2808,6 +2870,45 @@
 			};
 			name = Release;
 		};
+		D3A1000B2E60000100A10001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = FD6ZML48V9;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D3A1000C2E60000100A10001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = FD6ZML48V9;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -3059,6 +3160,15 @@
 			buildConfigurations = (
 				D2FF55DE2E4F17E700707A1D /* Debug */,
 				D2FF55DF2E4F17E700707A1D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D3A1000D2E60000100A10001 /* Build configuration list for PBXNativeTarget "ar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D3A1000B2E60000100A10001 /* Debug */,
+				D3A1000C2E60000100A10001 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

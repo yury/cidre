@@ -338,6 +338,9 @@ fn main() {
     if sdk == "iphoneos" || sdk == "iphonesimulator" {
         add_xc_target_args_from_features(&mut xc_target_args, &["wc"]);
     }
+    if sdk == "iphoneos" || sdk == "iphonesimulator" || sdk == "maccatalyst" {
+        add_xc_target_args_from_features(&mut xc_target_args, &["ar"]);
+    }
     if sdk == "macosx" || sdk == "maccatalyst" {
         add_xc_target_args_from_features(&mut xc_target_args, &["sc", "app"]);
         if env::var_os("CARGO_FEATURE_PRIVATE").is_some() {
