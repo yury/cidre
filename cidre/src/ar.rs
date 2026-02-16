@@ -25,6 +25,10 @@ pub use frame::Frame;
 pub use frame::SegmentationClass;
 pub use frame::WorldMappingStatus;
 
+mod light_estimate;
+pub use light_estimate::DirectionalLightEstimate;
+pub use light_estimate::LightEstimate;
+
 mod tracking_status_types;
 pub use tracking_status_types::TrackingState;
 pub use tracking_status_types::TrackingStateReason;

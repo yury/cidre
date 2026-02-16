@@ -47,6 +47,10 @@ impl Frame {
     #[objc::msg_send(anchors)]
     pub fn anchors(&self) -> arc::R<ns::Array<ar::Anchor>>;
 
+    /// Light estimate for the current scene, when available.
+    #[objc::msg_send(lightEstimate)]
+    pub fn light_estimate(&self) -> Option<arc::R<ar::LightEstimate>>;
+
     /// World-mapping status for the currently visible area.
     #[objc::msg_send(worldMappingStatus)]
     #[objc::available(ios = 12.0)]
