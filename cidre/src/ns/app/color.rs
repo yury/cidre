@@ -490,6 +490,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(unused_unsafe)]
     fn hdr() {
         let red = ns::Color::sys_red();
         if api::macos_available("26.0") {
