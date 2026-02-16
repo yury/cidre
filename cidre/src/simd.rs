@@ -531,6 +531,96 @@ impl std::ops::IndexMut<usize> for f32x4x4 {
         }
     }
 }
+
+pub trait SimdMul<Rhs = Self> {
+    type Output;
+
+    fn simd_mul(self, rhs: Rhs) -> Self::Output;
+}
+
+#[inline]
+pub fn simd_mul<L, R>(lhs: L, rhs: R) -> <L as SimdMul<R>>::Output
+where
+    L: SimdMul<R>,
+{
+    lhs.simd_mul(rhs)
+}
+
+#[inline]
+#[cfg(target_arch = "aarch64")]
+fn f32x4_dot_cols(c0: f32x4, c1: f32x4, c2: f32x4, c3: f32x4, v: f32x4) -> f32x4 {
+    let out = unsafe {
+        let acc = std::arch::aarch64::vmulq_laneq_f32::<0>(c0.0, v.0);
+        let acc = std::arch::aarch64::vmlaq_laneq_f32::<1>(acc, c1.0, v.0);
+        let acc = std::arch::aarch64::vmlaq_laneq_f32::<2>(acc, c2.0, v.0);
+        std::arch::aarch64::vmlaq_laneq_f32::<3>(acc, c3.0, v.0)
+    };
+    f32x4(out)
+}
+
+#[inline]
+#[cfg(not(target_arch = "aarch64"))]
+fn f32x4_dot_cols(c0: f32x4, c1: f32x4, c2: f32x4, c3: f32x4, v: f32x4) -> f32x4 {
+    let vx = v.x();
+    let vy = v.y();
+    let vz = v.z();
+    let vw = v.w();
+
+    f32x4::with_xyzw(
+        c0.x() * vx + c1.x() * vy + c2.x() * vz + c3.x() * vw,
+        c0.y() * vx + c1.y() * vy + c2.y() * vz + c3.y() * vw,
+        c0.z() * vx + c1.z() * vy + c2.z() * vz + c3.z() * vw,
+        c0.w() * vx + c1.w() * vy + c2.w() * vz + c3.w() * vw,
+    )
+}
+
+#[inline]
+#[cfg(not(target_arch = "aarch64"))]
+fn f32x4x4_with_cols(c0: f32x4, c1: f32x4, c2: f32x4, c3: f32x4) -> f32x4x4 {
+    f32x4x4([c0, c1, c2, c3])
+}
+
+#[inline]
+#[cfg(target_arch = "aarch64")]
+fn f32x4x4_with_cols(c0: f32x4, c1: f32x4, c2: f32x4, c3: f32x4) -> f32x4x4 {
+    f32x4x4(std::arch::aarch64::float32x4x4_t(c0.0, c1.0, c2.0, c3.0))
+}
+
+impl SimdMul<f32x4> for f32x4x4 {
+    type Output = f32x4;
+
+    fn simd_mul(self, rhs: f32x4) -> Self::Output {
+        f32x4_dot_cols(self[0], self[1], self[2], self[3], rhs)
+    }
+}
+
+impl std::ops::Mul<f32x4> for f32x4x4 {
+    type Output = f32x4;
+
+    fn mul(self, rhs: f32x4) -> Self::Output {
+        simd_mul(self, rhs)
+    }
+}
+
+impl SimdMul<f32x4x4> for f32x4x4 {
+    type Output = f32x4x4;
+
+    fn simd_mul(self, rhs: f32x4x4) -> Self::Output {
+        let c0 = simd_mul(self, rhs[0]);
+        let c1 = simd_mul(self, rhs[1]);
+        let c2 = simd_mul(self, rhs[2]);
+        let c3 = simd_mul(self, rhs[3]);
+        f32x4x4_with_cols(c0, c1, c2, c3)
+    }
+}
+
+impl std::ops::Mul<f32x4x4> for f32x4x4 {
+    type Output = f32x4x4;
+
+    fn mul(self, rhs: f32x4x4) -> Self::Output {
+        simd_mul(self, rhs)
+    }
+}
 #[cfg(feature = "half")]
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[allow(non_camel_case_types)]
@@ -680,6 +770,37 @@ impl f32quat {
     }
 }
 
+impl SimdMul<f32quat> for f32quat {
+    type Output = f32quat;
+
+    fn simd_mul(self, rhs: f32quat) -> Self::Output {
+        let x1 = self.x();
+        let y1 = self.y();
+        let z1 = self.z();
+        let w1 = self.w();
+
+        let x2 = rhs.x();
+        let y2 = rhs.y();
+        let z2 = rhs.z();
+        let w2 = rhs.w();
+
+        f32quat(f32x4::with_xyzw(
+            w1 * x2 + x1 * w2 + y1 * z2 - z1 * y2,
+            w1 * y2 - x1 * z2 + y1 * w2 + z1 * x2,
+            w1 * z2 + x1 * y2 - y1 * x2 + z1 * w2,
+            w1 * w2 - x1 * x2 - y1 * y2 - z1 * z2,
+        ))
+    }
+}
+
+impl std::ops::Mul<f32quat> for f32quat {
+    type Output = f32quat;
+
+    fn mul(self, rhs: f32quat) -> Self::Output {
+        simd_mul(self, rhs)
+    }
+}
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[allow(non_camel_case_types)]
 #[repr(transparent)]
@@ -779,13 +900,69 @@ pub mod packed {
 
 #[cfg(test)]
 mod tests {
+    use super::f32quat;
     use super::f32x2;
     use super::f32x2x2;
+    use super::f32x3;
+    use super::f32x4;
+    use super::f32x4x4;
+    use super::simd_mul;
+
+    fn assert_f32_close(a: f32, b: f32) {
+        let delta = (a - b).abs();
+        assert!(delta < 1e-6, "{a} != {b} (delta={delta})");
+    }
+
+    fn assert_f32x4_close(a: f32x4, b: f32x4) {
+        assert_f32_close(a.x(), b.x());
+        assert_f32_close(a.y(), b.y());
+        assert_f32_close(a.z(), b.z());
+        assert_f32_close(a.w(), b.w());
+    }
+
+    fn assert_f32quat_close(a: f32quat, b: f32quat) {
+        assert_f32x4_close(a.0, b.0);
+    }
 
     #[test]
     fn mul() {
         let _x = f32x2x2([f32x2::with_xy(1.0, 0.0), f32x2::with_xy(1.0, 0.0)]);
         let _y = f32x2x2([f32x2::with_xy(1.0, 0.0), f32x2::with_xy(1.0, 0.0)]);
+    }
+
+    #[test]
+    fn f32x4x4_mul_identity() {
+        let a = f32x4x4::translate(2.0, 3.0, 4.0);
+        let i = f32x4x4::identity();
+
+        assert_eq!(a * i, a);
+        assert_eq!(i * a, a);
+        assert_eq!(simd_mul(a, i), a);
+        assert_eq!(simd_mul(i, a), a);
+    }
+
+    #[test]
+    fn f32x4x4_mul_translate_compose() {
+        let a = f32x4x4::translate(2.0, 3.0, 4.0);
+        let b = f32x4x4::translate(5.0, 7.0, 11.0);
+        let c = a * b;
+        let d = simd_mul(a, b);
+
+        assert_eq!(c.tx(), 7.0);
+        assert_eq!(c.ty(), 10.0);
+        assert_eq!(c.tz(), 15.0);
+        assert_eq!(c, d);
+    }
+
+    #[test]
+    fn f32x4x4_mul_f32x4() {
+        let m = f32x4x4::translate(2.0, 3.0, 4.0);
+        let v = f32x4::with_xyzw(1.0, 2.0, 3.0, 1.0);
+        let o1 = m * v;
+        let o2 = simd_mul(m, v);
+
+        assert_eq!(o1, f32x4::with_xyzw(3.0, 5.0, 7.0, 1.0));
+        assert_eq!(o1, o2);
     }
 
     #[cfg(feature = "half")]
@@ -809,13 +986,39 @@ mod tests {
     }
 
     #[test]
-    fn f32quat() {
-        use std::f32;
-
-        use crate::simd::f32quat;
-        use crate::simd::f32x3;
-
-        let quat = f32quat::with_angle(f32::consts::FRAC_PI_2, f32x3::with_xyz(0.0, 0.0, 1.0));
+    fn f32quat_with_angle() {
+        let quat = f32quat::with_angle(std::f32::consts::FRAC_PI_2, f32x3::with_xyz(0.0, 0.0, 1.0));
         assert_eq!(quat.0, [0.0, 0.0, 0.70710677, 0.70710677]);
+    }
+
+    #[test]
+    fn f32quat_mul_identity_and_function_parity() {
+        let identity = f32quat(f32x4::with_xyzw(0.0, 0.0, 0.0, 1.0));
+        let q = f32quat::with_angle(std::f32::consts::FRAC_PI_2, f32x3::with_xyz(0.0, 0.0, 1.0));
+
+        assert_f32quat_close(identity * q, q);
+        assert_f32quat_close(q * identity, q);
+        assert_f32quat_close(simd_mul(identity, q), q);
+        assert_f32quat_close(simd_mul(q, identity), q);
+    }
+
+    #[test]
+    fn f32quat_mul_known_result() {
+        let qx = f32quat::with_angle(std::f32::consts::FRAC_PI_2, f32x3::with_xyz(1.0, 0.0, 0.0));
+        let qy = f32quat::with_angle(std::f32::consts::FRAC_PI_2, f32x3::with_xyz(0.0, 1.0, 0.0));
+        let q = qx * qy;
+        let expected = f32quat(f32x4::with_xyzw(0.5, 0.5, 0.5, 0.5));
+        assert_f32quat_close(q, expected);
+    }
+
+    #[test]
+    fn f32quat_mul_associativity_spot_check() {
+        let qa = f32quat::with_angle(0.3, f32x3::with_xyz(1.0, 0.0, 0.0));
+        let qb = f32quat::with_angle(0.7, f32x3::with_xyz(0.0, 1.0, 0.0));
+        let qc = f32quat::with_angle(1.1, f32x3::with_xyz(0.0, 0.0, 1.0));
+
+        let lhs = (qa * qb) * qc;
+        let rhs = qa * (qb * qc);
+        assert_f32quat_close(lhs, rhs);
     }
 }
