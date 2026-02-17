@@ -8,6 +8,9 @@ pub use media_format::MediaCharacteristic;
 pub use media_format::MediaType;
 pub use media_format::VideoRange;
 
+pub mod depth_data;
+pub use depth_data::DepthData;
+
 pub mod capture;
 pub use capture::AudioChannel as CaptureAudioChannel;
 pub use capture::AuthorizationStatus;

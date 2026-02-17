@@ -1,3 +1,5 @@
+#[cfg(feature = "av")]
+use crate::av;
 #[cfg(feature = "ui")]
 use crate::{cg, ui};
 use crate::{ar, arc, cv, define_obj_type, ns, objc};
@@ -40,6 +42,15 @@ impl Frame {
     /// The frame's captured image.
     #[objc::msg_send(capturedImage)]
     pub fn captured_image(&self) -> &cv::PixelBuf;
+
+    /// Timestamp identifying the captured depth data.
+    #[objc::msg_send(capturedDepthDataTimestamp)]
+    pub fn captured_depth_data_ts(&self) -> ns::TimeInterval;
+
+    /// The frame's captured depth data.
+    #[cfg(feature = "av")]
+    #[objc::msg_send(capturedDepthData)]
+    pub fn captured_depth_data(&self) -> Option<arc::R<av::DepthData>>;
 
     /// Camera used to capture this frame.
     #[objc::msg_send(camera)]
