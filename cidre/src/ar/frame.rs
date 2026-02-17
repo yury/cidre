@@ -1,3 +1,5 @@
+#[cfg(feature = "ui")]
+use crate::{cg, ui};
 use crate::{ar, arc, cv, define_obj_type, ns, objc};
 
 #[doc(alias = "ARSegmentationClass")]
@@ -74,4 +76,13 @@ impl Frame {
     #[objc::msg_send(smoothedSceneDepth)]
     #[objc::available(ios = 14.0)]
     pub fn smoothed_scene_depth(&self) -> Option<arc::R<ar::DepthData>>;
+
+    /// Display transform for the given viewport orientation and size.
+    #[cfg(feature = "ui")]
+    #[objc::msg_send(displayTransformForOrientation:viewportSize:)]
+    pub fn display_transform_for_orientation(
+        &self,
+        orientation: ui::Orientation,
+        viewport_size: cg::Size,
+    ) -> cg::AffineTransform;
 }
