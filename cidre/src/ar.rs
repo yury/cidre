@@ -17,6 +17,9 @@ pub use configuration::SceneReconstruction;
 pub use configuration::WorldAlignment;
 pub use configuration::WorldTrackingCfg;
 
+mod video_format;
+pub use video_format::VideoFormat;
+
 mod plane_detection_types;
 pub use plane_detection_types::PlaneDetection;
 

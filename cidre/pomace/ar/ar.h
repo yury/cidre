@@ -10,6 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 Class AR_SESSION;
+Class AR_CONFIGURATION;
 Class AR_WORLD_TRACKING_CONFIGURATION;
 Class AR_ANCHOR;
 Class AR_PLANE_ANCHOR;
@@ -23,6 +24,7 @@ static void ar_initializer(void)
         initialized = 1;
 
         AR_SESSION = NSClassFromString(@"ARSession");
+        AR_CONFIGURATION = NSClassFromString(@"ARConfiguration");
         AR_WORLD_TRACKING_CONFIGURATION = NSClassFromString(@"ARWorldTrackingConfiguration");
         AR_ANCHOR = NSClassFromString(@"ARAnchor");
         AR_PLANE_ANCHOR = NSClassFromString(@"ARPlaneAnchor");

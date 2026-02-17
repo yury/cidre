@@ -1,4 +1,6 @@
-use crate::{ar, arc, define_obj_type, define_opts, ns, objc};
+#[cfg(feature = "av")]
+use crate::av;
+use crate::{ar, arc, define_cls, define_obj_type, define_opts, ns, objc};
 
 define_opts!(
     #[doc(alias = "ARFrameSemantics")]
@@ -67,6 +69,29 @@ define_obj_type!(
 );
 
 impl Cfg {
+    define_cls!(AR_CONFIGURATION);
+
+    /// Returns whether this configuration type is supported on the current device.
+    #[objc::msg_send(isSupported)]
+    pub fn is_supported() -> bool;
+
+    /// Supported video formats for this configuration on the current device.
+    ///
+    /// The first element is the default session output format.
+    #[objc::msg_send(supportedVideoFormats)]
+    #[objc::available(ios = 12.0)]
+    pub fn supported_video_formats() -> arc::R<ns::Array<ar::VideoFormat>>;
+
+    /// Video format used for session output.
+    #[objc::msg_send(videoFormat)]
+    #[objc::available(ios = 12.0)]
+    pub fn video_format(&self) -> arc::R<ar::VideoFormat>;
+
+    /// Sets the video format used for session output.
+    #[objc::msg_send(setVideoFormat:)]
+    #[objc::available(ios = 12.0)]
+    pub fn set_video_format(&mut self, val: &ar::VideoFormat);
+
     /// World coordinate alignment.
     ///
     /// Default is `ar::WorldAlignment::Gravity`.
@@ -109,6 +134,37 @@ impl Cfg {
     #[objc::msg_send(setFrameSemantics:)]
     #[objc::available(ios = 13.0)]
     pub fn set_frame_semantics(&mut self, val: FrameSemantics);
+
+    /// Returns whether this configuration type supports the requested frame semantics.
+    #[objc::msg_send(supportsFrameSemantics:)]
+    #[objc::available(ios = 13.0)]
+    pub fn supports_frame_semantics(frame_semantics: FrameSemantics) -> bool;
+
+    /// Capture device used for rendering when camera settings are configurable.
+    #[cfg(feature = "av")]
+    #[objc::msg_send(configurableCaptureDeviceForPrimaryCamera)]
+    #[objc::available(ios = 16.0)]
+    pub fn configurable_capture_device_for_primary_camera() -> Option<arc::R<av::CaptureDevice>>;
+
+    /// Recommended format using 4K res, when supported.
+    #[objc::msg_send(recommendedVideoFormatFor4KResolution)]
+    #[objc::available(ios = 16.0)]
+    pub fn recommended_video_format_for_4k_res() -> Option<arc::R<ar::VideoFormat>>;
+
+    /// Recommended format for high-res frame capture, when supported.
+    #[objc::msg_send(recommendedVideoFormatForHighResolutionFrameCapturing)]
+    #[objc::available(ios = 16.0)]
+    pub fn recommended_video_format_for_high_res_frame_capturing() -> Option<arc::R<ar::VideoFormat>>;
+
+    /// Whether HDR capture is allowed for HDR-capable video formats.
+    #[objc::msg_send(videoHDRAllowed)]
+    #[objc::available(ios = 16.0)]
+    pub fn video_hdr_allowed(&self) -> bool;
+
+    /// Enables/disables HDR capture for HDR-capable video formats.
+    #[objc::msg_send(setVideoHDRAllowed:)]
+    #[objc::available(ios = 16.0)]
+    pub fn set_video_hdr_allowed(&mut self, val: bool);
 }
 
 define_obj_type!(
@@ -161,5 +217,6 @@ impl WorldTrackingCfg {
 
 #[link(name = "ar", kind = "static")]
 unsafe extern "C" {
+    static AR_CONFIGURATION: &'static objc::Class<Cfg>;
     static AR_WORLD_TRACKING_CONFIGURATION: &'static objc::Class<WorldTrackingCfg>;
 }
