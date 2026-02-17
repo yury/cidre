@@ -28,6 +28,13 @@ pub use frame::Frame;
 pub use frame::SegmentationClass;
 pub use frame::WorldMappingStatus;
 
+mod depth_data;
+pub use depth_data::ConfidenceLevel;
+pub use depth_data::DepthData;
+
+mod point_cloud;
+pub use point_cloud::PointCloud;
+
 mod light_estimate;
 pub use light_estimate::DirectionalLightEstimate;
 pub use light_estimate::LightEstimate;

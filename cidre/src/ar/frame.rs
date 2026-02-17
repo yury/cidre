@@ -51,6 +51,10 @@ impl Frame {
     #[objc::msg_send(lightEstimate)]
     pub fn light_estimate(&self) -> Option<arc::R<ar::LightEstimate>>;
 
+    /// Feature points in the scene with respect to the frame origin.
+    #[objc::msg_send(rawFeaturePoints)]
+    pub fn raw_feature_points(&self) -> Option<arc::R<ar::PointCloud>>;
+
     /// World-mapping status for the currently visible area.
     #[objc::msg_send(worldMappingStatus)]
     #[objc::available(ios = 12.0)]
@@ -60,4 +64,14 @@ impl Frame {
     #[objc::msg_send(segmentationBuffer)]
     #[objc::available(ios = 13.0)]
     pub fn segmentation_buf(&self) -> Option<&cv::PixelBuf>;
+
+    /// Scene depth data.
+    #[objc::msg_send(sceneDepth)]
+    #[objc::available(ios = 14.0)]
+    pub fn scene_depth(&self) -> Option<arc::R<ar::DepthData>>;
+
+    /// Scene depth data smoothed for temporal consistency.
+    #[objc::msg_send(smoothedSceneDepth)]
+    #[objc::available(ios = 14.0)]
+    pub fn smoothed_scene_depth(&self) -> Option<arc::R<ar::DepthData>>;
 }
