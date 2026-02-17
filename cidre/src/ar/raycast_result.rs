@@ -25,15 +25,3 @@ impl RaycastResult {
     #[objc::msg_send(anchor)]
     pub fn anchor(&self) -> Option<arc::R<ar::Anchor>>;
 }
-
-define_obj_type!(
-    #[doc(alias = "ARTrackedRaycast")]
-    /// Continuously updated raycast that can be stopped.
-    pub TrackedRaycast(ns::Id)
-);
-
-impl TrackedRaycast {
-    /// Stops tracked raycasting updates.
-    #[objc::msg_send(stopTracking)]
-    pub fn stop_tracking(&mut self);
-}

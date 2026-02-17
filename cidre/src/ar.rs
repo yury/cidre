@@ -60,9 +60,11 @@ pub use raycast_query::RaycastQuery;
 pub use raycast_query::Target as RaycastTarget;
 pub use raycast_query::TargetAlignment as RaycastTargetAlignment;
 
-mod raycast;
-pub use raycast::RaycastResult;
-pub use raycast::TrackedRaycast;
+mod raycast_result;
+pub use raycast_result::RaycastResult;
+
+mod tracked_raycast;
+pub use tracked_raycast::TrackedRaycast;
 
 pub mod error;
 pub use error::Code as ErrorCode;
