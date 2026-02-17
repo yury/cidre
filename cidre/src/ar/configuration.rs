@@ -184,6 +184,11 @@ impl WorldTrackingCfg {
     #[objc::available(ios = 13.0)]
     pub fn supports_frame_semantics(frame_semantics: FrameSemantics) -> bool;
 
+    /// Returns whether user face tracking is supported with world tracking.
+    #[objc::msg_send(supportsUserFaceTracking)]
+    #[objc::available(ios = 13.0)]
+    pub fn supports_user_face_tracking() -> bool;
+
     /// Plane types currently detected by the session.
     #[objc::msg_send(planeDetection)]
     pub fn plane_detection(&self) -> ar::PlaneDetection;
@@ -203,6 +208,58 @@ impl WorldTrackingCfg {
     #[objc::msg_send(setEnvironmentTexturing:)]
     #[objc::available(ios = 12.0)]
     pub fn set_environment_texturing(&mut self, val: EnvironmentTexturing);
+
+    /// Whether environment textures are provided with high dynamic range.
+    ///
+    /// Enabled by default.
+    #[objc::msg_send(wantsHDREnvironmentTextures)]
+    #[objc::available(ios = 13.0)]
+    pub fn wants_hdr_environment_textures(&self) -> bool;
+
+    /// Enables/disables HDR environment textures.
+    #[objc::msg_send(setWantsHDREnvironmentTextures:)]
+    #[objc::available(ios = 13.0)]
+    pub fn set_wants_hdr_environment_textures(&mut self, val: bool);
+
+    /// Whether automatic image scale estimation is enabled.
+    #[objc::msg_send(automaticImageScaleEstimationEnabled)]
+    #[objc::available(ios = 13.0)]
+    pub fn automatic_image_scale_estimation_enabled(&self) -> bool;
+
+    /// Enables/disables automatic image scale estimation.
+    #[objc::msg_send(setAutomaticImageScaleEstimationEnabled:)]
+    #[objc::available(ios = 13.0)]
+    pub fn set_automatic_image_scale_estimation_enabled(&mut self, val: bool);
+
+    /// Maximum number of images to track simultaneously.
+    #[objc::msg_send(maximumNumberOfTrackedImages)]
+    #[objc::available(ios = 12.0)]
+    pub fn maximum_number_of_tracked_images(&self) -> ns::Integer;
+
+    /// Sets the maximum number of images to track simultaneously.
+    #[objc::msg_send(setMaximumNumberOfTrackedImages:)]
+    #[objc::available(ios = 12.0)]
+    pub fn set_maximum_number_of_tracked_images(&mut self, val: ns::Integer);
+
+    /// Whether collaboration is enabled.
+    #[objc::msg_send(isCollaborationEnabled)]
+    #[objc::available(ios = 13.0)]
+    pub fn collaboration_enabled(&self) -> bool;
+
+    /// Enables/disables collaboration.
+    #[objc::msg_send(setCollaborationEnabled:)]
+    #[objc::available(ios = 13.0)]
+    pub fn set_collaboration_enabled(&mut self, val: bool);
+
+    /// Whether App Clip code tracking is enabled.
+    #[objc::msg_send(appClipCodeTrackingEnabled)]
+    #[objc::available(ios = 14.3)]
+    pub fn app_clip_code_tracking_enabled(&self) -> bool;
+
+    /// Enables/disables App Clip code tracking.
+    #[objc::msg_send(setAppClipCodeTrackingEnabled:)]
+    #[objc::available(ios = 14.3)]
+    pub fn set_app_clip_code_tracking_enabled(&mut self, val: bool);
 
     /// Scene reconstruction mode.
     #[objc::msg_send(sceneReconstruction)]
