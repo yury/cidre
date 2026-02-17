@@ -55,11 +55,13 @@ pub use plane_anchor::PlaneAnchorAlignment;
 pub use plane_anchor::PlaneClassification;
 pub use plane_anchor::PlaneClassificationStatus;
 
+mod raycast_query;
+pub use raycast_query::RaycastQuery;
+pub use raycast_query::Target as RaycastTarget;
+pub use raycast_query::TargetAlignment as RaycastTargetAlignment;
+
 mod raycast;
-pub use raycast::RaycastQuery;
 pub use raycast::RaycastResult;
-pub use raycast::Target as RaycastTarget;
-pub use raycast::TargetAlignment as RaycastTargetAlignment;
 pub use raycast::TrackedRaycast;
 
 pub mod error;
