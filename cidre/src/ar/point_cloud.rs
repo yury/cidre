@@ -8,6 +8,9 @@ define_obj_type!(
     pub PointCloud(ns::Id)
 );
 
+unsafe impl Send for PointCloud {}
+unsafe impl Sync for PointCloud {}
+
 impl PointCloud {
     /// Number of points in this point cloud.
     #[objc::msg_send(count)]
