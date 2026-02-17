@@ -1,4 +1,4 @@
-use crate::{ar, arc, define_cls, define_obj_type, ns, objc, simd};
+use crate::{arc, define_cls, define_obj_type, ns, objc, simd};
 
 #[doc(alias = "ARRaycastTarget")]
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
@@ -73,44 +73,6 @@ impl RaycastQuery {
     /// Alignment considered during raycasting.
     #[objc::msg_send(targetAlignment)]
     pub fn target_alignment(&self) -> TargetAlignment;
-}
-
-define_obj_type!(
-    #[doc(alias = "ARRaycastResult")]
-    /// Result of a raycast against a single target.
-    pub RaycastResult(ns::Id)
-);
-
-impl RaycastResult {
-    /// Result transform in world coordinates.
-    #[objc::msg_send(worldTransform)]
-    pub fn world_transform(&self) -> simd::f32x4x4;
-
-    /// Target type where the ray terminated.
-    #[objc::msg_send(target)]
-    pub fn target(&self) -> Target;
-
-    /// Alignment of the hit target.
-    #[objc::msg_send(targetAlignment)]
-    pub fn target_alignment(&self) -> TargetAlignment;
-
-    /// Intersected anchor, when available.
-    ///
-    /// Existing-plane targets always provide an anchor.
-    #[objc::msg_send(anchor)]
-    pub fn anchor(&self) -> Option<arc::R<ar::Anchor>>;
-}
-
-define_obj_type!(
-    #[doc(alias = "ARTrackedRaycast")]
-    /// Continuously updated raycast that can be stopped.
-    pub TrackedRaycast(ns::Id)
-);
-
-impl TrackedRaycast {
-    /// Stops tracked raycasting updates.
-    #[objc::msg_send(stopTracking)]
-    pub fn stop_tracking(&mut self);
 }
 
 #[link(name = "ar", kind = "static")]
