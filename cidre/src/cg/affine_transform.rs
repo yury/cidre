@@ -42,66 +42,79 @@ pub struct Components {
 }
 
 impl AffineTransform {
+    #[doc(alias = "CGAffineTransformMakeWithComponents")]
     #[inline]
     pub fn with_components(components: Components) -> Self {
         unsafe { CGAffineTransformMakeWithComponents(components) }
     }
 
+    #[doc(alias = "CGAffineTransformIdentity")]
     #[inline]
     pub fn identity() -> Self {
         unsafe { CGAffineTransformIdentity }
     }
 
+    #[doc(alias = "CGAffineTransformMakeTranslation")]
     #[inline]
     pub fn new_translation(tx: f64, ty: f64) -> Self {
         unsafe { CGAffineTransformMakeTranslation(tx, ty) }
     }
 
+    #[doc(alias = "CGAffineTransformMakeScale")]
     #[inline]
     pub fn new_scale(sx: f64, sy: f64) -> Self {
         unsafe { CGAffineTransformMakeScale(sx, sy) }
     }
 
+    #[doc(alias = "CGAffineTransformMakeRotation")]
     #[inline]
     pub fn new_rotation(angle: f64) -> Self {
         unsafe { CGAffineTransformMakeRotation(angle) }
     }
 
+    #[doc(alias = "CGAffineTransformIsIdentity")]
     #[inline]
     pub fn is_identity(&self) -> bool {
         unsafe { CGAffineTransformIsIdentity(*self) }
     }
 
+    #[doc(alias = "CGAffineTransformTranslate")]
     #[inline]
     pub fn translate(&self, tx: f64, ty: f64) -> Self {
         unsafe { CGAffineTransformTranslate(*self, tx, ty) }
     }
 
+    #[doc(alias = "CGAffineTransformScale")]
     #[inline]
     pub fn scale(&self, sx: f64, sy: f64) -> Self {
         unsafe { CGAffineTransformScale(*self, sx, sy) }
     }
 
+    #[doc(alias = "CGAffineTransformRotate")]
     #[inline]
     pub fn rotate(&self, angle: f64) -> Self {
         unsafe { CGAffineTransformRotate(*self, angle) }
     }
 
+    #[doc(alias = "CGAffineTransformInvert")]
     #[inline]
     pub fn invert(&self) -> Self {
         unsafe { CGAffineTransformInvert(*self) }
     }
 
+    #[doc(alias = "CGAffineTransformConcat")]
     #[inline]
     pub fn concat(&self, other: &Self) -> Self {
         unsafe { CGAffineTransformConcat(*self, *other) }
     }
 
+    #[doc(alias = "CGAffineTransformEqualToTransform")]
     #[inline]
     pub fn equal_to(&self, other: &Self) -> bool {
         unsafe { CGAffineTransformEqualToTransform(*self, *other) }
     }
 
+    #[doc(alias = "CGAffineTransformDecompose")]
     #[inline]
     pub fn decompose(&self) -> Components {
         unsafe { CGAffineTransformDecompose(*self) }
