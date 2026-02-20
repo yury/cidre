@@ -20,6 +20,7 @@ Class UI_SCREEN;
 Class UI_COLOR;
 Class UI_RESPONDER;
 Class UI_VIEW_CONTROLLER;
+Class UI_NAVIGATION_CONTROLLER;
 Class UI_VIEW_CONTROLLER_TRANSITION;
 Class UI_TAB_BAR_CONTROLLER;
 Class UI_IMAGE;
@@ -66,6 +67,8 @@ static void ui_initializer(void)
         UI_COLOR = [UIColor class];
         UI_RESPONDER = NSClassFromString(@"UIResponder");
         UI_VIEW_CONTROLLER = NSClassFromString(@"UIViewController");
+        UI_NAVIGATION_CONTROLLER = NSClassFromString(@"UINavigationController");
+
         UI_VIEW_CONTROLLER_TRANSITION = NSClassFromString(@"UIViewControllerTransition");
         UI_TAB_BAR_CONTROLLER = NSClassFromString(@"UITabBarController");
         UI_APPLICATION = NSClassFromString(@"UIApplication");

@@ -80,7 +80,7 @@ impl Cfg {
     /// The first element is the default session output format.
     #[objc::msg_send(supportedVideoFormats)]
     #[objc::available(ios = 12.0)]
-    pub fn supported_video_formats() -> arc::R<ns::Array<ar::VideoFormat>>;
+    pub unsafe fn supported_video_formats_throws() -> arc::R<ns::Array<ar::VideoFormat>>;
 
     /// Video format used for session output.
     #[objc::msg_send(videoFormat)]
@@ -178,6 +178,10 @@ impl WorldTrackingCfg {
     /// Returns whether world tracking is supported on the current device.
     #[objc::msg_send(isSupported)]
     pub fn is_supported() -> bool;
+
+    #[objc::msg_send(supportedVideoFormats)]
+    #[objc::available(ios = 12.0)]
+    pub fn supported_video_formats() -> arc::R<ns::Array<ar::VideoFormat>>;
 
     /// Returns whether this configuration supports `frame_semantics`.
     #[objc::msg_send(supportsFrameSemantics:)]
