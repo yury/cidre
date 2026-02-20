@@ -122,7 +122,9 @@ pub use device::SparsePageSize;
 pub use device::Timestamp;
 
 mod drawable;
+pub use drawable::AnyDrawable;
 pub use drawable::Drawable;
+pub use drawable::DrawablePresentedHandler;
 
 mod function_constant_values;
 pub use function_constant_values::FnConstValues;

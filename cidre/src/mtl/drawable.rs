@@ -1,4 +1,7 @@
-use crate::{cf, objc, objc::Obj};
+use crate::{blocks, cf, define_obj_type, ns, objc, objc::Obj};
+
+#[doc(alias = "MTLDrawablePresentedHandler")]
+pub type DrawablePresentedHandler = blocks::EscBlock<fn(drawable: &AnyDrawable)>;
 
 /// A displayable resource that can be rendered or written to.
 ///
@@ -50,4 +53,37 @@ pub trait Drawable<T: Obj>: Obj {
     /// * `presentation_time` - The Mach absolute time at which the drawable should be presented, in seconds.
     #[objc::msg_send(presentAtTime:)]
     fn present_at(&self, presentation_time: cf::TimeInterval);
+
+    /// Presents the drawable after a minimum amount of time has elapsed.
+    ///
+    /// # Arguments
+    ///
+    /// * `duration` - The minimum duration, in seconds, before this drawable appears onscreen.
+    #[objc::msg_send(presentAfterMinimumDuration:)]
+    fn present_after_minimum_duration(&self, duration: cf::TimeInterval);
+
+    /// Adds a callback block that runs when this drawable appears onscreen.
+    #[objc::msg_send(addPresentedHandler:)]
+    fn add_presented_handler_block(&mut self, block: &mut DrawablePresentedHandler);
+
+    /// Adds a callback that runs when this drawable appears onscreen.
+    #[inline]
+    fn add_presented_handler(&mut self, block: impl FnMut(&AnyDrawable) + Send + 'static) {
+        let mut block = DrawablePresentedHandler::new1(block);
+        self.add_presented_handler_block(&mut block);
+    }
+
+    /// The host time, in seconds, when this drawable appeared onscreen.
+    ///
+    /// Returns `0.0` if a frame hasn’t been presented or was skipped.
+    #[objc::msg_send(presentedTime)]
+    fn presented_time(&self) -> cf::TimeInterval;
+
+    /// The monotonically increasing identifier for drawables from the same layer.
+    #[objc::msg_send(drawableID)]
+    fn drawable_id(&self) -> usize;
 }
+
+define_obj_type!(pub AnyDrawable(ns::Id));
+
+impl Drawable<AnyDrawable> for AnyDrawable {}
