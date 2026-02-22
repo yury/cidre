@@ -180,8 +180,7 @@ impl Camera {
     ) -> cg::Point;
 
     /// Unprojects a 2D viewport point onto a 3D plane in world coordinates.
-    #[cfg(feature = "ui")]
-    #[objc::msg_send(unprojectPoint:ontoPlaneWithTransform:orientation:viewportSize:)]
+    #[cfg(all(feature = "ui", target_arch = "aarch64"))]
     #[objc::available(ios = 12.0)]
     pub fn unproject_point_onto_plane_with_transform(
         &self,
@@ -189,9 +188,45 @@ impl Camera {
         plane_transform: simd::f32x4x4,
         orientation: ui::Orientation,
         viewport_size: cg::Size,
-    ) -> simd::f32x3;
+    ) -> simd::f32x4 {
+        let plane: std::arch::aarch64::float32x4_t;
+
+        unsafe {
+            core::arch::asm!(
+                "bl \"_objc_msgSend$unprojectPoint:ontoPlaneWithTransform:orientation:viewportSize:\"",
+                in("x0") self as *const Camera,
+                in("d0") point.x,
+                in("d1") point.y,
+                in("q2") plane_transform.0.0,
+                in("q3") plane_transform.0.1,
+                in("q4") plane_transform.0.2,
+                in("q5") plane_transform.0.3,
+                in("x2") orientation as isize,
+                in("d6") viewport_size.width,
+                in("d7") viewport_size.height,
+                lateout("q0") plane,
+                clobber_abi("C"),
+            );
+        }
+
+        simd::f32x4(plane)
+    }
+
+    #[cfg(all(feature = "ui", not(target_arch = "aarch64")))]
+    // #[objc::msg_send(unprojectPoint:ontoPlaneWithTransform:orientation:viewportSize:)]
+    #[objc::available(ios = 12.0)]
+    pub fn unproject_point_onto_plane_with_transform(
+        &self,
+        point: cg::Point,
+        plane_transform: simd::f32x4x4,
+        orientation: ui::Orientation,
+        viewport_size: cg::Size,
+    ) -> simd::f32x4 {
+        unimplemented!()
+    }
 
     /// View matrix for rendering with a given interface orientation.
+    #[doc(alias = "viewMatrixForOrientation:")]
     #[cfg(all(feature = "ui", target_arch = "aarch64"))]
     pub fn view_matrix_for_orientation(&self, orientation: ui::Orientation) -> simd::f32x4x4 {
         let q0: std::arch::aarch64::float32x4_t;
