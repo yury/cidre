@@ -15,35 +15,24 @@ impl Camera {
     /// Camera transform (rotation + translation) in world coordinates.
     #[cfg(target_arch = "aarch64")]
     pub fn transform(&self) -> simd::f32x4x4 {
-        let mut out = std::mem::MaybeUninit::<simd::f32x4x4>::uninit();
+        let q0: std::arch::aarch64::float32x4_t;
+        let q1: std::arch::aarch64::float32x4_t;
+        let q2: std::arch::aarch64::float32x4_t;
+        let q3: std::arch::aarch64::float32x4_t;
 
         unsafe {
-            let out_base = out.as_mut_ptr() as *mut simd::f32x4;
-            let out_c0 = out_base;
-            let out_c1 = out_base.add(1);
-            let out_c2 = out_base.add(2);
-            let out_c3 = out_base.add(3);
-
             core::arch::asm!(
                 "bl _objc_msgSend$transform",
-                "str q0, [x23]",
-                "str q1, [x24]",
-                "str q2, [x25]",
-                "str q3, [x26]",
                 in("x0") self as *const Camera,
-                in("x23") out_c0,
-                in("x24") out_c1,
-                in("x25") out_c2,
-                in("x26") out_c3,
-                lateout("x23") _,
-                lateout("x24") _,
-                lateout("x25") _,
-                lateout("x26") _,
+                lateout("q0") q0,
+                lateout("q1") q1,
+                lateout("q2") q2,
+                lateout("q3") q3,
                 clobber_abi("C"),
             );
-
-            out.assume_init()
         }
+
+        simd::f32x4x4(std::arch::aarch64::float32x4x4_t(q0, q1, q2, q3))
     }
 
     #[cfg(not(target_arch = "aarch64"))]
@@ -53,27 +42,23 @@ impl Camera {
 
     /// Camera orientation as Euler angles (pitch, yaw, roll in radians).
     #[cfg(target_arch = "aarch64")]
-    pub fn euler_angles(&self) -> simd::f32x3 {
-        let mut out = std::mem::MaybeUninit::<simd::f32x3>::uninit();
+    pub fn euler_angles(&self) -> simd::f32x4 {
+        let q0: std::arch::aarch64::float32x4_t;
 
         unsafe {
-            let out_ptr = out.as_mut_ptr() as *mut u8;
-
             core::arch::asm!(
                 "bl _objc_msgSend$eulerAngles",
-                "str q0, [x23]",
                 in("x0") self as *const Camera,
-                in("x23") out_ptr,
-                lateout("x23") _,
+                lateout("q0") q0,
                 clobber_abi("C"),
             );
-
-            out.assume_init()
         }
+
+        simd::f32x4(q0)
     }
 
     #[cfg(not(target_arch = "aarch64"))]
-    pub fn euler_angles(&self) -> simd::f32x3 {
+    pub fn euler_angles(&self) -> simd::f32x4 {
         unimplemented!()
     }
 
@@ -112,35 +97,25 @@ impl Camera {
     /// Projection matrix for the camera (without far clipping limit).
     #[cfg(target_arch = "aarch64")]
     pub fn projection_matrix(&self) -> simd::f32x4x4 {
-        let mut out = std::mem::MaybeUninit::<simd::f32x4x4>::uninit();
+        let q0: std::arch::aarch64::float32x4_t;
+        let q1: std::arch::aarch64::float32x4_t;
+        let q2: std::arch::aarch64::float32x4_t;
+        let q3: std::arch::aarch64::float32x4_t;
 
         unsafe {
-            let out_base = out.as_mut_ptr() as *mut simd::f32x4;
-            let out_c0 = out_base;
-            let out_c1 = out_base.add(1);
-            let out_c2 = out_base.add(2);
-            let out_c3 = out_base.add(3);
-
             core::arch::asm!(
                 "bl _objc_msgSend$projectionMatrix",
-                "str q0, [x23]",
-                "str q1, [x24]",
-                "str q2, [x25]",
-                "str q3, [x26]",
                 in("x0") self as *const Camera,
-                in("x23") out_c0,
-                in("x24") out_c1,
-                in("x25") out_c2,
-                in("x26") out_c3,
-                lateout("x23") _,
-                lateout("x24") _,
-                lateout("x25") _,
-                lateout("x26") _,
+                lateout("q0") q0,
+                lateout("q1") q1,
+                lateout("q2") q2,
+                lateout("q3") q3,
+
                 clobber_abi("C"),
             );
-
-            out.assume_init()
         }
+
+        simd::f32x4x4(std::arch::aarch64::float32x4x4_t(q0, q1, q2, q3))
     }
 
     #[cfg(not(target_arch = "aarch64"))]
@@ -157,40 +132,29 @@ impl Camera {
         z_near: cg::Float,
         z_far: cg::Float,
     ) -> simd::f32x4x4 {
-        let mut out = std::mem::MaybeUninit::<simd::f32x4x4>::uninit();
+        let q0: std::arch::aarch64::float32x4_t;
+        let q1: std::arch::aarch64::float32x4_t;
+        let q2: std::arch::aarch64::float32x4_t;
+        let q3: std::arch::aarch64::float32x4_t;
 
         unsafe {
-            let out_base = out.as_mut_ptr() as *mut simd::f32x4;
-            let out_c0 = out_base;
-            let out_c1 = out_base.add(1);
-            let out_c2 = out_base.add(2);
-            let out_c3 = out_base.add(3);
-
             core::arch::asm!(
                 "bl \"_objc_msgSend$projectionMatrixForOrientation:viewportSize:zNear:zFar:\"",
-                "str q0, [x23]",
-                "str q1, [x24]",
-                "str q2, [x25]",
-                "str q3, [x26]",
                 in("x0") self as *const Camera,
                 in("x2") orientation as isize,
                 in("d0") viewport_size.width,
                 in("d1") viewport_size.height,
                 in("d2") z_near,
                 in("d3") z_far,
-                in("x23") out_c0,
-                in("x24") out_c1,
-                in("x25") out_c2,
-                in("x26") out_c3,
-                lateout("x23") _,
-                lateout("x24") _,
-                lateout("x25") _,
-                lateout("x26") _,
+                lateout("q0") q0,
+                lateout("q1") q1,
+                lateout("q2") q2,
+                lateout("q3") q3,
                 clobber_abi("C"),
             );
-
-            out.assume_init()
         }
+
+        simd::f32x4x4(std::arch::aarch64::float32x4x4_t(q0, q1, q2, q3))
     }
 
     #[cfg(all(feature = "ui", not(target_arch = "aarch64")))]
@@ -230,36 +194,24 @@ impl Camera {
     /// View matrix for rendering with a given interface orientation.
     #[cfg(all(feature = "ui", target_arch = "aarch64"))]
     pub fn view_matrix_for_orientation(&self, orientation: ui::Orientation) -> simd::f32x4x4 {
-        let mut out = std::mem::MaybeUninit::<simd::f32x4x4>::uninit();
+        let q0: std::arch::aarch64::float32x4_t;
+        let q1: std::arch::aarch64::float32x4_t;
+        let q2: std::arch::aarch64::float32x4_t;
+        let q3: std::arch::aarch64::float32x4_t;
 
         unsafe {
-            let out_base = out.as_mut_ptr() as *mut simd::f32x4;
-            let out_c0 = out_base;
-            let out_c1 = out_base.add(1);
-            let out_c2 = out_base.add(2);
-            let out_c3 = out_base.add(3);
-
             core::arch::asm!(
                 "bl \"_objc_msgSend$viewMatrixForOrientation:\"",
-                "str q0, [x23]",
-                "str q1, [x24]",
-                "str q2, [x25]",
-                "str q3, [x26]",
                 in("x0") self as *const Camera,
                 in("x2") orientation as isize,
-                in("x23") out_c0,
-                in("x24") out_c1,
-                in("x25") out_c2,
-                in("x26") out_c3,
-                lateout("x23") _,
-                lateout("x24") _,
-                lateout("x25") _,
-                lateout("x26") _,
+                lateout("q0") q0,
+                lateout("q1") q1,
+                lateout("q2") q2,
+                lateout("q3") q3,
                 clobber_abi("C"),
             );
-
-            out.assume_init()
         }
+        simd::f32x4x4(std::arch::aarch64::float32x4x4_t(q0, q1, q2, q3))
     }
 
     #[cfg(all(feature = "ui", not(target_arch = "aarch64")))]
