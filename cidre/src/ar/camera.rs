@@ -170,14 +170,44 @@ impl Camera {
     }
 
     /// Projects a 3D world point into 2D viewport coordinates.
-    #[cfg(feature = "ui")]
+    #[cfg(all(feature = "ui", target_arch = "aarch64"))]
+    #[doc(alias = "projectPoint:orientation:viewportSize:")]
+    pub fn project_point(
+        &self,
+        point: simd::f32x4,
+        orientation: ui::Orientation,
+        viewport_size: cg::Size,
+    ) -> cg::Point {
+        let out_x: cg::Float;
+        let out_y: cg::Float;
+
+        unsafe {
+            core::arch::asm!(
+                "bl \"_objc_msgSend$projectPoint:orientation:viewportSize:\"",
+                in("x0") self as *const Camera,
+                in("x2") orientation as isize,
+                in("d1") viewport_size.width,
+                in("d2") viewport_size.width,
+                in("q0") point.0,
+                lateout("d0") out_x,
+                lateout("d1") out_y,
+                clobber_abi("C"),
+            );
+        }
+
+        cg::Point { x: out_x, y: out_y }
+    }
+
+    #[cfg(all(feature = "ui", not(target_arch = "aarch64")))]
     #[objc::msg_send(projectPoint:orientation:viewportSize:)]
     pub fn project_point(
         &self,
-        point: simd::f32x3,
+        point: simd::f32x4,
         orientation: ui::Orientation,
         viewport_size: cg::Size,
-    ) -> cg::Point;
+    ) -> cg::Point {
+        unimplemented!()
+    }
 
     /// Unprojects a 2D viewport point onto a 3D plane in world coordinates.
     #[cfg(all(feature = "ui", target_arch = "aarch64"))]
