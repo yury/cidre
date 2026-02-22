@@ -43,24 +43,6 @@ impl arc::A<Anchor> {
         let mut out: *mut Anchor = unsafe { std::mem::transmute(self) };
 
         unsafe {
-            // core::arch::asm!(
-            //     "ldr q0, [x23]",
-            //     "ldr q1, [x24]",
-            //     "ldr q2, [x25]",
-            //     "ldr q3, [x26]",
-            //     "bl \"_objc_msgSend$initWithName:transform:\"",
-            //     inlateout("x0") out,
-            //     in("x2") name as *const ns::String,
-            //     in("x23") transform_c0,
-            //     in("x24") transform_c1,
-            //     in("x25") transform_c2,
-            //     in("x26") transform_c3,
-            //     lateout("x23") _,
-            //     lateout("x24") _,
-            //     lateout("x25") _,
-            //     lateout("x26") _,
-            //     clobber_abi("C"),
-            // );
             core::arch::asm!(
                 "bl \"_objc_msgSend$initWithName:transform:\"",
                 inlateout("x0") out,
