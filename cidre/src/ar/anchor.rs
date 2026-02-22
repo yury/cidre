@@ -8,16 +8,93 @@ define_obj_type!(
 
 impl arc::A<Anchor> {
     /// Initializes an anchor with `transform`.
-    #[objc::msg_send(initWithTransform:)]
-    pub fn init_with_transform(self, transform: simd::f32x4x4) -> arc::R<Anchor>;
+    #[cfg(target_arch = "aarch64")]
+    pub fn init_with_transform(self, transform: simd::f32x4x4) -> arc::R<Anchor> {
+        let transform_base = &transform as *const simd::f32x4x4 as *const simd::f32x4;
+        let transform_c0 = transform_base;
+        let transform_c1 = unsafe { transform_base.add(1) };
+        let transform_c2 = unsafe { transform_base.add(2) };
+        let transform_c3 = unsafe { transform_base.add(3) };
+
+        let mut out: *mut Anchor = unsafe { std::mem::transmute(self) };
+
+        unsafe {
+            core::arch::asm!(
+                "ldr q0, [x23]",
+                "ldr q1, [x24]",
+                "ldr q2, [x25]",
+                "ldr q3, [x26]",
+                "bl \"_objc_msgSend$initWithTransform:\"",
+                inlateout("x0") out,
+                in("x23") transform_c0,
+                in("x24") transform_c1,
+                in("x25") transform_c2,
+                in("x26") transform_c3,
+                lateout("x23") _,
+                lateout("x24") _,
+                lateout("x25") _,
+                lateout("x26") _,
+                clobber_abi("C"),
+            );
+
+            std::mem::transmute(out)
+        }
+    }
+
+    #[cfg(not(target_arch = "aarch64"))]
+    pub fn init_with_transform(self, transform: simd::f32x4x4) -> arc::R<Anchor> {
+        unimplemented!()
+    }
 
     /// Initializes an anchor with `name` and `transform`.
-    #[objc::msg_send(initWithName:transform:)]
+    #[cfg(target_arch = "aarch64")]
     pub fn init_with_name_transform(
         self,
         name: &ns::String,
         transform: simd::f32x4x4,
-    ) -> arc::R<Anchor>;
+    ) -> arc::R<Anchor> {
+        let transform_base = &transform as *const simd::f32x4x4 as *const simd::f32x4;
+        let transform_c0 = transform_base;
+        let transform_c1 = unsafe { transform_base.add(1) };
+        let transform_c2 = unsafe { transform_base.add(2) };
+        let transform_c3 = unsafe { transform_base.add(3) };
+
+        let mut out: *mut Anchor = unsafe { std::mem::transmute(self) };
+
+        unsafe {
+            core::arch::asm!(
+                "ldr q0, [x23]",
+                "ldr q1, [x24]",
+                "ldr q2, [x25]",
+                "ldr q3, [x26]",
+                "bl \"_objc_msgSend$initWithName:transform:\"",
+                inlateout("x0") out,
+                in("x2") name as *const ns::String,
+                in("x23") transform_c0,
+                in("x24") transform_c1,
+                in("x25") transform_c2,
+                in("x26") transform_c3,
+                lateout("x23") _,
+                lateout("x24") _,
+                lateout("x25") _,
+                lateout("x26") _,
+                clobber_abi("C"),
+            );
+
+            std::mem::transmute(out)
+        }
+    }
+
+    #[cfg(not(target_arch = "aarch64"))]
+    pub fn init_with_name_transform(
+        self,
+        name: &ns::String,
+        transform: simd::f32x4x4,
+    ) -> arc::R<Anchor> {
+        let _ = (name, transform);
+        let _ = self;
+        unimplemented!()
+    }
 }
 
 impl Anchor {
