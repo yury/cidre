@@ -112,7 +112,7 @@ impl Anchor {
         unsafe {
             core::arch::asm!(
                 "bl _objc_msgSend$transform",
-                in("x0") self as *const Anchor,
+                in("x0") self,
                 lateout("q0") q0,
                 lateout("q1") q1,
                 lateout("q2") q2,
