@@ -46,7 +46,7 @@ impl arc::A<Anchor> {
             core::arch::asm!(
                 "bl \"_objc_msgSend$initWithName:transform:\"",
                 inlateout("x0") out,
-                in("x2") name as *const ns::String,
+                in("x2") name,
                 in("q0") transform.0.0,
                 in("q1") transform.0.1,
                 in("q2") transform.0.2,

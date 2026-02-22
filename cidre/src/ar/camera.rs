@@ -23,7 +23,7 @@ impl Camera {
         unsafe {
             core::arch::asm!(
                 "bl _objc_msgSend$transform",
-                in("x0") self as *const Camera,
+                in("x0") self,
                 lateout("q0") q0,
                 lateout("q1") q1,
                 lateout("q2") q2,
@@ -48,7 +48,7 @@ impl Camera {
         unsafe {
             core::arch::asm!(
                 "bl _objc_msgSend$eulerAngles",
-                in("x0") self as *const Camera,
+                in("x0") self,
                 lateout("q0") q0,
                 clobber_abi("C"),
             );
@@ -105,7 +105,7 @@ impl Camera {
         unsafe {
             core::arch::asm!(
                 "bl _objc_msgSend$projectionMatrix",
-                in("x0") self as *const Camera,
+                in("x0") self,
                 lateout("q0") q0,
                 lateout("q1") q1,
                 lateout("q2") q2,
@@ -140,7 +140,7 @@ impl Camera {
         unsafe {
             core::arch::asm!(
                 "bl \"_objc_msgSend$projectionMatrixForOrientation:viewportSize:zNear:zFar:\"",
-                in("x0") self as *const Camera,
+                in("x0") self,
                 in("x2") orientation as isize,
                 in("d0") viewport_size.width,
                 in("d1") viewport_size.height,
@@ -184,7 +184,7 @@ impl Camera {
         unsafe {
             core::arch::asm!(
                 "bl \"_objc_msgSend$projectPoint:orientation:viewportSize:\"",
-                in("x0") self as *const Camera,
+                in("x0") self,
                 in("x2") orientation as isize,
                 in("d1") viewport_size.width,
                 in("d2") viewport_size.height,
@@ -224,7 +224,7 @@ impl Camera {
         unsafe {
             core::arch::asm!(
                 "bl \"_objc_msgSend$unprojectPoint:ontoPlaneWithTransform:orientation:viewportSize:\"",
-                in("x0") self as *const Camera,
+                in("x0") self,
                 in("d0") point.x,
                 in("d1") point.y,
                 in("q2") plane_transform.0.0,
@@ -267,7 +267,7 @@ impl Camera {
         unsafe {
             core::arch::asm!(
                 "bl \"_objc_msgSend$viewMatrixForOrientation:\"",
-                in("x0") self as *const Camera,
+                in("x0") self,
                 in("x2") orientation as isize,
                 lateout("q0") q0,
                 lateout("q1") q1,
