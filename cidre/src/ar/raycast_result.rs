@@ -18,7 +18,7 @@ impl RaycastResult {
 
         unsafe {
             core::arch::asm!(
-                "bl _objc_msgSend$transform",
+                "bl _objc_msgSend$worldTransform",
                 in("x0") self as *const Self,
                 lateout("q0") q0,
                 lateout("q1") q1,
