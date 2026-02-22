@@ -32,8 +32,28 @@ impl DirectionalLightEstimate {
     pub fn spherical_harmonics_coefficients(&self) -> arc::R<ns::Data>;
 
     /// Primary direction of light.
-    #[objc::msg_send(primaryLightDirection)]
-    pub fn primary_light_direction(&self) -> simd::f32x3;
+    #[doc(alias = "primaryLightDirection")]
+    #[cfg(target_arch = "aarch64")]
+    pub fn primary_light_direction(&self) -> simd::f32x4 {
+        let q0: std::arch::aarch64::float32x4_t;
+
+        unsafe {
+            core::arch::asm!(
+                "bl _objc_msgSend$primaryLightDirection",
+                in("x0") self as *const DirectionalLightEstimate,
+                lateout("q0") q0,
+                clobber_abi("C"),
+            );
+        }
+
+        simd::f32x4(q0)
+    }
+
+    #[cfg(not(target_arch = "aarch64"))]
+    #[doc(alias = "primaryLightDirection")]
+    pub fn primary_light_direction(&self) -> simd::f32x4 {
+        unimplemented!()
+    }
 
     /// Intensity of light in the primary direction.
     #[objc::msg_send(primaryLightIntensity)]
