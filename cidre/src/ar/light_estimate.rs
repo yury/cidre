@@ -40,7 +40,7 @@ impl DirectionalLightEstimate {
         unsafe {
             core::arch::asm!(
                 "bl _objc_msgSend$primaryLightDirection",
-                in("x0") self as *const DirectionalLightEstimate,
+                in("x0") self as *const Self,
                 lateout("q0") q0,
                 clobber_abi("C"),
             );
