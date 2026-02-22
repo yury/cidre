@@ -187,7 +187,7 @@ impl Camera {
                 in("x0") self as *const Camera,
                 in("x2") orientation as isize,
                 in("d1") viewport_size.width,
-                in("d2") viewport_size.width,
+                in("d2") viewport_size.height,
                 in("q0") point.0,
                 lateout("d0") out_x,
                 lateout("d1") out_y,
