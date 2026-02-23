@@ -1,4 +1,4 @@
-use crate::{arc, cg, define_obj_type, ns, objc, simd};
+use crate::{arc, cg, define_cls, define_obj_type, ns, objc, simd};
 
 define_obj_type!(
     #[doc(alias = "ARLightEstimate")]
@@ -7,6 +7,8 @@ define_obj_type!(
 );
 
 impl LightEstimate {
+    define_cls!(AR_LIGHT_ESTIMATE);
+
     /// Ambient intensity of the scene lighting.
     ///
     /// In a well-lit environment this value is usually near `1000`.
@@ -25,6 +27,8 @@ define_obj_type!(
 );
 
 impl DirectionalLightEstimate {
+    define_cls!(AR_DIRECTIONAL_LIGHT_ESTIMATE);
+
     /// Second-degree spherical harmonics coefficients.
     ///
     /// The data contains 27 `f32` values in three non-interleaved RGB sets.
@@ -58,4 +62,10 @@ impl DirectionalLightEstimate {
     /// Intensity of light in the primary direction.
     #[objc::msg_send(primaryLightIntensity)]
     pub fn primary_light_intensity(&self) -> cg::Float;
+}
+
+#[link(name = "ar", kind = "static")]
+unsafe extern "C" {
+    static AR_LIGHT_ESTIMATE: &'static objc::Class<LightEstimate>;
+    static AR_DIRECTIONAL_LIGHT_ESTIMATE: &'static objc::Class<DirectionalLightEstimate>;
 }
