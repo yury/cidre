@@ -763,7 +763,6 @@ impl std::ops::DerefMut for f32quat {
     }
 }
 
-#[cfg(target_arch = "aarch64")]
 impl f32quat {
     pub fn load(vals: &[f32; 4]) -> Self {
         Self(f32x4::load(vals))
@@ -980,7 +979,6 @@ mod tests {
         assert_f32x4_close(a.0, b.0);
     }
 
-    #[cfg(target_arch = "aarch64")]
     fn assert_f32quat_equiv(a: f32quat, b: f32quat) {
         let same = (a.x() - b.x()).abs() < 1e-6
             && (a.y() - b.y()).abs() < 1e-6
@@ -994,7 +992,6 @@ mod tests {
         assert_f32quat_close(a, neg_b);
     }
 
-    #[cfg(target_arch = "aarch64")]
     fn rot_matrix(c0: f32x4, c1: f32x4, c2: f32x4) -> f32x4x4 {
         super::f32x4x4_with_cols(c0, c1, c2, f32x4::with_xyzw(0.0, 0.0, 0.0, 1.0))
     }
@@ -1097,7 +1094,6 @@ mod tests {
         assert_f32quat_close(lhs, rhs);
     }
 
-    #[cfg(target_arch = "aarch64")]
     #[test]
     fn f32quat_from_matrix_identity() {
         let q = f32quat::from_matrix(f32x4x4::identity());
@@ -1105,7 +1101,6 @@ mod tests {
         assert_f32quat_equiv(q, expected);
     }
 
-    #[cfg(target_arch = "aarch64")]
     #[test]
     fn f32quat_from_matrix_rot_z_90() {
         let m = rot_matrix(
@@ -1118,7 +1113,6 @@ mod tests {
         assert_f32quat_equiv(q, expected);
     }
 
-    #[cfg(target_arch = "aarch64")]
     #[test]
     fn f32quat_from_matrix_rot_x_180_branch_x() {
         let m = rot_matrix(
@@ -1131,7 +1125,6 @@ mod tests {
         assert_f32quat_equiv(q, expected);
     }
 
-    #[cfg(target_arch = "aarch64")]
     #[test]
     fn f32quat_from_matrix_rot_y_180_branch_y() {
         let m = rot_matrix(
@@ -1144,7 +1137,6 @@ mod tests {
         assert_f32quat_equiv(q, expected);
     }
 
-    #[cfg(target_arch = "aarch64")]
     #[test]
     fn f32quat_from_matrix_rot_z_180_branch_z() {
         let m = rot_matrix(
