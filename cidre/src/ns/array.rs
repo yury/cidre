@@ -76,6 +76,11 @@ impl<T: objc::Obj> Array<T> {
         Self::alloc().init()
     }
 
+    #[inline]
+    pub fn empty() -> arc::R<Self> {
+        Self::new()
+    }
+
     /// Alternate constructor using `NS_ARRAY.new()`.
     ///
     /// Prefer `new()`; this path is slower.
