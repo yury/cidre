@@ -223,10 +223,12 @@ impl f32x4 {
         Self::load(&[r, g, b, a])
     }
 
+    #[inline]
     pub fn load(vals: &[f32; 4]) -> Self {
         Self(unsafe { std::arch::aarch64::vld1q_f32(vals.as_ptr()) })
     }
 
+    #[inline]
     pub fn splat(val: f32) -> Self {
         Self(unsafe { std::arch::aarch64::vdupq_n_f32(val) })
     }
@@ -892,6 +894,21 @@ impl f32quat {
             half_angle.cos(),
         ]))
     }
+
+    #[inline]
+    #[doc(alias = "simd_conjugate")]
+    pub fn conjugate(self) -> Self {
+        #[cfg(target_arch = "aarch64")]
+        {
+            let sign = f32x4::with_xyzw(-1.0, -1.0, -1.0, 1.0);
+            Self(self.0 * sign)
+        }
+
+        #[cfg(not(target_arch = "aarch64"))]
+        {
+            Self(f32x4::with_xyzw(-self.x(), -self.y(), -self.z(), self.w()))
+        }
+    }
 }
 
 pub mod packed {
@@ -955,6 +972,7 @@ pub mod packed {
 
 #[cfg(test)]
 mod tests {
+    use super::conjugate;
     use super::f32quat;
     use super::f32x2;
     use super::f32x2x2;
@@ -1095,6 +1113,27 @@ mod tests {
     }
 
     #[test]
+    fn f32quat_conjugate_matches_component_sign_flip() {
+        let q = f32quat(f32x4::with_xyzw(1.0, -2.0, 3.5, -4.0));
+        let c = q.conjugate();
+        let c_fn = conjugate(q);
+
+        let expected = f32quat(f32x4::with_xyzw(-1.0, 2.0, -3.5, -4.0));
+        assert_eq!(c, expected);
+        assert_eq!(c_fn, expected);
+    }
+
+    #[test]
+    fn f32quat_conjugate_is_inverse_for_unit_quat() {
+        let q = f32quat::with_angle(0.7, f32x3::with_xyz(0.0, 0.0, 1.0));
+        let qc = q.conjugate();
+        let identity = f32quat(f32x4::with_xyzw(0.0, 0.0, 0.0, 1.0));
+
+        assert_f32quat_close(q * qc, identity);
+        assert_f32quat_close(qc * q, identity);
+    }
+
+    #[test]
     fn f32quat_from_matrix_identity() {
         let q = f32quat::from_matrix(f32x4x4::identity());
         let expected = f32quat(f32x4::with_xyzw(0.0, 0.0, 0.0, 1.0));
@@ -1109,7 +1148,8 @@ mod tests {
             f32x4::with_xyzw(0.0, 0.0, 1.0, 0.0),
         );
         let q = f32quat::from_matrix(m);
-        let expected = f32quat::with_angle(std::f32::consts::FRAC_PI_2, f32x3::with_xyz(0.0, 0.0, 1.0));
+        let expected =
+            f32quat::with_angle(std::f32::consts::FRAC_PI_2, f32x3::with_xyz(0.0, 0.0, 1.0));
         assert_f32quat_equiv(q, expected);
     }
 
