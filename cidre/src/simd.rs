@@ -768,6 +768,62 @@ impl f32quat {
     pub fn load(vals: &[f32; 4]) -> Self {
         Self(f32x4::load(vals))
     }
+
+    pub fn from_matrix(matrix: f32x4x4) -> Self {
+        let m00 = matrix[0].x();
+        let m01 = matrix[0].y();
+        let m02 = matrix[0].z();
+        let m10 = matrix[1].x();
+        let m11 = matrix[1].y();
+        let m12 = matrix[1].z();
+        let m20 = matrix[2].x();
+        let m21 = matrix[2].y();
+        let m22 = matrix[2].z();
+
+        let trace = m00 + m11 + m22;
+
+        if trace >= 0.0 {
+            let r = 2.0 * (1.0 + trace).sqrt();
+            let rinv = 1.0 / r;
+            return Self(f32x4::with_xyzw(
+                rinv * (m12 - m21),
+                rinv * (m20 - m02),
+                rinv * (m01 - m10),
+                r * 0.25,
+            ));
+        }
+
+        if m00 >= m11 && m00 >= m22 {
+            let r = 2.0 * (1.0 - m11 - m22 + m00).sqrt();
+            let rinv = 1.0 / r;
+            return Self(f32x4::with_xyzw(
+                r * 0.25,
+                rinv * (m01 + m10),
+                rinv * (m02 + m20),
+                rinv * (m12 - m21),
+            ));
+        }
+
+        if m11 >= m22 {
+            let r = 2.0 * (1.0 - m00 - m22 + m11).sqrt();
+            let rinv = 1.0 / r;
+            return Self(f32x4::with_xyzw(
+                rinv * (m01 + m10),
+                r * 0.25,
+                rinv * (m12 + m21),
+                rinv * (m20 - m02),
+            ));
+        }
+
+        let r = 2.0 * (1.0 - m00 - m11 + m22).sqrt();
+        let rinv = 1.0 / r;
+        Self(f32x4::with_xyzw(
+            rinv * (m02 + m20),
+            rinv * (m12 + m21),
+            r * 0.25,
+            rinv * (m01 - m10),
+        ))
+    }
 }
 
 impl SimdMul<f32quat> for f32quat {
@@ -924,6 +980,25 @@ mod tests {
         assert_f32x4_close(a.0, b.0);
     }
 
+    #[cfg(target_arch = "aarch64")]
+    fn assert_f32quat_equiv(a: f32quat, b: f32quat) {
+        let same = (a.x() - b.x()).abs() < 1e-6
+            && (a.y() - b.y()).abs() < 1e-6
+            && (a.z() - b.z()).abs() < 1e-6
+            && (a.w() - b.w()).abs() < 1e-6;
+        if same {
+            return;
+        }
+
+        let neg_b = f32quat(f32x4::with_xyzw(-b.x(), -b.y(), -b.z(), -b.w()));
+        assert_f32quat_close(a, neg_b);
+    }
+
+    #[cfg(target_arch = "aarch64")]
+    fn rot_matrix(c0: f32x4, c1: f32x4, c2: f32x4) -> f32x4x4 {
+        super::f32x4x4_with_cols(c0, c1, c2, f32x4::with_xyzw(0.0, 0.0, 0.0, 1.0))
+    }
+
     #[test]
     fn mul() {
         let _x = f32x2x2([f32x2::with_xy(1.0, 0.0), f32x2::with_xy(1.0, 0.0)]);
@@ -1020,5 +1095,65 @@ mod tests {
         let lhs = (qa * qb) * qc;
         let rhs = qa * (qb * qc);
         assert_f32quat_close(lhs, rhs);
+    }
+
+    #[cfg(target_arch = "aarch64")]
+    #[test]
+    fn f32quat_from_matrix_identity() {
+        let q = f32quat::from_matrix(f32x4x4::identity());
+        let expected = f32quat(f32x4::with_xyzw(0.0, 0.0, 0.0, 1.0));
+        assert_f32quat_equiv(q, expected);
+    }
+
+    #[cfg(target_arch = "aarch64")]
+    #[test]
+    fn f32quat_from_matrix_rot_z_90() {
+        let m = rot_matrix(
+            f32x4::with_xyzw(0.0, 1.0, 0.0, 0.0),
+            f32x4::with_xyzw(-1.0, 0.0, 0.0, 0.0),
+            f32x4::with_xyzw(0.0, 0.0, 1.0, 0.0),
+        );
+        let q = f32quat::from_matrix(m);
+        let expected = f32quat::with_angle(std::f32::consts::FRAC_PI_2, f32x3::with_xyz(0.0, 0.0, 1.0));
+        assert_f32quat_equiv(q, expected);
+    }
+
+    #[cfg(target_arch = "aarch64")]
+    #[test]
+    fn f32quat_from_matrix_rot_x_180_branch_x() {
+        let m = rot_matrix(
+            f32x4::with_xyzw(1.0, 0.0, 0.0, 0.0),
+            f32x4::with_xyzw(0.0, -1.0, 0.0, 0.0),
+            f32x4::with_xyzw(0.0, 0.0, -1.0, 0.0),
+        );
+        let q = f32quat::from_matrix(m);
+        let expected = f32quat(f32x4::with_xyzw(1.0, 0.0, 0.0, 0.0));
+        assert_f32quat_equiv(q, expected);
+    }
+
+    #[cfg(target_arch = "aarch64")]
+    #[test]
+    fn f32quat_from_matrix_rot_y_180_branch_y() {
+        let m = rot_matrix(
+            f32x4::with_xyzw(-1.0, 0.0, 0.0, 0.0),
+            f32x4::with_xyzw(0.0, 1.0, 0.0, 0.0),
+            f32x4::with_xyzw(0.0, 0.0, -1.0, 0.0),
+        );
+        let q = f32quat::from_matrix(m);
+        let expected = f32quat(f32x4::with_xyzw(0.0, 1.0, 0.0, 0.0));
+        assert_f32quat_equiv(q, expected);
+    }
+
+    #[cfg(target_arch = "aarch64")]
+    #[test]
+    fn f32quat_from_matrix_rot_z_180_branch_z() {
+        let m = rot_matrix(
+            f32x4::with_xyzw(-1.0, 0.0, 0.0, 0.0),
+            f32x4::with_xyzw(0.0, -1.0, 0.0, 0.0),
+            f32x4::with_xyzw(0.0, 0.0, 1.0, 0.0),
+        );
+        let q = f32quat::from_matrix(m);
+        let expected = f32quat(f32x4::with_xyzw(0.0, 0.0, 1.0, 0.0));
+        assert_f32quat_equiv(q, expected);
     }
 }
