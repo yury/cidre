@@ -38,7 +38,7 @@ impl DirectionalLightEstimate {
     /// Primary direction of light.
     #[doc(alias = "primaryLightDirection")]
     #[cfg(target_arch = "aarch64")]
-    pub fn primary_light_direction(&self) -> simd::f32x4 {
+    pub fn primary_light_direction(&self) -> simd::f32x3 {
         let q0: std::arch::aarch64::float32x4_t;
 
         unsafe {
@@ -50,12 +50,12 @@ impl DirectionalLightEstimate {
             );
         }
 
-        simd::f32x4(q0)
+        simd::f32x3(q0)
     }
 
     #[cfg(not(target_arch = "aarch64"))]
     #[doc(alias = "primaryLightDirection")]
-    pub fn primary_light_direction(&self) -> simd::f32x4 {
+    pub fn primary_light_direction(&self) -> simd::f32x3 {
         unimplemented!()
     }
 

@@ -942,7 +942,7 @@ impl f32quat {
         Self(f32x4::load(vals))
     }
 
-    pub fn from_matrix(matrix: f32x4x4) -> Self {
+    pub fn from_f32x4x4(matrix: f32x4x4) -> Self {
         let m00 = matrix[0].x();
         let m01 = matrix[0].y();
         let m02 = matrix[0].z();
@@ -1304,7 +1304,7 @@ mod tests {
 
     #[test]
     fn f32quat_from_matrix_identity() {
-        let q = f32quat::from_matrix(f32x4x4::identity());
+        let q = f32quat::from_f32x4x4(f32x4x4::identity());
         let expected = f32quat(f32x4::with_xyzw(0.0, 0.0, 0.0, 1.0));
         assert_f32quat_equiv(q, expected);
     }
@@ -1316,7 +1316,7 @@ mod tests {
             f32x4::with_xyzw(-1.0, 0.0, 0.0, 0.0),
             f32x4::with_xyzw(0.0, 0.0, 1.0, 0.0),
         );
-        let q = f32quat::from_matrix(m);
+        let q = f32quat::from_f32x4x4(m);
         let expected =
             f32quat::with_angle(std::f32::consts::FRAC_PI_2, f32x3::with_xyz(0.0, 0.0, 1.0));
         assert_f32quat_equiv(q, expected);
@@ -1329,7 +1329,7 @@ mod tests {
             f32x4::with_xyzw(0.0, -1.0, 0.0, 0.0),
             f32x4::with_xyzw(0.0, 0.0, -1.0, 0.0),
         );
-        let q = f32quat::from_matrix(m);
+        let q = f32quat::from_f32x4x4(m);
         let expected = f32quat(f32x4::with_xyzw(1.0, 0.0, 0.0, 0.0));
         assert_f32quat_equiv(q, expected);
     }
@@ -1341,7 +1341,7 @@ mod tests {
             f32x4::with_xyzw(0.0, 1.0, 0.0, 0.0),
             f32x4::with_xyzw(0.0, 0.0, -1.0, 0.0),
         );
-        let q = f32quat::from_matrix(m);
+        let q = f32quat::from_f32x4x4(m);
         let expected = f32quat(f32x4::with_xyzw(0.0, 1.0, 0.0, 0.0));
         assert_f32quat_equiv(q, expected);
     }
@@ -1353,7 +1353,7 @@ mod tests {
             f32x4::with_xyzw(0.0, -1.0, 0.0, 0.0),
             f32x4::with_xyzw(0.0, 0.0, 1.0, 0.0),
         );
-        let q = f32quat::from_matrix(m);
+        let q = f32quat::from_f32x4x4(m);
         let expected = f32quat(f32x4::with_xyzw(0.0, 0.0, 1.0, 0.0));
         assert_f32quat_equiv(q, expected);
     }

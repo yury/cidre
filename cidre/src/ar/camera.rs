@@ -42,7 +42,7 @@ impl Camera {
 
     /// Camera orientation as Euler angles (pitch, yaw, roll in radians).
     #[cfg(target_arch = "aarch64")]
-    pub fn euler_angles(&self) -> simd::f32x4 {
+    pub fn euler_angles(&self) -> simd::f32x3 {
         let q0: std::arch::aarch64::float32x4_t;
 
         unsafe {
@@ -54,11 +54,11 @@ impl Camera {
             );
         }
 
-        simd::f32x4(q0)
+        simd::f32x3(q0)
     }
 
     #[cfg(not(target_arch = "aarch64"))]
-    pub fn euler_angles(&self) -> simd::f32x4 {
+    pub fn euler_angles(&self) -> simd::f32x3 {
         unimplemented!()
     }
 
@@ -174,7 +174,7 @@ impl Camera {
     #[doc(alias = "projectPoint:orientation:viewportSize:")]
     pub fn project_point(
         &self,
-        point: simd::f32x4,
+        point: simd::f32x3,
         orientation: ui::Orientation,
         viewport_size: cg::Size,
     ) -> cg::Point {
@@ -202,7 +202,7 @@ impl Camera {
     #[objc::msg_send(projectPoint:orientation:viewportSize:)]
     pub fn project_point(
         &self,
-        point: simd::f32x4,
+        point: simd::f32x3,
         orientation: ui::Orientation,
         viewport_size: cg::Size,
     ) -> cg::Point {
@@ -218,7 +218,7 @@ impl Camera {
         plane_transform: simd::f32x4x4,
         orientation: ui::Orientation,
         viewport_size: cg::Size,
-    ) -> simd::f32x4 {
+    ) -> simd::f32x3 {
         let plane: std::arch::aarch64::float32x4_t;
 
         unsafe {
@@ -239,7 +239,7 @@ impl Camera {
             );
         }
 
-        simd::f32x4(plane)
+        simd::f32x3(plane)
     }
 
     #[cfg(all(feature = "ui", not(target_arch = "aarch64")))]
@@ -251,7 +251,7 @@ impl Camera {
         plane_transform: simd::f32x4x4,
         orientation: ui::Orientation,
         viewport_size: cg::Size,
-    ) -> simd::f32x4 {
+    ) -> simd::f32x3 {
         unimplemented!()
     }
 
