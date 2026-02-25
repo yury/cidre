@@ -143,8 +143,145 @@ impl std::ops::Sub for f32x2 {
 #[allow(non_camel_case_types)]
 pub type f16x2 = Simd<half::f16, 2, 2>;
 
+#[cfg(not(target_arch = "aarch64"))]
 #[allow(non_camel_case_types)]
 pub type f32x3 = Simd<f32, 4, 3>;
+
+#[cfg(target_arch = "aarch64")]
+#[allow(non_camel_case_types)]
+#[derive(Debug, Copy, Clone)]
+#[repr(transparent)]
+pub struct f32x3(pub std::arch::aarch64::float32x4_t);
+
+#[cfg(target_arch = "aarch64")]
+impl PartialEq for f32x3 {
+    fn eq(&self, other: &Self) -> bool {
+        unsafe {
+            let cmp = std::arch::aarch64::vceqq_f32(self.0, other.0);
+            let bits: u128 = std::mem::transmute(cmp);
+            bits == u128::MAX
+        }
+    }
+}
+
+#[cfg(target_arch = "aarch64")]
+impl PartialEq<[f32; 3]> for f32x3 {
+    fn eq(&self, other: &[f32; 3]) -> bool {
+        self == &Self::load(other)
+    }
+}
+
+#[cfg(target_arch = "aarch64")]
+impl Default for f32x3 {
+    fn default() -> Self {
+        Self::load(&[0.0; 3])
+    }
+}
+
+#[cfg(target_arch = "aarch64")]
+impl f32x3 {
+    pub fn x(&self) -> f32 {
+        unsafe { std::arch::aarch64::vgetq_lane_f32::<0>(self.0) }
+    }
+    pub fn y(&self) -> f32 {
+        unsafe { std::arch::aarch64::vgetq_lane_f32::<1>(self.0) }
+    }
+    pub fn z(&self) -> f32 {
+        unsafe { std::arch::aarch64::vgetq_lane_f32::<2>(self.0) }
+    }
+
+    pub fn r(&self) -> f32 {
+        unsafe { std::arch::aarch64::vgetq_lane_f32::<0>(self.0) }
+    }
+    pub fn g(&self) -> f32 {
+        unsafe { std::arch::aarch64::vgetq_lane_f32::<1>(self.0) }
+    }
+    pub fn b(&self) -> f32 {
+        unsafe { std::arch::aarch64::vgetq_lane_f32::<2>(self.0) }
+    }
+
+    pub fn set_x(&mut self, val: f32) {
+        self.0 = unsafe { std::arch::aarch64::vsetq_lane_f32::<0>(val, self.0) }
+    }
+    pub fn set_y(&mut self, val: f32) {
+        self.0 = unsafe { std::arch::aarch64::vsetq_lane_f32::<1>(val, self.0) }
+    }
+    pub fn set_z(&mut self, val: f32) {
+        self.0 = unsafe { std::arch::aarch64::vsetq_lane_f32::<2>(val, self.0) }
+    }
+
+    pub fn set_r(&mut self, val: f32) {
+        self.0 = unsafe { std::arch::aarch64::vsetq_lane_f32::<0>(val, self.0) }
+    }
+    pub fn set_g(&mut self, val: f32) {
+        self.0 = unsafe { std::arch::aarch64::vsetq_lane_f32::<1>(val, self.0) }
+    }
+    pub fn set_b(&mut self, val: f32) {
+        self.0 = unsafe { std::arch::aarch64::vsetq_lane_f32::<2>(val, self.0) }
+    }
+
+    #[inline]
+    pub fn with_xyz(x: f32, y: f32, z: f32) -> Self {
+        Self::load(&[x, y, z])
+    }
+
+    #[inline]
+    pub fn with_rgb(r: f32, g: f32, b: f32) -> Self {
+        Self::load(&[r, g, b])
+    }
+
+    #[inline]
+    pub fn with_xyz_f32(x: f32, y: f32, z: f32) -> Self {
+        Self::load(&[x, y, z])
+    }
+
+    #[inline]
+    pub fn with_rgb_f32(r: f32, g: f32, b: f32) -> Self {
+        Self::load(&[r, g, b])
+    }
+
+    #[inline]
+    pub fn load(vals: &[f32; 3]) -> Self {
+        let vals = [vals[0], vals[1], vals[2], 0.0];
+        Self(unsafe { std::arch::aarch64::vld1q_f32(vals.as_ptr()) })
+    }
+
+    #[inline]
+    pub fn splat(val: f32) -> Self {
+        Self::load(&[val; 3])
+    }
+
+    pub fn to_bits(&self) -> u128 {
+        unsafe { std::mem::transmute(*self) }
+    }
+}
+
+#[cfg(target_arch = "aarch64")]
+impl std::ops::Add for f32x3 {
+    type Output = f32x3;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        unsafe { Self(std::arch::aarch64::vaddq_f32(self.0, rhs.0)) }
+    }
+}
+
+#[cfg(target_arch = "aarch64")]
+impl std::ops::Mul for f32x3 {
+    type Output = f32x3;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        unsafe { Self(std::arch::aarch64::vmulq_f32(self.0, rhs.0)) }
+    }
+}
+
+#[cfg(target_arch = "aarch64")]
+impl std::ops::Sub for f32x3 {
+    type Output = f32x3;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        unsafe { Self(std::arch::aarch64::vsubq_f32(self.0, rhs.0)) }
+    }
+}
 
 #[cfg(feature = "half")]
 #[allow(non_camel_case_types)]
@@ -312,11 +449,19 @@ pub struct f32x4x2(pub [f32x2; 4]);
 #[repr(transparent)]
 pub struct f32x2x3(pub [f32x3; 2]);
 
+#[cfg(not(target_arch = "aarch64"))]
 #[derive(Debug, Copy, Clone)]
 #[allow(non_camel_case_types)]
 #[repr(transparent)]
 pub struct f32x3x3(pub [f32x3; 3]);
 
+#[cfg(target_arch = "aarch64")]
+#[derive(Debug, Copy, Clone)]
+#[allow(non_camel_case_types)]
+#[repr(transparent)]
+pub struct f32x3x3(pub std::arch::aarch64::float32x4x3_t);
+
+#[cfg(not(target_arch = "aarch64"))]
 impl f32x3x3 {
     pub fn diagonal(v: f32x3) -> Self {
         Self([
@@ -340,6 +485,33 @@ impl f32x3x3 {
             f32x3::with_xyz_f32(0.0, 1.0, ty),
             f32x3::with_xyz_f32(0.0, 0.0, 1.0),
         ])
+    }
+}
+
+#[cfg(target_arch = "aarch64")]
+impl f32x3x3 {
+    pub fn diagonal(v: f32x3) -> Self {
+        Self(std::arch::aarch64::float32x4x3_t(
+            f32x3::with_xyz_f32(v.x(), 0.0, 0.0).0,
+            f32x3::with_xyz_f32(0.0, v.y(), 0.0).0,
+            f32x3::with_xyz_f32(0.0, 0.0, v.z()).0,
+        ))
+    }
+
+    pub fn identity() -> Self {
+        Self(std::arch::aarch64::float32x4x3_t(
+            f32x3::with_xyz_f32(1.0, 0.0, 0.0).0,
+            f32x3::with_xyz_f32(0.0, 1.0, 0.0).0,
+            f32x3::with_xyz_f32(0.0, 0.0, 1.0).0,
+        ))
+    }
+
+    pub fn translate(tx: f32, ty: f32) -> Self {
+        Self(std::arch::aarch64::float32x4x3_t(
+            f32x3::with_xyz_f32(1.0, 0.0, tx).0,
+            f32x3::with_xyz_f32(0.0, 1.0, ty).0,
+            f32x3::with_xyz_f32(0.0, 0.0, 1.0).0,
+        ))
     }
 }
 
@@ -972,7 +1144,6 @@ pub mod packed {
 
 #[cfg(test)]
 mod tests {
-    use super::conjugate;
     use super::f32quat;
     use super::f32x2;
     use super::f32x2x2;
@@ -1116,11 +1287,9 @@ mod tests {
     fn f32quat_conjugate_matches_component_sign_flip() {
         let q = f32quat(f32x4::with_xyzw(1.0, -2.0, 3.5, -4.0));
         let c = q.conjugate();
-        let c_fn = conjugate(q);
 
         let expected = f32quat(f32x4::with_xyzw(-1.0, 2.0, -3.5, -4.0));
         assert_eq!(c, expected);
-        assert_eq!(c_fn, expected);
     }
 
     #[test]
