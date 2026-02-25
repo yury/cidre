@@ -978,6 +978,62 @@ impl f32quat {
         Self(f32x4::load(vals))
     }
 
+    pub fn from_f32x3x3(matrix: f32x3x3) -> Self {
+        let m00 = matrix[0].x();
+        let m01 = matrix[0].y();
+        let m02 = matrix[0].z();
+        let m10 = matrix[1].x();
+        let m11 = matrix[1].y();
+        let m12 = matrix[1].z();
+        let m20 = matrix[2].x();
+        let m21 = matrix[2].y();
+        let m22 = matrix[2].z();
+
+        let trace = m00 + m11 + m22;
+
+        if trace >= 0.0 {
+            let r = 2.0 * (1.0 + trace).sqrt();
+            let rinv = 1.0 / r;
+            return Self(f32x4::with_xyzw(
+                rinv * (m12 - m21),
+                rinv * (m20 - m02),
+                rinv * (m01 - m10),
+                r * 0.25,
+            ));
+        }
+
+        if m00 >= m11 && m00 >= m22 {
+            let r = 2.0 * (1.0 - m11 - m22 + m00).sqrt();
+            let rinv = 1.0 / r;
+            return Self(f32x4::with_xyzw(
+                r * 0.25,
+                rinv * (m01 + m10),
+                rinv * (m02 + m20),
+                rinv * (m12 - m21),
+            ));
+        }
+
+        if m11 >= m22 {
+            let r = 2.0 * (1.0 - m00 - m22 + m11).sqrt();
+            let rinv = 1.0 / r;
+            return Self(f32x4::with_xyzw(
+                rinv * (m01 + m10),
+                r * 0.25,
+                rinv * (m12 + m21),
+                rinv * (m20 - m02),
+            ));
+        }
+
+        let r = 2.0 * (1.0 - m00 - m11 + m22).sqrt();
+        let rinv = 1.0 / r;
+        Self(f32x4::with_xyzw(
+            rinv * (m02 + m20),
+            rinv * (m12 + m21),
+            r * 0.25,
+            rinv * (m01 - m10),
+        ))
+    }
+
     pub fn from_f32x4x4(matrix: f32x4x4) -> Self {
         let m00 = matrix[0].x();
         let m01 = matrix[0].y();
