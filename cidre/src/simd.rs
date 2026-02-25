@@ -515,6 +515,42 @@ impl f32x3x3 {
     }
 }
 
+impl std::ops::Index<usize> for f32x3x3 {
+    type Output = f32x3;
+
+    #[cfg(not(target_arch = "aarch64"))]
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.0[index]
+    }
+
+    #[cfg(target_arch = "aarch64")]
+    fn index(&self, index: usize) -> &Self::Output {
+        match index {
+            0 => unsafe { std::mem::transmute(&self.0.0) },
+            1 => unsafe { std::mem::transmute(&self.0.1) },
+            2 => unsafe { std::mem::transmute(&self.0.2) },
+            _ => panic!(),
+        }
+    }
+}
+
+impl std::ops::IndexMut<usize> for f32x3x3 {
+    #[cfg(not(target_arch = "aarch64"))]
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.0[index]
+    }
+
+    #[cfg(target_arch = "aarch64")]
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        match index {
+            0 => unsafe { std::mem::transmute(&mut self.0.0) },
+            1 => unsafe { std::mem::transmute(&mut self.0.1) },
+            2 => unsafe { std::mem::transmute(&mut self.0.2) },
+            _ => panic!(),
+        }
+    }
+}
+
 #[cfg(not(target_arch = "aarch64"))]
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[allow(non_camel_case_types)]
