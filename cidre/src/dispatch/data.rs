@@ -133,13 +133,13 @@ impl From<&'static str> for arc::R<Data> {
 impl From<Vec<u8>> for arc::R<Data> {
     fn from(val: Vec<u8>) -> arc::R<Data> {
         let len = val.len();
-        let ptr = val.as_ptr();
         if len == 0 {
             return Data::empty().retained();
         }
+        let ptr = val.as_ptr();
 
         let mut destruct = dispatch::Block::<blocks::Esc>::new0(move || {
-            let _f = &val;
+            let _ = &val;
         });
 
         Data::with_bytes_no_copy(ptr, len, None, &mut destruct)
@@ -150,13 +150,13 @@ impl From<Vec<u8>> for arc::R<Data> {
 impl From<Box<[u8]>> for arc::R<Data> {
     fn from(val: Box<[u8]>) -> arc::R<Data> {
         let len = val.len();
-        let ptr = val.as_ptr();
         if len == 0 {
             return Data::empty().retained();
         }
+        let ptr = val.as_ptr();
 
         let mut destruct = dispatch::Block::<blocks::Esc>::new0(move || {
-            let _f = &val;
+            let _ = &val;
         });
 
         Data::with_bytes_no_copy(ptr, len, None, &mut destruct)
