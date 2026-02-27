@@ -370,6 +370,14 @@ impl f32x4 {
         Self(unsafe { std::arch::aarch64::vdupq_n_f32(val) })
     }
 
+    #[inline]
+    pub fn dot(&self, other: &Self) -> f32 {
+        unsafe {
+            let mul = std::arch::aarch64::vmulq_f32(self.0, other.0);
+            std::arch::aarch64::vaddvq_f32(mul)
+        }
+    }
+
     pub fn to_bits(&self) -> u128 {
         unsafe { std::mem::transmute(*self) }
     }
@@ -1316,6 +1324,13 @@ mod tests {
 
         assert_eq!(o1, f32x4::with_xyzw(3.0, 5.0, 7.0, 1.0));
         assert_eq!(o1, o2);
+    }
+
+    #[test]
+    fn f32x4_dot() {
+        let a = f32x4::with_xyzw(1.0, 2.0, 3.0, 4.0);
+        let b = f32x4::with_xyzw(5.0, 6.0, 7.0, 8.0);
+        assert_eq!(a.dot(&b), 70.0);
     }
 
     #[cfg(feature = "half")]

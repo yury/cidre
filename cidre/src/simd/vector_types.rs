@@ -254,6 +254,14 @@ impl Simd<f32, 4, 4> {
     pub const fn with_rgba_f32(r: f32, g: f32, b: f32, a: f32) -> Self {
         Self([r, g, b, a])
     }
+
+    #[inline]
+    pub fn dot(&self, other: &Self) -> f32 {
+        self.0[0] * other.0[0]
+            + self.0[1] * other.0[1]
+            + self.0[2] * other.0[2]
+            + self.0[3] * other.0[3]
+    }
 }
 
 #[cfg(feature = "half")]
