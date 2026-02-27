@@ -193,6 +193,16 @@ impl cg::Event {
     pub fn is_kb_autorepeat(&self) -> bool {
         self.field_i64(cg::EventField::KEYBOARD_EVENT_AUTOREPEAT) != 0
     }
+
+    /// Post an event into the event stream at a specified location.
+    ///
+    /// This function posts the specified event immediately before any event taps
+    /// instantiated for that location, and the event passes through any such
+    /// taps.
+    #[doc(alias = "CGEventPost")]
+    pub fn post(&self, tap: cg::EventTapLocation) {
+        unsafe { CGEventPost(tap, self) };
+    }
 }
 
 impl cg::EventSrc {
@@ -338,6 +348,8 @@ unsafe extern "C-unwind" {
 
     fn CGEventTapEnable(tap: &mut EventTap, val: bool);
     fn CGEventTapIsEnabled(tap: &EventTap) -> bool;
+
+    fn CGEventPost(tap: cg::EventTapLocation, event: &cg::Event);
 
     fn CGEventGetIntegerValueField(event: *const cg::Event, field: cg::EventField) -> i64;
     fn CGEventSetIntegerValueField(event: *mut cg::Event, field: cg::EventField, val: i64);
