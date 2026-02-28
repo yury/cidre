@@ -26,6 +26,7 @@ Class NS_TEXT_ATTACHMENT;
 Class NS_IMAGE;
 Class NS_EVENT;
 Class NS_MENU;
+Class NS_PASTEBOARD;
 Class NS_SPLIT_VIEW_ITEM;
 Class NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER;
 Class NS_TOOLBAR;
@@ -69,6 +70,7 @@ static void app_initializer(void)
         NS_IMAGE = [NSImage class];
         NS_EVENT = [NSEvent class];
         NS_MENU = [NSMenu class];
+        NS_PASTEBOARD = [NSPasteboard class];
         NS_SPLIT_VIEW_ITEM = [NSSplitViewItem class];
         NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER = [NSTitlebarAccessoryViewController class];
         NS_TOOLBAR = [NSToolbar class];

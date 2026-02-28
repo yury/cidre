@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 Class UI_DEVICE;
 Class UI_APPLICATION;
+Class UI_PASTEBOARD;
 Class UI_VIEW;
 Class UI_COLLECTION_VIEW;
 Class UI_WINDOW;
@@ -72,6 +73,7 @@ static void ui_initializer(void)
         UI_VIEW_CONTROLLER_TRANSITION = NSClassFromString(@"UIViewControllerTransition");
         UI_TAB_BAR_CONTROLLER = NSClassFromString(@"UITabBarController");
         UI_APPLICATION = NSClassFromString(@"UIApplication");
+        UI_PASTEBOARD = NSClassFromString(@"UIPasteboard");
         UI_WINDOW = NSClassFromString(@"UIWindow");
         UI_IMAGE = [UIImage class];
         UI_TRAIT_COLLECTION = [UITraitCollection class];

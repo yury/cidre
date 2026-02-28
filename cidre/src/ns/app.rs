@@ -125,6 +125,19 @@ pub use layout_constraint::LayoutPriority;
 mod menu;
 pub use menu::Menu;
 
+mod pasteboard;
+pub use pasteboard::Pasteboard;
+pub use pasteboard::PasteboardAccessBehavior;
+pub use pasteboard::PasteboardContentsOpts;
+pub use pasteboard::PasteboardDetectionPattern;
+pub use pasteboard::PasteboardMetadataType;
+pub use pasteboard::PasteboardName;
+pub use pasteboard::PasteboardReadingOptionKey;
+pub use pasteboard::PasteboardType;
+pub use pasteboard::name as pasteboard_name;
+pub use pasteboard::reading_option_key as pasteboard_reading_option_key;
+pub use pasteboard::types as pasteboard_types;
+
 mod paragraph_style;
 pub use paragraph_style::LineBreakMode;
 pub use paragraph_style::LineBreakStrategy;

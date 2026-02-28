@@ -45,6 +45,29 @@ pub use responder::Responder;
 pub use responder::ResponderStandardEditActions;
 pub use responder::ResponderStandardEditActionsImpl;
 
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+mod pasteboard;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use pasteboard::Pasteboard;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use pasteboard::PasteboardDetectionPattern;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use pasteboard::PasteboardItem;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use pasteboard::PasteboardName;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use pasteboard::PasteboardOption;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use pasteboard::name as pasteboard_name;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use pasteboard::notifications as pasteboard_notifications;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use pasteboard::option as pasteboard_option;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use pasteboard::type_list as pasteboard_type_list;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use pasteboard::types as pasteboard_types;
+
 mod touch;
 pub use touch::ForceTouchCapability;
 pub use touch::Touch;
