@@ -1,8 +1,8 @@
 #[cfg(feature = "av")]
 use crate::av;
+use crate::{ar, arc, cv, define_obj_type, ns, objc};
 #[cfg(feature = "ui")]
 use crate::{cg, ui};
-use crate::{ar, arc, cv, define_obj_type, ns, objc};
 
 #[doc(alias = "ARSegmentationClass")]
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
