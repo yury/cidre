@@ -1492,6 +1492,14 @@ impl std::ops::Mul<f32quat> for f32quat {
     }
 }
 
+impl std::ops::Neg for f32quat {
+    type Output = f32quat;
+
+    fn neg(self) -> Self::Output {
+        self.negate()
+    }
+}
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[allow(non_camel_case_types)]
 #[repr(transparent)]
@@ -1526,6 +1534,20 @@ impl f32quat {
     #[doc(alias = "simd_dot")]
     pub fn dot(&self, other: &Self) -> f32 {
         self.0.dot(&other.0)
+    }
+
+    #[inline]
+    #[doc(alias = "simd_negate")]
+    pub fn negate(self) -> Self {
+        #[cfg(target_arch = "aarch64")]
+        {
+            Self(f32x4(unsafe { std::arch::aarch64::vnegq_f32(self.0.0) }))
+        }
+
+        #[cfg(not(target_arch = "aarch64"))]
+        {
+            Self(f32x4::with_xyzw(-self.x(), -self.y(), -self.z(), -self.w()))
+        }
     }
 
     #[inline]
@@ -1917,6 +1939,14 @@ mod tests {
         let a = f32quat(f32x4::with_xyzw(1.0, 2.0, 3.0, 4.0));
         let b = f32quat(f32x4::with_xyzw(5.0, 6.0, 7.0, 8.0));
         assert_eq!(a.dot(&b), 70.0);
+    }
+
+    #[test]
+    fn f32quat_negate() {
+        let q = f32quat(f32x4::with_xyzw(1.0, -2.0, 3.5, -4.0));
+        let expected = f32quat(f32x4::with_xyzw(-1.0, 2.0, -3.5, 4.0));
+        assert_eq!(q.negate(), expected);
+        assert_eq!(-q, expected);
     }
 
     #[test]
