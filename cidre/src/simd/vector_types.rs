@@ -224,6 +224,11 @@ impl Simd<f32, 4, 3> {
     pub const fn with_rgb_f32(r: f32, g: f32, b: f32) -> Self {
         Self([r, g, b, 0.0])
     }
+
+    #[inline]
+    pub fn dot(&self, other: &Self) -> f32 {
+        self.0[0] * other.0[0] + self.0[1] * other.0[1] + self.0[2] * other.0[2]
+    }
 }
 
 impl<T: Copy> Simd<T, 4, 4> {

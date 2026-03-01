@@ -251,6 +251,16 @@ impl f32x3 {
         Self::load(&[val; 3])
     }
 
+    #[inline]
+    pub fn dot(&self, other: &Self) -> f32 {
+        unsafe {
+            let mul = std::arch::aarch64::vmulq_f32(self.0, other.0);
+            std::arch::aarch64::vgetq_lane_f32::<0>(mul)
+                + std::arch::aarch64::vgetq_lane_f32::<1>(mul)
+                + std::arch::aarch64::vgetq_lane_f32::<2>(mul)
+        }
+    }
+
     pub fn to_bits(&self) -> u128 {
         unsafe { std::mem::transmute(*self) }
     }
@@ -1006,6 +1016,36 @@ impl SimdNormalized for f32x4 {
             self.z() * inv_len,
             self.w() * inv_len,
         )
+    }
+}
+
+impl SimdNormalized for f32x3 {
+    type Output = f32x3;
+
+    #[cfg(target_arch = "aarch64")]
+    fn simd_normalized(self) -> Self::Output {
+        let len_sq = self.dot(&self);
+        if len_sq == 0.0 {
+            return self;
+        }
+
+        let inv_len = len_sq.sqrt().recip();
+        unsafe {
+            let scaled =
+                std::arch::aarch64::vmulq_f32(self.0, std::arch::aarch64::vdupq_n_f32(inv_len));
+            f32x3(std::arch::aarch64::vsetq_lane_f32::<3>(0.0, scaled))
+        }
+    }
+
+    #[cfg(not(target_arch = "aarch64"))]
+    fn simd_normalized(self) -> Self::Output {
+        let len_sq = self.dot(&self);
+        if len_sq == 0.0 {
+            return self;
+        }
+
+        let inv_len = len_sq.sqrt().recip();
+        f32x3::with_xyz_f32(self.x() * inv_len, self.y() * inv_len, self.z() * inv_len)
     }
 }
 
@@ -1866,6 +1906,23 @@ mod tests {
 
         let s = simd::mix(a, b, 0.5);
         assert_eq!(s, f32x4::with_xyzw(5.0, 15.0, 25.0, 35.0));
+    }
+
+    #[test]
+    fn f32x3_dot() {
+        let a = f32x3::with_xyz(1.0, 2.0, 3.0);
+        let b = f32x3::with_xyz(5.0, 6.0, 7.0);
+        assert_eq!(a.dot(&b), 38.0);
+    }
+
+    #[test]
+    fn f32x3_normalized() {
+        let a = f32x3::with_xyz(3.0, 4.0, 0.0);
+        let n = simd::normalized(a);
+        assert_f32_close(n.x(), 0.6);
+        assert_f32_close(n.y(), 0.8);
+        assert_f32_close(n.z(), 0.0);
+        assert_f32_close(n.dot(&n), 1.0);
     }
 
     #[test]
