@@ -757,7 +757,7 @@ pub trait SimdMul<Rhs = Self> {
 }
 
 #[inline]
-pub fn simd_mul<L, R>(lhs: L, rhs: R) -> <L as SimdMul<R>>::Output
+pub fn mul<L, R>(lhs: L, rhs: R) -> <L as SimdMul<R>>::Output
 where
     L: SimdMul<R>,
 {
@@ -771,7 +771,7 @@ pub trait SimdMix<Rhs = Self, T = Self> {
 }
 
 #[inline]
-pub fn simd_mix<L, R, T>(lhs: L, rhs: R, t: T) -> <L as SimdMix<R, T>>::Output
+pub fn mix<L, R, T>(lhs: L, rhs: R, t: T) -> <L as SimdMix<R, T>>::Output
 where
     L: SimdMix<R, T>,
 {
@@ -842,7 +842,7 @@ impl std::ops::Mul<f32x4> for f32x4x4 {
     type Output = f32x4;
 
     fn mul(self, rhs: f32x4) -> Self::Output {
-        simd_mul(self, rhs)
+        mul(self, rhs)
     }
 }
 
@@ -850,10 +850,10 @@ impl SimdMul<f32x4x4> for f32x4x4 {
     type Output = f32x4x4;
 
     fn simd_mul(self, rhs: f32x4x4) -> Self::Output {
-        let c0 = simd_mul(self, rhs[0]);
-        let c1 = simd_mul(self, rhs[1]);
-        let c2 = simd_mul(self, rhs[2]);
-        let c3 = simd_mul(self, rhs[3]);
+        let c0 = mul(self, rhs[0]);
+        let c1 = mul(self, rhs[1]);
+        let c2 = mul(self, rhs[2]);
+        let c3 = mul(self, rhs[3]);
         f32x4x4_with_cols(c0, c1, c2, c3)
     }
 }
@@ -862,7 +862,7 @@ impl std::ops::Mul<f32x4x4> for f32x4x4 {
     type Output = f32x4x4;
 
     fn mul(self, rhs: f32x4x4) -> Self::Output {
-        simd_mul(self, rhs)
+        mul(self, rhs)
     }
 }
 
@@ -960,10 +960,10 @@ impl SimdMix<f32x4x4, f32x4x4> for f32x4x4 {
     type Output = f32x4x4;
 
     fn simd_mix(self, rhs: f32x4x4, t: f32x4x4) -> Self::Output {
-        let c0 = simd_mix(self[0], rhs[0], t[0]);
-        let c1 = simd_mix(self[1], rhs[1], t[1]);
-        let c2 = simd_mix(self[2], rhs[2], t[2]);
-        let c3 = simd_mix(self[3], rhs[3], t[3]);
+        let c0 = mix(self[0], rhs[0], t[0]);
+        let c1 = mix(self[1], rhs[1], t[1]);
+        let c2 = mix(self[2], rhs[2], t[2]);
+        let c3 = mix(self[3], rhs[3], t[3]);
         f32x4x4_with_cols(c0, c1, c2, c3)
     }
 }
@@ -972,10 +972,10 @@ impl SimdMix<f32x4x4, f32> for f32x4x4 {
     type Output = f32x4x4;
 
     fn simd_mix(self, rhs: f32x4x4, t: f32) -> Self::Output {
-        let c0 = simd_mix(self[0], rhs[0], t);
-        let c1 = simd_mix(self[1], rhs[1], t);
-        let c2 = simd_mix(self[2], rhs[2], t);
-        let c3 = simd_mix(self[3], rhs[3], t);
+        let c0 = mix(self[0], rhs[0], t);
+        let c1 = mix(self[1], rhs[1], t);
+        let c2 = mix(self[2], rhs[2], t);
+        let c3 = mix(self[3], rhs[3], t);
         f32x4x4_with_cols(c0, c1, c2, c3)
     }
 }
@@ -984,9 +984,9 @@ impl SimdMix<f32x3x3, f32x3x3> for f32x3x3 {
     type Output = f32x3x3;
 
     fn simd_mix(self, rhs: f32x3x3, t: f32x3x3) -> Self::Output {
-        let c0 = simd_mix(self[0], rhs[0], t[0]);
-        let c1 = simd_mix(self[1], rhs[1], t[1]);
-        let c2 = simd_mix(self[2], rhs[2], t[2]);
+        let c0 = mix(self[0], rhs[0], t[0]);
+        let c1 = mix(self[1], rhs[1], t[1]);
+        let c2 = mix(self[2], rhs[2], t[2]);
         f32x3x3_with_cols(c0, c1, c2)
     }
 }
@@ -995,9 +995,9 @@ impl SimdMix<f32x3x3, f32> for f32x3x3 {
     type Output = f32x3x3;
 
     fn simd_mix(self, rhs: f32x3x3, t: f32) -> Self::Output {
-        let c0 = simd_mix(self[0], rhs[0], t);
-        let c1 = simd_mix(self[1], rhs[1], t);
-        let c2 = simd_mix(self[2], rhs[2], t);
+        let c0 = mix(self[0], rhs[0], t);
+        let c1 = mix(self[1], rhs[1], t);
+        let c2 = mix(self[2], rhs[2], t);
         f32x3x3_with_cols(c0, c1, c2)
     }
 }
@@ -1288,7 +1288,7 @@ impl std::ops::Mul<f32quat> for f32quat {
     type Output = f32quat;
 
     fn mul(self, rhs: f32quat) -> Self::Output {
-        simd_mul(self, rhs)
+        mul(self, rhs)
     }
 }
 
@@ -1413,8 +1413,7 @@ mod tests {
     use super::f32x3x3;
     use super::f32x4;
     use super::f32x4x4;
-    use super::simd_mix;
-    use super::simd_mul;
+    use crate::simd;
 
     fn assert_f32_close(a: f32, b: f32) {
         let delta = (a - b).abs();
@@ -1474,8 +1473,8 @@ mod tests {
 
         assert_eq!(a * i, a);
         assert_eq!(i * a, a);
-        assert_eq!(simd_mul(a, i), a);
-        assert_eq!(simd_mul(i, a), a);
+        assert_eq!(simd::mul(a, i), a);
+        assert_eq!(simd::mul(i, a), a);
     }
 
     #[test]
@@ -1483,7 +1482,7 @@ mod tests {
         let a = f32x4x4::translate(2.0, 3.0, 4.0);
         let b = f32x4x4::translate(5.0, 7.0, 11.0);
         let c = a * b;
-        let d = simd_mul(a, b);
+        let d = simd::mul(a, b);
 
         assert_eq!(c.tx(), 7.0);
         assert_eq!(c.ty(), 10.0);
@@ -1496,7 +1495,7 @@ mod tests {
         let m = f32x4x4::translate(2.0, 3.0, 4.0);
         let v = f32x4::with_xyzw(1.0, 2.0, 3.0, 1.0);
         let o1 = m * v;
-        let o2 = simd_mul(m, v);
+        let o2 = simd::mul(m, v);
 
         assert_eq!(o1, f32x4::with_xyzw(3.0, 5.0, 7.0, 1.0));
         assert_eq!(o1, o2);
@@ -1514,10 +1513,10 @@ mod tests {
         let a = f32x4::with_xyzw(0.0, 10.0, 20.0, 30.0);
         let b = f32x4::with_xyzw(10.0, 20.0, 30.0, 40.0);
 
-        let v = simd_mix(a, b, f32x4::with_xyzw(0.0, 0.25, 0.5, 1.0));
+        let v = simd::mix(a, b, f32x4::with_xyzw(0.0, 0.25, 0.5, 1.0));
         assert_eq!(v, f32x4::with_xyzw(0.0, 12.5, 25.0, 40.0));
 
-        let s = simd_mix(a, b, 0.5);
+        let s = simd::mix(a, b, 0.5);
         assert_eq!(s, f32x4::with_xyzw(5.0, 15.0, 25.0, 35.0));
     }
 
@@ -1526,10 +1525,10 @@ mod tests {
         let a = f32x3::with_xyz(0.0, 10.0, 20.0);
         let b = f32x3::with_xyz(10.0, 20.0, 30.0);
 
-        let v = simd_mix(a, b, f32x3::with_xyz(0.0, 0.25, 1.0));
+        let v = simd::mix(a, b, f32x3::with_xyz(0.0, 0.25, 1.0));
         assert_eq!(v, f32x3::with_xyz(0.0, 12.5, 30.0));
 
-        let s = simd_mix(a, b, 0.5);
+        let s = simd::mix(a, b, 0.5);
         assert_eq!(s, f32x3::with_xyz(5.0, 15.0, 25.0));
     }
 
@@ -1555,7 +1554,7 @@ mod tests {
             f32x4::with_xyzw(0.0, 1.0, 0.0, 1.0),
         );
 
-        let v = simd_mix(a, b, t);
+        let v = simd::mix(a, b, t);
         let expected_v = super::f32x4x4_with_cols(
             f32x4::with_xyzw(0.0, 12.5, 25.0, 40.0),
             f32x4::with_xyzw(11.0, 16.0, 23.5, 31.0),
@@ -1564,7 +1563,7 @@ mod tests {
         );
         assert_eq!(v, expected_v);
 
-        let s = simd_mix(a, b, 0.5);
+        let s = simd::mix(a, b, 0.5);
         let expected_s = super::f32x4x4_with_cols(
             f32x4::with_xyzw(5.0, 15.0, 25.0, 35.0),
             f32x4::with_xyzw(6.0, 16.0, 26.0, 36.0),
@@ -1593,7 +1592,7 @@ mod tests {
             f32x3::with_xyz(0.5, 1.0, 0.5),
         );
 
-        let v = simd_mix(a, b, t);
+        let v = simd::mix(a, b, t);
         let expected_v = super::f32x3x3_with_cols(
             f32x3::with_xyz(0.0, 12.5, 25.0),
             f32x3::with_xyz(11.0, 16.0, 21.0),
@@ -1601,7 +1600,7 @@ mod tests {
         );
         assert_f32x3x3_close(v, expected_v);
 
-        let s = simd_mix(a, b, 0.5);
+        let s = simd::mix(a, b, 0.5);
         let expected_s = super::f32x3x3_with_cols(
             f32x3::with_xyz(5.0, 15.0, 25.0),
             f32x3::with_xyz(6.0, 16.0, 26.0),
@@ -1643,8 +1642,8 @@ mod tests {
 
         assert_f32quat_close(identity * q, q);
         assert_f32quat_close(q * identity, q);
-        assert_f32quat_close(simd_mul(identity, q), q);
-        assert_f32quat_close(simd_mul(q, identity), q);
+        assert_f32quat_close(simd::mul(identity, q), q);
+        assert_f32quat_close(simd::mul(q, identity), q);
     }
 
     #[test]
