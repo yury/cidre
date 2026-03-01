@@ -792,6 +792,34 @@ where
     val.simd_inverse()
 }
 
+pub trait SimdLenSq {
+    type Output;
+
+    fn simd_len_sq(self) -> Self::Output;
+}
+
+#[inline]
+pub fn len_sq<T>(val: T) -> <T as SimdLenSq>::Output
+where
+    T: SimdLenSq,
+{
+    val.simd_len_sq()
+}
+
+pub trait SimdNormalized {
+    type Output;
+
+    fn simd_normalized(self) -> Self::Output;
+}
+
+#[inline]
+pub fn normalized<T>(val: T) -> <T as SimdNormalized>::Output
+where
+    T: SimdNormalized,
+{
+    val.simd_normalized()
+}
+
 #[inline]
 #[cfg(target_arch = "aarch64")]
 fn f32x4_dot_cols(c0: f32x4, c1: f32x4, c2: f32x4, c3: f32x4, v: f32x4) -> f32x4 {
@@ -932,6 +960,51 @@ impl SimdMix<f32x4, f32> for f32x4 {
             self.y() + (rhs.y() - self.y()) * t,
             self.z() + (rhs.z() - self.z()) * t,
             self.w() + (rhs.w() - self.w()) * t,
+        )
+    }
+}
+
+impl SimdLenSq for f32x4 {
+    type Output = f32;
+
+    #[inline]
+    fn simd_len_sq(self) -> Self::Output {
+        self.dot(&self)
+    }
+}
+
+impl SimdNormalized for f32x4 {
+    type Output = f32x4;
+
+    #[cfg(target_arch = "aarch64")]
+    fn simd_normalized(self) -> Self::Output {
+        let len_sq = self.dot(&self);
+        if len_sq == 0.0 {
+            return self;
+        }
+
+        let inv_len = len_sq.sqrt().recip();
+        unsafe {
+            f32x4(std::arch::aarch64::vmulq_f32(
+                self.0,
+                std::arch::aarch64::vdupq_n_f32(inv_len),
+            ))
+        }
+    }
+
+    #[cfg(not(target_arch = "aarch64"))]
+    fn simd_normalized(self) -> Self::Output {
+        let len_sq = self.dot(&self);
+        if len_sq == 0.0 {
+            return self;
+        }
+
+        let inv_len = len_sq.sqrt().recip();
+        f32x4::with_xyzw(
+            self.x() * inv_len,
+            self.y() * inv_len,
+            self.z() * inv_len,
+            self.w() * inv_len,
         )
     }
 }
@@ -1500,6 +1573,24 @@ impl std::ops::Neg for f32quat {
     }
 }
 
+impl SimdLenSq for f32quat {
+    type Output = f32;
+
+    #[inline]
+    fn simd_len_sq(self) -> Self::Output {
+        self.dot(&self)
+    }
+}
+
+impl SimdNormalized for f32quat {
+    type Output = f32quat;
+
+    #[inline]
+    fn simd_normalized(self) -> Self::Output {
+        f32quat(normalized(self.0))
+    }
+}
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 #[allow(non_camel_case_types)]
 #[repr(transparent)]
@@ -1749,6 +1840,23 @@ mod tests {
     }
 
     #[test]
+    fn f32x4_len_sq() {
+        let a = f32x4::with_xyzw(1.0, 2.0, 3.0, 4.0);
+        assert_eq!(simd::len_sq(a), 30.0);
+    }
+
+    #[test]
+    fn f32x4_normalized() {
+        let a = f32x4::with_xyzw(3.0, 4.0, 0.0, 0.0);
+        let n = simd::normalized(a);
+        assert_f32_close(n.x(), 0.6);
+        assert_f32_close(n.y(), 0.8);
+        assert_f32_close(n.z(), 0.0);
+        assert_f32_close(n.w(), 0.0);
+        assert_f32_close(simd::len_sq(n), 1.0);
+    }
+
+    #[test]
     fn f32x4_mix() {
         let a = f32x4::with_xyzw(0.0, 10.0, 20.0, 30.0);
         let b = f32x4::with_xyzw(10.0, 20.0, 30.0, 40.0);
@@ -1939,6 +2047,26 @@ mod tests {
         let a = f32quat(f32x4::with_xyzw(1.0, 2.0, 3.0, 4.0));
         let b = f32quat(f32x4::with_xyzw(5.0, 6.0, 7.0, 8.0));
         assert_eq!(a.dot(&b), 70.0);
+    }
+
+    #[test]
+    fn f32quat_len_sq() {
+        let q = f32quat(f32x4::with_xyzw(1.0, -2.0, 3.0, -4.0));
+        assert_eq!(simd::len_sq(q), 30.0);
+    }
+
+    #[test]
+    fn f32quat_normalized() {
+        let q = f32quat(f32x4::with_xyzw(0.0, 0.0, 2.0, 2.0));
+        let n = simd::normalized(q);
+        let expected = f32quat(f32x4::with_xyzw(
+            0.0,
+            0.0,
+            std::f32::consts::FRAC_1_SQRT_2,
+            std::f32::consts::FRAC_1_SQRT_2,
+        ));
+        assert_f32quat_close(n, expected);
+        assert_f32_close(simd::len_sq(n), 1.0);
     }
 
     #[test]
