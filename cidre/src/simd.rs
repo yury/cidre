@@ -764,6 +764,20 @@ where
     lhs.simd_mul(rhs)
 }
 
+pub trait SimdMix<Rhs = Self, T = Self> {
+    type Output;
+
+    fn simd_mix(self, rhs: Rhs, t: T) -> Self::Output;
+}
+
+#[inline]
+pub fn simd_mix<L, R, T>(lhs: L, rhs: R, t: T) -> <L as SimdMix<R, T>>::Output
+where
+    L: SimdMix<R, T>,
+{
+    lhs.simd_mix(rhs, t)
+}
+
 #[inline]
 #[cfg(target_arch = "aarch64")]
 fn f32x4_dot_cols(c0: f32x4, c1: f32x4, c2: f32x4, c3: f32x4, v: f32x4) -> f32x4 {
@@ -790,6 +804,18 @@ fn f32x4_dot_cols(c0: f32x4, c1: f32x4, c2: f32x4, c3: f32x4, v: f32x4) -> f32x4
         c0.z() * vx + c1.z() * vy + c2.z() * vz + c3.z() * vw,
         c0.w() * vx + c1.w() * vy + c2.w() * vz + c3.w() * vw,
     )
+}
+
+#[inline]
+#[cfg(not(target_arch = "aarch64"))]
+fn f32x3x3_with_cols(c0: f32x3, c1: f32x3, c2: f32x3) -> f32x3x3 {
+    f32x3x3([c0, c1, c2])
+}
+
+#[inline]
+#[cfg(target_arch = "aarch64")]
+fn f32x3x3_with_cols(c0: f32x3, c1: f32x3, c2: f32x3) -> f32x3x3 {
+    f32x3x3(std::arch::aarch64::float32x4x3_t(c0.0, c1.0, c2.0))
 }
 
 #[inline]
@@ -837,6 +863,142 @@ impl std::ops::Mul<f32x4x4> for f32x4x4 {
 
     fn mul(self, rhs: f32x4x4) -> Self::Output {
         simd_mul(self, rhs)
+    }
+}
+
+impl SimdMix<f32x4, f32x4> for f32x4 {
+    type Output = f32x4;
+
+    #[cfg(target_arch = "aarch64")]
+    fn simd_mix(self, rhs: f32x4, t: f32x4) -> Self::Output {
+        unsafe {
+            let delta = std::arch::aarch64::vsubq_f32(rhs.0, self.0);
+            let scaled = std::arch::aarch64::vmulq_f32(delta, t.0);
+            f32x4(std::arch::aarch64::vaddq_f32(self.0, scaled))
+        }
+    }
+
+    #[cfg(not(target_arch = "aarch64"))]
+    fn simd_mix(self, rhs: f32x4, t: f32x4) -> Self::Output {
+        f32x4::with_xyzw(
+            self.x() + (rhs.x() - self.x()) * t.x(),
+            self.y() + (rhs.y() - self.y()) * t.y(),
+            self.z() + (rhs.z() - self.z()) * t.z(),
+            self.w() + (rhs.w() - self.w()) * t.w(),
+        )
+    }
+}
+
+impl SimdMix<f32x4, f32> for f32x4 {
+    type Output = f32x4;
+
+    #[cfg(target_arch = "aarch64")]
+    fn simd_mix(self, rhs: f32x4, t: f32) -> Self::Output {
+        unsafe {
+            let delta = std::arch::aarch64::vsubq_f32(rhs.0, self.0);
+            let scaled = std::arch::aarch64::vmulq_f32(delta, std::arch::aarch64::vdupq_n_f32(t));
+            f32x4(std::arch::aarch64::vaddq_f32(self.0, scaled))
+        }
+    }
+
+    #[cfg(not(target_arch = "aarch64"))]
+    fn simd_mix(self, rhs: f32x4, t: f32) -> Self::Output {
+        f32x4::with_xyzw(
+            self.x() + (rhs.x() - self.x()) * t,
+            self.y() + (rhs.y() - self.y()) * t,
+            self.z() + (rhs.z() - self.z()) * t,
+            self.w() + (rhs.w() - self.w()) * t,
+        )
+    }
+}
+
+impl SimdMix<f32x3, f32x3> for f32x3 {
+    type Output = f32x3;
+
+    #[cfg(target_arch = "aarch64")]
+    fn simd_mix(self, rhs: f32x3, t: f32x3) -> Self::Output {
+        unsafe {
+            let delta = std::arch::aarch64::vsubq_f32(rhs.0, self.0);
+            let scaled = std::arch::aarch64::vmulq_f32(delta, t.0);
+            f32x3(std::arch::aarch64::vaddq_f32(self.0, scaled))
+        }
+    }
+
+    #[cfg(not(target_arch = "aarch64"))]
+    fn simd_mix(self, rhs: f32x3, t: f32x3) -> Self::Output {
+        f32x3::with_xyz_f32(
+            self.x() + (rhs.x() - self.x()) * t.x(),
+            self.y() + (rhs.y() - self.y()) * t.y(),
+            self.z() + (rhs.z() - self.z()) * t.z(),
+        )
+    }
+}
+
+impl SimdMix<f32x3, f32> for f32x3 {
+    type Output = f32x3;
+
+    #[cfg(target_arch = "aarch64")]
+    fn simd_mix(self, rhs: f32x3, t: f32) -> Self::Output {
+        unsafe {
+            let delta = std::arch::aarch64::vsubq_f32(rhs.0, self.0);
+            let scaled = std::arch::aarch64::vmulq_f32(delta, std::arch::aarch64::vdupq_n_f32(t));
+            f32x3(std::arch::aarch64::vaddq_f32(self.0, scaled))
+        }
+    }
+
+    #[cfg(not(target_arch = "aarch64"))]
+    fn simd_mix(self, rhs: f32x3, t: f32) -> Self::Output {
+        f32x3::with_xyz_f32(
+            self.x() + (rhs.x() - self.x()) * t,
+            self.y() + (rhs.y() - self.y()) * t,
+            self.z() + (rhs.z() - self.z()) * t,
+        )
+    }
+}
+
+impl SimdMix<f32x4x4, f32x4x4> for f32x4x4 {
+    type Output = f32x4x4;
+
+    fn simd_mix(self, rhs: f32x4x4, t: f32x4x4) -> Self::Output {
+        let c0 = simd_mix(self[0], rhs[0], t[0]);
+        let c1 = simd_mix(self[1], rhs[1], t[1]);
+        let c2 = simd_mix(self[2], rhs[2], t[2]);
+        let c3 = simd_mix(self[3], rhs[3], t[3]);
+        f32x4x4_with_cols(c0, c1, c2, c3)
+    }
+}
+
+impl SimdMix<f32x4x4, f32> for f32x4x4 {
+    type Output = f32x4x4;
+
+    fn simd_mix(self, rhs: f32x4x4, t: f32) -> Self::Output {
+        let c0 = simd_mix(self[0], rhs[0], t);
+        let c1 = simd_mix(self[1], rhs[1], t);
+        let c2 = simd_mix(self[2], rhs[2], t);
+        let c3 = simd_mix(self[3], rhs[3], t);
+        f32x4x4_with_cols(c0, c1, c2, c3)
+    }
+}
+
+impl SimdMix<f32x3x3, f32x3x3> for f32x3x3 {
+    type Output = f32x3x3;
+
+    fn simd_mix(self, rhs: f32x3x3, t: f32x3x3) -> Self::Output {
+        let c0 = simd_mix(self[0], rhs[0], t[0]);
+        let c1 = simd_mix(self[1], rhs[1], t[1]);
+        let c2 = simd_mix(self[2], rhs[2], t[2]);
+        f32x3x3_with_cols(c0, c1, c2)
+    }
+}
+
+impl SimdMix<f32x3x3, f32> for f32x3x3 {
+    type Output = f32x3x3;
+
+    fn simd_mix(self, rhs: f32x3x3, t: f32) -> Self::Output {
+        let c0 = simd_mix(self[0], rhs[0], t);
+        let c1 = simd_mix(self[1], rhs[1], t);
+        let c2 = simd_mix(self[2], rhs[2], t);
+        f32x3x3_with_cols(c0, c1, c2)
     }
 }
 #[cfg(feature = "half")]
@@ -1248,8 +1410,10 @@ mod tests {
     use super::f32x2;
     use super::f32x2x2;
     use super::f32x3;
+    use super::f32x3x3;
     use super::f32x4;
     use super::f32x4x4;
+    use super::simd_mix;
     use super::simd_mul;
 
     fn assert_f32_close(a: f32, b: f32) {
@@ -1262,6 +1426,18 @@ mod tests {
         assert_f32_close(a.y(), b.y());
         assert_f32_close(a.z(), b.z());
         assert_f32_close(a.w(), b.w());
+    }
+
+    fn assert_f32x3_close(a: f32x3, b: f32x3) {
+        assert_f32_close(a.x(), b.x());
+        assert_f32_close(a.y(), b.y());
+        assert_f32_close(a.z(), b.z());
+    }
+
+    fn assert_f32x3x3_close(a: f32x3x3, b: f32x3x3) {
+        assert_f32x3_close(a[0], b[0]);
+        assert_f32x3_close(a[1], b[1]);
+        assert_f32x3_close(a[2], b[2]);
     }
 
     fn assert_f32quat_close(a: f32quat, b: f32quat) {
@@ -1331,6 +1507,107 @@ mod tests {
         let a = f32x4::with_xyzw(1.0, 2.0, 3.0, 4.0);
         let b = f32x4::with_xyzw(5.0, 6.0, 7.0, 8.0);
         assert_eq!(a.dot(&b), 70.0);
+    }
+
+    #[test]
+    fn f32x4_mix() {
+        let a = f32x4::with_xyzw(0.0, 10.0, 20.0, 30.0);
+        let b = f32x4::with_xyzw(10.0, 20.0, 30.0, 40.0);
+
+        let v = simd_mix(a, b, f32x4::with_xyzw(0.0, 0.25, 0.5, 1.0));
+        assert_eq!(v, f32x4::with_xyzw(0.0, 12.5, 25.0, 40.0));
+
+        let s = simd_mix(a, b, 0.5);
+        assert_eq!(s, f32x4::with_xyzw(5.0, 15.0, 25.0, 35.0));
+    }
+
+    #[test]
+    fn f32x3_mix() {
+        let a = f32x3::with_xyz(0.0, 10.0, 20.0);
+        let b = f32x3::with_xyz(10.0, 20.0, 30.0);
+
+        let v = simd_mix(a, b, f32x3::with_xyz(0.0, 0.25, 1.0));
+        assert_eq!(v, f32x3::with_xyz(0.0, 12.5, 30.0));
+
+        let s = simd_mix(a, b, 0.5);
+        assert_eq!(s, f32x3::with_xyz(5.0, 15.0, 25.0));
+    }
+
+    #[test]
+    fn f32x4x4_mix() {
+        let a = super::f32x4x4_with_cols(
+            f32x4::with_xyzw(0.0, 10.0, 20.0, 30.0),
+            f32x4::with_xyzw(1.0, 11.0, 21.0, 31.0),
+            f32x4::with_xyzw(2.0, 12.0, 22.0, 32.0),
+            f32x4::with_xyzw(3.0, 13.0, 23.0, 33.0),
+        );
+        let b = super::f32x4x4_with_cols(
+            f32x4::with_xyzw(10.0, 20.0, 30.0, 40.0),
+            f32x4::with_xyzw(11.0, 21.0, 31.0, 41.0),
+            f32x4::with_xyzw(12.0, 22.0, 32.0, 42.0),
+            f32x4::with_xyzw(13.0, 23.0, 33.0, 43.0),
+        );
+
+        let t = super::f32x4x4_with_cols(
+            f32x4::with_xyzw(0.0, 0.25, 0.5, 1.0),
+            f32x4::with_xyzw(1.0, 0.5, 0.25, 0.0),
+            f32x4::with_xyzw(0.5, 0.5, 0.5, 0.5),
+            f32x4::with_xyzw(0.0, 1.0, 0.0, 1.0),
+        );
+
+        let v = simd_mix(a, b, t);
+        let expected_v = super::f32x4x4_with_cols(
+            f32x4::with_xyzw(0.0, 12.5, 25.0, 40.0),
+            f32x4::with_xyzw(11.0, 16.0, 23.5, 31.0),
+            f32x4::with_xyzw(7.0, 17.0, 27.0, 37.0),
+            f32x4::with_xyzw(3.0, 23.0, 23.0, 43.0),
+        );
+        assert_eq!(v, expected_v);
+
+        let s = simd_mix(a, b, 0.5);
+        let expected_s = super::f32x4x4_with_cols(
+            f32x4::with_xyzw(5.0, 15.0, 25.0, 35.0),
+            f32x4::with_xyzw(6.0, 16.0, 26.0, 36.0),
+            f32x4::with_xyzw(7.0, 17.0, 27.0, 37.0),
+            f32x4::with_xyzw(8.0, 18.0, 28.0, 38.0),
+        );
+        assert_eq!(s, expected_s);
+    }
+
+    #[test]
+    fn f32x3x3_mix() {
+        let a = super::f32x3x3_with_cols(
+            f32x3::with_xyz(0.0, 10.0, 20.0),
+            f32x3::with_xyz(1.0, 11.0, 21.0),
+            f32x3::with_xyz(2.0, 12.0, 22.0),
+        );
+        let b = super::f32x3x3_with_cols(
+            f32x3::with_xyz(10.0, 20.0, 30.0),
+            f32x3::with_xyz(11.0, 21.0, 31.0),
+            f32x3::with_xyz(12.0, 22.0, 32.0),
+        );
+
+        let t = super::f32x3x3_with_cols(
+            f32x3::with_xyz(0.0, 0.25, 0.5),
+            f32x3::with_xyz(1.0, 0.5, 0.0),
+            f32x3::with_xyz(0.5, 1.0, 0.5),
+        );
+
+        let v = simd_mix(a, b, t);
+        let expected_v = super::f32x3x3_with_cols(
+            f32x3::with_xyz(0.0, 12.5, 25.0),
+            f32x3::with_xyz(11.0, 16.0, 21.0),
+            f32x3::with_xyz(7.0, 22.0, 27.0),
+        );
+        assert_f32x3x3_close(v, expected_v);
+
+        let s = simd_mix(a, b, 0.5);
+        let expected_s = super::f32x3x3_with_cols(
+            f32x3::with_xyz(5.0, 15.0, 25.0),
+            f32x3::with_xyz(6.0, 16.0, 26.0),
+            f32x3::with_xyz(7.0, 17.0, 27.0),
+        );
+        assert_f32x3x3_close(s, expected_s);
     }
 
     #[cfg(feature = "half")]
