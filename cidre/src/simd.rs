@@ -1518,6 +1518,17 @@ impl f16quat {
 
 impl f32quat {
     #[inline]
+    pub fn identity() -> Self {
+        Self(f32x4::with_xyzw(0.0, 0.0, 0.0, 1.0))
+    }
+
+    #[inline]
+    #[doc(alias = "simd_dot")]
+    pub fn dot(&self, other: &Self) -> f32 {
+        self.0.dot(&other.0)
+    }
+
+    #[inline]
     pub fn with_angle(angle: f32, axis: f32x3) -> Self {
         let half_angle = angle * 0.5;
         let sin = half_angle.sin();
@@ -1892,13 +1903,20 @@ mod tests {
 
     #[test]
     fn f32quat_mul_identity_and_function_parity() {
-        let identity = f32quat(f32x4::with_xyzw(0.0, 0.0, 0.0, 1.0));
+        let identity = f32quat::identity();
         let q = f32quat::with_angle(std::f32::consts::FRAC_PI_2, f32x3::with_xyz(0.0, 0.0, 1.0));
 
         assert_f32quat_close(identity * q, q);
         assert_f32quat_close(q * identity, q);
         assert_f32quat_close(simd::mul(identity, q), q);
         assert_f32quat_close(simd::mul(q, identity), q);
+    }
+
+    #[test]
+    fn f32quat_dot() {
+        let a = f32quat(f32x4::with_xyzw(1.0, 2.0, 3.0, 4.0));
+        let b = f32quat(f32x4::with_xyzw(5.0, 6.0, 7.0, 8.0));
+        assert_eq!(a.dot(&b), 70.0);
     }
 
     #[test]
@@ -1934,7 +1952,7 @@ mod tests {
     fn f32quat_conjugate_is_inverse_for_unit_quat() {
         let q = f32quat::with_angle(0.7, f32x3::with_xyz(0.0, 0.0, 1.0));
         let qc = q.conjugate();
-        let identity = f32quat(f32x4::with_xyzw(0.0, 0.0, 0.0, 1.0));
+        let identity = f32quat::identity();
 
         assert_f32quat_close(q * qc, identity);
         assert_f32quat_close(qc * q, identity);
@@ -1943,7 +1961,7 @@ mod tests {
     #[test]
     fn f32quat_from_matrix_identity() {
         let q = f32quat::from_f32x4x4(f32x4x4::identity());
-        let expected = f32quat(f32x4::with_xyzw(0.0, 0.0, 0.0, 1.0));
+        let expected = f32quat::identity();
         assert_f32quat_equiv(q, expected);
     }
 
