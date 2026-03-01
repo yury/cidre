@@ -778,6 +778,20 @@ where
     lhs.simd_mix(rhs, t)
 }
 
+pub trait SimdInverse {
+    type Output;
+
+    fn simd_inverse(self) -> Self::Output;
+}
+
+#[inline]
+pub fn inverse<T>(val: T) -> <T as SimdInverse>::Output
+where
+    T: SimdInverse,
+{
+    val.simd_inverse()
+}
+
 #[inline]
 #[cfg(target_arch = "aarch64")]
 fn f32x4_dot_cols(c0: f32x4, c1: f32x4, c2: f32x4, c3: f32x4, v: f32x4) -> f32x4 {
@@ -816,6 +830,16 @@ fn f32x3x3_with_cols(c0: f32x3, c1: f32x3, c2: f32x3) -> f32x3x3 {
 #[cfg(target_arch = "aarch64")]
 fn f32x3x3_with_cols(c0: f32x3, c1: f32x3, c2: f32x3) -> f32x3x3 {
     f32x3x3(std::arch::aarch64::float32x4x3_t(c0.0, c1.0, c2.0))
+}
+
+#[inline]
+#[cfg(not(target_arch = "aarch64"))]
+fn f32x3_cross(a: f32x3, b: f32x3) -> f32x3 {
+    f32x3::with_xyz(
+        a.y() * b.z() - a.z() * b.y(),
+        a.z() * b.x() - a.x() * b.z(),
+        a.x() * b.y() - a.y() * b.x(),
+    )
 }
 
 #[inline]
@@ -999,6 +1023,182 @@ impl SimdMix<f32x3x3, f32> for f32x3x3 {
         let c1 = mix(self[1], rhs[1], t);
         let c2 = mix(self[2], rhs[2], t);
         f32x3x3_with_cols(c0, c1, c2)
+    }
+}
+
+impl SimdInverse for f32x3x3 {
+    type Output = f32x3x3;
+
+    fn simd_inverse(self) -> Self::Output {
+        #[cfg(target_arch = "aarch64")]
+        {
+            let q0: std::arch::aarch64::float32x4_t;
+            let q1: std::arch::aarch64::float32x4_t;
+            let q2: std::arch::aarch64::float32x4_t;
+
+            unsafe {
+                core::arch::asm!(
+                    "bl ___invert_f3",
+                    inlateout("q0") self.0.0 => q0,
+                    inlateout("q1") self.0.1 => q1,
+                    inlateout("q2") self.0.2 => q2,
+                    clobber_abi("C"),
+                );
+            }
+
+            return f32x3x3(std::arch::aarch64::float32x4x3_t(q0, q1, q2));
+        }
+
+        #[cfg(not(target_arch = "aarch64"))]
+        {
+            let c0 = self[0];
+            let c1 = self[1];
+            let c2 = self[2];
+
+            let cof0 = f32x3_cross(c1, c2);
+            let cof1 = f32x3_cross(c2, c0);
+            let cof2 = f32x3_cross(c0, c1);
+
+            let det = c0.x() * cof0.x() + c0.y() * cof0.y() + c0.z() * cof0.z();
+            let inv_det = 1.0 / det;
+
+            f32x3x3_with_cols(
+                f32x3::with_xyz(cof0.x() * inv_det, cof1.x() * inv_det, cof2.x() * inv_det),
+                f32x3::with_xyz(cof0.y() * inv_det, cof1.y() * inv_det, cof2.y() * inv_det),
+                f32x3::with_xyz(cof0.z() * inv_det, cof1.z() * inv_det, cof2.z() * inv_det),
+            )
+        }
+    }
+}
+
+impl SimdInverse for f32x4x4 {
+    type Output = f32x4x4;
+
+    fn simd_inverse(self) -> Self::Output {
+        #[cfg(target_arch = "aarch64")]
+        {
+            let q0: std::arch::aarch64::float32x4_t;
+            let q1: std::arch::aarch64::float32x4_t;
+            let q2: std::arch::aarch64::float32x4_t;
+            let q3: std::arch::aarch64::float32x4_t;
+
+            unsafe {
+                core::arch::asm!(
+                    "bl ___invert_f4",
+                    inlateout("q0") self.0.0 => q0,
+                    inlateout("q1") self.0.1 => q1,
+                    inlateout("q2") self.0.2 => q2,
+                    inlateout("q3") self.0.3 => q3,
+                    clobber_abi("C"),
+                );
+            }
+
+            return f32x4x4(std::arch::aarch64::float32x4x4_t(q0, q1, q2, q3));
+        }
+
+        #[cfg(not(target_arch = "aarch64"))]
+        {
+            let m00 = self[0].x();
+            let m01 = self[1].x();
+            let m02 = self[2].x();
+            let m03 = self[3].x();
+            let m10 = self[0].y();
+            let m11 = self[1].y();
+            let m12 = self[2].y();
+            let m13 = self[3].y();
+            let m20 = self[0].z();
+            let m21 = self[1].z();
+            let m22 = self[2].z();
+            let m23 = self[3].z();
+            let m30 = self[0].w();
+            let m31 = self[1].w();
+            let m32 = self[2].w();
+            let m33 = self[3].w();
+
+            let mut inv = [0.0f32; 16];
+
+            inv[0] = m11 * m22 * m33 - m11 * m23 * m32 - m21 * m12 * m33
+                + m21 * m13 * m32
+                + m31 * m12 * m23
+                - m31 * m13 * m22;
+            inv[4] = -m10 * m22 * m33 + m10 * m23 * m32 + m20 * m12 * m33
+                - m20 * m13 * m32
+                - m30 * m12 * m23
+                + m30 * m13 * m22;
+            inv[8] = m10 * m21 * m33 - m10 * m23 * m31 - m20 * m11 * m33
+                + m20 * m13 * m31
+                + m30 * m11 * m23
+                - m30 * m13 * m21;
+            inv[12] = -m10 * m21 * m32 + m10 * m22 * m31 + m20 * m11 * m32
+                - m20 * m12 * m31
+                - m30 * m11 * m22
+                + m30 * m12 * m21;
+
+            inv[1] = -m01 * m22 * m33 + m01 * m23 * m32 + m21 * m02 * m33
+                - m21 * m03 * m32
+                - m31 * m02 * m23
+                + m31 * m03 * m22;
+            inv[5] = m00 * m22 * m33 - m00 * m23 * m32 - m20 * m02 * m33
+                + m20 * m03 * m32
+                + m30 * m02 * m23
+                - m30 * m03 * m22;
+            inv[9] = -m00 * m21 * m33 + m00 * m23 * m31 + m20 * m01 * m33
+                - m20 * m03 * m31
+                - m30 * m01 * m23
+                + m30 * m03 * m21;
+            inv[13] = m00 * m21 * m32 - m00 * m22 * m31 - m20 * m01 * m32
+                + m20 * m02 * m31
+                + m30 * m01 * m22
+                - m30 * m02 * m21;
+
+            inv[2] = m01 * m12 * m33 - m01 * m13 * m32 - m11 * m02 * m33
+                + m11 * m03 * m32
+                + m31 * m02 * m13
+                - m31 * m03 * m12;
+            inv[6] = -m00 * m12 * m33 + m00 * m13 * m32 + m10 * m02 * m33
+                - m10 * m03 * m32
+                - m30 * m02 * m13
+                + m30 * m03 * m12;
+            inv[10] = m00 * m11 * m33 - m00 * m13 * m31 - m10 * m01 * m33
+                + m10 * m03 * m31
+                + m30 * m01 * m13
+                - m30 * m03 * m11;
+            inv[14] = -m00 * m11 * m32 + m00 * m12 * m31 + m10 * m01 * m32
+                - m10 * m02 * m31
+                - m30 * m01 * m12
+                + m30 * m02 * m11;
+
+            inv[3] = -m01 * m12 * m23 + m01 * m13 * m22 + m11 * m02 * m23
+                - m11 * m03 * m22
+                - m21 * m02 * m13
+                + m21 * m03 * m12;
+            inv[7] = m00 * m12 * m23 - m00 * m13 * m22 - m10 * m02 * m23
+                + m10 * m03 * m22
+                + m20 * m02 * m13
+                - m20 * m03 * m12;
+            inv[11] = -m00 * m11 * m23 + m00 * m13 * m21 + m10 * m01 * m23
+                - m10 * m03 * m21
+                - m20 * m01 * m13
+                + m20 * m03 * m11;
+            inv[15] = m00 * m11 * m22 - m00 * m12 * m21 - m10 * m01 * m22
+                + m10 * m02 * m21
+                + m20 * m01 * m12
+                - m20 * m02 * m11;
+
+            let det = m00 * inv[0] + m01 * inv[4] + m02 * inv[8] + m03 * inv[12];
+            let inv_det = 1.0 / det;
+
+            for v in &mut inv {
+                *v *= inv_det;
+            }
+
+            f32x4x4_with_cols(
+                f32x4::with_xyzw(inv[0], inv[4], inv[8], inv[12]),
+                f32x4::with_xyzw(inv[1], inv[5], inv[9], inv[13]),
+                f32x4::with_xyzw(inv[2], inv[6], inv[10], inv[14]),
+                f32x4::with_xyzw(inv[3], inv[7], inv[11], inv[15]),
+            )
+        }
     }
 }
 #[cfg(feature = "half")]
@@ -1433,6 +1633,13 @@ mod tests {
         assert_f32_close(a.z(), b.z());
     }
 
+    fn assert_f32x4x4_close(a: f32x4x4, b: f32x4x4) {
+        assert_f32x4_close(a[0], b[0]);
+        assert_f32x4_close(a[1], b[1]);
+        assert_f32x4_close(a[2], b[2]);
+        assert_f32x4_close(a[3], b[3]);
+    }
+
     fn assert_f32x3x3_close(a: f32x3x3, b: f32x3x3) {
         assert_f32x3_close(a[0], b[0]);
         assert_f32x3_close(a[1], b[1]);
@@ -1607,6 +1814,54 @@ mod tests {
             f32x3::with_xyz(7.0, 17.0, 27.0),
         );
         assert_f32x3x3_close(s, expected_s);
+    }
+
+    #[test]
+    fn f32x3x3_inverse() {
+        let d = f32x3x3::diagonal(f32x3::with_xyz(2.0, 4.0, 5.0));
+        let d_inv = simd::inverse(d);
+        let d_expected = f32x3x3::diagonal(f32x3::with_xyz(0.5, 0.25, 0.2));
+        assert_f32x3x3_close(d_inv, d_expected);
+
+        let t = super::f32x3x3_with_cols(
+            f32x3::with_xyz(1.0, 0.0, 0.0),
+            f32x3::with_xyz(2.0, 1.0, 0.0),
+            f32x3::with_xyz(3.0, 4.0, 1.0),
+        );
+        let t_inv = simd::inverse(t);
+        let t_expected = super::f32x3x3_with_cols(
+            f32x3::with_xyz(1.0, 0.0, 0.0),
+            f32x3::with_xyz(-2.0, 1.0, 0.0),
+            f32x3::with_xyz(5.0, -4.0, 1.0),
+        );
+        assert_f32x3x3_close(t_inv, t_expected);
+    }
+
+    #[test]
+    fn f32x4x4_inverse() {
+        let d = f32x4x4::diagonal(f32x4::with_xyzw(2.0, 4.0, 5.0, 10.0));
+        let d_inv = simd::inverse(d);
+        let d_expected = f32x4x4::diagonal(f32x4::with_xyzw(0.5, 0.25, 0.2, 0.1));
+        assert_f32x4x4_close(d_inv, d_expected);
+
+        let t = super::f32x4x4_with_cols(
+            f32x4::with_xyzw(1.0, 0.0, 0.0, 0.0),
+            f32x4::with_xyzw(2.0, 1.0, 0.0, 0.0),
+            f32x4::with_xyzw(3.0, 5.0, 1.0, 0.0),
+            f32x4::with_xyzw(4.0, 6.0, 7.0, 1.0),
+        );
+        let t_inv = simd::inverse(t);
+        let t_expected = super::f32x4x4_with_cols(
+            f32x4::with_xyzw(1.0, 0.0, 0.0, 0.0),
+            f32x4::with_xyzw(-2.0, 1.0, 0.0, 0.0),
+            f32x4::with_xyzw(7.0, -5.0, 1.0, 0.0),
+            f32x4::with_xyzw(-41.0, 29.0, -7.0, 1.0),
+        );
+        assert_f32x4x4_close(t_inv, t_expected);
+
+        let id = f32x4x4::identity();
+        assert_f32x4x4_close(simd::mul(t, t_inv), id);
+        assert_f32x4x4_close(simd::mul(t_inv, t), id);
     }
 
     #[cfg(feature = "half")]
