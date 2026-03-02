@@ -255,9 +255,8 @@ impl f32x3 {
     pub fn dot(&self, other: &Self) -> f32 {
         unsafe {
             let mul = std::arch::aarch64::vmulq_f32(self.0, other.0);
-            std::arch::aarch64::vgetq_lane_f32::<0>(mul)
-                + std::arch::aarch64::vgetq_lane_f32::<1>(mul)
-                + std::arch::aarch64::vgetq_lane_f32::<2>(mul)
+            let mul = std::arch::aarch64::vsetq_lane_f32::<3>(0.0, mul);
+            std::arch::aarch64::vaddvq_f32(mul)
         }
     }
 
