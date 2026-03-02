@@ -229,6 +229,16 @@ impl Simd<f32, 4, 3> {
     pub fn dot(&self, other: &Self) -> f32 {
         self.0[0] * other.0[0] + self.0[1] * other.0[1] + self.0[2] * other.0[2]
     }
+
+    #[inline]
+    pub fn fmla(&self, n: &Self, m: &Self) -> Self {
+        Self([
+            self.0[0] + n.0[0] * m.0[0],
+            self.0[1] + n.0[1] * m.0[1],
+            self.0[2] + n.0[2] * m.0[2],
+            0.0,
+        ])
+    }
 }
 
 impl<T: Copy> Simd<T, 4, 4> {
@@ -269,12 +279,32 @@ impl Simd<f32, 4, 4> {
     }
 
     #[inline]
+    pub fn fmla(&self, n: &Self, m: &Self) -> Self {
+        Self([
+            self.0[0] + n.0[0] * m.0[0],
+            self.0[1] + n.0[1] * m.0[1],
+            self.0[2] + n.0[2] * m.0[2],
+            self.0[3] + n.0[3] * m.0[3],
+        ])
+    }
+
+    #[inline]
     pub fn mul_f32(&self, val: f32) -> Self {
         Self([
             self.0[0] * val,
             self.0[1] * val,
             self.0[2] * val,
             self.0[3] * val,
+        ])
+    }
+
+    #[inline]
+    pub fn div_f32(&self, val: f32) -> Self {
+        Self([
+            self.0[0] / val,
+            self.0[1] / val,
+            self.0[2] / val,
+            self.0[3] / val,
         ])
     }
 }

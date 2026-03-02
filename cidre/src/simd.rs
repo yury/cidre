@@ -261,6 +261,14 @@ impl f32x3 {
         }
     }
 
+    #[inline]
+    pub fn fmla(&self, n: &Self, m: &Self) -> f32x3 {
+        unsafe {
+            let out = std::arch::aarch64::vfmaq_f32(self.0, n.0, m.0);
+            f32x3(std::arch::aarch64::vsetq_lane_f32::<3>(0.0, out))
+        }
+    }
+
     pub fn to_bits(&self) -> u128 {
         unsafe { std::mem::transmute(*self) }
     }
@@ -394,8 +402,23 @@ impl f32x4 {
     }
 
     #[inline]
+    pub fn fmla(&self, n: &Self, m: &Self) -> f32x4 {
+        unsafe { f32x4(std::arch::aarch64::vfmaq_f32(self.0, n.0, m.0)) }
+    }
+
+    #[inline]
     pub fn mul_f32(&self, val: f32) -> f32x4 {
         unsafe { f32x4(std::arch::aarch64::vmulq_n_f32(self.0, val)) }
+    }
+
+    #[inline]
+    pub fn div_f32(&self, val: f32) -> f32x4 {
+        unsafe {
+            f32x4(std::arch::aarch64::vdivq_f32(
+                self.0,
+                std::arch::aarch64::vdupq_n_f32(val),
+            ))
+        }
     }
 
     pub fn to_bits(&self) -> u128 {
@@ -1890,9 +1913,23 @@ mod tests {
     }
 
     #[test]
+    fn f32x4_fmla() {
+        let a = f32x4::with_xyzw(1.0, 2.0, 3.0, 4.0);
+        let n = f32x4::with_xyzw(10.0, 20.0, 30.0, 40.0);
+        let m = f32x4::with_xyzw(0.1, -0.5, 2.0, 0.25);
+        assert_eq!(a.fmla(&n, &m), f32x4::with_xyzw(2.0, -8.0, 63.0, 14.0));
+    }
+
+    #[test]
     fn f32x4_mul_f32() {
         let v = f32x4::with_xyzw(1.0, -2.0, 3.5, 0.25);
         assert_eq!(v.mul_f32(2.0), f32x4::with_xyzw(2.0, -4.0, 7.0, 0.5));
+    }
+
+    #[test]
+    fn f32x4_div_f32() {
+        let v = f32x4::with_xyzw(2.0, -4.0, 7.0, 0.5);
+        assert_eq!(v.div_f32(2.0), f32x4::with_xyzw(1.0, -2.0, 3.5, 0.25));
     }
 
     #[test]
@@ -1935,6 +1972,14 @@ mod tests {
         let a = f32x3::with_xyz(1.0, 2.0, 3.0);
         let b = f32x3::with_xyz(5.0, 6.0, 7.0);
         assert_eq!(a.dot(&b), 38.0);
+    }
+
+    #[test]
+    fn f32x3_fmla() {
+        let a = f32x3::with_xyz(1.0, 2.0, 3.0);
+        let n = f32x3::with_xyz(10.0, 20.0, 30.0);
+        let m = f32x3::with_xyz(0.1, -0.5, 2.0);
+        assert_eq!(a.fmla(&n, &m), f32x3::with_xyz(2.0, -8.0, 63.0));
     }
 
     #[test]
