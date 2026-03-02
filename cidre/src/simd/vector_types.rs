@@ -271,6 +271,11 @@ impl Simd<f32, 4, 4> {
     }
 
     #[inline]
+    pub fn with_xyz(xyz: &super::f32x3, w: f32) -> Self {
+        Self([xyz.x(), xyz.y(), xyz.z(), w])
+    }
+
+    #[inline]
     pub fn dot(&self, other: &Self) -> f32 {
         self.0[0] * other.0[0]
             + self.0[1] * other.0[1]

@@ -379,6 +379,11 @@ impl f32x4 {
     }
 
     #[inline]
+    pub fn with_xyz(xyz: &f32x3, w: f32) -> Self {
+        Self(unsafe { std::arch::aarch64::vsetq_lane_f32::<3>(w, xyz.0) })
+    }
+
+    #[inline]
     pub fn with_rgba(r: f32, g: f32, b: f32, a: f32) -> Self {
         Self::load(&[r, g, b, a])
     }
@@ -1936,6 +1941,13 @@ mod tests {
     fn f32x4_xyz() {
         let v = f32x4::with_xyzw(1.0, 2.0, 3.0, 4.0);
         assert_eq!(v.xyz(), f32x3::with_xyz(1.0, 2.0, 3.0));
+    }
+
+    #[test]
+    fn f32x4_with_xyz() {
+        let xyz = f32x3::with_xyz(1.0, 2.0, 3.0);
+        let v = f32x4::with_xyz(&xyz, 4.0);
+        assert_eq!(v, f32x4::with_xyzw(1.0, 2.0, 3.0, 4.0));
     }
 
     #[test]
