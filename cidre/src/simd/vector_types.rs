@@ -267,6 +267,16 @@ impl Simd<f32, 4, 4> {
             + self.0[2] * other.0[2]
             + self.0[3] * other.0[3]
     }
+
+    #[inline]
+    pub fn mul_f32(&self, val: f32) -> Self {
+        Self([
+            self.0[0] * val,
+            self.0[1] * val,
+            self.0[2] * val,
+            self.0[3] * val,
+        ])
+    }
 }
 
 #[cfg(feature = "half")]
