@@ -334,6 +334,11 @@ impl Default for f32x4 {
 
 #[cfg(target_arch = "aarch64")]
 impl f32x4 {
+    #[inline]
+    pub fn xyz(&self) -> f32x3 {
+        f32x3(unsafe { std::arch::aarch64::vsetq_lane_f32::<3>(0.0, self.0) })
+    }
+
     pub fn x(&self) -> f32 {
         unsafe { std::arch::aarch64::vgetq_lane_f32::<0>(self.0) }
     }
@@ -1877,6 +1882,12 @@ mod tests {
         let a = f32x4::with_xyzw(1.0, 2.0, 3.0, 4.0);
         let b = f32x4::with_xyzw(5.0, 6.0, 7.0, 8.0);
         assert_eq!(a.dot(&b), 70.0);
+    }
+
+    #[test]
+    fn f32x4_xyz() {
+        let v = f32x4::with_xyzw(1.0, 2.0, 3.0, 4.0);
+        assert_eq!(v.xyz(), f32x3::with_xyz(1.0, 2.0, 3.0));
     }
 
     #[test]
