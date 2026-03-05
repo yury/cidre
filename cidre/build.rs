@@ -1,4 +1,4 @@
-use std::{env, fs::read_to_string, path::PathBuf, process::Command, str::FromStr};
+use std::{env, fs::read_to_string, path::PathBuf, process::Command, str::FromStr, thread};
 
 #[derive(Debug, Clone, Copy)]
 struct Version {
@@ -102,6 +102,74 @@ fn try_build(targets: &[&str], sdk: &str, deployment_targets: &DeploymentTargets
     for name in targets {
         build_pomace_target(name, sdk, deployment_targets);
     }
+}
+
+fn collect_build_groups(sdk: &str) -> Vec<Vec<&'static str>> {
+    let mut groups = Vec::new();
+
+    // Available on all platforms
+    groups.push(vec!["ut", "un", "sn", "ns", "av", "cl", "nl", "ml", "at"]);
+
+    // Not available on watchOS
+    if sdk != "watchos" && sdk != "watchsimulator" {
+        groups.push(vec![
+            "ca", "vn", "mps", "mpsg", "mc", "mtl", "mtk", "ci", "gc", "av_kit",
+        ]);
+        if sdk != "xros" && sdk != "xrsimulator" {
+            groups.push(vec!["mlc"]);
+        }
+    }
+
+    // Not available on tvOS
+    if sdk != "appletvos" && sdk != "appletvsimulator" {
+        groups.push(vec!["core_motion"]);
+    }
+
+    // Not available on tvOS or watchOS
+    if sdk != "appletvos"
+        && sdk != "appletvsimulator"
+        && sdk != "watchos"
+        && sdk != "watchsimulator"
+    {
+        groups.push(vec!["wk"]);
+    }
+
+    // iOS/tvOS/watchOS/visionOS/Catalyst only
+    if [
+        "iphoneos",
+        "iphonesimulator",
+        "maccatalyst",
+        "appletvos",
+        "appletvsimulator",
+        "watchos",
+        "watchosimulator",
+        "visionos",
+        "visionsimulator",
+    ]
+    .contains(&sdk)
+    {
+        groups.push(vec!["ui"]);
+    }
+
+    // iPhone/iPad/Catalyst only
+    if sdk == "iphoneos" || sdk == "iphonesimulator" {
+        groups.push(vec!["wc"]);
+    }
+    if sdk == "iphoneos" || sdk == "iphonesimulator" || sdk == "maccatalyst" {
+        groups.push(vec!["ar"]);
+    }
+
+    // macOS/Catalyst only
+    if sdk == "macosx" || sdk == "maccatalyst" {
+        groups.push(vec!["sc", "app"]);
+    }
+
+    // macOS only
+    if sdk == "macosx" {
+        groups.push(vec!["core_audio"]);
+    }
+
+    groups
 }
 
 fn parse_deployment_targets() -> DeploymentTargets {
@@ -281,71 +349,23 @@ fn main() {
 
     println!("cargo:rerun-if-changed=./pomace/");
 
-    // Available on all platforms
-    try_build(
-        &["ut", "un", "sn", "ns", "av", "cl", "nl", "ml", "at"],
-        sdk,
-        &deployment_targets,
-    );
+    let build_groups: Vec<Vec<&'static str>> = collect_build_groups(sdk)
+        .into_iter()
+        .map(|group| {
+            group
+                .into_iter()
+                .filter(|name| has_feature(name))
+                .collect::<Vec<_>>()
+        })
+        .filter(|group| !group.is_empty())
+        .collect();
+    let deployment_targets = &deployment_targets;
 
-    // Not available on watchOS
-    if sdk != "watchos" && sdk != "watchsimulator" {
-        try_build(
-            &["ca", "vn", "mps", "mpsg", "mc", "mtl", "mtk", "ci", "gc", "av_kit"],
-            sdk,
-            &deployment_targets,
-        );
-        if sdk != "xros" && sdk != "xrsimulator" {
-            try_build(&["mlc"], sdk, &deployment_targets);
+    thread::scope(|scope| {
+        for targets in build_groups {
+            scope.spawn(move || {
+                try_build(&targets, sdk, deployment_targets);
+            });
         }
-    }
-
-    // Not available on tvOS
-    if sdk != "appletvos" && sdk != "appletvsimulator" {
-        try_build(&["core_motion"], sdk, &deployment_targets);
-    }
-
-    // Not available on tvOS or watchOS
-    if sdk != "appletvos"
-        && sdk != "appletvsimulator"
-        && sdk != "watchos"
-        && sdk != "watchsimulator"
-    {
-        try_build(&["wk"], sdk, &deployment_targets);
-    }
-
-    // iOS/tvOS/watchOS/visionOS/Catalyst only
-    if [
-        "iphoneos",
-        "iphonesimulator",
-        "maccatalyst",
-        "appletvos",
-        "appletvsimulator",
-        "watchos",
-        "watchosimulator",
-        "visionos",
-        "visionsimulator",
-    ]
-    .contains(&sdk)
-    {
-        try_build(&["ui"], sdk, &deployment_targets);
-    }
-
-    // iPhone/iPad/Catalyst only
-    if sdk == "iphoneos" || sdk == "iphonesimulator" {
-        try_build(&["wc"], sdk, &deployment_targets);
-    }
-    if sdk == "iphoneos" || sdk == "iphonesimulator" || sdk == "maccatalyst" {
-        try_build(&["ar"], sdk, &deployment_targets);
-    }
-
-    // macOS/Catalyst only
-    if sdk == "macosx" || sdk == "maccatalyst" {
-        try_build(&["sc", "app"], sdk, &deployment_targets);
-    }
-
-    // macOS only
-    if sdk == "macosx" {
-        try_build(&["core_audio"], sdk, &deployment_targets);
-    }
+    });
 }
