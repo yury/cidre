@@ -263,7 +263,7 @@ pub type EventSrcKeyboardType = u32;
 #[doc(alias = "CGEventSourceStateID")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(i32)]
-pub enum EventSrcStateId {
+pub enum EventSrcState {
     #[doc(alias = "kCGEventSourceStatePrivate")]
     Private = -1,
 
@@ -271,7 +271,7 @@ pub enum EventSrcStateId {
     CombinedSession = 0,
 
     #[doc(alias = "kCGEventSourceStateHIDSystemState")]
-    HidSystem = 1,
+    HidSys = 1,
 }
 
 #[doc(alias = "CGEventMask")]

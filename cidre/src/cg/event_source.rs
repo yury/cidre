@@ -8,7 +8,7 @@ impl cg::EventSrc {
 
     /// Return a Quartz event source created with a specified source state.
     #[doc(alias = "CGEventSourceCreate")]
-    pub fn with_state(state_id: cg::EventSrcStateId) -> Option<arc::R<Self>> {
+    pub fn with_state(state_id: cg::EventSrcState) -> Option<arc::R<Self>> {
         unsafe { CGEventSourceCreate(state_id) }
     }
 
@@ -35,7 +35,7 @@ impl cg::EventSrc {
     }
 
     #[doc(alias = "CGEventSourceGetSourceStateID")]
-    pub fn state_id(&self) -> cg::EventSrcStateId {
+    pub fn state_id(&self) -> cg::EventSrcState {
         unsafe { CGEventSourceGetSourceStateID(self) }
     }
 
@@ -83,7 +83,7 @@ impl cg::EventSrc {
     }
 }
 
-impl cg::EventSrcStateId {
+impl cg::EventSrcState {
     #[doc(alias = "CGEventSourceButtonState")]
     pub fn button_state(&self, button: cg::MouseButton) -> bool {
         unsafe { CGEventSourceButtonState(*self, button) }
@@ -113,21 +113,21 @@ impl cg::EventSrcStateId {
 #[link(name = "CoreGraphics", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CGEventSourceGetTypeID() -> cf::TypeId;
-    fn CGEventSourceCreate(state_id: cg::EventSrcStateId) -> Option<arc::R<cg::EventSrc>>;
+    fn CGEventSourceCreate(state_id: cg::EventSrcState) -> Option<arc::R<cg::EventSrc>>;
     fn CGEventSourceGetKeyboardType(src: *const cg::EventSrc) -> cg::EventSrcKeyboardType;
     fn CGEventSourceSetKeyboardType(src: *mut cg::EventSrc, val: cg::EventSrcKeyboardType);
     fn CGEventSourceGetPixelsPerLine(src: *const cg::EventSrc) -> f64;
     fn CGEventSourceSetPixelsPerLine(src: *mut cg::EventSrc, val: f64);
-    fn CGEventSourceGetSourceStateID(src: *const cg::EventSrc) -> cg::EventSrcStateId;
-    fn CGEventSourceButtonState(state_id: cg::EventSrcStateId, button: cg::MouseButton) -> bool;
-    fn CGEventSourceKeyState(state_id: cg::EventSrcStateId, key_code: cg::KeyCode) -> bool;
-    fn CGEventSourceFlagsState(state_id: cg::EventSrcStateId) -> cg::EventFlags;
+    fn CGEventSourceGetSourceStateID(src: *const cg::EventSrc) -> cg::EventSrcState;
+    fn CGEventSourceButtonState(state_id: cg::EventSrcState, button: cg::MouseButton) -> bool;
+    fn CGEventSourceKeyState(state_id: cg::EventSrcState, key_code: cg::KeyCode) -> bool;
+    fn CGEventSourceFlagsState(state_id: cg::EventSrcState) -> cg::EventFlags;
     fn CGEventSourceSecondsSinceLastEventType(
-        state_id: cg::EventSrcStateId,
+        state_id: cg::EventSrcState,
         event_type: cg::EventType,
     ) -> cf::TimeInterval;
     fn CGEventSourceCounterForEventType(
-        state_id: cg::EventSrcStateId,
+        state_id: cg::EventSrcState,
         event_type: cg::EventType,
     ) -> u32;
 
