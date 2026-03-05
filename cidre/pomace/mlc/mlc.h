@@ -44,25 +44,25 @@ static void mlc_initializer(void)
         
 #if TARGET_OS_SIMULATOR
 #else
-        MLC_DEVICE = [MLCDevice class];
-        MLC_GRAPH = [MLCGraph class];
-        MLC_ACTIVATION_DESCRIPTOR = [MLCActivationDescriptor class];
+        MLC_DEVICE = NSClassFromString(@"MLCDevice");
+        MLC_GRAPH = NSClassFromString(@"MLCGraph");
+        MLC_ACTIVATION_DESCRIPTOR = NSClassFromString(@"MLCActivationDescriptor");
         //      MLC_LAYER = [MLCLayer class];
-        MLC_ACTIVATION_LAYER = [MLCActivationLayer class];
-        MLC_OPTIMIZER_DESCRIPTOR = [MLCOptimizerDescriptor class];
-        MLC_ADAM_OPTIMIZER = [MLCAdamOptimizer class];
-        MLC_ADAMW_OPTIMIZER = [MLCAdamWOptimizer class];
-        MLC_ARITHMETIC_LAYER = [MLCArithmeticLayer class];
-        MLC_BATCH_NORMALIZATION_LAYER = [MLCBatchNormalizationLayer class];
-        MLC_TENSOR_DESCRIPTOR = [MLCTensorDescriptor class];
-        MLC_TENSOR_PARAMETER = [MLCTensorParameter class];
-        MLC_TENSOR_DATA = [MLCTensorData class];
-        MLC_TENSOR = [MLCTensor class];
-        MLC_GRAPH = [MLCGraph class];
-        MLC_MATMUL_DESCRIPTOR = [MLCMatMulDescriptor class];
-        MLC_MATMUL_LAYER = [MLCMatMulLayer class];
-        MLC_INFERENCE_GRAPH = [MLCInferenceGraph class];
-        MLC_TRAINING_GRAPH = [MLCTrainingGraph class];
+        MLC_ACTIVATION_LAYER = NSClassFromString(@"MLCActivationLayer");
+        MLC_OPTIMIZER_DESCRIPTOR = NSClassFromString(@"MLCOptimizerDescriptor");
+        MLC_ADAM_OPTIMIZER = NSClassFromString(@"MLCAdamOptimizer");
+        MLC_ADAMW_OPTIMIZER = NSClassFromString(@"MLCAdamWOptimizer");
+        MLC_ARITHMETIC_LAYER = NSClassFromString(@"MLCArithmeticLayer");
+        MLC_BATCH_NORMALIZATION_LAYER = NSClassFromString(@"MLCBatchNormalizationLayer");
+        MLC_TENSOR_DESCRIPTOR = NSClassFromString(@"MLCTensorDescriptor");
+        MLC_TENSOR_PARAMETER = NSClassFromString(@"MLCTensorParameter");
+        MLC_TENSOR_DATA = NSClassFromString(@"MLCTensorData");
+        MLC_TENSOR = NSClassFromString(@"MLCTensor");
+        MLC_GRAPH = NSClassFromString(@"MLCGraph");
+        MLC_MATMUL_DESCRIPTOR = NSClassFromString(@"MLCMatMulDescriptor");
+        MLC_MATMUL_LAYER = NSClassFromString(@"MLCMatMulLayer");
+        MLC_INFERENCE_GRAPH = NSClassFromString(@"MLCInferenceGraph");
+        MLC_TRAINING_GRAPH = NSClassFromString(@"MLCTrainingGraph");
 #endif
     }
 }

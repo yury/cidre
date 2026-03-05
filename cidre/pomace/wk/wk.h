@@ -25,7 +25,7 @@ static void wk_initializer(void)
         initialized = 1;
         WK_WEB_VIEW = [WKWebView class];
         WK_WEB_VIEW_CONFIGURATION = [WKWebViewConfiguration class];
-        WK_PROCESS_POOL = [WKProcessPool class];
+        WK_PROCESS_POOL = NSClassFromString(@"WKProcessPool");
         WK_PREFERENCES = [WKPreferences class];
         WK_USER_CONTENT_CONTROLLER = [WKUserContentController class];
         WK_USER_SCRIPT = [WKUserScript class];

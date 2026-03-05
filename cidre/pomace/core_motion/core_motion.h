@@ -20,7 +20,7 @@ static void core_motion_initializer(void)
     static int initialized = 0;
     if (!initialized) {
         initialized = 1;
-#if TARGET_OS_IOS || TARGET_OS_WATCHOS
+#if TARGET_OS_IOS || TARGET_OS_WATCH
         CM_MOTION_MANAGER = [CMMotionManager class];
 #endif
 #if TARGET_OS_OSX || TARGET_OS_IOS
