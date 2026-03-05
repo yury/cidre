@@ -240,7 +240,6 @@ impl Embedding {
     ) -> Option<arc::R<ns::Array<ns::String>>>;
 }
 
-#[link(name = "nl", kind = "static")]
 unsafe extern "C" {
     static NL_EMBEDDING: &'static objc::Class<Embedding>;
 }

@@ -21,7 +21,6 @@ impl Uuid {
     }
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_UUID: &'static objc::Class<Uuid>;
 }

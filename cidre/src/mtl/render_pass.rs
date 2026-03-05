@@ -311,7 +311,6 @@ impl AttachDesc {
     pub fn set_store_action_options(&mut self, val: StoreActionOpts);
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_RENDER_PASS_DESCRIPTOR: &'static objc::Class<Desc>;
 }

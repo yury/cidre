@@ -7,7 +7,6 @@ define_obj_type!(
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0, visionos = 2.0)]
 );
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_RESIDENCY_SET_DESCRIPTOR: &'static objc::Class<ResidencySetDesc>;
 }

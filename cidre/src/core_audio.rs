@@ -29,3 +29,9 @@ pub mod hardware_tapping;
 pub use hardware_tapping::Tap;
 #[cfg(feature = "macos_14_2")]
 pub use hardware_tapping::TapGuard;
+
+#[link(name = "CoreAudio", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "core_audio", kind = "static")]
+unsafe extern "C" {}

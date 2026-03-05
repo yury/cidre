@@ -309,3 +309,9 @@ pub use kit::InputPickerInteraction;
 pub use kit::InputPickerInteractionDelegate;
 #[cfg(all(feature = "av_kit", target_os = "ios"))]
 pub use kit::InputPickerInteractionDelegateImpl;
+
+#[link(name = "AVFoundation", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "av", kind = "static")]
+unsafe extern "C" {}

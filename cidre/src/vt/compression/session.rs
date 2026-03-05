@@ -249,7 +249,6 @@ impl Session {
     // TODO: multipass
 }
 
-#[link(name = "VideoToolbox", kind = "framework")]
 #[api::weak]
 unsafe extern "C" {
     fn VTCompressionSessionCreate(

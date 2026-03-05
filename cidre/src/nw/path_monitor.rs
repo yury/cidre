@@ -103,7 +103,6 @@ impl PathMonitor {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
     fn nw_path_monitor_create() -> arc::R<PathMonitor>;

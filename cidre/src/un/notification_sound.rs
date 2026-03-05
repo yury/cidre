@@ -48,7 +48,6 @@ impl NotificationSound {
     ) -> arc::R<Self>;
 }
 
-#[link(name = "un", kind = "static")]
 unsafe extern "C" {
     #[cfg(not(target_os = "tvos"))]
     static UN_NOTIFICATION_SOUND: &'static objc::Class<NotificationSound>;

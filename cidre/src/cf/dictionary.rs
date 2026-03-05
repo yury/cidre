@@ -334,7 +334,6 @@ impl Default for arc::R<Dictionary> {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C" {
     static kCFTypeDictionaryKeyCallBacks: KeyCbs;
     static kCFCopyStringDictionaryKeyCallBacks: KeyCbs;
@@ -638,7 +637,6 @@ where
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFDictionaryCreateMutable(
         allocator: Option<&cf::Allocator>,

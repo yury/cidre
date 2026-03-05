@@ -353,7 +353,6 @@ impl QueuePlayer {
     pub fn remove_all_items(&mut self);
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_PLAYER: &'static objc::Class<Player>;
     static AV_QUEUE_PLAYER: &'static objc::Class<QueuePlayer>;
@@ -367,7 +366,6 @@ impl ns::NotificationName {
     }
 }
 
-#[link(name = "AVFoundation", kind = "framework")]
 unsafe extern "C" {
     static AVPlayerRateDidChangeNotification: &'static ns::NotificationName;
     static AVPlayerWaitingToMinimizeStallsReason: &'static WaitingReason;

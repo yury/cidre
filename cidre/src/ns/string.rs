@@ -235,7 +235,6 @@ impl StringMut {
     pub fn hash(&self) -> ns::UInteger;
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_STRING: &'static Class<String>;
     static NS_MUTABLE_STRING: &'static Class<StringMut>;

@@ -943,7 +943,6 @@ impl Opts {
     pub const UNBUFFERED: Self = Self(1 << 16);
 }
 
-#[link(name = "AudioToolbox", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
     fn AudioConverterNew(

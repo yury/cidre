@@ -70,7 +70,6 @@ pub fn string_from_protocol(proto: &ns::objc::Protocol) -> arc::R<ns::String> {
     unsafe { arc::rar_retain(NSStringFromProtocol(proto)) }
 }
 
-#[link(name = "Foundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn NSStringFromSelector(sel: &ns::objc::Sel) -> arc::Rar<ns::String>;
     fn NSSelectorFromString(name: &ns::String) -> Option<&'static ns::objc::Sel>;

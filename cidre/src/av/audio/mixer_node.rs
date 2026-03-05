@@ -23,7 +23,6 @@ impl MixerNode {
     pub fn next_available_input_bus(&self) -> audio::NodeBus;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_AUDIO_MIXER_NODE: &'static objc::Class<MixerNode>;
 }

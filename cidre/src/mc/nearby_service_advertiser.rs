@@ -78,7 +78,6 @@ define_obj_type!(
 
 impl Delegate for AnyDelegate {}
 
-#[link(name = "mc", kind = "static")]
 unsafe extern "C" {
     static MC_NEARBY_SERVICE_ADVERTISER: &'static objc::Class<NearbyServiceAdvertiser>;
 }

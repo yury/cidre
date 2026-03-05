@@ -75,7 +75,6 @@ impl TapDesc {
     }
 }
 
-#[link(name = "CoreAudio", kind = "framework")]
 unsafe extern "C-unwind" {
     pub fn AudioHardwareCreateProcessTap(desc: &TapDesc, out_tap_id: *mut Obj) -> os::Status;
     pub fn AudioHardwareDestroyProcessTap(tap_id: Obj) -> os::Status;

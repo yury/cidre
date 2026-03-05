@@ -330,7 +330,6 @@ impl AsRef<ns::Id> for String {
 #[macro_export]
 macro_rules! cfstr {
     ($f:literal) => {{
-        #[link(name = "CoreFoundation", kind = "framework")]
         unsafe extern "C" {
             static __CFConstantStringClassReference: std::ffi::c_void;
         }
@@ -415,7 +414,6 @@ impl StringMut {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFStringGetTypeID() -> TypeId;
     fn CFStringGetLength(the_string: &String) -> Index;

@@ -229,7 +229,6 @@ impl Font {
     }
 }
 
-#[link(name = "CoreGraphics", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CGFontGetTypeID() -> cf::TypeId;
     fn CGFontCreateWithFontName(name: &cf::String) -> Option<arc::R<Font>>;

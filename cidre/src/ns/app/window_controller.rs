@@ -40,7 +40,6 @@ impl WindowController {
     pub fn dismiss_controller(&self, sender: Option<&ns::Id>);
 }
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_WINDOW_CONTROLLER: &'static objc::Class<WindowController>;
 }

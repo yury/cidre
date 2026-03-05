@@ -228,7 +228,6 @@ pub fn is_stereo_mv_hevc_decode_supported() -> bool {
     unsafe { VTIsStereoMVHEVCDecodeSupported() }
 }
 
-#[link(name = "VideoToolbox", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
     fn VTDecompressionSessionCreate(

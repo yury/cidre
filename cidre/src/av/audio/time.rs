@@ -105,7 +105,6 @@ impl Time {
     pub fn extrapolate_time_from_anchor(&self, anchor: &Time) -> Option<arc::R<Time>>;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_AUDIO_TIME: &'static objc::Class<Time>;
 }

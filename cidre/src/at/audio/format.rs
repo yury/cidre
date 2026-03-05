@@ -396,7 +396,6 @@ impl PropId {
     }
 }
 
-#[link(name = "AudioToolbox", kind = "framework")]
 unsafe extern "C-unwind" {
     fn AudioFormatGetPropertyInfo(
         property_id: PropId,

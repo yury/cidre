@@ -151,7 +151,6 @@ pub mod keys {
         unsafe { kVTDecompressionPropertyKey_RequestedMVHEVCVideoLayerIDs }
     }
 
-    #[link(name = "VideoToolbox", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
         static kVTDecompressionPropertyKey_PixelBufferPool: &'static cf::String;
@@ -244,7 +243,6 @@ pub mod video_decoder_specification {
         unsafe { kVTVideoDecoderSpecification_PreferredDecoderGPURegistryID }
     }
 
-    #[link(name = "VideoToolbox", kind = "framework")]
     unsafe extern "C" {
         static kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder:
             &'static cf::String;
@@ -290,7 +288,6 @@ pub mod decode_frame_option_keys {
         unsafe { kVTDecodeFrameOptionKey_ContentAnalyzerCropRectangle }
     }
 
-    #[link(name = "VideoToolbox", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
         #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]

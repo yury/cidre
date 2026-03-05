@@ -98,7 +98,6 @@ impl<S: objc::Obj, I: objc::Obj> CollectionViewDiffableDataSrc<S, I> {
 
 impl<S: objc::Obj, I: objc::Obj> ns::CollectionViewDataSrc for CollectionViewDiffableDataSrc<S, I> {}
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE:
         &'static objc::Class<CollectionViewDiffableDataSrc<ns::Id, ns::Id>>;

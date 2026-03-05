@@ -97,7 +97,6 @@ impl Line {
     }
 }
 
-#[link(name = "CoreText", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CTLineGetTypeID() -> cf::TypeId;
     fn CTLineCreateWithAttributedString(attr_string: &cf::AttrString) -> arc::R<Line>;

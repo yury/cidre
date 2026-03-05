@@ -181,7 +181,6 @@ impl UpdateLink {
     ) -> arc::R<Self>;
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_UPDATE_LINK: &'static objc::Class<UpdateLink>;
 }

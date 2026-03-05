@@ -59,7 +59,6 @@ impl GenPersonSegmentationRequest {
     }
 }
 
-#[link(name = "vn", kind = "static")]
 unsafe extern "C" {
     static VN_GENERATE_PERSON_SEGMENTAION_REQUEST:
         &'static objc::Class<GenPersonSegmentationRequest>;

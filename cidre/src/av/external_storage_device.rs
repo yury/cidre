@@ -107,7 +107,6 @@ impl DiscoverySession {
     pub fn is_supported() -> bool;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_EXTERNAL_STORAGE_DEVICE: &'static objc::Class<Device>;
     static AV_EXTERNAL_STORAGE_DEVICE_DISCOVERY_SESSION: &'static objc::Class<DiscoverySession>;

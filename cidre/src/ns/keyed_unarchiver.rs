@@ -24,7 +24,6 @@ impl KeyedUnarchiver {
     }
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_KEYED_UNARCHIVER: &'static objc::Class<KeyedUnarchiver>;
 }

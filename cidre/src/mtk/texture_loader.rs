@@ -296,7 +296,6 @@ impl OptionTexture {
     }
 }
 
-#[link(name = "mtk", kind = "static")]
 unsafe extern "C" {
     static MTK_TEXTURE_LOADER: &'static objc::Class<TextureLoader>;
 }
@@ -308,7 +307,6 @@ impl ns::ErrorDomain {
     }
 }
 
-#[link(name = "MetalKit", kind = "framework")]
 unsafe extern "C" {
     static MTKTextureLoaderErrorDomain: &'static ns::ErrorDomain;
     static MTKTextureLoaderErrorKey: &'static ns::String;

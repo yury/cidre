@@ -168,7 +168,6 @@ impl Obj {
     }
 }
 
-#[link(name = "CoreMediaIO", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CMIOObjectSetPropertyData(
         object_id: Obj,

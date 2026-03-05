@@ -276,7 +276,6 @@ impl WorldTrackingCfg {
     pub fn set_scene_reconstruction(&mut self, val: SceneReconstruction);
 }
 
-#[link(name = "ar", kind = "static")]
 unsafe extern "C" {
     static AR_CONFIGURATION: &'static objc::Class<Cfg>;
     static AR_WORLD_TRACKING_CONFIGURATION: &'static objc::Class<WorldTrackingCfg>;

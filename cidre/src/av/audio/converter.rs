@@ -181,7 +181,6 @@ impl Converter {
     }
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_AUDIO_CONVERTER: &'static objc::Class<Converter>;
 }

@@ -80,7 +80,6 @@ impl ns::Value {
     pub fn with_range(range: ns::Range) -> arc::R<Self>;
 }
 
-#[link(name = "Foundation", kind = "framework")]
 unsafe extern "C" {
     fn NSIntersectionRange(a: Range, b: Range) -> Range;
     fn NSUnionRange(a: Range, b: Range) -> Range;

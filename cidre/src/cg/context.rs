@@ -92,7 +92,6 @@ impl Context {
     }
 }
 
-#[link(name = "CoreGraphics", kind = "framework")]
 unsafe extern "C" {
     fn CGContextGetTypeID() -> cf::TypeId;
     fn CGContextSaveGState(ctx: Option<&Context>);

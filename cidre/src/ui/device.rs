@@ -61,7 +61,6 @@ pub mod notifications {
         unsafe { UIDeviceProximityStateDidChangeNotification }
     }
 
-    #[link(name = "UIKit", kind = "framework")]
     unsafe extern "C" {
         static UIDeviceOrientationDidChangeNotification: &'static ns::NotificationName;
         static UIDeviceBatteryStateDidChangeNotification: &'static ns::NotificationName;
@@ -129,7 +128,6 @@ impl Device {
     pub fn orientation(&self) -> ui::DeviceOrientation;
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_DEVICE: &'static objc::Class<Device>;
 }

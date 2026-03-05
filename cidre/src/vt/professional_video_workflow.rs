@@ -8,7 +8,6 @@ pub fn register_encoders() {
     unsafe { VTRegisterProfessionalVideoWorkflowVideoEncoders() }
 }
 
-#[link(name = "VideoToolbox", kind = "framework")]
 unsafe extern "C" {
     fn VTRegisterProfessionalVideoWorkflowVideoDecoders();
     fn VTRegisterProfessionalVideoWorkflowVideoEncoders();

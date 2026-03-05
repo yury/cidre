@@ -42,7 +42,6 @@ impl PlayerLayer {
     pub fn displayed_pixel_buf(&self) -> Option<arc::Retained<cv::PixelBuf>>;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_PLAYER_LAYER: &'static objc::Class<PlayerLayer>;
 }

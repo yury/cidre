@@ -58,7 +58,6 @@ impl InferenceGraph {
     ) -> bool;
 }
 
-#[link(name = "mlc", kind = "static")]
 unsafe extern "C" {
     static MLC_INFERENCE_GRAPH: &'static objc::Class<InferenceGraph>;
 }

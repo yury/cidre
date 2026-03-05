@@ -41,7 +41,6 @@ impl ut::Type {
         unsafe { UTTypeDiskImage }
     }
 }
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeItem: &'static ut::Type;
     static UTTypeContent: &'static ut::Type;
@@ -122,7 +121,6 @@ impl ut::Type {
         unsafe { UTTypeAliasFile }
     }
 }
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeData: &'static ut::Type;
     static UTTypeDirectory: &'static ut::Type;
@@ -167,7 +165,6 @@ impl ut::Type {
     }
 }
 
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeURL: &'static ut::Type;
     static UTTypeFileURL: &'static ut::Type;
@@ -279,7 +276,6 @@ impl ut::Type {
     }
 }
 
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeText: &'static ut::Type;
     static UTTypePlainText: &'static ut::Type;
@@ -326,7 +322,6 @@ impl ut::Type {
     }
 }
 
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeHTML: &'static ut::Type;
     static UTTypeXML: &'static ut::Type;
@@ -425,7 +420,6 @@ impl ut::Type {
     }
 }
 
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeSourceCode: &'static ut::Type;
     static UTTypeAssemblyLanguageSource: &'static ut::Type;
@@ -551,7 +545,6 @@ impl ut::Type {
     }
 }
 
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeScript: &'static ut::Type;
     static UTTypeAppleScript: &'static ut::Type;
@@ -610,7 +603,6 @@ impl ut::Type {
         unsafe { UTTypeBinaryPropertyList }
     }
 }
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeJSON: &'static ut::Type;
     static UTTypePropertyList: &'static ut::Type;
@@ -662,7 +654,6 @@ impl ut::Type {
     }
 }
 
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypePDF: &'static ut::Type;
     static UTTypeRTFD: &'static ut::Type;
@@ -812,7 +803,6 @@ impl ut::Type {
     }
 }
 
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeImage: &'static ut::Type;
     static UTTypeJPEG: &'static ut::Type;
@@ -1084,7 +1074,6 @@ impl ut::Type {
     }
 }
 
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTType3DContent: &'static ut::Type;
     static UTTypeUSD: &'static ut::Type;
@@ -1266,7 +1255,6 @@ impl ut::Type {
     }
 }
 
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeFolder: &'static ut::Type;
     static UTTypeVolume: &'static ut::Type;
@@ -1337,7 +1325,6 @@ impl ut::Type {
     }
 }
 
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeArchive: &'static ut::Type;
     static UTTypeGZIP: &'static ut::Type;
@@ -1378,7 +1365,6 @@ impl ut::Type {
     }
 }
 
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeSpreadsheet: &'static ut::Type;
     static UTTypePresentation: &'static ut::Type;
@@ -1444,7 +1430,6 @@ impl ut::Type {
     }
 }
 
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeMessage: &'static ut::Type;
     static UTTypeContact: &'static ut::Type;
@@ -1477,7 +1462,6 @@ impl ut::Type {
     }
 }
 
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeInternetLocation: &'static ut::Type;
     static UTTypeInternetShortcut: &'static ut::Type;
@@ -1552,7 +1536,6 @@ impl ut::Type {
     }
 }
 
-#[link(name = "UniformTypeIdentifiers", kind = "framework")]
 unsafe extern "C" {
     static UTTypeFont: &'static ut::Type;
     static UTTypeBookmark: &'static ut::Type;

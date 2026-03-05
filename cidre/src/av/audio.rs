@@ -166,3 +166,6 @@ pub use speech_synthesis::VoiceTraits as SpeechSynthesisVoiceTraits;
 pub mod application;
 pub use application::App;
 pub use application::RecordPermission as AppRecordPermission;
+
+#[link(name = "AVFAudio", kind = "framework")]
+unsafe extern "C" {}

@@ -74,7 +74,6 @@ impl FnDesc {
     pub fn set_opts(&mut self, val: mtl::FnOpts);
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_FUNCTION_DESCRIPTOR: &'static objc::Class<FnDesc>;
 }

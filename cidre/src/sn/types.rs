@@ -12,7 +12,6 @@ impl Id {
     }
 }
 
-#[link(name = "SoundAnalysis", kind = "framework")]
 unsafe extern "C" {
     static SNClassifierIdentifierVersion1: &'static Id;
 }

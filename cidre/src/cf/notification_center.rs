@@ -122,7 +122,6 @@ pub enum NotificationSuspensionBehavior {
     DeliverImmediately = 4,
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFNotificationCenterGetTypeID() -> cf::TypeId;
     fn CFNotificationCenterGetLocalCenter<'a>() -> &'a mut NotificationCenter;

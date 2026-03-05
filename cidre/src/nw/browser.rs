@@ -162,7 +162,6 @@ impl Browser {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C-unwind" {
     fn nw_browser_create(
         descriptor: &nw::BrowseDesc,

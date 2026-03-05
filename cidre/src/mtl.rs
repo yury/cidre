@@ -452,3 +452,9 @@ macro_rules! define_mtl {
         define_mtl!($($tail),+);
     };
 }
+
+#[link(name = "Metal", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "mtl", kind = "static")]
+unsafe extern "C" {}

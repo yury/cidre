@@ -251,7 +251,6 @@ impl DisplayStream {
     }
 }
 
-#[link(name = "CoreGraphics", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CGDisplayStreamUpdateGetTypeID() -> cf::TypeId;
 

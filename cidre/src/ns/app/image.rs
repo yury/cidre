@@ -56,7 +56,6 @@ define_obj_type!(
     pub ImageSymbolCfg(ns::Id)
 );
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_IMAGE: &'static objc::Class<Image>;
 }

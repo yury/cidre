@@ -153,7 +153,6 @@ impl Pedometer {
     pub fn stop_pedometer_updates(&mut self);
 }
 
-#[link(name = "core_motion", kind = "static")]
 unsafe extern "C" {
     static CM_PEDOMETER: &'static objc::Class<Pedometer>;
 }

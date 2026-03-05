@@ -88,7 +88,6 @@ impl Image {
     }
 }
 
-#[link(name = "CoreGraphics", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CGImageIsMask(image: &Image) -> bool;
     fn CGImageGetWidth(image: &Image) -> usize;

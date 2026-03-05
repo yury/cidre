@@ -449,7 +449,6 @@ impl Color {
 
 unsafe impl Send for Color {}
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_COLOR: &'static objc::Class<Color>;
 }

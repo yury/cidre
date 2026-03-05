@@ -533,7 +533,6 @@ impl ArrayMut {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     static kCFTypeArrayCallBacks: Cbs;
 

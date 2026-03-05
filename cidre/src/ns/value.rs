@@ -416,7 +416,6 @@ impl std::hash::Hash for arc::R<ns::Number> {
     }
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_VALUE: &'static Class<ns::Value>;
     static NS_NUMBER: &'static Class<ns::Number>;

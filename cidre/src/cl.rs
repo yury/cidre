@@ -35,3 +35,9 @@ pub use location::accuracy as location_accuracy;
 
 mod heading;
 pub use heading::Heading;
+
+#[link(name = "CoreLocation", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "cl", kind = "static")]
+unsafe extern "C" {}

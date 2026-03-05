@@ -420,7 +420,6 @@ mod tests {
     }
 }
 
-#[link(name = "CoreMedia", kind = "framework")]
 unsafe extern "C-unwind" {
     static kCMTimeInvalid: Time;
     static kCMTimeIndefinite: Time;

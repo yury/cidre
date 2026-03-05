@@ -39,7 +39,6 @@ pub enum BlurEffectStyle {
     SysChromeMaterialDark,
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_BLUR_EFFECT: &'static objc::Class<BlurEffect>;
 }

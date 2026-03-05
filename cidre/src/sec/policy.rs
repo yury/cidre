@@ -119,7 +119,6 @@ impl sec::Policy {
     }
 }
 
-#[link(name = "Security", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
     fn SecPolicyGetTypeID() -> cf::TypeId;

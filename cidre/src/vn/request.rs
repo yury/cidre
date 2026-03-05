@@ -90,7 +90,6 @@ pub trait RequestProgressProviding: objc::Obj {
     fn indeterminate(&self) -> bool;
 }
 
-#[link(name = "vn", kind = "static")]
 unsafe extern "C" {
     static VN_DETECT_HORIZON_REQUEST: &'static objc::Class<DetectHorizonRequest>;
 }

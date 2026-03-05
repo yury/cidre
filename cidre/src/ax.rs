@@ -39,3 +39,6 @@ pub use ui_element::trusted_check_option_prompt;
 mod value;
 pub use value::Value;
 pub use value::ValueType;
+
+#[link(name = "ApplicationServices", kind = "framework")]
+unsafe extern "C" {}

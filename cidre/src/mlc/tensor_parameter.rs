@@ -23,7 +23,6 @@ impl TensorParameter {
     ) -> arc::R<Self>;
 }
 
-#[link(name = "mlc", kind = "static")]
 unsafe extern "C" {
     static MLC_TENSOR_PARAMETER: &'static objc::Class<TensorParameter>;
 }

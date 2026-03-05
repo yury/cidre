@@ -71,7 +71,6 @@ impl UrlCache {
     pub fn current_disk_usage(&self) -> usize;
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_URL_CACHE: &'static objc::Class<UrlCache>;
 }

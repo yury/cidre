@@ -64,3 +64,6 @@ pub use log_item::LogItem;
 #[cfg(not(target_os = "tvos"))]
 #[link(name = "CoreMotion", kind = "framework")]
 unsafe extern "C" {}
+
+#[link(name = "core_motion", kind = "static")]
+unsafe extern "C" {}

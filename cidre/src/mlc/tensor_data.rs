@@ -31,7 +31,6 @@ impl TensorData {
     }
 }
 
-#[link(name = "mlc", kind = "static")]
 unsafe extern "C" {
     static MLC_TENSOR_DATA: &'static objc::Class<TensorData>;
 }

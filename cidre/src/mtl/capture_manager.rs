@@ -93,7 +93,6 @@ impl CaptureManager {
     pub fn default_capture_scope(&self) -> Option<arc::R<mtl::CaptureScope>>;
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_CAPTURE_DESCRIPTOR: &'static objc::Class<CaptureDesc>;
     static MTL_CAPTURE_MANAGER: &'static objc::Class<CaptureManager>;

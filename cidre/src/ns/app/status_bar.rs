@@ -17,7 +17,6 @@ impl StatusBar {
     pub fn thickness(&self) -> cg::Float;
 }
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_STATUS_BAR: &'static objc::Class<StatusBar>;
 }

@@ -50,7 +50,6 @@ impl Iso8601DateFormatter {
     pub fn set_format_opts(&mut self, val: ns::Iso8601DateFormatOpts);
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_ISO_8601_DATE_FORMATTER: &'static objc::Class<Iso8601DateFormatter>;
 }

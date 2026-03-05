@@ -92,12 +92,10 @@ impl Location {
     pub fn distance_from_location(&self, location: &cl::Location) -> cl::LocationDistance;
 }
 
-#[link(name = "cl", kind = "static")]
 unsafe extern "C" {
     static CL_LOCATION: &'static objc::Class<Location>;
 }
 
-#[link(name = "CoreLocation", kind = "framework")]
 unsafe extern "C" {
     static kCLLocationCoordinate2DInvalid: Coordinate2d;
     fn CLLocationCoordinate2DIsValid(coord: Coordinate2d) -> bool;
@@ -148,7 +146,6 @@ pub mod accuracy {
         unsafe { kCLLocationAccuracyReduced }
     }
 
-    #[link(name = "CoreLocation", kind = "framework")]
     unsafe extern "C" {
         static kCLLocationAccuracyBestForNavigation: cl::LocationAccuracy;
         static kCLLocationAccuracyBest: cl::LocationAccuracy;

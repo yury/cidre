@@ -48,7 +48,6 @@ impl Constraint {
     pub fn duration_range(&self) -> cm::TimeRange;
 }
 
-#[link(name = "sn", kind = "static")]
 unsafe extern "C" {
     static SN_TIME_DURATION_CONSTRAINT: &'static objc::Class<Constraint>;
 }

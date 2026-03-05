@@ -114,7 +114,6 @@ impl RecognizeTextRequest {
     pub fn set_min_text_height(&mut self, val: f32);
 }
 
-#[link(name = "vn", kind = "static")]
 unsafe extern "C" {
     static VN_RECOGNIZE_TEXT_REQUEST: &'static objc::Class<RecognizeTextRequest>;
 }

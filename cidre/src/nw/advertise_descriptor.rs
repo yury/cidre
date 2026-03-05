@@ -74,7 +74,6 @@ impl AdvertiseDesc {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C-unwind" {
     fn nw_advertise_descriptor_create_bonjour_service(
         name: *const c_char,

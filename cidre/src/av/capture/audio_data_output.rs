@@ -48,7 +48,6 @@ impl AudioDataOutput {
     ) -> Option<&'a ns::Dictionary<ns::String, ns::Id>>;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_CAPTURE_AUDIO_DATA_OUTPUT: &'static objc::Class<AudioDataOutput>;
 }

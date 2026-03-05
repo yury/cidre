@@ -151,7 +151,6 @@ impl WebViewCfg {
     pub fn set_ui_direction_policy(&self, val: wk::UiDirectionPolicy);
 }
 
-#[link(name = "wk", kind = "static")]
 unsafe extern "C" {
     static WK_WEB_VIEW_CONFIGURATION: &'static objc::Class<WebViewCfg>;
 }

@@ -361,7 +361,6 @@ define_obj_type!(
     pub Marker(ns::Id)
 );
 
-#[link(name = "AVFAudio", kind = "framework")]
 unsafe extern "C" {
     static AVSpeechUtteranceMinimumSpeechRate: f32;
     static AVSpeechUtteranceMaximumSpeechRate: f32;

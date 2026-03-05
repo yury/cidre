@@ -114,3 +114,6 @@ pub use display_stream::YCbCrMatrix as DisplayStreamYCbCrMatrix;
 
 #[link(name = "CoreGraphics", kind = "framework")]
 unsafe extern "C" {}
+
+#[link(name = "ImageIO", kind = "framework")]
+unsafe extern "C" {}

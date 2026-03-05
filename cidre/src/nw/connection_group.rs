@@ -261,7 +261,6 @@ pub type ConnectionGroupSendCompletion = crate::blocks::SyncBlock<fn(error: Opti
 pub type ConnectionGroupNewConnectionHandler =
     crate::blocks::SyncBlock<fn(connection: &mut nw::Connection)>;
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C" {
     fn nw_connection_group_create(
         group_desc: &nw::GroupDesc,

@@ -42,7 +42,6 @@ impl Locale {
     pub fn region_code(&self) -> Option<arc::R<ns::String>>;
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_LOCALE: &'static objc::Class<Locale>;
 }

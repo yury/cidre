@@ -100,7 +100,6 @@ pub enum CollectionChangeType {
     Remove = 1,
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_ORDERED_COLLECTION_CHANGE: &'static objc::Class<OrderedCollectionChange<ns::Id>>;
 }

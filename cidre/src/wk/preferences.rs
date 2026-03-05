@@ -82,7 +82,6 @@ pub enum InactiveSchedulingPolicy {
     None,
 }
 
-#[link(name = "wk", kind = "static")]
 unsafe extern "C" {
     static WK_PREFERENCES: &'static objc::Class<Preferences>;
 }

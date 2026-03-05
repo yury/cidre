@@ -35,7 +35,6 @@ impl ModelCfg {
     pub fn set_compute_units(&mut self, val: ComputeUnits);
 }
 
-#[link(name = "ml", kind = "static")]
 unsafe extern "C" {
     static ML_MODEL_CONFIGURATION: &'static objc::Class<ModelCfg>;
 }

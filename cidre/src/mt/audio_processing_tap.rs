@@ -273,7 +273,6 @@ impl Tap {
 }
 
 #[cfg(not(target_os = "watchos"))]
-#[link(name = "MediaToolbox", kind = "framework")]
 unsafe extern "C-unwind" {
     fn MTAudioProcessingTapGetTypeID() -> cf::TypeId;
 

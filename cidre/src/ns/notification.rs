@@ -146,7 +146,6 @@ impl Drop for NotificationGuard {
     }
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_NOTIFICATION: &'static objc::Class<Notification>;
     static NS_NOTIFICATION_CENTER: &'static objc::Class<NotificationCenter>;

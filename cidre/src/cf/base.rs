@@ -363,7 +363,6 @@ impl Allocator {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFCopyTypeIDDescription(type_id: TypeId) -> Option<arc::R<String>>;
 

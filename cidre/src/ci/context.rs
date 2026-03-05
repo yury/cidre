@@ -54,7 +54,6 @@ impl Context {
     }
 }
 
-#[link(name = "ci", kind = "static")]
 unsafe extern "C" {
     static CI_CONTEXT: &'static objc::Class<Context>;
 }

@@ -39,3 +39,9 @@ pub use model_configuration::ModelCfg;
 
 mod model_description;
 pub use model_description::ModelDesc;
+
+#[link(name = "CoreML", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "ml", kind = "static")]
+unsafe extern "C" {}

@@ -50,7 +50,6 @@ impl MetadataOutput {
     pub fn set_rect_of_interest(&mut self, value: cg::Rect);
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_CAPTURE_METADATA_OUTPUT: &'static objc::Class<MetadataOutput>;
 }

@@ -35,7 +35,6 @@ impl GenImageFeaturePrintRequest {
     pub fn set_image_crop_and_scale_option(&mut self, value: vn::ImageCropAndScaleOpt);
 }
 
-#[link(name = "vn", kind = "static")]
 unsafe extern "C" {
     static VN_GENERATE_IMAGE_FEAUTRE_PRINT_REQUEST:
         &'static objc::Class<GenImageFeaturePrintRequest>;

@@ -83,7 +83,6 @@ impl PlaneAnchor {
     pub fn classification(&self) -> PlaneClassification;
 }
 
-#[link(name = "ar", kind = "static")]
 unsafe extern "C" {
     static AR_PLANE_ANCHOR: &'static objc::Class<PlaneAnchor>;
 }

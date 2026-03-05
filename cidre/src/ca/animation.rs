@@ -9,7 +9,6 @@ impl Animation {
     pub fn set_timing_fn(&mut self, val: Option<&ca::MediaTimingFn>);
 }
 
-#[link(name = "ca", kind = "static")]
 unsafe extern "C" {
     static CA_ANIMATION: &'static objc::Class<Animation>;
 }

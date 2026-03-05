@@ -12,7 +12,6 @@ impl DetectDocumentSegmentationRequest {
     pub fn results(&self) -> Option<arc::R<ns::Array<vn::RectangleObservation>>>;
 }
 
-#[link(name = "vn", kind = "static")]
 unsafe extern "C" {
     static VN_DETECT_DOCUMENT_SEGMENTATION_REQUEST:
         &'static objc::Class<DetectDocumentSegmentationRequest>;

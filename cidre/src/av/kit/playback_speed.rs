@@ -32,7 +32,6 @@ impl PlaybackSpeed {
     pub fn localized_numeric_name(&self) -> arc::R<ns::String>;
 }
 
-#[link(name = "av_kit", kind = "static")]
 unsafe extern "C" {
     static AV_PLAYBACK_SPEED: &'static objc::Class<PlaybackSpeed>;
 }

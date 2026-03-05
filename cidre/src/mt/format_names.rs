@@ -12,7 +12,6 @@ impl cm::MediaType {
 }
 
 #[cfg(not(target_os = "watchos"))]
-#[link(name = "MediaToolbox", kind = "framework")]
 unsafe extern "C-unwind" {
     fn MTCopyLocalizedNameForMediaType(media_type: cm::MediaType) -> arc::R<cf::String>;
     fn MTCopyLocalizedNameForMediaSubType(

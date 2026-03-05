@@ -206,7 +206,6 @@ impl View {
 
 impl ns::AnimatablePropContainer for View {}
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_VIEW: &'static objc::Class<View>;
 }

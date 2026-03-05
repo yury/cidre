@@ -59,7 +59,6 @@ impl Type {
     pub fn supertypes(&self) -> arc::R<ns::Set<Self>>;
 }
 
-#[link(name = "ut", kind = "static")]
 unsafe extern "C" {
     static UT_TYPE: &'static objc::Class<Type>;
 }

@@ -47,7 +47,6 @@ pub fn matching(query: &cf::DictionaryOf<cf::String, cf::Type>) -> os::Result<ar
     os::result_init(|res| unsafe { SecItemCopyMatching(query, res) })
 }
 
-#[link(name = "Security", kind = "framework")]
 unsafe extern "C-unwind" {
     static kSecClass: &'static cf::String;
 
@@ -198,7 +197,6 @@ pub mod match_keys {
         unsafe { kSecMatchLimit }
     }
 
-    #[link(name = "Security", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
         static kSecMatchPolicy: &'static cf::String;
@@ -238,7 +236,6 @@ pub mod match_limit {
         unsafe { kSecMatchLimitAll }
     }
 
-    #[link(name = "Security", kind = "framework")]
     unsafe extern "C" {
         static kSecMatchLimitOne: &'static cf::String;
         static kSecMatchLimitAll: &'static cf::String;
@@ -289,7 +286,6 @@ pub mod return_data {
         unsafe { kSecReturnPersistentRef }
     }
 
-    #[link(name = "Security", kind = "framework")]
     unsafe extern "C" {
 
         static kSecReturnData: &'static cf::String;

@@ -81,7 +81,6 @@ impl CounterHeap {
     pub fn invalidate_counter_range(&mut self, range: ns::Range);
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL4_COUNTER_HEAP_DESCRIPTOR: &'static objc::Class<CounterHeapDesc>;
 }

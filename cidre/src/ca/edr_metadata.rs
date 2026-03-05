@@ -30,7 +30,6 @@ impl EdrMetadata {
     pub fn is_available() -> bool;
 }
 
-#[link(name = "ca", kind = "static")]
 unsafe extern "C" {
     static CA_EDR_METADATA: &'static objc::Class<EdrMetadata>;
 }

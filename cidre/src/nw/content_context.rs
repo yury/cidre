@@ -26,7 +26,6 @@ impl ContentCtx {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C-unwind" {
     static _nw_content_context_default_message: &'static ContentCtx;
     static _nw_content_context_final_send: &'static ContentCtx;

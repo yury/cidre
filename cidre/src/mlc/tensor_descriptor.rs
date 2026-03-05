@@ -111,7 +111,6 @@ impl TensorDesc {
     ) -> Option<arc::R<Self>>;
 }
 
-#[link(name = "mlc", kind = "static")]
 unsafe extern "C" {
     static MLC_TENSOR_DESCRIPTOR: &'static objc::Class<TensorDesc>;
 }

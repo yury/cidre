@@ -283,7 +283,6 @@ impl MediaCharacteristic {
     }
 }
 
-#[link(name = "AVFoundation", kind = "framework")]
 unsafe extern "C" {
     static AVMediaCharacteristicVisual: &'static MediaCharacteristic;
     static AVMediaCharacteristicAudible: &'static MediaCharacteristic;
@@ -575,7 +574,6 @@ impl FileTypeProfile {
     }
 }
 
-#[link(name = "AVFoundation", kind = "framework")]
 #[api::weak]
 unsafe extern "C" {
     static AVFileTypeQuickTimeMovie: &'static FileType;

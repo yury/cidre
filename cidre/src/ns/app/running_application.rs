@@ -97,7 +97,6 @@ mod tests {
     }
 }
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_RUNNING_APPLICATION: &'static objc::Class<RunningApp>;
 }

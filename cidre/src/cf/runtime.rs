@@ -129,7 +129,6 @@ impl Type {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFRetain(cf: &Type) -> arc::R<Type>;
     fn CFRelease(cf: &mut Type);

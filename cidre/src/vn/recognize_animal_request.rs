@@ -50,13 +50,11 @@ impl RecognizeAnimalsRequest {
     ) -> Option<arc::R<ns::Array<AnimalId>>>;
 }
 
-#[link(name = "Vision", kind = "framework")]
 unsafe extern "C" {
     static VNAnimalIdentifierDog: &'static AnimalId;
     static VNAnimalIdentifierCat: &'static AnimalId;
 }
 
-#[link(name = "vn", kind = "static")]
 unsafe extern "C" {
     static VN_RECOGNIZE_ANIMALS_REQUEST: &'static objc::Class<RecognizeAnimalsRequest>;
 }

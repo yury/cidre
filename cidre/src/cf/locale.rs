@@ -38,7 +38,6 @@ impl Locale {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFLocaleGetSystem() -> &'static Locale;
     fn CFLocaleGetIdentifier(locale: &Locale) -> &Id;

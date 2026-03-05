@@ -153,7 +153,6 @@ impl ui::ViewController {
     pub fn tab_bar_controller(&self) -> Option<arc::R<TabBarController>>;
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_TAB_BAR_CONTROLLER: &'static objc::Class<TabBarController>;
 }

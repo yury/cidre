@@ -272,7 +272,6 @@ impl<S: objc::Obj, I: objc::Obj> Clone for DiffableDataSrcSnapshot<S, I> {
 impl<S: objc::Obj, I: objc::Obj> ns::Copying for DiffableDataSrcSnapshot<S, I> {}
 
 #[cfg(all(feature = "app", target_os = "macos"))]
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_DIFFABLE_DATA_SOURCE_SNAPSHOT:
         &'static objc::Class<DiffableDataSrcSnapshot<ns::Id, ns::Id>>;
@@ -282,7 +281,6 @@ unsafe extern "C" {
     feature = "ui",
     any(target_os = "ios", target_os = "tvos", target_os = "visionos")
 ))]
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static NS_DIFFABLE_DATA_SOURCE_SNAPSHOT:
         &'static objc::Class<DiffableDataSrcSnapshot<ns::Id, ns::Id>>;

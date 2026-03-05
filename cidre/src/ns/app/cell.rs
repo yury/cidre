@@ -117,7 +117,6 @@ impl ControlStateValue {
     pub const ON: Self = Self(1);
 }
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_CELL: &'static objc::Class<Cell>;
 }

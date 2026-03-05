@@ -78,7 +78,6 @@ impl BrowseDesc {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C-unwind" {
     fn nw_browse_descriptor_create_bonjour_service(
         type_: *const c_char,

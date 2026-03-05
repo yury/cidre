@@ -16,7 +16,6 @@ impl UserContentController {
     pub fn remove_all_user_scripts(&mut self);
 }
 
-#[link(name = "wk", kind = "static")]
 unsafe extern "C" {
     static WK_USER_CONTENT_CONTROLLER: &'static objc::Class<UserContentController>;
 }

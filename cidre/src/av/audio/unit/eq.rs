@@ -103,7 +103,6 @@ impl UnitEq {
     pub fn set_global_gain(&mut self, value: f32);
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_AUDIO_UNIT_EQ: &'static objc::Class<UnitEq>;
 }

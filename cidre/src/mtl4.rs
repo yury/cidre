@@ -75,3 +75,6 @@ pub use pipeline_state::PipelineOpts;
 pub use pipeline_state::ShaderReflection;
 
 pub use crate::mtl::acceleration_structure_types::mtl4::BufRange;
+
+#[link(name = "mtl", kind = "static")]
+unsafe extern "C" {}

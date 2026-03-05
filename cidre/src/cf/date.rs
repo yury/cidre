@@ -115,7 +115,6 @@ impl std::convert::TryFrom<std::time::SystemTime> for arc::R<Date> {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFAbsoluteTimeGetCurrent() -> AbsTime;
     fn CFDateGetTypeID() -> cf::TypeId;

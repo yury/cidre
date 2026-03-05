@@ -120,7 +120,6 @@ impl ParagraphStyle {
     }
 }
 
-#[link(name = "CoreText", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CTParagraphStyleGetTypeID() -> cf::TypeId;
     fn CTParagraphStyleCreate(

@@ -239,7 +239,6 @@ pub mod types {
         unsafe { NSPasteboardTypeFileURL }
     }
 
-    #[link(name = "AppKit", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
         #[api::available(macos = 10.6)]
@@ -315,7 +314,6 @@ pub mod name {
         unsafe { NSPasteboardNameDrag }
     }
 
-    #[link(name = "AppKit", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
         #[api::available(macos = 10.13)]
@@ -348,7 +346,6 @@ pub mod reading_option_key {
         unsafe { NSPasteboardURLReadingContentsConformToTypesKey }
     }
 
-    #[link(name = "AppKit", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
         #[api::available(macos = 10.6)]
@@ -358,7 +355,6 @@ pub mod reading_option_key {
     }
 }
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_PASTEBOARD: &'static objc::Class<Pasteboard>;
 }

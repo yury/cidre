@@ -316,7 +316,6 @@ pub mod err {
     pub const CORE_VIDEO_IS_ABSENT: Error = Error::new_unchcked(-21784);
 }
 
-#[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
     static kvImage_YpCbCrToARGBMatrix_ITU_R_601_4: &'static YpCbCrArgbMatrix;
     static kvImage_YpCbCrToARGBMatrix_ITU_R_709_2: &'static YpCbCrArgbMatrix;

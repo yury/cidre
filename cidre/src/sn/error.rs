@@ -6,7 +6,6 @@ impl ns::ErrorDomain {
     }
 }
 
-#[link(name = "SoundAnalysis", kind = "framework")]
 unsafe extern "C" {
     static SNErrorDomain: &'static ns::ErrorDomain;
 }

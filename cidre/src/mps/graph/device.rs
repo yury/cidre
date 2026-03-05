@@ -25,7 +25,6 @@ impl Device {
     pub fn with_mtl_device(mtl_device: &mtl::Device) -> arc::R<Device>;
 }
 
-#[link(name = "mpsg", kind = "static")]
 unsafe extern "C" {
     static MPS_GRAPH_DEVICE: &'static objc::Class<Device>;
 }

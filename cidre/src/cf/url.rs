@@ -223,7 +223,6 @@ impl AsRef<ns::Id> for Url {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFURLGetTypeID() -> cf::TypeId;
 

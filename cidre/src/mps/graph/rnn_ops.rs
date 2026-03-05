@@ -286,7 +286,6 @@ impl graph::Graph {
     ) -> arc::R<ns::Array<graph::Tensor>>;
 }
 
-#[link(name = "mpsg", kind = "static")]
 unsafe extern "C" {
     static MPS_GRAPH_SINGLE_GATE_RNN_DESCRIPTOR: &'static objc::Class<SingleGateRnnDesc>;
     static MPS_GRAPH_LSTM_DESCRIPTOR: &'static objc::Class<LstmDesc>;

@@ -163,7 +163,6 @@ define_obj_type!(
     pub AnyNavControllerDelegate(ns::Id)
 );
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_NAVIGATION_CONTROLLER: &'static objc::Class<NavController>;
 }

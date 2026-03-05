@@ -122,7 +122,6 @@ impl ProcessInfo {
     pub fn is_ios_app_on_vision(&self) -> bool;
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_PROCESS_INFO: &'static objc::Class<ProcessInfo>;
 }

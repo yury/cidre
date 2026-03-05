@@ -107,7 +107,6 @@ impl Error {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     static kCFErrorDomainPOSIX: &'static Domain;
     static kCFErrorDomainOSStatus: &'static Domain;

@@ -325,7 +325,6 @@ impl Connection {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C-unwind" {
     fn nw_connection_create(
         endpoint: &nw::Endpoint,

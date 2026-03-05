@@ -153,7 +153,6 @@ impl WebView {
     pub fn fullscreen_state(&self) -> wk::FullscreenState;
 }
 
-#[link(name = "wk", kind = "static")]
 unsafe extern "C" {
     static WK_WEB_VIEW: &'static objc::Class<WebView>;
 }

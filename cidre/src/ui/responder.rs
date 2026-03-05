@@ -216,7 +216,6 @@ impl Responder {
     pub fn touches_estimated_props_updated(&mut self, touches: &ns::Set<ui::Touch>);
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_RESPONDER: &'static objc::Class<Responder>;
 }

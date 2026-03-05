@@ -45,3 +45,9 @@ pub use input_picker_interaction::InputPickerInteraction;
 pub use input_picker_interaction::InputPickerInteractionDelegate;
 #[cfg(target_os = "ios")]
 pub use input_picker_interaction::InputPickerInteractionDelegateImpl;
+
+#[link(name = "AVKit", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "av_kit", kind = "static")]
+unsafe extern "C" {}

@@ -31,7 +31,6 @@ impl TimePitchAlgorithm {
     }
 }
 
-#[link(name = "AVFoundation", kind = "framework")]
 unsafe extern "C" {
     static AVAudioTimePitchAlgorithmTimeDomain: &'static TimePitchAlgorithm;
     static AVAudioTimePitchAlgorithmSpectral: &'static TimePitchAlgorithm;

@@ -45,7 +45,6 @@ impl Date {
     pub fn add_time_interval(&self, val: TimeInterval) -> arc::R<Self>;
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_DATE: &'static objc::Class<ns::Date>;
 }

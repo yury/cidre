@@ -36,7 +36,6 @@ impl av::PipControllerContentSrc {
     pub fn active_video_call_content_vc(&self) -> arc::R<av::PipViewCallController>;
 }
 
-#[link(name = "av_kit", kind = "static")]
 #[api::weak]
 unsafe extern "C" {
     #[api::available(ios = 15.0, visionos = 1.0)]

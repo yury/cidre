@@ -214,7 +214,6 @@ impl AttrName {
     }
 }
 
-#[link(name = "CoreText", kind = "framework")]
 unsafe extern "C-unwind" {
     static kCTFontAttributeName: &'static AttrName;
     static kCTForegroundColorFromContextAttributeName: &'static AttrName;

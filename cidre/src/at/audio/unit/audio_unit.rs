@@ -262,7 +262,6 @@ pub enum AudioUnitBusType {
     Ouptut = 2,
 }
 
-#[link(name = "at", kind = "static")]
 unsafe extern "C" {
     static AU_AUDIO_UNIT: &'static objc::Class<AudioUnit>;
 }

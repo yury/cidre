@@ -188,7 +188,6 @@ impl Listener {
     }
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_XPC_CONNECTION: &'static objc::Class<Connection>;
     static NS_XPC_LISTENER: &'static objc::Class<Listener>;

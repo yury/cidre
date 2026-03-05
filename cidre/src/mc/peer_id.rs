@@ -22,7 +22,6 @@ impl PeerId {
     pub fn display_name(&self) -> arc::R<ns::String>;
 }
 
-#[link(name = "mc", kind = "static")]
 unsafe extern "C" {
     static MC_PEER_ID: &'static objc::Class<PeerId>;
 }

@@ -34,7 +34,6 @@ impl ChannelLayout {
     pub fn channel_count(&self) -> av::AudioChannelCount;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_AUDIO_CHANNEL_LAYOUT: &'static objc::Class<ChannelLayout>;
 }

@@ -1815,7 +1815,6 @@ impl Clock {
     }
 }
 
-#[link(name = "CoreAudio", kind = "framework")]
 unsafe extern "C-unwind" {
 
     fn AudioObjectShow(objectId: Obj);

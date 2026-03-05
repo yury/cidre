@@ -70,3 +70,9 @@ impl ns::String {
         args: ns::Array<ns::Id>,
     ) -> arc::R<ns::String>;
 }
+
+#[link(name = "UserNotifications", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "un", kind = "static")]
+unsafe extern "C" {}

@@ -44,7 +44,6 @@ impl ClassifySoundRequest {
     pub fn known_classifications(&self) -> arc::R<ns::Array<ns::String>>;
 }
 
-#[link(name = "sn", kind = "static")]
 unsafe extern "C" {
     static SN_CLASSIFY_SOUND_REQUEST: &'static objc::Class<ClassifySoundRequest>;
 }

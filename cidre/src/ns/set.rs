@@ -236,7 +236,6 @@ impl<T: Obj> SetMut<T> {
 impl<T> ns::FastEnum<T> for Set<T> where T: Obj {}
 impl<T> ns::FastEnum<T> for SetMut<T> where T: Obj {}
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_SET: &'static Class<ns::Set<ns::Id>>;
     static NS_MUTABLE_SET: &'static Class<ns::SetMut<ns::Id>>;

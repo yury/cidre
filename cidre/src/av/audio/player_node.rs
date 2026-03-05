@@ -88,7 +88,6 @@ impl PlayerNode {
     pub fn set_pan(&mut self, val: f32);
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_AUDIO_PLAYER_NODE: &'static objc::Class<PlayerNode>;
 }

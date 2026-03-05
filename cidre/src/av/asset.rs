@@ -133,7 +133,6 @@ impl UrlAsset {
     pub fn duration(&self) -> cm::Time;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_URL_ASSET: &'static objc::Class<UrlAsset>;
 }

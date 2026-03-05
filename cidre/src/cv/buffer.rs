@@ -103,7 +103,6 @@ impl Buf {
     }
 }
 
-#[link(name = "CoreVideo", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
 

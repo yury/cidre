@@ -48,7 +48,6 @@ impl State {
     pub fn factors(&self) -> Factors;
 }
 
-#[link(name = "AVFoundation", kind = "framework")]
 unsafe extern "C" {
     static AVCaptureSystemPressureLevelNominal: &'static Level;
     static AVCaptureSystemPressureLevelFair: &'static Level;

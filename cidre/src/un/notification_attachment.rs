@@ -59,7 +59,6 @@ impl NotificationAttachOpts {
     }
 }
 
-#[link(name = "UserNotifications", kind = "framework")]
 unsafe extern "C" {
     static UNNotificationAttachmentOptionsTypeHintKey: &'static NotificationAttachOpts;
     static UNNotificationAttachmentOptionsThumbnailHiddenKey: &'static NotificationAttachOpts;

@@ -605,7 +605,6 @@ impl ExecutionOpts {
     pub const PER_LAYER_PROFILING: Self = Self(0x10);
 }
 
-#[link(name = "MLCompute", kind = "framework")]
 unsafe extern "C-unwind" {
     fn MLCActivationTypeDebugDescription(activationType: ActivationType) -> &'static ns::String;
     fn MLCArithmeticOperationDebugDescription(op: ArithmeticOp) -> &'static ns::String;

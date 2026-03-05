@@ -171,7 +171,6 @@ impl VideoDataOutput {
     pub fn recommended_media_time_scale_for_asset_writer(&self) -> cm::TimeScale;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_CAPTURE_VIDEO_DATA_OUTPUT: &'static objc::Class<VideoDataOutput>;
 }

@@ -160,7 +160,6 @@ impl VideoProcessor {
     pub fn cancel(&mut self);
 }
 
-#[link(name = "vn", kind = "static")]
 unsafe extern "C" {
     static VN_VIDEO_PROCESSOR: &'static objc::Class<VideoProcessor>;
     static VN_VIDEO_PROCESSOR_FRAME_RATE_CADENCE: &'static objc::Class<FrameRateCadence>;

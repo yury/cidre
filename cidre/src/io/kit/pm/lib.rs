@@ -85,7 +85,6 @@ impl UserActiveType {
     pub const REMOTE: Self = Self(1);
 }
 
-#[link(name = "IOKit", kind = "framework")]
 unsafe extern "C-unwind" {
     fn IOPMAssertionCreateWithName(
         assertion_type: &cf::String,

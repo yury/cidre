@@ -250,7 +250,6 @@ impl CmdQueue {
     }
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL4_COMMIT_OPTIONS: &'static objc::Class<CommitOpts>;
     static MTL4_COMMAND_QUEUE_DESCRIPTOR: &'static objc::Class<CmdQueueDesc>;

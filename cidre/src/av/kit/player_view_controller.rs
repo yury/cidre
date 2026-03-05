@@ -269,7 +269,6 @@ define_obj_type!(
     pub AnyPlayerViewControllerDelegate(ns::Id)
 );
 
-#[link(name = "av_kit", kind = "static")]
 unsafe extern "C" {
     static AV_PLAYER_VIEW_CONTROLLER: &'static objc::Class<PlayerViewController>;
 }

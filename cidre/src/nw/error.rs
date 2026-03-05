@@ -82,7 +82,6 @@ impl cf::ErrorDomain {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
     fn nw_error_get_error_domain(error: &Error) -> ErrorDomain;

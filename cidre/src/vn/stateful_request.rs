@@ -50,7 +50,6 @@ impl StatefulRequest {
     pub fn frame_analysis_spacing(&self) -> cm::Time;
 }
 
-#[link(name = "vn", kind = "static")]
 unsafe extern "C" {
     static VN_STATEFUL_REQUEST: &'static objc::Class<StatefulRequest>;
 }

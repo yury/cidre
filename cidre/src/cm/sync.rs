@@ -170,7 +170,6 @@ pub mod sync_err {
     pub const RATE_MUST_BE_NON_ZERO: Error = Error::new_unchecked(-12755);
 }
 
-#[link(name = "CoreMedia", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CMClockGetTypeID() -> cf::TypeId;
     fn CMClockGetHostTimeClock() -> &'static Clock;
@@ -545,7 +544,6 @@ impl Timebase {
     }
 }
 
-#[link(name = "CoreMedia", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CMTimebaseGetTypeID() -> cf::TypeId;
 
@@ -732,7 +730,6 @@ impl ClockOrTimebase {
     }
 }
 
-#[link(name = "CoreMedia", kind = "framework")]
 unsafe extern "C-unwind" {
 
     fn CMSyncGetRelativeRate(

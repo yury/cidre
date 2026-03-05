@@ -96,7 +96,6 @@ impl ci::Vec {
     pub fn w(&self) -> cg::Float;
 }
 
-#[link(name = "ci", kind = "static")]
 unsafe extern "C" {
     static CI_VECTOR: &'static objc::Class<Vec>;
 }

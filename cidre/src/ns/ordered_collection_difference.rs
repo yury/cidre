@@ -67,7 +67,6 @@ pub enum OrderedCollectionDiffInverseOpts {
     RemovedObjsFirst = 1,
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_ORDERED_COLLECTION_DIFFERENCE: &'static objc::Class<OrderedCollectionDiff<ns::Id>>;
 }

@@ -68,7 +68,6 @@ impl VideoPreviewLayer {
     ) -> Option<arc::R<av::MetadataObj>>;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_CAPTURE_VIDEO_PREVIEW_LAYER: &'static objc::Class<VideoPreviewLayer>;
 }

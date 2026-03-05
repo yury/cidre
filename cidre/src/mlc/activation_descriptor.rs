@@ -38,7 +38,6 @@ impl ActivationDesc {
     ) -> Option<arc::R<Self>>;
 }
 
-#[link(name = "mlc", kind = "static")]
 unsafe extern "C" {
     static MLC_ACTIVATION_DESCRIPTOR: &'static objc::Class<ActivationDesc>;
 }

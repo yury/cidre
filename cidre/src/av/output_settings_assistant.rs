@@ -98,7 +98,6 @@ impl OutputSettingsPreset {
     }
 }
 
-#[link(name = "AVFoundation", kind = "framework")]
 #[api::weak]
 unsafe extern "C" {
     static AVOutputSettingsPreset640x480: &'static OutputSettingsPreset;
@@ -169,7 +168,6 @@ impl OutputSettingsAssistant {
     pub fn set_src_video_average_frame_duration(&mut self, val: cm::Time);
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_OUTPUT_SETTINGS_ASSISTANT: &'static objc::Class<OutputSettingsAssistant>;
 }

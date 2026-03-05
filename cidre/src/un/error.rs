@@ -7,7 +7,6 @@ impl ns::ErrorDomain {
     }
 }
 
-#[link(name = "UserNotifications", kind = "framework")]
 unsafe extern "C" {
     static UNErrorDomain: &'static ns::ErrorDomain;
 }

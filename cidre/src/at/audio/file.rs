@@ -643,7 +643,6 @@ pub enum Permissions {
     ReadWrite = 0x3,
 }
 
-#[link(name = "AudioToolbox", kind = "framework")]
 unsafe extern "C" {
     fn AudioFileCreateWithURL(
         in_file_url: &cf::Url,

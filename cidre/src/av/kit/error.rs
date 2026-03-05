@@ -7,7 +7,6 @@ impl ns::ErrorDomain {
     }
 }
 
-#[link(name = "AVKit", kind = "framework")]
 unsafe extern "C" {
     static AVKitErrorDomain: &'static ns::ErrorDomain;
 }

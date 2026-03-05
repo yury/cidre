@@ -23,7 +23,6 @@ impl LayoutGuide {
     pub fn set_id(&mut self, val: &ns::String);
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_LAYOUT_GUIDE: &'static objc::Class<LayoutGuide>;
 }

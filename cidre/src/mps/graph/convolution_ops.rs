@@ -36,7 +36,6 @@ impl graph::Graph {
     ) -> arc::R<graph::Tensor>;
 }
 
-#[link(name = "mpsg", kind = "static")]
 unsafe extern "C" {
     static MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR: &'static objc::Class<Conv2dOpDesc>;
 }

@@ -182,7 +182,6 @@ impl MachPort {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFMachPortGetTypeID() -> cf::TypeId;
 

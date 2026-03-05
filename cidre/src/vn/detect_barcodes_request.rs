@@ -32,7 +32,6 @@ impl DetectBarcodesRequest {
     }
 }
 
-#[link(name = "vn", kind = "static")]
 unsafe extern "C" {
     static VN_DETECT_BARCODES_REQUEST: &'static objc::Class<DetectBarcodesRequest>;
 }

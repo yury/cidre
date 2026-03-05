@@ -58,7 +58,6 @@ impl PrivacyContext {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C-unwind" {
     fn nw_privacy_context_create(description: *const c_char) -> arc::R<PrivacyContext>;
     fn nw_privacy_context_flush_cache(context: &mut PrivacyContext);

@@ -32,7 +32,6 @@ impl Thread {
     pub fn is_main() -> bool;
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_THREAD: &'static objc::Class<Thread>;
 }

@@ -218,7 +218,6 @@ impl UrlRequestMut {
     pub fn set_http_body(&mut self, value: Option<&ns::Data>);
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_URL_REQUEST: &'static objc::Class<UrlRequest>;
     static NS_MUTABLE_URL_REQUEST: &'static objc::Class<UrlRequestMut>;

@@ -497,7 +497,6 @@ pub mod key {
         unsafe { kIOSurfaceContentHeadroom }
     }
 
-    #[link(name = "IOSurface", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
         static kIOSurfaceAllocSize: &'static String;

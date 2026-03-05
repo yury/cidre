@@ -244,7 +244,6 @@ define_obj_type!(
 
 impl UserActivityDelegate for AnyUserActivityDelegate {}
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_USER_ACTIVITY: &'static objc::Class<UserActivity>;
 }

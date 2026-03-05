@@ -27,7 +27,6 @@ impl cm::Clock {
 }
 
 #[cfg(not(target_os = "macos"))]
-#[link(name = "CoreMedia", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CMAudioClockCreate(
         allocator: Option<&cf::Allocator>,

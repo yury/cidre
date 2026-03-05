@@ -111,7 +111,6 @@ impl AudioFileAnalyzer {
     pub fn cancel_analysis(&mut self);
 }
 
-#[link(name = "sn", kind = "static")]
 unsafe extern "C" {
     static SN_AUDIO_STREAM_ANALYZER: &'static objc::Class<AudioStreamAnalyzer>;
     static SN_AUDIO_FILE_ANALYZER: &'static objc::Class<AudioFileAnalyzer>;

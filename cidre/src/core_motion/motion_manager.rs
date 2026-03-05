@@ -195,7 +195,6 @@ impl MotionManager {
     }
 }
 
-#[link(name = "core_motion", kind = "static")]
 unsafe extern "C" {
     static CM_MOTION_MANAGER: &'static objc::Class<MotionManager>;
 }

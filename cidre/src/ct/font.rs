@@ -350,7 +350,6 @@ pub enum UIFontType {
     ControlContent = 26,
 }
 
-#[link(name = "CoreText", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CTFontGetTypeID() -> cf::TypeId;
     fn CTFontCreateWithName(

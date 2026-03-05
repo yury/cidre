@@ -52,3 +52,9 @@ pub use renderer::Renderer;
 
 mod transaction;
 pub use transaction::Transaction;
+
+#[link(name = "QuartzCore", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "ca", kind = "static")]
+unsafe extern "C" {}

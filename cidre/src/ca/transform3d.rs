@@ -99,7 +99,6 @@ impl Transform3d {
     }
 }
 
-#[link(name = "QuartzCore", kind = "framework")]
 unsafe extern "C-unwind" {
     static CATransform3DIdentity: Transform3d;
     fn CATransform3DIsIdentity(t: Transform3d) -> bool;

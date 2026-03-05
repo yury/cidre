@@ -8,7 +8,6 @@ use crate::cm;
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
-#[link(name = "AVFoundation", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
 
@@ -885,7 +884,6 @@ impl<'a> DerefMut for ConfigLockGuard<'a> {
     }
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_CAPTURE_DEVICE: &'static objc::Class<Device>;
 }
@@ -2354,7 +2352,6 @@ pub mod notifications {
         unsafe { AVCaptureDeviceSubjectAreaDidChangeNotification }
     }
 
-    #[link(name = "AVFoundation", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
         #[api::available(macos = 10.7, ios = 4.0, maccatalyst = 14.0, tvos = 17.0)]
@@ -2475,7 +2472,6 @@ impl ZoomRange {
     pub fn contains_zoom_factor(&self, zoom_factor: cg::Float) -> bool;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_CAPTURE_DEVICE_DISCOVERY_SESSION: &'static objc::Class<DiscoverySession>;
     static AV_CAPTURE_DEVICE_ROTATION_COORDINATOR: &'static objc::Class<RotationCoordinator>;

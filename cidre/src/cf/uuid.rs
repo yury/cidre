@@ -54,7 +54,6 @@ impl Uuid {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFUUIDGetTypeID() -> cf::TypeId;
     fn CFUUIDCreate(alloc: Option<&cf::Allocator>) -> Option<arc::R<Uuid>>;

@@ -53,7 +53,6 @@ impl Disk {
     }
 }
 
-#[link(name = "DiskArbitration", kind = "framework")]
 unsafe extern "C-unwind" {
     fn DADiskGetTypeID() -> cf::TypeId;
     fn DADiskCopyDescription(disk: &Disk)

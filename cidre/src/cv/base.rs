@@ -124,7 +124,6 @@ impl TimeStampFlags {
     pub const IS_INTERLACED: Self = Self(Self::TOP_FIELD.0 | Self::BOTTOM_FIELD.0);
 }
 
-#[link(name = "CoreVideo", kind = "framework")]
 unsafe extern "C" {
     static kCVZeroTime: Time;
     static kCVIndefiniteTime: Time;

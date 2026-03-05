@@ -21,7 +21,6 @@ pub mod element_kind {
         unsafe { UICollectionElementKindSectionFooter }
     }
 
-    #[link(name = "UIKit", kind = "framework")]
     unsafe extern "C" {
         static UICollectionElementKindSectionHeader: &'static ns::String;
         static UICollectionElementKindSectionFooter: &'static ns::String;

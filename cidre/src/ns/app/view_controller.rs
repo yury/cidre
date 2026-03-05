@@ -64,7 +64,6 @@ impl ViewController {
     pub fn view_will_transition_to_size(&mut self, val: ns::Size);
 }
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_VIEW_CONTROLLER: &'static objc::Class<ViewController>;
 }

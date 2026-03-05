@@ -112,3 +112,12 @@ pub use video_processor::FrameRateCadence as VideoProcessorFrameRateCadence;
 pub use video_processor::RequestProcessingOpts as VideoProcessorRequestProcessingOpts;
 pub use video_processor::TimeIntervalCadence as VideoProcessorTimeIntervalCadence;
 pub use video_processor::VideoProcessor;
+
+#[link(name = "Vision", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "CoreImage", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "vn", kind = "static")]
+unsafe extern "C" {}

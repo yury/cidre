@@ -192,7 +192,6 @@ impl Tensor {
     );
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_TENSOR_EXTENTS: &'static objc::Class<TensorExtents>;
     static MTL_TENSOR_DESCRIPTOR: &'static objc::Class<TensorDesc>;

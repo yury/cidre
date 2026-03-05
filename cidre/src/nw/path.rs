@@ -136,7 +136,6 @@ impl Path {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C-unwind" {
     fn nw_path_get_status(path: &Path) -> Status;
     fn nw_path_get_unsatisfied_reason(path: &Path) -> UnsatisfiedReason;

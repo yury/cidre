@@ -45,7 +45,6 @@ pub trait MachPortDelegate: objc::Obj {
 define_obj_type!(pub AnyMachPortDelegate(ns::Id));
 impl MachPortDelegate for AnyMachPortDelegate {}
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_PORT: &'static objc::Class<Port>;
     static NS_MACH_PORT: &'static objc::Class<MachPort>;

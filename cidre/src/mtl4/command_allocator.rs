@@ -35,7 +35,6 @@ impl CmdAllocator {
 }
 
 #[cfg(any(target_os = "macos", target_os = "ios"))]
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL4_COMMAND_ALLOCATOR_DESCRIPTOR: &'static objc::Class<CmdAllocatorDesc>;
 }

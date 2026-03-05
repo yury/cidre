@@ -13,7 +13,6 @@ impl DetectFaceCaptureQualityRequest {
     pub fn results(&self) -> Option<arc::R<ns::Array<vn::FaceObservation>>>;
 }
 
-#[link(name = "vn", kind = "static")]
 unsafe extern "C" {
     static VN_DETECT_FACE_CAPTURE_QUALITY_REQUEST:
         &'static objc::Class<DetectFaceCaptureQualityRequest>;

@@ -44,7 +44,6 @@ impl AsRef<cf::Type> for Null {
     }
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_NULL: &'static objc::Class<Null>;
 }

@@ -250,7 +250,6 @@ pub trait Delegate: objc::Obj {
 define_obj_type!(pub AnyDelegate(ns::Id));
 impl Delegate for AnyDelegate {}
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_ASSET_WRITER: &'static objc::Class<Writer>;
 }

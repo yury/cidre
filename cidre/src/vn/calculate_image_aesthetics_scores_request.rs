@@ -37,7 +37,6 @@ impl CalcImageAestheticsScoresRequest {
     pub fn results(&self) -> Option<arc::R<ns::Array<vn::ImageAestheticsScoresObservation>>>;
 }
 
-#[link(name = "vn", kind = "static")]
 unsafe extern "C" {
     static VN_CALCULATE_IMAGE_AESTHETICS_SCORES_REQUEST:
         &'static objc::Class<CalcImageAestheticsScoresRequest>;

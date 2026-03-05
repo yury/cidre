@@ -33,7 +33,6 @@ impl Device {
     pub fn actual_device_type(&self) -> mlc::DeviceType;
 }
 
-#[link(name = "mlc", kind = "static")]
 unsafe extern "C" {
     static MLC_DEVICE: &'static objc::Class<Device>;
 }

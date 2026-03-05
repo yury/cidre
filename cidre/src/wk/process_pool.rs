@@ -6,7 +6,6 @@ define_obj_type!(
     WK_PROCESS_POOL
 );
 
-#[link(name = "wk", kind = "static")]
 unsafe extern "C" {
     static WK_PROCESS_POOL: &'static objc::Class<ProcessPool>;
 }

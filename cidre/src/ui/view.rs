@@ -318,7 +318,6 @@ impl AnyCoordinateSpace {
     }
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_VIEW: &'static objc::Class<View>;
 }

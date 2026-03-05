@@ -19,7 +19,6 @@ pub mod element_kind {
         unsafe { NSCollectionElementKindSectionFooter }
     }
 
-    #[link(name = "AppKit", kind = "framework")]
     unsafe extern "C" {
         static NSCollectionElementKindSectionHeader: &'static CollectionViewElementKind;
         static NSCollectionElementKindSectionFooter: &'static CollectionViewElementKind;

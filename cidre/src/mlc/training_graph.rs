@@ -17,7 +17,6 @@ impl TrainingGraph {
     pub fn device_mem_size(&self) -> usize;
 }
 
-#[link(name = "mlc", kind = "static")]
 unsafe extern "C" {
     static MLC_TRAINING_GRAPH: &'static objc::Class<TrainingGraph>;
 }

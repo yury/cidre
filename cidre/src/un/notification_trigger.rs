@@ -67,7 +67,6 @@ impl LocationNotificationTrigger {
     pub fn with_region(region: &cl::Region, repeats: bool) -> arc::R<Self>;
 }
 
-#[link(name = "un", kind = "static")]
 unsafe extern "C" {
     static UN_NOTIFICATION_TRIGGER: &'static objc::Class<NotificationTrigger>;
     static UN_PUSH_NOTIFICATION_TRIGGER: &'static objc::Class<PushNotificationTrigger>;

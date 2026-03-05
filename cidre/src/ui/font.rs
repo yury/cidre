@@ -118,7 +118,6 @@ impl AsRef<crate::ct::Font> for Font {
     }
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_FONT: &'static objc::Class<Font>;
 }

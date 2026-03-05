@@ -360,7 +360,6 @@ impl<'a> Deref for Session<'a> {
     }
 }
 
-#[link(name = "MobileDevice", kind = "framework")]
 unsafe extern "C" {
     fn AMDeviceGetConnectionID(device: &Device) -> u32;
     fn AMDeviceCopyDeviceIdentifier(device: &Device) -> arc::R<cf::String>;

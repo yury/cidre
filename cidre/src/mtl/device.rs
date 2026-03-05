@@ -647,7 +647,6 @@ impl Device {
     }
 }
 
-#[link(name = "Metal", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
     fn MTLCreateSystemDefaultDevice() -> Option<arc::R<Device>>;

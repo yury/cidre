@@ -170,7 +170,6 @@ impl RunLoop {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFRunLoopRun();
     fn CFRunLoopStop(rl: &RunLoop);
@@ -369,7 +368,6 @@ impl Src {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFRunLoopSourceGetTypeID() -> cf::TypeId;
     fn CFRunLoopSourceCreate(
@@ -546,7 +544,6 @@ impl Timer {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFRunLoopTimerGetTypeID() -> cf::TypeId;
     fn CFRunLoopTimerCreate(
@@ -596,7 +593,6 @@ impl Observer {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFRunLoopObserverInvalidate(timer: &Observer);
     fn CFRunLoopObserverIsValid(timer: &Observer) -> bool;

@@ -52,7 +52,6 @@ pub struct Mapping {
     pub target: cm::TimeRange,
 }
 
-#[link(name = "CoreMedia", kind = "framework")]
 unsafe extern "C-unwind" {
     static kCMTimeRangeZero: Range;
     static kCMTimeRangeInvalid: Range;

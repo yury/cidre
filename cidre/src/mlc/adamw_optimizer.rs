@@ -33,7 +33,6 @@ impl AdamWOptimizer {
     ) -> arc::R<Self>;
 }
 
-#[link(name = "mlc", kind = "static")]
 unsafe extern "C" {
     static MLC_ADAMW_OPTIMIZER: &'static objc::Class<AdamWOptimizer>;
 }

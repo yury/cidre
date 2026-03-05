@@ -21,3 +21,6 @@ pub mod conversion;
 
 pub mod utilities;
 pub use utilities::AllocatedBuf;
+
+#[link(name = "Accelerate", kind = "framework")]
+unsafe extern "C" {}

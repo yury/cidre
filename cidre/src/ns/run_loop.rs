@@ -46,7 +46,6 @@ impl RunLoop {
     pub fn run_mode_until_date(&self, mode: &RunLoopMode, before_date: &ns::Date) -> bool;
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_RUN_LOOP: &'static objc::Class<ns::Id>;
 }

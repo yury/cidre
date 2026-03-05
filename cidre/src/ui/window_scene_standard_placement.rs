@@ -13,7 +13,6 @@ impl WindowSceneStandardPlacement {
     pub fn new() -> arc::R<Self>;
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_WINDOW_SCENE_STANDARD_PLACEMENT: &'static objc::Class<WindowSceneStandardPlacement>;
 }

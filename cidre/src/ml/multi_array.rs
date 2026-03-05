@@ -202,7 +202,6 @@ impl MultiArray {
     pub fn transfer_to(&self, dst: &mut Self);
 }
 
-#[link(name = "ml", kind = "static")]
 unsafe extern "C" {
     static ML_MULTI_ARRAY: &'static objc::Class<MultiArray>;
 }

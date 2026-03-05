@@ -110,7 +110,6 @@ impl UpdateActionPhase {
     pub fn after_update_complete() -> arc::R<Self>;
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_UPDATE_ACTION_PHASE: &'static objc::Class<UpdateActionPhase>;
 }

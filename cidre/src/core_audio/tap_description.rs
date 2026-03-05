@@ -199,7 +199,6 @@ impl TapDesc {
     pub fn set_stream(&mut self, val: Option<&ns::Number>);
 }
 
-#[link(name = "core_audio", kind = "static")]
 unsafe extern "C" {
     static CA_TAP_DESCRIPTION: &'static objc::Class<TapDesc>;
 }

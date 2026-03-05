@@ -90,7 +90,6 @@ impl MulticastGroupDesc {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C" {
     fn nw_group_descriptor_create_multiplex(
         remote_endpoint: &nw::Endpoint,

@@ -1927,7 +1927,6 @@ pub mod ssl_err {
     pub const EARLY_DATA_REJECTED: Error = Error::new_unchecked(-9890);
 }
 
-#[link(name = "Security", kind = "framework")]
 unsafe extern "C-unwind" {
     fn SecCopyErrorMessageString(
         status: os::Status,

@@ -288,7 +288,6 @@ impl Debug for Error {
     }
 }
 
-#[link(name = "MobileDevice", kind = "framework")]
 unsafe extern "C" {
     fn AMDCopyErrorText(error: Error) -> Option<arc::R<cf::String>>;
 }

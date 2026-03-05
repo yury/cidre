@@ -217,7 +217,6 @@ impl WriterInputPixelBufAdaptor {
     }
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_ASSET_WRITER_INPUT: &'static objc::Class<WriterInput>;
     static AV_ASSET_WRITER_INPUT_PIXEL_BUFFER_ADAPTOR:

@@ -168,7 +168,6 @@ impl Heap {
     pub fn type_(&self) -> Type;
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_HEAP_DESCRIPTOR: &'static objc::Class<Desc>;
 }

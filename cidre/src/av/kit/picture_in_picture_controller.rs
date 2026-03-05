@@ -141,7 +141,6 @@ pub trait PipControllerDelegate: objc::Obj {
     fn pip_controller_did_stop_pip(&mut self, ctrl: &av::PipController);
 }
 
-#[link(name = "av_kit", kind = "static")]
 unsafe extern "C" {
     static AV_PICTURE_IN_PICTURE_CONTROLLER: &'static objc::Class<PipController>;
     static AV_PICTURE_IN_PICTURE_CONTROLLER_CONTENT_SRC:

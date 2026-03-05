@@ -123,7 +123,6 @@ impl BarcodeSymbology {
     }
 }
 
-#[link(name = "CoreImage", kind = "framework")]
 unsafe extern "C" {
     static VNBarcodeSymbologyAztec: &'static BarcodeSymbology;
     static VNBarcodeSymbologyCode39: &'static BarcodeSymbology;

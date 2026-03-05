@@ -204,7 +204,6 @@ impl QueryBuilder {
     }
 }
 
-#[link(name = "MobileDevice", kind = "framework")]
 unsafe extern "C" {
     fn AMDCreateDeviceList() -> Option<arc::R<cf::ArrayOf<Device>>>;
     fn AMDCopyArrayOfDevicesMatchingQuery<'a>(
@@ -287,7 +286,6 @@ impl Drop for SubscriptionGuard {
     }
 }
 
-#[link(name = "MobileDevice", kind = "framework")]
 unsafe extern "C" {
     fn AMDeviceNotificationSubscribe(
         callback: NotificationCallback<c_void>,

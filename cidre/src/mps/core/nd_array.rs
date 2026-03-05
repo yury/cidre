@@ -73,7 +73,6 @@ impl NdArrayDesc {
     pub fn dim_slice_range(&self, dim_index: usize) -> mps::DimensionSlice;
 }
 
-#[link(name = "mps", kind = "static")]
 unsafe extern "C" {
     static MPS_NDARRAY: &'static objc::Class<NdArray>;
     static MPS_NDARRAY_DESCRIPTOR: &'static objc::Class<NdArrayDesc>;

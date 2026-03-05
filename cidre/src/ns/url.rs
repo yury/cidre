@@ -147,7 +147,6 @@ impl AsRef<cf::Url> for Url {
 
 unsafe impl Send for Url {}
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_URL: &'static Class<Url>;
 }
@@ -628,7 +627,6 @@ impl ResKey {
     }
 }
 
-#[link(name = "Foundation", kind = "framework")]
 unsafe extern "C" {
     static NSURLNameKey: &'static ResKey;
     static NSURLLocalizedNameKey: &'static ResKey;

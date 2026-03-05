@@ -96,7 +96,6 @@ impl ActivationLayer {
     pub fn clamp(min: f32, max: f32) -> arc::R<Self>;
 }
 
-#[link(name = "mlc", kind = "static")]
 unsafe extern "C" {
     static MLC_ACTIVATION_LAYER: &'static objc::Class<ActivationLayer>;
 }

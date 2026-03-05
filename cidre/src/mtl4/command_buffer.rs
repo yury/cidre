@@ -96,7 +96,6 @@ impl CmdBuf {
     );
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL4_COMMAND_BUFFER_OPTIONS: &'static objc::Class<CmdBufOpts>;
 }

@@ -31,3 +31,9 @@ pub use classify_sound_request::ClassifySoundRequest;
 mod classification_result;
 pub use classification_result::Classification;
 pub use classification_result::ClassificationResult;
+
+#[link(name = "SoundAnalysis", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "sn", kind = "static")]
+unsafe extern "C" {}

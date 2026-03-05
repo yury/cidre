@@ -98,7 +98,6 @@ impl Desc {
     pub fn set_sample_count(&mut self, val: usize);
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR: &'static objc::Class<Desc>;
 }

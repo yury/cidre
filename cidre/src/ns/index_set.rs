@@ -208,7 +208,6 @@ impl Default for arc::R<IndexSetMut> {
     }
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_INDEX_SET: &'static objc::Class<IndexSet>;
     static NS_MUTABLE_INDEX_SET: &'static objc::Class<IndexSetMut>;

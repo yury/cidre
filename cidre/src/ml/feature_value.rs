@@ -64,7 +64,6 @@ impl FeatureValue {
     pub fn is_equal_to_feature_value(&self, val: &Self) -> bool;
 }
 
-#[link(name = "ml", kind = "static")]
 unsafe extern "C" {
     static ML_FEATURE_VALUE: &'static objc::Class<FeatureValue>;
 }

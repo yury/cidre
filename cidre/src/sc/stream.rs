@@ -443,14 +443,12 @@ impl Cfg {
     pub fn with_preset(preset: CfgPreset) -> arc::R<Self>;
 }
 
-#[link(name = "sc", kind = "static")]
 unsafe extern "C" {
     static SC_STREAM_CONFIGURATION: &'static objc::Class<Cfg>;
     static SC_CONTENT_FILTER: &'static objc::Class<ContentFilter>;
     static SC_STREAM: &'static objc::Class<Stream>;
 }
 
-#[link(name = "ScreenCaptureKit", kind = "framework")]
 #[api::weak]
 unsafe extern "C" {
     #[api::available(macos = 12.3)]

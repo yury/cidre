@@ -43,7 +43,6 @@ impl VisibleFnTable {
     );
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_VISIBLE_FUNCTION_TABLE_DESCRIPTOR: &'static objc::Class<Desc>;
 }

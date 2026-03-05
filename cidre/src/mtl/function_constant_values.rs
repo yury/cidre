@@ -41,7 +41,6 @@ impl FnConstValues {
     pub fn set_value_with_name(&mut self, val: *const c_void, type_: mtl::DType, name: &ns::String);
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_FUNCTION_CONSTANT_VALUES: &'static objc::Class<FnConstValues>;
 }

@@ -26,7 +26,6 @@ define_obj_type!(
 
 impl Coder {}
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_CODER: &'static objc::Class<Coder>;
 }

@@ -376,3 +376,9 @@ pub fn app_main(
         UIApplicationMain(argc, argv, principal_class_name, delegate_class_name)
     }
 }
+
+#[link(name = "UIKit", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "ui", kind = "static")]
+unsafe extern "C" {}

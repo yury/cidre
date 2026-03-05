@@ -171,7 +171,6 @@ impl State {
     pub fn label(&self) -> Option<arc::R<ns::String>>;
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_STENCIL_DESCRIPTOR: &'static objc::Class<StencilDesc>;
     static MTL_DEPTH_STENCIL_DESCRIPTOR: &'static objc::Class<DepthStencilDesc>;

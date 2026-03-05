@@ -202,7 +202,6 @@ impl CidreObserver {
     pub fn invalide(&self);
 }
 
-#[link(name = "Foundation", kind = "framework")]
 unsafe extern "C" {
     static NSKeyValueChangeKindKey: &'static KvChangeKey;
     static NSKeyValueChangeNewKey: &'static KvChangeKey;
@@ -211,7 +210,6 @@ unsafe extern "C" {
     static NSKeyValueChangeNotificationIsPriorKey: &'static KvChangeKey;
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C-unwind" {
     fn cidre_create_observer(
         obj: &ns::Id,

@@ -110,7 +110,6 @@ impl cg::EventSrcState {
     }
 }
 
-#[link(name = "CoreGraphics", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CGEventSourceGetTypeID() -> cf::TypeId;
     fn CGEventSourceCreate(state_id: cg::EventSrcState) -> Option<arc::R<cg::EventSrc>>;

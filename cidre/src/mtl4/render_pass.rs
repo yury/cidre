@@ -123,7 +123,6 @@ impl RenderPassDesc {
     pub fn set_support_color_attach_mapping(&mut self, val: bool);
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL4_RENDER_PASS_DESCRIPTOR: &'static objc::Class<RenderPassDesc>;
 }

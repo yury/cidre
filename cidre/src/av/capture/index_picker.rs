@@ -116,7 +116,6 @@ impl IndexPicker {
     );
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_CAPTURE_INDEX_PICKER: &'static objc::Class<IndexPicker>;
 }

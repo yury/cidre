@@ -334,12 +334,10 @@ impl FileManager {
     }
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_FILE_MANAGER: &'static objc::Class<FileManager>;
 }
 
-#[link(name = "Foundation", kind = "framework")]
 unsafe extern "C" {
     static NSFileProtectionNone: &'static ns::FileProtectionType;
     static NSFileProtectionComplete: &'static ns::FileProtectionType;

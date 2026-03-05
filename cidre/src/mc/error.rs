@@ -6,7 +6,6 @@ impl ns::ErrorDomain {
     }
 }
 
-#[link(name = "MultipeerConnectivity", kind = "framework")]
 unsafe extern "C" {
     static MCErrorDomain: &'static ns::ErrorDomain;
 }

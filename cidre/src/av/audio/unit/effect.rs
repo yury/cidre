@@ -24,7 +24,6 @@ impl Effect {
     pub fn set_bypass(&mut self, value: bool);
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_AUDIO_UNIT_EFFECT: &'static objc::Class<Effect>;
 }

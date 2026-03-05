@@ -87,7 +87,6 @@ pub trait CenterDelegate: objc::Obj {
     );
 }
 
-#[link(name = "un", kind = "static")]
 unsafe extern "C" {
     static UN_USER_NOTIFICATION_CENTER: &'static objc::Class<Center>;
 }

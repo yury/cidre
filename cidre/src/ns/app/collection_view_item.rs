@@ -38,7 +38,6 @@ impl CollectionViewItem {
     pub fn dragging_image_components(&self) -> arc::R<ns::Array<ns::Id>>;
 }
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_COLLECTION_VIEW_ITEM: &'static objc::Class<CollectionViewItem>;
 }

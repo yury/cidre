@@ -84,7 +84,6 @@ impl Endpoint {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C-unwind" {
     fn nw_endpoint_get_type(endpoint: &Endpoint) -> EndpointType;
     fn nw_endpoint_create_host(
@@ -152,7 +151,6 @@ impl Endpoint {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C-unwind" {
     fn nw_endpoint_create_bonjour_service(
         name: *const c_char,
@@ -214,7 +212,6 @@ impl Endpoint {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C-unwind" {
     fn nw_endpoint_create_url(url: *const c_char) -> Option<arc::R<Endpoint>>;
     fn nw_endpoint_get_url(endpoint: &Endpoint) -> *const c_char;

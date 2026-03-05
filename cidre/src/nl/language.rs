@@ -361,7 +361,6 @@ impl Lang {
     }
 }
 
-#[link(name = "NaturalLanguage", kind = "framework")]
 unsafe extern "C" {
     static NLLanguageUndetermined: &'static Lang;
     static NLLanguageAmharic: &'static Lang;

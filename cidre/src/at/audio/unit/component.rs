@@ -1404,7 +1404,6 @@ impl audio::Component {
     }
 }
 
-#[link(name = "AudioToolbox", kind = "framework")]
 unsafe extern "C-unwind" {
     static kAudioComponentRegistrationsChangedNotification: &'static cf::NotificationName;
     static kAudioComponentInstanceInvalidationNotification: &'static cf::NotificationName;

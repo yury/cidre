@@ -12,7 +12,6 @@ impl GenObjectnessBasedSaliencyImageRequest {
     pub fn results(&self) -> Option<arc::R<ns::Array<vn::SaliencyImageObservation>>>;
 }
 
-#[link(name = "vn", kind = "static")]
 unsafe extern "C" {
     static VN_GENERATE_OBJECTNESS_BASED_SALIENCY_IMAGE_REQUEST:
         &'static objc::Class<GenObjectnessBasedSaliencyImageRequest>;

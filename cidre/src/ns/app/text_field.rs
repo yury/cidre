@@ -174,7 +174,6 @@ define_obj_type!(
 
 impl TextFieldDelegate for AnyTextFieldDelegate {}
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_TEXT_FIELD: &'static objc::Class<TextField>;
 }

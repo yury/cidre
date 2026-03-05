@@ -217,12 +217,10 @@ impl ns::ToolbarItemId {
     }
 }
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_TOOLBAR_ITEM: &'static objc::Class<ToolbarItem>;
 }
 
-#[link(name = "AppKit", kind = "framework")]
 #[api::weak]
 unsafe extern "C" {
     static NSToolbarSpaceItemIdentifier: &'static ns::ToolbarItemId;

@@ -132,7 +132,6 @@ pub trait Observer: objc::Obj {
     fn picker_start_did_fail_with_err(&mut self, err: &ns::Error);
 }
 
-#[link(name = "sc", kind = "static")]
 unsafe extern "C" {
     static SC_CONTENT_SHARING_PICKER_CONFIGURATION: &'static objc::Class<Cfg>;
     static SC_CONTENT_SHARING_PICKER: &'static objc::Class<Picker>;

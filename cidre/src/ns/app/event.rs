@@ -733,7 +733,6 @@ impl Event {
     pub fn remove_monitor(event_monitor: &ns::Id);
 }
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_EVENT: &'static objc::Class<Event>;
 }

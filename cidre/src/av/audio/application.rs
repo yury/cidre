@@ -208,7 +208,6 @@ impl App {
     }
 }
 
-#[link(name = "AVFAudio", kind = "framework")]
 #[api::weak]
 unsafe extern "C" {
     #[api::available(
@@ -232,7 +231,6 @@ unsafe extern "C" {
     static AVAudioApplicationMuteStateKey: &'static ns::String;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_AUDIO_APPLICATION: &'static objc::Class<App>;
 }

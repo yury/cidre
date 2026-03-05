@@ -268,7 +268,6 @@ impl Desc {
     pub fn set_shader_validation(&mut self, val: mtl::ShaderValidation);
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_RENDER_PIPELINE_DESCRIPTOR: &'static objc::Class<Desc>;
     static MTL_TILE_RENDER_PIPELINE_DESCRIPTOR: &'static objc::Class<TileRenderPipelineDesc>;

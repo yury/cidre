@@ -48,7 +48,6 @@ impl PipelineBufDescArray {
     pub fn set(&mut self, val: Option<&PipelineBufDesc>, index: usize);
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_PIPELINE_BUFFER_DESCRIPTOR: &'static objc::Class<PipelineBufDesc>;
 }

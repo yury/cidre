@@ -75,7 +75,6 @@ impl RaycastQuery {
     pub fn target_alignment(&self) -> TargetAlignment;
 }
 
-#[link(name = "ar", kind = "static")]
 unsafe extern "C" {
     static AR_RAYCAST_QUERY: &'static objc::Class<RaycastQuery>;
 }

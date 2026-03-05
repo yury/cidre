@@ -18,7 +18,6 @@ impl WindowSceneActivationRequestOpts {
 }
 
 #[cfg(target_os = "ios")]
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_WINDOW_SCENE_ACTIVATION_REQUEST_OPTIONS:
         &'static objc::Class<WindowSceneActivationRequestOpts>;

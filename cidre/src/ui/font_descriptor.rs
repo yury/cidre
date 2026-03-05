@@ -88,7 +88,6 @@ impl TextStyle {
     }
 }
 
-#[link(name = "UIKit", kind = "framework")]
 unsafe extern "C" {
     static UIFontTextStyleLargeTitle: &'static TextStyle;
     static UIFontTextStyleExtraLargeTitle: &'static TextStyle;
@@ -147,7 +146,6 @@ impl FontWeight {
     }
 }
 
-#[link(name = "UIKit", kind = "framework")]
 unsafe extern "C" {
     static UIFontWeightUltraLight: FontWeight;
     static UIFontWeightThin: FontWeight;
@@ -182,7 +180,6 @@ impl FontWidth {
     }
 }
 
-#[link(name = "UIKit", kind = "framework")]
 unsafe extern "C" {
 
     static UIFontWidthCondensed: FontWidth;

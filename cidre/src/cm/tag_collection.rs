@@ -139,7 +139,6 @@ impl TagCollection {
     // TODO: more api
 }
 
-#[link(name = "CoreMedia", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
 

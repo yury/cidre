@@ -314,7 +314,6 @@ pub mod notification {
         unsafe { NSWorkspaceActiveSpaceDidChangeNotification }
     }
 
-    #[link(name = "AppKit", kind = "framework")]
     unsafe extern "C" {
         static NSWorkspaceApplicationKey: &'static ns::String;
 

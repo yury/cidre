@@ -304,7 +304,6 @@ impl RouteDesc {
     pub fn outputs(&self) -> arc::R<ns::Array<PortDesc>>;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_AUDIO_SESSION_ROUTE_DESCRIPTION: &'static objc::Class<RouteDesc>;
 }

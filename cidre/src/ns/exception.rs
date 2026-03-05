@@ -186,7 +186,6 @@ unsafe extern "C" {
     fn NSSetUncaughtExceptionHandler(handler: *const UncaughtExceptionHandler);
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C-unwind" {
     fn cidre_raise_exception(message: &ns::String) -> !;
     fn cidre_try_catch<'ar>(

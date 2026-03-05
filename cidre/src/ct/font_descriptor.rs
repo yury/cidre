@@ -62,7 +62,6 @@ impl Desc {
     }
 }
 
-#[link(name = "CoreText", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CTFontDescriptorGetTypeID() -> cf::TypeId;
     fn CTFontDescriptorCreateWithNameAndSize(name: &cf::String, size: cg::Float) -> arc::R<Desc>;

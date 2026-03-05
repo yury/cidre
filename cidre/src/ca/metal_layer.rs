@@ -133,7 +133,6 @@ impl MetalLayer {
     pub fn residency_set(&self) -> arc::R<mtl::ResidencySet>;
 }
 
-#[link(name = "ca", kind = "static")]
 unsafe extern "C" {
     static CA_METAL_LAYER: &'static objc::Class<MetalLayer>;
 }

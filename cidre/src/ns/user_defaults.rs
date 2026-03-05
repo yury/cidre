@@ -124,7 +124,6 @@ impl ns::KvObserverRegistration for UserDefaults {}
 unsafe impl Send for UserDefaults {}
 unsafe impl Sync for UserDefaults {}
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_USER_DEFAULTS: &'static objc::Class<UserDefaults>;
 }

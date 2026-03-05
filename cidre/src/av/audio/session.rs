@@ -550,7 +550,6 @@ impl Session {
 }
 
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_AUDIO_SESSION: &'static objc::Class<Session>;
 }
@@ -707,7 +706,6 @@ pub mod keys {
         unsafe { AVAudioSessionMuteStateKey }
     }
 
-    #[link(name = "AVFAudio", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
         #[api::available(ios = 15.0, watchos = 8.0, tvos = 15.0)]
@@ -743,7 +741,6 @@ pub mod keys {
     }
 }
 
-#[link(name = "AVFAudio", kind = "framework")]
 #[api::weak]
 unsafe extern "C" {
     static AVAudioSessionInterruptionNotification: &'static ns::NotificationName;

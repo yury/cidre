@@ -82,7 +82,6 @@ impl ArgTable {
     pub fn label(&self) -> Option<arc::R<ns::String>>;
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL4_ARGUMENT_TABLE_DESCRIPTOR: &'static objc::Class<ArgTableDesc>;
 }

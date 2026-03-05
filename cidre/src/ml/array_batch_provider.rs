@@ -39,7 +39,6 @@ impl ArrayBatchProvider {
     }
 }
 
-#[link(name = "ml", kind = "static")]
 unsafe extern "C" {
     static ML_ARRAY_BATCH_PROVIDER: &'static objc::Class<ArrayBatchProvider>;
 }

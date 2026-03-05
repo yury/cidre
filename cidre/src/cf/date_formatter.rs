@@ -200,7 +200,6 @@ impl DateFormatter {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFDateFormatterGetTypeID() -> cf::TypeId;
     fn CFDateFormatterCreateISO8601Formatter(

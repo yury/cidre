@@ -990,7 +990,6 @@ impl std::fmt::Debug for MuxedStreamType {
     }
 }
 
-#[link(name = "CoreMedia", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
     static kCMFormatDescriptionExtension_FormatName: &'static FormatDescExtKey;

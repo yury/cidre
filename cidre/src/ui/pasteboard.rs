@@ -152,7 +152,6 @@ pub mod name {
         unsafe { UIPasteboardNameGeneral }
     }
 
-    #[link(name = "UIKit", kind = "framework")]
     unsafe extern "C" {
         static UIPasteboardNameGeneral: &'static PasteboardName;
     }
@@ -175,7 +174,6 @@ pub mod option {
         unsafe { UIPasteboardOptionLocalOnly }
     }
 
-    #[link(name = "UIKit", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
         #[api::available(ios = 10.0)]
@@ -212,7 +210,6 @@ pub mod notifications {
         unsafe { UIPasteboardChangedTypesRemovedKey }
     }
 
-    #[link(name = "UIKit", kind = "framework")]
     unsafe extern "C" {
         static UIPasteboardChangedNotification: &'static ns::NotificationName;
         static UIPasteboardRemovedNotification: &'static ns::NotificationName;
@@ -248,7 +245,6 @@ pub mod type_list {
         unsafe { UIPasteboardTypeListColor }
     }
 
-    #[link(name = "UIKit", kind = "framework")]
     unsafe extern "C" {
         static UIPasteboardTypeListString: &'static ns::Array<ns::String>;
         static UIPasteboardTypeListURL: &'static ns::Array<ns::String>;
@@ -267,7 +263,6 @@ pub mod types {
         unsafe { UIPasteboardTypeAutomatic }
     }
 
-    #[link(name = "UIKit", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
         #[api::available(ios = 10.0)]
@@ -275,7 +270,6 @@ pub mod types {
     }
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_PASTEBOARD: &'static objc::Class<Pasteboard>;
 }

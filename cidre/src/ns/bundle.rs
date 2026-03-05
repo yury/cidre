@@ -45,7 +45,6 @@ impl Bundle {
     pub fn bundle_id(&self) -> Option<arc::R<ns::String>>;
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_BUNDLE: &'static objc::Class<Bundle>;
 }

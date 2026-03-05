@@ -20,7 +20,6 @@ impl DetectFaceRectanglesRequest {
     pub fn results(&self) -> Option<arc::R<ns::Array<vn::FaceObservation>>>;
 }
 
-#[link(name = "vn", kind = "static")]
 unsafe extern "C" {
     static VN_DETECT_FACE_RECTANGLES_REQUEST: &'static objc::Class<DetectFaceRectanglesRequest>;
 }

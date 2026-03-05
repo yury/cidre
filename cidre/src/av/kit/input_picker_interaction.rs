@@ -92,7 +92,6 @@ impl InputPickerInteraction {
     }
 }
 
-#[link(name = "av_kit", kind = "static")]
 unsafe extern "C" {
     #[cfg(target_os = "ios")]
     static AV_INPUT_PICKER_INTERACTION: &'static objc::Class<InputPickerInteraction>;

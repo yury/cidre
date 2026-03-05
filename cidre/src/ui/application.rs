@@ -178,7 +178,6 @@ unsafe extern "C" {
     static UI_APPLICATION: &'static objc::Class<App>;
 }
 
-#[link(name = "UIKit", kind = "framework")]
 #[api::weak]
 unsafe extern "C" {
     #[api::available(ios = 8.0)]

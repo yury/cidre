@@ -60,7 +60,6 @@ impl Altimeter {
     pub fn stop_abs_altitude_updates(&mut self);
 }
 
-#[link(name = "core_motion", kind = "static")]
 unsafe extern "C" {
     static CM_ALTIMETER: &'static objc::Class<Altimeter>;
 }

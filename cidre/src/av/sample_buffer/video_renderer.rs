@@ -142,12 +142,10 @@ impl VideoRenderer {
     }
 }
 
-#[link(name = "ca", kind = "static")]
 unsafe extern "C" {
     static AV_SAMPLE_BUFFER_VIDEO_RENDERER: &'static objc::Class<VideoRenderer>;
 }
 
-#[link(name = "AVFoundation", kind = "framework")]
 #[api::weak]
 unsafe extern "C" {
     #[api::available(

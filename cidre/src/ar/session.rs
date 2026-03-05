@@ -181,7 +181,6 @@ define_obj_type!(
 impl SessionObserver for AnySessionDelegate {}
 impl SessionDelegate for AnySessionDelegate {}
 
-#[link(name = "ar", kind = "static")]
 unsafe extern "C" {
     static AR_SESSION: &'static objc::Class<Session>;
 }

@@ -125,7 +125,6 @@ impl Value {
     }
 }
 
-#[link(name = "ApplicationServices", kind = "framework")]
 unsafe extern "C" {
     fn AXValueGetTypeID() -> cf::TypeId;
     fn AXValueCreate(

@@ -332,12 +332,10 @@ define_obj_type!(
 
 impl LayerDelegate for AnyLayerDelegate {}
 
-#[link(name = "ca", kind = "static")]
 unsafe extern "C" {
     static CA_LAYER: &'static objc::Class<Layer>;
 }
 
-#[link(name = "QuartzCore", kind = "framework")]
 #[api::weak]
 unsafe extern "C" {
     #[api::available(

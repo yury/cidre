@@ -9,3 +9,6 @@ pub use device::Speed as DeviceSpeed;
 pub mod service_connection;
 pub use service_connection::InvalidSocketError;
 pub use service_connection::ServiceConnection;
+
+#[link(name = "MobileDevice", kind = "framework")]
+unsafe extern "C" {}

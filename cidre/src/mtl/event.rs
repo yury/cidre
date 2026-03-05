@@ -97,7 +97,6 @@ impl SharedEvent {
     pub fn set_signaled_value(&self, val: u64);
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_SHARED_EVENT_LISTENER: &'static objc::Class<SharedEventListener>;
 }

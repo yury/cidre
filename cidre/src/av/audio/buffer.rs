@@ -273,7 +273,6 @@ impl CompressedBuf {
     pub fn data(&self) -> *const c_void;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_AUDIO_PCM_BUFFER: &'static objc::Class<PcmBuf>;
     static AV_AUDIO_COMPRESSED_BUFFER: &'static objc::Class<CompressedBuf>;

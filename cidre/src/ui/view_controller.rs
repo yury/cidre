@@ -39,7 +39,6 @@ impl ViewController {
     pub fn set_preferred_transition(&mut self, val: Option<&ui::ViewControllerTransition>);
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_VIEW_CONTROLLER: &'static objc::Class<ViewController>;
 }

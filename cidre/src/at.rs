@@ -36,3 +36,9 @@ pub use extended_audio_file::ExtAudioFile;
 pub use extended_audio_file::ExtAudioFilePropId;
 pub use extended_audio_file::ExtAudioFileRef;
 pub use extended_audio_file::err as ext_audio_file_err;
+
+#[link(name = "AudioToolbox", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "at", kind = "static")]
+unsafe extern "C" {}

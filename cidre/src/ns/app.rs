@@ -237,3 +237,9 @@ pub use workspace::Authorization as WorkspaceAuthorization;
 pub use workspace::AuthorizationType as WorkspaceAuthorizationType;
 pub use workspace::Workspace;
 pub use workspace::WorkspaceOpenCfg;
+
+#[link(name = "AppKit", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "app", kind = "static")]
+unsafe extern "C" {}

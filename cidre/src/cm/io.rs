@@ -10,3 +10,6 @@ pub use hardware::PropElement;
 pub use hardware::PropScope;
 pub use hardware::PropSelector;
 pub use hardware::err;
+
+#[link(name = "CoreMediaIO", kind = "framework")]
+unsafe extern "C" {}

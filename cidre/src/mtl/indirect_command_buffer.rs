@@ -173,7 +173,6 @@ impl IndirectCmdBuf {
     }
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_INDIRECT_COMMAND_BUFFER_DESCRIPTOR: &'static objc::Class<Desc>;
 }

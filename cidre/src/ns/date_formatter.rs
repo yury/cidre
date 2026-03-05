@@ -48,7 +48,6 @@ impl DateFormatter {
     pub fn set_date_format(&mut self, val: Option<&ns::String>);
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_DATE_FORMATTER: &'static objc::Class<DateFormatter>;
 }

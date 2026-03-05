@@ -220,7 +220,6 @@ impl Default for TaskPriority {
     }
 }
 
-#[link(name = "Foundation", kind = "framework")]
 unsafe extern "C" {
     static NSURLSessionTaskPriorityDefault: TaskPriority;
     static NSURLSessionTaskPriorityLow: TaskPriority;
@@ -271,7 +270,6 @@ impl WebSocketMessage {
     pub fn type_(&self) -> WebSocketMessageType;
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_URL_SESSION: &'static Class<Session>;
     static NS_URL_SESSION_WEB_SOCKET_MESSAGE: &'static Class<WebSocketMessage>;

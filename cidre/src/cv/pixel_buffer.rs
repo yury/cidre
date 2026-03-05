@@ -646,7 +646,6 @@ impl AsRef<ns::Id> for PixelFormat {
     }
 }
 
-#[link(name = "CoreVideo", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CVPixelBufferGetTypeID() -> cf::TypeId;
     fn CVPixelBufferCreate(

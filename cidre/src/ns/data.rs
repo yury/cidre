@@ -234,7 +234,6 @@ impl AsMut<cf::DataMut> for DataMut {
     }
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_DATA: &'static objc::Class<Data>;
     static NS_MUTABLE_DATA: &'static objc::Class<DataMut>;

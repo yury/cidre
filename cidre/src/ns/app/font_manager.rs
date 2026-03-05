@@ -59,7 +59,6 @@ impl FontManager {
     pub fn available_font_families(&self) -> arc::R<ns::Array<ns::String>>;
 }
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_FONT_MANAGER: &'static objc::Class<FontManager>;
 }

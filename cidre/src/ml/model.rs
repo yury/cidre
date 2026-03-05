@@ -66,7 +66,6 @@ impl Model {
     }
 }
 
-#[link(name = "ml", kind = "static")]
 unsafe extern "C" {
     static ML_MODEL: &'static objc::Class<Model>;
 }

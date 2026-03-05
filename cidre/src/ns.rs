@@ -389,3 +389,6 @@ pub trait CopyingMut {
     #[objc::msg_send(mutableCopyWithZone:)]
     unsafe fn copy_with_zone_mut(&self, zone: *mut Zone) -> Option<arc::Retained<Id>>;
 }
+
+#[link(name = "Foundation", kind = "framework")]
+unsafe extern "C" {}

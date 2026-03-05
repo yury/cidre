@@ -319,7 +319,6 @@ impl Texture {
     pub fn array_len(&self) -> usize;
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_TEXTURE_DESCRIPTOR: &'static objc::Class<Desc>;
 }

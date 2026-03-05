@@ -19,7 +19,6 @@ pub mod all_formats_keys {
         unsafe { AVNumberOfChannelsKey }
     }
 
-    #[link(name = "AVFAudio", kind = "framework")]
     unsafe extern "C" {
         static AVFormatIDKey: &'static ns::String;
         static AVSampleRateKey: &'static ns::String;
@@ -50,7 +49,6 @@ pub mod linear_pcm_keys {
         unsafe { AVLinearPCMIsNonInterleaved }
     }
 
-    #[link(name = "AVFAudio", kind = "framework")]
     unsafe extern "C" {
         static AVLinearPCMBitDepthKey: &'static ns::String;
         static AVLinearPCMIsBigEndianKey: &'static ns::String;
@@ -67,7 +65,6 @@ pub mod file_keys {
         unsafe { AVAudioFileTypeKey }
     }
 
-    #[link(name = "AVFAudio", kind = "framework")]
     unsafe extern "C" {
         static AVAudioFileTypeKey: &'static ns::String;
     }
@@ -108,7 +105,6 @@ pub mod encoder_propery_keys {
         unsafe { AVEncoderBitDepthHintKey }
     }
 
-    #[link(name = "AVFAudio", kind = "framework")]
     unsafe extern "C" {
         static AVEncoderAudioQualityKey: &'static ns::String;
         static AVEncoderAudioQualityForVBRKey: &'static ns::String;
@@ -133,7 +129,6 @@ pub mod sample_rate_converter_keys {
         unsafe { AVSampleRateConverterAudioQualityKey }
     }
 
-    #[link(name = "AVFAudio", kind = "framework")]
     unsafe extern "C" {
         static AVSampleRateConverterAlgorithmKey: &'static ns::String;
         static AVSampleRateConverterAudioQualityKey: &'static ns::String;
@@ -142,7 +137,6 @@ pub mod sample_rate_converter_keys {
 
 /// value is an NSData containing an AudioChannelLayout
 pub fn channel_layout_key() -> &'static ns::String {
-    #[link(name = "AVFAudio", kind = "framework")]
     unsafe extern "C" {
         static AVChannelLayoutKey: &'static ns::String;
     }
@@ -170,7 +164,6 @@ pub mod bit_rate_strategy {
         unsafe { AVAudioBitRateStrategy_Variable }
     }
 
-    #[link(name = "AVFAudio", kind = "framework")]
     unsafe extern "C" {
         static AVAudioBitRateStrategy_Constant: &'static ns::String;
         static AVAudioBitRateStrategy_LongTermAverage: &'static ns::String;
@@ -195,7 +188,6 @@ pub mod sample_rate_converer_algorithm {
         unsafe { AVSampleRateConverterAlgorithm_MinimumPhase }
     }
 
-    #[link(name = "AVFAudio", kind = "framework")]
     unsafe extern "C" {
         static AVSampleRateConverterAlgorithm_Normal: &'static ns::String;
         static AVSampleRateConverterAlgorithm_Mastering: &'static ns::String;

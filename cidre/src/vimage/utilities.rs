@@ -60,7 +60,6 @@ impl vimage::Buf {
     }
 }
 
-#[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
     fn vImageBuffer_GetSize(buf: *const vimage::Buf) -> cg::Size;
     fn vImageBuffer_Init(

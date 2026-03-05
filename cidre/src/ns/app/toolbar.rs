@@ -194,7 +194,6 @@ define_obj_type!(
 
 impl ToolbarDelegate for AnyToolbarDelegate {}
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_TOOLBAR: &'static objc::Class<Toolbar>;
 }

@@ -76,7 +76,6 @@ impl vimage::Buf {
     }
 }
 
-#[link(name = "Accelerate", kind = "framework")]
 unsafe extern "C" {
     fn vImageConvert_PlanarFtoPlanar16F(
         src: *const vimage::Buf,

@@ -25,7 +25,6 @@ impl LayerVideoGravity {
     }
 }
 
-#[link(name = "AVFoundation", kind = "framework")]
 unsafe extern "C" {
     static AVLayerVideoGravityResizeAspect: &'static LayerVideoGravity;
     static AVLayerVideoGravityResizeAspectFill: &'static LayerVideoGravity;

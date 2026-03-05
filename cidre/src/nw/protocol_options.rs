@@ -43,7 +43,6 @@ impl ProtocolMetadata {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C" {
     fn nw_protocol_definition_is_equal(
         a: &nw::ProtocolDefinition,

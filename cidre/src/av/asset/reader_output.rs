@@ -156,7 +156,6 @@ impl ReaderTrackOutput {
     pub fn reset_for_reading_time_ranges(&mut self, ranges: &ns::Array<ns::Value>);
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_ASSET_READER_TRACK_OUTPUT: &'static objc::Class<ReaderTrackOutput>;
 }

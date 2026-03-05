@@ -90,7 +90,6 @@ impl Reader {
     pub fn outputs(&self) -> arc::R<ns::Array<av::AssetReaderOutput>>;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_ASSET_READER: &'static objc::Class<Reader>;
 }

@@ -120,7 +120,6 @@ pub enum IfaceRadioType {
     CellEvdo = 0x88,
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C-unwind" {
     fn nw_interface_get_type(iface: &Iface) -> IfaceType;
     fn nw_interface_get_name(iface: &Iface) -> *const c_char;

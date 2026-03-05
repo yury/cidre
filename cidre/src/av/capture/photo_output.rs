@@ -78,7 +78,6 @@ impl PhotoSettings {
     pub fn set_auto_red_eye_reduction_enabled(&mut self, val: bool);
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_CAPTURE_PHOTO_OUTPUT: &'static objc::Class<PhotoOutput>;
     static AV_CAPTURE_PHOTO_SETTINGS: &'static objc::Class<PhotoSettings>;

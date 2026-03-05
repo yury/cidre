@@ -131,7 +131,6 @@ impl SplitViewItem {
 
 impl ns::AnimatablePropContainer for SplitViewItem {}
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_SPLIT_VIEW_ITEM: &'static objc::Class<SplitViewItem>;
 }

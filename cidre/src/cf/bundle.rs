@@ -83,7 +83,6 @@ impl Bundle {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFBundleGetTypeID() -> cf::TypeId;
     fn CFBundleGetMainBundle() -> Option<&'static Bundle>;

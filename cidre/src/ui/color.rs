@@ -160,7 +160,6 @@ impl Color {
     pub fn clear() -> arc::R<Self>;
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_COLOR: &'static objc::Class<Color>;
 }

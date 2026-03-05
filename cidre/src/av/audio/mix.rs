@@ -130,7 +130,6 @@ impl InputParamsMut {
     }
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_AUDIO_MIX: &'static objc::Class<Mix>;
     static AV_MUTABLE_AUDIO_MIX: &'static objc::Class<MixMut>;

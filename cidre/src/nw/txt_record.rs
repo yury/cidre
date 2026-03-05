@@ -135,7 +135,6 @@ impl TxtRecord {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C-unwind" {
     fn nw_txt_record_create_with_bytes(
         txt_bytes: *const u8,

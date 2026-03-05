@@ -37,3 +37,9 @@ pub use recording_output::RecordingOutput;
 pub use recording_output::RecordingOutputCfg;
 
 pub mod error;
+
+#[link(name = "ScreenCaptureKit", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "sc", kind = "static")]
+unsafe extern "C" {}

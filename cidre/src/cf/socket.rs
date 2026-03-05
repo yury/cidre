@@ -208,7 +208,6 @@ impl Socket {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFSocketCreate(
         allocator: Option<&cf::Allocator>,

@@ -35,7 +35,6 @@ impl LangRecognizer {
     pub fn set_lang_constraints(&mut self, val: &ns::Array<nl::Lang>);
 }
 
-#[link(name = "nl", kind = "static")]
 unsafe extern "C" {
     static NL_LANGUAGE_RECOGNIZER: &'static objc::Class<LangRecognizer>;
 }

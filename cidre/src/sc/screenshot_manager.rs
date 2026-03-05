@@ -77,7 +77,6 @@ impl ScreenshotManager {
     }
 }
 
-#[link(name = "sc", kind = "static")]
 unsafe extern "C" {
     static SC_SCREENSHOT_MANAGER: &'static objc::Class<ScreenshotManager>;
 }

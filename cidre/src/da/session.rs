@@ -38,7 +38,6 @@ impl Session {
     }
 }
 
-#[link(name = "DiskArbitration", kind = "framework")]
 unsafe extern "C-unwind" {
     fn DASessionGetTypeID() -> cf::TypeId;
     fn DASessionCreate(allocator: Option<&cf::Allocator>) -> Option<arc::R<Session>>;

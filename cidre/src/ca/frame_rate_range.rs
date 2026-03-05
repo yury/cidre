@@ -27,7 +27,6 @@ impl PartialEq<Self> for FrameRateRange {
     }
 }
 
-#[link(name = "QuartzCore", kind = "framework")]
 unsafe extern "C-unwind" {
     static CAFrameRateRangeDefault: FrameRateRange;
     fn CAFrameRateRangeIsEqualToRange(range: FrameRateRange, other: FrameRateRange) -> bool;

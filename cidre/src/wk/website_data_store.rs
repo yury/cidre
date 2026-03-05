@@ -36,7 +36,6 @@ impl WebsiteDataStore {
     }
 }
 
-#[link(name = "wk", kind = "static")]
 unsafe extern "C" {
     static WK_WEBSITE_DATA_STORE: &'static objc::Class<WebsiteDataStore>;
 }

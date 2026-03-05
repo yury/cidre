@@ -74,3 +74,9 @@ pub use training_graph::TrainingGraph;
 mod matmul;
 pub use matmul::Desc as MatMulDesc;
 pub use matmul::Layer as MatMulLayer;
+
+#[link(name = "MLCompute", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "mlc", kind = "static")]
+unsafe extern "C" {}

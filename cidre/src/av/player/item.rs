@@ -343,7 +343,6 @@ impl ns::NotificationName {
     }
 }
 
-#[link(name = "AVFoundation", kind = "framework")]
 unsafe extern "C" {
     static AVPlayerItemTimeJumpedNotification: &'static ns::NotificationName;
     static AVPlayerItemDidPlayToEndTimeNotification: &'static ns::NotificationName;
@@ -356,7 +355,6 @@ unsafe extern "C" {
     static AVPlayerItemMediaSelectionDidChangeNotification: &'static ns::NotificationName;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_PLAYER_ITEM: &'static objc::Class<Item>;
 }

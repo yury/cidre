@@ -26,7 +26,6 @@ pub fn host_clock_minimum_time_delta() -> u32 {
     unsafe { CVGetHostClockMinimumTimeDelta() }
 }
 
-#[link(name = "CoreVideo", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CVGetCurrentHostTime() -> u64;
     fn CVGetHostClockFrequency() -> f64;

@@ -69,7 +69,6 @@ impl DisplayLink {
     pub fn set_paused(&mut self, val: bool);
 }
 
-#[link(name = "ca", kind = "static")]
 unsafe extern "C" {
     static CA_DISPLAY_LINK: &'static objc::Class<ns::Id>;
 }

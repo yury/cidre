@@ -95,7 +95,6 @@ impl NumberFormatter {
     }
 }
 
-#[link(name = "CoreFoundation", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CFNumberFormatterGetTypeID() -> cf::TypeId;
     fn CFNumberFormatterCreate(

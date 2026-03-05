@@ -181,7 +181,6 @@ impl<I: objc::Obj> Clone for DiffableDataSrcSectionSnapshot<I> {
 
 impl<I: objc::Obj> ns::Copying for DiffableDataSrcSectionSnapshot<I> {}
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static NS_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT:
         &'static objc::Class<DiffableDataSrcSectionSnapshot<ns::Id>>;

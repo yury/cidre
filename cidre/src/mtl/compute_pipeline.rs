@@ -43,7 +43,6 @@ impl Desc {
     pub fn reset(&mut self);
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_COMPUTE_PIPELINE_DESCRIPTOR: &'static objc::Class<Desc>;
 }

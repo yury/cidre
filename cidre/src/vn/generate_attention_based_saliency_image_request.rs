@@ -12,7 +12,6 @@ impl GenAttentionBasedSaliencyImageRequest {
     pub fn results(&self) -> Option<arc::R<ns::Array<vn::SaliencyImageObservation>>>;
 }
 
-#[link(name = "vn", kind = "static")]
 unsafe extern "C" {
     static VN_GENERATE_ATTENTION_BAED_SALIENCY_IMAGE_REQUEST:
         &'static objc::Class<GenAttentionBasedSaliencyImageRequest>;

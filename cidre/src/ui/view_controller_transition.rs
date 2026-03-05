@@ -61,7 +61,6 @@ impl ZoomTransitionSrcViewProviderCtx {
 }
 
 #[cfg(not(target_os = "watchos"))]
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_VIEW_CONTROLLER_TRANSITION: &'static objc::Class<ViewControllerTransition>;
 }

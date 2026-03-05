@@ -174,7 +174,6 @@ impl Format {
     pub fn magic_cookie(&self) -> Option<arc::R<ns::Data>>;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_AUDIO_FORMAT: &'static objc::Class<Format>;
 }

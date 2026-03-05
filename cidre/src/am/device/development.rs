@@ -9,7 +9,6 @@ use super::{Connected, Device, Error, Session};
 /// explicitly released or else it will leak.
 pub type MountCallback<T> = extern "C" fn(status: arc::R<cf::Dictionary>, context: *mut T);
 
-#[link(name = "MobileDevice", kind = "framework")]
 unsafe extern "C" {
     fn AMDeviceMountImage(
         device: &Device,

@@ -101,7 +101,6 @@ impl Renderer {
     pub fn set_dst(&mut self, val: &mtl::Texture);
 }
 
-#[link(name = "ca", kind = "static")]
 unsafe extern "C" {
     static CA_RENDERER: &'static objc::Class<Renderer>;
 }

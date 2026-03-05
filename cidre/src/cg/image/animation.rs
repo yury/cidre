@@ -99,7 +99,6 @@ pub fn animate_image_data(
     unsafe { CGAnimateImageDataWithBlock(data, options, &mut block).result() }
 }
 
-#[link(name = "ImageIO", kind = "framework")]
 unsafe extern "C-unwind" {
     static kCGImageAnimationStartIndex: &'static OptKey;
     static kCGImageAnimationDelayTime: &'static OptKey;

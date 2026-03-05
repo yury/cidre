@@ -97,7 +97,6 @@ impl cm::SampleBuf {
     }
 }
 
-#[link(name = "CoreMedia", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
     #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]

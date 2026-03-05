@@ -285,7 +285,6 @@ impl Engine {
     pub fn manual_rendering_sample_time(&self) -> av::audio::FramePos;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_AUDIO_ENGINE: &'static objc::Class<Engine>;
 }

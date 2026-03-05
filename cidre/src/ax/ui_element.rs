@@ -344,7 +344,6 @@ impl Observer {
     }
 }
 
-#[link(name = "ApplicationServices", kind = "framework")]
 unsafe extern "C-unwind" {
     fn AXIsProcessTrustedWithOptions(
         options: Option<&cf::DictionaryOf<cf::String, cf::Type>>,

@@ -306,7 +306,6 @@ define_cf_type!(
 
 impl TextDescFlavor {}
 
-#[link(name = "CoreMedia", kind = "framework")]
 unsafe extern "C-unwind" {
     static kCMImageDescriptionFlavor_QuickTimeMovie: &'static ImageDescFlavor;
     static kCMImageDescriptionFlavor_ISOFamily: &'static ImageDescFlavor;

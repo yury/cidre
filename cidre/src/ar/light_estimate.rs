@@ -64,7 +64,6 @@ impl DirectionalLightEstimate {
     pub fn primary_light_intensity(&self) -> cg::Float;
 }
 
-#[link(name = "ar", kind = "static")]
 unsafe extern "C" {
     static AR_LIGHT_ESTIMATE: &'static objc::Class<LightEstimate>;
     static AR_DIRECTIONAL_LIGHT_ESTIMATE: &'static objc::Class<DirectionalLightEstimate>;

@@ -86,7 +86,6 @@ impl RecordingOutput {
     }
 }
 
-#[link(name = "sc", kind = "static")]
 unsafe extern "C" {
     static SC_RECORDING_OUTPUT_CONFIGURATION: &'static objc::Class<RecordingOutputCfg>;
     static SC_RECORDING_OUTPUT: &'static objc::Class<RecordingOutput>;

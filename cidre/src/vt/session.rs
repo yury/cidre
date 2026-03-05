@@ -88,7 +88,6 @@ impl Session {
     }
 }
 
-#[link(name = "VideoToolbox", kind = "framework")]
 unsafe extern "C-unwind" {
     fn VTSessionSetProperty(
         session: &mut Session,

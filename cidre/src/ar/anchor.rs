@@ -129,7 +129,6 @@ impl Anchor {
     }
 }
 
-#[link(name = "ar", kind = "static")]
 unsafe extern "C" {
     static AR_ANCHOR: &'static objc::Class<Anchor>;
 }

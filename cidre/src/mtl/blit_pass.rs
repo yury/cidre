@@ -51,7 +51,6 @@ impl Desc {
     pub fn sample_buf_attaches(&self) -> arc::R<SampleBufAttachDescArray>;
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_BLIT_PASS_DESCRIPTOR: &'static objc::Class<Desc>;
 }

@@ -159,7 +159,6 @@ impl NotificationContentMut {
     pub fn set_filter_criteria(&mut self, val: Option<&ns::String>);
 }
 
-#[link(name = "un", kind = "static")]
 unsafe extern "C" {
     static UN_NOTIFICATION_CONTENT: &'static objc::Class<NotificationContent>;
     static UN_MUTABLE_NOTIFICATION_CONTENT: &'static objc::Class<NotificationContent>;

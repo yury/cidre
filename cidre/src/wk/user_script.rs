@@ -46,7 +46,6 @@ impl UserScript {
     pub fn is_for_main_frame_only(&self) -> bool;
 }
 
-#[link(name = "wk", kind = "static")]
 unsafe extern "C" {
     static WK_USER_SCRIPT: &'static objc::Class<UserScript>;
 }

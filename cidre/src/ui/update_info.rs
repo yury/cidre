@@ -74,7 +74,6 @@ impl UpdateInfo {
     pub fn is_performing_low_latency_phases(&self) -> bool;
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_UPDATE_INFO: &'static objc::Class<UpdateInfo>;
 }

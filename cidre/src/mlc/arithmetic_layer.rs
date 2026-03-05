@@ -12,7 +12,6 @@ impl ArithmeticLayer {
     pub fn with_op(op: mlc::ArithmeticOp) -> arc::R<Self>;
 }
 
-#[link(name = "mlc", kind = "static")]
 unsafe extern "C" {
     static MLC_ARITHMETIC_LAYER: &'static objc::Class<ArithmeticLayer>;
 }

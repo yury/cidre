@@ -105,7 +105,6 @@ impl TextureCache {
     }
 }
 
-#[link(name = "CoreVideo", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CVMetalTextureCacheCreate(
         allocator: Option<&cf::Allocator>,
@@ -148,7 +147,6 @@ pub mod keys {
         unsafe { kCVMetalTextureUsage }
     }
 
-    #[link(name = "CoreVideo", kind = "framework")]
     unsafe extern "C" {
         static kCVMetalTextureCacheMaximumTextureAgeKey: &'static cf::String;
         static kCVMetalTextureUsage: &'static cf::String;

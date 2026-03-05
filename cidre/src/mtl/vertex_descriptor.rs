@@ -341,7 +341,6 @@ impl Desc {
     pub fn attrs(&self) -> arc::R<VertexAttrDescArray>;
 }
 
-#[link(name = "mtl", kind = "static")]
 unsafe extern "C" {
     static MTL_VERTEX_DESCRIPTOR: &'static objc::Class<Desc>;
     static MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR: &'static objc::Class<VertexBufLayoutDesc>;

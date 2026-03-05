@@ -94,7 +94,6 @@ impl AnimationCtx {
     }
 }
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_ANIMATION_CONTEXT: &'static objc::Class<AnimationCtx>;
 }

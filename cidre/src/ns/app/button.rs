@@ -212,7 +212,6 @@ impl Button {
     pub fn perform_key_equivalent(&mut self, key: &ns::Event) -> bool;
 }
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_BUTTON: &'static objc::Class<Button>;
 }

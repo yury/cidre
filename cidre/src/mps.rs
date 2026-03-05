@@ -19,3 +19,6 @@ pub use core::Size;
 pub use core::NdArray;
 pub use core::NdArrayAllocator;
 pub use core::NdArrayDesc;
+
+#[link(name = "mps", kind = "static")]
+unsafe extern "C" {}

@@ -332,7 +332,6 @@ define_obj_type!(
     pub ProtocolStack(ns::Id)
 );
 
-#[link(name = "Network", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
     fn nw_parameters_create() -> arc::R<Params>;

@@ -26,7 +26,6 @@ impl Window {
     pub fn make_key_and_visible(&self);
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_WINDOW: &'static objc::Class<Window>;
 }

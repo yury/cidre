@@ -123,7 +123,6 @@ impl AttrStringKey {
 }
 
 #[cfg(all(feature = "app", target_os = "macos"))]
-#[link(name = "AppKit", kind = "framework")]
 unsafe extern "C" {
     static NSFontAttributeName: &'static AttrStringKey;
     static NSParagraphStyleAttributeName: &'static AttrStringKey;
@@ -147,7 +146,6 @@ unsafe extern "C" {
 }
 
 #[cfg(any(target_os = "ios", target_os = "tvos", target_os = "watchos"))]
-#[link(name = "UIKit", kind = "framework")]
 unsafe extern "C" {
     static NSFontAttributeName: &'static AttrStringKey;
     static NSParagraphStyleAttributeName: &'static AttrStringKey;

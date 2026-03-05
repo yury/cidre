@@ -8,7 +8,6 @@ impl Domain {
     }
 }
 
-#[link(name = "WatchConnectivity", kind = "framework")]
 unsafe extern "C" {
     static WCErrorDomain: &'static Domain;
 }

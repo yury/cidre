@@ -541,7 +541,6 @@ impl PathMut {
     }
 }
 
-#[link(name = "CoreGraphics", kind = "framework")]
 unsafe extern "C-unwind" {
     fn CGPathGetTypeID() -> cf::TypeId;
     fn CGPathCreateMutable() -> arc::R<PathMut>;

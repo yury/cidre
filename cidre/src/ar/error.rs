@@ -73,7 +73,6 @@ impl PartialEq<isize> for Code {
     }
 }
 
-#[link(name = "ARKit", kind = "framework")]
 unsafe extern "C" {
     static ARErrorDomain: &'static ns::ErrorDomain;
 }

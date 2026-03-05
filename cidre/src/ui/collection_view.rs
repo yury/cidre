@@ -1238,7 +1238,6 @@ impl CollectionViewDropPlaceholder {
     }
 }
 
-#[link(name = "ui", kind = "static")]
 unsafe extern "C" {
     static UI_COLLECTION_VIEW: &'static objc::Class<CollectionView>;
     static UI_COLLECTION_VIEW_DROP_PROPOSAL: &'static objc::Class<CollectionViewDropProposal>;

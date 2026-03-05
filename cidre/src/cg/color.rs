@@ -75,7 +75,6 @@ impl Color {
     }
 }
 
-#[link(name = "CoreGraphics", kind = "framework")]
 #[api::weak]
 unsafe extern "C-unwind" {
     fn CGColorCreateGenericGray(gray: cg::Float, alpha: cg::Float) -> arc::R<Color>;

@@ -20,3 +20,6 @@ pub mod identity;
 
 pub mod policy;
 // pub use policy::Policy;
+
+#[link(name = "Security", kind = "framework")]
+unsafe extern "C" {}

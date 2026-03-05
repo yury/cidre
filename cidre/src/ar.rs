@@ -68,3 +68,9 @@ pub use tracked_raycast::TrackedRaycast;
 
 pub mod error;
 pub use error::Code as ErrorCode;
+
+#[link(name = "ARKit", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "ar", kind = "static")]
+unsafe extern "C" {}

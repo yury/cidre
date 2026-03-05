@@ -45,7 +45,6 @@ impl DisplayLayer {
     pub fn sample_buf_renderer(&self) -> arc::R<av::SampleBufVideoRenderer>;
 }
 
-#[link(name = "ca", kind = "static")]
 unsafe extern "C" {
     static AV_DISPLAY_LAYER: &'static objc::Class<DisplayLayer>;
 }

@@ -378,7 +378,6 @@ impl WindowDelegate for AnyWindowDelegate {}
 
 impl ns::AnimatablePropContainer for Window {}
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_WINDOW: &'static objc::Class<Window>;
 }

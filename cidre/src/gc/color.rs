@@ -27,7 +27,6 @@ impl Color {
     pub fn b(&self) -> f32;
 }
 
-#[link(name = "gc", kind = "static")]
 unsafe extern "C" {
     static GC_COLOR: &'static objc::Class<Color>;
 }

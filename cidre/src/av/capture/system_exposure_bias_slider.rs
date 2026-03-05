@@ -61,7 +61,6 @@ impl SysExposureBiasSlider {
     }
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_CAPTURE_SYSTEM_EXPOSURE_BIAS_SLIDER: &'static objc::Class<SysExposureBiasSlider>;
 }

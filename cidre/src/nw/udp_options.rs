@@ -41,7 +41,6 @@ impl nw::ProtocolMetadata {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C" {
     fn nw_protocol_copy_udp_definition() -> arc::R<nw::ProtocolDefinition>;
     fn nw_udp_create_options() -> arc::R<nw::ProtocolOpts>;

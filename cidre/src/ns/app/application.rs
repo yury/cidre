@@ -141,7 +141,6 @@ impl App {
     pub fn set_help_menu(&mut self, val: Option<&ns::Menu>);
 }
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_APPLICATION: &'static objc::Class<App>;
 }
@@ -241,7 +240,6 @@ pub mod notifications {
         unsafe { NSApplicationDidChangeOcclusionStateNotification }
     }
 
-    #[link(name = "AppKit", kind = "framework")]
     #[api::weak]
     unsafe extern "C" {
         static NSApplicationDidBecomeActiveNotification: &'static NotificationName;

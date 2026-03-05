@@ -184,7 +184,6 @@ impl Listener {
     }
 }
 
-#[link(name = "Network", kind = "framework")]
 unsafe extern "C-unwind" {
     fn nw_listener_create_with_port(
         port: *const c_char,

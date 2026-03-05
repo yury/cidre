@@ -86,7 +86,6 @@ impl<T: objc::Obj> ns::SetMut<T> {
     pub fn filter_using_predicate(&mut self, predicate: &ns::Predicate);
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_PREDICATE: &'static objc::Class<Predicate>;
 }

@@ -768,7 +768,6 @@ define_obj_type!(
 
 impl CollectionViewDelegate for AnyCollectionViewDelegate {}
 
-#[link(name = "app", kind = "static")]
 unsafe extern "C" {
     static NS_COLLECTION_VIEW: &'static objc::Class<CollectionView>;
 }

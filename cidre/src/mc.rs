@@ -35,3 +35,9 @@ mod nearby_service_browser;
 pub use nearby_service_browser::Delegate as NearbyServiceBrowserDelegate;
 pub use nearby_service_browser::DelegateImpl as NearbyServiceBrowserDelegateImpl;
 pub use nearby_service_browser::NearbyServiceBrowser;
+
+#[link(name = "MultipeerConnectivity", kind = "framework")]
+unsafe extern "C" {}
+
+#[link(name = "mc", kind = "static")]
+unsafe extern "C" {}

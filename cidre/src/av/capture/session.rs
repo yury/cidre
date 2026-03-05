@@ -46,7 +46,6 @@ pub enum InterruptionReason {
 impl InterruptionReason {
     #[doc(alias = "AVCaptureSessionInterruptionReasonKey")]
     pub fn key() -> &'static ns::String {
-        #[link(name = "AVFoundation", kind = "framework")]
         unsafe extern "C" {
             static AVCaptureSessionInterruptionReasonKey: &'static ns::String;
         }
@@ -320,7 +319,6 @@ impl Session {
     pub fn hw_cost(&self) -> f32;
 }
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_CAPTURE_SESSION: &'static objc::Class<Session>;
     static AV_CAPTURE_MULTI_CAM_SESSION: &'static objc::Class<MultiCamSession>;
@@ -600,7 +598,6 @@ impl AudioChannel {
 
 #[doc(alias = "AVCaptureSessionErrorKey")]
 pub fn err_key() -> &'static ns::String {
-    #[link(name = "AVFoundation", kind = "framework")]
     unsafe extern "C" {
         static AVCaptureSessionErrorKey: &'static ns::String;
     }
@@ -641,7 +638,6 @@ pub mod notifications {
         unsafe { AVCaptureSessionInterruptionEndedNotification }
     }
 
-    #[link(name = "AVFoundation", kind = "framework")]
     unsafe extern "C" {
         static AVCaptureSessionRuntimeErrorNotification: &'static ns::NotificationName;
         static AVCaptureSessionDidStartRunningNotification: &'static ns::NotificationName;

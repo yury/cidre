@@ -32,7 +32,6 @@ impl Region {
     define_cls!(CL_REGION);
 }
 
-#[link(name = "cl", kind = "static")]
 unsafe extern "C" {
     #[cfg(not(target_os = "visionos"))]
     static CL_REGION: &'static objc::Class<Region>;

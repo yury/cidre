@@ -47,7 +47,6 @@ impl UrlResponse {
     pub fn url(&self) -> Option<arc::R<ns::Url>>;
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C" {
     static NS_URL_RESPONSE: &'static objc::Class<UrlResponse>;
 }

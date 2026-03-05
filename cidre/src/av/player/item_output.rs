@@ -127,7 +127,6 @@ define_obj_type!(
 
 impl ItemOutputPullDelegate for AnyItemOutputPullDelegate {}
 
-#[link(name = "av", kind = "static")]
 unsafe extern "C" {
     static AV_PLAYER_ITEM_VIDEO_OUTPUT: &'static objc::Class<ItemVideoOutput>;
 }

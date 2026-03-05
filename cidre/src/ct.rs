@@ -39,3 +39,6 @@ mod string_attributes;
 pub use string_attributes::AttrName as StringAttrName;
 pub use string_attributes::UnderlineStyle;
 pub use string_attributes::UnderlineStyleModifiers;
+
+#[link(name = "CoreText", kind = "framework")]
+unsafe extern "C" {}
