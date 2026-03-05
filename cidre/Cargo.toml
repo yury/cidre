@@ -280,6 +280,9 @@ visionos_26_1 = ["visionos_26_0"]
 
 # end of deployment targets
 
+[build-dependencies]
+cc = "1"
+
 [dependencies]
 
 tokio = { optional = true, version = "1", default-features = false, features = ["macros", "rt", "rt-multi-thread", "time", "net", "process", "io-util"] }
