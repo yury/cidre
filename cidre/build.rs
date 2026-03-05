@@ -8,11 +8,11 @@ struct Version {
 
 #[derive(Debug, Clone, Default)]
 struct DeploymentTargets {
-    macos: String,
-    ios: String,
-    tvos: String,
-    watchos: String,
-    visionos: String,
+    macos: Option<Version>,
+    ios: Option<Version>,
+    tvos: Option<Version>,
+    watchos: Option<Version>,
+    visionos: Option<Version>,
 }
 
 impl Version {
@@ -48,101 +48,60 @@ impl Version {
     }
 }
 
-fn add_xc_target_args_from_features(
-    target_args: &mut Vec<&'static str>,
-    features: &[&'static str],
-) {
-    for feature in features {
-        let env_var = format!("CARGO_FEATURE_{}", feature.to_uppercase());
-        if env::var_os(env_var).is_some() {
-            target_args.push("-target");
-            target_args.push(feature);
-        }
-    }
+fn has_feature(name: &str) -> bool {
+    env::var_os(format!("CARGO_FEATURE_{}", name.to_uppercase())).is_some()
 }
 
-fn xc_build(
-    targets: &[&'static str],
-    sdk: &str,
-    arch: &str,
-    configuration: &str,
-    deployment_targets: &DeploymentTargets,
-) {
-    let mut out_lib_dir = PathBuf::from(&env::var("OUT_DIR").unwrap());
-    let mut env_args = Vec::with_capacity(6);
-    if !deployment_targets.macos.is_empty() {
-        env_args.push(deployment_targets.macos.clone());
-    }
-    if !deployment_targets.ios.is_empty() {
-        env_args.push(deployment_targets.ios.clone());
-    }
-    if !deployment_targets.tvos.is_empty() {
-        env_args.push(deployment_targets.tvos.clone());
-    }
-    if !deployment_targets.watchos.is_empty() {
-        env_args.push(deployment_targets.watchos.clone());
-    }
-    if !deployment_targets.visionos.is_empty() {
-        env_args.push(deployment_targets.visionos.clone());
-    }
-    env_args.push(format!("SYMROOT={}", out_lib_dir.to_str().unwrap()));
-
-    let status = if sdk == "maccatalyst" {
-        let c = Command::new("xcrun")
-            .arg("--show-sdk-path")
-            .output()
-            .unwrap();
-        let line = String::from_utf8(c.stdout).unwrap();
-        let line = line.lines().next().unwrap();
-
-        println!("cargo:rustc-link-search=system={line}/System/iOSSupport/usr");
-        println!(
-            "cargo:rustc-link-search=framework={line}/System/iOSSupport/System/Library/Frameworks"
-        );
-
-        // -isystem $(MACOSX_SDK_DIR)/System/iOSSupport/usr/include \
-        // -iframework $(MACOSX_SDK_DIR)/System/iOSSupport/System/Library/Frameworks
-        Command::new("xcodebuild")
-            .args(["-project", "./pomace/pomace.xcodeproj"])
-            .args(["-sdk", "macosx"])
-            .args(["-arch", arch])
-            .args(["-configuration", configuration])
-            // .args(["-derivedDataPath", out_lib_dir.to_str().unwrap()])
-            .args([
-                "-destination 'generic/platform=macOS,variant=Mac Catalyst'",
-                "SUPPORTS_MACCATALYST=YES",
-            ])
-            .args(targets)
-            .arg("build")
-            .args(env_args)
-            .status()
-            .unwrap()
-    } else {
-        Command::new("xcodebuild")
-            .args(["-project", "./pomace/pomace.xcodeproj"])
-            .args(["-sdk", sdk])
-            .args(["-arch", arch])
-            .args(["-configuration", configuration])
-            .args(targets)
-            // .args(["-derivedDataPath", out_lib_dir.to_str().unwrap()])
-            .arg("build")
-            .args(env_args)
-            .status()
-            .unwrap()
-    };
-
-    out_lib_dir.push(configuration);
-
-    let mut s = out_lib_dir.to_str().unwrap().to_string();
-
-    if sdk != "macosx" {
-        s.push('-');
-        s.push_str(sdk);
+fn build_pomace_target(name: &str, sdk: &str, deployment_targets: &DeploymentTargets) {
+    if !has_feature(name) {
+        return;
     }
 
-    println!("cargo:rustc-link-search=native={s}");
+    let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let src = format!("{manifest_dir}/pomace/{name}/{name}.m");
 
-    assert!(status.success());
+    let mut build = cc::Build::new();
+    build.file(&src);
+    build.flag("-fobjc-arc");
+    build.flag("-fobjc-weak");
+    build.flag("-fno-common");
+    // Ensure Foundation types (Class, NS_ASSUME_NONNULL_BEGIN, etc.) are
+    // available even for targets that import C-only frameworks like CoreAudio.
+    // Xcode does this implicitly for all Obj-C targets.
+    build.flag("-include").flag("Foundation/Foundation.h");
+
+    // Set deployment target flags
+    match sdk {
+        "macosx" | "maccatalyst" => {
+            if let Some(v) = &deployment_targets.macos {
+                build.flag(&format!("-mmacosx-version-min={}", v.to_string()));
+            }
+        }
+        "iphoneos" | "iphonesimulator" => {
+            if let Some(v) = &deployment_targets.ios {
+                build.flag(&format!("-mios-version-min={}", v.to_string()));
+            }
+        }
+        "appletvos" | "appletvsimulator" => {
+            if let Some(v) = &deployment_targets.tvos {
+                build.flag(&format!("-mtvos-version-min={}", v.to_string()));
+            }
+        }
+        "watchos" | "watchsimulator" => {
+            if let Some(v) = &deployment_targets.watchos {
+                build.flag(&format!("-mwatchos-version-min={}", v.to_string()));
+            }
+        }
+        _ => {}
+    }
+
+    build.compile(name);
+}
+
+fn try_build(targets: &[&str], sdk: &str, deployment_targets: &DeploymentTargets) {
+    for name in targets {
+        build_pomace_target(name, sdk, deployment_targets);
+    }
 }
 
 fn parse_deployment_targets() -> DeploymentTargets {
@@ -207,26 +166,56 @@ fn parse_deployment_targets() -> DeploymentTargets {
     let mut res = DeploymentTargets::default();
 
     if let Some(v) = Version::with_table(&macos) {
-        res.macos = format!("MACOSX_DEPLOYMENT_TARGET={}", v.to_string());
+        res.macos = Some(v);
     }
     if let Some(v) = Version::with_table(&ios) {
-        res.ios = format!("IPHONEOS_DEPLOYMENT_TARGET={}", v.to_string());
+        res.ios = Some(v);
     }
     if let Some(v) = Version::with_table(&tvos) {
-        res.tvos = format!("TVOS_DEPLOYMENT_TARGET={}", v.to_string());
+        res.tvos = Some(v);
     }
     if let Some(v) = Version::with_table(&watchos) {
-        res.watchos = format!("WATCHOS_DEPLOYMENT_TARGET={}", v.to_string());
+        res.watchos = Some(v);
     }
     if let Some(v) = Version::with_table(&maccatalyst) {
-        // TODO: investigate
-        res.ios = format!("IPHONEOS_DEPLOYMENT_TARGET={}", v.to_string());
+        // Mac Catalyst uses the iOS deployment target
+        res.ios = Some(v);
     }
     if let Some(v) = Version::with_table(&visionos) {
-        res.visionos = format!("XROS_DEPLOYMENT_TARGET={}", v.to_string());
+        res.visionos = Some(v);
     }
 
     res
+}
+
+fn clang_link_search_path() -> String {
+    // Use the CC env var if set (e.g. by Nix), otherwise fall back to
+    // the cc crate's compiler detection.
+    let compiler = env::var("CC").unwrap_or_else(|_| {
+        cc::Build::new()
+            .get_compiler()
+            .path()
+            .to_str()
+            .unwrap()
+            .to_string()
+    });
+
+    let output = Command::new(&compiler)
+        .arg("--print-search-dirs")
+        .output()
+        .unwrap();
+    if !output.status.success() {
+        panic!("Can't get search paths from {compiler}");
+    }
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    for line in stdout.lines() {
+        if let Some((a, b)) = line.split_once('=') {
+            if a == "libraries: " {
+                return format!("{}/lib/darwin", b);
+            }
+        }
+    }
+    panic!("{compiler} is missing search paths");
 }
 
 fn main() {
@@ -234,7 +223,7 @@ fn main() {
         return;
     }
 
-    let versions = parse_deployment_targets();
+    let deployment_targets = parse_deployment_targets();
 
     let sdk = match env::var("TARGET").unwrap().as_ref() {
         "aarch64-apple-darwin" | "x86_64-apple-darwin" => "macosx",
@@ -268,58 +257,64 @@ fn main() {
     println!("cargo:rustc-link-lib={}", clang_rt);
     println!("cargo:rustc-link-search={}", clang_link_search_path());
 
-    let arch = match env::var("TARGET").unwrap().as_ref() {
-        "aarch64-apple-ios-macabi"
-        | "aarch64-apple-darwin"
-        | "aarch64-apple-ios"
-        | "aarch64-apple-tvos"
-        | "aarch64-apple-tvos-sim"
-        | "aarch64-apple-ios-sim"
-        | "aarch64-apple-watchos-sim"
-        | "aarch64-apple-visionos"
-        | "aarch64-apple-visionos-sim" => "arm64",
-        "x86_64-apple-ios" | "x86_64-apple-darwin" => "x86_64",
-        "arm64_32-apple-watchos" => "arm64_32",
-        x => panic!("unknown tripple: {x}"),
-    };
+    if sdk == "maccatalyst" {
+        // Mac Catalyst needs iOSSupport paths for framework and system headers
+        let sdkroot = env::var("SDKROOT").unwrap_or_else(|_| {
+            let c = Command::new("xcrun")
+                .arg("--show-sdk-path")
+                .output()
+                .unwrap();
+            String::from_utf8(c.stdout).unwrap().trim().to_string()
+        });
+        println!("cargo:rustc-link-search=system={sdkroot}/System/iOSSupport/usr");
+        println!(
+            "cargo:rustc-link-search=framework={sdkroot}/System/iOSSupport/System/Library/Frameworks"
+        );
+    }
 
-    let configuration = match env::var("PROFILE").unwrap().as_str() {
-        "release" => "Release",
-        "debug" => "Debug",
-        x => panic!("unknown profile: {x}"),
-    };
+    if (sdk == "macosx" || sdk == "maccatalyst") && has_feature("private") {
+        println!("cargo:rustc-link-search=framework=/System/Library/PrivateFrameworks");
+        println!(
+            "cargo:rustc-link-search=framework=/Library/Apple/System/Library/PrivateFrameworks"
+        );
+    }
 
-    let mut xc_target_args = Vec::new();
+    println!("cargo:rerun-if-changed=./pomace/");
 
-    add_xc_target_args_from_features(
-        &mut xc_target_args,
+    // Available on all platforms
+    try_build(
         &["ut", "un", "sn", "ns", "av", "cl", "nl", "ml", "at"],
+        sdk,
+        &deployment_targets,
     );
 
+    // Not available on watchOS
     if sdk != "watchos" && sdk != "watchsimulator" {
-        add_xc_target_args_from_features(
-            &mut xc_target_args,
-            &[
-                "ca", "vn", "mps", "mpsg", "mc", "mtl", "mtk", "ci", "gc", "av_kit",
-            ],
+        try_build(
+            &["ca", "vn", "mps", "mpsg", "mc", "mtl", "mtk", "ci", "gc", "av_kit"],
+            sdk,
+            &deployment_targets,
         );
         if sdk != "xros" && sdk != "xrsimulator" {
-            add_xc_target_args_from_features(&mut xc_target_args, &["mlc"]);
+            try_build(&["mlc"], sdk, &deployment_targets);
         }
     }
 
+    // Not available on tvOS
     if sdk != "appletvos" && sdk != "appletvsimulator" {
-        add_xc_target_args_from_features(&mut xc_target_args, &["core_motion"]);
+        try_build(&["core_motion"], sdk, &deployment_targets);
     }
 
+    // Not available on tvOS or watchOS
     if sdk != "appletvos"
         && sdk != "appletvsimulator"
         && sdk != "watchos"
         && sdk != "watchsimulator"
     {
-        add_xc_target_args_from_features(&mut xc_target_args, &["wk"]);
+        try_build(&["wk"], sdk, &deployment_targets);
     }
 
+    // iOS/tvOS/watchOS/visionOS/Catalyst only
     if [
         "iphoneos",
         "iphonesimulator",
@@ -333,46 +328,24 @@ fn main() {
     ]
     .contains(&sdk)
     {
-        add_xc_target_args_from_features(&mut xc_target_args, &["ui"]);
+        try_build(&["ui"], sdk, &deployment_targets);
     }
+
+    // iPhone/iPad/Catalyst only
     if sdk == "iphoneos" || sdk == "iphonesimulator" {
-        add_xc_target_args_from_features(&mut xc_target_args, &["wc"]);
+        try_build(&["wc"], sdk, &deployment_targets);
     }
     if sdk == "iphoneos" || sdk == "iphonesimulator" || sdk == "maccatalyst" {
-        add_xc_target_args_from_features(&mut xc_target_args, &["ar"]);
+        try_build(&["ar"], sdk, &deployment_targets);
     }
+
+    // macOS/Catalyst only
     if sdk == "macosx" || sdk == "maccatalyst" {
-        add_xc_target_args_from_features(&mut xc_target_args, &["sc", "app"]);
-        if env::var_os("CARGO_FEATURE_PRIVATE").is_some() {
-            println!("cargo:rustc-link-search=framework=/System/Library/PrivateFrameworks");
-            println!(
-                "cargo:rustc-link-search=framework=/Library/Apple/System/Library/PrivateFrameworks"
-            );
-        }
+        try_build(&["sc", "app"], sdk, &deployment_targets);
     }
+
+    // macOS only
     if sdk == "macosx" {
-        add_xc_target_args_from_features(&mut xc_target_args, &["core_audio"]);
+        try_build(&["core_audio"], sdk, &deployment_targets);
     }
-
-    println!("cargo:rerun-if-changed=./pomace/");
-    xc_build(&xc_target_args, sdk, arch, configuration, &versions);
-}
-
-fn clang_link_search_path() -> String {
-    let output = Command::new("/usr/bin/clang")
-        .arg("--print-search-dirs")
-        .output()
-        .unwrap();
-    if !output.status.success() {
-        panic!("Can't get search paths from clang");
-    }
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    for line in stdout.lines() {
-        if let Some((a, b)) = line.split_once('=') {
-            if a == "libraries: " {
-                return format!("{}/lib/darwin", b);
-            }
-        }
-    }
-    panic!("clang is missing search paths");
 }
