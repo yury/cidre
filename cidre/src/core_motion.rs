@@ -60,3 +60,7 @@ pub use pedometer::PedometerEventType;
 
 mod log_item;
 pub use log_item::LogItem;
+
+#[cfg(not(target_os = "tvos"))]
+#[link(name = "CoreMotion", kind = "framework")]
+unsafe extern "C" {}

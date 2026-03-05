@@ -33,3 +33,7 @@ pub use navigation_delegate::NavigationDelegateImpl;
 
 mod website_data_store;
 pub use website_data_store::WebsiteDataStore;
+
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+#[link(name = "WebKit", kind = "framework")]
+unsafe extern "C" {}

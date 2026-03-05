@@ -136,3 +136,7 @@ impl Graph {
 unsafe extern "C" {
     static MPS_GRAPH: &'static objc::Class<Graph>;
 }
+
+#[cfg(not(target_os = "watchos"))]
+#[link(name = "MetalPerformanceShadersGraph", kind = "framework")]
+unsafe extern "C" {}

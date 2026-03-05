@@ -42,21 +42,15 @@ unsafe extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{api, nl, ns};
+    use crate::{nl, ns};
     #[test]
     fn basics() {
         assert!(nl::LangRecognizer::dominant_lang_for_string(ns::str!(c"")).is_none());
 
-        let lang = nl::LangRecognizer::dominant_lang_for_string(ns::str!(c"cidre"))
+        let lang = nl::LangRecognizer::dominant_lang_for_string(ns::str!(c"un verre de cidre"))
             .expect("failed to recognize language");
         let fr_str = nl::Lang::with_string(ns::str!(c"fr"));
-        let nl_str = nl::Lang::with_string(ns::str!(c"nl"));
-
-        if api::macos_available("26.0") {
-            assert_eq!(nl_str, &lang);
-        } else {
-            assert_eq!(fr_str, &lang);
-        }
+        assert_eq!(fr_str, &lang);
 
         let mut recognizer = nl::LangRecognizer::new();
 
@@ -64,12 +58,8 @@ mod tests {
 
         assert!(recognizer.lang_hypotheses(10).is_empty());
 
-        recognizer.process_string(ns::str!(c"cidre"));
-        if api::macos_available("26.0") {
-            assert_eq!(nl_str, &recognizer.dominant_lang().unwrap());
-        } else {
-            assert_eq!(fr_str, &recognizer.dominant_lang().unwrap());
-        }
+        recognizer.process_string(ns::str!(c"un verre de cidre"));
+        assert_eq!(fr_str, &recognizer.dominant_lang().unwrap());
         assert_eq!(10, recognizer.lang_hypotheses(10).len());
 
         assert!(recognizer.lang_hints().is_empty());
