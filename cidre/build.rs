@@ -98,31 +98,25 @@ fn build_pomace_target(name: &str, sdk: &str, deployment_targets: &DeploymentTar
     build.compile(name);
 }
 
-fn try_build(targets: &[&str], sdk: &str, deployment_targets: &DeploymentTargets) {
-    for name in targets {
-        build_pomace_target(name, sdk, deployment_targets);
-    }
-}
-
-fn collect_build_groups(sdk: &str) -> Vec<Vec<&'static str>> {
-    let mut groups = Vec::new();
+fn collect_targets(sdk: &str) -> Vec<&'static str> {
+    let mut targets = Vec::new();
 
     // Available on all platforms
-    groups.push(vec!["ut", "un", "sn", "ns", "av", "cl", "nl", "ml", "at"]);
+    targets.extend_from_slice(&["ut", "un", "sn", "ns", "av", "cl", "nl", "ml", "at"]);
 
     // Not available on watchOS
     if sdk != "watchos" && sdk != "watchsimulator" {
-        groups.push(vec![
+        targets.extend_from_slice(&[
             "ca", "vn", "mps", "mpsg", "mc", "mtl", "mtk", "ci", "gc", "av_kit",
         ]);
         if sdk != "xros" && sdk != "xrsimulator" {
-            groups.push(vec!["mlc"]);
+            targets.push("mlc");
         }
     }
 
     // Not available on tvOS
     if sdk != "appletvos" && sdk != "appletvsimulator" {
-        groups.push(vec!["core_motion"]);
+        targets.push("core_motion");
     }
 
     // Not available on tvOS or watchOS
@@ -131,7 +125,7 @@ fn collect_build_groups(sdk: &str) -> Vec<Vec<&'static str>> {
         && sdk != "watchos"
         && sdk != "watchsimulator"
     {
-        groups.push(vec!["wk"]);
+        targets.push("wk");
     }
 
     // iOS/tvOS/watchOS/visionOS/Catalyst only
@@ -148,28 +142,29 @@ fn collect_build_groups(sdk: &str) -> Vec<Vec<&'static str>> {
     ]
     .contains(&sdk)
     {
-        groups.push(vec!["ui"]);
+        targets.push("ui");
     }
 
     // iPhone/iPad/Catalyst only
     if sdk == "iphoneos" || sdk == "iphonesimulator" {
-        groups.push(vec!["wc"]);
+        targets.push("wc");
     }
     if sdk == "iphoneos" || sdk == "iphonesimulator" || sdk == "maccatalyst" {
-        groups.push(vec!["ar"]);
+        targets.push("ar");
     }
 
     // macOS/Catalyst only
     if sdk == "macosx" || sdk == "maccatalyst" {
-        groups.push(vec!["sc", "app"]);
+        targets.extend_from_slice(&["sc", "app"]);
     }
 
     // macOS only
     if sdk == "macosx" {
-        groups.push(vec!["core_audio"]);
+        targets.push("core_audio");
     }
 
-    groups
+    targets.retain(|target| has_feature(target));
+    targets
 }
 
 fn parse_deployment_targets() -> DeploymentTargets {
@@ -349,22 +344,13 @@ fn main() {
 
     println!("cargo:rerun-if-changed=./pomace/");
 
-    let build_groups: Vec<Vec<&'static str>> = collect_build_groups(sdk)
-        .into_iter()
-        .map(|group| {
-            group
-                .into_iter()
-                .filter(|name| has_feature(name))
-                .collect::<Vec<_>>()
-        })
-        .filter(|group| !group.is_empty())
-        .collect();
+    let targets = collect_targets(sdk);
     let deployment_targets = &deployment_targets;
 
     thread::scope(|scope| {
-        for targets in build_groups {
+        for target in targets {
             scope.spawn(move || {
-                try_build(&targets, sdk, deployment_targets);
+                build_pomace_target(target, sdk, deployment_targets);
             });
         }
     });
