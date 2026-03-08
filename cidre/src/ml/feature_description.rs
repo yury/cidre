@@ -17,4 +17,11 @@ impl FeatureDesc {
 
     #[objc::msg_send(isAllowedValue:)]
     pub fn is_allowed_value(&self, val: &ml::FeatureValue) -> bool;
+
+    #[objc::msg_send(multiArrayConstraint)]
+    pub fn multi_array_constraint(&self) -> Option<arc::R<ml::MultiArrayConstraint>>;
+
+    #[objc::available(macos = 15.0, ios = 18.0, watchos = 11.0, tvos = 18.0)]
+    #[objc::msg_send(stateConstraint)]
+    pub fn state_constraint(&self) -> Option<arc::R<ml::StateConstraint>>;
 }

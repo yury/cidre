@@ -28,9 +28,18 @@ mod feature_provider;
 pub use feature_provider::AnyFeatureProvider;
 pub use feature_provider::FeatureProvider;
 
+mod multi_array_constraint;
+pub use multi_array_constraint::MultiArrayConstraint;
+
 mod multi_array;
 pub use multi_array::MultiArray;
 pub use multi_array::MultiArrayDType;
+
+mod multi_array_shape_constraint;
+pub use multi_array_shape_constraint::MultiArrayShapeConstraint;
+
+mod multi_array_shape_constraint_type;
+pub use multi_array_shape_constraint_type::MultiArrayShapeConstraintType;
 
 mod model;
 pub use model::Model;
@@ -43,6 +52,9 @@ pub use prediction_options::PredictionOpts;
 
 mod state;
 pub use state::State;
+
+mod state_constraint;
+pub use state_constraint::StateConstraint;
 
 pub mod model_compute_device;
 
