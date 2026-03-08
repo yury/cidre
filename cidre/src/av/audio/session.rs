@@ -178,6 +178,19 @@ impl Session {
     #[objc::msg_send(preferredInput)]
     pub fn preferred_input(&self) -> Option<&PortDesc>;
 
+    #[cfg(not(target_os = "watchos"))]
+    #[objc::msg_send(setPreferredInput:error:)]
+    pub unsafe fn set_preferred_input_err<'ear>(
+        &mut self,
+        val: Option<&PortDesc>,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    #[cfg(not(target_os = "watchos"))]
+    pub fn set_preferred_input<'ear>(&mut self, val: Option<&PortDesc>) -> ns::Result<'ear> {
+        ns::if_false(|err| unsafe { self.set_preferred_input_err(val, err) })
+    }
+
     #[objc::msg_send(allowHapticsAndSystemSoundsDuringRecording)]
     pub fn allow_haptics_and_sys_sounds_during_record(&self) -> bool;
 
