@@ -16,6 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 Class MPS_GRAPH_DEVICE;
 Class MPS_GRAPH;
+Class MPS_GRAPH_COMPILATION_DESCRIPTOR;
+Class MPS_GRAPH_EXECUTION_DESCRIPTOR;
+Class MPS_GRAPH_EXECUTABLE;
+Class MPS_GRAPH_EXECUTABLE_EXECUTION_DESCRIPTOR;
+Class MPS_GRAPH_TENSOR_DATA;
 Class MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR;
 Class MPS_GRAPH_SINGLE_GATE_RNN_DESCRIPTOR;
 Class MPS_GRAPH_LSTM_DESCRIPTOR;
@@ -33,6 +38,11 @@ static void mpsg_initializer(void)
         
         MPS_GRAPH_DEVICE = [MPSGraphDevice class];
         MPS_GRAPH = [MPSGraph class];
+        MPS_GRAPH_COMPILATION_DESCRIPTOR = [MPSGraphCompilationDescriptor class];
+        MPS_GRAPH_EXECUTION_DESCRIPTOR = [MPSGraphExecutionDescriptor class];
+        MPS_GRAPH_EXECUTABLE = [MPSGraphExecutable class];
+        MPS_GRAPH_EXECUTABLE_EXECUTION_DESCRIPTOR = [MPSGraphExecutableExecutionDescriptor class];
+        MPS_GRAPH_TENSOR_DATA = [MPSGraphTensorData class];
         MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR = [MPSGraphConvolution2DOpDescriptor class];
         MPS_GRAPH_SINGLE_GATE_RNN_DESCRIPTOR = [MPSGraphSingleGateRNNDescriptor class];
         MPS_GRAPH_GRU_DESCRIPTOR = [MPSGraphGRUDescriptor class];

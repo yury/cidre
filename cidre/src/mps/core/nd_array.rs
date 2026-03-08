@@ -1,3 +1,5 @@
+#[allow(unused_imports)]
+use crate::api;
 use crate::{arc, define_cls, define_obj_type, mps, mtl, ns, objc};
 
 define_obj_type!(
@@ -44,6 +46,13 @@ impl NdArray {
 
     #[objc::msg_send(descriptor)]
     pub fn descriptor(&self) -> &NdArrayDesc;
+
+    #[objc::msg_send(descriptor)]
+    pub fn desc(&self) -> arc::R<NdArrayDesc>;
+
+    #[objc::msg_send(arrayViewWithDescriptor:)]
+    #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0)]
+    pub fn array_view_with_desc(&self, descriptor: &NdArrayDesc) -> Option<arc::R<NdArray>>;
 }
 
 define_obj_type!(
@@ -71,6 +80,9 @@ impl NdArrayDesc {
 
     #[objc::msg_send(sliceRangeForDimension:)]
     pub fn dim_slice_range(&self, dim_index: usize) -> mps::DimensionSlice;
+
+    #[objc::msg_send(sliceDimension:withSubrange:)]
+    pub fn slice_dim_with_subrange(&mut self, dim_index: usize, sub_range: mps::DimensionSlice);
 }
 
 unsafe extern "C" {
