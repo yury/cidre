@@ -12,6 +12,9 @@ mod compute_device_protocol;
 pub use compute_device_protocol::AnyComputeDevice;
 pub use compute_device_protocol::ComputeDevice;
 
+mod dictionary_feature_provider;
+pub use dictionary_feature_provider::DictionaryFeatureProvider;
+
 mod feature_type;
 pub use feature_type::FeatureType;
 
@@ -32,9 +35,19 @@ pub use multi_array::MultiArrayDType;
 mod model;
 pub use model::Model;
 
+mod model_model_compilation;
+mod model_state;
+
+mod prediction_options;
+pub use prediction_options::PredictionOpts;
+
+mod state;
+pub use state::State;
+
 pub mod model_compute_device;
 
 mod model_configuration;
+pub use model_configuration::ComputeUnits;
 pub use model_configuration::ModelCfg;
 
 mod model_description;

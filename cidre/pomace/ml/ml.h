@@ -18,9 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 Class ML_FEATURE_VALUE;
 Class ML_MULTI_ARRAY;
+Class ML_PREDICTION_OPTIONS;
 Class ML_MODEL;
 Class ML_MODEL_CONFIGURATION;
 Class ML_ARRAY_BATCH_PROVIDER;
+Class ML_DICTIONARY_FEATURE_PROVIDER;
 
 __attribute__((constructor))
 static void ml_initializer(void)
@@ -31,12 +33,13 @@ static void ml_initializer(void)
         
         ML_FEATURE_VALUE = NSClassFromString(@"MLFeatureValue");
         ML_MULTI_ARRAY = NSClassFromString(@"MLMultiArray");
+        ML_PREDICTION_OPTIONS = NSClassFromString(@"MLPredictionOptions");
         ML_MODEL = NSClassFromString(@"MLModel");
         ML_MODEL_CONFIGURATION = NSClassFromString(@"MLModelConfiguration");
         ML_ARRAY_BATCH_PROVIDER = NSClassFromString(@"MLArrayBatchProvider");
+        ML_DICTIONARY_FEATURE_PROVIDER = NSClassFromString(@"MLDictionaryFeatureProvider");
     }
 }
 
 
 NS_ASSUME_NONNULL_END
-

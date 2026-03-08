@@ -23,6 +23,9 @@ impl FeatureValue {
     #[objc::msg_send(stringValue)]
     pub fn string(&self) -> Option<arc::R<ns::String>>;
 
+    #[objc::msg_send(multiArrayValue)]
+    pub fn multi_array(&self) -> Option<arc::R<ml::MultiArray>>;
+
     #[objc::msg_send(dictionaryValue)]
     pub fn dictionary(&self) -> Option<ns::Dictionary<ns::Id, ns::Number>>;
 
@@ -41,6 +44,9 @@ impl FeatureValue {
     pub fn with_string<S: AsRef<ns::String>>(val: S) -> arc::R<Self> {
         Self::with_ns_string(val.as_ref())
     }
+
+    #[objc::msg_send(featureValueWithMultiArray:)]
+    pub fn with_multi_array(val: &ml::MultiArray) -> arc::R<Self>;
 
     #[objc::msg_send(featureValueWithPixelBuffer:)]
     pub fn with_pixel_buf(val: &cv::PixelBuf) -> arc::R<Self>;

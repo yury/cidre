@@ -6,7 +6,6 @@ define_obj_type!(
 );
 
 impl Model {
-    #[objc::available(macos = 10.14, ios = 12.0, watchos = 5.0, tvos = 12.0)]
     define_cls!(ML_MODEL);
 
     /// A model holds a description of its required inputs and expected outputs.
@@ -51,6 +50,22 @@ impl Model {
         ns::if_none(|err| unsafe { self.prediction_from_features_err(input, err) })
     }
 
+    #[objc::msg_send(predictionFromFeatures:options:error:)]
+    pub unsafe fn prediction_from_features_opts_err<'ear, F: ml::FeatureProvider>(
+        &self,
+        input: &F,
+        options: &ml::PredictionOpts,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<ml::AnyFeatureProvider>>;
+
+    pub fn prediction_from_features_opts<'ear, F: ml::FeatureProvider>(
+        &self,
+        input: &F,
+        options: &ml::PredictionOpts,
+    ) -> ns::Result<'ear, arc::R<ml::AnyFeatureProvider>> {
+        ns::if_none(|err| unsafe { self.prediction_from_features_opts_err(input, options, err) })
+    }
+
     #[objc::msg_send(predictionsFromBatch:error:)]
     pub unsafe fn predictions_from_batch_err<'ear, P: ml::BatchProvider>(
         &self,
@@ -63,6 +78,25 @@ impl Model {
         input_batch: &P,
     ) -> ns::Result<'ear, arc::R<ml::AnyBatchProvider>> {
         ns::if_none(|err| unsafe { self.predictions_from_batch_err(input_batch, err) })
+    }
+
+    #[objc::msg_send(predictionsFromBatch:options:error:)]
+    pub unsafe fn predictions_from_batch_opts_err<'ear, P: ml::BatchProvider>(
+        &self,
+        input_batch: &P,
+        options: &ml::PredictionOpts,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<ml::AnyBatchProvider>>;
+
+    #[objc::available(macos = 10.14, ios = 12.0, watchos = 5.0, tvos = 12.0)]
+    pub unsafe fn predictions_from_batch_opts<'ear, P: ml::BatchProvider>(
+        &self,
+        input_batch: &P,
+        options: &ml::PredictionOpts,
+    ) -> ns::Result<'ear, arc::R<ml::AnyBatchProvider>> {
+        ns::if_none(|err| unsafe {
+            self.predictions_from_batch_opts_err(input_batch, options, err)
+        })
     }
 }
 
