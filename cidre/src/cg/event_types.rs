@@ -372,5 +372,269 @@ impl EventField {
     #[doc(alias = "kCGScrollWheelEventDeltaAxis2")]
     pub const SCROLL_WHEEL_EVENT_DELTA_AXIS2: Self = Self(12);
 
-    // ...
+    /// This field is not used.
+    #[doc(alias = "kCGScrollWheelEventDeltaAxis3")]
+    pub const SCROLL_WHEEL_EVENT_DELTA_AXIS3: Self = Self(13);
+
+    /// Key to access a field that contains scrolling data. The scrolling data
+    /// represents a line-based or pixel-based change in vertical position
+    /// since the last scrolling event from a Mighty Mouse scroller or a
+    /// single-wheel mouse scroller. The scrolling data uses a fixed-point
+    /// 16.16 signed integer format. If this key is passed to
+    /// `CGEventGetDoubleValueField`, the fixed-point value is converted to a
+    /// double value.
+    #[doc(alias = "kCGScrollWheelEventFixedPtDeltaAxis1")]
+    pub const SCROLL_WHEEL_EVENT_FIXED_PT_DELTA_AXIS1: Self = Self(93);
+
+    /// Key to access a field that contains scrolling data. The scrolling data
+    /// represents a line-based or pixel-based change in horizontal position
+    /// since the last scrolling event from a Mighty Mouse scroller. The
+    /// scrolling data uses a fixed-point 16.16 signed integer format. If this
+    /// key is passed to `CGEventGetDoubleValueField`, the fixed-point value is
+    /// converted to a double value.
+    #[doc(alias = "kCGScrollWheelEventFixedPtDeltaAxis2")]
+    pub const SCROLL_WHEEL_EVENT_FIXED_PT_DELTA_AXIS2: Self = Self(94);
+
+    /// This field is not used.
+    #[doc(alias = "kCGScrollWheelEventFixedPtDeltaAxis3")]
+    pub const SCROLL_WHEEL_EVENT_FIXED_PT_DELTA_AXIS3: Self = Self(95);
+
+    /// Key to access an integer field that contains pixel-based scrolling
+    /// data. The scrolling data represents the change in vertical position
+    /// since the last scrolling event from a Mighty Mouse scroller or a
+    /// single-wheel mouse scroller.
+    #[doc(alias = "kCGScrollWheelEventPointDeltaAxis1")]
+    pub const SCROLL_WHEEL_EVENT_POINT_DELTA_AXIS1: Self = Self(96);
+
+    /// Key to access an integer field that contains pixel-based scrolling
+    /// data. The scrolling data represents the change in horizontal position
+    /// since the last scrolling event from a Mighty Mouse scroller.
+    #[doc(alias = "kCGScrollWheelEventPointDeltaAxis2")]
+    pub const SCROLL_WHEEL_EVENT_POINT_DELTA_AXIS2: Self = Self(97);
+
+    /// This field is not used.
+    #[doc(alias = "kCGScrollWheelEventPointDeltaAxis3")]
+    pub const SCROLL_WHEEL_EVENT_POINT_DELTA_AXIS3: Self = Self(98);
+
+    /// Key to access an integer field that contains the scroll phase.
+    #[doc(alias = "kCGScrollWheelEventScrollPhase")]
+    pub const SCROLL_WHEEL_EVENT_SCROLL_PHASE: Self = Self(99);
+
+    /// Key to access an integer field that contains the scroll count.
+    #[doc(alias = "kCGScrollWheelEventScrollCount")]
+    pub const SCROLL_WHEEL_EVENT_SCROLL_COUNT: Self = Self(100);
+
+    /// Key to access an integer field that contains the momentum phase.
+    #[doc(alias = "kCGScrollWheelEventMomentumPhase")]
+    pub const SCROLL_WHEEL_EVENT_MOMENTUM_PHASE: Self = Self(123);
+
+    /// Key to access an integer field that indicates whether the event should
+    /// be ignored by the Inkwell subsystem. If the value is non-zero, the
+    /// event should be ignored.
+    #[doc(alias = "kCGScrollWheelEventInstantMouser")]
+    pub const SCROLL_WHEEL_EVENT_INSTANT_MOUSER: Self = Self(14);
+
+    /// Key to access an integer field that contains the absolute X coordinate
+    /// in tablet space at full tablet resolution.
+    #[doc(alias = "kCGTabletEventPointX")]
+    pub const TABLET_EVENT_POINT_X: Self = Self(15);
+
+    /// Key to access an integer field that contains the absolute Y coordinate
+    /// in tablet space at full tablet resolution.
+    #[doc(alias = "kCGTabletEventPointY")]
+    pub const TABLET_EVENT_POINT_Y: Self = Self(16);
+
+    /// Key to access an integer field that contains the absolute Z coordinate
+    /// in tablet space at full tablet resolution.
+    #[doc(alias = "kCGTabletEventPointZ")]
+    pub const TABLET_EVENT_POINT_Z: Self = Self(17);
+
+    /// Key to access an integer field that contains the tablet button state.
+    /// Bit 0 is the first button, and a set bit represents a closed or pressed
+    /// button. Up to 16 buttons are supported.
+    #[doc(alias = "kCGTabletEventPointButtons")]
+    pub const TABLET_EVENT_POINT_BUTTONS: Self = Self(18);
+
+    /// Key to access a double field that contains the tablet pen pressure. A
+    /// value of 0.0 represents no pressure, and 1.0 represents maximum
+    /// pressure.
+    #[doc(alias = "kCGTabletEventPointPressure")]
+    pub const TABLET_EVENT_POINT_PRESSURE: Self = Self(19);
+
+    /// Key to access a double field that contains the horizontal tablet pen
+    /// tilt. A value of 0 represents no tilt, and 1 represents maximum tilt.
+    #[doc(alias = "kCGTabletEventTiltX")]
+    pub const TABLET_EVENT_TILT_X: Self = Self(20);
+
+    /// Key to access a double field that contains the vertical tablet pen
+    /// tilt. A value of 0 represents no tilt, and 1 represents maximum tilt.
+    #[doc(alias = "kCGTabletEventTiltY")]
+    pub const TABLET_EVENT_TILT_Y: Self = Self(21);
+
+    /// Key to access a double field that contains the tablet pen rotation.
+    #[doc(alias = "kCGTabletEventRotation")]
+    pub const TABLET_EVENT_ROTATION: Self = Self(22);
+
+    /// Key to access a double field that contains the tangential pressure on
+    /// the device. A value of 0.0 represents no pressure, and 1.0 represents
+    /// maximum pressure.
+    #[doc(alias = "kCGTabletEventTangentialPressure")]
+    pub const TABLET_EVENT_TANGENTIAL_PRESSURE: Self = Self(23);
+
+    /// Key to access an integer field that contains the system-assigned unique
+    /// device ID.
+    #[doc(alias = "kCGTabletEventDeviceID")]
+    pub const TABLET_EVENT_DEVICE_ID: Self = Self(24);
+
+    /// Key to access an integer field that contains a vendor-specified value.
+    #[doc(alias = "kCGTabletEventVendor1")]
+    pub const TABLET_EVENT_VENDOR_1: Self = Self(25);
+
+    /// Key to access an integer field that contains a vendor-specified value.
+    #[doc(alias = "kCGTabletEventVendor2")]
+    pub const TABLET_EVENT_VENDOR_2: Self = Self(26);
+
+    /// Key to access an integer field that contains a vendor-specified value.
+    #[doc(alias = "kCGTabletEventVendor3")]
+    pub const TABLET_EVENT_VENDOR_3: Self = Self(27);
+
+    /// Key to access an integer field that contains the vendor-defined ID,
+    /// typically the USB vendor ID.
+    #[doc(alias = "kCGTabletProximityEventVendorID")]
+    pub const TABLET_PROXIMITY_EVENT_VENDOR_ID: Self = Self(28);
+
+    /// Key to access an integer field that contains the vendor-defined tablet
+    /// ID, typically the USB product ID.
+    #[doc(alias = "kCGTabletProximityEventTabletID")]
+    pub const TABLET_PROXIMITY_EVENT_TABLET_ID: Self = Self(29);
+
+    /// Key to access an integer field that contains the vendor-defined ID of
+    /// the pointing device.
+    #[doc(alias = "kCGTabletProximityEventPointerID")]
+    pub const TABLET_PROXIMITY_EVENT_POINTER_ID: Self = Self(30);
+
+    /// Key to access an integer field that contains the system-assigned device
+    /// ID.
+    #[doc(alias = "kCGTabletProximityEventDeviceID")]
+    pub const TABLET_PROXIMITY_EVENT_DEVICE_ID: Self = Self(31);
+
+    /// Key to access an integer field that contains the system-assigned unique
+    /// tablet ID.
+    #[doc(alias = "kCGTabletProximityEventSystemTabletID")]
+    pub const TABLET_PROXIMITY_EVENT_SYSTEM_TABLET_ID: Self = Self(32);
+
+    /// Key to access an integer field that contains the vendor-assigned
+    /// pointer type.
+    #[doc(alias = "kCGTabletProximityEventVendorPointerType")]
+    pub const TABLET_PROXIMITY_EVENT_VENDOR_POINTER_TYPE: Self = Self(33);
+
+    /// Key to access an integer field that contains the vendor-defined pointer
+    /// serial number.
+    #[doc(alias = "kCGTabletProximityEventVendorPointerSerialNumber")]
+    pub const TABLET_PROXIMITY_EVENT_VENDOR_POINTER_SERIAL_NUMBER: Self = Self(34);
+
+    /// Key to access an integer field that contains the vendor-defined unique
+    /// ID.
+    #[doc(alias = "kCGTabletProximityEventVendorUniqueID")]
+    pub const TABLET_PROXIMITY_EVENT_VENDOR_UNIQUE_ID: Self = Self(35);
+
+    /// Key to access an integer field that contains the device capabilities
+    /// mask.
+    #[doc(alias = "kCGTabletProximityEventCapabilityMask")]
+    pub const TABLET_PROXIMITY_EVENT_CAPABILITY_MASK: Self = Self(36);
+
+    /// Key to access an integer field that contains the pointer type.
+    #[doc(alias = "kCGTabletProximityEventPointerType")]
+    pub const TABLET_PROXIMITY_EVENT_POINTER_TYPE: Self = Self(37);
+
+    /// Key to access an integer field that indicates whether the pen is in
+    /// proximity to the tablet. The value is non-zero if the pen is in
+    /// proximity to the tablet and zero when leaving the tablet.
+    #[doc(alias = "kCGTabletProximityEventEnterProximity")]
+    pub const TABLET_PROXIMITY_EVENT_ENTER_PROXIMITY: Self = Self(38);
+
+    /// Key to access a field that contains the event target process serial
+    /// number. The value is a 64-bit value.
+    #[doc(alias = "kCGEventTargetProcessSerialNumber")]
+    pub const EVENT_TARGET_PROCESS_SERIAL_NUMBER: Self = Self(39);
+
+    /// Key to access a field that contains the event target Unix process ID.
+    #[doc(alias = "kCGEventTargetUnixProcessID")]
+    pub const EVENT_TARGET_UNIX_PROCESS_ID: Self = Self(40);
+
+    /// Key to access a field that contains the event source Unix process ID.
+    #[doc(alias = "kCGEventSourceUnixProcessID")]
+    pub const EVENT_SOURCE_UNIX_PROCESS_ID: Self = Self(41);
+
+    /// Key to access a field that contains the event source user-supplied
+    /// data, up to 64 bits.
+    #[doc(alias = "kCGEventSourceUserData")]
+    pub const EVENT_SOURCE_USER_DATA: Self = Self(42);
+
+    /// Key to access a field that contains the event source Unix effective
+    /// UID.
+    #[doc(alias = "kCGEventSourceUserID")]
+    pub const EVENT_SOURCE_USER_ID: Self = Self(43);
+
+    /// Key to access a field that contains the event source Unix effective
+    /// GID.
+    #[doc(alias = "kCGEventSourceGroupID")]
+    pub const EVENT_SOURCE_GROUP_ID: Self = Self(44);
+
+    /// Key to access a field that contains the event source state ID used to
+    /// create this event.
+    #[doc(alias = "kCGEventSourceStateID")]
+    pub const EVENT_SOURCE_STATE_ID: Self = Self(45);
+
+    /// Key to access an integer field that indicates whether a scrolling event
+    /// contains continuous, pixel-based scrolling data. The value is non-zero
+    /// when the scrolling data is pixel-based and zero when the scrolling data
+    /// is line-based.
+    #[doc(alias = "kCGScrollWheelEventIsContinuous")]
+    pub const SCROLL_WHEEL_EVENT_IS_CONTINUOUS: Self = Self(88);
+
+    /// Key to access an integer field that contains the window under the mouse
+    /// pointer.
+    #[doc(alias = "kCGMouseEventWindowUnderMousePointer")]
+    pub const MOUSE_EVENT_WINDOW_UNDER_MOUSE_POINTER: Self = Self(91);
+
+    /// Key to access an integer field that contains the window under the mouse
+    /// pointer that can handle this event.
+    #[doc(alias = "kCGMouseEventWindowUnderMousePointerThatCanHandleThisEvent")]
+    pub const MOUSE_EVENT_WINDOW_UNDER_MOUSE_POINTER_THAT_CAN_HANDLE_THIS_EVENT: Self = Self(92);
+
+    /// Key to access an integer field that contains unaccelerated pointer
+    /// movement along the X axis.
+    #[doc(alias = "kCGEventUnacceleratedPointerMovementX")]
+    pub const EVENT_UNACCELERATED_POINTER_MOVEMENT_X: Self = Self(170);
+
+    /// Key to access an integer field that contains unaccelerated pointer
+    /// movement along the Y axis.
+    #[doc(alias = "kCGEventUnacceleratedPointerMovementY")]
+    pub const EVENT_UNACCELERATED_POINTER_MOVEMENT_Y: Self = Self(171);
+
+    /// Key to access an integer field that contains the optional momentum
+    /// phase.
+    #[doc(alias = "kCGScrollWheelEventMomentumOptionPhase")]
+    pub const SCROLL_WHEEL_EVENT_MOMENTUM_OPTION_PHASE: Self = Self(173);
+
+    /// Key to access an integer field that contains the accelerated vertical
+    /// scroll delta.
+    #[doc(alias = "kCGScrollWheelEventAcceleratedDeltaAxis1")]
+    pub const SCROLL_WHEEL_EVENT_ACCELERATED_DELTA_AXIS1: Self = Self(176);
+
+    /// Key to access an integer field that contains the accelerated
+    /// horizontal scroll delta.
+    #[doc(alias = "kCGScrollWheelEventAcceleratedDeltaAxis2")]
+    pub const SCROLL_WHEEL_EVENT_ACCELERATED_DELTA_AXIS2: Self = Self(175);
+
+    /// Key to access an integer field that contains the raw vertical scroll
+    /// delta.
+    #[doc(alias = "kCGScrollWheelEventRawDeltaAxis1")]
+    pub const SCROLL_WHEEL_EVENT_RAW_DELTA_AXIS1: Self = Self(178);
+
+    /// Key to access an integer field that contains the raw horizontal scroll
+    /// delta.
+    #[doc(alias = "kCGScrollWheelEventRawDeltaAxis2")]
+    pub const SCROLL_WHEEL_EVENT_RAW_DELTA_AXIS2: Self = Self(177);
 }
