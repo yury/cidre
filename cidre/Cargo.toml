@@ -29,6 +29,7 @@ full = [
   "cm",
   "cmio",
   "ct",
+  "tis",
   "av",
   "av_kit",
   "ar",
@@ -131,6 +132,7 @@ ui = ["ns"]
 ut = ["ns"]
 un = ["ns"]
 ct = ["cf", "cg"]
+tis = ["cf"]
 mc = ["ns"]
 ml = ["ns", "cf", "blocks"]
 mt = ["cm", "cat"]

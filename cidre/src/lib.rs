@@ -81,6 +81,10 @@ pub mod compression;
 #[cfg(feature = "ct")]
 pub mod ct;
 
+/// Carbon/HIToolbox Text Input Sources
+#[cfg(all(target_os = "macos", feature = "tis"))]
+pub mod tis;
+
 /// Core Video
 #[cfg(feature = "cv")]
 pub mod cv;
