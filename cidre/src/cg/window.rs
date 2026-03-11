@@ -1,7 +1,7 @@
-use crate::{define_cf_type, define_opts};
+use crate::define_opts;
 
 #[cfg(target_os = "macos")]
-use crate::{arc, cf};
+use crate::{arc, cf, define_cf_type};
 
 // typedef uint32_t CGWindowID;
 #[doc(alias = "CGWindowID")]
