@@ -55,9 +55,21 @@ impl Id {
             CGDisplayMoveCursorToPoint(self, point);
         }
     }
+
+    pub fn shielding_window_id(&self) -> cg::WindowId {
+        unsafe { CGShieldingWindowID(*self) }
+    }
 }
 
 pub type RefreshRate = f64;
+
+#[cfg(target_os = "macos")]
+impl cg::WindowLevel {
+    #[doc(alias = "CGShieldingWindowLevel")]
+    pub fn shielding() -> cg::WindowLevel {
+        unsafe { CGShieldingWindowLevel() }
+    }
+}
 
 #[cfg(target_os = "macos")]
 unsafe extern "C-unwind" {
@@ -71,6 +83,8 @@ unsafe extern "C-unwind" {
     fn CGDisplayPixelsHigh(display: Id) -> usize;
 
     fn CGDisplayMoveCursorToPoint(display: Id, point: cg::Point);
+    fn CGShieldingWindowLevel() -> cg::WindowLevel;
+    fn CGShieldingWindowID(display_id: cg::DirectDisplayId) -> cg::WindowId;
 }
 
 #[cfg(all(test, target_os = "macos"))]

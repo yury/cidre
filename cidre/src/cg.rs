@@ -21,6 +21,7 @@ pub use window::Id as WindowId;
 
 mod window_level;
 pub use window_level::WindowLevel;
+pub use window_level::WindowLevelKey;
 
 pub mod direct_display;
 pub use direct_display::Id as DirectDisplayId;
