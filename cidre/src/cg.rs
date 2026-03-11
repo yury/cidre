@@ -25,6 +25,15 @@ pub use window::WindowList;
 #[cfg(target_os = "macos")]
 pub use window::keys as window_keys;
 
+#[cfg(target_os = "macos")]
+mod session;
+#[cfg(target_os = "macos")]
+pub use session::current_dictionary as session_current_dictionary;
+#[cfg(target_os = "macos")]
+pub use session::keys as session_keys;
+#[cfg(target_os = "macos")]
+pub use session::notifications as session_notifications;
+
 mod window_level;
 pub use window_level::WindowLevel;
 pub use window_level::WindowLevelKey;
