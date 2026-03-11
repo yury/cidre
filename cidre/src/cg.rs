@@ -18,6 +18,9 @@ pub use color::Color;
 
 mod window;
 pub use window::Id as WindowId;
+pub use window::ListOpt as WindowListOpt;
+#[cfg(target_os = "macos")]
+pub use window::keys as window_keys;
 
 mod window_level;
 pub use window_level::WindowLevel;
