@@ -320,7 +320,7 @@ mod tests {
         let result = results.get(out.as_ref()).unwrap();
         let ndarray = result.mps_nd_array();
         let mut bytes = [0u8; std::mem::size_of::<f32>() * 2];
-        let mut strides = [0isize; 1];
+        let mut strides = [std::mem::size_of::<f32>() as isize];
         ndarray.read_bytes(bytes.as_mut_ptr(), strides.as_mut_ptr());
         let values = unsafe { std::slice::from_raw_parts(bytes.as_ptr().cast::<f32>(), 2) };
         assert_eq!(values, &[4.0, 6.0]);
