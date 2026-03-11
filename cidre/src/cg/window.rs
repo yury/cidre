@@ -1,7 +1,14 @@
-use crate::define_opts;
+use crate::{define_cf_type, define_opts};
+
+#[cfg(target_os = "macos")]
+use crate::{arc, cf};
 
 // typedef uint32_t CGWindowID;
+#[doc(alias = "CGWindowID")]
 pub type Id = u32;
+
+#[doc(alias = "kCGNullWindowID")]
+pub const WINDOW_ID_NULL: Id = 0;
 
 define_opts!(
     #[doc(alias = "CGWindowListOption")]
@@ -26,6 +33,32 @@ impl ListOpt {
 
     #[doc(alias = "kCGWindowListExcludeDesktopElements")]
     pub const EXCLUDE_DESKTOP_ELEMENTS: Self = Self(1 << 4);
+}
+
+#[cfg(target_os = "macos")]
+define_cf_type!(WindowList(cf::Array));
+
+#[cfg(target_os = "macos")]
+impl WindowList {
+    #[doc(alias = "CGWindowListCreate")]
+    #[inline]
+    pub fn new(option: ListOpt, relative_to_window: Id) -> Option<arc::R<Self>> {
+        unsafe { CGWindowListCreate(option, relative_to_window) }
+    }
+
+    #[inline]
+    pub fn get(&self, index: usize) -> Id {
+        (unsafe { self.0.get(index) }) as Id
+    }
+
+    #[doc(alias = "CGWindowListCopyWindowInfo")]
+    #[inline]
+    pub fn info(
+        option: ListOpt,
+        relative_to_window: Id,
+    ) -> Option<arc::R<cf::ArrayOf<cf::DictionaryOf<cf::String, cf::Type>>>> {
+        unsafe { CGWindowListCopyWindowInfo(option, relative_to_window) }
+    }
 }
 
 #[cfg(target_os = "macos")]
@@ -138,5 +171,44 @@ pub mod keys {
         static kCGWindowName: &'static cf::String;
         static kCGWindowIsOnscreen: &'static cf::String;
         static kCGWindowBackingLocationVideoMemory: &'static cf::String;
+    }
+}
+
+#[cfg(target_os = "macos")]
+unsafe extern "C-unwind" {
+    fn CGWindowListCopyWindowInfo(
+        option: ListOpt,
+        relative_to_window: Id,
+    ) -> Option<arc::R<cf::ArrayOf<cf::DictionaryOf<cf::String, cf::Type>>>>;
+
+    fn CGWindowListCreate(option: ListOpt, relative_to_window: Id) -> Option<arc::R<WindowList>>;
+}
+
+#[cfg(all(test, target_os = "macos"))]
+mod tests {
+    use crate::cg;
+
+    #[test]
+    fn basics() {
+        let ids = cg::WindowList::new(cg::WindowListOpt::ALL, cg::WINDOW_ID_NULL);
+        let infos = cg::WindowList::info(cg::WindowListOpt::ALL, cg::WINDOW_ID_NULL);
+
+        match (ids, infos) {
+            (Some(ids), Some(infos)) => {
+                assert_eq!(ids.len(), infos.len());
+                if ids.len() > 0 {
+                    let info = &infos[0];
+                    let number = info.get(cg::window_keys::number()).unwrap();
+                    let number = number.try_as_number().unwrap();
+                    assert_eq!(ids.get(0) as i64, number.to_i64().unwrap());
+                }
+            }
+            (None, None) => {}
+            (ids, infos) => panic!(
+                "window_list and window_list_info should agree on availability: ids={}, infos={}",
+                ids.is_some(),
+                infos.is_some()
+            ),
+        }
     }
 }

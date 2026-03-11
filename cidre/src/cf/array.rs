@@ -119,7 +119,7 @@ where
 
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
-        unsafe { std::mem::transmute::<&Type, &T>(&self.0[index]) }
+        unsafe { std::mem::transmute(self.0.get(index)) }
     }
 }
 
@@ -129,7 +129,7 @@ where
 {
     #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        unsafe { std::mem::transmute::<&mut Type, &mut T>(&mut self.0[index]) }
+        unsafe { std::mem::transmute(self.0.get_mut(index)) }
     }
 }
 
@@ -169,7 +169,7 @@ where
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         if self.index < self.len {
-            let res = unsafe { std::mem::transmute::<&Type, &'a T>(&self.array[self.index]) };
+            let res = unsafe { std::mem::transmute(self.array.get(self.index)) };
             self.index += 1;
             Some(res)
         } else {
@@ -252,7 +252,7 @@ where
 
     #[inline]
     fn index(&self, index: usize) -> &Self::Output {
-        unsafe { std::mem::transmute::<&Type, &T>(&self.0[index]) }
+        unsafe { std::mem::transmute(self.0.get(index)) }
     }
 }
 
@@ -262,7 +262,7 @@ where
 {
     #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        unsafe { std::mem::transmute::<&mut Type, &mut T>(&mut self.0[index]) }
+        unsafe { std::mem::transmute(self.0.get_mut(index)) }
     }
 }
 
@@ -443,20 +443,14 @@ impl Array {
     pub fn copy_mut_with_capacity(&self, capacity: usize) -> Option<arc::R<ArrayMut>> {
         self.copy_mut_in(capacity as _, None)
     }
-}
-
-impl std::ops::Index<usize> for Array {
-    type Output = Type;
 
     #[inline]
-    fn index(&self, index: usize) -> &Self::Output {
+    pub unsafe fn get(&self, index: usize) -> *const std::ffi::c_void {
         unsafe { CFArrayGetValueAtIndex(self, index as _) }
     }
-}
 
-impl std::ops::IndexMut<usize> for Array {
     #[inline]
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+    pub unsafe fn get_mut(&mut self, index: usize) -> *mut std::ffi::c_void {
         unsafe { CFArrayGetValueAtIndex(self, index as _) }
     }
 }
@@ -538,7 +532,7 @@ unsafe extern "C-unwind" {
 
     fn CFArrayGetTypeID() -> TypeId;
 
-    fn CFArrayGetValueAtIndex(array: &Array, idx: Index) -> &mut Type;
+    fn CFArrayGetValueAtIndex(array: &Array, idx: Index) -> *mut std::ffi::c_void;
 
     fn CFArrayCreate(
         allocator: Option<&Allocator>,
