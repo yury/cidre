@@ -1,4 +1,7 @@
-use crate::{api, arc, blocks, define_cls, define_obj_type, gc, ns, objc};
+use crate::{api, arc, define_cls, define_obj_type, gc, ns, objc};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
@@ -45,9 +48,11 @@ impl Controller {
     #[api::available(macos = 11.3, ios = 14.5, tvos = 14.5)]
     pub fn set_should_monitor_background_events(val: bool);
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(startWirelessControllerDiscoveryWithCompletionHandler:)]
     pub fn start_wireless_discovery_ch(ch: Option<&mut blocks::CompletionBlock>);
 
+    #[cfg(feature = "blocks")]
     pub fn start_wireless_discovery(ch: impl FnMut() + 'static) {
         let mut block = blocks::CompletionBlock::new0(ch);
         Self::start_wireless_discovery_ch(Some(&mut block));
