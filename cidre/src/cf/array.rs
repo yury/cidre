@@ -218,9 +218,10 @@ impl<T: Retain> ArrayOfMut<T> {
         }
     }
 
+    #[doc(alias = "CFArrayAppendValue")]
     #[inline]
     pub fn push(&mut self, val: &T) {
-        self.0.push(unsafe { std::mem::transmute(val) });
+        unsafe { self.0.append_value(std::mem::transmute(val)) };
     }
 
     #[doc(alias = "CFArrayRemoveValueAtIndex")]
@@ -462,12 +463,6 @@ impl ArrayMut {
     #[inline]
     pub unsafe fn append_value(&mut self, val: *const c_void) {
         unsafe { CFArrayAppendValue(self, val) }
-    }
-
-    #[doc(alias = "CFArrayAppendValue")]
-    #[inline]
-    pub fn push(&mut self, val: &Type) {
-        unsafe { self.append_value(val.as_type_ptr()) }
     }
 
     #[doc(alias = "CFArrayRemoveValueAtIndex")]

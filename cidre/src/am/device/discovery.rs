@@ -165,10 +165,10 @@ impl QueryBuilder {
     }
 
     pub fn udids(&mut self, udids: &[&str]) -> &mut Self {
-        let mut array = cf::ArrayMut::with_capacity(udids.len() as _);
+        let mut array = cf::ArrayOfMut::with_capacity(udids.len() as _);
         for u in udids {
             let s = cf::String::from_str(u);
-            array.push(&s);
+            array.push(s.as_ref());
         }
         self.query.insert(&matching::criteria::udid_key(), &array);
         self
