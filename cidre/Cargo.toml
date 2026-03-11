@@ -63,6 +63,7 @@ full = [
   "io_kit",
   "io_pm",
   "nw",
+  "notify",
   "core_motion",
   "core_audio",
   "compression",
@@ -125,6 +126,7 @@ vdsp = []
 cblas = []
 vimage = []
 nw = ["ns", "dispatch"]
+notify = []
 ui = ["ns"]
 ut = ["ns"]
 un = ["ns"]

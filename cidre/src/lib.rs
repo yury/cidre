@@ -147,6 +147,10 @@ pub mod nl;
 #[cfg(feature = "nw")]
 pub mod nw;
 
+/// Darwin notifications
+#[cfg(feature = "notify")]
+pub mod notify;
+
 #[cfg(feature = "ns")]
 pub mod objc;
 
