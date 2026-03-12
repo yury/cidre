@@ -50,9 +50,7 @@ pub use error::Cb as ErrorCallback;
 pub use error::Error;
 pub use error::Status;
 
-#[cfg(target_os = "macos")]
 pub mod remote_operation;
-#[cfg(target_os = "macos")]
 pub use remote_operation::*;
 
 #[cfg(target_os = "macos")]
