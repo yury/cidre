@@ -1,1123 +1,503 @@
-use crate::{ns, objc};
+use crate::ns;
 
+/// These values match the keyboard and keypad usage IDs in `IOHIDUsageTables.h`.
 #[doc(alias = "GCKeyCode")]
 pub type KeyCode = ns::Integer;
 
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+// Letter keys
 #[doc(alias = "GCKeyCodeKeyA")]
-#[inline]
-pub fn key_a() -> KeyCode {
-    unsafe { GCKeyCodeKeyA }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_A: KeyCode = 0x04; // a or A
 #[doc(alias = "GCKeyCodeKeyB")]
-#[inline]
-pub fn key_b() -> KeyCode {
-    unsafe { GCKeyCodeKeyB }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_B: KeyCode = 0x05; // b or B
 #[doc(alias = "GCKeyCodeKeyC")]
-#[inline]
-pub fn key_c() -> KeyCode {
-    unsafe { GCKeyCodeKeyC }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_C: KeyCode = 0x06; // c or C
 #[doc(alias = "GCKeyCodeKeyD")]
-#[inline]
-pub fn key_d() -> KeyCode {
-    unsafe { GCKeyCodeKeyD }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_D: KeyCode = 0x07; // d or D
 #[doc(alias = "GCKeyCodeKeyE")]
-#[inline]
-pub fn key_e() -> KeyCode {
-    unsafe { GCKeyCodeKeyE }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_E: KeyCode = 0x08; // e or E
 #[doc(alias = "GCKeyCodeKeyF")]
-#[inline]
-pub fn key_f() -> KeyCode {
-    unsafe { GCKeyCodeKeyF }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_F: KeyCode = 0x09; // f or F
 #[doc(alias = "GCKeyCodeKeyG")]
-#[inline]
-pub fn key_g() -> KeyCode {
-    unsafe { GCKeyCodeKeyG }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_G: KeyCode = 0x0A; // g or G
 #[doc(alias = "GCKeyCodeKeyH")]
-#[inline]
-pub fn key_h() -> KeyCode {
-    unsafe { GCKeyCodeKeyH }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_H: KeyCode = 0x0B; // h or H
 #[doc(alias = "GCKeyCodeKeyI")]
-#[inline]
-pub fn key_i() -> KeyCode {
-    unsafe { GCKeyCodeKeyI }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_I: KeyCode = 0x0C; // i or I
 #[doc(alias = "GCKeyCodeKeyJ")]
-#[inline]
-pub fn key_j() -> KeyCode {
-    unsafe { GCKeyCodeKeyJ }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_J: KeyCode = 0x0D; // j or J
 #[doc(alias = "GCKeyCodeKeyK")]
-#[inline]
-pub fn key_k() -> KeyCode {
-    unsafe { GCKeyCodeKeyK }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_K: KeyCode = 0x0E; // k or K
 #[doc(alias = "GCKeyCodeKeyL")]
-#[inline]
-pub fn key_l() -> KeyCode {
-    unsafe { GCKeyCodeKeyL }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_L: KeyCode = 0x0F; // l or L
 #[doc(alias = "GCKeyCodeKeyM")]
-#[inline]
-pub fn key_m() -> KeyCode {
-    unsafe { GCKeyCodeKeyM }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_M: KeyCode = 0x10; // m or M
 #[doc(alias = "GCKeyCodeKeyN")]
-#[inline]
-pub fn key_n() -> KeyCode {
-    unsafe { GCKeyCodeKeyN }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_N: KeyCode = 0x11; // n or N
 #[doc(alias = "GCKeyCodeKeyO")]
-#[inline]
-pub fn key_o() -> KeyCode {
-    unsafe { GCKeyCodeKeyO }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_O: KeyCode = 0x12; // o or O
 #[doc(alias = "GCKeyCodeKeyP")]
-#[inline]
-pub fn key_p() -> KeyCode {
-    unsafe { GCKeyCodeKeyP }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_P: KeyCode = 0x13; // p or P
 #[doc(alias = "GCKeyCodeKeyQ")]
-#[inline]
-pub fn key_q() -> KeyCode {
-    unsafe { GCKeyCodeKeyQ }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_Q: KeyCode = 0x14; // q or Q
 #[doc(alias = "GCKeyCodeKeyR")]
-#[inline]
-pub fn key_r() -> KeyCode {
-    unsafe { GCKeyCodeKeyR }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_R: KeyCode = 0x15; // r or R
 #[doc(alias = "GCKeyCodeKeyS")]
-#[inline]
-pub fn key_s() -> KeyCode {
-    unsafe { GCKeyCodeKeyS }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_S: KeyCode = 0x16; // s or S
 #[doc(alias = "GCKeyCodeKeyT")]
-#[inline]
-pub fn key_t() -> KeyCode {
-    unsafe { GCKeyCodeKeyT }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_T: KeyCode = 0x17; // t or T
 #[doc(alias = "GCKeyCodeKeyU")]
-#[inline]
-pub fn key_u() -> KeyCode {
-    unsafe { GCKeyCodeKeyU }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_U: KeyCode = 0x18; // u or U
 #[doc(alias = "GCKeyCodeKeyV")]
-#[inline]
-pub fn key_v() -> KeyCode {
-    unsafe { GCKeyCodeKeyV }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_V: KeyCode = 0x19; // v or V
 #[doc(alias = "GCKeyCodeKeyW")]
-#[inline]
-pub fn key_w() -> KeyCode {
-    unsafe { GCKeyCodeKeyW }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_W: KeyCode = 0x1A; // w or W
 #[doc(alias = "GCKeyCodeKeyX")]
-#[inline]
-pub fn key_x() -> KeyCode {
-    unsafe { GCKeyCodeKeyX }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_X: KeyCode = 0x1B; // x or X
 #[doc(alias = "GCKeyCodeKeyY")]
-#[inline]
-pub fn key_y() -> KeyCode {
-    unsafe { GCKeyCodeKeyY }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEY_Y: KeyCode = 0x1C; // y or Y
 #[doc(alias = "GCKeyCodeKeyZ")]
-#[inline]
-pub fn key_z() -> KeyCode {
-    unsafe { GCKeyCodeKeyZ }
-}
+pub const KEY_Z: KeyCode = 0x1D; // z or Z
 
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+// Number row
 #[doc(alias = "GCKeyCodeOne")]
-#[inline]
-pub fn one() -> KeyCode {
-    unsafe { GCKeyCodeOne }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const ONE: KeyCode = 0x1E; // 1 or !
 #[doc(alias = "GCKeyCodeTwo")]
-#[inline]
-pub fn two() -> KeyCode {
-    unsafe { GCKeyCodeTwo }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const TWO: KeyCode = 0x1F; // 2 or @
 #[doc(alias = "GCKeyCodeThree")]
-#[inline]
-pub fn three() -> KeyCode {
-    unsafe { GCKeyCodeThree }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const THREE: KeyCode = 0x20; // 3 or #
 #[doc(alias = "GCKeyCodeFour")]
-#[inline]
-pub fn four() -> KeyCode {
-    unsafe { GCKeyCodeFour }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const FOUR: KeyCode = 0x21; // 4 or $
 #[doc(alias = "GCKeyCodeFive")]
-#[inline]
-pub fn five() -> KeyCode {
-    unsafe { GCKeyCodeFive }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const FIVE: KeyCode = 0x22; // 5 or %
 #[doc(alias = "GCKeyCodeSix")]
-#[inline]
-pub fn six() -> KeyCode {
-    unsafe { GCKeyCodeSix }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const SIX: KeyCode = 0x23; // 6 or ^
 #[doc(alias = "GCKeyCodeSeven")]
-#[inline]
-pub fn seven() -> KeyCode {
-    unsafe { GCKeyCodeSeven }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const SEVEN: KeyCode = 0x24; // 7 or &
 #[doc(alias = "GCKeyCodeEight")]
-#[inline]
-pub fn eight() -> KeyCode {
-    unsafe { GCKeyCodeEight }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const EIGHT: KeyCode = 0x25; // 8 or *
 #[doc(alias = "GCKeyCodeNine")]
-#[inline]
-pub fn nine() -> KeyCode {
-    unsafe { GCKeyCodeNine }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const NINE: KeyCode = 0x26; // 9 or (
 #[doc(alias = "GCKeyCodeZero")]
-#[inline]
-pub fn zero() -> KeyCode {
-    unsafe { GCKeyCodeZero }
-}
+pub const ZERO: KeyCode = 0x27; // 0 or )
 
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+// Control and symbol keys
 #[doc(alias = "GCKeyCodeReturnOrEnter")]
-#[inline]
-pub fn return_or_enter() -> KeyCode {
-    unsafe { GCKeyCodeReturnOrEnter }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const RETURN_OR_ENTER: KeyCode = 0x28; // Return (Enter)
 #[doc(alias = "GCKeyCodeEscape")]
-#[inline]
-pub fn escape() -> KeyCode {
-    unsafe { GCKeyCodeEscape }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const ESCAPE: KeyCode = 0x29; // Escape
 #[doc(alias = "GCKeyCodeDeleteOrBackspace")]
-#[inline]
-pub fn delete_or_backspace() -> KeyCode {
-    unsafe { GCKeyCodeDeleteOrBackspace }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const DELETE_OR_BACKSPACE: KeyCode = 0x2A; // Delete (Backspace)
 #[doc(alias = "GCKeyCodeTab")]
-#[inline]
-pub fn tab() -> KeyCode {
-    unsafe { GCKeyCodeTab }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const TAB: KeyCode = 0x2B; // Tab
 #[doc(alias = "GCKeyCodeSpacebar")]
-#[inline]
-pub fn spacebar() -> KeyCode {
-    unsafe { GCKeyCodeSpacebar }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const SPACEBAR: KeyCode = 0x2C; // Spacebar
 #[doc(alias = "GCKeyCodeHyphen")]
-#[inline]
-pub fn hyphen() -> KeyCode {
-    unsafe { GCKeyCodeHyphen }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const HYPHEN: KeyCode = 0x2D; // - or _
 #[doc(alias = "GCKeyCodeEqualSign")]
-#[inline]
-pub fn equal_sign() -> KeyCode {
-    unsafe { GCKeyCodeEqualSign }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const EQUAL_SIGN: KeyCode = 0x2E; // = or +
 #[doc(alias = "GCKeyCodeOpenBracket")]
-#[inline]
-pub fn open_bracket() -> KeyCode {
-    unsafe { GCKeyCodeOpenBracket }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const OPEN_BRACKET: KeyCode = 0x2F; // [ or {
 #[doc(alias = "GCKeyCodeCloseBracket")]
-#[inline]
-pub fn close_bracket() -> KeyCode {
-    unsafe { GCKeyCodeCloseBracket }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const CLOSE_BRACKET: KeyCode = 0x30; // ] or }
 #[doc(alias = "GCKeyCodeBackslash")]
-#[inline]
-pub fn backslash() -> KeyCode {
-    unsafe { GCKeyCodeBackslash }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const BACKSLASH: KeyCode = 0x31; // \ or |
 #[doc(alias = "GCKeyCodeNonUSPound")]
-#[inline]
-pub fn non_us_pound() -> KeyCode {
-    unsafe { GCKeyCodeNonUSPound }
-}
+pub const NON_US_POUND: KeyCode = 0x32; // Non-US # or _
 
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+// Punctuation and lock keys
 #[doc(alias = "GCKeyCodeSemicolon")]
-#[inline]
-pub fn semicolon() -> KeyCode {
-    unsafe { GCKeyCodeSemicolon }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const SEMICOLON: KeyCode = 0x33; // ; or :
 #[doc(alias = "GCKeyCodeQuote")]
-#[inline]
-pub fn quote() -> KeyCode {
-    unsafe { GCKeyCodeQuote }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const QUOTE: KeyCode = 0x34; // ' or "
 #[doc(alias = "GCKeyCodeGraveAccentAndTilde")]
-#[inline]
-pub fn grave_accent_and_tilde() -> KeyCode {
-    unsafe { GCKeyCodeGraveAccentAndTilde }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const GRAVE_ACCENT_AND_TILDE: KeyCode = 0x35; // Grave Accent and Tilde
 #[doc(alias = "GCKeyCodeComma")]
-#[inline]
-pub fn comma() -> KeyCode {
-    unsafe { GCKeyCodeComma }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const COMMA: KeyCode = 0x36; // , or <
 #[doc(alias = "GCKeyCodePeriod")]
-#[inline]
-pub fn period() -> KeyCode {
-    unsafe { GCKeyCodePeriod }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const PERIOD: KeyCode = 0x37; // . or >
 #[doc(alias = "GCKeyCodeSlash")]
-#[inline]
-pub fn slash() -> KeyCode {
-    unsafe { GCKeyCodeSlash }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const SLASH: KeyCode = 0x38; // / or ?
 #[doc(alias = "GCKeyCodeCapsLock")]
-#[inline]
-pub fn caps_lock() -> KeyCode {
-    unsafe { GCKeyCodeCapsLock }
-}
+pub const CAPS_LOCK: KeyCode = 0x39; // Caps Lock
 
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+// Function and navigation keys
 #[doc(alias = "GCKeyCodeF1")]
-#[inline]
-pub fn f1() -> KeyCode {
-    unsafe { GCKeyCodeF1 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const F1: KeyCode = 0x3A; // F1
 #[doc(alias = "GCKeyCodeF2")]
-#[inline]
-pub fn f2() -> KeyCode {
-    unsafe { GCKeyCodeF2 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const F2: KeyCode = 0x3B; // F2
 #[doc(alias = "GCKeyCodeF3")]
-#[inline]
-pub fn f3() -> KeyCode {
-    unsafe { GCKeyCodeF3 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const F3: KeyCode = 0x3C; // F3
 #[doc(alias = "GCKeyCodeF4")]
-#[inline]
-pub fn f4() -> KeyCode {
-    unsafe { GCKeyCodeF4 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const F4: KeyCode = 0x3D; // F4
 #[doc(alias = "GCKeyCodeF5")]
-#[inline]
-pub fn f5() -> KeyCode {
-    unsafe { GCKeyCodeF5 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const F5: KeyCode = 0x3E; // F5
 #[doc(alias = "GCKeyCodeF6")]
-#[inline]
-pub fn f6() -> KeyCode {
-    unsafe { GCKeyCodeF6 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const F6: KeyCode = 0x3F; // F6
 #[doc(alias = "GCKeyCodeF7")]
-#[inline]
-pub fn f7() -> KeyCode {
-    unsafe { GCKeyCodeF7 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const F7: KeyCode = 0x40; // F7
 #[doc(alias = "GCKeyCodeF8")]
-#[inline]
-pub fn f8() -> KeyCode {
-    unsafe { GCKeyCodeF8 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const F8: KeyCode = 0x41; // F8
 #[doc(alias = "GCKeyCodeF9")]
-#[inline]
-pub fn f9() -> KeyCode {
-    unsafe { GCKeyCodeF9 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const F9: KeyCode = 0x42; // F9
 #[doc(alias = "GCKeyCodeF10")]
-#[inline]
-pub fn f10() -> KeyCode {
-    unsafe { GCKeyCodeF10 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const F10: KeyCode = 0x43; // F10
 #[doc(alias = "GCKeyCodeF11")]
-#[inline]
-pub fn f11() -> KeyCode {
-    unsafe { GCKeyCodeF11 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const F11: KeyCode = 0x44; // F11
 #[doc(alias = "GCKeyCodeF12")]
-#[inline]
-pub fn f12() -> KeyCode {
-    unsafe { GCKeyCodeF12 }
-}
-
-#[objc::available(macos = 12.0, ios = 15.0, tvos = 15.0)]
-#[doc(alias = "GCKeyCodeF13")]
-#[inline]
-pub fn f13() -> KeyCode {
-    unsafe { GCKeyCodeF13 }
-}
-
-#[objc::available(macos = 12.0, ios = 15.0, tvos = 15.0)]
-#[doc(alias = "GCKeyCodeF14")]
-#[inline]
-pub fn f14() -> KeyCode {
-    unsafe { GCKeyCodeF14 }
-}
-
-#[objc::available(macos = 12.0, ios = 15.0, tvos = 15.0)]
-#[doc(alias = "GCKeyCodeF15")]
-#[inline]
-pub fn f15() -> KeyCode {
-    unsafe { GCKeyCodeF15 }
-}
-
-#[objc::available(macos = 12.0, ios = 15.0, tvos = 15.0)]
-#[doc(alias = "GCKeyCodeF16")]
-#[inline]
-pub fn f16() -> KeyCode {
-    unsafe { GCKeyCodeF16 }
-}
-
-#[objc::available(macos = 12.0, ios = 15.0, tvos = 15.0)]
-#[doc(alias = "GCKeyCodeF17")]
-#[inline]
-pub fn f17() -> KeyCode {
-    unsafe { GCKeyCodeF17 }
-}
-
-#[objc::available(macos = 12.0, ios = 15.0, tvos = 15.0)]
-#[doc(alias = "GCKeyCodeF18")]
-#[inline]
-pub fn f18() -> KeyCode {
-    unsafe { GCKeyCodeF18 }
-}
-
-#[objc::available(macos = 12.0, ios = 15.0, tvos = 15.0)]
-#[doc(alias = "GCKeyCodeF19")]
-#[inline]
-pub fn f19() -> KeyCode {
-    unsafe { GCKeyCodeF19 }
-}
-
-#[objc::available(macos = 12.0, ios = 15.0, tvos = 15.0)]
-#[doc(alias = "GCKeyCodeF20")]
-#[inline]
-pub fn f20() -> KeyCode {
-    unsafe { GCKeyCodeF20 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const F12: KeyCode = 0x45; // F12
 #[doc(alias = "GCKeyCodePrintScreen")]
-#[inline]
-pub fn print_screen() -> KeyCode {
-    unsafe { GCKeyCodePrintScreen }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const PRINT_SCREEN: KeyCode = 0x46; // Print Screen
 #[doc(alias = "GCKeyCodeScrollLock")]
-#[inline]
-pub fn scroll_lock() -> KeyCode {
-    unsafe { GCKeyCodeScrollLock }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const SCROLL_LOCK: KeyCode = 0x47; // Scroll Lock
 #[doc(alias = "GCKeyCodePause")]
-#[inline]
-pub fn pause() -> KeyCode {
-    unsafe { GCKeyCodePause }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const PAUSE: KeyCode = 0x48; // Pause
 #[doc(alias = "GCKeyCodeInsert")]
-#[inline]
-pub fn insert() -> KeyCode {
-    unsafe { GCKeyCodeInsert }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const INSERT: KeyCode = 0x49; // Insert
 #[doc(alias = "GCKeyCodeHome")]
-#[inline]
-pub fn home() -> KeyCode {
-    unsafe { GCKeyCodeHome }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const HOME: KeyCode = 0x4A; // Home
 #[doc(alias = "GCKeyCodePageUp")]
-#[inline]
-pub fn page_up() -> KeyCode {
-    unsafe { GCKeyCodePageUp }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const PAGE_UP: KeyCode = 0x4B; // Page Up
 #[doc(alias = "GCKeyCodeDeleteForward")]
-#[inline]
-pub fn delete_forward() -> KeyCode {
-    unsafe { GCKeyCodeDeleteForward }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const DELETE_FORWARD: KeyCode = 0x4C; // Delete Forward
 #[doc(alias = "GCKeyCodeEnd")]
-#[inline]
-pub fn end() -> KeyCode {
-    unsafe { GCKeyCodeEnd }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const END: KeyCode = 0x4D; // End
 #[doc(alias = "GCKeyCodePageDown")]
-#[inline]
-pub fn page_down() -> KeyCode {
-    unsafe { GCKeyCodePageDown }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const PAGE_DOWN: KeyCode = 0x4E; // Page Down
 #[doc(alias = "GCKeyCodeRightArrow")]
-#[inline]
-pub fn right_arrow() -> KeyCode {
-    unsafe { GCKeyCodeRightArrow }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const RIGHT_ARROW: KeyCode = 0x4F; // Right Arrow
 #[doc(alias = "GCKeyCodeLeftArrow")]
-#[inline]
-pub fn left_arrow() -> KeyCode {
-    unsafe { GCKeyCodeLeftArrow }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const LEFT_ARROW: KeyCode = 0x50; // Left Arrow
 #[doc(alias = "GCKeyCodeDownArrow")]
-#[inline]
-pub fn down_arrow() -> KeyCode {
-    unsafe { GCKeyCodeDownArrow }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const DOWN_ARROW: KeyCode = 0x51; // Down Arrow
 #[doc(alias = "GCKeyCodeUpArrow")]
-#[inline]
-pub fn up_arrow() -> KeyCode {
-    unsafe { GCKeyCodeUpArrow }
-}
+pub const UP_ARROW: KeyCode = 0x52; // Up Arrow
 
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+// Keypad keys
 #[doc(alias = "GCKeyCodeKeypadNumLock")]
-#[inline]
-pub fn keypad_num_lock() -> KeyCode {
-    unsafe { GCKeyCodeKeypadNumLock }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD_NUM_LOCK: KeyCode = 0x53; // Keypad NumLock or Clear
 #[doc(alias = "GCKeyCodeKeypadSlash")]
-#[inline]
-pub fn keypad_slash() -> KeyCode {
-    unsafe { GCKeyCodeKeypadSlash }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD_SLASH: KeyCode = 0x54; // Keypad /
 #[doc(alias = "GCKeyCodeKeypadAsterisk")]
-#[inline]
-pub fn keypad_asterisk() -> KeyCode {
-    unsafe { GCKeyCodeKeypadAsterisk }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD_ASTERISK: KeyCode = 0x55; // Keypad *
 #[doc(alias = "GCKeyCodeKeypadHyphen")]
-#[inline]
-pub fn keypad_hyphen() -> KeyCode {
-    unsafe { GCKeyCodeKeypadHyphen }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD_HYPHEN: KeyCode = 0x56; // Keypad -
 #[doc(alias = "GCKeyCodeKeypadPlus")]
-#[inline]
-pub fn keypad_plus() -> KeyCode {
-    unsafe { GCKeyCodeKeypadPlus }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD_PLUS: KeyCode = 0x57; // Keypad +
 #[doc(alias = "GCKeyCodeKeypadEnter")]
-#[inline]
-pub fn keypad_enter() -> KeyCode {
-    unsafe { GCKeyCodeKeypadEnter }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD_ENTER: KeyCode = 0x58; // Keypad Enter
 #[doc(alias = "GCKeyCodeKeypad1")]
-#[inline]
-pub fn keypad1() -> KeyCode {
-    unsafe { GCKeyCodeKeypad1 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD1: KeyCode = 0x59; // Keypad 1 or End
 #[doc(alias = "GCKeyCodeKeypad2")]
-#[inline]
-pub fn keypad2() -> KeyCode {
-    unsafe { GCKeyCodeKeypad2 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD2: KeyCode = 0x5A; // Keypad 2 or Down Arrow
 #[doc(alias = "GCKeyCodeKeypad3")]
-#[inline]
-pub fn keypad3() -> KeyCode {
-    unsafe { GCKeyCodeKeypad3 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD3: KeyCode = 0x5B; // Keypad 3 or Page Down
 #[doc(alias = "GCKeyCodeKeypad4")]
-#[inline]
-pub fn keypad4() -> KeyCode {
-    unsafe { GCKeyCodeKeypad4 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD4: KeyCode = 0x5C; // Keypad 4 or Left Arrow
 #[doc(alias = "GCKeyCodeKeypad5")]
-#[inline]
-pub fn keypad5() -> KeyCode {
-    unsafe { GCKeyCodeKeypad5 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD5: KeyCode = 0x5D; // Keypad 5
 #[doc(alias = "GCKeyCodeKeypad6")]
-#[inline]
-pub fn keypad6() -> KeyCode {
-    unsafe { GCKeyCodeKeypad6 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD6: KeyCode = 0x5E; // Keypad 6 or Right Arrow
 #[doc(alias = "GCKeyCodeKeypad7")]
-#[inline]
-pub fn keypad7() -> KeyCode {
-    unsafe { GCKeyCodeKeypad7 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD7: KeyCode = 0x5F; // Keypad 7 or Home
 #[doc(alias = "GCKeyCodeKeypad8")]
-#[inline]
-pub fn keypad8() -> KeyCode {
-    unsafe { GCKeyCodeKeypad8 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD8: KeyCode = 0x60; // Keypad 8 or Up Arrow
 #[doc(alias = "GCKeyCodeKeypad9")]
-#[inline]
-pub fn keypad9() -> KeyCode {
-    unsafe { GCKeyCodeKeypad9 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD9: KeyCode = 0x61; // Keypad 9 or Page Up
 #[doc(alias = "GCKeyCodeKeypad0")]
-#[inline]
-pub fn keypad0() -> KeyCode {
-    unsafe { GCKeyCodeKeypad0 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD0: KeyCode = 0x62; // Keypad 0 or Insert
 #[doc(alias = "GCKeyCodeKeypadPeriod")]
-#[inline]
-pub fn keypad_period() -> KeyCode {
-    unsafe { GCKeyCodeKeypadPeriod }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
-#[doc(alias = "GCKeyCodeKeypadEqualSign")]
-#[inline]
-pub fn keypad_equal_sign() -> KeyCode {
-    unsafe { GCKeyCodeKeypadEqualSign }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const KEYPAD_PERIOD: KeyCode = 0x63; // Keypad . or Delete
 #[doc(alias = "GCKeyCodeNonUSBackslash")]
-#[inline]
-pub fn non_us_backslash() -> KeyCode {
-    unsafe { GCKeyCodeNonUSBackslash }
-}
+pub const NON_US_BACKSLASH: KeyCode = 0x64; // Non-US \ or |
 
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+// Application and extended function keys
 #[doc(alias = "GCKeyCodeApplication")]
-#[inline]
-pub fn application() -> KeyCode {
-    unsafe { GCKeyCodeApplication }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const APPLICATION: KeyCode = 0x65; // Application
 #[doc(alias = "GCKeyCodePower")]
-#[inline]
-pub fn power() -> KeyCode {
-    unsafe { GCKeyCodePower }
-}
+pub const POWER: KeyCode = 0x66; // Power
+#[doc(alias = "GCKeyCodeKeypadEqualSign")]
+pub const KEYPAD_EQUAL_SIGN: KeyCode = 0x67; // Keypad =
 
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+#[doc(alias = "GCKeyCodeF13")]
+pub const F13: KeyCode = 0x68; // F13
+#[doc(alias = "GCKeyCodeF14")]
+pub const F14: KeyCode = 0x69; // F14
+#[doc(alias = "GCKeyCodeF15")]
+pub const F15: KeyCode = 0x6A; // F15
+#[doc(alias = "GCKeyCodeF16")]
+pub const F16: KeyCode = 0x6B; // F16
+#[doc(alias = "GCKeyCodeF17")]
+pub const F17: KeyCode = 0x6C; // F17
+#[doc(alias = "GCKeyCodeF18")]
+pub const F18: KeyCode = 0x6D; // F18
+#[doc(alias = "GCKeyCodeF19")]
+pub const F19: KeyCode = 0x6E; // F19
+#[doc(alias = "GCKeyCodeF20")]
+pub const F20: KeyCode = 0x6F; // F20
+
+// International keys
 #[doc(alias = "GCKeyCodeInternational1")]
-#[inline]
-pub fn international1() -> KeyCode {
-    unsafe { GCKeyCodeInternational1 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const INTERNATIONAL1: KeyCode = 0x87; // International1
 #[doc(alias = "GCKeyCodeInternational2")]
-#[inline]
-pub fn international2() -> KeyCode {
-    unsafe { GCKeyCodeInternational2 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const INTERNATIONAL2: KeyCode = 0x88; // International2
 #[doc(alias = "GCKeyCodeInternational3")]
-#[inline]
-pub fn international3() -> KeyCode {
-    unsafe { GCKeyCodeInternational3 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const INTERNATIONAL3: KeyCode = 0x89; // International3
 #[doc(alias = "GCKeyCodeInternational4")]
-#[inline]
-pub fn international4() -> KeyCode {
-    unsafe { GCKeyCodeInternational4 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const INTERNATIONAL4: KeyCode = 0x8A; // International4
 #[doc(alias = "GCKeyCodeInternational5")]
-#[inline]
-pub fn international5() -> KeyCode {
-    unsafe { GCKeyCodeInternational5 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const INTERNATIONAL5: KeyCode = 0x8B; // International5
 #[doc(alias = "GCKeyCodeInternational6")]
-#[inline]
-pub fn international6() -> KeyCode {
-    unsafe { GCKeyCodeInternational6 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const INTERNATIONAL6: KeyCode = 0x8C; // International6
 #[doc(alias = "GCKeyCodeInternational7")]
-#[inline]
-pub fn international7() -> KeyCode {
-    unsafe { GCKeyCodeInternational7 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const INTERNATIONAL7: KeyCode = 0x8D; // International7
 #[doc(alias = "GCKeyCodeInternational8")]
-#[inline]
-pub fn international8() -> KeyCode {
-    unsafe { GCKeyCodeInternational8 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const INTERNATIONAL8: KeyCode = 0x8E; // International8
 #[doc(alias = "GCKeyCodeInternational9")]
-#[inline]
-pub fn international9() -> KeyCode {
-    unsafe { GCKeyCodeInternational9 }
-}
+pub const INTERNATIONAL9: KeyCode = 0x8F; // International9
 
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+// Language keys
 #[doc(alias = "GCKeyCodeLANG1")]
-#[inline]
-pub fn lang1() -> KeyCode {
-    unsafe { GCKeyCodeLANG1 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const LANG1: KeyCode = 0x90; // LANG1
 #[doc(alias = "GCKeyCodeLANG2")]
-#[inline]
-pub fn lang2() -> KeyCode {
-    unsafe { GCKeyCodeLANG2 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const LANG2: KeyCode = 0x91; // LANG2
 #[doc(alias = "GCKeyCodeLANG3")]
-#[inline]
-pub fn lang3() -> KeyCode {
-    unsafe { GCKeyCodeLANG3 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const LANG3: KeyCode = 0x92; // LANG3
 #[doc(alias = "GCKeyCodeLANG4")]
-#[inline]
-pub fn lang4() -> KeyCode {
-    unsafe { GCKeyCodeLANG4 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const LANG4: KeyCode = 0x93; // LANG4
 #[doc(alias = "GCKeyCodeLANG5")]
-#[inline]
-pub fn lang5() -> KeyCode {
-    unsafe { GCKeyCodeLANG5 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const LANG5: KeyCode = 0x94; // LANG5
 #[doc(alias = "GCKeyCodeLANG6")]
-#[inline]
-pub fn lang6() -> KeyCode {
-    unsafe { GCKeyCodeLANG6 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const LANG6: KeyCode = 0x95; // LANG6
 #[doc(alias = "GCKeyCodeLANG7")]
-#[inline]
-pub fn lang7() -> KeyCode {
-    unsafe { GCKeyCodeLANG7 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const LANG7: KeyCode = 0x96; // LANG7
 #[doc(alias = "GCKeyCodeLANG8")]
-#[inline]
-pub fn lang8() -> KeyCode {
-    unsafe { GCKeyCodeLANG8 }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const LANG8: KeyCode = 0x97; // LANG8
 #[doc(alias = "GCKeyCodeLANG9")]
-#[inline]
-pub fn lang9() -> KeyCode {
-    unsafe { GCKeyCodeLANG9 }
-}
+pub const LANG9: KeyCode = 0x98; // LANG9
 
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+// Modifier keys
 #[doc(alias = "GCKeyCodeLeftControl")]
-#[inline]
-pub fn left_control() -> KeyCode {
-    unsafe { GCKeyCodeLeftControl }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const LEFT_CONTROL: KeyCode = 0xE0; // Left Control
 #[doc(alias = "GCKeyCodeLeftShift")]
-#[inline]
-pub fn left_shift() -> KeyCode {
-    unsafe { GCKeyCodeLeftShift }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const LEFT_SHIFT: KeyCode = 0xE1; // Left Shift
 #[doc(alias = "GCKeyCodeLeftAlt")]
-#[inline]
-pub fn left_alt() -> KeyCode {
-    unsafe { GCKeyCodeLeftAlt }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const LEFT_ALT: KeyCode = 0xE2; // Left Alt
 #[doc(alias = "GCKeyCodeLeftGUI")]
-#[inline]
-pub fn left_gui() -> KeyCode {
-    unsafe { GCKeyCodeLeftGUI }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const LEFT_GUI: KeyCode = 0xE3; // Left GUI
 #[doc(alias = "GCKeyCodeRightControl")]
-#[inline]
-pub fn right_control() -> KeyCode {
-    unsafe { GCKeyCodeRightControl }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const RIGHT_CONTROL: KeyCode = 0xE4; // Right Control
 #[doc(alias = "GCKeyCodeRightShift")]
-#[inline]
-pub fn right_shift() -> KeyCode {
-    unsafe { GCKeyCodeRightShift }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const RIGHT_SHIFT: KeyCode = 0xE5; // Right Shift
 #[doc(alias = "GCKeyCodeRightAlt")]
-#[inline]
-pub fn right_alt() -> KeyCode {
-    unsafe { GCKeyCodeRightAlt }
-}
-
-#[objc::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
+pub const RIGHT_ALT: KeyCode = 0xE6; // Right Alt
 #[doc(alias = "GCKeyCodeRightGUI")]
-#[inline]
-pub fn right_gui() -> KeyCode {
-    unsafe { GCKeyCodeRightGUI }
-}
+pub const RIGHT_GUI: KeyCode = 0xE7; // Right GUI
 
-unsafe extern "C" {
-    static GCKeyCodeKeyA: KeyCode;
-    static GCKeyCodeKeyB: KeyCode;
-    static GCKeyCodeKeyC: KeyCode;
-    static GCKeyCodeKeyD: KeyCode;
-    static GCKeyCodeKeyE: KeyCode;
-    static GCKeyCodeKeyF: KeyCode;
-    static GCKeyCodeKeyG: KeyCode;
-    static GCKeyCodeKeyH: KeyCode;
-    static GCKeyCodeKeyI: KeyCode;
-    static GCKeyCodeKeyJ: KeyCode;
-    static GCKeyCodeKeyK: KeyCode;
-    static GCKeyCodeKeyL: KeyCode;
-    static GCKeyCodeKeyM: KeyCode;
-    static GCKeyCodeKeyN: KeyCode;
-    static GCKeyCodeKeyO: KeyCode;
-    static GCKeyCodeKeyP: KeyCode;
-    static GCKeyCodeKeyQ: KeyCode;
-    static GCKeyCodeKeyR: KeyCode;
-    static GCKeyCodeKeyS: KeyCode;
-    static GCKeyCodeKeyT: KeyCode;
-    static GCKeyCodeKeyU: KeyCode;
-    static GCKeyCodeKeyV: KeyCode;
-    static GCKeyCodeKeyW: KeyCode;
-    static GCKeyCodeKeyX: KeyCode;
-    static GCKeyCodeKeyY: KeyCode;
-    static GCKeyCodeKeyZ: KeyCode;
-    static GCKeyCodeOne: KeyCode;
-    static GCKeyCodeTwo: KeyCode;
-    static GCKeyCodeThree: KeyCode;
-    static GCKeyCodeFour: KeyCode;
-    static GCKeyCodeFive: KeyCode;
-    static GCKeyCodeSix: KeyCode;
-    static GCKeyCodeSeven: KeyCode;
-    static GCKeyCodeEight: KeyCode;
-    static GCKeyCodeNine: KeyCode;
-    static GCKeyCodeZero: KeyCode;
-    static GCKeyCodeReturnOrEnter: KeyCode;
-    static GCKeyCodeEscape: KeyCode;
-    static GCKeyCodeDeleteOrBackspace: KeyCode;
-    static GCKeyCodeTab: KeyCode;
-    static GCKeyCodeSpacebar: KeyCode;
-    static GCKeyCodeHyphen: KeyCode;
-    static GCKeyCodeEqualSign: KeyCode;
-    static GCKeyCodeOpenBracket: KeyCode;
-    static GCKeyCodeCloseBracket: KeyCode;
-    static GCKeyCodeBackslash: KeyCode;
-    static GCKeyCodeNonUSPound: KeyCode;
-    static GCKeyCodeSemicolon: KeyCode;
-    static GCKeyCodeQuote: KeyCode;
-    static GCKeyCodeGraveAccentAndTilde: KeyCode;
-    static GCKeyCodeComma: KeyCode;
-    static GCKeyCodePeriod: KeyCode;
-    static GCKeyCodeSlash: KeyCode;
-    static GCKeyCodeCapsLock: KeyCode;
-    static GCKeyCodeF1: KeyCode;
-    static GCKeyCodeF2: KeyCode;
-    static GCKeyCodeF3: KeyCode;
-    static GCKeyCodeF4: KeyCode;
-    static GCKeyCodeF5: KeyCode;
-    static GCKeyCodeF6: KeyCode;
-    static GCKeyCodeF7: KeyCode;
-    static GCKeyCodeF8: KeyCode;
-    static GCKeyCodeF9: KeyCode;
-    static GCKeyCodeF10: KeyCode;
-    static GCKeyCodeF11: KeyCode;
-    static GCKeyCodeF12: KeyCode;
-    static GCKeyCodeF13: KeyCode;
-    static GCKeyCodeF14: KeyCode;
-    static GCKeyCodeF15: KeyCode;
-    static GCKeyCodeF16: KeyCode;
-    static GCKeyCodeF17: KeyCode;
-    static GCKeyCodeF18: KeyCode;
-    static GCKeyCodeF19: KeyCode;
-    static GCKeyCodeF20: KeyCode;
-    static GCKeyCodePrintScreen: KeyCode;
-    static GCKeyCodeScrollLock: KeyCode;
-    static GCKeyCodePause: KeyCode;
-    static GCKeyCodeInsert: KeyCode;
-    static GCKeyCodeHome: KeyCode;
-    static GCKeyCodePageUp: KeyCode;
-    static GCKeyCodeDeleteForward: KeyCode;
-    static GCKeyCodeEnd: KeyCode;
-    static GCKeyCodePageDown: KeyCode;
-    static GCKeyCodeRightArrow: KeyCode;
-    static GCKeyCodeLeftArrow: KeyCode;
-    static GCKeyCodeDownArrow: KeyCode;
-    static GCKeyCodeUpArrow: KeyCode;
-    static GCKeyCodeKeypadNumLock: KeyCode;
-    static GCKeyCodeKeypadSlash: KeyCode;
-    static GCKeyCodeKeypadAsterisk: KeyCode;
-    static GCKeyCodeKeypadHyphen: KeyCode;
-    static GCKeyCodeKeypadPlus: KeyCode;
-    static GCKeyCodeKeypadEnter: KeyCode;
-    static GCKeyCodeKeypad1: KeyCode;
-    static GCKeyCodeKeypad2: KeyCode;
-    static GCKeyCodeKeypad3: KeyCode;
-    static GCKeyCodeKeypad4: KeyCode;
-    static GCKeyCodeKeypad5: KeyCode;
-    static GCKeyCodeKeypad6: KeyCode;
-    static GCKeyCodeKeypad7: KeyCode;
-    static GCKeyCodeKeypad8: KeyCode;
-    static GCKeyCodeKeypad9: KeyCode;
-    static GCKeyCodeKeypad0: KeyCode;
-    static GCKeyCodeKeypadPeriod: KeyCode;
-    static GCKeyCodeKeypadEqualSign: KeyCode;
-    static GCKeyCodeNonUSBackslash: KeyCode;
-    static GCKeyCodeApplication: KeyCode;
-    static GCKeyCodePower: KeyCode;
-    static GCKeyCodeInternational1: KeyCode;
-    static GCKeyCodeInternational2: KeyCode;
-    static GCKeyCodeInternational3: KeyCode;
-    static GCKeyCodeInternational4: KeyCode;
-    static GCKeyCodeInternational5: KeyCode;
-    static GCKeyCodeInternational6: KeyCode;
-    static GCKeyCodeInternational7: KeyCode;
-    static GCKeyCodeInternational8: KeyCode;
-    static GCKeyCodeInternational9: KeyCode;
-    static GCKeyCodeLANG1: KeyCode;
-    static GCKeyCodeLANG2: KeyCode;
-    static GCKeyCodeLANG3: KeyCode;
-    static GCKeyCodeLANG4: KeyCode;
-    static GCKeyCodeLANG5: KeyCode;
-    static GCKeyCodeLANG6: KeyCode;
-    static GCKeyCodeLANG7: KeyCode;
-    static GCKeyCodeLANG8: KeyCode;
-    static GCKeyCodeLANG9: KeyCode;
-    static GCKeyCodeLeftControl: KeyCode;
-    static GCKeyCodeLeftShift: KeyCode;
-    static GCKeyCodeLeftAlt: KeyCode;
-    static GCKeyCodeLeftGUI: KeyCode;
-    static GCKeyCodeRightControl: KeyCode;
-    static GCKeyCodeRightShift: KeyCode;
-    static GCKeyCodeRightAlt: KeyCode;
-    static GCKeyCodeRightGUI: KeyCode;
-}
-
-#[cfg(all(test, feature = "cg"))]
+#[cfg(all(test, target_os = "macos"))]
 mod tests {
-    use crate::{cg, gc};
+    use std::{fs, process::Command};
+
+    use super::*;
+
+    fn hid_header() -> String {
+        let output = Command::new("xcrun")
+            .args(["--sdk", "macosx", "--show-sdk-path"])
+            .output()
+            .expect("xcrun should be available to locate the macOS SDK");
+        assert!(
+            output.status.success(),
+            "xcrun failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let sdk = String::from_utf8(output.stdout).expect("xcrun output should be utf-8");
+        let path = format!(
+            "{}/System/Library/Frameworks/IOKit.framework/Headers/hid/IOHIDUsageTables.h",
+            sdk.trim()
+        );
+        let bytes = fs::read(path).expect("IOHIDUsageTables.h should exist in the SDK");
+        String::from_utf8_lossy(&bytes).into_owned()
+    }
+
+    fn hid_usage(header: &str, symbol: &str) -> KeyCode {
+        let line = header
+            .lines()
+            .find(|line| {
+                line.split('=')
+                    .next()
+                    .map(str::trim)
+                    .is_some_and(|name| name == symbol)
+            })
+            .unwrap_or_else(|| panic!("missing {symbol} in IOHIDUsageTables.h"));
+        let value = line
+            .split('=')
+            .nth(1)
+            .unwrap_or_else(|| panic!("missing value for {symbol}"))
+            .split(',')
+            .next()
+            .unwrap()
+            .trim();
+
+        if value.starts_with("0x") {
+            KeyCode::from_str_radix(value.trim_start_matches("0x"), 16)
+                .expect("hex value should parse")
+        } else {
+            value.parse::<KeyCode>().expect("value should parse")
+        }
+    }
+
+    #[test]
+    fn all_gc_key_codes_match_hid_usage_table() {
+        let header = hid_header();
+        let cases = [
+            (KEY_A, "kHIDUsage_KeyboardA"),
+            (KEY_B, "kHIDUsage_KeyboardB"),
+            (KEY_C, "kHIDUsage_KeyboardC"),
+            (KEY_D, "kHIDUsage_KeyboardD"),
+            (KEY_E, "kHIDUsage_KeyboardE"),
+            (KEY_F, "kHIDUsage_KeyboardF"),
+            (KEY_G, "kHIDUsage_KeyboardG"),
+            (KEY_H, "kHIDUsage_KeyboardH"),
+            (KEY_I, "kHIDUsage_KeyboardI"),
+            (KEY_J, "kHIDUsage_KeyboardJ"),
+            (KEY_K, "kHIDUsage_KeyboardK"),
+            (KEY_L, "kHIDUsage_KeyboardL"),
+            (KEY_M, "kHIDUsage_KeyboardM"),
+            (KEY_N, "kHIDUsage_KeyboardN"),
+            (KEY_O, "kHIDUsage_KeyboardO"),
+            (KEY_P, "kHIDUsage_KeyboardP"),
+            (KEY_Q, "kHIDUsage_KeyboardQ"),
+            (KEY_R, "kHIDUsage_KeyboardR"),
+            (KEY_S, "kHIDUsage_KeyboardS"),
+            (KEY_T, "kHIDUsage_KeyboardT"),
+            (KEY_U, "kHIDUsage_KeyboardU"),
+            (KEY_V, "kHIDUsage_KeyboardV"),
+            (KEY_W, "kHIDUsage_KeyboardW"),
+            (KEY_X, "kHIDUsage_KeyboardX"),
+            (KEY_Y, "kHIDUsage_KeyboardY"),
+            (KEY_Z, "kHIDUsage_KeyboardZ"),
+            (ONE, "kHIDUsage_Keyboard1"),
+            (TWO, "kHIDUsage_Keyboard2"),
+            (THREE, "kHIDUsage_Keyboard3"),
+            (FOUR, "kHIDUsage_Keyboard4"),
+            (FIVE, "kHIDUsage_Keyboard5"),
+            (SIX, "kHIDUsage_Keyboard6"),
+            (SEVEN, "kHIDUsage_Keyboard7"),
+            (EIGHT, "kHIDUsage_Keyboard8"),
+            (NINE, "kHIDUsage_Keyboard9"),
+            (ZERO, "kHIDUsage_Keyboard0"),
+            (RETURN_OR_ENTER, "kHIDUsage_KeyboardReturnOrEnter"),
+            (ESCAPE, "kHIDUsage_KeyboardEscape"),
+            (DELETE_OR_BACKSPACE, "kHIDUsage_KeyboardDeleteOrBackspace"),
+            (TAB, "kHIDUsage_KeyboardTab"),
+            (SPACEBAR, "kHIDUsage_KeyboardSpacebar"),
+            (HYPHEN, "kHIDUsage_KeyboardHyphen"),
+            (EQUAL_SIGN, "kHIDUsage_KeyboardEqualSign"),
+            (OPEN_BRACKET, "kHIDUsage_KeyboardOpenBracket"),
+            (CLOSE_BRACKET, "kHIDUsage_KeyboardCloseBracket"),
+            (BACKSLASH, "kHIDUsage_KeyboardBackslash"),
+            (NON_US_POUND, "kHIDUsage_KeyboardNonUSPound"),
+            (SEMICOLON, "kHIDUsage_KeyboardSemicolon"),
+            (QUOTE, "kHIDUsage_KeyboardQuote"),
+            (
+                GRAVE_ACCENT_AND_TILDE,
+                "kHIDUsage_KeyboardGraveAccentAndTilde",
+            ),
+            (COMMA, "kHIDUsage_KeyboardComma"),
+            (PERIOD, "kHIDUsage_KeyboardPeriod"),
+            (SLASH, "kHIDUsage_KeyboardSlash"),
+            (CAPS_LOCK, "kHIDUsage_KeyboardCapsLock"),
+            (F1, "kHIDUsage_KeyboardF1"),
+            (F2, "kHIDUsage_KeyboardF2"),
+            (F3, "kHIDUsage_KeyboardF3"),
+            (F4, "kHIDUsage_KeyboardF4"),
+            (F5, "kHIDUsage_KeyboardF5"),
+            (F6, "kHIDUsage_KeyboardF6"),
+            (F7, "kHIDUsage_KeyboardF7"),
+            (F8, "kHIDUsage_KeyboardF8"),
+            (F9, "kHIDUsage_KeyboardF9"),
+            (F10, "kHIDUsage_KeyboardF10"),
+            (F11, "kHIDUsage_KeyboardF11"),
+            (F12, "kHIDUsage_KeyboardF12"),
+            (PRINT_SCREEN, "kHIDUsage_KeyboardPrintScreen"),
+            (SCROLL_LOCK, "kHIDUsage_KeyboardScrollLock"),
+            (PAUSE, "kHIDUsage_KeyboardPause"),
+            (INSERT, "kHIDUsage_KeyboardInsert"),
+            (HOME, "kHIDUsage_KeyboardHome"),
+            (PAGE_UP, "kHIDUsage_KeyboardPageUp"),
+            (DELETE_FORWARD, "kHIDUsage_KeyboardDeleteForward"),
+            (END, "kHIDUsage_KeyboardEnd"),
+            (PAGE_DOWN, "kHIDUsage_KeyboardPageDown"),
+            (RIGHT_ARROW, "kHIDUsage_KeyboardRightArrow"),
+            (LEFT_ARROW, "kHIDUsage_KeyboardLeftArrow"),
+            (DOWN_ARROW, "kHIDUsage_KeyboardDownArrow"),
+            (UP_ARROW, "kHIDUsage_KeyboardUpArrow"),
+            (KEYPAD_NUM_LOCK, "kHIDUsage_KeypadNumLock"),
+            (KEYPAD_SLASH, "kHIDUsage_KeypadSlash"),
+            (KEYPAD_ASTERISK, "kHIDUsage_KeypadAsterisk"),
+            (KEYPAD_HYPHEN, "kHIDUsage_KeypadHyphen"),
+            (KEYPAD_PLUS, "kHIDUsage_KeypadPlus"),
+            (KEYPAD_ENTER, "kHIDUsage_KeypadEnter"),
+            (KEYPAD1, "kHIDUsage_Keypad1"),
+            (KEYPAD2, "kHIDUsage_Keypad2"),
+            (KEYPAD3, "kHIDUsage_Keypad3"),
+            (KEYPAD4, "kHIDUsage_Keypad4"),
+            (KEYPAD5, "kHIDUsage_Keypad5"),
+            (KEYPAD6, "kHIDUsage_Keypad6"),
+            (KEYPAD7, "kHIDUsage_Keypad7"),
+            (KEYPAD8, "kHIDUsage_Keypad8"),
+            (KEYPAD9, "kHIDUsage_Keypad9"),
+            (KEYPAD0, "kHIDUsage_Keypad0"),
+            (KEYPAD_PERIOD, "kHIDUsage_KeypadPeriod"),
+            (NON_US_BACKSLASH, "kHIDUsage_KeyboardNonUSBackslash"),
+            (APPLICATION, "kHIDUsage_KeyboardApplication"),
+            (POWER, "kHIDUsage_KeyboardPower"),
+            (KEYPAD_EQUAL_SIGN, "kHIDUsage_KeypadEqualSign"),
+            (F13, "kHIDUsage_KeyboardF13"),
+            (F14, "kHIDUsage_KeyboardF14"),
+            (F15, "kHIDUsage_KeyboardF15"),
+            (F16, "kHIDUsage_KeyboardF16"),
+            (F17, "kHIDUsage_KeyboardF17"),
+            (F18, "kHIDUsage_KeyboardF18"),
+            (F19, "kHIDUsage_KeyboardF19"),
+            (F20, "kHIDUsage_KeyboardF20"),
+            (INTERNATIONAL1, "kHIDUsage_KeyboardInternational1"),
+            (INTERNATIONAL2, "kHIDUsage_KeyboardInternational2"),
+            (INTERNATIONAL3, "kHIDUsage_KeyboardInternational3"),
+            (INTERNATIONAL4, "kHIDUsage_KeyboardInternational4"),
+            (INTERNATIONAL5, "kHIDUsage_KeyboardInternational5"),
+            (INTERNATIONAL6, "kHIDUsage_KeyboardInternational6"),
+            (INTERNATIONAL7, "kHIDUsage_KeyboardInternational7"),
+            (INTERNATIONAL8, "kHIDUsage_KeyboardInternational8"),
+            (INTERNATIONAL9, "kHIDUsage_KeyboardInternational9"),
+            (LANG1, "kHIDUsage_KeyboardLANG1"),
+            (LANG2, "kHIDUsage_KeyboardLANG2"),
+            (LANG3, "kHIDUsage_KeyboardLANG3"),
+            (LANG4, "kHIDUsage_KeyboardLANG4"),
+            (LANG5, "kHIDUsage_KeyboardLANG5"),
+            (LANG6, "kHIDUsage_KeyboardLANG6"),
+            (LANG7, "kHIDUsage_KeyboardLANG7"),
+            (LANG8, "kHIDUsage_KeyboardLANG8"),
+            (LANG9, "kHIDUsage_KeyboardLANG9"),
+            (LEFT_CONTROL, "kHIDUsage_KeyboardLeftControl"),
+            (LEFT_SHIFT, "kHIDUsage_KeyboardLeftShift"),
+            (LEFT_ALT, "kHIDUsage_KeyboardLeftAlt"),
+            (LEFT_GUI, "kHIDUsage_KeyboardLeftGUI"),
+            (RIGHT_CONTROL, "kHIDUsage_KeyboardRightControl"),
+            (RIGHT_SHIFT, "kHIDUsage_KeyboardRightShift"),
+            (RIGHT_ALT, "kHIDUsage_KeyboardRightAlt"),
+            (RIGHT_GUI, "kHIDUsage_KeyboardRightGUI"),
+        ];
+
+        for (actual, symbol) in cases {
+            assert_eq!(actual, hid_usage(&header, symbol), "mismatch for {symbol}");
+        }
+    }
 
     #[test]
     fn gc_key_codes_do_not_match_cg_virtual_keycodes() {
-        let gc = [
-            gc::key_codes::key_a(),
-            gc::key_codes::spacebar(),
-            gc::key_codes::f1(),
-            gc::key_codes::keypad1(),
-        ];
-        let cg = [
-            cg::key_code::ANSI_A as gc::KeyCode,
-            cg::key_code::SPACE as gc::KeyCode,
-            cg::key_code::F1 as gc::KeyCode,
-            cg::key_code::ANSI_KEYPAD_1 as gc::KeyCode,
-        ];
+        let gc = [KEY_A, SPACEBAR, F1, KEYPAD1];
+        let cg = [0 as KeyCode, 49 as KeyCode, 122 as KeyCode, 83 as KeyCode];
 
-        assert_eq!(
-            gc,
-            [
-                4 as gc::KeyCode,
-                44 as gc::KeyCode,
-                58 as gc::KeyCode,
-                89 as gc::KeyCode
-            ]
-        );
-        assert_eq!(
-            cg,
-            [
-                0 as gc::KeyCode,
-                49 as gc::KeyCode,
-                122 as gc::KeyCode,
-                83 as gc::KeyCode
-            ]
-        );
-        assert_ne!(
-            gc, cg,
-            "GCKeyCode values are HID usages, not CG virtual keycodes"
-        );
+        assert_ne!(gc, cg);
     }
 }
