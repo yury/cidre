@@ -13,7 +13,7 @@ pub use device::Device;
 mod device_light;
 pub use device_light::DeviceLight;
 
-mod key_codes;
+pub mod key_codes;
 pub use key_codes::KeyCode;
 
 mod physical_input_profile;
