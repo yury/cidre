@@ -10,6 +10,7 @@ pub mod compression;
 pub use compression::Session as CompressionSession;
 pub use compression::properties as compression_props;
 pub use compression::properties as compression_properties;
+pub use compression::properties::encoder_spec_keys as video_encoder_spec_keys;
 pub use compression::properties::keys as compression_props_keys;
 
 pub mod decompression;

@@ -798,14 +798,18 @@ pub mod profile_level {
 
     pub mod hevc {
         use crate::cf;
+
+        #[doc(alias = "kVTProfileLevel_HEVC_Main_AutoLevel")]
         pub fn main_auto_lvl() -> &'static cf::String {
             unsafe { kVTProfileLevel_HEVC_Main_AutoLevel }
         }
 
+        #[doc(alias = "kVTProfileLevel_HEVC_Main10_AutoLevel")]
         pub fn main10_auto_lvl() -> &'static cf::String {
             unsafe { kVTProfileLevel_HEVC_Main10_AutoLevel }
         }
 
+        #[doc(alias = "kVTProfileLevel_HEVC_Main42210_AutoLevel")]
         pub fn main42210_auto_lvl() -> &'static cf::String {
             unsafe { kVTProfileLevel_HEVC_Main42210_AutoLevel }
         }
@@ -1041,49 +1045,62 @@ pub mod profile_level {
     pub mod mp4v {
         use crate::cf;
 
+        #[doc(alias = "kVTProfileLevel_MP4V_Simple_L0")]
         pub fn simple_l0() -> &'static cf::String {
             unsafe { kVTProfileLevel_MP4V_Simple_L0 }
         }
 
+        #[doc(alias = "kVTProfileLevel_MP4V_Simple_L1")]
         pub fn simple_l1() -> &'static cf::String {
             unsafe { kVTProfileLevel_MP4V_Simple_L1 }
         }
 
+        #[doc(alias = "kVTProfileLevel_MP4V_Simple_L2")]
         pub fn simple_l2() -> &'static cf::String {
             unsafe { kVTProfileLevel_MP4V_Simple_L2 }
         }
 
+        #[doc(alias = "kVTProfileLevel_MP4V_Simple_L3")]
         pub fn simple_l3() -> &'static cf::String {
             unsafe { kVTProfileLevel_MP4V_Simple_L3 }
         }
 
+        #[doc(alias = "kVTProfileLevel_MP4V_Main_L2")]
         pub fn main_l2() -> &'static cf::String {
             unsafe { kVTProfileLevel_MP4V_Main_L2 }
         }
 
+        #[doc(alias = "kVTProfileLevel_MP4V_Main_L3")]
         pub fn main_l3() -> &'static cf::String {
             unsafe { kVTProfileLevel_MP4V_Main_L3 }
         }
 
+        #[doc(alias = "kVTProfileLevel_MP4V_Main_L4")]
         pub fn main_l4() -> &'static cf::String {
             unsafe { kVTProfileLevel_MP4V_Main_L4 }
         }
 
+        #[doc(alias = "kVTProfileLevel_MP4V_AdvancedSimple_L0")]
         pub fn advanced_simple_l0() -> &'static cf::String {
             unsafe { kVTProfileLevel_MP4V_AdvancedSimple_L0 }
         }
 
+        #[doc(alias = "kVTProfileLevel_MP4V_AdvancedSimple_L1")]
         pub fn advanced_simple_l1() -> &'static cf::String {
             unsafe { kVTProfileLevel_MP4V_AdvancedSimple_L1 }
         }
 
+        #[doc(alias = "kVTProfileLevel_MP4V_AdvancedSimple_L2")]
         pub fn advanced_simple_l2() -> &'static cf::String {
             unsafe { kVTProfileLevel_MP4V_AdvancedSimple_L2 }
         }
+
+        #[doc(alias = "kVTProfileLevel_MP4V_AdvancedSimple_L3")]
         pub fn advanced_simple_l3() -> &'static cf::String {
             unsafe { kVTProfileLevel_MP4V_AdvancedSimple_L3 }
         }
 
+        #[doc(alias = "kVTProfileLevel_MP4V_AdvancedSimple_L4")]
         pub fn advanced_simple_l4() -> &'static cf::String {
             unsafe { kVTProfileLevel_MP4V_AdvancedSimple_L4 }
         }
@@ -1109,14 +1126,17 @@ pub mod profile_level {
     pub mod h263 {
         use crate::cf;
 
+        #[doc(alias = "kVTProfileLevel_H263_Profile0_Level10")]
         pub fn profile0_lvl_10() -> &'static cf::String {
             unsafe { kVTProfileLevel_H263_Profile0_Level10 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H263_Profile0_Level45")]
         pub fn profile0_lvl_45() -> &'static cf::String {
             unsafe { kVTProfileLevel_H263_Profile0_Level45 }
         }
 
+        #[doc(alias = "kVTProfileLevel_H263_Profile3_Level45")]
         pub fn profile3_lvl_45() -> &'static cf::String {
             unsafe { kVTProfileLevel_H263_Profile3_Level45 }
         }
@@ -1134,10 +1154,12 @@ pub mod frame_keys {
     use crate::cf;
 
     /// [`cf::Boolean`] value indicating whether the current frame is forced to be a key frame.
+    #[doc(alias = "kVTEncodeFrameOptionKey_ForceKeyFrame")]
     pub fn force_key_frame() -> &'static cf::String {
         unsafe { kVTEncodeFrameOptionKey_ForceKeyFrame }
     }
 
+    #[doc(alias = "kVTEncodeFrameOptionKey_BaseFrameQP")]
     pub fn base_frame_qp() -> &'static cf::String {
         unsafe { kVTEncodeFrameOptionKey_BaseFrameQP }
     }
@@ -1188,5 +1210,41 @@ pub mod preset_keys {
 
         #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, watchos = 26.0, visionos = 26.0)]
         static kVTCompressionPreset_VideoConferencing: &'static cf::String;
+    }
+}
+
+pub mod encoder_spec_keys {
+    use crate::{api, cf};
+
+    #[doc(alias = "kVTVideoEncoderSpecification_EnableHardwareAcceleratedVideoEncoder")]
+    #[api::available(macos = 10.9, ios = 17.4, tvos = 17.4, visionos = 1.1)]
+    pub fn enable_hw_accelerated_video_encoder() -> &'static cf::String {
+        unsafe { kVTVideoEncoderSpecification_EnableHardwareAcceleratedVideoEncoder }
+    }
+
+    #[doc(alias = "kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder")]
+    #[api::available(macos = 10.9, ios = 17.4, tvos = 17.4, visionos = 1.1)]
+    pub fn require_hw_accelerated_video_encoder() -> &'static cf::String {
+        unsafe { kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder }
+    }
+
+    #[doc(alias = "kVTVideoEncoderSpecification_EnableLowLatencyRateControl")]
+    #[api::available(macos = 11.3, ios = 14.5, tvos = 14.5, visionos = 1.0)]
+    pub fn enable_low_latency_rate_control() -> &'static cf::String {
+        unsafe { kVTVideoEncoderSpecification_EnableLowLatencyRateControl }
+    }
+
+    #[api::weak]
+    unsafe extern "C" {
+        #[api::available(macos = 10.9, ios = 17.4, tvos = 17.4, visionos = 1.1)]
+        static kVTVideoEncoderSpecification_EnableHardwareAcceleratedVideoEncoder:
+            &'static cf::String;
+
+        #[api::available(macos = 10.9, ios = 17.4, tvos = 17.4, visionos = 1.1)]
+        static kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder:
+            &'static cf::String;
+
+        #[api::available(macos = 11.3, ios = 14.5, tvos = 14.5, visionos = 1.0)]
+        static kVTVideoEncoderSpecification_EnableLowLatencyRateControl: &'static cf::String;
     }
 }
