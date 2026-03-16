@@ -29,6 +29,34 @@ impl From<ComparisonResult> for std::cmp::Ordering {
 #[doc(alias = "NSComparator")]
 pub type Comparator<T, Attr> = crate::blocks::Block<fn(a: &T, b: &T) -> ns::ComparisonResult, Attr>;
 
+#[doc(alias = "NSQualityOfService")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, PartialOrd, Ord)]
+#[repr(transparent)]
+pub struct QualityOfService(pub ns::Integer);
+
+impl QualityOfService {
+    #[doc(alias = "NSQualityOfServiceUserInteractive")]
+    pub const USER_INTERACTIVE: Self = Self(0x21);
+
+    #[doc(alias = "NSQualityOfServiceUserInitiated")]
+    pub const USER_INITIATED: Self = Self(0x19);
+
+    #[doc(alias = "NSQualityOfServiceUtility")]
+    pub const UTILITY: Self = Self(0x11);
+
+    #[doc(alias = "NSQualityOfServiceBackground")]
+    pub const BACKGROUND: Self = Self(0x09);
+
+    #[doc(alias = "NSQualityOfServiceDefault")]
+    pub const DEFAULT: Self = Self(-1);
+}
+
+impl Default for QualityOfService {
+    fn default() -> Self {
+        Self::DEFAULT
+    }
+}
+
 #[doc(alias = "NSNotFound")]
 pub const NOT_FOUND: ns::Integer = ns::Integer::MAX;
 

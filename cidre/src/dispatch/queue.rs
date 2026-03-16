@@ -141,6 +141,15 @@ impl Queue {
     }
 
     #[inline]
+    pub fn serial_with_ar_pool_qos(qos_class: QosClass, relative_priority: i32) -> arc::R<Self> {
+        // debug_assert!(relative_priority >= QosClass::QOS_MIN_RELATIVE_PRIORITY);
+        // debug_assert!(relative_priority <= 0);
+        let attr = Attr::serial_with_ar_pool();
+        let attr = Attr::make_with_qos_class(Some(&attr), qos_class, relative_priority);
+        Self::with_label_and_attrs(None::<&CStr>, Some(&attr))
+    }
+
+    #[inline]
     pub fn concurrent_with_ar_pool() -> arc::R<Self> {
         let attr = Attr::concurrent_with_ar_pool();
         Self::with_label_and_attrs(None::<&CStr>, Some(&attr))
@@ -161,6 +170,34 @@ impl Queue {
             let label = label.map_or(std::ptr::null(), |f| f.as_ref().as_ptr());
             dispatch_queue_create(label, attr)
         }
+    }
+
+    #[doc(alias = "dispatch_queue_get_label")]
+    #[inline]
+    pub fn label(&self) -> &CStr {
+        let ptr = unsafe { dispatch_queue_get_label(Some(self)) };
+        unsafe { CStr::from_ptr(ptr) }
+    }
+
+    #[doc(alias = "dispatch_queue_get_label")]
+    #[inline]
+    pub fn current_queue_label<'a>() -> &'a CStr {
+        let ptr = unsafe { dispatch_queue_get_label(None) };
+        unsafe { CStr::from_ptr(ptr) }
+    }
+
+    #[doc(alias = "dispatch_queue_get_qos_class")]
+    #[inline]
+    pub fn qos(&self) -> QosClass {
+        unsafe { dispatch_queue_get_qos_class(self, std::ptr::null_mut()) }
+    }
+
+    #[doc(alias = "dispatch_queue_get_qos_class")]
+    #[inline]
+    pub fn qos_with_relative_priority(&self) -> (QosClass, i32) {
+        let mut relative_priority = 0i32;
+        let qos = unsafe { dispatch_queue_get_qos_class(self, &mut relative_priority) };
+        (qos, relative_priority)
     }
 
     #[inline]
@@ -454,6 +491,9 @@ unsafe extern "C-unwind" {
     fn dispatch_sync_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);
     fn dispatch_queue_create(label: *const c_char, attr: Option<&Attr>) -> arc::R<Queue>;
 
+    fn dispatch_queue_get_label(queue: Option<&Queue>) -> *const std::ffi::c_char;
+    fn dispatch_queue_get_qos_class(queue: &Queue, relative_priority_ptr: *mut i32) -> QosClass;
+
     fn dispatch_async_and_wait_f(queue: &Queue, context: *mut c_void, work: dispatch::Fn<c_void>);
 
     fn dispatch_queue_attr_make_initially_inactive(attr: Option<&Attr>) -> arc::R<Attr>;
@@ -567,5 +607,34 @@ mod tests {
         let res = q.sync(|| 10);
 
         assert_eq!(res, 10);
+        assert!(q.label().is_empty());
+    }
+
+    #[test]
+    fn qos() {
+        let qos = dispatch::QosClass::USER_INITIATED;
+        let q = dispatch::Queue::serial_with_ar_pool_qos(qos, 0);
+        assert_eq!(q.qos(), qos);
+        assert_eq!(q.qos_with_relative_priority(), (qos, 0));
+
+        let q = dispatch::Queue::serial_with_ar_pool_qos(qos, -10);
+        assert_eq!(q.qos(), qos);
+        assert_eq!(q.qos_with_relative_priority(), (qos, -10));
+
+        let q = dispatch::Queue::serial_with_ar_pool_qos(qos, 10);
+        assert_eq!(
+            q.qos_with_relative_priority(),
+            (dispatch::QosClass::UNSPECIFIED, 0)
+        );
+    }
+
+    #[test]
+    fn label() {
+        let q = dispatch::Queue::serial_with_ar_pool();
+        assert!(q.label().is_empty());
+
+        let label = c"label";
+        let q = dispatch::Queue::with_label_and_attrs(Some(label), None);
+        assert_eq!(q.label(), label);
     }
 }

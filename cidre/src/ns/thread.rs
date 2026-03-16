@@ -30,6 +30,24 @@ impl Thread {
 
     #[objc::msg_send(isMainThread)]
     pub fn is_main() -> bool;
+
+    #[objc::msg_send(threadPriority)]
+    pub fn priority() -> f64;
+
+    #[objc::msg_send(setThreadPriority:)]
+    pub fn set_priority(val: f64) -> bool;
+
+    #[objc::msg_send(qualityOfService)]
+    pub fn qos(&self) -> ns::QualityOfService;
+
+    #[objc::msg_send(setQualityOfService:)]
+    pub fn set_qos(&mut self, val: ns::QualityOfService);
+
+    #[objc::msg_send(name)]
+    pub fn name(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(setName:)]
+    pub fn set_name(&mut self, val: Option<&ns::String>);
 }
 
 unsafe extern "C" {
