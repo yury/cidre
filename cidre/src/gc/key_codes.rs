@@ -4,6 +4,8 @@ use crate::ns;
 #[doc(alias = "GCKeyCode")]
 pub type KeyCode = ns::Integer;
 
+pub const KEY_UNDEFINED: KeyCode = 0x00;
+
 // Letter keys
 #[doc(alias = "GCKeyCodeKeyA")]
 pub const KEY_A: KeyCode = 0x04; // a or A
