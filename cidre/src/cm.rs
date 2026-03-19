@@ -92,6 +92,9 @@ pub use attachment::Mode as AttachMode;
 
 pub mod block_buffer;
 pub use block_buffer::BlockBuf;
+pub use block_buffer::CUSTOM_SRC_VERSION as BLOCK_BUF_CUSTOM_SRC_VERSION;
+pub use block_buffer::ContiguousBlockBuf;
+pub use block_buffer::CustomSrc as BlockCustomSrc;
 pub use block_buffer::Flags as BlockBufFlags;
 pub use block_buffer::err as block_buf_err;
 

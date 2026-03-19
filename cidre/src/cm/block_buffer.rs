@@ -34,10 +34,24 @@ impl Flags {
     pub const PERMIT_EMPTY_REFERENCE: Self = Self(1u32 << 3);
 }
 
+#[doc(alias = "CMBlockBufferCustomBlockSource")]
+#[derive(Debug, Default)]
+#[repr(C, packed(4))]
+pub struct CustomSrc {
+    pub version: u32,
+    pub alloc: Option<extern "C" fn(refcon: *mut c_void, bytes_n: usize) -> *mut c_void>,
+    pub free: Option<extern "C" fn(refcon: *mut c_void, doomed_mem: *mut c_void, bytes_n: usize)>,
+    pub refcon: *mut c_void,
+}
+
+#[doc(alias = "kCMBlockBufferCustomBlockSourceVersion")]
+pub const CUSTOM_SRC_VERSION: u32 = 0;
+
 define_cf_type!(
     #[doc(alias = "CMBlockBufferRef")]
     BlockBuf(cf::Type)
 );
+
 // TODO: termporary...
 unsafe impl Send for BlockBuf {}
 unsafe impl Sync for BlockBuf {}
@@ -120,6 +134,7 @@ impl BlockBuf {
                 std::ptr::null_mut(),
                 len,
                 block_allocator,
+                std::ptr::null(),
                 0,
                 len,
                 Flags::ASSURE_MEM_NOW,
@@ -135,6 +150,41 @@ impl BlockBuf {
                 std::ptr::null_mut(),
                 len,
                 None,
+                std::ptr::null(),
+                0,
+                len,
+                Flags::ASSURE_MEM_NOW,
+                None,
+            )
+        }
+    }
+
+    pub fn with_custom_src_flags(
+        len: usize,
+        src: &CustomSrc,
+        flags: Flags,
+    ) -> os::Result<arc::R<Self>> {
+        unsafe {
+            Self::create_with_mem_block_in(
+                std::ptr::null_mut(),
+                len,
+                None,
+                src,
+                0,
+                len,
+                flags,
+                None,
+            )
+        }
+    }
+
+    pub fn with_custom_src(len: usize, src: &CustomSrc) -> os::Result<arc::R<Self>> {
+        unsafe {
+            Self::create_with_mem_block_in(
+                std::ptr::null_mut(),
+                len,
+                None,
+                src,
                 0,
                 len,
                 Flags::ASSURE_MEM_NOW,
@@ -149,7 +199,7 @@ impl BlockBuf {
         memory_block: *mut c_void,
         block_length: usize,
         block_allocator: Option<&cf::Allocator>,
-        // custom_block_source: *const c_void, // TODO: add block source
+        custom_block_source: *const CustomSrc,
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
@@ -162,7 +212,7 @@ impl BlockBuf {
                     memory_block,
                     block_length,
                     block_allocator,
-                    std::ptr::null(),
+                    custom_block_source,
                     offset_to_data,
                     data_length,
                     flags,
@@ -281,6 +331,57 @@ impl BlockBuf {
         }
     }
 
+    pub fn try_contiguous_buf(&self) -> Option<ContiguousBlockBuf> {
+        if self.is_range_contiguous(0, self.len()) {
+            Some(ContiguousBlockBuf(self.retained()))
+        } else {
+            None
+        }
+    }
+
+    #[doc(alias = "CMBlockBufferCreateContiguous")]
+    #[inline]
+    pub fn make_contiguous_in(
+        &self,
+        block_allocator: Option<&cf::Allocator>,
+    ) -> os::Result<ContiguousBlockBuf> {
+        let buf = unsafe {
+            os::result_unchecked(|val| {
+                CMBlockBufferCreateContiguous(
+                    None,
+                    self,
+                    block_allocator,
+                    std::ptr::null(),
+                    0,
+                    self.len(),
+                    Flags::NONE,
+                    val,
+                )
+            })
+        }?;
+        Ok(ContiguousBlockBuf(buf))
+    }
+
+    #[doc(alias = "CMBlockBufferCreateContiguous")]
+    #[inline]
+    pub fn make_contiguous(&self) -> os::Result<ContiguousBlockBuf> {
+        let buf = unsafe {
+            os::result_unchecked(|val| {
+                CMBlockBufferCreateContiguous(
+                    None,
+                    self,
+                    None,
+                    std::ptr::null(),
+                    0,
+                    self.len(),
+                    Flags::NONE,
+                    val,
+                )
+            })
+        }?;
+        Ok(ContiguousBlockBuf(buf))
+    }
+
     #[inline]
     pub fn with_buf_ref(
         buf_reference: &BlockBuf,
@@ -335,6 +436,23 @@ impl BlockBuf {
     pub fn assure_block_mem(&mut self) -> os::Result {
         unsafe { CMBlockBufferAssureBlockMemory(self).result() }
     }
+
+    #[doc(alias = "CMBlockBufferCopyDataBytes")]
+    #[inline]
+    pub unsafe fn copy_bytes(
+        &self,
+        offset_to_data: usize,
+        data_length: usize,
+        dst: *mut u8,
+    ) -> os::Result {
+        unsafe { CMBlockBufferCopyDataBytes(self, offset_to_data, data_length, dst).result() }
+    }
+
+    #[doc(alias = "CMBlockBufferCopyDataBytes")]
+    #[inline]
+    pub fn copy_to(&self, offset: usize, slice: &mut [u8]) -> os::Result {
+        unsafe { self.copy_bytes(offset, slice.len(), slice.as_mut_ptr()) }
+    }
 }
 
 unsafe extern "C-unwind" {
@@ -353,7 +471,18 @@ unsafe extern "C-unwind" {
         memory_block: *mut c_void,
         block_length: usize,
         block_allocator: Option<&cf::Allocator>,
-        custom_block_source: *const c_void, // TODO: add block source
+        custom_block_source: *const CustomSrc,
+        offset_to_data: usize,
+        data_length: usize,
+        flags: Flags,
+        block_buffer_out: *mut Option<arc::R<BlockBuf>>,
+    ) -> os::Status;
+
+    fn CMBlockBufferCreateContiguous(
+        structure_allocator: Option<&cf::Allocator>,
+        src_buf: &BlockBuf,
+        block_allocator: Option<&cf::Allocator>,
+        custom_block_source: *const CustomSrc,
         offset_to_data: usize,
         data_length: usize,
         flags: Flags,
@@ -382,6 +511,13 @@ unsafe extern "C-unwind" {
     ) -> os::Status;
 
     fn CMBlockBufferAssureBlockMemory(buffer: &mut BlockBuf) -> os::Status;
+
+    fn CMBlockBufferCopyDataBytes(
+        buf: &BlockBuf,
+        offset_to_data: usize,
+        data_length: usize,
+        destination: *mut u8,
+    ) -> os::Status;
 
 }
 
@@ -426,4 +562,110 @@ pub mod err {
 
     #[doc(alias = "kCMBlockBufferInsufficientSpaceErr")]
     pub const INSUFFICIENT_SPACE: Error = Error::new_unchecked(-12708);
+}
+
+pub struct ContiguousBlockBuf(arc::R<BlockBuf>);
+
+impl std::ops::Deref for ContiguousBlockBuf {
+    type Target = BlockBuf;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl AsRef<BlockBuf> for ContiguousBlockBuf {
+    fn as_ref(&self) -> &BlockBuf {
+        &self.0
+    }
+}
+
+impl AsRef<[u8]> for ContiguousBlockBuf {
+    fn as_ref(&self) -> &[u8] {
+        unsafe { self.0.as_slice().unwrap_unchecked() }
+    }
+}
+
+impl TryFrom<&BlockBuf> for Vec<u8> {
+    type Error = crate::os::Error;
+
+    fn try_from(value: &BlockBuf) -> Result<Self, Self::Error> {
+        let len = value.len();
+        if len == 0 {
+            return Ok(vec![]);
+        } else {
+            let mut vec = Vec::with_capacity(len);
+            unsafe { vec.set_len(len) };
+            (unsafe { value.copy_bytes(0, len, vec.as_mut_ptr()) })?;
+            Ok(vec)
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::{
+        ffi::c_void,
+        sync::atomic::{AtomicUsize, Ordering},
+    };
+
+    use crate::cm;
+
+    // bytes::Bytes::from_owner
+    fn from_owner<T>(_owner: T)
+    where
+        T: AsRef<[u8]> + Send + 'static,
+    {
+    }
+
+    #[test]
+    fn basics() {
+        let buf = cm::BlockBuf::with_mem_block(100).unwrap();
+        let contiguous_buf = buf.try_contiguous_buf().unwrap();
+        assert_eq!(contiguous_buf.len(), 100);
+
+        from_owner(contiguous_buf);
+
+        let vec: Vec<u8> = buf.as_ref().try_into().unwrap();
+        assert_eq!(vec.len(), 100);
+
+        let mut arr = [0u8; 100];
+        buf.copy_to(0, &mut arr).unwrap();
+        let err = buf.copy_to(10, &mut arr).unwrap_err();
+        assert_eq!(err, cm::block_buf_err::BAD_LEN_PARAM);
+    }
+
+    #[test]
+    fn custom_src() {
+        static ALLOC_N: AtomicUsize = AtomicUsize::new(0);
+        static FREE_N: AtomicUsize = AtomicUsize::new(0);
+        extern "C" fn alloc(_refcon: *mut c_void, size: usize) -> *mut c_void {
+            let vec = vec![0u8; size];
+            assert_eq!(vec.len(), vec.capacity());
+            ALLOC_N.fetch_add(1, Ordering::SeqCst);
+
+            vec.into_raw_parts().0 as _
+        }
+
+        extern "C" fn free(_refcon: *mut c_void, buf: *mut c_void, size: usize) {
+            FREE_N.fetch_add(1, Ordering::SeqCst);
+            unsafe { Vec::from_raw_parts(buf as *mut u8, size, size) };
+        }
+
+        {
+            let src = cm::BlockCustomSrc {
+                alloc: Some(alloc),
+                free: Some(free),
+                ..Default::default()
+            };
+
+            let mut buf = cm::BlockBuf::with_custom_src(100, &src).unwrap();
+
+            _ = buf.as_mut_slice();
+            assert_eq!(buf.len(), 100);
+        }
+
+        assert_eq!(1, ALLOC_N.load(Ordering::SeqCst));
+        assert_eq!(1, FREE_N.load(Ordering::SeqCst));
+    }
 }
