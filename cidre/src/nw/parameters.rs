@@ -311,6 +311,18 @@ pub enum MultipathService {
 
 /// Data Handling
 impl Params {
+    #[doc(alias = "nw_parameters_set_service_class")]
+    #[inline]
+    pub fn set_service_class(&mut self, val: nw::ServiceClass) {
+        unsafe { nw_parameters_set_service_class(self, val) }
+    }
+
+    #[doc(alias = "nw_parameters_get_service_class")]
+    #[inline]
+    pub fn service_class(&self) -> nw::ServiceClass {
+        unsafe { nw_parameters_get_service_class(self) }
+    }
+
     #[doc(alias = "nw_parameters_get_fast_open_enabled")]
     #[inline]
     pub fn fast_open_enabled(&self) -> bool {
@@ -398,6 +410,9 @@ unsafe extern "C-unwind" {
 
     fn nw_parameters_set_include_peer_to_peer(params: &mut Params, val: bool);
     fn nw_parameters_get_include_peer_to_peer(params: &Params) -> bool;
+
+    fn nw_parameters_set_service_class(params: &mut Params, val: nw::ServiceClass);
+    fn nw_parameters_get_service_class(params: &Params) -> nw::ServiceClass;
 
     fn nw_parameters_set_fast_open_enabled(params: &mut Params, val: bool);
     fn nw_parameters_get_fast_open_enabled(params: &Params) -> bool;

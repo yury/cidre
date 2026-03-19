@@ -30,6 +30,8 @@ pub use connection_group::ConnectionGroup;
 pub mod content_context;
 pub use content_context::ContentCtx;
 
+pub mod tcp_options;
+
 mod txt_record;
 pub use txt_record::TxtRecord;
 #[cfg(feature = "blocks")]
