@@ -566,6 +566,18 @@ pub mod err {
 
 pub struct ContiguousBlockBuf(arc::R<BlockBuf>);
 
+impl ContiguousBlockBuf {
+    pub fn new_in(len: usize, block_allocator: Option<&cf::Allocator>) -> os::Result<Self> {
+        let block = BlockBuf::with_mem_block_in(len, block_allocator)?;
+        Ok(Self(block))
+    }
+
+    pub fn new(len: usize) -> os::Result<Self> {
+        let block = BlockBuf::with_mem_block_in(len, None)?;
+        Ok(Self(block))
+    }
+}
+
 impl std::ops::Deref for ContiguousBlockBuf {
     type Target = BlockBuf;
 
@@ -575,14 +587,23 @@ impl std::ops::Deref for ContiguousBlockBuf {
 }
 
 impl AsRef<BlockBuf> for ContiguousBlockBuf {
+    #[inline]
     fn as_ref(&self) -> &BlockBuf {
         &self.0
     }
 }
 
 impl AsRef<[u8]> for ContiguousBlockBuf {
+    #[inline]
     fn as_ref(&self) -> &[u8] {
         unsafe { self.0.as_slice().unwrap_unchecked() }
+    }
+}
+
+impl AsMut<[u8]> for ContiguousBlockBuf {
+    #[inline]
+    fn as_mut(&mut self) -> &mut [u8] {
+        unsafe { self.0.as_mut_slice().unwrap_unchecked() }
     }
 }
 
@@ -667,5 +688,18 @@ mod tests {
 
         assert_eq!(1, ALLOC_N.load(Ordering::SeqCst));
         assert_eq!(1, FREE_N.load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn contiguous() {
+        let mut buf = cm::ContiguousBlockBuf::new(100).unwrap();
+        assert_eq!(buf.len(), 100);
+        assert!(buf.is_range_contiguous(0, 100));
+        let slice = buf.as_slice().unwrap();
+        assert_eq!(slice[0], 0);
+        let mut_slice: &mut [u8] = buf.as_mut();
+        mut_slice[0] = 25;
+        let slice = buf.as_slice().unwrap();
+        assert_eq!(slice[0], 25);
     }
 }
