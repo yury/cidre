@@ -576,6 +576,10 @@ impl ContiguousBlockBuf {
         let block = BlockBuf::with_mem_block_in(len, None)?;
         Ok(Self(block))
     }
+
+    pub fn retained(&self) -> Self {
+        Self(self.0.retained())
+    }
 }
 
 impl std::ops::Deref for ContiguousBlockBuf {
