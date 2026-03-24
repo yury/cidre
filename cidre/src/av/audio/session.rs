@@ -84,7 +84,7 @@ impl Session {
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_category_mod_opts<'ear>(
+    pub fn set_category_mode_opts<'ear>(
         &mut self,
         val: &Category,
         mode: &Mode,

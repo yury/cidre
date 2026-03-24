@@ -430,6 +430,12 @@ impl Mode {
     pub fn short_form_video() -> &'static Self {
         unsafe { AVAudioSessionModeShortFormVideo }
     }
+
+    #[doc(alias = "AVAudioSessionModeDualRoute")]
+    #[api::available(ios = 26.2)]
+    pub fn dual_route() -> &'static Self {
+        unsafe { AVAudioSessionModeDualRoute }
+    }
 }
 
 #[api::weak]
@@ -445,6 +451,8 @@ unsafe extern "C" {
     static AVAudioSessionModeVoicePrompt: &'static Mode;
     #[api::available(ios = 26.0)]
     static AVAudioSessionModeShortFormVideo: &'static Mode;
+    #[api::available(ios = 26.2)]
+    static AVAudioSessionModeDualRoute: &'static Mode;
 
 }
 
@@ -655,6 +663,7 @@ impl CategoryOpts {
     ///
     #[doc(alias = "AVAudioSessionCategoryOptionAllowAirPlay")]
     pub const ALLOW_AIR_PLAY: Self = Self(0x40);
+
     /// Some devices include a privacy feature that mutes the built-in microphone at a hardware level
     /// under certain conditions e.g. when the Smart Folio of an iPad is closed. The default behavior is
     /// to interrupt the session using the built-in microphone when that microphone is muted in hardware.
@@ -675,6 +684,19 @@ impl CategoryOpts {
     /// not the user has granted permission to use microphone input.
     #[doc(alias = "AVAudioSessionCategoryOptionOverrideMutedMicrophoneInterruption")]
     pub const OVERRIDE_MUTED_MICROPHONE_INTERRUPTION: Self = Self(0x80);
+
+    /// This option should be used if a session prefers to use FarFieldInput when available.
+    /// This option is only valid with categories that support input -
+    /// `AVAudioSessionCategoryPlayAndRecord` and `AVAudioSessionCategoryRecord`.
+    ///
+    /// - This option requires `AVAudioSessionCategoryOptionAllowBluetoothHFP` to be set. Otherwise error will be returned.
+    ///
+    ///	- Support for this can be queried on input ports via the BluetoothMicrophone interface on a port, via its member `farFieldCapture.isSupported`.
+    ///
+    ///	- Active sessions can see if far-field input is enabled on a bluetooth audio device by querying
+    ///		the BluetoothMicrophone interface of the input port of the current route for: `farFieldCapture.isEnabled`.
+    #[doc(alias = "AVAudioSessionCategoryOptionFarFieldInput")]
+    pub const FAR_FIELD_INPUT: Self = Self(1 << 18);
 
     #[doc(alias = "AVAudioSessionCategoryOptionBluetoothHighQualityRecording")]
     #[cfg(target_os = "ios")]
@@ -713,6 +735,7 @@ pub enum InterruptionReason {
     /// The audio session was interrupted because another session was activated.
     #[default]
     Default = 0,
+
     /// The audio session was interrupted due to the app being suspended by the operating sytem.
     ///
     /// Starting in iOS 10, the system will deactivate the audio session of most apps in response to the
@@ -722,6 +745,7 @@ pub enum InterruptionReason {
     /// deactivated by the system and the notification can only be delivered once the app is running
     /// again.
     AppWasSuspended = 1,
+
     /// The audio session was interrupted due to the built-in mic being muted e.g. due to an iPad's Smart Folio being closed.
     BuiltInMicMuted = 2,
 }
