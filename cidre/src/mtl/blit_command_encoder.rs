@@ -55,13 +55,14 @@ impl BlitCmdEncoder {
     /// # Important
     ///
     /// Copying data to overlapping regions within the same buffer may result in unexpected behavior.
-    #[objc::msg_send(copyFromBuffer:sourceOffset:toBuffer:destinationOffset:)]
+    #[objc::msg_send(copyFromBuffer:sourceOffset:toBuffer:destinationOffset:size:)]
     pub fn copy_buf_to_buf(
         &self,
         src_buf: &mtl::Buf,
         src_offset: usize,
         dst_buf: &mut mtl::Buf,
         dst_offset: usize,
+        size: usize,
     );
 
     #[objc::msg_send(copyFromBuffer:sourceOffset:sourceBytesPerRow:sourceBytesPerImage:sourceSize:toTexture:destinationSlice:destinationLevel:destinationOrigin:)]
