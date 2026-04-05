@@ -312,6 +312,15 @@ float4 glyph_fragment(VertexOut in [[stage_in]],
         index_count: usize,
     }
 
+    struct PreparedRun {
+        font_key: String,
+        font_size: f32,
+        color: [f32; 4],
+        glyphs: Vec<cg::Glyph>,
+        positions: Vec<cg::Point>,
+        line_origin: cg::Point,
+    }
+
     struct TextMesh {
         vertex_buffer: Option<arc::R<mtl::Buf>>,
         index_buffer: Option<arc::R<mtl::Buf>>,
@@ -397,13 +406,6 @@ float4 glyph_fragment(VertexOut in [[stage_in]],
         }
 
         fn ensure_glyph(&mut self, glyph: cg::Glyph) -> Result<(), String> {
-            let mut advances = [cg::Size::zero(); 1];
-            self.font.advances_for_glyphs(
-                ct::FontOrientation::Horizontal,
-                std::slice::from_ref(&glyph),
-                &mut advances,
-            );
-
             let Some(path) = self.font.path_for_glyph(glyph, None) else {
                 self.glyph_cache.insert(glyph.0.0, GlyphInfo::default());
                 return Ok(());
@@ -675,9 +677,8 @@ float4 glyph_fragment(VertexOut in [[stage_in]],
             let mut bounds_max_x = f32::NEG_INFINITY;
             let mut bounds_max_y = f32::NEG_INFINITY;
 
-            let mut vertices = Vec::<GlyphVertex>::new();
-            let mut indices = Vec::<u16>::new();
-            let mut submeshes = Vec::<TextSubmesh>::new();
+            let mut prepared_runs = Vec::<PreparedRun>::new();
+            let mut glyphs_by_font = HashMap::<String, Vec<cg::Glyph>>::new();
 
             for (line_index, line) in lines.iter().enumerate() {
                 let line_origin = line_origins[line_index];
@@ -703,100 +704,138 @@ float4 glyph_fragment(VertexOut in [[stage_in]],
                     let mut positions = vec![cg::Point::zero(); glyph_count];
                     run.copy_positions(0, &mut positions);
 
-                    let device = self.device.retained();
-                    let atlas = self.atlas_for_font_name_mut(&font_key)?;
-                    atlas.insert_glyphs(&glyphs_storage, device.as_ref())?;
-
                     let run_color = extract_run_color(attrs);
+                    glyphs_by_font
+                        .entry(font_key.clone())
+                        .or_default()
+                        .extend_from_slice(&glyphs_storage);
+                    prepared_runs.push(PreparedRun {
+                        font_key,
+                        font_size,
+                        color: run_color,
+                        glyphs: glyphs_storage,
+                        positions,
+                        line_origin,
+                    });
+                }
+            }
 
-                    let submesh_index_start = indices.len();
-                    let mut submesh_index_count = 0usize;
+            if !glyphs_by_font.is_empty() {
+                let device = self.device.retained();
+                for (font_key, glyphs) in glyphs_by_font.iter_mut() {
+                    glyphs.sort_unstable_by_key(|glyph| glyph.0.0);
+                    glyphs.dedup_by_key(|glyph| glyph.0.0);
+                    let atlas = self.atlas_for_font_name_mut(font_key)?;
+                    atlas.insert_glyphs(glyphs, device.as_ref())?;
+                }
+            }
 
-                    for (glyph_index, &glyph) in glyphs_storage.iter().enumerate() {
-                        let info = atlas.glyph_info(glyph);
-                        if info.curve_count == 0 {
-                            continue;
-                        }
+            let estimated_glyph_count: usize =
+                prepared_runs.iter().map(|run| run.glyphs.len()).sum();
+            let mut vertices = Vec::<GlyphVertex>::with_capacity(estimated_glyph_count * 4);
+            let mut indices = Vec::<u16>::with_capacity(estimated_glyph_count * 6);
+            let mut submeshes = Vec::<TextSubmesh>::with_capacity(prepared_runs.len());
 
-                        let pos_x = (line_origin.x + positions[glyph_index].x) as f32;
-                        let pos_y =
-                            (line_origin.y - first_line_y + positions[glyph_index].y) as f32;
+            for run in prepared_runs {
+                let PreparedRun {
+                    font_key,
+                    font_size,
+                    color,
+                    glyphs,
+                    positions,
+                    line_origin,
+                } = run;
+                let atlas = self
+                    .atlas_cache
+                    .get(&font_key)
+                    .ok_or_else(|| format!("missing atlas for {}", font_key))?;
 
-                        let ex0 = info.x_min - DILATION_MARGIN;
-                        let ex1 = info.x_max + DILATION_MARGIN;
-                        let ey0 = info.y_min - DILATION_MARGIN;
-                        let ey1 = info.y_max + DILATION_MARGIN;
+                let submesh_index_start = indices.len();
+                let mut submesh_index_count = 0usize;
 
-                        let px0 = ex0 * font_size;
-                        let py0 = ey0 * font_size;
-                        let px1 = ex1 * font_size;
-                        let py1 = ey1 * font_size;
-
-                        bounds_min_x = bounds_min_x.min(pos_x + px0);
-                        bounds_min_y = bounds_min_y.min(pos_y + py0);
-                        bounds_max_x = bounds_max_x.max(pos_x + px1);
-                        bounds_max_y = bounds_max_y.max(pos_y + py1);
-
-                        let tex_z = f32::from_bits(info.band_start);
-                        let bmax_x = (info.num_vert_bands - 1) as u32;
-                        let bmax_y = (info.num_horiz_bands - 1) as u32;
-                        let tex_w = f32::from_bits(bmax_x | (bmax_y << 16));
-
-                        let band_transform = [
-                            info.band_scale_x,
-                            info.band_scale_y,
-                            info.band_offset_x,
-                            info.band_offset_y,
-                        ];
-
-                        let inv_scale = if font_size.abs() > f32::EPSILON {
-                            1.0 / font_size
-                        } else {
-                            1.0
-                        };
-                        let inv_jacobian = [inv_scale, 0.0, 0.0, inv_scale];
-
-                        let corners = [
-                            (px0, py0, ex0, ey0),
-                            (px1, py0, ex1, ey0),
-                            (px1, py1, ex1, ey1),
-                            (px0, py1, ex0, ey1),
-                        ];
-
-                        let base_index = vertices.len();
-                        if base_index > (u16::MAX as usize).saturating_sub(4) {
-                            return Err("text mesh exceeded 16-bit index capacity".to_string());
-                        }
-
-                        for &(px, py, ex, ey) in &corners {
-                            let normal = normalize2([ex, ey]);
-                            vertices.push(GlyphVertex {
-                                pos_and_norm: [pos_x + px, pos_y + py, normal[0], normal[1]],
-                                tex_and_atlas_offsets: [ex, ey, tex_z, tex_w],
-                                inv_jacobian,
-                                band_transform,
-                                color: run_color,
-                            });
-                        }
-
-                        indices.extend_from_slice(&[
-                            base_index as u16,
-                            (base_index + 1) as u16,
-                            (base_index + 2) as u16,
-                            base_index as u16,
-                            (base_index + 2) as u16,
-                            (base_index + 3) as u16,
-                        ]);
-                        submesh_index_count += 6;
+                for (glyph_index, &glyph) in glyphs.iter().enumerate() {
+                    let info = atlas.glyph_info(glyph);
+                    if info.curve_count == 0 {
+                        continue;
                     }
 
-                    if submesh_index_count > 0 {
-                        submeshes.push(TextSubmesh {
-                            font_key,
-                            index_buffer_offset: submesh_index_start * mem::size_of::<u16>(),
-                            index_count: submesh_index_count,
+                    let pos_x = (line_origin.x + positions[glyph_index].x) as f32;
+                    let pos_y = (line_origin.y - first_line_y + positions[glyph_index].y) as f32;
+
+                    let ex0 = info.x_min - DILATION_MARGIN;
+                    let ex1 = info.x_max + DILATION_MARGIN;
+                    let ey0 = info.y_min - DILATION_MARGIN;
+                    let ey1 = info.y_max + DILATION_MARGIN;
+
+                    let px0 = ex0 * font_size;
+                    let py0 = ey0 * font_size;
+                    let px1 = ex1 * font_size;
+                    let py1 = ey1 * font_size;
+
+                    bounds_min_x = bounds_min_x.min(pos_x + px0);
+                    bounds_min_y = bounds_min_y.min(pos_y + py0);
+                    bounds_max_x = bounds_max_x.max(pos_x + px1);
+                    bounds_max_y = bounds_max_y.max(pos_y + py1);
+
+                    let tex_z = f32::from_bits(info.band_start);
+                    let bmax_x = (info.num_vert_bands - 1) as u32;
+                    let bmax_y = (info.num_horiz_bands - 1) as u32;
+                    let tex_w = f32::from_bits(bmax_x | (bmax_y << 16));
+
+                    let band_transform = [
+                        info.band_scale_x,
+                        info.band_scale_y,
+                        info.band_offset_x,
+                        info.band_offset_y,
+                    ];
+
+                    let inv_scale = if font_size.abs() > f32::EPSILON {
+                        1.0 / font_size
+                    } else {
+                        1.0
+                    };
+                    let inv_jacobian = [inv_scale, 0.0, 0.0, inv_scale];
+
+                    let corners = [
+                        (px0, py0, ex0, ey0),
+                        (px1, py0, ex1, ey0),
+                        (px1, py1, ex1, ey1),
+                        (px0, py1, ex0, ey1),
+                    ];
+
+                    let base_index = vertices.len();
+                    if base_index > (u16::MAX as usize).saturating_sub(4) {
+                        return Err("text mesh exceeded 16-bit index capacity".to_string());
+                    }
+
+                    for &(px, py, ex, ey) in &corners {
+                        let normal = normalize2([ex, ey]);
+                        vertices.push(GlyphVertex {
+                            pos_and_norm: [pos_x + px, pos_y + py, normal[0], normal[1]],
+                            tex_and_atlas_offsets: [ex, ey, tex_z, tex_w],
+                            inv_jacobian,
+                            band_transform,
+                            color,
                         });
                     }
+
+                    indices.extend_from_slice(&[
+                        base_index as u16,
+                        (base_index + 1) as u16,
+                        (base_index + 2) as u16,
+                        base_index as u16,
+                        (base_index + 2) as u16,
+                        (base_index + 3) as u16,
+                    ]);
+                    submesh_index_count += 6;
+                }
+
+                if submesh_index_count > 0 {
+                    submeshes.push(TextSubmesh {
+                        font_key,
+                        index_buffer_offset: submesh_index_start * mem::size_of::<u16>(),
+                        index_count: submesh_index_count,
+                    });
                 }
             }
 
