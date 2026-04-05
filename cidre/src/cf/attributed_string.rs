@@ -107,6 +107,23 @@ impl AttrStringMut {
     pub fn with_max_len(max_len: usize) -> arc::R<AttrStringMut> {
         unsafe { std::mem::transmute(CFAttributedStringCreateMutable(None, max_len as _)) }
     }
+
+    #[doc(alias = "CFAttributedStringReplaceString")]
+    #[inline]
+    pub fn replace_string(&mut self, range: cf::Range, replacement: &cf::String) {
+        unsafe { CFAttributedStringReplaceString(self, range, replacement) }
+    }
+
+    #[doc(alias = "CFAttributedStringSetAttributes")]
+    #[inline]
+    pub fn set_attributes(
+        &mut self,
+        range: cf::Range,
+        replacement: &cf::Dictionary,
+        clear_other_attributes: bool,
+    ) {
+        unsafe { CFAttributedStringSetAttributes(self, range, replacement, clear_other_attributes) }
+    }
 }
 
 unsafe extern "C-unwind" {
@@ -135,6 +152,19 @@ unsafe extern "C-unwind" {
         alloc: Option<&cf::Allocator>,
         max_len: cf::Index,
     ) -> Option<arc::R<AttrStringMut>>;
+
+    fn CFAttributedStringReplaceString(
+        a_str: &mut AttrStringMut,
+        range: cf::Range,
+        replacement: &cf::String,
+    );
+
+    fn CFAttributedStringSetAttributes(
+        a_str: &mut AttrStringMut,
+        range: cf::Range,
+        replacement: &cf::Dictionary,
+        clear_other_attributes: bool,
+    );
 }
 
 #[cfg(test)]
@@ -156,5 +186,17 @@ mod tests {
 
         let mcopy = copy.copy_mut();
         assert!(mcopy.string().equal(str));
+    }
+
+    #[test]
+    fn mutable_editing() {
+        let mut astr = cf::AttrStringMut::with_max_len(0);
+        let replacement = cf::String::from_str("hello");
+        astr.replace_string(cf::Range::new(0, 0), &replacement);
+        assert!(astr.string().equal(&replacement));
+
+        let attrs = cf::Dictionary::new();
+        astr.set_attributes(cf::Range::new(0, replacement.len() as _), &attrs, true);
+        assert_eq!(astr.len(), replacement.len() as usize);
     }
 }

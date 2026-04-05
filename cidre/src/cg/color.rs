@@ -41,6 +41,29 @@ impl Color {
         unsafe { CGColorGetAlpha(self) }
     }
 
+    #[doc(alias = "CGColorGetNumberOfComponents")]
+    #[inline]
+    pub fn components_n(&self) -> usize {
+        unsafe { CGColorGetNumberOfComponents(self) }
+    }
+
+    #[doc(alias = "CGColorGetComponents")]
+    #[inline]
+    pub fn components_ptr(&self) -> *const cg::Float {
+        unsafe { CGColorGetComponents(self) }
+    }
+
+    #[doc(alias = "CGColorGetComponents")]
+    #[inline]
+    pub fn components(&self) -> Option<&[cg::Float]> {
+        let ptr = self.components_ptr();
+        if ptr.is_null() {
+            None
+        } else {
+            Some(unsafe { std::slice::from_raw_parts(ptr, self.components_n()) })
+        }
+    }
+
     #[doc(alias = "CGColorCreateWithContentHeadroom")]
     #[inline]
     #[api::available(
@@ -86,6 +109,8 @@ unsafe extern "C-unwind" {
     ) -> arc::R<Color>;
 
     fn CGColorGetAlpha(color: &Color) -> cg::Float;
+    fn CGColorGetNumberOfComponents(color: &Color) -> usize;
+    fn CGColorGetComponents(color: &Color) -> *const cg::Float;
 
     #[api::available(
         macos = 26.0,
@@ -116,6 +141,17 @@ unsafe extern "C-unwind" {
 #[cfg(test)]
 mod tests {
     use crate::{api, cg};
+
+    #[test]
+    fn components() {
+        let color = cg::Color::generic_rgba(0.25, 0.5, 0.75, 1.0);
+        let components = color.components().unwrap();
+        assert_eq!(components.len(), 4);
+        assert_eq!(components[0], 0.25);
+        assert_eq!(components[1], 0.5);
+        assert_eq!(components[2], 0.75);
+        assert_eq!(components[3], 1.0);
+    }
 
     #[test]
     fn hdr() {

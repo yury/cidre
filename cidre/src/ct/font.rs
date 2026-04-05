@@ -211,6 +211,12 @@ impl Font {
         unsafe { CTFontGetGlyphWithName(self, name) }
     }
 
+    #[doc(alias = "CTFontCopyPostScriptName")]
+    #[inline]
+    pub fn post_script_name(&self) -> arc::R<cf::String> {
+        unsafe { CTFontCopyPostScriptName(self) }
+    }
+
     #[doc(alias = "CTFontGetAscent")]
     #[inline]
     pub fn ascent(&self) -> cg::Float {
@@ -370,6 +376,7 @@ unsafe extern "C-unwind" {
         matrix: Option<&cg::AffineTransform>,
     ) -> Option<arc::R<cg::Path>>;
 
+    fn CTFontCopyPostScriptName(font: &Font) -> arc::R<cf::String>;
     fn CTFontGetGlyphWithName(font: &Font, name: &cf::String) -> cg::Glyph;
 
     fn CTFontCopyNameForGlyph(font: &Font, glyph: cg::Glyph) -> Option<arc::R<cf::String>>;
@@ -427,6 +434,8 @@ mod tests {
     #[test]
     fn basics() {
         let font = ct::Font::with_name_size_matrix(&cf::String::from_str("None"), 28.0, None);
+        let post_script_name = font.post_script_name();
+        assert!(post_script_name.len() > 0);
         let langs = font.supported_languages();
         assert!(langs.len() > 0);
         println!("langs {:?}", langs);

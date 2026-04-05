@@ -18,6 +18,12 @@ mod font_manager;
 pub use font_manager::FontManager;
 pub use font_manager::Scope as FontManagerScope;
 
+mod frame;
+pub use frame::Frame;
+
+mod framesetter;
+pub use framesetter::Framesetter;
+
 mod run;
 pub use run::Run;
 pub use run::Status as RunStatus;
