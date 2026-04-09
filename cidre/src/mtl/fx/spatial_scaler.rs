@@ -17,7 +17,7 @@ define_obj_type!(
     #[doc(alias = "MTLFXSpatialScalerDescriptor")]
     pub SpatialScaleDesc(ns::Id),
     MTLFX_SPATIAL_SCALE_DESCRIPTOR,
-    #[api::available(macos = 13.0, ios = 16.0)]
+    #[api::available(macos = 13.0, ios = 16.0, tvos = 16.0, visionos = 1.0)]
 );
 
 impl ns::Copying for SpatialScaleDesc {}
@@ -69,7 +69,7 @@ impl SpatialScaleDesc {
     pub fn new_spatial_scaler(&self, device: &mtl::Device) -> Option<arc::R<SpatialScaler>>;
 
     #[objc::msg_send(newSpatialScalerWithDevice:compiler:)]
-    #[api::available(macos = 26.0, ios = 26.0)]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0)]
     pub fn new_spatial_scaler_with_compiler(
         &self,
         device: &mtl::Device,
@@ -77,7 +77,7 @@ impl SpatialScaleDesc {
     ) -> Option<arc::R<mtl4::fx::SpatialScaler>>;
 
     #[objc::msg_send(supportsMetal4FX:)]
-    #[api::available(macos = 26.0, ios = 26.0)]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0)]
     pub fn supports_metal4_fx(device: &mtl::Device) -> bool;
 
     #[objc::msg_send(supportsDevice:)]

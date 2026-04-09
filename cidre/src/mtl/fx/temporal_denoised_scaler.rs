@@ -6,7 +6,7 @@ define_obj_type!(
     #[doc(alias = "MTLFXTemporalDenoisedScalerDescriptor")]
     pub TemporalDenoisedScalerDesc(ns::Id),
     MTLFX_TEMPORAL_DENOISED_SCALER_DESCRIPTOR,
-    #[api::available(macos = 26.0, ios = 18.0)]
+    #[api::available(macos = 26.0, ios = 18.0, tvos = 18.0)]
 );
 
 impl ns::Copying for TemporalDenoisedScalerDesc {}
@@ -151,7 +151,7 @@ impl TemporalDenoisedScalerDesc {
     ) -> Option<arc::R<TemporalDenoisedScaler>>;
 
     #[objc::msg_send(newTemporalDenoisedScalerWithDevice:compiler:)]
-    #[api::available(macos = 26.0, ios = 26.0)]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0)]
     pub fn new_temporal_denoised_scaler_with_compiler(
         &self,
         device: &mtl::Device,
@@ -165,7 +165,7 @@ impl TemporalDenoisedScalerDesc {
     pub fn supported_input_content_max_scale(device: &mtl::Device) -> f32;
 
     #[objc::msg_send(supportsMetal4FX:)]
-    #[api::available(macos = 26.0, ios = 26.0)]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0)]
     pub fn supports_metal4_fx(device: &mtl::Device) -> bool;
 
     #[objc::msg_send(supportsDevice:)]

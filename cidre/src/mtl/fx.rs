@@ -17,8 +17,8 @@ pub use spatial_scaler::SpatialScaler;
 pub use spatial_scaler::SpatialScalerBase;
 pub use spatial_scaler::SpatialScalerColorProcessingMode;
 
-#[link(name = "MetalFx", kind = "framework")]
+#[link(name = "MetalFX", kind = "framework")]
 unsafe extern "C" {}
 
-#[link(name = "mtl_fx", kind = "static")]
+#[cfg(all(feature = "mtl_fx", not(target_env = "sim")))]
 unsafe extern "C" {}

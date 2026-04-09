@@ -5,7 +5,7 @@ define_obj_type!(
     #[doc(alias = "MTLFXFrameInterpolatorDescriptor")]
     pub FrameInterpolatorDesc(ns::Id),
     MTLFX_FRAME_INTERPOLATOR_DESCRIPTOR,
-    #[api::available(macos = 26.0, ios = 26.0)]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0)]
 );
 
 impl ns::Copying for FrameInterpolatorDesc {}
@@ -76,7 +76,7 @@ impl FrameInterpolatorDesc {
     -> Option<arc::R<FrameInterpolator>>;
 
     #[objc::msg_send(newFrameInterpolatorWithDevice:compiler:)]
-    #[api::available(macos = 26.0, ios = 26.0)]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0)]
     pub fn new_frame_interpolator_with_compiler(
         &self,
         device: &mtl::Device,
@@ -84,11 +84,11 @@ impl FrameInterpolatorDesc {
     ) -> Option<arc::R<mtl4::fx::FrameInterpolator>>;
 
     #[objc::msg_send(supportsMetal4FX:)]
-    #[api::available(macos = 26.0, ios = 26.0)]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0)]
     pub fn supports_metal4_fx(device: &mtl::Device) -> bool;
 
     #[objc::msg_send(supportsDevice:)]
-    #[api::available(macos = 26.0, ios = 26.0)]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0)]
     pub fn supports_device(device: &mtl::Device) -> bool;
 }
 

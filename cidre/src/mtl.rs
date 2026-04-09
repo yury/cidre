@@ -459,5 +459,5 @@ unsafe extern "C" {}
 #[link(name = "mtl", kind = "static")]
 unsafe extern "C" {}
 
-#[cfg(feature = "mtl_fx")]
+#[cfg(all(feature = "mtl_fx", not(target_env = "sim")))]
 pub mod fx;

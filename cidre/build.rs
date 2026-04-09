@@ -107,10 +107,14 @@ fn collect_targets(sdk: &str) -> Vec<&'static str> {
     // Not available on watchOS
     if sdk != "watchos" && sdk != "watchsimulator" {
         targets.extend_from_slice(&[
-            "ca", "vn", "mps", "mpsg", "mc", "mtl", "mtl_fx", "mtk", "ci", "gc", "av_kit",
+            "ca", "vn", "mps", "mpsg", "mc", "mtl", "mtk", "ci", "gc", "av_kit",
         ]);
         if sdk != "xros" && sdk != "xrsimulator" {
             targets.push("mlc");
+        }
+
+        if sdk != "iphonesimulator" && sdk != "appletvsimulator" && sdk != "visionsimulator" {
+            targets.push("mtl_fx");
         }
     }
 
