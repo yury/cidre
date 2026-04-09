@@ -1,4 +1,7 @@
-use crate::{arc, blocks, define_cls, define_mtl, define_obj_type, dispatch, mtl, ns, objc};
+use crate::{arc, blocks, define_cls, define_mtl, define_obj_type, mtl, ns, objc};
+
+#[cfg(feature = "dispatch")]
+use crate::dispatch;
 
 define_obj_type!(
     #[doc(alias = "MTLEvent")]
@@ -22,6 +25,7 @@ define_obj_type!(
 );
 
 impl arc::A<SharedEventListener> {
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(initWithDispatchQueue:)]
     pub fn init_with_dispatch_queue(self, queue: &dispatch::Queue) -> arc::R<SharedEventListener>;
 }
@@ -35,10 +39,12 @@ impl SharedEventListener {
 
     /// Creates a new shareable event listener with a specific dispatch queue.
     #[inline]
+    #[cfg(feature = "dispatch")]
     pub fn with_dispatch_queue(queue: &dispatch::Queue) -> arc::R<Self> {
         Self::alloc().init_with_dispatch_queue(queue)
     }
 
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(dispatchQueue)]
     pub fn dispatch_queue(&self) -> arc::R<dispatch::Queue>;
 }

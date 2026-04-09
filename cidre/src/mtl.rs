@@ -458,3 +458,6 @@ unsafe extern "C" {}
 
 #[link(name = "mtl", kind = "static")]
 unsafe extern "C" {}
+
+#[cfg(feature = "mtl_fx")]
+pub mod fx;

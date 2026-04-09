@@ -26,6 +26,12 @@ pub use command_queue::CmdQueue;
 pub use command_queue::CmdQueueDesc;
 pub use command_queue::CommitOpts;
 
+mod compiler;
+pub use compiler::Compiler;
+
+#[cfg(feature = "mtl_fx")]
+pub mod fx;
+
 mod commit_feedback;
 pub use commit_feedback::CommitFeedback;
 pub use commit_feedback::CommitFeedbackHandler;

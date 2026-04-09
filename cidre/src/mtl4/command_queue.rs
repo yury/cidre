@@ -1,4 +1,7 @@
-use crate::{api, arc, define_obj_type, dispatch, mtl, mtl4, ns, objc};
+use crate::{api, arc, define_obj_type, mtl, mtl4, ns, objc};
+
+#[cfg(feature = "dispatch")]
+use crate::dispatch;
 
 define_obj_type!(
     #[doc(alias = "MTL4CommitOptions")]
@@ -35,9 +38,11 @@ impl CmdQueueDesc {
     #[objc::msg_send(setLabel:)]
     pub fn set_label(&mut self, val: Option<&ns::String>);
 
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(feedbackQueue)]
     pub fn feedback_queue(&self) -> Option<arc::R<dispatch::Queue>>;
 
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(setFeedbackQueue:)]
     pub fn set_feedback_queue(&mut self, val: Option<&dispatch::Queue>);
 }

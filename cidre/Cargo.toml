@@ -45,6 +45,7 @@ full = [
   "ml",
   "mt",
   "mtl",
+  "mtl_fx",
   "mtk",
   "mlc",
   "cv",
@@ -137,6 +138,7 @@ mc = ["ns"]
 ml = ["ns", "cf", "blocks"]
 mt = ["cm", "cat"]
 mtl = ["ns", "blocks"]
+mtl_fx = ["mtl", "simd"]
 mtk = ["mtl"] # optional blocks and async
 mlc = ["mtl"]
 mps = ["mtl"]
@@ -290,7 +292,7 @@ visionos_26_1 = ["visionos_26_0"]
 # end of deployment targets
 
 [build-dependencies]
-cc = "1"
+cc = "=1.2.58"
 
 [dependencies]
 
