@@ -29,7 +29,7 @@ pub use command_queue::CommitOpts;
 mod compiler;
 pub use compiler::Compiler;
 
-#[cfg(all(feature = "mtl_fx", not(target_env = "sim")))]
+#[cfg(all(feature = "mtl_fx", not(target_os = "tvos"), not(target_env = "sim")))]
 pub mod fx;
 
 mod commit_feedback;

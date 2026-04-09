@@ -113,7 +113,11 @@ fn collect_targets(sdk: &str) -> Vec<&'static str> {
             targets.push("mlc");
         }
 
-        if sdk != "iphonesimulator" && sdk != "appletvsimulator" && sdk != "visionsimulator" {
+        if sdk != "appletvos"
+            && sdk != "iphonesimulator"
+            && sdk != "appletvsimulator"
+            && sdk != "visionsimulator"
+        {
             targets.push("mtl_fx");
         }
     }
