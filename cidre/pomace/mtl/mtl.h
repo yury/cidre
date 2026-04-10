@@ -61,6 +61,7 @@ Class MTL4_COMMAND_BUFFER_OPTIONS;
 Class MTL4_MACHINE_LEARNING_PIPELINE_DESCRIPTOR;
 Class MTL4_RENDER_PASS_DESCRIPTOR;
 Class MTL4_PIPELINE_OPTIONS;
+Class MTL4_COMPILER_DESCRIPTOR;
 
 
 
@@ -128,6 +129,7 @@ static void mtl_initializer(void)
         MTL4_MACHINE_LEARNING_PIPELINE_DESCRIPTOR = NSClassFromString(@"MTL4MachineLearningPipelineDescriptor");
         MTL4_RENDER_PASS_DESCRIPTOR = NSClassFromString(@"MTL4RenderPassDescriptor");
         MTL4_PIPELINE_OPTIONS = NSClassFromString(@"MTL4PipelineOptions");
+        MTL4_COMPILER_DESCRIPTOR =  NSClassFromString(@"MTL4CompilerDescriptor");
         
         
     }

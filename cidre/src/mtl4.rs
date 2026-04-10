@@ -28,6 +28,7 @@ pub use command_queue::CommitOpts;
 
 mod compiler;
 pub use compiler::Compiler;
+pub use compiler::CompilerDesc;
 
 #[cfg(all(feature = "mtl_fx", not(target_os = "tvos"), not(target_env = "sim")))]
 pub mod fx;

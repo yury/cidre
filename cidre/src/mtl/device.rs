@@ -633,6 +633,34 @@ impl Device {
         ns::if_none(|err| unsafe { self.new_arg_table_err(desc, err) })
     }
 
+    #[objc::msg_send(newCompilerWithDescriptor:error:)]
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub unsafe fn new_compiler_err<'ear>(
+        &self,
+        desc: &mtl4::CompilerDesc,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<mtl4::Compiler>>;
+
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn new_compiler<'ear>(
+        &self,
+        desc: &mtl4::CompilerDesc,
+    ) -> ns::Result<'ear, arc::R<mtl4::Compiler>> {
+        ns::if_none(|err| unsafe { self.new_compiler_err(desc, err) })
+    }
+
     /// Returns an array of all the Metal device instances in the system.
     #[doc(alias = "MTLCopyAllDevices")]
     #[api::available(
