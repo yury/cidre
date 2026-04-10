@@ -42,6 +42,36 @@ impl PixelBuf {
         unsafe { CVPixelBufferGetPixelFormatType(self) }
     }
 
+    #[doc(alias = "CVPixelBufferGetBaseAddress")]
+    #[inline]
+    pub unsafe fn base_address(&self) -> *const c_void {
+        unsafe { CVPixelBufferGetBaseAddress(self) }
+    }
+
+    #[doc(alias = "CVPixelBufferGetBaseAddress")]
+    #[inline]
+    pub unsafe fn base_address_mut(&mut self) -> *mut c_void {
+        unsafe { CVPixelBufferGetBaseAddress(self) }
+    }
+
+    #[doc(alias = "CVPixelBufferGetBytesPerRow")]
+    #[inline]
+    pub fn bytes_per_row(&self) -> usize {
+        unsafe { CVPixelBufferGetBytesPerRow(self) }
+    }
+
+    #[doc(alias = "CVPixelBufferGetDataSize")]
+    #[inline]
+    pub fn data_size(&self) -> usize {
+        unsafe { CVPixelBufferGetDataSize(self) }
+    }
+
+    #[doc(alias = "CVPixelBufferIsPlanar")]
+    #[inline]
+    pub fn is_planar(&self) -> bool {
+        unsafe { CVPixelBufferIsPlanar(self) }
+    }
+
     #[doc(alias = "CVPixelBufferGetPlaneCount")]
     #[inline]
     pub fn plane_count(&self) -> usize {
@@ -81,6 +111,7 @@ impl PixelBuf {
     /// assert_eq!(100, pixel_buf.height());
     /// assert_eq!(cv::PixelFormat::_32_BGRA, pixel_buf.pixel_format());
     /// assert_eq!(0, pixel_buf.plane_count());
+    /// assert_eq!(false, pixel_buf.is_planar());
     /// assert_eq!(cv::PixelBuf::type_id(), pixel_buf.get_type_id());
     ///
     /// ```
@@ -673,6 +704,10 @@ unsafe extern "C-unwind" {
     fn CVPixelBufferGetWidth(pixel_buffer: &PixelBuf) -> usize;
     fn CVPixelBufferGetHeight(pixel_buffer: &PixelBuf) -> usize;
     fn CVPixelBufferGetPixelFormatType(pixel_buffer: &PixelBuf) -> PixelFormat;
+    fn CVPixelBufferGetBaseAddress(pixel_buffer: &PixelBuf) -> *mut c_void;
+    fn CVPixelBufferGetBytesPerRow(pixel_buffer: &PixelBuf) -> usize;
+    fn CVPixelBufferGetDataSize(pixel_buffer: &PixelBuf) -> usize;
+    fn CVPixelBufferIsPlanar(pixel_buffer: &PixelBuf) -> bool;
     fn CVPixelBufferGetPlaneCount(pixel_buffer: &PixelBuf) -> usize;
     fn CVPixelBufferGetWidthOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> usize;
     fn CVPixelBufferGetHeightOfPlane(pixel_buffer: &PixelBuf, plane_index: usize) -> usize;
