@@ -65,9 +65,9 @@ impl cg::Event {
         src: Option<&cg::EventSrc>,
         units: cg::ScrollEventUnit,
         wheel_count: u32,
-        wheel_1: u32,
-        wheel_2: u32,
-        wheel_3: u32,
+        wheel_1: i32,
+        wheel_2: i32,
+        wheel_3: i32,
     ) -> Option<arc::R<Self>> {
         unsafe {
             CGEventCreateScrollWheelEvent2(src, units, wheel_count, wheel_1, wheel_2, wheel_3)
@@ -77,7 +77,7 @@ impl cg::Event {
     pub fn wheel_1(
         src: Option<&cg::EventSrc>,
         units: cg::ScrollEventUnit,
-        wheel: u32,
+        wheel: i32,
     ) -> Option<arc::R<Self>> {
         unsafe { CGEventCreateScrollWheelEvent2(src, units, 1, wheel, 0, 0) }
     }
@@ -85,8 +85,8 @@ impl cg::Event {
     pub fn wheel_2(
         src: Option<&cg::EventSrc>,
         units: cg::ScrollEventUnit,
-        wheel_1: u32,
-        wheel_2: u32,
+        wheel_1: i32,
+        wheel_2: i32,
     ) -> Option<arc::R<Self>> {
         unsafe { CGEventCreateScrollWheelEvent2(src, units, 2, wheel_1, wheel_2, 0) }
     }
@@ -94,9 +94,9 @@ impl cg::Event {
     pub fn wheel_3(
         src: Option<&cg::EventSrc>,
         units: cg::ScrollEventUnit,
-        wheel_1: u32,
-        wheel_2: u32,
-        wheel_3: u32,
+        wheel_1: i32,
+        wheel_2: i32,
+        wheel_3: i32,
     ) -> Option<arc::R<Self>> {
         unsafe { CGEventCreateScrollWheelEvent2(src, units, 3, wheel_1, wheel_2, wheel_3) }
     }
@@ -186,12 +186,78 @@ impl cg::Event {
         }
     }
 
+    pub fn scroll_wheel_delta_axis1(&self) -> i64 {
+        self.field_i64(cg::EventField::SCROLL_WHEEL_EVENT_DELTA_AXIS1)
+    }
+
+    pub fn scroll_wheel_point_delta_axis1(&self) -> i64 {
+        self.field_i64(cg::EventField::SCROLL_WHEEL_EVENT_POINT_DELTA_AXIS1)
+    }
+
+    pub fn scroll_wheel_fixed_pt_delta_axis1(&self) -> f64 {
+        self.field_f64(cg::EventField::SCROLL_WHEEL_EVENT_FIXED_PT_DELTA_AXIS1)
+    }
+
+    pub fn scroll_wheel_point_delta_axis2(&self) -> i64 {
+        self.field_i64(cg::EventField::SCROLL_WHEEL_EVENT_POINT_DELTA_AXIS2)
+    }
+
+    pub fn scroll_wheel_fixed_pt_delta_axis2(&self) -> f64 {
+        self.field_f64(cg::EventField::SCROLL_WHEEL_EVENT_FIXED_PT_DELTA_AXIS2)
+    }
+
     pub fn kb_key_code(&self) -> cg::KeyCode {
         self.field_i64(cg::EventField::KEYBOARD_EVENT_KEYCODE) as _
     }
 
     pub fn is_kb_autorepeat(&self) -> bool {
         self.field_i64(cg::EventField::KEYBOARD_EVENT_AUTOREPEAT) != 0
+    }
+
+    pub fn gesture_phase(&self) -> cg::GesturePhase {
+        self.field_i64(cg::EventField::GESTURE_PHASE).into()
+    }
+
+    pub fn set_gesture_phase(&mut self, val: cg::GesturePhase) {
+        self.set_field_i64(cg::EventField::GESTURE_PHASE, val as _);
+    }
+
+    pub fn gesture_scroll_flag_bits(&self) -> u64 {
+        self.field_i64(cg::EventField::GESTURE_SCROLL_FLAG_BITS)
+            .cast_unsigned()
+    }
+
+    pub fn set_gesture_scroll_flag_bits(&mut self, val: u64) {
+        self.set_field_i64(cg::EventField::GESTURE_SCROLL_FLAG_BITS, val.cast_signed())
+    }
+
+    pub fn gesture_swipe_flag_bits(&self) -> i64 {
+        self.field_i64(cg::EventField::GESTURE_SWIPE_FLAG_BITS)
+    }
+
+    pub fn gesture_swipe_motion(&self) -> u64 {
+        self.field_i64(cg::EventField::GESTURE_SWIPE_MOTION)
+            .cast_unsigned()
+    }
+
+    pub fn set_gesture_swipe_motion(&mut self, val: u64) {
+        self.set_field_i64(cg::EventField::GESTURE_SWIPE_MOTION, val.cast_signed())
+    }
+
+    pub fn gesture_scroll_x(&self) -> f64 {
+        self.field_f64(cg::EventField::GESTURE_SCROLL_X)
+    }
+
+    pub fn gesture_scroll_y(&self) -> f64 {
+        self.field_f64(cg::EventField::GESTURE_SCROLL_Y)
+    }
+
+    pub fn set_gesture_scroll_x(&mut self, val: f64) {
+        self.set_field_f64(cg::EventField::GESTURE_SCROLL_X, val)
+    }
+
+    pub fn set_gesture_scroll_y(&mut self, val: f64) {
+        self.set_field_f64(cg::EventField::GESTURE_SCROLL_Y, val)
     }
 
     /// Post an event into the event stream at a specified location.
@@ -314,9 +380,9 @@ unsafe extern "C-unwind" {
         source: Option<&cg::EventSrc>,
         units: cg::ScrollEventUnit,
         wheel_count: u32,
-        wheel_1: u32,
-        wheel_2: u32,
-        wheel_3: u32,
+        wheel_1: i32,
+        wheel_2: i32,
+        wheel_3: i32,
     ) -> Option<arc::R<cg::Event>>;
 
     fn CGEventCreateCopy(event: &cg::Event) -> arc::R<cg::Event>;

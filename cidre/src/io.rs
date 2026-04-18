@@ -21,7 +21,7 @@ unsafe extern "C" {}
 #[cfg(all(target_os = "macos", feature = "io_kit"))]
 mod kit;
 #[cfg(all(target_os = "macos", feature = "io_kit"))]
-pub use kit::{Return, audio};
+pub use kit::{Return, audio, hid};
 
 /// Defines power management constants and keys used by both in-kernel and user space power management.
 #[cfg(all(target_os = "macos", feature = "io_kit", feature = "io_pm"))]

@@ -95,6 +95,19 @@ pub enum GesturePhase {
     MayBegin = 128,
 }
 
+impl From<i64> for GesturePhase {
+    fn from(value: i64) -> Self {
+        match value {
+            1 => GesturePhase::Began,
+            2 => GesturePhase::Changed,
+            4 => GesturePhase::Ended,
+            8 => GesturePhase::Cancelled,
+            128 => GesturePhase::MayBegin,
+            _ => GesturePhase::None,
+        }
+    }
+}
+
 define_opts!(
     #[doc(alias = "CGEventFlags")]
     pub EventFlags(u64)
@@ -209,7 +222,23 @@ impl EventType {
         | Self::RIGHT_BUTTON_MOUSE_EVENTS_MASK
         | Self::MOUSE_MOVED.mask();
 
+    #[doc(alias = "kCGAnyInputEventType")]
     pub const ALL_EVENTS_MASK: EventMask = !0;
+}
+
+// Private API
+impl EventType {
+    #[doc(alias = "kCGSEventZoom")]
+    pub const ZOOM: Self = Self(28);
+
+    #[doc(alias = "kCGSEventGesture")]
+    pub const GESTURE: Self = Self(29);
+
+    #[doc(alias = "kCGSEventDockControl")]
+    pub const DOCK_CONTROL: Self = Self(30);
+
+    #[doc(alias = "kCGSEventFluidTouchGesture")]
+    pub const FLUID_TOUCH_GESTURE: Self = Self(31);
 }
 
 /// Constants that specify possible tapping points for events.
@@ -637,4 +666,115 @@ impl EventField {
     /// delta.
     #[doc(alias = "kCGScrollWheelEventRawDeltaAxis2")]
     pub const SCROLL_WHEEL_EVENT_RAW_DELTA_AXIS2: Self = Self(177);
+}
+
+// Private API
+impl EventField {
+    #[doc(alias = "kCGSEventWindowIDField")]
+    pub const WINDOW_ID: Self = Self(51);
+
+    #[doc(alias = "kCGSEventTypeField")]
+    pub const TYPE: Self = Self(55);
+
+    #[doc(alias = "kCGEventGestureHIDType")]
+    pub const GESTURE_HID_TYPE: Self = Self(110);
+
+    #[doc(alias = "kCGEventGestureIsPreflight")]
+    pub const GESTURE_IS_PREFLIGHT: Self = Self(111);
+
+    #[doc(alias = "kCGEventGestureZoomValue")]
+    pub const GESTURE_ZOOM_VALUE: Self = Self(113);
+
+    #[doc(alias = "kCGEventGestureRotationValue")]
+    pub const GESTURE_ROTATION_VALUE: Self = Self(114);
+
+    #[doc(alias = "kCGEventGestureSwipeValue")]
+    pub const GESTURE_SWIPE_VALUE: Self = Self(115);
+
+    #[doc(alias = "kCGEventGesturePreflightProgress")]
+    pub const GESTURE_PREFLIGHT_PROGRESS: Self = Self(116);
+
+    #[doc(alias = "kCGEventGestureStartEndSeriesType")]
+    pub const GESTURE_START_END_SERIES_TYPE: Self = Self(117);
+
+    #[doc(alias = "kCGEventGestureScrollX")]
+    pub const GESTURE_SCROLL_X: Self = Self(118);
+
+    #[doc(alias = "kCGEventGestureScrollY")]
+    pub const GESTURE_SCROLL_Y: Self = Self(119);
+
+    #[doc(alias = "kCGEventGestureScrollZ")]
+    pub const GESTURE_SCROLL_Z: Self = Self(120);
+
+    #[doc(alias = "kCGEventGestureSwipeMotion")]
+    pub const GESTURE_SWIPE_MOTION: Self = Self(123);
+
+    #[doc(alias = "kCGEventGestureSwipeProgress")]
+    pub const GESTURE_SWIPE_PROGRESS: Self = Self(124);
+
+    #[doc(alias = "kCGEventGestureSwipePositionX")]
+    pub const GESTURE_SWIPE_POSITION_X: Self = Self(125);
+
+    #[doc(alias = "kCGEventGestureSwipePositionY")]
+    pub const GESTURE_SWIPE_POSITION_Y: Self = Self(126);
+
+    #[doc(alias = "kCGEventGestureSwipeVelocityX")]
+    pub const GESTURE_SWIPE_VELOCITY_X: Self = Self(129);
+
+    #[doc(alias = "kCGEventGestureSwipeVelocityY")]
+    pub const GESTURE_SWIPE_VELOCITY_Y: Self = Self(130);
+
+    #[doc(alias = "kCGEventGestureSwipeVelocityZ")]
+    pub const GESTURE_SWIPE_VELOCITY_Z: Self = Self(131);
+
+    #[doc(alias = "kCGEventGesturePhase")]
+    pub const GESTURE_PHASE: Self = Self(132);
+
+    #[doc(alias = "kCGEventGestureMask")]
+    pub const GESTURE_MASK: Self = Self(133);
+
+    #[doc(alias = "kCGEventGestureSwipeMask")]
+    pub const GESTURE_SWIPE_MASK: Self = Self(134);
+
+    #[doc(alias = "kCGEventScrollGestureFlagBits")]
+    pub const GESTURE_SCROLL_FLAG_BITS: Self = Self(135);
+
+    #[doc(alias = "kCGEventSwipeGestureFlagBits")]
+    pub const GESTURE_SWIPE_FLAG_BITS: Self = Self(136);
+
+    #[doc(alias = "kCGEventGestureFlavor")]
+    pub const GESTURE_FLAVOR: Self = Self(138);
+
+    #[doc(alias = "kCGEventGestureZoomDeltaX")]
+    pub const GESTURE_ZOOM_DELTA_X: Self = Self(139);
+
+    #[doc(alias = "kCGEventGestureZoomDeltaY")]
+    pub const GESTURE_ZOOM_DELTA_Y: Self = Self(140);
+
+    #[doc(alias = "kCGEventGestureProgress")]
+    pub const GESTURE_PROGRESS: Self = Self(142);
+
+    #[doc(alias = "kCGEventGestureStage")]
+    pub const GESTURE_STAGE: Self = Self(143);
+
+    #[doc(alias = "kCGEventGestureBehavior")]
+    pub const GESTURE_BEHAVIOR: Self = Self(144);
+
+    #[doc(alias = "kCGEventTransitionProgress")]
+    pub const TRANSITION_PROGRESS: Self = Self(147);
+
+    #[doc(alias = "kCGEventStagePressure")]
+    pub const STAGE_PRESSURE: Self = Self(148);
+}
+
+#[doc(alias = "CGSHIDEventType")]
+#[repr(transparent)]
+pub struct HidEventType(pub u32);
+
+impl HidEventType {
+    #[doc(alias = "kCGHIDEventTypeGestureStarted")]
+    pub const GESTURE_STARTED: Self = Self(61);
+
+    #[doc(alias = "kCGHIDEventTypeGestureEnded")]
+    pub const GESTURE_ENDED: Self = Self(61);
 }
