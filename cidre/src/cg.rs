@@ -25,9 +25,7 @@ pub use window::WindowList;
 #[cfg(target_os = "macos")]
 pub use window::keys as window_keys;
 #[cfg(target_os = "macos")]
-pub use window::screen_capture_preflight;
-#[cfg(target_os = "macos")]
-pub use window::screen_capture_request_access;
+pub use window::screen_capture_access;
 
 #[cfg(target_os = "macos")]
 mod session;

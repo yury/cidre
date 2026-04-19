@@ -174,20 +174,26 @@ pub mod keys {
     }
 }
 
-/// Checks whether the current process already has screen capture access
-#[doc(alias = "CGRequestScreenCaptureAccess")]
 #[cfg(target_os = "macos")]
-#[inline]
-pub fn screen_capture_preflight() -> bool {
-    unsafe { CGPreflightScreenCaptureAccess() }
-}
+pub mod screen_capture_access {
+    /// Checks whether the current process already has screen capture access
+    #[doc(alias = "CGPreflightScreenCaptureAccess")]
+    #[inline]
+    pub fn preflight() -> bool {
+        unsafe { CGPreflightScreenCaptureAccess() }
+    }
 
-/// Requests event listening access if absent, potentially prompting
-#[doc(alias = "CGRequestScreenCaptureAccess")]
-#[cfg(target_os = "macos")]
-#[inline]
-pub fn screen_capture_request_access() -> bool {
-    unsafe { CGRequestScreenCaptureAccess() }
+    /// Requests event listening access if absent, potentially prompting
+    #[doc(alias = "CGRequestScreenCaptureAccess")]
+    #[inline]
+    pub fn request() -> bool {
+        unsafe { CGRequestScreenCaptureAccess() }
+    }
+
+    unsafe extern "C-unwind" {
+        fn CGPreflightScreenCaptureAccess() -> bool;
+        fn CGRequestScreenCaptureAccess() -> bool;
+    }
 }
 
 #[cfg(target_os = "macos")]
@@ -199,8 +205,6 @@ unsafe extern "C-unwind" {
 
     fn CGWindowListCreate(option: ListOpt, relative_to_window: Id) -> Option<arc::R<WindowList>>;
 
-    fn CGPreflightScreenCaptureAccess() -> bool;
-    fn CGRequestScreenCaptureAccess() -> bool;
 }
 
 #[cfg(all(test, target_os = "macos"))]
