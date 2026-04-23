@@ -114,6 +114,10 @@ define_opts!(
 );
 
 impl EventFlags {
+    /// Indicates if mouse/pen movement events are not being coalesced
+    #[doc(alias = "kCGEventFlagMaskNonCoalesced")]
+    pub const NON_COALESCED: Self = Self(0x00000100);
+
     #[doc(alias = "kCGEventFlagMaskAlphaShift")]
     pub const ALPHA_SHIFT: Self = Self(0x00010000);
 
@@ -129,14 +133,15 @@ impl EventFlags {
     #[doc(alias = "kCGEventFlagMaskCommand")]
     pub const CMD: Self = Self(0x00100000);
 
+    /// Identifies key events from numeric keypad area on extended keyboards
+    #[doc(alias = "kCGEventFlagMaskNumericPad")]
+    pub const NUM_PAD: Self = Self(0x00200000);
+
     #[doc(alias = "kCGEventFlagMaskHelp")]
     pub const HELP: Self = Self(0x00400000);
 
     #[doc(alias = "kCGEventFlagMaskSecondaryFn")]
     pub const SECONDARY_FN: Self = Self(0x00800000);
-
-    #[doc(alias = "kCGEventFlagMaskNumericPad")]
-    pub const NUM_PAD: Self = Self(0x00200000);
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, PartialOrd)]
