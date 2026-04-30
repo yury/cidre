@@ -103,7 +103,7 @@ static void ui_initializer(void)
         UI_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT_HANDLERS = NSClassFromString(@"UICollectionViewDiffableDataSourceSectionSnapshotHandlers");
         
         NS_DIFFABLE_DATA_SOURCE_SNAPSHOT = [NSDiffableDataSourceSnapshot class];
-        NS_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT = NSClassFromString(@" NSDiffableDataSourceSectionSnapshot");
+        NS_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT = NSClassFromString(@"NSDiffableDataSourceSectionSnapshot");
     }
 }
 
