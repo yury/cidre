@@ -53,7 +53,7 @@ impl PlayerNode {
         self.schedule_buf_ch_block(buffer, Some(&mut block));
     }
 
-    #[cfg(feature = "blocks")]
+    #[cfg(all(feature = "blocks", feature = "async"))]
     pub async fn schedule_buf(&mut self, buffer: &av::AudioPcmBuf) {
         let (future, mut block) = blocks::comp0();
         self.schedule_buf_ch_block(buffer, Some(&mut block));

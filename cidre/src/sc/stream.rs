@@ -779,6 +779,7 @@ impl Stream {
         ns::if_false(|err| unsafe { self.remove_stream_output_err(output, output_type, err) })
     }
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(updateContentFilter:completionHandler:)]
     pub fn update_content_filter_ch_block(
         &self,
@@ -786,6 +787,7 @@ impl Stream {
         ch: Option<&mut blocks::ErrCh>,
     );
 
+    #[cfg(feature = "blocks")]
     pub fn update_content_filter_ch(
         &self,
         filter: &ContentFilter,
@@ -805,9 +807,11 @@ impl Stream {
         future.await
     }
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(updateConfiguration:completionHandler:)]
     pub fn update_cfg_ch_block(&self, cfg: &Cfg, ch: Option<&mut blocks::ErrCh>);
 
+    #[cfg(feature = "blocks")]
     pub fn update_cfg_ch(&self, cfg: &Cfg, ch: impl FnMut(Option<&ns::Error>) + 'static) {
         let mut block = blocks::ErrCh::new1(ch);
         self.update_cfg_ch_block(cfg, Some(&mut block));
@@ -820,17 +824,21 @@ impl Stream {
         future.await
     }
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(startCaptureWithCompletionHandler:)]
     pub fn start_with_ch_block(&self, ch: Option<&mut blocks::ErrCh>);
 
+    #[cfg(feature = "blocks")]
     pub fn start_with_ch(&self, ch: impl FnMut(Option<&ns::Error>) + 'static) {
         let mut block = blocks::ErrCh::new1(ch);
         self.start_with_ch_block(Some(&mut block));
     }
 
+    #[cfg(feature = "blocks")]
     #[objc::msg_send(stopCaptureWithCompletionHandler:)]
     pub fn stop_with_ch_block(&self, ch: Option<&mut blocks::ErrCh>);
 
+    #[cfg(feature = "blocks")]
     pub fn stop_with_ch(&self, ch: impl FnMut(Option<&ns::Error>) + 'static) {
         let mut block = blocks::ErrCh::new1(ch);
         self.stop_with_ch_block(Some(&mut block));

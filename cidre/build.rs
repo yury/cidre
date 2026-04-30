@@ -116,7 +116,7 @@ fn collect_targets(sdk: &str) -> Vec<&'static str> {
         if sdk != "appletvos"
             && sdk != "iphonesimulator"
             && sdk != "appletvsimulator"
-            && sdk != "visionsimulator"
+            && sdk != "xrsimulator"
         {
             targets.push("mtl_fx");
         }
@@ -144,9 +144,9 @@ fn collect_targets(sdk: &str) -> Vec<&'static str> {
         "appletvos",
         "appletvsimulator",
         "watchos",
-        "watchosimulator",
-        "visionos",
-        "visionsimulator",
+        "watchsimulator",
+        "xros",
+        "xrsimulator",
     ]
     .contains(&sdk)
     {
@@ -318,7 +318,7 @@ fn main() {
         "appletvos" => "clang_rt.tvos",
         "appletvsimulator" => "clang_rt.tvossim",
         "watchos" => "clang_rt.watchos",
-        "watchossimulator" => "clang_rt.watchossim",
+        "watchsimulator" => "clang_rt.watchossim",
         "xros" => "clang_rt.xros",
         "xrsimulator" => "clang_rt.xrossim",
         "maccatalyst" => "clang_rt.ios", // check

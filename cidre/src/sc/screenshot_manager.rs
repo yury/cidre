@@ -1,9 +1,15 @@
-use crate::{api, arc, cg, define_obj_type, ns, objc, sc};
+use crate::{api, define_obj_type, ns, objc};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
 
-#[cfg(feature = "cm")]
+#[cfg(all(feature = "blocks", feature = "async"))]
+use crate::arc;
+
+#[cfg(feature = "blocks")]
+use crate::{cg, sc};
+
+#[cfg(all(feature = "blocks", feature = "cm"))]
 use crate::cm;
 
 define_obj_type!(
