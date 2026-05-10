@@ -32,6 +32,11 @@ pub use content_context::ContentCtx;
 
 pub mod tcp_options;
 
+pub mod tls_options;
+pub use tls_options::SecProtocolOpts;
+pub use tls_options::TlsCiphersuite;
+pub use tls_options::TlsProtocolVersion;
+
 mod txt_record;
 pub use txt_record::TxtRecord;
 #[cfg(feature = "blocks")]
