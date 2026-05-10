@@ -100,6 +100,16 @@ impl Rect {
     }
 
     #[inline]
+    pub fn from_dictionary_representation(dict: &cf::Dictionary) -> Option<Self> {
+        let mut rect = Self::zero();
+        if unsafe { CGRectMakeWithDictionaryRepresentation(dict, &mut rect) } {
+            Some(rect)
+        } else {
+            None
+        }
+    }
+
+    #[inline]
     pub const fn new(x: Float, y: Float, width: Float, height: Float) -> Self {
         Self {
             origin: Point { x, y },
@@ -246,6 +256,7 @@ unsafe extern "C" {
     fn CGPointCreateDictionaryRepresentation(point: Point) -> arc::R<cf::Dictionary>;
     fn CGSizeCreateDictionaryRepresentation(size: Size) -> arc::R<cf::Dictionary>;
     fn CGRectCreateDictionaryRepresentation(rect: Rect) -> arc::R<cf::Dictionary>;
+    fn CGRectMakeWithDictionaryRepresentation(dict: &cf::Dictionary, rect: *mut Rect) -> bool;
 
     fn CGRectEqualToRect(rect1: Rect, rect2: Rect) -> bool;
     fn CGRectIntersectsRect(rect1: Rect, rect2: Rect) -> bool;
