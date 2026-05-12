@@ -47,7 +47,7 @@ impl PropSelector {
     pub const fn output_addr(self) -> PropAddr {
         PropAddr {
             selector: self,
-            scope: PropScope::INPUT,
+            scope: PropScope::OUTPUT,
             element: PropElement::MAIN,
         }
     }
