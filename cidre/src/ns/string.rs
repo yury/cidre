@@ -110,11 +110,24 @@ impl String {
     #[objc::msg_send(mutableCopy)]
     pub fn copy_mut(&self) -> arc::Retained<ns::StringMut>;
 
+    /// Returns a substring for `range`.
+    ///
+    /// # Safety
+    ///
+    /// Throws an Objective-C exception if `range` is outside the string bounds.
     #[objc::msg_send(substringWithRange:)]
-    pub fn substring_with_range(&self, range: ns::Range) -> arc::R<Self>;
+    pub unsafe fn substring_with_range_throws(&self, range: ns::Range) -> arc::R<Self>;
 
     #[inline]
-    pub fn substring(&self, range: std::ops::Range<usize>) -> arc::R<ns::String> {
+    pub fn substring_with_range<'ear>(&self, range: ns::Range) -> ns::ExResult<'ear, arc::R<Self>> {
+        ns::try_catch(|| unsafe { self.substring_with_range_throws(range) })
+    }
+
+    #[inline]
+    pub fn substring<'ear>(
+        &self,
+        range: std::ops::Range<usize>,
+    ) -> ns::ExResult<'ear, arc::R<ns::String>> {
         self.substring_with_range(range.into())
     }
 
@@ -349,7 +362,7 @@ mod tests {
             assert_eq!(s.to_f64(), 10.5f64);
             assert_eq!(s.to_bool(), true);
 
-            let sub = s.substring(1..2);
+            let sub = s.substring(1..2).unwrap();
             assert_eq!(sub.to_i32(), 0);
             assert_eq!(sub.to_bool(), false);
 
@@ -360,7 +373,7 @@ mod tests {
             // let sub = &s[3..4];
             // assert_eq!(sub.to_i32(), 5);
 
-            let r = ns::try_catch(|| s.substring(1..10));
+            let r = s.substring(1..10);
             assert!(r.is_err());
 
             let _l = s.lowercased();

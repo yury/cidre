@@ -69,9 +69,19 @@ impl Writer {
     #[objc::msg_send(startSessionAtSourceTime:)]
     pub fn start_session_at_src_time(&mut self, start_time: cm::Time);
 
+    /// Ends the current sample-writing session.
+    ///
+    /// # Safety
+    ///
+    /// Throws an Objective-C exception if no session was started first.
     #[cfg(feature = "cm")]
     #[objc::msg_send(endSessionAtSourceTime:)]
-    pub fn end_session_at_src_time(&mut self, end_time: cm::Time);
+    pub unsafe fn end_session_at_src_time_throws(&mut self, end_time: cm::Time);
+
+    #[cfg(feature = "cm")]
+    pub fn end_session_at_src_time<'ear>(&mut self, end_time: cm::Time) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe { self.end_session_at_src_time_throws(end_time) })
+    }
 
     #[objc::msg_send(finishWriting)]
     pub fn finish_writing(&mut self);

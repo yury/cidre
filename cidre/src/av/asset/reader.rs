@@ -82,9 +82,19 @@ impl Reader {
     #[objc::msg_send(timeRange)]
     pub fn time_range(&self) -> cm::TimeRange;
 
+    /// Sets the time range to read.
+    ///
+    /// # Safety
+    ///
+    /// Throws an Objective-C exception if reading has already started.
     #[cfg(feature = "cm")]
     #[objc::msg_send(setTimeRange:)]
-    pub fn set_time_range(&mut self, value: cm::TimeRange);
+    pub unsafe fn set_time_range_throws(&mut self, value: cm::TimeRange);
+
+    #[cfg(feature = "cm")]
+    pub fn set_time_range<'ear>(&mut self, value: cm::TimeRange) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe { self.set_time_range_throws(value) })
+    }
 
     #[objc::msg_send(outputs)]
     pub fn outputs(&self) -> arc::R<ns::Array<av::AssetReaderOutput>>;
