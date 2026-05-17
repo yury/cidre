@@ -78,7 +78,7 @@ impl Class {
 /// The minimum relative priority that may be specified within a
 /// QOS class. These priorities are relative only within a given QOS class
 /// and meaningful only for the current process.
-pub const MIN_RELATIVE_PRIORITY: i32 = -15;
+pub const MIN_RELATIVE_PRIORITY: std::ffi::c_int = -15;
 
 impl Class {
     #[doc(alias = "qos_class_self")]
