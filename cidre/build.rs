@@ -328,6 +328,10 @@ fn main() {
     println!("cargo:rustc-link-lib={}", clang_rt);
     println!("cargo:rustc-link-search={}", clang_link_search_path());
 
+    if has_feature("swift") {
+        println!("cargo:rustc-link-arg=-Wl,-rpath,/usr/lib/swift");
+    }
+
     if sdk == "maccatalyst" {
         // Mac Catalyst needs iOSSupport paths for framework and system headers
         let sdkroot = env::var("SDKROOT").unwrap_or_else(|_| {

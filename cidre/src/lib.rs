@@ -94,6 +94,15 @@ pub mod cv;
 #[cfg(feature = "da")]
 pub mod da;
 
+/// DockKit
+#[cfg(all(
+    target_vendor = "apple",
+    target_arch = "aarch64",
+    any(target_os = "macos", all(target_os = "ios", not(target_abi = "sim"))),
+    feature = "dk"
+))]
+pub mod dk;
+
 /// Grand Central Dispatch
 #[cfg(feature = "dispatch")]
 pub mod dispatch;
@@ -214,6 +223,9 @@ pub mod time;
 
 #[cfg(feature = "simd")]
 pub mod simd;
+
+#[cfg(all(target_vendor = "apple", target_arch = "aarch64", feature = "swift"))]
+pub mod swift;
 
 /// Vision
 #[cfg(feature = "vn")]
