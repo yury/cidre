@@ -156,6 +156,9 @@ pub trait Obj: Sized + arc::Retain {
                     "bl _objc_retain_{obj:x}",
                     obj = in(reg) id,
                     lateout("x0") result,
+                    out("x16") _,
+                    out("x17") _,
+                    out("x30") _,
                     clobber_abi("C"),
                 );
                 std::mem::transmute(result)
@@ -180,6 +183,9 @@ pub trait Obj: Sized + arc::Retain {
                 asm!(
                     "bl _objc_release_{x}",
                     x = in(reg) id,
+                    out("x16") _,
+                    out("x17") _,
+                    out("x30") _,
                     clobber_abi("C")
                     // system also works
                     // clobber_abi("system")
