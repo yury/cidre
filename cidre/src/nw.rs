@@ -26,6 +26,8 @@ pub use connection::send_completion as connection_send_completion;
 
 pub mod connection_group;
 pub use connection_group::ConnectionGroup;
+#[cfg(feature = "blocks")]
+pub use connection_group::ConnectionGroupNewConnectionHandler;
 
 pub mod content_context;
 pub use content_context::ContentCtx;
@@ -36,6 +38,8 @@ pub mod tls_options;
 pub use tls_options::SecProtocolOpts;
 pub use tls_options::TlsCiphersuite;
 pub use tls_options::TlsProtocolVersion;
+
+pub mod quic_options;
 
 mod txt_record;
 pub use txt_record::TxtRecord;

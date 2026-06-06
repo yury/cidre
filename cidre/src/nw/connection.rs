@@ -314,8 +314,11 @@ impl Connection {
 
     #[doc(alias = "nw_connection_copy_protocol_metadata")]
     #[inline]
-    pub fn protocol_metadata(&self) -> Option<arc::R<nw::ProtocolMetadata>> {
-        unsafe { nw_connection_copy_protocol_metadata(self) }
+    pub fn protocol_metadata(
+        &self,
+        definition: &nw::ProtocolDefinition,
+    ) -> Option<arc::R<nw::ProtocolMetadata>> {
+        unsafe { nw_connection_copy_protocol_metadata(self, definition) }
     }
 
     #[doc(alias = "nw_connection_get_maximum_datagram_size")]
@@ -394,6 +397,7 @@ unsafe extern "C-unwind" {
     fn nw_connection_copy_current_path(connection: &Connection) -> Option<arc::R<nw::Path>>;
     fn nw_connection_copy_protocol_metadata(
         connection: &Connection,
+        definition: &nw::ProtocolDefinition,
     ) -> Option<arc::R<nw::ProtocolMetadata>>;
 
     fn nw_connection_get_maximum_datagram_size(connection: &Connection) -> u32;

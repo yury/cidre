@@ -17,6 +17,17 @@ pub use item::matching as item_matching;
 pub use item::return_data;
 
 pub mod identity;
+pub use identity::ProtocolIdentity;
+pub mod key;
+pub use key::attrs as key_attrs;
+pub use key::key_classes;
+pub use key::key_types;
+pub mod protocol_metadata;
+pub use protocol_metadata::ProtocolMetadata;
+pub mod protocol_types;
+pub use protocol_types::ProtocolTrust;
+#[cfg(feature = "blocks")]
+pub use protocol_types::{ProtocolVerify, ProtocolVerifyComplete};
 
 pub mod policy;
 // pub use policy::Policy;
