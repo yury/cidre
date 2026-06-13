@@ -98,6 +98,21 @@ fn build_pomace_target(name: &str, sdk: &str, deployment_targets: &DeploymentTar
     build.compile(name);
 }
 
+fn sdk_root(sdk: &str) -> Option<PathBuf> {
+    let sdk = if sdk == "maccatalyst" { "macosx" } else { sdk };
+    let output = Command::new("xcrun")
+        .arg("--sdk")
+        .arg(sdk)
+        .arg("--show-sdk-path")
+        .output()
+        .ok()?;
+    if !output.status.success() {
+        return None;
+    }
+    let output = String::from_utf8(output.stdout).ok()?;
+    Some(PathBuf::from(output.trim()))
+}
+
 fn collect_targets(sdk: &str) -> Vec<&'static str> {
     let mut targets = Vec::new();
 
@@ -119,6 +134,10 @@ fn collect_targets(sdk: &str) -> Vec<&'static str> {
             && sdk != "xrsimulator"
         {
             targets.push("mtl_fx");
+        }
+
+        if has_feature("sc") {
+            targets.push("sc");
         }
     }
 
@@ -163,7 +182,7 @@ fn collect_targets(sdk: &str) -> Vec<&'static str> {
 
     // macOS/Catalyst only
     if sdk == "macosx" || sdk == "maccatalyst" {
-        targets.extend_from_slice(&["sc", "app"]);
+        targets.push("app");
     }
 
     // macOS only
@@ -330,16 +349,17 @@ fn main() {
 
     if sdk == "maccatalyst" {
         // Mac Catalyst needs iOSSupport paths for framework and system headers
-        let sdkroot = env::var("SDKROOT").unwrap_or_else(|_| {
-            let c = Command::new("xcrun")
-                .arg("--show-sdk-path")
-                .output()
-                .unwrap();
-            String::from_utf8(c.stdout).unwrap().trim().to_string()
-        });
-        println!("cargo:rustc-link-search=system={sdkroot}/System/iOSSupport/usr");
+        let sdkroot = env::var_os("SDKROOT")
+            .map(PathBuf::from)
+            .or_else(|| sdk_root(sdk))
+            .unwrap();
         println!(
-            "cargo:rustc-link-search=framework={sdkroot}/System/iOSSupport/System/Library/Frameworks"
+            "cargo:rustc-link-search=system={}/System/iOSSupport/usr",
+            sdkroot.display()
+        );
+        println!(
+            "cargo:rustc-link-search=framework={}/System/iOSSupport/System/Library/Frameworks",
+            sdkroot.display()
         );
     }
 

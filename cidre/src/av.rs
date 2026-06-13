@@ -76,8 +76,11 @@ pub use capture::SysPressureState as CaptureSysPressureState;
 #[cfg(any(target_os = "ios", target_os = "tvos"))]
 pub use capture::MetadataInput as CaptureMetadataInput;
 
+#[cfg(not(any(target_os = "visionos", target_os = "watchos")))]
 pub mod external_storage_device;
+#[cfg(not(any(target_os = "visionos", target_os = "watchos")))]
 pub use external_storage_device::Device as ExternalStorageDevice;
+#[cfg(not(any(target_os = "visionos", target_os = "watchos")))]
 pub use external_storage_device::DiscoverySession as ExternalStorageDeviceDiscoverySession;
 
 pub mod metadata_object;

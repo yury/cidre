@@ -184,7 +184,7 @@ pub use cblas_new::catlas;
 pub use cblas_new::cblas;
 
 /// Screen Capture Kit
-#[cfg(all(target_os = "macos", feature = "sc"))]
+#[cfg(all(feature = "sc", not(target_os = "watchos")))]
 pub mod sc;
 
 /// Sound Analysis

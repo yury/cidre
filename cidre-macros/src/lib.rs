@@ -83,19 +83,20 @@ impl Attr {
 #[proc_macro_attribute]
 pub fn optional(_sel: TokenStream, func: TokenStream) -> TokenStream {
     let mut iter = func.clone().into_iter();
-    let Some(TokenTree::Punct(p)) = iter.next() else {
-        panic!("expect #[objc::msg_send(...)]")
-    };
 
-    if p != '#' {
-        panic!("expect #[objc::msg_send(...)]")
-    }
-    let Some(TokenTree::Group(g)) = iter.next() else {
-        panic!("expect #[objc::msg_send(...)]")
-    };
-
-    let Some(Attr::MsgSend(extern_name)) = Attr::from_stream(g.stream()) else {
-        panic!("expect #[objc::msg_send(...)]")
+    let extern_name = loop {
+        let Some(TokenTree::Punct(p)) = iter.next() else {
+            panic!("expect #[objc::msg_send(...)]")
+        };
+        if p != '#' {
+            panic!("expect #[objc::msg_send(...)]")
+        }
+        let Some(TokenTree::Group(g)) = iter.next() else {
+            panic!("expect #[objc::msg_send(...)]")
+        };
+        if let Some(Attr::MsgSend(extern_name)) = Attr::from_stream(g.stream()) {
+            break extern_name;
+        }
     };
 
     let mut fn_name = None;

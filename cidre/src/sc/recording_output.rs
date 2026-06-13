@@ -4,38 +4,64 @@ use crate::{api, arc, av, define_obj_type, ns, objc};
 use crate::cm;
 
 define_obj_type!(
+    /// Configuration for recording stream content to a movie file.
     #[doc(alias = "SCRecordingOutputConfiguration")]
     pub RecordingOutputCfg(ns::Id),
     SC_RECORDING_OUTPUT_CONFIGURATION,
-    #[api::available(macos = 15.0)]
+    #[api::available(
+        macos = 15.0,
+        maccatalyst = 18.2,
+        ios = 27.0,
+        visionos = 27.0,
+        tvos = 27.0
+    )]
 );
 
 impl RecordingOutputCfg {
+    /// The destination URL for the recording file.
     #[objc::msg_send(outputURL)]
     pub fn output_url(&self) -> Option<arc::R<ns::Url>>;
 
+    /// Sets the destination URL for the recording file.
     #[objc::msg_send(setOutputURL:)]
     pub fn set_output_url(&mut self, val: &ns::Url);
 
+    /// The video codec used for recording.
     #[objc::msg_send(videoCodecType)]
     pub fn video_codec(&self) -> arc::R<av::VideoCodec>;
 
+    /// The file container type used for recording.
     #[objc::msg_send(outputFileType)]
     pub fn output_file_type(&self) -> arc::R<av::FileType>;
 
+    /// The video codecs supported by the current configuration.
     #[objc::msg_send(availableVideoCodecTypes)]
     pub fn available_video_codecs(&self) -> arc::R<ns::Array<av::VideoCodec>>;
 
+    /// The output file types supported by the current configuration.
     #[objc::msg_send(availableOutputFileTypes)]
     pub fn available_output_file_types(&self) -> arc::R<ns::Array<av::FileType>>;
+
+    /// Whether system audio and microphone audio are mixed into one track.
+    #[objc::msg_send(mixesAudioWithMicrophone)]
+    #[api::available(macos = 27.0, maccatalyst = 27.0, ios = 27.0, visionos = 27.0)]
+    pub fn mixes_audio_with_mic(&self) -> bool;
+
+    /// Sets whether system audio and microphone audio are mixed into one track.
+    #[objc::msg_send(setMixesAudioWithMicrophone:)]
+    #[api::available(macos = 27.0, maccatalyst = 27.0, ios = 27.0, visionos = 27.0)]
+    pub fn set_mixes_audio_with_mic(&mut self, val: bool);
 }
 
+/// Receives recording output lifecycle callbacks.
 #[objc::protocol(SCRecordingOutputDelegate)]
 pub trait Delegate: objc::Obj {
+    /// Called after recording starts successfully.
     #[objc::optional]
     #[objc::msg_send(recordingOutputDidStartRecording:)]
     fn recording_output_did_start_recording(&mut self, recording_output: &mut RecordingOutput);
 
+    /// Called when recording fails.
     #[objc::optional]
     #[objc::msg_send(recordingOutput:didFailWithError:)]
     fn recording_output_did_fail_with_err(
@@ -44,6 +70,7 @@ pub trait Delegate: objc::Obj {
         error: &ns::Error,
     );
 
+    /// Called after recording finishes successfully.
     #[objc::optional]
     #[objc::msg_send(recordingOutputDidFinishRecording:)]
     fn recording_output_did_finish_recording(&mut self, recording_output: &mut RecordingOutput);
@@ -53,11 +80,13 @@ define_obj_type!(pub AnyDelegate(ns::Id));
 impl Delegate for AnyDelegate {}
 
 define_obj_type!(
+    /// An output that records stream content to a file.
     #[doc(alias = "SCRecordingOutput")]
     pub RecordingOutput(ns::Id)
 );
 
 impl arc::A<RecordingOutput> {
+    /// Initializes a recording output with a configuration and delegate.
     #[objc::msg_send(initWithConfiguration:delegate:)]
     pub fn init_with_cfg_delegate<D: Delegate>(
         self,
@@ -67,7 +96,13 @@ impl arc::A<RecordingOutput> {
 }
 
 impl RecordingOutput {
-    #[api::available(macos = 15.0)]
+    #[api::available(
+        macos = 15.0,
+        maccatalyst = 18.2,
+        ios = 27.0,
+        visionos = 27.0,
+        tvos = 27.0
+    )]
     crate::define_cls!(SC_RECORDING_OUTPUT);
 
     /// Indicates current duration of recording to the output file.
@@ -80,7 +115,14 @@ impl RecordingOutput {
     pub fn recorded_file_size(&self) -> isize;
 
     #[inline]
-    #[api::available(macos = 15.0)]
+    /// Creates a recording output with a configuration and delegate.
+    #[api::available(
+        macos = 15.0,
+        maccatalyst = 18.2,
+        ios = 27.0,
+        visionos = 27.0,
+        tvos = 27.0
+    )]
     pub fn with_cfg(cfg: &RecordingOutputCfg, delegate: &impl Delegate) -> arc::R<Self> {
         Self::alloc().init_with_cfg_delegate(cfg, delegate)
     }

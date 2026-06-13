@@ -1,4 +1,4 @@
-use crate::ns;
+use crate::{api, ns};
 
 pub mod code {
     use crate::ns;
@@ -86,19 +86,36 @@ pub mod code {
     /// The stream was stopped by the system
     #[doc(alias = "SCStreamErrorSystemStoppedStream")]
     pub const SYSTEM_STOPPED_STREAM: ns::Integer = -3821;
+
+    /// The stream was stopped due to insufficient storage for recording
+    #[doc(alias = "SCStreamErrorInsufficientStorage")]
+    pub const INSUFFICIENT_STORAGE: ns::Integer = -3822;
+
+    /// The operation is not supported on this platform
+    #[doc(alias = "SCStreamErrorNotSupported")]
+    pub const NOT_SUPPORTED: ns::Integer = -3823;
+
+    /// The stream was stopped due to missing background mode
+    #[doc(alias = "SCStreamErrorMissingBackgroundMode")]
+    pub const MISSING_BACKGROUND_MODE: ns::Integer = -3824;
 }
 
 #[doc(alias = "SCStreamErrorDomain")]
+#[api::available(macos = 12.3, maccatalyst = 18.2, ios = 27.0, visionos = 27.0, tvos = 27.0)]
 pub fn domain() -> &'static ns::ErrorDomain {
+    //"com.apple.ScreenCaptureKit.SCStreamErrorDomain"
     unsafe { SCStreamErrorDomain }
 }
 
+#[api::weak]
 unsafe extern "C" {
+    #[api::available(macos = 12.3, maccatalyst = 18.2, ios = 27.0, visionos = 27.0, tvos = 27.0)]
     static SCStreamErrorDomain: &'static ns::ErrorDomain;
 }
 
 impl ns::ErrorDomain {
     #[doc(alias = "SCStreamErrorDomain")]
+    #[api::available(macos = 12.3, maccatalyst = 18.2, ios = 27.0, visionos = 27.0, tvos = 27.0)]
     pub fn screen_capture() -> &'static Self {
         unsafe { SCStreamErrorDomain }
     }
