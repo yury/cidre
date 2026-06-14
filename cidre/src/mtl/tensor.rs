@@ -2,6 +2,7 @@ use crate::{api, arc, define_obj_type, define_opts, mtl, ns, objc};
 
 /// The possible data types for the elements of a tensor.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[non_exhaustive]
 #[repr(isize)]
 pub enum TensorDType {
     #[doc(alias = "MTLTensorDataTypeNone")]
