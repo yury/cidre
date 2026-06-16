@@ -1,5 +1,14 @@
 use crate::cg;
 
+#[doc(alias = "NSBackingStoreType")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(usize)]
+pub enum BackingStoreType {
+    #[doc(alias = "NSBackingStoreBuffered")]
+    Buffered = 2,
+}
+
+
 #[doc(alias = "NSWindowOrderingMode")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]

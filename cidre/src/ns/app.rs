@@ -106,6 +106,7 @@ mod graphics;
 pub use graphics::EdgeInsets;
 pub use graphics::WindowDepth;
 pub use graphics::WindowOrderingMode;
+pub use graphics::BackingStoreType;
 
 mod gesture_recognizer;
 pub use gesture_recognizer::AnyGestureRecognizerDelegate;
@@ -146,6 +147,7 @@ mod responder;
 pub use responder::Responder;
 
 pub mod running_application;
+pub use running_application::AppActivationPolicy;
 pub use running_application::RunningApp;
 
 mod screen;

@@ -1,5 +1,15 @@
 use crate::{arc, define_obj_type, ns, objc, sys};
 
+#[doc(alias = "NSApplicationActivationPolicy")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(isize)]
+pub enum AppActivationPolicy {
+    Regular = 0,
+    Accessory = 1,
+    Prohibited = 2,
+}
+
+
 define_obj_type!(
     #[doc(alias = "NSRunningApplication")]
     pub RunningApp(ns::Id),

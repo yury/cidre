@@ -130,7 +130,32 @@ define_obj_type!(
    NS_WINDOW
 );
 
+impl arc::A<Window> {
+    #[objc::msg_send(initWithContentRect:styleMask:backing:defer:)]
+    pub fn init_with_content_rect_style_mask_backing_defer(
+        self,
+        content_rect: ns::Rect,
+        style: ns::WindowStyleMask,
+        backing: ns::BackingStoreType,
+        defer: bool,
+    ) -> arc::R<Window>;
+}
+
 impl Window {
+    pub fn with_content_rect_style_mask_backing_defer(
+        content_rect: ns::Rect,
+        style: ns::WindowStyleMask,
+        backing: ns::BackingStoreType,
+        defer: bool,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_content_rect_style_mask_backing_defer(
+            content_rect,
+            style,
+            backing,
+            defer,
+        )
+    }
+
     #[objc::msg_send(title)]
     pub fn title(&self) -> arc::R<ns::String>;
 
@@ -333,6 +358,18 @@ impl Window {
 
     #[objc::msg_send(isMiniaturized)]
     pub fn is_miniaturized(&self) -> bool;
+
+    #[objc::msg_send(contentView)]
+    pub fn content_view(&self) -> Option<arc::R<ns::View>>;
+
+    #[objc::msg_send(setContentView:)]
+    pub fn set_content_view(&mut self, val: Option<&ns::View>);
+
+    #[objc::msg_send(makeKeyAndOrderFront:)]
+    pub fn make_key_and_order_front(&mut self, sender: Option<&ns::Id>);
+
+    #[objc::msg_send(orderFront:)]
+    pub fn order_front(&mut self, sender: Option<&ns::Id>);
 }
 
 /// ns::ViewController Support
