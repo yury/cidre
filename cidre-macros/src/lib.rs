@@ -8,6 +8,7 @@ enum Attr {
     Optional,
     MsgSend(String),
     ApiAvailable(Versions),
+    ApiDeprecated(Deprecation),
     DocAvailable,
 }
 
@@ -65,6 +66,12 @@ impl Attr {
                                 return None;
                             };
                             Some(Attr::ApiAvailable(Versions::from_stream(a.stream())))
+                        }
+                        "deprecated" => {
+                            let Some(TokenTree::Group(a)) = iter.next() else {
+                                return None;
+                            };
+                            Some(Attr::ApiDeprecated(Deprecation::from_stream(a.stream())))
                         }
                         _ => None,
                     };
@@ -469,6 +476,7 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
     let mut unsafe_already = false;
     let mut optional_already = false;
     let mut versions = Versions::default();
+    let mut deprecation = None;
 
     while let Some(tt) = iter.next() {
         match tt {
@@ -478,6 +486,11 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
                         Some(Attr::Optional) => optional_already = true,
                         Some(Attr::ApiAvailable(v)) => {
                             versions = v;
+                            meta.pop();
+                            continue;
+                        }
+                        Some(Attr::ApiDeprecated(v)) => {
+                            deprecation = Some(v);
                             meta.pop();
                             continue;
                         }
@@ -626,6 +639,10 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
 
     let available = versions.available_cfg();
     let unavailable = versions.unavailable_cfg();
+    let deprecated = deprecation
+        .as_ref()
+        .map(|v| v.cfg_attr())
+        .unwrap_or_default();
 
     let mut flow = String::new();
     let pre = TokenStream::from_iter(meta).to_string();
@@ -651,6 +668,7 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
             "
     {available}
     {doc_alias}
+    {deprecated}
     #[inline]
     {pre} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
         extern \"C\" {{
@@ -694,6 +712,7 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
 
     {unavailable}
     {doc_alias}
+    {deprecated}
     #[inline]
     {pre} {unsafe_str} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
         extern \"C\" {{
@@ -721,6 +740,7 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
             "
     {available}
     {doc_alias}
+    {deprecated}
     #[inline]
     {pre} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
         extern \"C\" {{
@@ -760,6 +780,7 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
 
     {unavailable}
     {doc_alias}
+    {deprecated}
     #[inline]
     {pre} {unsafe_str} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
         extern \"C\" {{
@@ -787,6 +808,7 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
 
     {available}
     {doc_alias}
+    {deprecated}
     #[inline]
     {pre} fn {fn_name}{gen}{args}{ret_full} {{
         arc::rar_retain_option({self_}{fn_name}_ar({vars}) )
@@ -800,6 +822,7 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
 
     {unavailable}
     {doc_alias}
+    {deprecated}
     #[inline]
     /// Check availability with selector1 `Self::sel_{fn_name}()`
     {pre} {unsafe_str} fn {fn_name}{gen}{args}{ret_full} {{
@@ -815,6 +838,7 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
 
     {available}
     {doc_alias}
+    {deprecated}
     #[inline]
     {pre} fn {fn_name}{gen}{args}{ret_full} {{
         arc::rar_retain({self_}{fn_name}_ar({vars}))
@@ -828,6 +852,7 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
 
     {unavailable}
     {doc_alias}
+    {deprecated}
     /// Check availability with selector `Self::sel_{fn_name}()`
     #[inline]
     {pre} {unsafe_str} fn {fn_name}{gen}{args}{ret_full} {{
@@ -1288,6 +1313,186 @@ impl Versions {
         }
         res
     }
+}
+
+#[derive(Default, Debug)]
+struct Deprecation {
+    versions: Versions,
+    note: Option<String>,
+    replacement: Option<String>,
+}
+
+impl Deprecation {
+    fn cfg_attr(&self) -> String {
+        let note = format!("{:?}", self.note());
+        let conditions = self.conditions();
+        if conditions.is_empty() {
+            format!("#[deprecated(note = {note})]\n")
+        } else if conditions.len() == 1 {
+            format!(
+                "#[cfg_attr({}, deprecated(note = {note}))]\n",
+                conditions[0]
+            )
+        } else {
+            format!(
+                "#[cfg_attr(any({}), deprecated(note = {note}))]\n",
+                conditions.join(", ")
+            )
+        }
+    }
+
+    fn conditions(&self) -> Vec<String> {
+        let mut vec = Vec::with_capacity(6);
+        if let Some(v) = self.versions.macos {
+            vec.push(format!(
+                "all(target_os=\"macos\", feature=\"macos_{}_{}\")",
+                v.0, v.1
+            ));
+        }
+        if let Some(v) = self.versions.ios {
+            vec.push(format!(
+                "all(target_os=\"ios\", not(target_abi=\"macabi\"), feature=\"ios_{}_{}\")",
+                v.0, v.1
+            ));
+        }
+        if let Some(v) = self.versions.tvos {
+            vec.push(format!(
+                "all(target_os=\"tvos\", feature=\"tvos_{}_{}\")",
+                v.0, v.1,
+            ));
+        }
+        if let Some(v) = self.versions.watchos {
+            vec.push(format!(
+                "all(target_os=\"watchos\", feature=\"watchos_{}_{}\")",
+                v.0, v.1,
+            ));
+        }
+        if let Some(v) = self.versions.visionos {
+            vec.push(format!(
+                "all(target_os=\"visionos\", feature=\"visionos_{}_{}\")",
+                v.0, v.1
+            ));
+        }
+        if let Some(v) = self.versions.maccatalyst {
+            vec.push(format!(
+                "all(target_os=\"ios\", target_abi=\"macabi\", feature=\"maccatalyst_{}_{}\")",
+                v.0, v.1
+            ));
+        }
+        vec
+    }
+
+    fn note(&self) -> String {
+        let mut note = if self.versions.any() {
+            format!("Deprecated: {}.", self.version_labels().join(", "))
+        } else {
+            "Deprecated.".to_string()
+        };
+        if let Some(msg) = &self.note {
+            note.push(' ');
+            note.push_str(msg);
+        } else if let Some(replacement) = &self.replacement {
+            note.push_str(" Use ");
+            note.push_str(replacement);
+            note.push_str(" instead.");
+        }
+        note
+    }
+
+    fn version_labels(&self) -> Vec<String> {
+        let mut vec = Vec::with_capacity(6);
+        if let Some(v) = self.versions.macos {
+            vec.push(format!("macOS {}.{}", v.0, v.1));
+        }
+        if let Some(v) = self.versions.ios {
+            vec.push(format!("iOS {}.{}", v.0, v.1));
+        }
+        if let Some(v) = self.versions.tvos {
+            vec.push(format!("tvOS {}.{}", v.0, v.1));
+        }
+        if let Some(v) = self.versions.watchos {
+            vec.push(format!("watchOS {}.{}", v.0, v.1));
+        }
+        if let Some(v) = self.versions.visionos {
+            vec.push(format!("visionOS {}.{}", v.0, v.1));
+        }
+        if let Some(v) = self.versions.maccatalyst {
+            vec.push(format!("macCatalyst {}.{}", v.0, v.1));
+        }
+        vec
+    }
+
+    fn from_stream(stream: TokenStream) -> Self {
+        let mut iter = stream.into_iter();
+        let mut res = Self::default();
+        while let Some(t) = iter.next() {
+            let key = match t {
+                TokenTree::Ident(ident) => ident.to_string(),
+                _ => panic!("Unexpected token {t:?}"),
+            };
+            let Some(TokenTree::Punct(ident)) = iter.next() else {
+                panic!("Expecting = ");
+            };
+            assert_eq!(ident, '=', "expecting =");
+
+            let Some(val) = iter.next() else {
+                panic!("expecting deprecated value");
+            };
+
+            match key.as_str() {
+                "note" => {
+                    let TokenTree::Literal(val) = val else {
+                        panic!("expecting note string literal");
+                    };
+                    res.note = Some(Self::literal_string(val));
+                }
+                "replacement" => {
+                    let TokenTree::Literal(val) = val else {
+                        panic!("expecting replacement string literal");
+                    };
+                    res.replacement = Some(Self::literal_string(val));
+                }
+                _ => {
+                    let TokenTree::Literal(val) = val else {
+                        panic!("expecting version");
+                    };
+                    let v = Version::from_str(&val.to_string());
+                    match key.as_str() {
+                        "macos" => res.versions.macos = v,
+                        "ios" => res.versions.ios = v,
+                        "tvos" => res.versions.tvos = v,
+                        "watchos" => res.versions.watchos = v,
+                        "visionos" => res.versions.visionos = v,
+                        "maccatalyst" | "macCatalyst" | "mac_catalyst" => {
+                            res.versions.maccatalyst = v
+                        }
+                        t => panic!("Unsupported deprecated key {t:?}"),
+                    };
+                }
+            }
+
+            if let Some(TokenTree::Punct(p)) = iter.next() {
+                assert_eq!(p, ',', "expect ,");
+            };
+        }
+        res
+    }
+
+    fn literal_string(val: proc_macro::Literal) -> String {
+        let val = val.to_string();
+        val.strip_prefix('"')
+            .and_then(|v| v.strip_suffix('"'))
+            .unwrap_or(&val)
+            .to_string()
+    }
+}
+
+#[proc_macro_attribute]
+pub fn api_deprecated(args: TokenStream, body: TokenStream) -> TokenStream {
+    let deprecated = Deprecation::from_stream(args).cfg_attr();
+    let mut res = TokenStream::from_str(&deprecated).unwrap();
+    res.extend(body);
+    res
 }
 
 #[proc_macro_attribute]

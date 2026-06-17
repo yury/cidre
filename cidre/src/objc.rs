@@ -791,6 +791,7 @@ mod tests {
 }
 pub use cidre_macros::add_methods;
 pub use cidre_macros::api_available as available;
+pub use cidre_macros::api_deprecated as deprecated;
 pub use cidre_macros::optional;
 pub use cidre_macros::protocol;
 

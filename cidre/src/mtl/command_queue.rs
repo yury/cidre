@@ -21,6 +21,11 @@ impl CmdQueue {
     #[objc::msg_send(commandBufferWithUnretainedReferences)]
     pub fn new_cmd_buf_unretained_refs(&self) -> Option<arc::R<mtl::CmdBuf>>;
 
+    /// Insert a boundary at this point in the queue between captured and uncaptured commands.
+    #[objc::msg_send(insertDebugCaptureBoundary)]
+    #[api::deprecated(macos = 10.13, ios = 11.0, note = "Use MTLCaptureScope instead")]
+    pub fn insert_debug_capture_boundary(&self);
+
     /// Marks the residency set as part of the command queue execution.
     ///
     /// This ensures that the residency set is resident during execution of all

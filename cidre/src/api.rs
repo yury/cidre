@@ -323,6 +323,7 @@ macro_rules! version {
     };
 }
 pub use cidre_macros::api_available as available;
+pub use cidre_macros::api_deprecated as deprecated;
 pub use cidre_macros::api_weak as weak;
 pub use version;
 
