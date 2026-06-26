@@ -101,8 +101,11 @@ impl ImageRequestHandler {
     ) -> bool;
 
     #[inline]
-    pub fn perform<'ear>(&self, requests: &ns::Array<vn::Request>) -> ns::Result<'ear> {
-        unsafe { ns::if_false(|err| self.perform_request_err(requests, err)) }
+    pub fn perform<'ear>(
+        &self,
+        requests: &ns::Array<vn::Request>,
+    ) -> Result<(), Option<&'ear ns::Error>> {
+        unsafe { ns::if_false_maybe(|err| self.perform_request_err(requests, err)) }
     }
 }
 
@@ -177,7 +180,9 @@ mod tests {
         let requests = ns::Array::<vn::Request>::from_slice(&[&request]);
         let error = handler.perform(&requests).expect_err("should be error");
 
-        assert!(error.domain().is_equal(ns::ErrorDomain::vision()));
-        assert_eq!(vn::ErrorCode::InvalidImage, error.code());
+        if let Some(error) = error {
+            assert!(error.domain().is_equal(ns::ErrorDomain::vision()));
+            assert_eq!(vn::ErrorCode::InvalidImage, error.code());
+        }
     }
 }

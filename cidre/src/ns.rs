@@ -188,6 +188,7 @@ pub use error::Domain as ErrorDomain;
 pub use error::Error;
 pub use error::if_err;
 pub use error::if_false;
+pub use error::if_false_maybe;
 pub use error::if_none;
 pub use error::user_info_keys as error_user_info_keys;
 

@@ -27,6 +27,14 @@ where
     }
 }
 
+pub fn if_false_maybe<'ear, F>(f: F) -> Result<(), Option<&'ear ns::Error>>
+where
+    F: FnOnce(*mut Option<&'ear ns::Error>) -> bool,
+{
+    let mut err = None;
+    if f(&mut err) { Ok(()) } else { Err(err) }
+}
+
 pub fn if_none<'ear, F, R>(f: F) -> Result<R, &'ear ns::Error>
 where
     F: FnOnce(*mut Option<&'ear ns::Error>) -> Option<R>,
