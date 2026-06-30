@@ -9,7 +9,6 @@ pub enum AppActivationPolicy {
     Prohibited = 2,
 }
 
-
 define_obj_type!(
     #[doc(alias = "NSRunningApplication")]
     pub RunningApp(ns::Id),

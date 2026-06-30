@@ -101,7 +101,13 @@ pub mod code {
 }
 
 #[doc(alias = "SCStreamErrorDomain")]
-#[api::available(macos = 12.3, maccatalyst = 18.2, ios = 27.0, visionos = 27.0, tvos = 27.0)]
+#[api::available(
+    macos = 12.3,
+    maccatalyst = 18.2,
+    ios = 27.0,
+    visionos = 27.0,
+    tvos = 27.0
+)]
 pub fn domain() -> &'static ns::ErrorDomain {
     //"com.apple.ScreenCaptureKit.SCStreamErrorDomain"
     unsafe { SCStreamErrorDomain }
@@ -109,13 +115,25 @@ pub fn domain() -> &'static ns::ErrorDomain {
 
 #[api::weak]
 unsafe extern "C" {
-    #[api::available(macos = 12.3, maccatalyst = 18.2, ios = 27.0, visionos = 27.0, tvos = 27.0)]
+    #[api::available(
+        macos = 12.3,
+        maccatalyst = 18.2,
+        ios = 27.0,
+        visionos = 27.0,
+        tvos = 27.0
+    )]
     static SCStreamErrorDomain: &'static ns::ErrorDomain;
 }
 
 impl ns::ErrorDomain {
     #[doc(alias = "SCStreamErrorDomain")]
-    #[api::available(macos = 12.3, maccatalyst = 18.2, ios = 27.0, visionos = 27.0, tvos = 27.0)]
+    #[api::available(
+        macos = 12.3,
+        maccatalyst = 18.2,
+        ios = 27.0,
+        visionos = 27.0,
+        tvos = 27.0
+    )]
     pub fn screen_capture() -> &'static Self {
         unsafe { SCStreamErrorDomain }
     }

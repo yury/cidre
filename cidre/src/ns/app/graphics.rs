@@ -8,7 +8,6 @@ pub enum BackingStoreType {
     Buffered = 2,
 }
 
-
 #[doc(alias = "NSWindowOrderingMode")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]

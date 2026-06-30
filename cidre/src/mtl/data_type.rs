@@ -157,7 +157,7 @@ pub enum DType {
 
     #[doc(alias = "MTLDataTypeDepthStencilState")]
     DepthStencilState = 139,
-    
+
     #[doc(alias = "MTLDataTypeTensor")]
     Tensor = 140,
 }

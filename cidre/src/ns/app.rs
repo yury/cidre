@@ -103,10 +103,10 @@ pub use font_manager::FontManager;
 pub use font_manager::FontTraitMask;
 
 mod graphics;
+pub use graphics::BackingStoreType;
 pub use graphics::EdgeInsets;
 pub use graphics::WindowDepth;
 pub use graphics::WindowOrderingMode;
-pub use graphics::BackingStoreType;
 
 mod gesture_recognizer;
 pub use gesture_recognizer::AnyGestureRecognizerDelegate;
