@@ -73,7 +73,7 @@ impl SimpleQueue {
     #[doc(alias = "CMSimpleQueueEnqueue")]
     #[inline]
     pub fn enqueue(&mut self, element: *const c_void) -> os::Result {
-        unsafe { std::mem::transmute(CMSimpleQueueEnqueue(self, element)) }
+        unsafe { CMSimpleQueueEnqueue(self, element).result() }
     }
 
     #[doc(alias = "CMSimpleQueueDequeue")]

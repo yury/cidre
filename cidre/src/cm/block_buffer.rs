@@ -114,16 +114,6 @@ impl BlockBuf {
         Self::new_in(sub_block_capacity, flags, None)
     }
 
-    /// ```
-    /// use cidre::cm;
-    ///
-    /// let b = cm::BlockBuf::with_mem_block(10, None)
-    ///     .expect("empty block buffer");
-    ///
-    /// assert_eq!(false, b.is_empty());
-    /// assert_eq!(10, b.data_len());
-    ///
-    /// ```
     #[inline]
     pub fn with_mem_block_in(
         len: usize,
@@ -143,6 +133,16 @@ impl BlockBuf {
         }
     }
 
+    /// ```
+    /// use cidre::cm;
+    ///
+    /// let b = cm::BlockBuf::with_mem_block(10)
+    ///     .expect("empty block buffer");
+    ///
+    /// assert_eq!(false, b.is_empty());
+    /// assert_eq!(10, b.data_len());
+    ///
+    /// ```
     #[inline]
     pub fn with_mem_block(len: usize) -> os::Result<arc::R<BlockBuf>> {
         unsafe {

@@ -166,7 +166,11 @@ impl Status {
 
     #[inline]
     pub fn result(self) -> Result {
-        unsafe { std::mem::transmute(self) }
+        if self.is_ok() {
+            Ok(())
+        } else {
+            Err(Error::new_unchecked(self.0))
+        }
     }
 
     #[inline]

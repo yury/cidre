@@ -465,6 +465,10 @@ impl ArrayMut {
         unsafe { CFArrayAppendValue(self, val) }
     }
 
+    pub fn push(&mut self, val: &cf::Type) {
+        unsafe { CFArrayAppendValue(self, val.as_type_ptr()) }
+    }
+
     #[doc(alias = "CFArrayRemoveValueAtIndex")]
     #[inline]
     pub unsafe fn remove_unchecked(&mut self, index: isize) {
