@@ -345,33 +345,65 @@ impl<T: objc::Obj> std::borrow::BorrowMut<T> for R<T> {
 
 #[cfg(target_arch = "aarch64")]
 #[cfg(feature = "objc")]
-#[inline]
+#[inline(always)]
 pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
-    use std::arch::asm;
+    #[cfg(any(
+        all(target_os = "macos", feature = "macos_13_0"),
+        all(target_os = "ios", feature = "ios_16_0"),
+        all(target_os = "tvos", feature = "tvos_16_0"),
+        all(target_os = "watchos", feature = "watchos_9_0"),
+        all(target_os = "visionos", feature = "visionos_1_0"),
+    ))]
+    {
+        unsafe {
+            std::mem::transmute(objc::objc_claimAutoreleasedReturnValue(
+                std::mem::transmute(id),
+            ))
+        }
+    }
+    #[cfg(not(any(
+        all(target_os = "macos", feature = "macos_13_0"),
+        all(target_os = "ios", feature = "ios_16_0"),
+        all(target_os = "tvos", feature = "tvos_16_0"),
+        all(target_os = "watchos", feature = "watchos_9_0"),
+        all(target_os = "visionos", feature = "visionos_1_0"),
+    )))]
+    {
+        unsafe {
+            // see comments in rar_retain
+            std::arch::asm!("mov x29, x29");
 
-    unsafe {
-        // see comments in rar_retain
-        asm!("mov x29, x29");
-
-        std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
-            std::mem::transmute(id),
-        ))
+            std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
+                std::mem::transmute(id),
+            ))
+        }
     }
 }
 
 /// Accept a value returned through a +0 autoreleasing convention for use at +1,
 /// without a NOP in the caller on ARM64.
+#[cfg(any(
+    all(target_os = "macos", feature = "macos_13_0"),
+    all(target_os = "ios", feature = "ios_16_0"),
+    all(target_os = "tvos", feature = "tvos_16_0"),
+    all(target_os = "watchos", feature = "watchos_9_0"),
+    all(target_os = "visionos", feature = "visionos_1_0"),
+))]
 #[doc(alias = "objc_claimAutoreleasedReturnValue")]
 #[cfg(target_arch = "aarch64")]
 #[cfg(feature = "objc")]
 #[inline]
-pub fn rar_claim_value<T: objc::Obj>() -> Option<R<T>> {
-    unsafe { std::mem::transmute(objc::objc_claimAutoreleasedReturnValue()) }
+pub fn rar_claim_value<T: objc::Obj>(obj: Option<&T>) -> Option<R<T>> {
+    unsafe {
+        std::mem::transmute(objc::objc_claimAutoreleasedReturnValue(
+            std::mem::transmute(obj),
+        ))
+    }
 }
 
 #[cfg(target_arch = "x86_64")]
 #[cfg(feature = "objc")]
-#[inline]
+#[inline(always)]
 pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
     // since we can't insert marker right before actual `objc_msgSend` we fallback to retain
     unsafe { std::mem::transmute(objc::objc_retain(std::mem::transmute(id))) }
@@ -381,19 +413,40 @@ pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
 #[cfg(target_arch = "aarch64")]
 #[inline]
 pub fn rar_retain<T: objc::Obj>(id: Rar<T>) -> R<T> {
-    use std::arch::asm;
+    #[cfg(any(
+        all(target_os = "macos", feature = "macos_13_0"),
+        all(target_os = "ios", feature = "ios_16_0"),
+        all(target_os = "tvos", feature = "tvos_16_0"),
+        all(target_os = "watchos", feature = "watchos_9_0"),
+        all(target_os = "visionos", feature = "visionos_1_0"),
+    ))]
+    {
+        unsafe {
+            std::mem::transmute(objc::objc_claimAutoreleasedReturnValue(
+                std::mem::transmute(id),
+            ))
+        }
+    }
+    #[cfg(not(any(
+        all(target_os = "macos", feature = "macos_13_0"),
+        all(target_os = "ios", feature = "ios_16_0"),
+        all(target_os = "tvos", feature = "tvos_16_0"),
+        all(target_os = "watchos", feature = "watchos_9_0"),
+        all(target_os = "visionos", feature = "visionos_1_0"),
+    )))]
+    {
+        unsafe {
+            // latest runtimes don't need this marker anymore.
+            // see https://developer.apple.com/videos/play/wwdc2022/110363/ at 13:24
+            // but benchmarks show that on macos it is not a case yet
+            // (see alloc_with_ar_retain bench).
+            // Need to check on iOS.
+            std::arch::asm!("mov x29, x29");
 
-    unsafe {
-        // latest runtimes don't need this marker anymore.
-        // see https://developer.apple.com/videos/play/wwdc2022/110363/ at 13:24
-        // but benchmarks show that on macos it is not a case yet
-        // (see alloc_with_ar_retain bench).
-        // Need to check on iOS.
-        asm!("mov x29, x29");
-
-        std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
-            std::mem::transmute(id),
-        ))
+            std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
+                std::mem::transmute(id),
+            ))
+        }
     }
 }
 
