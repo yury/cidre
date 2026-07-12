@@ -194,6 +194,8 @@ pub use error::user_info_keys as error_user_info_keys;
 
 mod thread;
 pub use thread::Thread;
+pub use thread::ThreadTarget;
+pub use thread::ThreadTargetImpl;
 
 mod timer;
 pub use timer::Timer;

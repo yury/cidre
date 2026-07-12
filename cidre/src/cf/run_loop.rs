@@ -148,6 +148,7 @@ impl RunLoop {
     /// configuring a run-loop observer and only in situations where you want that
     /// observer to run in more than one mode.
     #[doc(alias = "CFRunLoopRunInMode")]
+    #[must_use]
     #[inline]
     pub fn run_in_mode(
         mode: &Mode,
@@ -216,6 +217,12 @@ impl Mode {
     #[inline]
     pub fn common() -> &'static Mode {
         unsafe { kCFRunLoopCommonModes }
+    }
+
+    #[cfg(feature = "ns")]
+    #[inline]
+    pub fn as_ns(&self) -> &ns::RunLoopMode {
+        unsafe { std::mem::transmute(self) }
     }
 }
 
