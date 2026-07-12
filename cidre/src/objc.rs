@@ -348,7 +348,7 @@ unsafe extern "C-unwind" {
 
     pub fn objc_retainAutoreleasedReturnValue<'ar>(obj: Option<&Id>) -> Option<arc::R<Id>>;
     pub fn objc_retainAutoreleaseReturnValue<'ar>(obj: Option<&Id>) -> Option<&'ar Id>;
-    pub fn objc_claimAutoreleasedReturnValue(obj: Option<&Id>) -> Option<arc::R<Id>>;
+    pub fn objc_claimAutoreleasedReturnValue() -> Option<arc::R<Id>>;
     pub fn objc_autoreleaseReturnValue<'ar>(obj: Option<&Id>) -> Option<&'ar Id>;
 
     pub fn objc_copyWeak<'ar>(dest: *mut *mut Id, src: *mut *mut Id) -> Option<&'ar Id>;
