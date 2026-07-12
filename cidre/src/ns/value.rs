@@ -128,6 +128,13 @@ impl Number {
     }
 
     // for benches
+    #[cfg(any(
+        all(target_os = "macos", feature = "macos_13_0"),
+        all(target_os = "ios", feature = "ios_16_0"),
+        all(target_os = "tvos", feature = "tvos_16_0"),
+        all(target_os = "watchos", feature = "watchos_9_0"),
+        all(target_os = "visionos", feature = "visionos_1_0"),
+    ))]
     #[cfg(target_arch = "aarch64")]
     #[inline]
     pub fn with_i64_ar_claim(value: i64) -> arc::R<Self> {
