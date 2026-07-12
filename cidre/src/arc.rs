@@ -347,13 +347,8 @@ impl<T: objc::Obj> std::borrow::BorrowMut<T> for R<T> {
 #[cfg(feature = "objc")]
 #[inline]
 pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
-    use std::arch::asm;
-
     unsafe {
-        // see comments in rar_retain
-        asm!("mov x29, x29");
-
-        std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
+        std::mem::transmute(objc::objc_claimAutoreleasedReturnValue(
             std::mem::transmute(id),
         ))
     }
@@ -365,8 +360,12 @@ pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
 #[cfg(target_arch = "aarch64")]
 #[cfg(feature = "objc")]
 #[inline]
-pub fn rar_claim_value<T: objc::Obj>() -> Option<R<T>> {
-    unsafe { std::mem::transmute(objc::objc_claimAutoreleasedReturnValue()) }
+pub fn rar_claim_value<T: objc::Obj>(obj: &T) -> R<T> {
+    unsafe {
+        std::mem::transmute(objc::objc_claimAutoreleasedReturnValue(
+            std::mem::transmute(obj),
+        ))
+    }
 }
 
 #[cfg(target_arch = "x86_64")]
@@ -381,17 +380,8 @@ pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
 #[cfg(target_arch = "aarch64")]
 #[inline]
 pub fn rar_retain<T: objc::Obj>(id: Rar<T>) -> R<T> {
-    use std::arch::asm;
-
     unsafe {
-        // latest runtimes don't need this marker anymore.
-        // see https://developer.apple.com/videos/play/wwdc2022/110363/ at 13:24
-        // but benchmarks show that on macos it is not a case yet
-        // (see alloc_with_ar_retain bench).
-        // Need to check on iOS.
-        asm!("mov x29, x29");
-
-        std::mem::transmute(objc::objc_retainAutoreleasedReturnValue(
+        std::mem::transmute(objc::objc_claimAutoreleasedReturnValue(
             std::mem::transmute(id),
         ))
     }

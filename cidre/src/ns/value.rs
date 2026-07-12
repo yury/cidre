@@ -131,8 +131,7 @@ impl Number {
     #[cfg(target_arch = "aarch64")]
     #[inline]
     pub fn with_i64_ar_claim(value: i64) -> arc::R<Self> {
-        Self::with_i64_ar(value);
-        unsafe { std::mem::transmute(arc::rar_claim_value::<Self>()) }
+        arc::rar_claim_value(&Self::with_i64_ar(value))
     }
 
     #[objc::msg_send(numberWithLongLong:)]
