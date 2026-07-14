@@ -343,49 +343,49 @@ impl AsRef<ns::Number> for ns::Number {
 
 impl AsRef<ns::Id> for u8 {
     fn as_ref(&self) -> &ns::Id {
-        &ns::Number::tagged_u8(*self).as_id_ref()
+        ns::Number::tagged_u8(*self).as_id_ref()
     }
 }
 
 impl AsRef<ns::Id> for i8 {
     fn as_ref(&self) -> &ns::Id {
-        &ns::Number::tagged_i8(*self).as_id_ref()
+        ns::Number::tagged_i8(*self).as_id_ref()
     }
 }
 
 impl AsRef<ns::Id> for u16 {
     fn as_ref(&self) -> &ns::Id {
-        &ns::Number::tagged_u16(*self).as_id_ref()
+        ns::Number::tagged_u16(*self).as_id_ref()
     }
 }
 
 impl AsRef<ns::Id> for i16 {
     fn as_ref(&self) -> &ns::Id {
-        &ns::Number::tagged_i16(*self).as_id_ref()
+        ns::Number::tagged_i16(*self).as_id_ref()
     }
 }
 
 impl AsRef<ns::Id> for u32 {
     fn as_ref(&self) -> &ns::Id {
-        &ns::Number::tagged_u32(*self).as_id_ref()
+        ns::Number::tagged_u32(*self).as_id_ref()
     }
 }
 
 impl AsRef<ns::Id> for i32 {
     fn as_ref(&self) -> &ns::Id {
-        &ns::Number::tagged_i32(*self).as_id_ref()
+        ns::Number::tagged_i32(*self).as_id_ref()
     }
 }
 
 impl AsRef<ns::Number> for u8 {
     fn as_ref(&self) -> &ns::Number {
-        &ns::Number::tagged_u8(*self)
+        ns::Number::tagged_u8(*self)
     }
 }
 
 impl AsRef<ns::Number> for i8 {
     fn as_ref(&self) -> &ns::Number {
-        &ns::Number::tagged_i8(*self)
+        ns::Number::tagged_i8(*self)
     }
 }
 
@@ -397,19 +397,19 @@ impl AsRef<ns::Number> for u16 {
 
 impl AsRef<ns::Number> for i16 {
     fn as_ref(&self) -> &ns::Number {
-        &ns::Number::tagged_i16(*self)
+        ns::Number::tagged_i16(*self)
     }
 }
 
 impl AsRef<ns::Number> for u32 {
     fn as_ref(&self) -> &ns::Number {
-        &ns::Number::tagged_u32(*self)
+        ns::Number::tagged_u32(*self)
     }
 }
 
 impl AsRef<ns::Number> for i32 {
     fn as_ref(&self) -> &ns::Number {
-        &ns::Number::tagged_i32(*self)
+        ns::Number::tagged_i32(*self)
     }
 }
 

@@ -3,7 +3,7 @@ use crate::mach;
 use crate::{arc, cf, define_cf_type};
 
 #[doc(alias = "CFRunLoopRunResult")]
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(i32)]
 pub enum RunResult {
     /// The run loop mode mode has no sources or timers.
@@ -17,6 +17,13 @@ pub enum RunResult {
 
     /// A source was processed. This exit condition only applies when `return_after_source_handled` is true.
     HandledSource = 4,
+}
+
+impl RunResult {
+    #[inline(always)]
+    pub fn is_timeout(&self) -> bool {
+        self == &RunResult::TimedOut
+    }
 }
 
 define_cf_type!(

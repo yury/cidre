@@ -1541,7 +1541,7 @@ fn try_replace_fn(tokens: &mut Vec<TokenTree>, make_result_optional: &mut bool) 
 
         _ => return false,
     };
-    return false;
+    false
 }
 
 fn try_replace_return(tokens: &mut Vec<TokenTree>) -> bool {

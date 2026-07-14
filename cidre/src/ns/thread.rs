@@ -77,16 +77,22 @@ impl Thread {
     pub fn is_cancelled(&self) -> bool;
 
     #[objc::msg_send(isMainThread)]
-    pub fn is_main() -> bool;
+    pub fn is_main_thread() -> bool;
 
     #[objc::msg_send(isMainThread)]
-    pub fn is_main_thread(&self) -> bool;
+    pub fn is_main(&self) -> bool;
 
     #[objc::msg_send(threadPriority)]
-    pub fn priority() -> f64;
+    pub fn thread_priority() -> f64;
 
     #[objc::msg_send(setThreadPriority:)]
-    pub fn set_priority(val: f64) -> bool;
+    pub fn set_thread_priority(val: f64) -> bool;
+
+    #[objc::msg_send(threadPriority)]
+    pub fn priority(&self) -> f64;
+
+    #[objc::msg_send(setThreadPriority:)]
+    pub fn set_priority(&mut self, val: f64);
 
     #[objc::msg_send(qualityOfService)]
     pub fn qos(&self) -> ns::QualityOfService;
@@ -103,6 +109,12 @@ impl Thread {
     /// The stack size of the receiver, in bytes.
     #[objc::msg_send(stackSize)]
     pub fn stack_size(&self) -> usize;
+
+    #[objc::msg_send(callStackReturnAddresses)]
+    pub fn call_stack_return_addresses() -> arc::R<ns::Array<ns::Number>>;
+
+    #[objc::msg_send(callStackSymbols)]
+    pub fn call_stack_symbols() -> arc::R<ns::Array<ns::String>>;
 
     /// The stack size of the receiver, in bytes.
     ///
@@ -152,10 +164,10 @@ mod tests {
 
         assert!(ns::Thread::is_mutli_threaded());
 
-        assert!(!ns::Thread::is_main());
+        assert!(!ns::Thread::is_main_thread());
 
         let thread = ns::Thread::with_mut(|| {});
-        assert!(!thread.is_main_thread());
+        assert!(!thread.is_main());
         assert!(!thread.is_executing());
         assert!(!thread.is_finished());
     }

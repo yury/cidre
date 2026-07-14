@@ -584,7 +584,7 @@ pub mod keys {
     /// kVTSampleAttachmentKey_RequireLTRAcknowledgementToken
     /// Clients are responsible for reporting acknowledged LTR frames to the encoder through:
     /// - kVTEncodeFrameOptionKey_AcknowledgedLTRTokens
-    ///    Client can request a refresh frame at any time through:
+    ///   Client can request a refresh frame at any time through:
     /// - kVTEncodeFrameOptionKey_ForceLTRRefresh
     ///   Encoder will encode a P frame by using one of acknowledged LTR frames
     /// as the reference. Encoder will encode a new reference frame using an acknowledged LTR,
