@@ -1,5 +1,9 @@
 use crate::{arc, cg, define_obj_type, ns, objc, ui};
 
+#[cfg(feature = "ca")]
+#[allow(unused)]
+use crate::ca;
+
 define_obj_type!(
     #[doc(alias = "UIWindowScene")]
     pub WindowScene(ui::Scene)
@@ -34,6 +38,27 @@ impl WindowScene {
     /// otherwise will provide a mutable object for window behavior customization.
     #[objc::msg_send(windowingBehaviors)]
     pub fn windowing_behaviors(&self) -> Option<arc::R<ui::SceneWindowingBehaviors>>;
+
+    #[cfg(feature = "ca")]
+    #[objc::msg_send(displayLinkWithTarget:selector:)]
+    #[objc::available(ios = 27.0, tvos = 27.0, visionos = 27.0)]
+    pub fn display_link_with_target_selector(
+        &self,
+        target: &ns::Id,
+        selector: &objc::Sel,
+    ) -> Option<arc::R<ca::DisplayLink>>;
+
+    #[cfg(feature = "ca")]
+    #[objc::available(ios = 27.0, tvos = 27.0, visionos = 27.0)]
+    #[allow(unused_unsafe)]
+    pub fn display_link_with_target<D: ca::DisplayLinkTargetImpl>(
+        &self,
+        target: &D,
+    ) -> Option<arc::R<ca::DisplayLink>> {
+        unsafe {
+            self.display_link_with_target_selector(target.as_id_ref(), D::sel_on_display_link())
+        }
+    }
 
     #[objc::msg_send(isFullScreen)]
     pub fn is_full_screen(&self) -> bool;
