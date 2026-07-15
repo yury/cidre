@@ -89,6 +89,7 @@ pub use library::CompileOpts;
 pub use library::CompileSymbolVisibility;
 pub use library::Error as LibError;
 pub use library::ErrorDomain as LibErrorDomain;
+pub use library::FloatingPointConversionRoundingMode;
 pub use library::Fn;
 pub use library::FnType;
 pub use library::LangVersion;
