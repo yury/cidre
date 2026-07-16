@@ -51,7 +51,12 @@ impl Output {
 
     #[objc::msg_send(setDeferredStartEnabled:)]
     #[objc::available(macos = 26.0, maccatalyst = 26.0, ios = 26.0, tvos = 26.0)]
-    pub fn set_deferred_start_enabled(&mut self, val: bool);
+    pub unsafe fn set_deferred_start_enabled_throws(&mut self, val: bool);
+
+    #[objc::available(macos = 26.0, maccatalyst = 26.0, ios = 26.0, tvos = 26.0)]
+    pub fn set_deferred_start_enabled<'ear>(&mut self, val: bool) -> ns::ExResult<'ear> {
+        unsafe { ns::try_catch(|| self.set_deferred_start_enabled_throws(val)) }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
