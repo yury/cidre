@@ -71,6 +71,55 @@ impl RunLoop {
         unsafe { CFRunLoopStop(self) }
     }
 
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "CFRunLoopPerformBlock")]
+    #[inline]
+    pub unsafe fn perform_block_in_mode_(
+        &self,
+        mode: &cf::Type,
+        block: &mut blocks::SendBlock<fn()>,
+    ) {
+        unsafe { CFRunLoopPerformBlock(self, mode, block) }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "CFRunLoopPerformBlock")]
+    #[inline]
+    pub fn perform_block_in_mode(&self, mode: &Mode, block: &mut blocks::SendBlock<fn()>) {
+        unsafe { CFRunLoopPerformBlock(self, mode, block) }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "CFRunLoopPerformBlock")]
+    #[inline]
+    pub fn perform_mut_in_mode(&self, mode: &Mode, f: impl FnMut() + 'static + Send) {
+        let mut block = blocks::SendBlock::new0(f);
+        self.perform_block_in_mode(mode, &mut block);
+    }
+
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "CFRunLoopPerformBlock")]
+    #[inline]
+    pub fn perform_block_in_modes(
+        &self,
+        modes: &cf::ArrayOf<Mode>,
+        block: &mut blocks::SendBlock<fn()>,
+    ) {
+        unsafe { CFRunLoopPerformBlock(self, modes, block) }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "CFRunLoopPerformBlock")]
+    #[inline]
+    pub fn perform_mut_in_modes(
+        &self,
+        modes: &cf::ArrayOf<Mode>,
+        f: impl FnMut() + 'static + Send,
+    ) {
+        let mut block = blocks::SendBlock::new0(f);
+        self.perform_block_in_modes(modes, &mut block);
+    }
+
     #[doc(alias = "CFRunLoopCopyCurrentMode")]
     #[inline]
     pub fn current_mode(&self) -> Option<arc::R<Mode>> {
@@ -181,6 +230,8 @@ impl RunLoop {
 unsafe extern "C-unwind" {
     fn CFRunLoopRun();
     fn CFRunLoopStop(rl: &RunLoop);
+    #[cfg(feature = "blocks")]
+    fn CFRunLoopPerformBlock(rl: &RunLoop, mode: &cf::Type, block: &mut blocks::SendBlock<fn()>);
     fn CFRunLoopGetCurrent() -> &'static RunLoop;
     fn CFRunLoopGetMain() -> &'static RunLoop;
     fn CFRunLoopCopyCurrentMode(rl: &RunLoop) -> Option<arc::R<Mode>>;
