@@ -153,7 +153,7 @@ mod tests {
     fn basics() {
         let mut metal_layer = ca::MetalLayer::new();
         metal_layer.set_name(Some(ns::str!(c"mtl_layer")));
-        metal_layer.set_bounds(cg::Rect::with_size(100.0, 100.0));
+        metal_layer.set_bounds(cg::Rect::with_wh(100.0, 100.0));
         let device = metal_layer.preferred_device().unwrap().retained();
         metal_layer.set_device(Some(&device));
         let drawable = metal_layer
