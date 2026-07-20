@@ -150,7 +150,7 @@ impl CmdBuf {
     /// The submission thread will be lock stepped with present call been serviced
     /// by window server
     #[objc::msg_send(presentDrawable:)]
-    pub fn present_drawable<O: objc::Obj, D: mtl::Drawable<O>>(&self, drawable: &D);
+    pub fn present_drawable<D: mtl::Drawable>(&self, drawable: &D);
 
     /// Add a drawable present that will be invoked when this command buffer has been
     /// scheduled for execution.
@@ -158,11 +158,7 @@ impl CmdBuf {
     /// The submission thread will be lock stepped with present call been serviced
     /// by window server
     #[objc::msg_send(presentDrawable:atTime:)]
-    pub fn present_drawable_at<O: objc::Obj, D: mtl::Drawable<O>>(
-        &self,
-        drawable: &D,
-        at_time: cf::TimeInterval,
-    );
+    pub fn present_drawable_at<D: mtl::Drawable>(&self, drawable: &D, at_time: cf::TimeInterval);
 
     /// Reports the current stage in the lifetime of MTLCommandBuffer, as it proceeds
     /// to enqueued, committed, scheduled, and completed.

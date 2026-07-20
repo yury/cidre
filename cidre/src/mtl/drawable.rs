@@ -1,4 +1,4 @@
-use crate::{blocks, cf, define_obj_type, ns, objc, objc::Obj};
+use crate::{blocks, cf, define_obj_type, ns, objc};
 
 #[doc(alias = "MTLDrawablePresentedHandler")]
 pub type DrawablePresentedHandler = blocks::EscBlock<fn(drawable: &AnyDrawable)>;
@@ -12,7 +12,7 @@ pub type DrawablePresentedHandler = blocks::EscBlock<fn(drawable: &AnyDrawable)>
 ///
 /// Don’t implement this protocol yourself; instead, see ca::MetalLayer,
 /// for a class that can create and manage drawable objects for you.
-pub trait Drawable<T: Obj>: Obj {
+pub trait Drawable: objc::Obj {
     /// Presents the drawable onscreen as soon as possible.
     ///
     /// When a command queue schedules a command buffer for execution,
@@ -86,4 +86,4 @@ pub trait Drawable<T: Obj>: Obj {
 
 define_obj_type!(pub AnyDrawable(ns::Id));
 
-impl Drawable<AnyDrawable> for AnyDrawable {}
+impl Drawable for AnyDrawable {}

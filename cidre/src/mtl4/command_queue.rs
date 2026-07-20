@@ -131,10 +131,10 @@ impl CmdQueue {
     pub fn wait_for_event(&self, event: &mtl::Event, val: u64);
 
     #[objc::msg_send(signalDrawable:)]
-    pub fn signal_drawable<T: objc::Obj, D: mtl::Drawable<T>>(&self, drawable: &D);
+    pub fn signal_drawable<D: mtl::Drawable>(&self, drawable: &D);
 
     #[objc::msg_send(waitDrawable:)]
-    pub fn wait_drawable<T: objc::Obj, D: mtl::Drawable<T>>(&self, drawable: &D);
+    pub fn wait_drawable<D: mtl::Drawable>(&self, drawable: &D);
 
     #[objc::msg_send(addResidencySet:)]
     pub fn add_residency_set(&mut self, val: &mtl::ResidencySet);

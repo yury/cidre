@@ -70,5 +70,5 @@ impl DisplayLink {
 }
 
 unsafe extern "C" {
-    static CA_DISPLAY_LINK: &'static objc::Class<ns::Id>;
+    static CA_DISPLAY_LINK: &'static objc::Class<DisplayLink>;
 }
