@@ -14,10 +14,20 @@ pub trait MetalDrawable: mtl::Drawable {
     fn layer(&self) -> arc::R<MetalLayer>;
 }
 
-define_obj_type!(pub AnyMetalDrawable(ns::Id));
+define_obj_type!(pub AnyMetalDrawable(mtl::AnyDrawable));
 
 impl mtl::Drawable for AnyMetalDrawable {}
 impl MetalDrawable for AnyMetalDrawable {}
+
+impl AnyMetalDrawable {
+    pub fn texture(&self) -> arc::R<mtl::Texture> {
+        MetalDrawable::texture(self)
+    }
+
+    pub fn layer(&self) -> arc::R<MetalLayer> {
+        MetalDrawable::layer(self)
+    }
+}
 
 impl MetalLayer {
     #[objc::msg_send(device)]
@@ -144,10 +154,7 @@ unsafe extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        ca::{self, MetalDrawable},
-        cg, ns,
-    };
+    use crate::{ca, cg, ns};
 
     #[test]
     fn basics() {
