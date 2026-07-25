@@ -320,6 +320,34 @@ pub unsafe fn sel_reg_name(str: *const i8) -> &'static Sel {
     unsafe { std::mem::transmute(sel_registerName(str)) }
 }
 
+/// Replaces meta class method implementation and returns original
+pub unsafe fn cls_meta_replace_method(
+    cls: &std::ffi::CStr,
+    sel: &std::ffi::CStr,
+    sig: &std::ffi::CStr,
+    imp: extern "C" fn(),
+) -> Option<extern "C" fn()> {
+    unsafe {
+        let cls = objc::objc_getClass(cls.as_ptr().cast())?;
+        let meta = objc::object_getClass(Some(std::mem::transmute(cls)))?;
+        let sel = objc::sel_reg_name(sel.as_ptr());
+        objc::class_replaceMethod(meta, sel, imp, sig.as_ptr().cast())
+    }
+}
+
+pub unsafe fn cls_replace_method(
+    cls: &std::ffi::CStr,
+    sel: &std::ffi::CStr,
+    sig: &std::ffi::CStr,
+    imp: extern "C" fn(),
+) -> Option<extern "C" fn()> {
+    unsafe {
+        let cls = objc::objc_getClass(cls.as_ptr().cast())?;
+        let sel = objc::sel_reg_name(sel.as_ptr());
+        objc::class_replaceMethod(cls, sel, imp, sig.as_ptr().cast())
+    }
+}
+
 #[doc(alias = "objc_super")]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
