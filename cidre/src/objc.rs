@@ -44,7 +44,7 @@ pub const NS_OBJECT_SIZE: usize = std::mem::size_of::<usize>();
 #[doc(hidden)]
 #[inline]
 pub const fn extra_bytes_for_inner<I>() -> usize {
-    let max_padding = std::mem::align_of::<I>() - NS_OBJECT_SIZE;
+    let max_padding = std::mem::align_of::<I>().saturating_sub(NS_OBJECT_SIZE);
     std::mem::size_of::<I>() + max_padding
 }
 
