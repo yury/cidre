@@ -41,6 +41,32 @@ impl<T: Obj, I: Sized> std::ops::Deref for ClassInstExtra<T, I> {
 // class_getInstanceSize([NSObject class]);
 pub const NS_OBJECT_SIZE: usize = std::mem::size_of::<usize>();
 
+#[doc(hidden)]
+#[inline]
+pub const fn extra_bytes_for_inner<I>() -> usize {
+    let max_padding = std::mem::align_of::<I>() - NS_OBJECT_SIZE;
+    std::mem::size_of::<I>() + max_padding
+}
+
+#[doc(hidden)]
+#[inline]
+pub unsafe fn inner_ptr<I>(obj: *const u8) -> *const I {
+    let ptr = unsafe { obj.add(NS_OBJECT_SIZE) };
+    let align = std::mem::align_of::<I>();
+    if align <= NS_OBJECT_SIZE {
+        return ptr.cast();
+    }
+
+    let offset = ptr.align_offset(align);
+    unsafe { ptr.add(offset).cast() }
+}
+
+#[doc(hidden)]
+#[inline]
+pub unsafe fn inner_ptr_mut<I>(obj: *mut u8) -> *mut I {
+    unsafe { inner_ptr::<I>(obj).cast_mut() }
+}
+
 #[macro_export]
 macro_rules! init_with_default {
     ($NewType:ty, $InnerType:ty) => {{
@@ -69,8 +95,8 @@ macro_rules! init_with_default {
                     unsafe {
                         let ptr: *mut u8 = s.cast();
                         let d_ptr: *mut std::mem::ManuallyDrop<T> =
-                            ptr.add($crate::objc::NS_OBJECT_SIZE) as _;
-                        *d_ptr = std::mem::ManuallyDrop::new(T::default());
+                            $crate::objc::inner_ptr_mut(ptr);
+                        d_ptr.write(std::mem::ManuallyDrop::new(T::default()));
 
                         std::mem::transmute(ptr)
                     }
@@ -95,14 +121,15 @@ impl<T: Obj, I: Sized> ClassInstExtra<T, I> {
     #[inline]
     pub fn alloc_init(&self, var: I) -> arc::R<T> {
         unsafe {
-            let inst = class_createInstance(std::mem::transmute(self), std::mem::size_of::<I>());
+            let inst =
+                class_createInstance(std::mem::transmute(self), extra_bytes_for_inner::<I>());
 
             // we may skip init?
             // let inst = inst.init();
 
             let ptr: *mut u8 = std::mem::transmute(inst);
-            let d_ptr: *mut std::mem::ManuallyDrop<I> = ptr.add(NS_OBJECT_SIZE) as _;
-            *d_ptr = std::mem::ManuallyDrop::new(var);
+            let d_ptr: *mut std::mem::ManuallyDrop<I> = inner_ptr_mut(ptr);
+            d_ptr.write(std::mem::ManuallyDrop::new(var));
 
             std::mem::transmute(ptr)
         }
@@ -524,9 +551,8 @@ macro_rules! define_obj_type {
             #[inline]
             pub fn inner(&self) -> &$InnerType {
                 unsafe {
-                    let ptr =  self as *const Self as *const u8;
-                    let ptr = ptr.add($crate::objc::NS_OBJECT_SIZE);
-                    &*(ptr as *const $InnerType)
+                    let ptr = self as *const Self as *const u8;
+                    &*$crate::objc::inner_ptr(ptr)
                 }
             }
 
@@ -534,9 +560,8 @@ macro_rules! define_obj_type {
             #[inline]
             pub fn inner_mut(&mut self) -> &mut $InnerType {
                 unsafe {
-                    let ptr: *mut u8 = self as *mut Self as *mut u8;
-                    let ptr = ptr.add($crate::objc::NS_OBJECT_SIZE);
-                    &mut *(ptr as *mut $InnerType)
+                    let ptr = self as *mut Self as *mut u8;
+                    &mut *$crate::objc::inner_ptr_mut(ptr)
                 }
             }
 
@@ -559,7 +584,10 @@ macro_rules! define_obj_type {
 
                         extern "C" fn alloc_impl(cls: &$crate::objc::Class<$crate::ns::Id>) -> $crate::arc::A<$NewType> {
                             unsafe {
-                                let inst = $crate::objc::class_createInstance(cls, std::mem::size_of::<$InnerType>());
+                                let inst = $crate::objc::class_createInstance(
+                                    cls,
+                                    $crate::objc::extra_bytes_for_inner::<$InnerType>(),
+                                );
                                 std::mem::transmute(inst)
                             }
 
@@ -841,6 +869,10 @@ pub use cidre_macros::msg_send_x86_64 as msg_send;
 mod tests2 {
 
     use std::collections::HashMap;
+    use std::sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    };
 
     use crate::{
         arc::{self, Retain},
@@ -881,6 +913,32 @@ mod tests2 {
 
     define_obj_type!(Bla + FooImpl, D, BLA_USIZE);
 
+    #[repr(align(128))]
+    struct Aligned128 {
+        value: usize,
+        dropped: Arc<AtomicBool>,
+    }
+
+    impl Drop for Aligned128 {
+        fn drop(&mut self) {
+            self.dropped.store(true, Ordering::SeqCst);
+        }
+    }
+
+    define_obj_type!(Aligned128Obj, Aligned128, ALIGNED_128_OBJ);
+
+    #[derive(Default)]
+    #[repr(align(128))]
+    struct DefaultAligned128 {
+        value: usize,
+    }
+
+    define_obj_type!(
+        DefaultAligned128Obj,
+        DefaultAligned128,
+        DEFAULT_ALIGNED_128_OBJ
+    );
+
     impl Foo for Bla {
         fn direct_fn(&self) {}
     }
@@ -914,6 +972,36 @@ mod tests2 {
             assert!(desc.to_string().starts_with("<BLA_USIZE: "));
         }
         assert!(unsafe { DROP_CALLED });
+    }
+
+    #[test]
+    fn aligned_128_inner() {
+        assert_eq!(
+            objc::extra_bytes_for_inner::<Aligned128>(),
+            std::mem::size_of::<Aligned128>() + 120
+        );
+
+        let dropped = Arc::new(AtomicBool::new(false));
+        {
+            let mut obj = Aligned128Obj::with(Aligned128 {
+                value: 42,
+                dropped: Arc::clone(&dropped),
+            });
+            assert_eq!(obj.inner() as *const Aligned128 as usize % 128, 0);
+            assert_eq!(obj.inner().value, 42);
+
+            obj.inner_mut().value = 84;
+            assert_eq!(obj.inner().value, 84);
+        }
+        assert!(dropped.load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn aligned_128_inner_with_objc_new() {
+        let cls: &objc::Class<DefaultAligned128Obj> = DefaultAligned128Obj::cls();
+        let obj = unsafe { cls.new() };
+        assert_eq!(obj.inner() as *const DefaultAligned128 as usize % 128, 0);
+        assert_eq!(obj.inner().value, 0);
     }
 
     #[test]
