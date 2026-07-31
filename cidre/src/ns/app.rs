@@ -143,6 +143,17 @@ mod paragraph_style;
 pub use paragraph_style::LineBreakMode;
 pub use paragraph_style::LineBreakStrategy;
 
+pub mod outline_view;
+pub use outline_view::AnyOutlineViewDataSrc;
+pub use outline_view::AnyOutlineViewDelegate;
+pub use outline_view::OUTLINE_VIEW_DROP_ON_ITEM_INDEX;
+pub use outline_view::OutlineView;
+pub use outline_view::OutlineViewDataSrc;
+pub use outline_view::OutlineViewDataSrcImpl;
+pub use outline_view::OutlineViewDelegate;
+pub use outline_view::OutlineViewDelegateImpl;
+pub use outline_view::notifications as outline_view_notifications;
+
 mod responder;
 pub use responder::Responder;
 
@@ -183,6 +194,26 @@ pub use text_view::TextView;
 
 mod text;
 pub use text::Text;
+
+pub mod table_view;
+pub use table_view::AnyTableViewDataSrc;
+pub use table_view::AnyTableViewDelegate;
+pub use table_view::TableRowActionEdge;
+pub use table_view::TableView;
+pub use table_view::TableViewAnimationOpts;
+pub use table_view::TableViewAutosaveName;
+pub use table_view::TableViewColumnAutoresizingStyle;
+pub use table_view::TableViewDataSrc;
+pub use table_view::TableViewDataSrcImpl;
+pub use table_view::TableViewDelegate;
+pub use table_view::TableViewDelegateImpl;
+pub use table_view::TableViewDraggingDestinationFeedbackStyle;
+pub use table_view::TableViewDropOp;
+pub use table_view::TableViewGridLineStyle;
+pub use table_view::TableViewRowSizeStyle;
+pub use table_view::TableViewSelectionHighlightStyle;
+pub use table_view::TableViewStyle;
+pub use table_view::notifications as table_view_notifications;
 
 mod titlebar_accessory_view_controller;
 pub use titlebar_accessory_view_controller::TitlebarAccessoryViewController;
