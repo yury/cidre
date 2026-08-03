@@ -1,4 +1,4 @@
-use crate::{swift, swift::abi};
+use crate::swift::abi;
 
 /// DockKit `DockKitError`.
 #[doc(alias = "DockKitError")]
@@ -76,7 +76,7 @@ impl Error {
     }
 
     #[inline]
-    pub fn hash_value(&self) -> swift::Int {
+    pub fn hash_value(&self) -> isize {
         unsafe { abi::call_value_to_int(dock_kit_error_hash_value as *const (), self.as_abi_ptr()) }
     }
 }

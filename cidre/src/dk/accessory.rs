@@ -4,12 +4,19 @@ use std::{
     ptr::NonNull,
 };
 
-use crate::{cg, swift, swift::abi};
+use crate::{
+    cg, swift,
+    swift::{
+        abi,
+        async_task::{
+            swift_async_epilogue, swift_async_function_pointer, swift_async_load_parent,
+            swift_async_load_resume, swift_async_prologue, swift_async_task_descriptor,
+            swift_task_alloc, swift_task_dealloc, swift_task_switch,
+        },
+    },
+};
 
-#[repr(C)]
-pub struct Accessory {
-    _priv: [u8; 0],
-}
+crate::define_swift_class!(pub Accessory);
 
 pub struct StateChanges {
     ptr: NonNull<u8>,
@@ -44,332 +51,148 @@ struct StateChangeNextTask {
     callback: Box<dyn FnMut(Option<StateChange>) + Send>,
 }
 
-#[cfg(all(
-    target_vendor = "apple",
-    target_arch = "aarch64",
-    not(target_feature = "paca")
-))]
-core::arch::global_asm!(
-    r#"
-    .section __TEXT,__const
-    .globl _cidre_dk_state_changes_next_task_descriptor
-    .p2align 3
-_cidre_dk_state_changes_next_task_descriptor:
-    .long _cidre_dk_state_changes_next_task_entry - _cidre_dk_state_changes_next_task_descriptor
-    .long 64
-
-    .text
-    .globl _cidre_dk_state_changes_next_task_entry
-    .p2align 2
-_cidre_dk_state_changes_next_task_entry:
-    orr x29, x29, #0x1000000000000000
-    sub sp, sp, #32
-    stp x29, x30, [sp, #16]
-    str x22, [sp, #8]
-    add x29, sp, #16
-    str x20, [x22, #24]
-    str x22, [x22, #16]
-    mov x0, x20
-    bl _cidre_dk_state_changes_next_result_size
-    bl _swift_task_alloc
-    mov x1, x0
-    str x1, [x22, #40]
-    ldr x0, [x22, #24]
-    bl _cidre_dk_state_changes_next_set_task_result
-    adrp x0, _cidre_dk_state_changes_next_task_run@PAGE
-    add x0, x0, _cidre_dk_state_changes_next_task_run@PAGEOFF
-    mov x1, #0
-    mov x2, #0
-    ldp x29, x30, [sp, #16]
-    and x29, x29, #0xefffffffffffffff
-    add sp, sp, #32
-    b _swift_task_switch
-
-    .globl _cidre_dk_state_changes_next_task_run
-    .p2align 2
-_cidre_dk_state_changes_next_task_run:
-    orr x29, x29, #0x1000000000000000
-    sub sp, sp, #32
-    stp x29, x30, [sp, #16]
-    str x22, [sp, #8]
-    add x29, sp, #16
-    ldr x0, [x22, #24]
-    bl _cidre_dk_state_changes_next_prepare
-    ldr x0, [x22, #24]
-    bl _cidre_dk_state_changes_next_iter_ptr
-    str x0, [x22, #32]
-    str x22, [x22, #16]
-    adrp x8, _$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaFTu@GOTPAGE
-    ldr x8, [x8, _$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaFTu@GOTPAGEOFF]
-    ldr w8, [x8, #4]
-    mov x0, x8
-    bl _swift_task_alloc
-    mov x9, x0
-    str x9, [x22, #48]
-    ldr x8, [x22, #16]
-    str x8, [x9]
-    adrp x8, _cidre_dk_state_changes_next_task_resume@PAGE
-    add x8, x8, _cidre_dk_state_changes_next_task_resume@PAGEOFF
-    str x8, [x9, #8]
-    ldr x0, [x22, #40]
-    ldr x20, [x22, #32]
-    mov x22, x9
-    mov x21, #0
-    ldp x29, x30, [sp, #16]
-    and x29, x29, #0xefffffffffffffff
-    add sp, sp, #32
-    b _$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaF
-
-    .globl _cidre_dk_state_changes_next_task_resume
-    .p2align 2
-_cidre_dk_state_changes_next_task_resume:
-    orr x29, x29, #0x1000000000000000
-    sub sp, sp, #32
-    stp x29, x30, [sp, #16]
-    str x22, [sp, #8]
-    add x29, sp, #16
-    ldr x9, [x22]
-    str x9, [sp]
-    str x9, [x9, #16]
-    ldr x0, [x9, #48]
-    bl _swift_task_dealloc
-    ldr x22, [sp]
-    adrp x0, _cidre_dk_state_changes_next_task_complete@PAGE
-    add x0, x0, _cidre_dk_state_changes_next_task_complete@PAGEOFF
-    mov x1, #0
-    mov x2, #0
-    ldp x29, x30, [sp, #16]
-    and x29, x29, #0xefffffffffffffff
-    add sp, sp, #32
-    b _swift_task_switch
-
-    .globl _cidre_dk_state_changes_next_task_complete
-    .p2align 2
-_cidre_dk_state_changes_next_task_complete:
-    orr x29, x29, #0x1000000000000000
-    sub sp, sp, #32
-    stp x29, x30, [sp, #16]
-    str x22, [sp, #8]
-    add x29, sp, #16
-    ldr x0, [x22, #24]
-    bl _cidre_dk_state_changes_next_process
-    ldr x22, [sp, #8]
-    cbnz x0, Lcidre_dk_state_changes_next_task_continue
-    ldr x9, [x22, #16]
-    ldr x0, [x9, #8]
-    mov x22, x9
-    ldp x29, x30, [sp, #16]
-    and x29, x29, #0xefffffffffffffff
-    add sp, sp, #32
-    br x0
-
-Lcidre_dk_state_changes_next_task_continue:
-    str x22, [x22, #16]
-    adrp x8, _$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaFTu@GOTPAGE
-    ldr x8, [x8, _$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaFTu@GOTPAGEOFF]
-    ldr w8, [x8, #4]
-    mov x0, x8
-    bl _swift_task_alloc
-    mov x9, x0
-    ldr x22, [sp, #8]
-    str x9, [x22, #48]
-    mov x8, x22
-    str x8, [x9]
-    adrp x8, _cidre_dk_state_changes_next_task_resume@PAGE
-    add x8, x8, _cidre_dk_state_changes_next_task_resume@PAGEOFF
-    str x8, [x9, #8]
-    ldr x0, [x22, #40]
-    ldr x20, [x22, #32]
-    mov x22, x9
-    mov x21, #0
-    ldp x29, x30, [sp, #16]
-    and x29, x29, #0xefffffffffffffff
-    add sp, sp, #32
-    b _$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaF
-    "#
+swift_async_task_descriptor!(
+    #[cfg(all(target_vendor = "apple", target_arch = "aarch64"))]
+    cidre_dk_state_changes_next_task_descriptor,
+    entry: state_changes_next_task_entry,
+    context_size: "64",
 );
 
-#[cfg(all(
-    target_vendor = "apple",
-    target_arch = "aarch64",
-    target_feature = "paca"
-))]
-core::arch::global_asm!(
-    r#"
-    .arch_extension pauth
-    .section __TEXT,__const
-    .globl _cidre_dk_state_changes_next_task_descriptor
-    .p2align 3
-_cidre_dk_state_changes_next_task_descriptor:
-    .long _cidre_dk_state_changes_next_task_entry - _cidre_dk_state_changes_next_task_descriptor
-    .long 64
+/// Allocates the callee context, wires up the resume symbol, and tail-calls
+/// `Accessory.StateChanges.Iterator.next()`.
+///
+/// Shared by the first iteration and by every subsequent one, which is why the
+/// context slots are re-read rather than kept in registers.
+macro_rules! state_changes_next_call {
+    () => {
+        concat!(
+            // Word 1 of the async function pointer is the callee's context size.
+            "adrp x8, {next_async}@GOTPAGE\n",
+            "ldr x8, [x8, {next_async}@GOTPAGEOFF]\n",
+            "ldr w0, [x8, #4]\n",
+            "bl {task_alloc}\n",
+            "mov x9, x0\n",
+            "str x9, [x22, #48]\n",
+            $crate::swift::async_task::swift_async_store_parent!(), "\n",
+            $crate::swift::async_task::swift_async_store_resume!("{resume}"), "\n",
+            "ldr x0, [x22, #40]\n",
+            "ldr x20, [x22, #32]\n",
+            "mov x22, x9\n",
+            "mov x21, #0\n",
+            $crate::swift::async_task::swift_async_epilogue!(frame: "32", fp: "16"), "\n",
+            "b {next}",
+        )
+    };
+}
 
-    .text
-    .globl _cidre_dk_state_changes_next_task_entry
-    .p2align 2
-_cidre_dk_state_changes_next_task_entry:
-    pacibsp
-    orr x29, x29, #0x1000000000000000
-    sub sp, sp, #32
-    stp x29, x30, [sp, #16]
-    str x22, [sp, #8]
-    add x29, sp, #16
-    str x20, [x22, #24]
-    str x22, [x22, #16]
-    mov x0, x20
-    bl _cidre_dk_state_changes_next_result_size
-    bl _swift_task_alloc
-    mov x1, x0
-    str x1, [x22, #40]
-    ldr x0, [x22, #24]
-    bl _cidre_dk_state_changes_next_set_task_result
-    adrp x16, _cidre_dk_state_changes_next_task_run@PAGE
-    add x16, x16, _cidre_dk_state_changes_next_task_run@PAGEOFF
-    paciza x16
-    mov x0, x16
-    mov x1, #0
-    mov x2, #0
-    ldp x29, x30, [sp, #16]
-    and x29, x29, #0xefffffffffffffff
-    add sp, sp, #32
-    autibsp
-    b _swift_task_switch
+/// Moves the result buffer into the task's own allocation, then hops to a plain
+/// frame so the Rust setup below can run off the async entry path.
+#[cfg(all(target_vendor = "apple", target_arch = "aarch64"))]
+#[unsafe(naked)]
+unsafe extern "C" fn state_changes_next_task_entry() {
+    core::arch::naked_asm!(
+        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
+        "str x20, [x22, #24]",
+        "str x22, [x22, #16]",
+        "mov x0, x20",
+        "bl {result_size}",
+        "bl {task_alloc}",
+        "mov x1, x0",
+        "str x1, [x22, #40]",
+        "ldr x0, [x22, #24]",
+        "bl {set_task_result}",
+        swift_async_function_pointer!("{run}"),
+        "mov x1, #0",
+        "mov x2, #0",
+        swift_async_epilogue!(frame: "32", fp: "16"),
+        "b {task_switch}",
+        result_size = sym cidre_dk_state_changes_next_result_size,
+        set_task_result = sym cidre_dk_state_changes_next_set_task_result,
+        task_alloc = sym swift_task_alloc,
+        task_switch = sym swift_task_switch,
+        run = sym state_changes_next_task_run,
+    );
+}
 
-    .globl _cidre_dk_state_changes_next_task_run
-    .p2align 2
-_cidre_dk_state_changes_next_task_run:
-    pacibsp
-    orr x29, x29, #0x1000000000000000
-    sub sp, sp, #32
-    stp x29, x30, [sp, #16]
-    str x22, [sp, #8]
-    add x29, sp, #16
-    ldr x0, [x22, #24]
-    bl _cidre_dk_state_changes_next_prepare
-    ldr x0, [x22, #24]
-    bl _cidre_dk_state_changes_next_iter_ptr
-    str x0, [x22, #32]
-    str x22, [x22, #16]
-    adrp x8, _$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaFTu@GOTPAGE
-    ldr x8, [x8, _$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaFTu@GOTPAGEOFF]
-    ldr w8, [x8, #4]
-    mov x0, x8
-    bl _swift_task_alloc
-    mov x9, x0
-    str x9, [x22, #48]
-    ldr x8, [x22, #16]
-    mov x16, x9
-    movk x16, #48546, lsl #48
-    pacda x8, x16
-    str x8, [x9]
-    add x8, x9, #8
-    adrp x16, _cidre_dk_state_changes_next_task_resume@PAGE
-    add x16, x16, _cidre_dk_state_changes_next_task_resume@PAGEOFF
-    mov x17, x8
-    movk x17, #55047, lsl #48
-    pacia x16, x17
-    str x16, [x9, #8]
-    ldr x0, [x22, #40]
-    ldr x20, [x22, #32]
-    mov x22, x9
-    mov x21, #0
-    ldp x29, x30, [sp, #16]
-    and x29, x29, #0xefffffffffffffff
-    add sp, sp, #32
-    autibsp
-    b _$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaF
+/// Makes the async iterator on the Rust side, then starts iterating.
+#[cfg(all(target_vendor = "apple", target_arch = "aarch64"))]
+#[unsafe(naked)]
+unsafe extern "C" fn state_changes_next_task_run() {
+    core::arch::naked_asm!(
+        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
+        "ldr x0, [x22, #24]",
+        "bl {prepare}",
+        "ldr x0, [x22, #24]",
+        "bl {iter_ptr}",
+        "str x0, [x22, #32]",
+        "str x22, [x22, #16]",
+        state_changes_next_call!(),
+        prepare = sym cidre_dk_state_changes_next_prepare,
+        iter_ptr = sym cidre_dk_state_changes_next_iter_ptr,
+        next_async = sym STATE_CHANGES_ITERATOR_NEXT_ASYNC_FN,
+        next = sym state_changes_iterator_next,
+        task_alloc = sym swift_task_alloc,
+        resume = sym state_changes_next_task_resume,
+    );
+}
 
-    .globl _cidre_dk_state_changes_next_task_resume
-    .p2align 2
-_cidre_dk_state_changes_next_task_resume:
-    pacibsp
-    orr x29, x29, #0x1000000000000000
-    sub sp, sp, #32
-    stp x29, x30, [sp, #16]
-    str x22, [sp, #8]
-    add x29, sp, #16
-    ldr x16, [x22]
-    mov x17, x22
-    movk x17, #48546, lsl #48
-    autda x16, x17
-    str x16, [sp]
-    str x16, [x16, #16]
-    ldr x0, [x16, #48]
-    bl _swift_task_dealloc
-    ldr x22, [sp]
-    adrp x16, _cidre_dk_state_changes_next_task_complete@PAGE
-    add x16, x16, _cidre_dk_state_changes_next_task_complete@PAGEOFF
-    paciza x16
-    mov x0, x16
-    mov x1, #0
-    mov x2, #0
-    ldp x29, x30, [sp, #16]
-    and x29, x29, #0xefffffffffffffff
-    add sp, sp, #32
-    autibsp
-    b _swift_task_switch
+/// Resumed once per element. Hops to a plain frame before calling into Rust.
+#[cfg(all(target_vendor = "apple", target_arch = "aarch64"))]
+#[unsafe(naked)]
+unsafe extern "C" fn state_changes_next_task_resume() {
+    core::arch::naked_asm!(
+        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
+        swift_async_load_parent!(),
+        "str x9, [sp]",
+        "str x9, [x9, #16]",
+        "ldr x0, [x9, #48]",
+        "bl {task_dealloc}",
+        "ldr x22, [sp]",
+        swift_async_function_pointer!("{complete}"),
+        "mov x1, #0",
+        "mov x2, #0",
+        swift_async_epilogue!(frame: "32", fp: "16"),
+        "b {task_switch}",
+        task_dealloc = sym swift_task_dealloc,
+        task_switch = sym swift_task_switch,
+        complete = sym state_changes_next_task_complete,
+    );
+}
 
-    .globl _cidre_dk_state_changes_next_task_complete
-    .p2align 2
-_cidre_dk_state_changes_next_task_complete:
-    pacibsp
-    orr x29, x29, #0x1000000000000000
-    sub sp, sp, #32
-    stp x29, x30, [sp, #16]
-    str x22, [sp, #8]
-    add x29, sp, #16
-    ldr x0, [x22, #24]
-    bl _cidre_dk_state_changes_next_process
-    ldr x22, [sp, #8]
-    cbnz x0, Lcidre_dk_state_changes_next_task_continue
-    ldr x9, [x22, #16]
-    ldr x16, [x9, #8]
-    add x17, x9, #8
-    movk x17, #55047, lsl #48
-    autia x16, x17
-    mov x22, x9
-    ldp x29, x30, [sp, #16]
-    and x29, x29, #0xefffffffffffffff
-    add sp, sp, #32
-    autibsp
-    br x16
+/// Delivers one state change to Rust, then either asks for the next one or
+/// returns to whoever created the task.
+#[cfg(all(target_vendor = "apple", target_arch = "aarch64"))]
+#[unsafe(naked)]
+unsafe extern "C" fn state_changes_next_task_complete() {
+    core::arch::naked_asm!(
+        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
+        "ldr x0, [x22, #24]",
+        "bl {process}",
+        "ldr x22, [sp, #8]",
+        "cbnz x0, 0f",
+        "ldr x9, [x22, #16]",
+        swift_async_load_resume!(),
+        "mov x22, x9",
+        swift_async_epilogue!(frame: "32", fp: "16"),
+        "br x16",
+        "0:",
+        "str x22, [x22, #16]",
+        state_changes_next_call!(),
+        process = sym cidre_dk_state_changes_next_process,
+        next_async = sym STATE_CHANGES_ITERATOR_NEXT_ASYNC_FN,
+        next = sym state_changes_iterator_next,
+        task_alloc = sym swift_task_alloc,
+        resume = sym state_changes_next_task_resume,
+    );
+}
 
-Lcidre_dk_state_changes_next_task_continue:
-    str x22, [x22, #16]
-    adrp x8, _$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaFTu@GOTPAGE
-    ldr x8, [x8, _$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaFTu@GOTPAGEOFF]
-    ldr w8, [x8, #4]
-    mov x0, x8
-    bl _swift_task_alloc
-    mov x9, x0
-    ldr x22, [sp, #8]
-    str x9, [x22, #48]
-    mov x8, x22
-    mov x16, x9
-    movk x16, #48546, lsl #48
-    pacda x8, x16
-    str x8, [x9]
-    add x8, x9, #8
-    adrp x16, _cidre_dk_state_changes_next_task_resume@PAGE
-    add x16, x16, _cidre_dk_state_changes_next_task_resume@PAGEOFF
-    mov x17, x8
-    movk x17, #55047, lsl #48
-    pacia x16, x17
-    str x16, [x9, #8]
-    ldr x0, [x22, #40]
-    ldr x20, [x22, #32]
-    mov x22, x9
-    mov x21, #0
-    ldp x29, x30, [sp, #16]
-    and x29, x29, #0xefffffffffffffff
-    add sp, sp, #32
-    autibsp
-    b _$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaF
-    "#
-);
-
+#[link(name = "DockKit", kind = "framework")]
 unsafe extern "C" {
-    static cidre_dk_state_changes_next_task_descriptor: u8;
+    #[link_name = "$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaF"]
+    fn state_changes_iterator_next();
+
+    #[link_name = "$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaFTu"]
+    static STATE_CHANGES_ITERATOR_NEXT_ASYNC_FN: u8;
 
     #[link_name = "$s7DockKit0A9AccessoryC12StateChangesV8IteratorVMa"]
     fn dock_accessory_state_changes_iterator_metadata();
@@ -510,9 +333,8 @@ impl StateChangeNextTask {
                 callback: Box::new(callback),
             });
             let context: *mut () = Box::into_raw(task).cast();
-            let flags = 0x15 | (1 << 12) | (1 << 14) | (1 << 15);
             let (_task, _) = abi::task_create(
-                flags,
+                abi::ENQUEUED_DISCARDING_TASK_FLAGS,
                 core::ptr::null(),
                 (&raw const cidre_dk_state_changes_next_task_descriptor).cast(),
                 context,
@@ -544,12 +366,10 @@ unsafe fn alloc_value(layout: alloc::Layout) -> NonNull<u8> {
     NonNull::new(unsafe { alloc::alloc(layout) }).expect("swift value allocation failed")
 }
 
-#[unsafe(no_mangle)]
 extern "C" fn cidre_dk_state_changes_next_result_size(task: *mut StateChangeNextTask) -> usize {
     unsafe { (*task).result_layout.size() }
 }
 
-#[unsafe(no_mangle)]
 extern "C" fn cidre_dk_state_changes_next_set_task_result(
     task: *mut StateChangeNextTask,
     result: *mut u8,
@@ -562,7 +382,6 @@ extern "C" fn cidre_dk_state_changes_next_set_task_result(
     }
 }
 
-#[unsafe(no_mangle)]
 extern "C" fn cidre_dk_state_changes_next_prepare(task: *mut StateChangeNextTask) {
     unsafe {
         let task = &mut *task;
@@ -577,15 +396,6 @@ extern "C" fn cidre_dk_state_changes_next_prepare(task: *mut StateChangeNextTask
     }
 }
 
-#[unsafe(no_mangle)]
-extern "C" fn cidre_dk_state_changes_next_result_ptr(task: *mut StateChangeNextTask) -> *mut () {
-    unsafe {
-        let task = &mut *task;
-        task.result.as_ptr().cast()
-    }
-}
-
-#[unsafe(no_mangle)]
 extern "C" fn cidre_dk_state_changes_next_iter_ptr(task: *mut StateChangeNextTask) -> *mut () {
     unsafe {
         let task = &mut *task;
@@ -594,7 +404,6 @@ extern "C" fn cidre_dk_state_changes_next_iter_ptr(task: *mut StateChangeNextTas
     }
 }
 
-#[unsafe(no_mangle)]
 extern "C" fn cidre_dk_state_changes_next_process(task: *mut StateChangeNextTask) -> bool {
     match catch_unwind(AssertUnwindSafe(|| unsafe {
         let task = &mut *task;
@@ -681,7 +490,7 @@ macro_rules! resilient_enum {
             }
 
             #[inline]
-            pub fn hash_value(&self) -> swift::Int {
+            pub fn hash_value(&self) -> isize {
                 unsafe { abi::call_value_to_int($hash_fn as *const (), self.as_abi_ptr()) }
             }
 
@@ -733,7 +542,7 @@ macro_rules! resilient_enum {
             }
 
             #[inline]
-            pub fn hash_value(&self) -> swift::Int {
+            pub fn hash_value(&self) -> isize {
                 unsafe { abi::call_value_to_int($hash_fn as *const (), self.as_abi_ptr()) }
             }
         }
@@ -849,14 +658,14 @@ unsafe extern "C" {
     fn dock_accessory_region_of_interest();
 }
 
-impl swift::Object<Accessory> {
+impl Accessory {
     #[doc(alias = "DockAccessory.debugDescription")]
     #[inline]
     pub fn debug_desc(&self) -> swift::String {
         unsafe {
             swift::String::from_raw(abi::call_object_to_string(
                 dock_accessory_debug_description as *const (),
-                self.as_raw().cast_const().cast(),
+                (self as *const Self).cast(),
             ))
         }
     }
@@ -868,7 +677,7 @@ impl swift::Object<Accessory> {
         unsafe {
             abi::call_object_to_value(
                 dock_accessory_framing_mode as *const (),
-                self.as_raw().cast_const().cast(),
+                (self as *const Self).cast(),
                 (&mut value as *mut FramingMode).cast(),
             );
         }
@@ -881,7 +690,7 @@ impl swift::Object<Accessory> {
         let (x, y, width, height) = unsafe {
             abi::call_object_to_rect(
                 dock_accessory_region_of_interest as *const (),
-                self.as_raw().cast_const().cast(),
+                (self as *const Self).cast(),
             )
         };
         cg::Rect {

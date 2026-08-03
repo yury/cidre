@@ -48,7 +48,7 @@ fn print_state_change(change: Option<cidre::dk::StateChange>) {
 
 fn print_status(
     tick: u64,
-    manager: &cidre::swift::Object<cidre::dk::AccessoryManager>,
+    manager: &cidre::dk::AccessoryManager,
     accessory_state_changes_available: bool,
 ) {
     println!("status tick={tick}:");

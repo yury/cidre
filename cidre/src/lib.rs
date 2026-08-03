@@ -200,6 +200,15 @@ pub mod sc;
 #[cfg(feature = "sn")]
 pub mod sn;
 
+/// Speech.framework native Swift API.
+#[cfg(all(
+    target_vendor = "apple",
+    target_arch = "aarch64",
+    not(target_os = "watchos"),
+    feature = "speech"
+))]
+pub mod speech;
+
 #[cfg(all(
     any(
         target_os = "ios",

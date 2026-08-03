@@ -24,6 +24,32 @@ pub struct Allocated<T: Release + 'static>(&'static mut T);
 #[repr(transparent)]
 pub struct Retained<T: Release + 'static>(&'static mut T);
 
+impl<T: Release + 'static> Retained<T> {
+    /// Takes ownership of a non-null retained object pointer.
+    ///
+    /// # Safety
+    ///
+    /// `ptr` must point to a valid `T` carrying one ownership retain that this
+    /// value may consume with [`Release::release`].
+    #[inline]
+    pub unsafe fn from_raw(ptr: *mut T) -> Self {
+        assert!(!ptr.is_null(), "retained object must not be null");
+        Self(unsafe { &mut *ptr })
+    }
+
+    #[inline]
+    pub fn as_ptr(&self) -> *mut T {
+        self.0 as *const T as *mut T
+    }
+
+    #[inline]
+    pub fn into_raw(self) -> *mut T {
+        let ptr = self.as_ptr();
+        std::mem::forget(self);
+        ptr
+    }
+}
+
 impl<T: Release + std::error::Error> std::error::Error for Retained<T> {}
 
 impl<T: Release + std::fmt::Display> std::fmt::Display for Retained<T> {

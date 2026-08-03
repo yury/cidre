@@ -1,9 +1,6 @@
-use crate::{dk::StateChanges, swift, swift::abi};
+use crate::{arc, dk::StateChanges, swift::abi};
 
-#[repr(C)]
-pub struct AccessoryManager {
-    _priv: [u8; 0],
-}
+crate::define_swift_class!(pub AccessoryManager);
 
 #[link(name = "DockKit", kind = "framework")]
 unsafe extern "C" {
@@ -27,27 +24,25 @@ impl AccessoryManager {
     /// DockKit `DockAccessoryManager.shared`.
     #[doc(alias = "DockAccessoryManager.shared")]
     #[inline]
-    pub fn shared() -> swift::Object<Self> {
+    pub fn shared() -> arc::R<Self> {
         unsafe {
             // Swift emits a class metadata access before calling this static getter.
             let metadata =
                 abi::call_int_to_int(dock_accessory_manager_metadata as *const (), 0) as *const ();
-            swift::Object::from_raw(
+            arc::R::from_raw(
                 abi::call_static0_object(dock_accessory_manager_shared as *const (), metadata)
                     .cast(),
             )
         }
     }
-}
 
-impl swift::Object<AccessoryManager> {
     #[doc(alias = "DockAccessoryManager.isSystemTrackingEnabled")]
     #[inline]
     pub fn is_system_tracking_enabled(&self) -> bool {
         unsafe {
             abi::call_object_to_bool(
                 dock_accessory_manager_is_system_tracking_enabled as *const (),
-                self.as_raw().cast_const().cast(),
+                (self as *const Self).cast(),
             )
         }
     }
@@ -62,7 +57,7 @@ impl swift::Object<AccessoryManager> {
             let mut value = StateChanges::alloc(metadata);
             let error = abi::call_object_to_throwing_value(
                 dock_accessory_manager_accessory_state_changes as *const (),
-                self.as_raw().cast_const().cast(),
+                (self as *const Self).cast(),
                 value.as_mut_ptr(),
             );
             if error.is_null() {

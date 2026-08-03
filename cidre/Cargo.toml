@@ -59,6 +59,7 @@ full = [
   "cat",
   "vn",
   "sn",
+  "speech",
   "ui",
   "ut",
   "un",
@@ -124,6 +125,7 @@ io_surface = ["cf"]
 io_kit = []
 io_pm = []
 sn = ["ns"]
+speech = ["swift", "ns"]
 sec = ["cf"]
 vn = ["ns"]
 vdsp = []
@@ -193,6 +195,7 @@ macos_15_2 = ["macos_15_0"]
 macos_15_4 = ["macos_15_2"]
 macos_26_0 = ["macos_15_4"]
 macos_26_1 = ["macos_26_0"]
+macos_27_0 = ["macos_26_1"]
 
 maccatalyst_13_0 = []
 maccatalyst_13_1 = ["maccatalyst_13_0"]
@@ -207,6 +210,7 @@ maccatalyst_18_0 = ["maccatalyst_17_4"]
 maccatalyst_18_2 = ["maccatalyst_18_0"]
 maccatalyst_26_0 = ["maccatalyst_18_2"]
 maccatalyst_26_1 = ["maccatalyst_26_0"]
+maccatalyst_27_0 = ["maccatalyst_26_1"]
 
 ios_2_0 = []
 ios_3_0 = ["ios_2_0"]
@@ -244,6 +248,7 @@ ios_18_3 = ["ios_18_2"]
 ios_26_0 = ["ios_18_3"]
 ios_26_1 = ["ios_26_0"]
 ios_26_2 = ["ios_26_1"]
+ios_27_0 = ["ios_26_2"]
 
 tvos_7_0 = []
 tvos_8_0 = ["tvos_7_0"]
@@ -266,6 +271,7 @@ tvos_18_0 = ["tvos_17_4"]
 tvos_18_2 = ["tvos_18_0"]
 tvos_26_0 = ["tvos_18_2"]
 tvos_26_1 = ["tvos_26_0"]
+tvos_27_0 = ["tvos_26_1"]
 
 watchos_1_0 = []
 watchos_2_0 = ["watchos_1_0"]
@@ -292,6 +298,7 @@ visionos_2_1 = ["visionos_2_0"]
 visionos_2_2 = ["visionos_2_1"]
 visionos_26_0 = ["visionos_2_2"]
 visionos_26_1 = ["visionos_26_0"]
+visionos_27_0 = ["visionos_26_1"]
 
 # end of deployment targets
 
@@ -309,7 +316,7 @@ half = { optional = true, version = "2.6" }
 [dev-dependencies]
 criterion = "0.8"
 clap = { version = "4.5", features = ["default", "derive"] }
-tokio = { version = "1", features = ["signal", "sync"] }
+tokio = { version = "1", features = ["macros", "rt", "signal", "sync"] }
 mimalloc = { version = "0.1" }
 uuid = { version = "1.9", features = ["v4", "v7", "fast-rng", "serde"] }
 
@@ -391,6 +398,9 @@ required-features = ["av", "mt", "dispatch"]
 name = "dock-kit"
 required-features = ["dk"]
 
+[[example]]
+name = "swift-speech"
+required-features = ["speech", "av", "async", "cm", "dispatch", "macos_27_0"]
 
 [package.metadata.playground]
 features = ["full"]

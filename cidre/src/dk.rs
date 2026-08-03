@@ -37,6 +37,8 @@ mod tests {
     #[test]
     fn manager_shared_call_uses_swift_class_abi() {
         let manager = AccessoryManager::shared();
-        let _ = manager.is_system_tracking_enabled();
+        let retained = manager.clone();
+        drop(manager);
+        let _ = retained.is_system_tracking_enabled();
     }
 }
