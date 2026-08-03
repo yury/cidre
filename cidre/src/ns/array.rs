@@ -525,8 +525,8 @@ unsafe extern "C" {
 /// Creates an `ns::Array` from inline arguments.
 ///
 /// ```
-/// # use cidre::ns;
-/// let nums = ns::arr![1, 2, 3];
+/// # use cidre::{ns, arc};
+/// let nums: arc::R<ns::Array<ns::Number>> = ns::arr![1, 2, 3];
 /// assert_eq!(nums.len(), 3);
 /// ```
 macro_rules! nsarr {

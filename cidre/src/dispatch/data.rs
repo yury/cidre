@@ -113,7 +113,7 @@ impl Data {
         }
     }
 }
-extern "C" fn destructor_noop(_ctx: *const c_void) {}
+pub extern "C" fn destructor_noop(_ctx: *const c_void) {}
 
 #[cfg(feature = "blocks")]
 impl From<&'static [u8]> for arc::R<Data> {

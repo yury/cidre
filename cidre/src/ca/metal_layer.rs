@@ -6,7 +6,7 @@ define_obj_type!(
     CA_METAL_LAYER
 );
 
-pub trait MetalDrawable<T: objc::Obj>: mtl::Drawable<T> {
+pub trait MetalDrawable: mtl::Drawable {
     #[objc::msg_send(texture)]
     fn texture(&self) -> arc::R<mtl::Texture>;
 
@@ -14,10 +14,20 @@ pub trait MetalDrawable<T: objc::Obj>: mtl::Drawable<T> {
     fn layer(&self) -> arc::R<MetalLayer>;
 }
 
-define_obj_type!(pub AnyMetalDrawable(ns::Id));
+define_obj_type!(pub AnyMetalDrawable(mtl::AnyDrawable));
 
-impl mtl::Drawable<ns::Id> for AnyMetalDrawable {}
-impl MetalDrawable<ns::Id> for AnyMetalDrawable {}
+impl mtl::Drawable for AnyMetalDrawable {}
+impl MetalDrawable for AnyMetalDrawable {}
+
+impl AnyMetalDrawable {
+    pub fn texture(&self) -> arc::R<mtl::Texture> {
+        MetalDrawable::texture(self)
+    }
+
+    pub fn layer(&self) -> arc::R<MetalLayer> {
+        MetalDrawable::layer(self)
+    }
+}
 
 impl MetalLayer {
     #[objc::msg_send(device)]
@@ -29,8 +39,13 @@ impl MetalLayer {
     #[objc::msg_send(setDevice:)]
     pub fn set_device(&mut self, val: Option<&mtl::Device>);
 
+    /// throws when called from ca::MetalDisplayLink
     #[objc::msg_send(nextDrawable)]
-    pub fn next_drawable(&self) -> Option<arc::R<AnyMetalDrawable>>;
+    pub unsafe fn next_drawable_throws(&self) -> Option<arc::R<AnyMetalDrawable>>;
+
+    pub fn next_drawable<'ear>(&self) -> ns::ExResult<'ear, Option<arc::R<AnyMetalDrawable>>> {
+        ns::try_catch(|| unsafe { self.next_drawable_throws() })
+    }
 
     /// This property controls the pixel format of the [`mtl::Texture`] objects.
     #[objc::msg_send(pixelFormat)]
@@ -139,19 +154,19 @@ unsafe extern "C" {
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        ca::{self, MetalDrawable},
-        cg, ns,
-    };
+    use crate::{ca, cg, ns};
 
     #[test]
     fn basics() {
         let mut metal_layer = ca::MetalLayer::new();
         metal_layer.set_name(Some(ns::str!(c"mtl_layer")));
-        metal_layer.set_bounds(cg::Rect::with_size(100.0, 100.0));
+        metal_layer.set_bounds(cg::Rect::with_wh(100.0, 100.0));
         let device = metal_layer.preferred_device().unwrap().retained();
         metal_layer.set_device(Some(&device));
-        let drawable = metal_layer.next_drawable().unwrap();
+        let drawable = metal_layer
+            .next_drawable()
+            .expect("failed to get text")
+            .unwrap();
         let texture = drawable.texture();
         println!("{drawable:?} {texture:?}");
         println!("colorspace: {:?}", metal_layer.colorspace());

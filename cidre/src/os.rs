@@ -166,7 +166,19 @@ impl Status {
 
     #[inline]
     pub fn result(self) -> Result {
-        unsafe { std::mem::transmute(self) }
+        // See https://github.com/rust-lang/rust/issues/159433
+        #[cfg(debug_assertions)]
+        {
+            if self.is_ok() {
+                Ok(())
+            } else {
+                Err(Error::new_unchecked(self.0))
+            }
+        }
+        #[cfg(not(debug_assertions))]
+        {
+            unsafe { std::mem::transmute(self) }
+        }
     }
 
     #[inline]

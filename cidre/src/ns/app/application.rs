@@ -122,6 +122,15 @@ impl App {
     #[objc::msg_send(isRunning)]
     pub fn is_running(&self) -> bool;
 
+    #[objc::msg_send(activationPolicy)]
+    pub fn activation_policy(&self) -> ns::AppActivationPolicy;
+
+    #[objc::msg_send(setActivationPolicy:)]
+    pub fn set_activation_policy(&mut self, policy: ns::AppActivationPolicy) -> bool;
+
+    #[objc::msg_send(activateIgnoringOtherApps:)]
+    pub fn activate_ignoring_other_apps(&mut self, flag: bool);
+
     #[objc::msg_send(setWindowsNeedUpdate:)]
     pub fn set_windows_need_update(&mut self, needs_update: bool);
 

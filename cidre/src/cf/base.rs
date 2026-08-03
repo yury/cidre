@@ -201,6 +201,7 @@ define_cf_type!(
 );
 
 unsafe impl Send for Allocator {}
+unsafe impl Sync for Allocator {}
 
 pub type AllocatorRetainCb<T = c_void> = extern "C" fn(info: *const T) -> *const T;
 pub type AllocatorReleaseCb<T = c_void> = extern "C" fn(info: *const T);

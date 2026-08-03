@@ -46,6 +46,19 @@ pub use metal_layer::MetalDrawable;
 #[cfg(feature = "mtl")]
 pub use metal_layer::MetalLayer;
 
+#[cfg(feature = "mtl")]
+mod metal_display_link;
+#[cfg(feature = "mtl")]
+pub use metal_display_link::AnyMetalDisplayLinkDelegate;
+#[cfg(feature = "mtl")]
+pub use metal_display_link::MetalDisplayLink;
+#[cfg(feature = "mtl")]
+pub use metal_display_link::MetalDisplayLinkDelegate;
+#[cfg(feature = "mtl")]
+pub use metal_display_link::MetalDisplayLinkDelegateImpl;
+#[cfg(feature = "mtl")]
+pub use metal_display_link::MetalDisplayLinkUpdate;
+
 mod renderer;
 pub use renderer::OptKey as RendererOptKey;
 pub use renderer::Renderer;

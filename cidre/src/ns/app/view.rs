@@ -97,6 +97,10 @@ impl View {
     #[objc::msg_send(layer)]
     pub fn layer(&self) -> Option<arc::R<ca::Layer>>;
 
+    #[cfg(feature = "ca")]
+    #[objc::msg_send(setLayer:)]
+    pub fn set_layer(&mut self, val: Option<&ca::Layer>);
+
     #[objc::msg_send(wantsLayer)]
     pub fn wants_layer(&self) -> bool;
 

@@ -10,6 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 Class CA_DISPLAY_LINK;
+Class CA_METAL_DISPLAY_LINK;
 Class CA_ANIMATION;
 Class CA_MEDIA_TIMING_FUNCTION;
 Class CA_LAYER;
@@ -28,6 +29,7 @@ static void ca_initializer(void)
         CA_ANIMATION = [CAAnimation class];
         CA_MEDIA_TIMING_FUNCTION = [CAMediaTimingFunction class];
         CA_DISPLAY_LINK = NSClassFromString(@"CADisplayLink");
+        CA_METAL_DISPLAY_LINK = NSClassFromString(@"CAMetalDisplayLink");
         CA_LAYER = [CALayer class];
         CA_METAL_LAYER = [CAMetalLayer class];
         CA_RENDERER = [CARenderer class];

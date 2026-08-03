@@ -5,7 +5,11 @@
 //  Created by Yury Korolev on 17.04.2022.
 //
 
+#if __has_include(<ScreenCaptureKit/ScreenCaptureKit.h>)
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
+#else
+#import <Foundation/Foundation.h>
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,9 +20,14 @@ Class SC_SHAREABLE_CONTENT;
 
 Class SC_RECORDING_OUTPUT_CONFIGURATION;
 Class SC_RECORDING_OUTPUT;
+Class SC_CLIP_BUFFERING_OUTPUT;
 Class SC_CONTENT_SHARING_PICKER_CONFIGURATION;
 Class SC_CONTENT_SHARING_PICKER;
+Class SC_RECORDING_EDITOR;
 Class SC_SCREENSHOT_MANAGER;
+Class SC_SCREENSHOT_CONFIGURATION;
+Class SC_SCREENSHOT_OUTPUT;
+Class SC_VIDEO_EFFECT_OUTPUT;
 
 __attribute__((constructor))
 static void sc_initializer(void)
@@ -34,9 +43,14 @@ static void sc_initializer(void)
         
         SC_RECORDING_OUTPUT_CONFIGURATION = NSClassFromString(@"SCRecordingOutputConfiguration");
         SC_RECORDING_OUTPUT = NSClassFromString(@"SCRecordingOutput");
+        SC_CLIP_BUFFERING_OUTPUT = NSClassFromString(@"SCClipBufferingOutput");
         SC_CONTENT_SHARING_PICKER_CONFIGURATION = NSClassFromString(@"SCContentSharingPickerConfiguration");
         SC_CONTENT_SHARING_PICKER = NSClassFromString(@"SCContentSharingPicker");
+        SC_RECORDING_EDITOR = NSClassFromString(@"SCRecordingEditor");
         SC_SCREENSHOT_MANAGER = NSClassFromString(@"SCScreenshotManager");
+        SC_SCREENSHOT_CONFIGURATION = NSClassFromString(@"SCScreenshotConfiguration");
+        SC_SCREENSHOT_OUTPUT = NSClassFromString(@"SCScreenshotOutput");
+        SC_VIDEO_EFFECT_OUTPUT = NSClassFromString(@"SCVideoEffectOutput");
         
     }
 }

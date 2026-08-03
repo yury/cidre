@@ -37,7 +37,7 @@ fn main() {
         .unwrap()
         .display_link_with_target(link_target.as_ref());
 
-    display_link.add_to_run_loop_for_mode(ns::RunLoop::current(), ns::RunLoopMode::common());
+    display_link.add_to_run_loop_for_mode(&ns::RunLoop::current(), ns::RunLoopMode::common());
 
     let mut player = av::Player::with_player_item(Some(&item)).unwrap();
     player.set_src_clock(Some(cm::Clock::host_time_clock()));

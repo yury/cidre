@@ -62,7 +62,7 @@ impl Attr {
 }
 
 #[doc(alias = "MTLLanguageVersion")]
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(usize)]
 pub enum LangVersion {
     #[doc(alias = "MTLLanguageVersion1_0")]
@@ -99,6 +99,9 @@ pub enum LangVersion {
 
     #[doc(alias = "MTLLanguageVersion4_0")]
     _4_0 = (4 << 16) + 0,
+
+    #[doc(alias = "MTLLanguageVersion4_1")]
+    _4_1 = (4 << 16) + 1,
 }
 
 /// An enum to indicate if the compiler can perform optimizations for floating-point
@@ -130,6 +133,19 @@ pub enum MathFloatingPointFns {
 
     /// Sets the default math functions for single precision floating-point to the corresponding functions in 'metal::precise' namespace
     Precise = 1,
+}
+
+/// The rounding mode for narrowing floating-point conversions.
+#[doc(alias = "MTLFloatingPointConversionRoundingMode")]
+#[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum FloatingPointConversionRoundingMode {
+    /// Round-to-nearest-even (default). Standard IEEE 754 rounding mode.
+    #[default]
+    ToNearestEven = 0,
+
+    /// Round-toward-zero.
+    TowardZero = 1,
 }
 
 #[doc(alias = "MTLLibraryType")]
@@ -297,6 +313,31 @@ impl CompileOpts {
         visionos = 2.0
     )]
     pub fn set_enable_logging(&mut self, val: bool);
+
+    #[objc::msg_send(floatingPointConversionRoundingMode)]
+    #[objc::available(
+        macos = 27.0,
+        ios = 27.0,
+        maccatalyst = 27.0,
+        tvos = 27.0,
+        visionos = 27.0
+    )]
+    pub fn floating_point_concersion_rounding_mode(
+        &self,
+    ) -> mtl::FloatingPointConversionRoundingMode;
+
+    #[objc::msg_send(setFloatingPointConversionRoundingMode:)]
+    #[objc::available(
+        macos = 27.0,
+        ios = 27.0,
+        maccatalyst = 27.0,
+        tvos = 27.0,
+        visionos = 27.0
+    )]
+    pub fn set_floating_point_concersion_rounding_mode(
+        &mut self,
+        val: mtl::FloatingPointConversionRoundingMode,
+    );
 }
 
 define_obj_type!(

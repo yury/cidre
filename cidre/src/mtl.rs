@@ -33,12 +33,14 @@ pub use acceleration_structure_types::PackedF32x4x3;
 mod pixel_format;
 pub use pixel_format::PixelFormat;
 
+mod data_type;
+pub use data_type::DType;
+
 mod argument;
 pub use argument::Access as ArgAccess;
 pub use argument::ArrayType;
 pub use argument::BaseType;
 pub use argument::Binding;
-pub use argument::DType;
 pub use argument::PointerType;
 pub use argument::StructMember;
 pub use argument::StructType;
@@ -87,6 +89,7 @@ pub use library::CompileOpts;
 pub use library::CompileSymbolVisibility;
 pub use library::Error as LibError;
 pub use library::ErrorDomain as LibErrorDomain;
+pub use library::FloatingPointConversionRoundingMode;
 pub use library::Fn;
 pub use library::FnType;
 pub use library::LangVersion;

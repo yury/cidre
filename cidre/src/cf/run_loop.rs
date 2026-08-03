@@ -3,7 +3,7 @@ use crate::mach;
 use crate::{arc, cf, define_cf_type};
 
 #[doc(alias = "CFRunLoopRunResult")]
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 #[repr(i32)]
 pub enum RunResult {
     /// The run loop mode mode has no sources or timers.
@@ -17,6 +17,13 @@ pub enum RunResult {
 
     /// A source was processed. This exit condition only applies when `return_after_source_handled` is true.
     HandledSource = 4,
+}
+
+impl RunResult {
+    #[inline(always)]
+    pub fn is_timeout(&self) -> bool {
+        self == &RunResult::TimedOut
+    }
 }
 
 define_cf_type!(
@@ -62,6 +69,55 @@ impl RunLoop {
     #[inline]
     pub fn stop(&self) {
         unsafe { CFRunLoopStop(self) }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "CFRunLoopPerformBlock")]
+    #[inline]
+    pub unsafe fn perform_block_in_mode_(
+        &self,
+        mode: &cf::Type,
+        block: &mut blocks::SendBlock<fn()>,
+    ) {
+        unsafe { CFRunLoopPerformBlock(self, mode, block) }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "CFRunLoopPerformBlock")]
+    #[inline]
+    pub fn perform_block_in_mode(&self, mode: &Mode, block: &mut blocks::SendBlock<fn()>) {
+        unsafe { CFRunLoopPerformBlock(self, mode, block) }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "CFRunLoopPerformBlock")]
+    #[inline]
+    pub fn perform_mut_in_mode(&self, mode: &Mode, f: impl FnMut() + 'static + Send) {
+        let mut block = blocks::SendBlock::new0(f);
+        self.perform_block_in_mode(mode, &mut block);
+    }
+
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "CFRunLoopPerformBlock")]
+    #[inline]
+    pub fn perform_block_in_modes(
+        &self,
+        modes: &cf::ArrayOf<Mode>,
+        block: &mut blocks::SendBlock<fn()>,
+    ) {
+        unsafe { CFRunLoopPerformBlock(self, modes, block) }
+    }
+
+    #[cfg(feature = "blocks")]
+    #[doc(alias = "CFRunLoopPerformBlock")]
+    #[inline]
+    pub fn perform_mut_in_modes(
+        &self,
+        modes: &cf::ArrayOf<Mode>,
+        f: impl FnMut() + 'static + Send,
+    ) {
+        let mut block = blocks::SendBlock::new0(f);
+        self.perform_block_in_modes(modes, &mut block);
     }
 
     #[doc(alias = "CFRunLoopCopyCurrentMode")]
@@ -148,6 +204,7 @@ impl RunLoop {
     /// configuring a run-loop observer and only in situations where you want that
     /// observer to run in more than one mode.
     #[doc(alias = "CFRunLoopRunInMode")]
+    #[must_use]
     #[inline]
     pub fn run_in_mode(
         mode: &Mode,
@@ -173,6 +230,8 @@ impl RunLoop {
 unsafe extern "C-unwind" {
     fn CFRunLoopRun();
     fn CFRunLoopStop(rl: &RunLoop);
+    #[cfg(feature = "blocks")]
+    fn CFRunLoopPerformBlock(rl: &RunLoop, mode: &cf::Type, block: &mut blocks::SendBlock<fn()>);
     fn CFRunLoopGetCurrent() -> &'static RunLoop;
     fn CFRunLoopGetMain() -> &'static RunLoop;
     fn CFRunLoopCopyCurrentMode(rl: &RunLoop) -> Option<arc::R<Mode>>;
@@ -216,6 +275,12 @@ impl Mode {
     #[inline]
     pub fn common() -> &'static Mode {
         unsafe { kCFRunLoopCommonModes }
+    }
+
+    #[cfg(feature = "ns")]
+    #[inline]
+    pub fn as_ns(&self) -> &ns::RunLoopMode {
+        unsafe { std::mem::transmute(self) }
     }
 }
 

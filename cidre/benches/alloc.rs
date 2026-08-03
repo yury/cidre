@@ -58,6 +58,13 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         })
     });
 
+    #[cfg(any(
+        all(target_os = "macos", feature = "macos_13_0"),
+        all(target_os = "ios", feature = "ios_16_0"),
+        all(target_os = "tvos", feature = "tvos_16_0"),
+        all(target_os = "watchos", feature = "watchos_9_0"),
+        all(target_os = "visionos", feature = "visionos_1_0"),
+    ))]
     #[cfg(target_arch = "aarch64")]
     c.bench_function("alloc_with_ar_claim", |b| {
         b.iter(|| {

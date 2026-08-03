@@ -19,8 +19,20 @@ where
     if f(&mut err) {
         Ok(())
     } else {
-        unsafe { Err(err.unwrap_unchecked()) }
+        // Cocoa NSError-by-reference APIs use the BOOL/nil return value as the
+        // success signal; the NSError pointer is detail, not the condition.
+        // Avoid unwrap_unchecked: a framework may report failure without
+        // populating the out-param, and that must not become UB.
+        Err(err.expect("Objective-C API returned false without NSError"))
     }
+}
+
+pub fn if_false_maybe<'ear, F>(f: F) -> Result<(), Option<&'ear ns::Error>>
+where
+    F: FnOnce(*mut Option<&'ear ns::Error>) -> bool,
+{
+    let mut err = None;
+    if f(&mut err) { Ok(()) } else { Err(err) }
 }
 
 pub fn if_none<'ear, F, R>(f: F) -> Result<R, &'ear ns::Error>
@@ -28,7 +40,9 @@ where
     F: FnOnce(*mut Option<&'ear ns::Error>) -> Option<R>,
 {
     let mut err = None;
-    f(&mut err).ok_or_else(|| unsafe { err.unwrap_unchecked() })
+    // See if_false: nil is the failure signal, but the NSError out-param can
+    // still be absent on framework edge cases.
+    f(&mut err).ok_or_else(|| err.expect("Objective-C API returned nil without NSError"))
 }
 
 pub fn if_err<'ear>(f: impl FnOnce(*mut Option<&'ear ns::Error>)) -> ns::Result<'ear> {

@@ -404,7 +404,7 @@ mod tests {
         )
         .unwrap();
 
-        cf::RunLoop::run_in_mode(cf::RunLoopMode::default(), 0.5, false);
+        _ = cf::RunLoop::run_in_mode(Default::default(), 0.5, false);
     }
 
     #[test]

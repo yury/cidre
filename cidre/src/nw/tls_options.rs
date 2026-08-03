@@ -1,5 +1,8 @@
 use crate::{api, arc, define_obj_type, dispatch, ns, nw};
 
+#[cfg(feature = "sec")]
+use crate::sec;
+
 define_obj_type!(
     #[doc(alias = "sec_protocol_options")]
     #[doc(alias = "sec_protocol_options_t")]
@@ -58,6 +61,24 @@ impl SecProtocolOpts {
     pub fn append_tls_ciphersuite(&mut self, ciphersuite: TlsCiphersuite) {
         unsafe { sec_protocol_options_append_tls_ciphersuite(self, ciphersuite) }
     }
+
+    #[doc(alias = "sec_protocol_options_set_local_identity")]
+    #[cfg(feature = "sec")]
+    #[inline]
+    pub fn set_local_identity(&mut self, identity: &sec::ProtocolIdentity) {
+        unsafe { sec_protocol_options_set_local_identity(self, identity) }
+    }
+
+    #[doc(alias = "sec_protocol_options_set_verify_block")]
+    #[cfg(all(feature = "blocks", feature = "sec"))]
+    #[inline]
+    pub fn set_verify_block(
+        &mut self,
+        verify_block: &mut sec::ProtocolVerify,
+        verify_queue: &dispatch::Queue,
+    ) {
+        unsafe { sec_protocol_options_set_verify_block(self, verify_block, verify_queue) }
+    }
 }
 
 #[repr(u16)]
@@ -102,6 +123,17 @@ unsafe extern "C-unwind" {
     fn sec_protocol_options_append_tls_ciphersuite(
         options: &mut SecProtocolOpts,
         ciphersuite: TlsCiphersuite,
+    );
+    #[cfg(feature = "sec")]
+    fn sec_protocol_options_set_local_identity(
+        options: &mut SecProtocolOpts,
+        identity: &sec::ProtocolIdentity,
+    );
+    #[cfg(all(feature = "blocks", feature = "sec"))]
+    fn sec_protocol_options_set_verify_block(
+        options: &mut SecProtocolOpts,
+        verify_block: &mut sec::ProtocolVerify,
+        verify_queue: &dispatch::Queue,
     );
 }
 

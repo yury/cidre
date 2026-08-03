@@ -128,11 +128,21 @@ impl Number {
     }
 
     // for benches
+    #[cfg(any(
+        all(target_os = "macos", feature = "macos_13_0"),
+        all(target_os = "ios", feature = "ios_16_0"),
+        all(target_os = "tvos", feature = "tvos_16_0"),
+        all(target_os = "watchos", feature = "watchos_9_0"),
+        all(target_os = "visionos", feature = "visionos_1_0"),
+    ))]
     #[cfg(target_arch = "aarch64")]
     #[inline]
     pub fn with_i64_ar_claim(value: i64) -> arc::R<Self> {
-        Self::with_i64_ar(value);
-        unsafe { std::mem::transmute(arc::rar_claim_value::<Self>()) }
+        unsafe {
+            std::mem::transmute(arc::rar_claim_value::<Self>(Some(&Self::with_i64_ar(
+                value,
+            ))))
+        }
     }
 
     #[objc::msg_send(numberWithLongLong:)]
@@ -333,49 +343,49 @@ impl AsRef<ns::Number> for ns::Number {
 
 impl AsRef<ns::Id> for u8 {
     fn as_ref(&self) -> &ns::Id {
-        &ns::Number::tagged_u8(*self).as_id_ref()
+        ns::Number::tagged_u8(*self).as_id_ref()
     }
 }
 
 impl AsRef<ns::Id> for i8 {
     fn as_ref(&self) -> &ns::Id {
-        &ns::Number::tagged_i8(*self).as_id_ref()
+        ns::Number::tagged_i8(*self).as_id_ref()
     }
 }
 
 impl AsRef<ns::Id> for u16 {
     fn as_ref(&self) -> &ns::Id {
-        &ns::Number::tagged_u16(*self).as_id_ref()
+        ns::Number::tagged_u16(*self).as_id_ref()
     }
 }
 
 impl AsRef<ns::Id> for i16 {
     fn as_ref(&self) -> &ns::Id {
-        &ns::Number::tagged_i16(*self).as_id_ref()
+        ns::Number::tagged_i16(*self).as_id_ref()
     }
 }
 
 impl AsRef<ns::Id> for u32 {
     fn as_ref(&self) -> &ns::Id {
-        &ns::Number::tagged_u32(*self).as_id_ref()
+        ns::Number::tagged_u32(*self).as_id_ref()
     }
 }
 
 impl AsRef<ns::Id> for i32 {
     fn as_ref(&self) -> &ns::Id {
-        &ns::Number::tagged_i32(*self).as_id_ref()
+        ns::Number::tagged_i32(*self).as_id_ref()
     }
 }
 
 impl AsRef<ns::Number> for u8 {
     fn as_ref(&self) -> &ns::Number {
-        &ns::Number::tagged_u8(*self)
+        ns::Number::tagged_u8(*self)
     }
 }
 
 impl AsRef<ns::Number> for i8 {
     fn as_ref(&self) -> &ns::Number {
-        &ns::Number::tagged_i8(*self)
+        ns::Number::tagged_i8(*self)
     }
 }
 
@@ -387,19 +397,19 @@ impl AsRef<ns::Number> for u16 {
 
 impl AsRef<ns::Number> for i16 {
     fn as_ref(&self) -> &ns::Number {
-        &ns::Number::tagged_i16(*self)
+        ns::Number::tagged_i16(*self)
     }
 }
 
 impl AsRef<ns::Number> for u32 {
     fn as_ref(&self) -> &ns::Number {
-        &ns::Number::tagged_u32(*self)
+        ns::Number::tagged_u32(*self)
     }
 }
 
 impl AsRef<ns::Number> for i32 {
     fn as_ref(&self) -> &ns::Number {
-        &ns::Number::tagged_i32(*self)
+        ns::Number::tagged_i32(*self)
     }
 }
 

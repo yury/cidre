@@ -1,4 +1,7 @@
-use crate::{arc, cf, define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, ns, objc};
+
+#[cfg(feature = "cf")]
+use crate::cf;
 
 define_obj_type!(
     pub RunLoopMode(ns::String)
@@ -14,6 +17,22 @@ impl RunLoopMode {
     pub fn common() -> &'static Self {
         unsafe { NSRunLoopCommonModes }
     }
+
+    pub fn with_string(str: &ns::String) -> &Self {
+        unsafe { std::mem::transmute(str) }
+    }
+
+    #[cfg(feature = "cf")]
+    #[inline]
+    pub fn as_cf(&self) -> &cf::RunLoopMode {
+        unsafe { std::mem::transmute(self) }
+    }
+}
+
+impl Default for &'static RunLoopMode {
+    fn default() -> Self {
+        RunLoopMode::default()
+    }
 }
 
 unsafe extern "C" {
@@ -25,11 +44,12 @@ define_obj_type!(pub RunLoop(ns::Id), NS_RUN_LOOP);
 
 impl RunLoop {
     #[objc::msg_send(currentRunLoop)]
-    pub fn current() -> &'static Self;
+    pub fn current() -> arc::R<Self>;
 
     #[objc::msg_send(mainRunLoop)]
-    pub fn main() -> &'static Self;
+    pub fn main() -> arc::R<Self>;
 
+    #[cfg(feature = "cf")]
     #[objc::msg_send(getCFRunLoop)]
     pub fn as_cf_run_loop(&self) -> &cf::RunLoop;
 
@@ -44,6 +64,10 @@ impl RunLoop {
 
     #[objc::msg_send(runMode:beforeDate:)]
     pub fn run_mode_until_date(&self, mode: &RunLoopMode, before_date: &ns::Date) -> bool;
+
+    #[cfg(feature = "cf")]
+    #[objc::msg_send(getCFRunLoop)]
+    pub fn as_cf(&self) -> &cf::RunLoop;
 }
 
 unsafe extern "C" {
@@ -59,6 +83,8 @@ mod tests {
         let current = ns::RunLoop::current();
         let main = ns::RunLoop::main();
 
-        assert!(!current.is_equal(main));
+        assert!(!current.is_equal(&main));
+
+        main.as_cf();
     }
 }
