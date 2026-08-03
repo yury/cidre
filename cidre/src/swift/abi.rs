@@ -20,8 +20,16 @@ pub const ENQUEUED_DISCARDING_TASK_FLAGS: usize = 0x15 | (1 << 12) | (1 << 14) |
 
 #[link(name = "swiftCore")]
 unsafe extern "C" {
+    /// Declared `C_CC` in the runtime, so it needs no assembly shim.
     fn swift_retain(object: *const ()) -> *const ();
+
+    /// Declared `C_CC` in the runtime, so it needs no assembly shim.
     fn swift_release(object: *const ());
+
+    /// Declared `C_CC` in the runtime, so it needs no assembly shim.
+    fn swift_errorRetain(error: *const ()) -> *const ();
+
+    /// Declared `C_CC` in the runtime, so it needs no assembly shim.
     fn swift_errorRelease(error: *const ());
     fn swift_getTypeByMangledNameInContext2(
         name: *const u8,
@@ -48,6 +56,14 @@ unsafe extern "C" {
     fn swift_bridgeObjectRelease(object: *const ());
 
     fn _swift_stdlib_bridgeErrorToNSError(error: *mut ()) -> *mut ();
+
+    /// Declared `C_CC` in the runtime, so it needs no assembly shim.
+    fn swift_arrayInitWithCopy(
+        dst: *mut (),
+        src: *const (),
+        count: usize,
+        metadata: *const TypeMetadata,
+    );
 
     #[link_name = "$sSS7cStringSSSPys4Int8VG_tcfC"]
     fn swift_string_from_c_string();
@@ -119,30 +135,26 @@ unsafe extern "C" {
     fn swift_task_enqueueGlobal(task: *mut ());
 }
 
+/// Retains a native Swift object.
+///
+/// Returns the same pointer, as the runtime declares `FirstParamReturned`.
+///
+/// # Safety
+///
+/// `object` must be a live native Swift object.
 #[inline]
 pub unsafe fn object_retain(object: *const ()) -> *const () {
-    let retained: *const ();
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_retain,
-            inlateout("x0") object => retained,
-            clobber_abi("C"),
-        );
-    }
-    retained
+    unsafe { swift_retain(object) }
 }
 
+/// Releases a native Swift object.
+///
+/// # Safety
+///
+/// The caller must own a reference to `object`.
 #[inline]
 pub unsafe fn object_release(object: *const ()) {
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_release,
-            in("x0") object,
-            clobber_abi("C"),
-        );
-    }
+    unsafe { swift_release(object) }
 }
 
 #[inline]
@@ -219,16 +231,24 @@ pub unsafe fn error_as_ns_error(error: *mut ()) -> *mut () {
     unsafe { _swift_stdlib_bridgeErrorToNSError(error) }
 }
 
+/// Retains a Swift error box.
+///
+/// # Safety
+///
+/// `error` must be a live Swift error box.
+#[inline]
+pub unsafe fn error_retain(error: *const ()) -> *const () {
+    unsafe { swift_errorRetain(error) }
+}
+
+/// Releases a Swift error box.
+///
+/// # Safety
+///
+/// The caller must own a reference to `error`.
 #[inline]
 pub unsafe fn error_release(error: *const ()) {
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_errorRelease,
-            in("x0") error,
-            clobber_abi("C"),
-        );
-    }
+    unsafe { swift_errorRelease(error) }
 }
 
 macro_rules! metadata {
@@ -319,6 +339,24 @@ pub unsafe fn initialize_with_copy(
     let init: unsafe extern "C" fn(*mut (), *const (), *const TypeMetadata) -> *mut () =
         unsafe { std::mem::transmute(*vwt.add(2)) };
     unsafe { init(dst, src, metadata) }
+}
+
+/// Copies `count` contiguous values through their `initializeWithCopy` witness.
+///
+/// Both buffers must be laid out at the type's Swift stride.
+///
+/// # Safety
+///
+/// `dst` must be uninitialized storage for `count` values described by
+/// `metadata`, and `src` must hold that many initialized ones.
+#[inline]
+pub unsafe fn array_initialize_with_copy(
+    dst: *mut (),
+    src: *const (),
+    count: usize,
+    metadata: *const TypeMetadata,
+) {
+    unsafe { swift_arrayInitWithCopy(dst, src, count, metadata) };
 }
 
 #[inline]

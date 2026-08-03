@@ -11,8 +11,10 @@ async fn main() {
         .nth(1)
         .unwrap_or_else(|| "en_US".to_owned())
         .replace('-', "_");
-    let transcriber =
-        speech::DictationTranscriber::with_progressive_long_dictation_locale_id(&locale);
+    let transcriber = speech::DictationTranscriber::with_locale_id(
+        &locale,
+        speech::DictationPreset::ProgressiveLongDictation,
+    );
     transcriber.results(|result| match result {
         Ok(Some(text)) => eprint!("\r{text}"),
         Ok(None) => eprintln!("Transcription stream ended."),

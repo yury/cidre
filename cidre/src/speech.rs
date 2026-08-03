@@ -7,6 +7,7 @@
 #[cfg(feature = "av")]
 mod capture_input_sequence_provider;
 mod dictation_transcriber;
+mod locale;
 mod speech_analyzer;
 mod speech_detector;
 mod speech_module;
@@ -15,7 +16,7 @@ mod value;
 
 #[cfg(feature = "av")]
 pub use capture_input_sequence_provider::CaptureInputSequenceProvider;
-pub use dictation_transcriber::DictationTranscriber;
+pub use dictation_transcriber::{DictationPreset, DictationTranscriber};
 pub use speech_analyzer::SpeechAnalyzer;
 pub use speech_detector::{SensitivityLevel, SpeechDetector};
 pub use speech_module::SpeechModule;
@@ -65,7 +66,7 @@ mod tests {
     fn dictation_transcriber_uses_progressive_long_dictation() {
         unsafe {
             let transcriber =
-                DictationTranscriber::with_progressive_long_dictation_locale_id("en_US");
+                DictationTranscriber::with_locale_id("en_US", DictationPreset::default());
             let module = SpeechModule::from(transcriber.as_ref());
             drop(transcriber);
 

@@ -59,22 +59,27 @@ impl<T: SwiftType> Array<T> {
         metadata
     }
 
-    /// Allocates a Swift array and copies each value through `T`'s Swift value
+    /// Allocates a Swift array and copies the values through `T`'s Swift value
     /// witness table.
     #[inline]
     pub fn from_slice(values: &[T]) -> Self {
         unsafe {
             let metadata = Self::element_metadata();
             let (storage, elements) = abi::allocate_uninitialized_array(values.len(), metadata);
-            let stride = abi::value_layout(metadata).stride;
 
-            for (index, value) in values.iter().enumerate() {
-                abi::initialize_with_copy(
-                    elements.cast::<u8>().add(index * stride).cast(),
-                    core::ptr::from_ref(value).cast(),
-                    metadata,
-                );
-            }
+            // `SwiftType` guarantees `T` matches the Swift type's size and
+            // alignment, so a Rust slice is already laid out at the Swift
+            // stride and the runtime can copy the whole run in one call.
+            debug_assert_eq!(
+                core::mem::size_of::<T>(),
+                abi::value_layout(metadata).stride
+            );
+            abi::array_initialize_with_copy(
+                elements,
+                values.as_ptr().cast(),
+                values.len(),
+                metadata,
+            );
 
             Self::from_raw(storage)
         }

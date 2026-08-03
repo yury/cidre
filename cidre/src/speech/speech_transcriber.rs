@@ -11,8 +11,9 @@ use crate::swift::async_task::{
     swift_opaque_iterator_typeref, swift_task_alloc, swift_task_dealloc, swift_task_switch,
 };
 
-use super::value::{
-    AnyValue, DynamicStorage, Storage, call_with_owned_value, call_with_owned_values,
+use super::{
+    locale,
+    value::{AnyValue, DynamicStorage, Storage, call_with_owned_value},
 };
 
 crate::define_swift_class!(pub SpeechTranscriber);
@@ -30,12 +31,6 @@ pub enum TranscriberPreset {
 #[link(name = "Speech", kind = "framework")]
 #[link(name = "swiftFoundation")]
 unsafe extern "C" {
-    #[link_name = "$s10Foundation6LocaleVMa"]
-    fn foundation_locale_metadata();
-
-    #[link_name = "$s10Foundation6LocaleV10identifierACSS_tcfC"]
-    fn foundation_locale_init();
-
     #[link_name = "$s6Speech0A11TranscriberCMa"]
     fn speech_transcriber_metadata();
 
@@ -104,17 +99,6 @@ unsafe extern "C" {
 
     #[link_name = "$sScI4next9isolation7ElementQzSgScA_pSgYi_tYa7FailureQzYKFTjTu"]
     static ASYNC_ITERATOR_NEXT_ASYNC_FN: u8;
-}
-
-struct FoundationLocale;
-
-unsafe impl SwiftMetadata for FoundationLocale {
-    fn metadata() -> *const abi::TypeMetadata {
-        unsafe {
-            abi::call_int_to_int(foundation_locale_metadata as *const (), 0)
-                as *const abi::TypeMetadata
-        }
-    }
 }
 
 struct SpeechTranscriberPreset;
@@ -186,46 +170,30 @@ impl SpeechTranscriber {
         visionos = 26.0
     )]
     pub fn with_locale_id(locale_id: &str, preset: TranscriberPreset) -> arc::R<Self> {
+        let preset_getter = match preset {
+            TranscriberPreset::Transcription => transcription_preset as _,
+            TranscriberPreset::TranscriptionWithAlternatives => {
+                transcription_with_alternatives_preset as _
+            }
+            TranscriberPreset::TimeIndexedTranscriptionWithAlternatives => {
+                time_indexed_transcription_with_alternatives_preset as _
+            }
+            TranscriberPreset::ProgressiveTranscription => progressive_transcription_preset as _,
+            TranscriberPreset::TimeIndexedProgressiveTranscription => {
+                time_indexed_progressive_transcription_preset as _
+            }
+        };
+
         unsafe {
-            let mut locale_storage = Storage::<FoundationLocale>::new();
-            let locale_id = swift::String::from(locale_id).into_raw();
-            abi::call_string_to_value(
-                foundation_locale_init as *const (),
-                locale_id,
-                locale_storage.as_mut_ptr(),
-            );
-            let locale = locale_storage.assume_init();
-
-            let mut preset_storage = Storage::<SpeechTranscriberPreset>::new();
-            let preset_getter = match preset {
-                TranscriberPreset::Transcription => transcription_preset as *const (),
-                TranscriberPreset::TranscriptionWithAlternatives => {
-                    transcription_with_alternatives_preset as *const ()
-                }
-                TranscriberPreset::TimeIndexedTranscriptionWithAlternatives => {
-                    time_indexed_transcription_with_alternatives_preset as *const ()
-                }
-                TranscriberPreset::ProgressiveTranscription => {
-                    progressive_transcription_preset as *const ()
-                }
-                TranscriberPreset::TimeIndexedProgressiveTranscription => {
-                    time_indexed_progressive_transcription_preset as *const ()
-                }
-            };
-            abi::call0_value(preset_getter, preset_storage.as_mut_ptr());
-            let preset_value = preset_storage.assume_init();
-
-            let transcriber_metadata =
-                abi::call_int_to_int(speech_transcriber_metadata as *const (), 0) as *const ();
-            let object = call_with_owned_values(locale, preset_value, |locale, preset| {
-                abi::call_static_values_to_object(
-                    speech_transcriber_init as *const (),
-                    transcriber_metadata,
-                    locale,
-                    preset,
+            arc::R::from_raw(
+                locale::transcriber_with_id_and_preset::<SpeechTranscriberPreset>(
+                    locale_id,
+                    preset_getter,
+                    speech_transcriber_metadata as _,
+                    speech_transcriber_init as _,
                 )
-            });
-            arc::R::from_raw(object.cast())
+                .cast(),
+            )
         }
     }
 
