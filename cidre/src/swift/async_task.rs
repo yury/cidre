@@ -17,7 +17,7 @@
 //! in `x9` and [`swift_async_load_resume`] always leaves the resume pointer in
 //! `x16`, signed or not.
 
-#[link(name = "swift_Concurrency")]
+//#[link(name = "swift_Concurrency")]
 unsafe extern "C" {
     /// Only ever referenced as a `sym` operand, so the signature is unused.
     pub(crate) fn swift_task_alloc();

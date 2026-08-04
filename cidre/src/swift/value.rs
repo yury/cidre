@@ -213,7 +213,7 @@ impl<T: SwiftMetadata> Value<Optional<T>> {
     /// Returns whether the value is `.some`, reading the tag through `T`'s
     /// witnesses.
     #[inline]
-    pub(crate) fn is_some(&self) -> bool {
+    pub fn is_some(&self) -> bool {
         unsafe { abi::get_enum_tag_single_payload(self.as_ptr(), 1, T::metadata()) == 0 }
     }
 }

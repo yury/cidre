@@ -87,7 +87,7 @@ unsafe extern "C" {
     static ASYNC_ITERATOR_CONFORMANCE: u8;
 }
 
-#[link(name = "swift_Concurrency")]
+//#[link(name = "swift_Concurrency")]
 unsafe extern "C" {
     #[link_name = "$sScI4next9isolation7ElementQzSgScA_pSgYi_tYa7FailureQzYKFTj"]
     fn async_iterator_next();
