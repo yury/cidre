@@ -116,7 +116,7 @@ impl String {
     }
 
     /// Copies this value's UTF-8 representation into a Rust string.
-    pub fn to_rust_string(&self) -> std::string::String {
+    pub fn to_string(&self) -> std::string::String {
         struct Utf8CString(*mut ());
 
         impl Drop for Utf8CString {
@@ -203,7 +203,7 @@ const ARRAY_ELEMENTS_OFFSET: usize = 32;
 ///
 /// Copying the buffer in one go replaces a generic subscript call per byte,
 /// which matters because every transcription result is converted through
-/// [`String::to_rust_string`]. The header offsets are an internal standard
+/// [`String::to_string`]. The header offsets are an internal standard
 /// library detail, so the stored count is checked against the count the array
 /// itself reported; a mismatch means the layout moved and the caller falls back
 /// to the subscript path.
@@ -258,13 +258,13 @@ impl Eq for String {}
 
 impl fmt::Display for String {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(&self.to_rust_string())
+        f.write_str(&self.to_string())
     }
 }
 
 impl fmt::Debug for String {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Debug::fmt(&self.to_rust_string(), f)
+        fmt::Debug::fmt(&self.to_string(), f)
     }
 }
 
@@ -299,7 +299,7 @@ impl From<&std::string::String> for String {
 impl From<String> for std::string::String {
     #[inline]
     fn from(value: String) -> Self {
-        value.to_rust_string()
+        value.to_string()
     }
 }
 
@@ -315,12 +315,12 @@ mod tests {
             let fast = String::from(value);
             let slow = unsafe { String::from_raw(abi::string_from_utf8(value.as_bytes())) };
             assert_eq!(slow, fast, "{value:?}");
-            assert_eq!(value, fast.to_rust_string(), "{value:?}");
+            assert_eq!(value, fast.to_string(), "{value:?}");
         }
 
         // Too long, and non-ASCII, must fall back and still round-trip.
         for value in ["0123456789abcdef", "héllo", "🦀"] {
-            assert_eq!(value, String::from(value).to_rust_string(), "{value:?}");
+            assert_eq!(value, String::from(value).to_string(), "{value:?}");
         }
     }
 
@@ -341,11 +341,11 @@ mod tests {
         let value = "Swift from Rust: 🦀\0привет";
         let str = String::from(value);
 
-        assert_eq!(value, str.to_rust_string());
+        assert_eq!(value, str.to_string());
         assert_eq!(value.chars().count() as isize, str.count());
     }
 
-    /// Guards the native storage offsets that let `to_rust_string` copy the
+    /// Guards the native storage offsets that let `to_string` copy the
     /// UTF-8 buffer in one go instead of one subscript call per byte.
     #[test]
     fn utf8_buffer_reads_native_contiguous_array_storage() {
@@ -379,7 +379,7 @@ mod tests {
 
         assert_eq!(
             "a Swift string long enough to use heap storage 🦀",
-            clone.to_rust_string()
+            clone.to_string()
         );
     }
 }

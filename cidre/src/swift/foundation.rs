@@ -35,7 +35,7 @@ mod tests {
         let b = Uuid::new();
         assert_ne!(a, b, "two generated identifiers must differ");
 
-        let text = a.to_swift_string().to_rust_string();
+        let text = a.to_swift_string().to_string();
         assert_eq!(36, text.len(), "{text}");
         assert_eq!(text, text.to_uppercase(), "Swift renders them uppercase");
 
@@ -56,12 +56,12 @@ mod tests {
     fn locale_round_trips_its_identifier() {
         for id in ["en_US", "fr_FR", "zh-Hans"] {
             let locale = Locale::with_id(id);
-            assert_eq!(id, locale.id().to_rust_string(), "{id}");
+            assert_eq!(id, locale.id().to_string(), "{id}");
         }
 
         // A `const` literal is the zero-cost path, so it must agree.
         const EN: swift::String = swift::String::from_ascii_literal("en_GB");
-        assert_eq!("en_GB", Locale::with_swift_id(EN).id().to_rust_string());
+        assert_eq!("en_GB", Locale::with_swift_id(EN).id().to_string());
     }
 
     #[test]

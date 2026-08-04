@@ -274,7 +274,7 @@ mod tests {
             ],
             array
                 .iter()
-                .map(|value| value.to_rust_string())
+                .map(|value| value.to_string())
                 .collect::<Vec<_>>()
         );
 
@@ -282,7 +282,7 @@ mod tests {
         drop(array);
         assert_eq!(
             "a longer Swift string from Rust 🦀",
-            clone.get(1).unwrap().to_rust_string()
+            clone.get(1).unwrap().to_string()
         );
     }
 

@@ -70,7 +70,7 @@ impl AttrString {
 
     /// The text without its attributes, as a Rust string.
     pub fn to_rust_string(&self) -> std::string::String {
-        self.to_swift_string().to_rust_string()
+        self.to_swift_string().to_string()
     }
 }
 
