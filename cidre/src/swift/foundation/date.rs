@@ -29,6 +29,7 @@ impl Date {
         }
     }
 
+    #[allow(dead_code)]
     pub(crate) unsafe fn from_value(value: Value<DateValue>) -> Self {
         Self(value)
     }

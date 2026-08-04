@@ -14,9 +14,11 @@ pub use attr_string::AttrString;
 #[allow(unused_imports)]
 pub(crate) use attr_string::AttrStringValue;
 pub use date::Date;
+#[allow(unused_imports)]
 pub(crate) use date::DateValue;
 pub use locale::Locale;
 pub use uuid::Uuid;
+#[allow(unused_imports)]
 pub(crate) use uuid::UuidValue;
 
 #[link(name = "Foundation", kind = "framework")]

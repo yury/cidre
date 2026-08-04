@@ -31,11 +31,14 @@ unsafe impl Send for Uuid {}
 unsafe impl Sync for Uuid {}
 
 impl Uuid {
+    // Bridges for the framework modules that hand back these values.
+    #[allow(dead_code)]
     #[inline]
     pub(crate) unsafe fn from_value(value: Value<UuidValue>) -> Self {
         Self { value }
     }
 
+    #[allow(dead_code)]
     #[inline]
     pub(crate) fn as_ptr(&self) -> *const () {
         self.value.as_ptr()

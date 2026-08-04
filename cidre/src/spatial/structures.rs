@@ -48,27 +48,31 @@ impl Default for Rotation3D {
     }
 }
 
-#[cfg(feature = "swift")]
-unsafe impl crate::swift::SwiftMetadata for Vector3D {
-    #[inline]
-    fn metadata() -> *const crate::swift::abi::TypeMetadata {
-        unsafe { crate::swift::abi::type_by_mangled_name("So10SPVector3Da") }
+/// The `swift` module carries hand-written aarch64 assembly, so it exists only
+/// where [`crate::swift`] itself does. The condition has to match that one.
+#[cfg(all(target_vendor = "apple", target_arch = "aarch64", feature = "swift"))]
+mod swift_interop {
+    use super::{Rotation3D, Vector3D};
+    use crate::swift::{SwiftMetadata, SwiftType, abi};
+
+    unsafe impl SwiftMetadata for Vector3D {
+        #[inline]
+        fn metadata() -> *const abi::TypeMetadata {
+            unsafe { abi::type_by_mangled_name("So10SPVector3Da") }
+        }
     }
-}
 
-#[cfg(feature = "swift")]
-unsafe impl crate::swift::SwiftType for Vector3D {}
+    unsafe impl SwiftType for Vector3D {}
 
-#[cfg(feature = "swift")]
-unsafe impl crate::swift::SwiftMetadata for Rotation3D {
-    #[inline]
-    fn metadata() -> *const crate::swift::abi::TypeMetadata {
-        unsafe { crate::swift::abi::type_by_mangled_name("So12SPRotation3Da") }
+    unsafe impl SwiftMetadata for Rotation3D {
+        #[inline]
+        fn metadata() -> *const abi::TypeMetadata {
+            unsafe { abi::type_by_mangled_name("So12SPRotation3Da") }
+        }
     }
-}
 
-#[cfg(feature = "swift")]
-unsafe impl crate::swift::SwiftType for Rotation3D {}
+    unsafe impl SwiftType for Rotation3D {}
+}
 
 #[cfg(test)]
 mod tests {
