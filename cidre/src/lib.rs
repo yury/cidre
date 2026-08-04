@@ -209,6 +209,15 @@ pub mod sn;
 ))]
 pub mod speech;
 
+/// MusicUnderstanding.framework native Swift API.
+#[cfg(all(
+    target_vendor = "apple",
+    target_arch = "aarch64",
+    not(target_os = "watchos"),
+    feature = "music_understanding"
+))]
+pub mod music_understanding;
+
 #[cfg(all(
     any(
         target_os = "ios",

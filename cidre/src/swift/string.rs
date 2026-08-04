@@ -24,10 +24,17 @@ pub enum SmallStringError {
 }
 
 impl String {
-    /// Creates a Swift string from valid UTF-8 through Swift's native
-    /// `_uncheckedFromUTF8` standard-library ABI entry.
+    /// Creates a Swift string from valid UTF-8.
+    ///
+    /// Short ASCII strings are built directly in Swift's small-string form,
+    /// which needs no allocation and no call into the standard library; longer
+    /// or non-ASCII ones go through `_uncheckedFromUTF8`.
     #[inline]
     pub fn from_str(str: &str) -> Self {
+        if let Ok(small) = Self::from_small_ascii(str) {
+            return small;
+        }
+
         let raw = unsafe { abi::string_from_utf8(str.as_bytes()) };
         unsafe { Self::from_raw(raw) }
     }
@@ -48,31 +55,31 @@ impl String {
         unsafe { Self::from_raw(raw) }
     }
 
+    /// Builds Swift's small-string form, which stores up to fifteen ASCII
+    /// bytes inside the value itself.
     #[inline]
-    pub fn from_small_ascii(str: &str) -> Result<Self, SmallStringError> {
-        let bytes = str.as_bytes();
-        if bytes.len() > 15 {
-            return Err(SmallStringError::TooLong);
+    pub const fn from_small_ascii(str: &str) -> Result<Self, SmallStringError> {
+        match small_ascii_raw(str.as_bytes()) {
+            Ok(raw) => Ok(unsafe { Self::from_raw(raw) }),
+            Err(err) => Err(err),
         }
+    }
 
-        let mut raw = RawString {
-            word0: 0,
-            word1: (0xe000_0000_0000_0000usize) | (bytes.len() << 56),
-        };
-
-        for (index, byte) in bytes.iter().copied().enumerate() {
-            if !byte.is_ascii() {
-                return Err(SmallStringError::NonAscii);
-            }
-
-            if index < 8 {
-                raw.word0 |= (byte as usize) << (index * 8);
-            } else {
-                raw.word1 |= (byte as usize) << ((index - 8) * 8);
-            }
+    /// Builds a Swift string from an ASCII literal at compile time.
+    ///
+    /// A Swift string literal costs nothing at runtime because the compiler
+    /// folds it; this is the same, so a Rust caller pays nothing either.
+    ///
+    /// # Panics
+    ///
+    /// At compile time, when used in a `const`, if `str` is not at most fifteen
+    /// ASCII bytes.
+    #[inline]
+    pub const fn from_ascii_literal(str: &str) -> Self {
+        match small_ascii_raw(str.as_bytes()) {
+            Ok(raw) => unsafe { Self::from_raw(raw) },
+            Err(_) => panic!("expected at most 15 ASCII bytes"),
         }
-
-        Ok(unsafe { Self::from_raw(raw) })
     }
 
     /// Takes ownership of a raw Swift `String` ABI value.
@@ -82,7 +89,7 @@ impl String {
     /// `raw` must be a valid Swift `String` value whose bridge object word can be
     /// released by this value's destructor.
     #[inline]
-    pub unsafe fn from_raw(raw: RawString) -> Self {
+    pub const unsafe fn from_raw(raw: RawString) -> Self {
         Self { raw }
     }
 
@@ -150,6 +157,37 @@ impl String {
         // UTF-8 view is valid UTF-8 by construction.
         unsafe { std::string::String::from_utf8_unchecked(bytes) }
     }
+}
+
+/// Encodes up to fifteen ASCII bytes the way Swift's small-string form does.
+///
+/// Returns only plain data so the whole thing stays usable in a `const`.
+const fn small_ascii_raw(bytes: &[u8]) -> Result<RawString, SmallStringError> {
+    if bytes.len() > 15 {
+        return Err(SmallStringError::TooLong);
+    }
+
+    let mut raw = RawString {
+        word0: 0,
+        word1: (0xe000_0000_0000_0000usize) | (bytes.len() << 56),
+    };
+
+    let mut index = 0;
+    while index < bytes.len() {
+        let byte = bytes[index];
+        if !byte.is_ascii() {
+            return Err(SmallStringError::NonAscii);
+        }
+
+        if index < 8 {
+            raw.word0 |= (byte as usize) << (index * 8);
+        } else {
+            raw.word1 |= (byte as usize) << ((index - 8) * 8);
+        }
+        index += 1;
+    }
+
+    Ok(raw)
 }
 
 /// Offset of `_ArrayBody`'s count word inside native array storage, past the
@@ -267,7 +305,24 @@ impl From<String> for std::string::String {
 
 #[cfg(test)]
 mod tests {
-    use super::String;
+    use super::{String, abi};
+
+    /// The small-string fast path must produce exactly what the standard
+    /// library would have.
+    #[test]
+    fn short_ascii_matches_the_stdlib_encoding() {
+        for value in ["", "a", "en_US", "0123456789abcde"] {
+            let fast = String::from(value);
+            let slow = unsafe { String::from_raw(abi::string_from_utf8(value.as_bytes())) };
+            assert_eq!(slow, fast, "{value:?}");
+            assert_eq!(value, fast.to_rust_string(), "{value:?}");
+        }
+
+        // Too long, and non-ASCII, must fall back and still round-trip.
+        for value in ["0123456789abcdef", "héllo", "🦀"] {
+            assert_eq!(value, String::from(value).to_rust_string(), "{value:?}");
+        }
+    }
 
     #[test]
     fn small_ascii_count_uses_swift_abi() {

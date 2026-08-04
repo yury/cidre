@@ -12,7 +12,6 @@ mod speech_analyzer;
 mod speech_detector;
 mod speech_module;
 mod speech_transcriber;
-mod value;
 
 #[cfg(feature = "av")]
 pub use capture_input_sequence_provider::CaptureInputSequenceProvider;

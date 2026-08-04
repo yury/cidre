@@ -57,6 +57,18 @@ unsafe extern "C" {
 
     fn _swift_stdlib_bridgeErrorToNSError(error: *mut ()) -> *mut ();
 
+    fn swift_getWitnessTable(
+        conformance: *const (),
+        type_metadata: *const TypeMetadata,
+        instantiation_args: *const *const (),
+    ) -> *const ();
+
+    #[link_name = "$sSh12arrayLiteralShyxGxd_tcfC"]
+    fn swift_set_from_array_literal();
+
+    #[link_name = "$sSDyq_Sgxcig"]
+    fn swift_dictionary_subscript();
+
     /// Declared `C_CC` in the runtime, so it needs no assembly shim.
     fn swift_arrayInitWithCopy(
         dst: *mut (),
@@ -91,6 +103,9 @@ unsafe extern "C" {
 
     #[link_name = "$sSaMa"]
     fn swift_array_metadata();
+
+    #[link_name = "$sSqMa"]
+    fn swift_optional_metadata();
 
     #[link_name = "$ss15ContiguousArrayV5countSivg"]
     fn swift_contiguous_array_count();
@@ -290,6 +305,183 @@ pub unsafe fn array_metadata(element: *const TypeMetadata) -> *const TypeMetadat
     metadata
 }
 
+/// Returns `Optional<Wrapped>`'s metadata from the standard library's generic
+/// metadata accessor.
+///
+/// This replaces spelling every optional out as a mangled `…Sg` name.
+/// Instantiates a protocol witness table from its conformance descriptor.
+///
+/// Bindings need this because a framework exports the descriptor but not the
+/// table itself; the table is built lazily by whoever uses the conformance.
+///
+/// # Safety
+///
+/// `conformance` must describe a conformance of the type `type_metadata`
+/// describes, and the conformance must need no instantiation arguments.
+#[inline]
+pub unsafe fn witness_table(
+    conformance: *const (),
+    type_metadata: *const TypeMetadata,
+) -> *const () {
+    unsafe { swift_getWitnessTable(conformance, type_metadata, core::ptr::null()) }
+}
+
+/// Builds a `Set<Element>` from an array, consuming it.
+///
+/// This is `Set.init(arrayLiteral:)`, whose variadic parameter is an array.
+///
+/// # Safety
+///
+/// `array` must be an owned `Array<Element>`, and `metadata` and `witness` must
+/// describe that element type and its `Hashable` conformance.
+#[inline]
+pub unsafe fn set_from_array(
+    array: *mut (),
+    metadata: *const TypeMetadata,
+    witness: *const (),
+) -> *mut () {
+    let set: *mut ();
+    unsafe {
+        asm!(
+            "bl {f}",
+            f = sym swift_set_from_array_literal,
+            inlateout("x0") array => set,
+            in("x1") metadata,
+            in("x2") witness,
+            clobber_abi("C"),
+        );
+    }
+    set
+}
+
+/// Calls a generic type's metadata accessor that takes one type argument.
+///
+/// # Safety
+///
+/// `accessor` must be the metadata accessor of a type with exactly one generic
+/// parameter, and `arg` its argument's metadata.
+#[inline]
+pub unsafe fn generic_metadata1(
+    accessor: *const (),
+    arg: *const TypeMetadata,
+) -> *const TypeMetadata {
+    let metadata: *const TypeMetadata;
+    unsafe {
+        asm!(
+            "blr {f}",
+            f = in(reg) accessor,
+            inlateout("x0") 0usize => metadata,
+            in("x1") arg,
+            clobber_abi("C"),
+        );
+    }
+    metadata
+}
+
+/// Calls a member of a generic type that returns its value indirectly.
+///
+/// Unlike [`call_value_to_value`], the callee also needs the generic context,
+/// which is the enclosing type's metadata.
+///
+/// # Safety
+///
+/// `function` must be a member of the type `metadata` describes, `value` a
+/// valid instance of it, and `out` uninitialized storage for the result.
+#[inline]
+pub unsafe fn call_generic_value_to_value(
+    function: *const (),
+    value: *const (),
+    metadata: *const TypeMetadata,
+    out: *mut (),
+) {
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") value,
+            in("x0") metadata,
+            in("x8") out,
+            clobber_abi("C"),
+        );
+    }
+}
+
+/// Calls a member of a generic type that returns three words directly, such as
+/// a `CMTime`.
+///
+/// # Safety
+///
+/// As [`call_generic_value_to_value`], and the member must return exactly three
+/// words in registers.
+#[inline]
+pub unsafe fn call_generic_value_to_words3(
+    function: *const (),
+    value: *const (),
+    metadata: *const TypeMetadata,
+) -> [usize; 3] {
+    let (w0, w1, w2);
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") value,
+            inlateout("x0") metadata => w0,
+            lateout("x1") w1,
+            lateout("x2") w2,
+            clobber_abi("C"),
+        );
+    }
+    [w0, w1, w2]
+}
+
+/// Looks a key up in a `Dictionary<Key, Value>`, writing `Value?` to `out`.
+///
+/// # Safety
+///
+/// `key` must be a valid `Key`, `dictionary` a valid `Dictionary<Key, Value>`,
+/// the two metadata arguments must describe `Key` and `Value`, `witness` must
+/// be `Key`'s `Hashable` conformance, and `out` must be uninitialized storage
+/// for `Value?`.
+#[inline]
+#[allow(clippy::too_many_arguments)]
+pub unsafe fn dictionary_get(
+    key: *const (),
+    dictionary: *const (),
+    key_metadata: *const TypeMetadata,
+    value_metadata: *const TypeMetadata,
+    witness: *const (),
+    out: *mut (),
+) {
+    unsafe {
+        asm!(
+            "bl {f}",
+            f = sym swift_dictionary_subscript,
+            in("x0") key,
+            in("x1") dictionary,
+            in("x2") key_metadata,
+            in("x3") value_metadata,
+            in("x4") witness,
+            in("x8") out,
+            clobber_abi("C"),
+        );
+    }
+}
+
+#[inline]
+pub unsafe fn optional_metadata(wrapped: *const TypeMetadata) -> *const TypeMetadata {
+    let metadata: *const TypeMetadata;
+    unsafe {
+        asm!(
+            "bl {f}",
+            f = sym swift_optional_metadata,
+            inlateout("x0") 0usize => metadata,
+            in("x1") wrapped,
+            clobber_abi("C"),
+        );
+    }
+    metadata
+}
+
 #[inline]
 pub unsafe fn value_witness_table(metadata: *const TypeMetadata) -> *const usize {
     unsafe { *metadata.cast::<*const usize>().sub(1) }
@@ -386,6 +578,19 @@ pub unsafe fn store_enum_tag_single_payload(
 
 /// `ValueWitnessFlags::HasEnumWitnesses`.
 const HAS_ENUM_WITNESSES: usize = 0x0020_0000;
+
+/// `ValueWitnessFlags::IsNonBitwiseTakable`.
+const IS_NON_BITWISE_TAKABLE: usize = 0x0010_0000;
+
+/// Whether an initialized value may be relocated with a plain byte copy.
+///
+/// Most Swift values may; the exceptions keep pointers into themselves, so
+/// their address is part of their state.
+#[inline]
+pub unsafe fn is_bitwise_takable(metadata: *const TypeMetadata) -> bool {
+    let vwt = unsafe { value_witness_table(metadata) };
+    unsafe { *vwt.add(10) & IS_NON_BITWISE_TAKABLE == 0 }
+}
 
 /// Writes a case tag into uninitialized enum storage through the runtime's
 /// `destructiveInjectEnumTag` witness.
@@ -776,12 +981,9 @@ pub unsafe fn call_static0_object(function: *const (), type_metadata: *const ())
     let object: *mut ();
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") type_metadata,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") type_metadata,
             lateout("x0") object,
             clobber_abi("C"),
         );
@@ -794,12 +996,9 @@ pub unsafe fn call_static0_bool(function: *const (), type_metadata: *const ()) -
     let result: usize;
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") type_metadata,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") type_metadata,
             lateout("x0") result,
             clobber_abi("C"),
         );
@@ -817,12 +1016,9 @@ pub unsafe fn call_static_value_bool_to_object(
     let object: *mut ();
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") type_metadata,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") type_metadata,
             inlateout("x0") value => object,
             in("x1") boolean as usize,
             clobber_abi("C"),
@@ -841,12 +1037,9 @@ pub unsafe fn call_static_values_to_object(
     let object: *mut ();
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") type_metadata,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") type_metadata,
             inlateout("x0") value0 => object,
             in("x1") value1,
             clobber_abi("C"),
@@ -865,12 +1058,9 @@ pub unsafe fn call_static_array_value_to_object(
     let object: *mut ();
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") type_metadata,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") type_metadata,
             inlateout("x0") array => object,
             in("x1") value,
             clobber_abi("C"),
@@ -915,12 +1105,9 @@ pub unsafe fn call_make_async_iterator(
 ) {
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") sequence,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") sequence,
             in("x0") sequence_metadata,
             in("x1") witness,
             in("x8") iterator,
@@ -934,12 +1121,9 @@ pub unsafe fn call_object_to_bool(function: *const (), object: *const ()) -> boo
     let result: usize;
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") object,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") object,
             inlateout("x0") object as usize => result,
             clobber_abi("C"),
         );
@@ -953,12 +1137,9 @@ pub unsafe fn call_object_to_string(function: *const (), object: *const ()) -> R
     let word1: usize;
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") object,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") object,
             in("x0") object,
             lateout("x0") word0,
             lateout("x1") word1,
@@ -976,12 +1157,9 @@ pub unsafe fn call_object_to_rect(function: *const (), object: *const ()) -> (f6
     let height: f64;
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") object,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") object,
             in("x0") object,
             lateout("d0") x,
             lateout("d1") y,
@@ -998,12 +1176,9 @@ pub unsafe fn call_value_to_int(function: *const (), value: *const ()) -> isize 
     let result: isize;
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") value,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") value,
             inlateout("x0") value as isize => result,
             clobber_abi("C"),
         );
@@ -1016,12 +1191,9 @@ pub unsafe fn call_value_to_bool(function: *const (), value: *const ()) -> bool 
     let result: usize;
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") value,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") value,
             inlateout("x0") value as usize => result,
             clobber_abi("C"),
         );
@@ -1034,12 +1206,9 @@ pub unsafe fn call_value_to_object(function: *const (), value: *const ()) -> *mu
     let result: usize;
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") value,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") value,
             inlateout("x0") value as usize => result,
             clobber_abi("C"),
         );
@@ -1053,12 +1222,9 @@ pub unsafe fn call_value_to_string(function: *const (), value: *const ()) -> Raw
     let word1: usize;
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") value,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") value,
             in("x0") value,
             lateout("x0") word0,
             lateout("x1") word1,
@@ -1072,12 +1238,9 @@ pub unsafe fn call_value_to_string(function: *const (), value: *const ()) -> Raw
 pub unsafe fn call_object_to_value(function: *const (), object: *const (), out: *mut ()) {
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") object,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") object,
             in("x0") object,
             in("x8") out,
             clobber_abi("C"),
@@ -1089,12 +1252,9 @@ pub unsafe fn call_object_to_value(function: *const (), object: *const (), out: 
 pub unsafe fn call_value_to_value(function: *const (), value: *const (), out: *mut ()) {
     unsafe {
         asm!(
-            "stp x20, x19, [sp, #-16]!",
-            "mov x20, x10",
-            "blr x9",
-            "ldp x20, x19, [sp], #16",
-            in("x9") function,
-            in("x10") value,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") value,
             in("x0") value,
             in("x8") out,
             clobber_abi("C"),
@@ -1111,17 +1271,12 @@ pub unsafe fn call_object_to_throwing_value(
     let error: *mut ();
     unsafe {
         asm!(
-            "stp x20, x21, [sp, #-16]!",
-            "mov x20, x10",
-            "mov x21, #0",
-            "blr x9",
-            "mov x11, x21",
-            "ldp x20, x21, [sp], #16",
-            in("x9") function,
-            in("x10") object,
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") object,
+            inlateout("x21") 0usize => error,
             in("x0") object,
             in("x8") out,
-            lateout("x11") error,
             clobber_abi("C"),
         );
     }

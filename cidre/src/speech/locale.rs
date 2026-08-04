@@ -10,7 +10,7 @@ use crate::{
     swift::{SwiftMetadata, abi},
 };
 
-use super::value::{Storage, Value, call_with_owned_values};
+use crate::swift::value::{Storage, Value, call_with_owned_values};
 
 #[link(name = "swiftFoundation")]
 unsafe extern "C" {
@@ -21,16 +21,7 @@ unsafe extern "C" {
     fn foundation_locale_init();
 }
 
-pub(super) struct FoundationLocale;
-
-unsafe impl SwiftMetadata for FoundationLocale {
-    fn metadata() -> *const abi::TypeMetadata {
-        unsafe {
-            abi::call_int_to_int(foundation_locale_metadata as *const (), 0)
-                as *const abi::TypeMetadata
-        }
-    }
-}
+crate::define_swift_marker!(pub(super) FoundationLocale = accessor foundation_locale_metadata);
 
 /// Builds `Foundation.Locale(identifier:)`.
 pub(super) fn with_id(locale_id: &str) -> Value<FoundationLocale> {

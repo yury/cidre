@@ -1,7 +1,4 @@
-use crate::{
-    api, arc, ns,
-    swift::{SwiftMetadata, abi, async_task::swift_opaque_iterator_typeref},
-};
+use crate::{api, arc, ns, swift::async_task::swift_opaque_iterator_typeref};
 
 use super::{locale, speech_transcriber::ResultsTask};
 
@@ -134,16 +131,7 @@ unsafe extern "C" {
     fn dictation_transcriber_result_text();
 }
 
-struct DictationTranscriberPreset;
-
-unsafe impl SwiftMetadata for DictationTranscriberPreset {
-    fn metadata() -> *const abi::TypeMetadata {
-        unsafe {
-            abi::call_int_to_int(dictation_transcriber_preset_metadata as *const (), 0)
-                as *const abi::TypeMetadata
-        }
-    }
-}
+crate::define_swift_marker!(DictationTranscriberPreset = accessor dictation_transcriber_preset_metadata);
 
 impl DictationTranscriber {
     /// Creates a transcriber using `Foundation.Locale(identifier:)` and one of
@@ -208,7 +196,7 @@ swift_opaque_iterator_typeref!(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::speech::value::Storage;
+    use crate::swift::{SwiftMetadata, abi, value::Storage};
 
     /// Each case must reach its own Swift static, so a mistyped mangled name
     /// cannot silently alias another preset.

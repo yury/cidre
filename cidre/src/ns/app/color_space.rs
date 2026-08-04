@@ -19,6 +19,11 @@ impl ColorSpace {
         Self::alloc().init_with_cg_color_space(val)
     }
 
+    // NOTE: `CGColorSpace` is not `CF_RETURNS_RETAINED`, so this is really a +0
+    // return. It cannot use the retain-autoreleased path because that requires
+    // `objc::Obj`, which a CoreFoundation type does not implement, so the
+    // pointer is taken as owned. Harmless today only because CoreGraphics hands
+    // back immortal colour spaces.
     #[objc::msg_send(CGColorSpace)]
     pub fn cg_color_space(&self) -> Option<arc::Retained<cg::ColorSpace>>;
 

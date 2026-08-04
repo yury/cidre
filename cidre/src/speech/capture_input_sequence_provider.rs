@@ -1,9 +1,6 @@
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
-use crate::{
-    api, arc, av, ns, swift,
-    swift::{SwiftMetadata, abi},
-};
+use crate::{api, arc, av, ns, swift, swift::abi};
 
 use crate::swift::async_task::{
     swift_async_epilogue, swift_async_function_pointer, swift_async_load_parent,
@@ -12,10 +9,8 @@ use crate::swift::async_task::{
     swift_task_switch,
 };
 
-use super::{
-    SpeechModule,
-    value::{Storage, Value},
-};
+use super::SpeechModule;
+use crate::swift::value::{Optional, Storage, Value};
 
 crate::define_swift_class!(pub CaptureInputSequenceProvider);
 
@@ -29,7 +24,7 @@ unsafe impl Send for AnalyzerInputSequence {}
 struct ProviderTask {
     device: arc::R<av::CaptureDevice>,
     modules: swift::Array<SpeechModule>,
-    priority: Value<OptionalTaskPriority>,
+    priority: Value<Optional<TaskPriority>>,
     result: *mut (),
     error: *mut (),
     callback: Option<
@@ -63,35 +58,12 @@ unsafe extern "C" {
     static PROVIDER_WITH_SESSION_ASYNC_FN: u8;
 }
 
-pub(super) struct AnalyzerInputs;
+crate::define_swift_marker!(
+    pub(super) AnalyzerInputs =
+        opaque (&raw const CAPTURE_INPUT_SEQUENCE_PROVIDER_ANALYZER_INPUTS_DESCRIPTOR).cast(), 0
+);
 
-unsafe impl SwiftMetadata for AnalyzerInputs {
-    fn metadata() -> *const abi::TypeMetadata {
-        unsafe {
-            let descriptor =
-                (&raw const CAPTURE_INPUT_SEQUENCE_PROVIDER_ANALYZER_INPUTS_DESCRIPTOR).cast();
-            abi::opaque_type_metadata(descriptor, 0)
-        }
-    }
-}
-
-struct TaskPriority;
-
-unsafe impl SwiftMetadata for TaskPriority {
-    fn metadata() -> *const abi::TypeMetadata {
-        unsafe {
-            abi::call_int_to_int(task_priority_metadata as *const (), 0) as *const abi::TypeMetadata
-        }
-    }
-}
-
-struct OptionalTaskPriority;
-
-unsafe impl SwiftMetadata for OptionalTaskPriority {
-    fn metadata() -> *const abi::TypeMetadata {
-        unsafe { abi::type_by_mangled_name("ScPSg") }
-    }
-}
+crate::define_swift_marker!(TaskPriority = accessor task_priority_metadata);
 
 impl CaptureInputSequenceProvider {
     #[doc(alias = "CaptureInputSequenceProvider.providerWithSession")]
@@ -177,7 +149,7 @@ impl ProviderTask {
             let task = Box::new(Self {
                 device: device.retained(),
                 modules: swift::Array::from_slice(modules),
-                priority: Value::<OptionalTaskPriority>::optional_none::<TaskPriority>(),
+                priority: Value::<Optional<TaskPriority>>::none(),
                 result: core::ptr::null_mut(),
                 error: core::ptr::null_mut(),
                 callback: Some(Box::new(callback)),

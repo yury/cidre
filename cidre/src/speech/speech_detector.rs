@@ -3,7 +3,7 @@ use crate::{
     swift::{SwiftMetadata, abi},
 };
 
-use super::value::{Storage, call_with_owned_value};
+use crate::swift::value::{Storage, call_with_owned_value};
 
 crate::define_swift_class!(pub SpeechDetector);
 
@@ -37,27 +37,9 @@ unsafe extern "C" {
     fn speech_detector_init();
 }
 
-struct SensitivityLevelValue;
+crate::define_swift_marker!(SensitivityLevelValue = accessor sensitivity_level_metadata);
 
-unsafe impl SwiftMetadata for SensitivityLevelValue {
-    fn metadata() -> *const abi::TypeMetadata {
-        unsafe {
-            abi::call_int_to_int(sensitivity_level_metadata as *const (), 0)
-                as *const abi::TypeMetadata
-        }
-    }
-}
-
-struct DetectionOptions;
-
-unsafe impl SwiftMetadata for DetectionOptions {
-    fn metadata() -> *const abi::TypeMetadata {
-        unsafe {
-            abi::call_int_to_int(detection_options_metadata as *const (), 0)
-                as *const abi::TypeMetadata
-        }
-    }
-}
+crate::define_swift_marker!(DetectionOptions = accessor detection_options_metadata);
 
 impl SpeechDetector {
     #[doc(alias = "SpeechDetector.init")]

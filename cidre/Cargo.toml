@@ -60,6 +60,7 @@ full = [
   "vn",
   "sn",
   "speech",
+  "music_understanding",
   "ui",
   "ut",
   "un",
@@ -126,6 +127,7 @@ io_kit = []
 io_pm = []
 sn = ["ns"]
 speech = ["swift", "ns"]
+music_understanding = ["swift", "ns", "av", "cm"]
 sec = ["cf"]
 vn = ["ns"]
 vdsp = []
@@ -310,8 +312,7 @@ cc = "1"
 
 tokio = { optional = true, version = "1", default-features = false, features = ["macros", "rt", "rt-multi-thread", "time", "net", "process", "io-util"] }
 parking_lot = { optional = true, version = "0.12" }
-# cidre-macros = { version = "0.6", path = "../cidre-macros" }
-cidre-macros = { version = "0.6" }
+cidre-macros = { version = "0.6", path = "../cidre-macros" }
 half = { optional = true, version = "2.6" }
 
 [dev-dependencies]
@@ -416,3 +417,7 @@ targets = [
     "aarch64-apple-watchos",
     "aarch64-apple-visionos",
 ]
+
+[[example]]
+name = "music-understanding"
+required-features = ["music_understanding", "av", "async", "cm", "dispatch", "macos_27_0"]

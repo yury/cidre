@@ -8,6 +8,7 @@ mod array;
 pub(crate) mod async_task;
 mod string;
 mod types;
+pub(crate) mod value;
 
 pub use array::{Array, ArrayIter};
 pub use string::{RawString, SmallStringError, String};

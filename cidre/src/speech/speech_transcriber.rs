@@ -1,9 +1,6 @@
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
-use crate::{
-    api, arc, ns, swift,
-    swift::{SwiftMetadata, abi},
-};
+use crate::{api, arc, ns, swift, swift::abi};
 
 use crate::swift::async_task::{
     swift_async_epilogue, swift_async_function_pointer, swift_async_load_parent,
@@ -11,10 +8,8 @@ use crate::swift::async_task::{
     swift_opaque_iterator_typeref, swift_task_alloc, swift_task_dealloc, swift_task_switch,
 };
 
-use super::{
-    locale,
-    value::{AnyValue, DynamicStorage, Storage, call_with_owned_value},
-};
+use super::locale;
+use crate::swift::value::{AnyValue, DynamicStorage, Storage, call_with_owned_value};
 
 crate::define_swift_class!(pub SpeechTranscriber);
 
@@ -101,46 +96,13 @@ unsafe extern "C" {
     static ASYNC_ITERATOR_NEXT_ASYNC_FN: u8;
 }
 
-struct SpeechTranscriberPreset;
+crate::define_swift_marker!(SpeechTranscriberPreset = accessor speech_transcriber_preset_metadata);
 
-unsafe impl SwiftMetadata for SpeechTranscriberPreset {
-    fn metadata() -> *const abi::TypeMetadata {
-        unsafe {
-            abi::call_int_to_int(speech_transcriber_preset_metadata as *const (), 0)
-                as *const abi::TypeMetadata
-        }
-    }
-}
+crate::define_swift_marker!(AttributedString = accessor attributed_string_metadata);
 
-struct AttributedString;
+crate::define_swift_marker!(AttributedStringCharacterView = accessor attributed_string_character_view_metadata);
 
-unsafe impl SwiftMetadata for AttributedString {
-    fn metadata() -> *const abi::TypeMetadata {
-        unsafe {
-            abi::call_int_to_int(attributed_string_metadata as *const (), 0)
-                as *const abi::TypeMetadata
-        }
-    }
-}
-
-struct AttributedStringCharacterView;
-
-unsafe impl SwiftMetadata for AttributedStringCharacterView {
-    fn metadata() -> *const abi::TypeMetadata {
-        unsafe {
-            abi::call_int_to_int(attributed_string_character_view_metadata as *const (), 0)
-                as *const abi::TypeMetadata
-        }
-    }
-}
-
-struct SwiftError;
-
-unsafe impl SwiftMetadata for SwiftError {
-    fn metadata() -> *const abi::TypeMetadata {
-        unsafe { abi::type_by_mangled_name("s5Error_p") }
-    }
-}
+crate::define_swift_marker!(SwiftError = mangled "s5Error_p");
 
 impl SpeechTranscriber {
     #[doc(alias = "SpeechTranscriber.isAvailable")]
@@ -588,6 +550,7 @@ unsafe extern "C" fn results_task_process() {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::swift::SwiftMetadata;
 
     /// The failure path reads the thrown error straight out of its indirect
     /// return slot, which is only valid while `any Error` stays one word wide.

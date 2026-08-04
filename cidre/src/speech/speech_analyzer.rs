@@ -1,7 +1,4 @@
-use crate::{
-    api, arc, ns, swift,
-    swift::{SwiftMetadata, abi},
-};
+use crate::{api, arc, ns, swift, swift::abi};
 
 #[cfg(feature = "av")]
 use crate::swift::async_task::{
@@ -17,10 +14,8 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 #[cfg(feature = "av")]
 use super::CaptureInputSequenceProvider;
 
-use super::{
-    SpeechModule,
-    value::{Value, call_with_owned_value},
-};
+use super::SpeechModule;
+use crate::swift::value::{Optional, Value, call_with_owned_value};
 
 crate::define_swift_class!(pub SpeechAnalyzer);
 
@@ -44,24 +39,7 @@ unsafe extern "C" {
     static ANALYZE_SEQUENCE_ASYNC_FN: u8;
 }
 
-struct AnalyzerOptions;
-
-unsafe impl SwiftMetadata for AnalyzerOptions {
-    fn metadata() -> *const abi::TypeMetadata {
-        unsafe {
-            abi::call_int_to_int(speech_analyzer_options_metadata as *const (), 0)
-                as *const abi::TypeMetadata
-        }
-    }
-}
-
-struct OptionalAnalyzerOptions;
-
-unsafe impl SwiftMetadata for OptionalAnalyzerOptions {
-    fn metadata() -> *const abi::TypeMetadata {
-        unsafe { abi::type_by_mangled_name("6Speech0A8AnalyzerC7OptionsVSg") }
-    }
-}
+crate::define_swift_marker!(AnalyzerOptions = accessor speech_analyzer_options_metadata);
 
 impl SpeechAnalyzer {
     /// Creates an analyzer with `options: nil`.
@@ -76,7 +54,7 @@ impl SpeechAnalyzer {
     pub fn with_modules(modules: &[SpeechModule]) -> arc::R<Self> {
         unsafe {
             let modules = swift::Array::from_slice(modules);
-            let options = Value::<OptionalAnalyzerOptions>::optional_none::<AnalyzerOptions>();
+            let options = Value::<Optional<AnalyzerOptions>>::none();
             let analyzer_metadata =
                 abi::call_int_to_int(speech_analyzer_metadata as *const (), 0) as *const ();
             let object = call_with_owned_value(options, |options| {
