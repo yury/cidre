@@ -94,15 +94,6 @@ pub mod cv;
 #[cfg(feature = "da")]
 pub mod da;
 
-/// DockKit
-#[cfg(all(
-    target_vendor = "apple",
-    target_arch = "aarch64",
-    any(target_os = "macos", all(target_os = "ios", not(target_abi = "sim"))),
-    feature = "dk"
-))]
-pub mod dk;
-
 /// Grand Central Dispatch
 #[cfg(feature = "dispatch")]
 pub mod dispatch;
@@ -200,24 +191,6 @@ pub mod sc;
 #[cfg(feature = "sn")]
 pub mod sn;
 
-/// Speech.framework native Swift API.
-#[cfg(all(
-    target_arch = "aarch64",
-    not(target_os = "watchos"),
-    feature = "speech",
-    any(feature = "macos_26_0", feature = "ios_26_0")
-))]
-pub mod speech;
-
-/// MusicUnderstanding.framework native Swift API.
-#[cfg(all(
-    target_arch = "aarch64",
-    not(target_os = "watchos"),
-    feature = "music_understanding",
-    any(feature = "macos_27_0", feature = "ios_27_0")
-))]
-pub mod music_understanding;
-
 #[cfg(all(
     any(
         target_os = "ios",
@@ -241,6 +214,10 @@ pub mod time;
 
 #[cfg(feature = "simd")]
 pub mod simd;
+
+/// Spatial framework value types.
+#[cfg(feature = "spatial")]
+pub mod spatial;
 
 #[cfg(all(target_vendor = "apple", target_arch = "aarch64", feature = "swift"))]
 pub mod swift;

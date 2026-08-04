@@ -14,10 +14,6 @@ pub struct ValueLayout {
     pub align: usize,
 }
 
-/// Medium-priority Swift task that is enqueued immediately, returns no value,
-/// and consumes its opaque context without applying Swift ARC to it.
-pub const ENQUEUED_DISCARDING_TASK_FLAGS: usize = 0x15 | (1 << 12) | (1 << 14) | (1 << 15);
-
 #[link(name = "swiftCore")]
 unsafe extern "C" {
     /// Declared `C_CC` in the runtime, so it needs no assembly shim.
@@ -37,6 +33,7 @@ unsafe extern "C" {
         context: *const (),
         args: *const *const (),
     ) -> *const TypeMetadata;
+    fn swift_getObjCClassMetadata(class: *const ()) -> *const TypeMetadata;
     fn swift_getOpaqueTypeMetadata(
         request: usize,
         args: *const *const (),
@@ -143,13 +140,6 @@ unsafe extern "C" {
     static SWIFT_STRING_METADATA: u8;
 }
 
-#[link(name = "swift_Concurrency")]
-unsafe extern "C" {
-    fn swift_task_create();
-    fn swift_task_create_common();
-    fn swift_task_enqueueGlobal(task: *mut ());
-}
-
 /// Retains a native Swift object.
 ///
 /// Returns the same pointer, as the runtime declares `FirstParamReturned`.
@@ -170,63 +160,6 @@ pub unsafe fn object_retain(object: *const ()) -> *const () {
 #[inline]
 pub unsafe fn object_release(object: *const ()) {
     unsafe { swift_release(object) }
-}
-
-#[inline]
-pub unsafe fn task_create_common(
-    flags: usize,
-    future_result_type: *const TypeMetadata,
-    function: *const (),
-    context: *mut (),
-    initial_context_size: usize,
-) -> (*mut (), *mut ()) {
-    let task: *mut ();
-    let initial_context: *mut ();
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_task_create_common,
-            inlateout("x0") flags => task,
-            in("x1") core::ptr::null_mut::<()>(),
-            in("x2") future_result_type,
-            in("x3") function,
-            in("x4") context,
-            in("x5") initial_context_size,
-            lateout("x1") initial_context,
-            clobber_abi("C"),
-        );
-    }
-    (task, initial_context)
-}
-
-#[inline]
-pub unsafe fn task_create(
-    flags: usize,
-    future_result_type: *const TypeMetadata,
-    function: *const (),
-    context: *mut (),
-) -> (*mut (), *mut ()) {
-    let task: *mut ();
-    let initial_context: *mut ();
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_task_create,
-            inlateout("x0") flags => task,
-            in("x1") core::ptr::null_mut::<()>(),
-            in("x2") future_result_type,
-            in("x3") function,
-            in("x4") context,
-            lateout("x1") initial_context,
-            clobber_abi("C"),
-        );
-    }
-    (task, initial_context)
-}
-
-#[inline]
-pub unsafe fn task_enqueue_global(task: *mut ()) {
-    unsafe { swift_task_enqueueGlobal(task) }
 }
 
 /// Fills in a thrown Swift error's `NSError` representation and returns it.
@@ -289,6 +222,11 @@ metadata!(uint64_metadata, SWIFT_UINT64_METADATA);
 metadata!(float_metadata, SWIFT_FLOAT_METADATA);
 metadata!(double_metadata, SWIFT_DOUBLE_METADATA);
 metadata!(string_metadata, SWIFT_STRING_METADATA);
+
+#[inline]
+pub unsafe fn objc_class_metadata(class: *const ()) -> *const TypeMetadata {
+    unsafe { swift_getObjCClassMetadata(class) }
+}
 
 #[inline]
 pub unsafe fn array_metadata(element: *const TypeMetadata) -> *const TypeMetadata {
@@ -574,6 +512,24 @@ pub unsafe fn store_enum_tag_single_payload(
     let store_tag: unsafe extern "C" fn(*mut (), u32, u32, *const TypeMetadata) =
         unsafe { std::mem::transmute(*vwt.add(7)) };
     unsafe { store_tag(value, tag, empty_cases, metadata) };
+}
+
+/// Reads the case tag of a multi-payload Swift enum.
+#[inline]
+pub unsafe fn get_enum_tag(value: *const (), metadata: *const TypeMetadata) -> u32 {
+    let vwt = unsafe { value_witness_table(metadata) };
+    let get_tag: unsafe extern "C" fn(*const (), *const TypeMetadata) -> u32 =
+        unsafe { std::mem::transmute(*vwt.add(11)) };
+    unsafe { get_tag(value, metadata) }
+}
+
+/// Replaces an enum value with its selected case's payload in place.
+#[inline]
+pub unsafe fn destructive_project_enum_data(value: *mut (), metadata: *const TypeMetadata) {
+    let vwt = unsafe { value_witness_table(metadata) };
+    let project: unsafe extern "C" fn(*mut (), *const TypeMetadata) =
+        unsafe { std::mem::transmute(*vwt.add(12)) };
+    unsafe { project(value, metadata) };
 }
 
 /// `ValueWitnessFlags::HasEnumWitnesses`.
@@ -977,6 +933,123 @@ pub unsafe fn call0_object(function: *const ()) -> *mut () {
 }
 
 #[inline]
+pub unsafe fn call_double_to_words2(function: *const (), value: f64) -> (u64, u64) {
+    let word0: u64;
+    let word1: u64;
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("d0") value,
+            lateout("x0") word0,
+            lateout("x1") word1,
+            clobber_abi("C"),
+        );
+    }
+    (word0, word1)
+}
+
+#[inline]
+pub unsafe fn call_vector_duration_bool_object(
+    function: *const (),
+    vector: (f64, f64, f64),
+    duration: (u64, u64),
+    relative: bool,
+    object: *const (),
+) -> (*mut (), *mut ()) {
+    let result: *mut ();
+    let error: *mut ();
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("d0") vector.0,
+            in("d1") vector.1,
+            in("d2") vector.2,
+            inlateout("x0") duration.0 => result,
+            in("x1") duration.1,
+            in("x2") relative as usize,
+            in("x20") object,
+            inlateout("x21") 0usize => error,
+            clobber_abi("C"),
+        );
+    }
+    (result, error)
+}
+
+#[inline]
+pub unsafe fn call_rotation_duration_bool_object(
+    function: *const (),
+    rotation: (f64, f64, f64, f64),
+    duration: (u64, u64),
+    relative: bool,
+    object: *const (),
+) -> (*mut (), *mut ()) {
+    let result: *mut ();
+    let error: *mut ();
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("d0") rotation.0,
+            in("d1") rotation.1,
+            in("d2") rotation.2,
+            in("d3") rotation.3,
+            inlateout("x0") duration.0 => result,
+            in("x1") duration.1,
+            in("x2") relative as usize,
+            in("x20") object,
+            inlateout("x21") 0usize => error,
+            clobber_abi("C"),
+        );
+    }
+    (result, error)
+}
+
+#[inline]
+pub unsafe fn call_doubles3_to_throwing_value(
+    function: *const (),
+    values: (f64, f64, f64),
+    out: *mut (),
+) -> *mut () {
+    let error: *mut ();
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("d0") values.0,
+            in("d1") values.1,
+            in("d2") values.2,
+            in("x8") out,
+            inlateout("x21") 0usize => error,
+            clobber_abi("C"),
+        );
+    }
+    error
+}
+
+#[inline]
+pub unsafe fn call_values3_to_value(
+    function: *const (),
+    value0: *mut (),
+    value1: *mut (),
+    value2: *mut (),
+    out: *mut (),
+) {
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("x0") value0,
+            in("x1") value1,
+            in("x2") value2,
+            in("x8") out,
+            clobber_abi("C"),
+        );
+    }
+}
+
+#[inline]
 pub unsafe fn call_static0_object(function: *const (), type_metadata: *const ()) -> *mut () {
     let object: *mut ();
     unsafe {
@@ -1084,11 +1157,53 @@ pub unsafe fn call_string_to_value(function: *const (), string: RawString, out: 
 }
 
 #[inline]
-pub unsafe fn call0_value(function: *const (), out: *mut ()) {
+pub unsafe fn call_int_value_rect_value_to_value(
+    function: *const (),
+    integer: isize,
+    value: *const (),
+    rect: (f64, f64, f64, f64),
+    trailing_value: *const (),
+    out: *mut (),
+) {
     unsafe {
         asm!(
             "blr {function}",
             function = in(reg) function,
+            in("x0") integer,
+            in("x1") value,
+            in("d0") rect.0,
+            in("d1") rect.1,
+            in("d2") rect.2,
+            in("d3") rect.3,
+            in("x2") trailing_value,
+            in("x8") out,
+            clobber_abi("C"),
+        );
+    }
+}
+
+#[cfg(feature = "av")]
+#[inline]
+pub unsafe fn call_camera_information_init(
+    function: *const (),
+    device_type: *const (),
+    position: isize,
+    orientation: *const (),
+    intrinsics: *const (),
+    reference_dimensions: (u64, u64, u64),
+    out: *mut (),
+) {
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("x0") device_type,
+            in("x1") position,
+            in("x2") orientation,
+            in("x3") intrinsics,
+            in("x4") reference_dimensions.0,
+            in("x5") reference_dimensions.1,
+            in("x6") reference_dimensions.2,
             in("x8") out,
             clobber_abi("C"),
         );
@@ -1096,21 +1211,12 @@ pub unsafe fn call0_value(function: *const (), out: *mut ()) {
 }
 
 #[inline]
-pub unsafe fn call_make_async_iterator(
-    function: *const (),
-    sequence: *mut (),
-    sequence_metadata: *const TypeMetadata,
-    witness: *const (),
-    iterator: *mut (),
-) {
+pub unsafe fn call0_value(function: *const (), out: *mut ()) {
     unsafe {
         asm!(
             "blr {function}",
             function = in(reg) function,
-            in("x20") sequence,
-            in("x0") sequence_metadata,
-            in("x1") witness,
-            in("x8") iterator,
+            in("x8") out,
             clobber_abi("C"),
         );
     }
@@ -1125,6 +1231,36 @@ pub unsafe fn call_object_to_bool(function: *const (), object: *const ()) -> boo
             function = in(reg) function,
             in("x20") object,
             inlateout("x0") object as usize => result,
+            clobber_abi("C"),
+        );
+    }
+    result & 1 == 1
+}
+
+#[inline]
+pub unsafe fn call_object_to_int(function: *const (), object: *const ()) -> isize {
+    let result: isize;
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") object,
+            inlateout("x0") object as isize => result,
+            clobber_abi("C"),
+        );
+    }
+    result
+}
+
+#[inline]
+pub unsafe fn call_objects_to_bool(function: *const (), lhs: *const (), rhs: *const ()) -> bool {
+    let result: usize;
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            inlateout("x0") lhs as usize => result,
+            in("x1") rhs,
             clobber_abi("C"),
         );
     }
@@ -1199,6 +1335,82 @@ pub unsafe fn call_value_to_bool(function: *const (), value: *const ()) -> bool 
         );
     }
     result & 1 == 1
+}
+
+#[inline]
+pub unsafe fn call_value_to_double(function: *const (), value: *const ()) -> f64 {
+    let result: f64;
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") value,
+            in("x0") value,
+            lateout("d0") result,
+            clobber_abi("C"),
+        );
+    }
+    result
+}
+
+#[inline]
+pub unsafe fn call_value_to_words3(function: *const (), value: *const ()) -> (u64, u64, u64) {
+    let word0: u64;
+    let word1: u64;
+    let word2: u64;
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") value,
+            in("x0") value,
+            lateout("x0") word0,
+            lateout("x1") word1,
+            lateout("x2") word2,
+            clobber_abi("C"),
+        );
+    }
+    (word0, word1, word2)
+}
+
+#[inline]
+pub unsafe fn call_value_to_doubles2(function: *const (), value: *const ()) -> (f64, f64) {
+    let value0: f64;
+    let value1: f64;
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") value,
+            in("x0") value,
+            lateout("d0") value0,
+            lateout("d1") value1,
+            clobber_abi("C"),
+        );
+    }
+    (value0, value1)
+}
+
+#[inline]
+pub unsafe fn call_value_to_rect(function: *const (), value: *const ()) -> (f64, f64, f64, f64) {
+    let x: f64;
+    let y: f64;
+    let width: f64;
+    let height: f64;
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") value,
+            in("x0") value,
+            lateout("d0") x,
+            lateout("d1") y,
+            lateout("d2") width,
+            lateout("d3") height,
+            clobber_abi("C"),
+        );
+    }
+    (x, y, width, height)
 }
 
 #[inline]
@@ -1277,6 +1489,26 @@ pub unsafe fn call_object_to_throwing_value(
             inlateout("x21") 0usize => error,
             in("x0") object,
             in("x8") out,
+            clobber_abi("C"),
+        );
+    }
+    error
+}
+
+#[inline]
+pub unsafe fn call_value_object_to_throwing_void(
+    function: *const (),
+    value: *const (),
+    object: *const (),
+) -> *mut () {
+    let error: *mut ();
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("x0") value,
+            in("x20") object,
+            inlateout("x21") 0usize => error,
             clobber_abi("C"),
         );
     }

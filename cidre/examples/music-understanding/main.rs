@@ -3,7 +3,7 @@
 //! Usage: `music-understanding <audio-file>`
 //! `cargo r --features="av,async,cm,dispatch,macos_27_0" --example music-understanding <audio-file>`
 
-use cidre::{av, cm, music_understanding as mu, ns};
+use cidre::{av, cm, ns, swift::music_understanding as mu};
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {

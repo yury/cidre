@@ -6,36 +6,11 @@
 //! differ, so the construction sequence lives here once.
 
 use crate::{
-    swift,
+    swift::foundation,
     swift::{SwiftMetadata, abi},
 };
 
-use crate::swift::value::{Storage, Value, call_with_owned_values};
-
-#[link(name = "swiftFoundation")]
-unsafe extern "C" {
-    #[link_name = "$s10Foundation6LocaleVMa"]
-    fn foundation_locale_metadata();
-
-    #[link_name = "$s10Foundation6LocaleV10identifierACSS_tcfC"]
-    fn foundation_locale_init();
-}
-
-crate::define_swift_marker!(pub(super) FoundationLocale = accessor foundation_locale_metadata);
-
-/// Builds `Foundation.Locale(identifier:)`.
-pub(super) fn with_id(locale_id: &str) -> Value<FoundationLocale> {
-    unsafe {
-        let mut storage = Storage::<FoundationLocale>::new();
-        let locale_id = swift::String::from(locale_id).into_raw();
-        abi::call_string_to_value(
-            foundation_locale_init as *const (),
-            locale_id,
-            storage.as_mut_ptr(),
-        );
-        storage.assume_init()
-    }
-}
+use crate::swift::value::{Storage, call_with_owned_values};
 
 /// Creates a transcriber through `init(locale:preset:)`.
 ///
@@ -55,14 +30,14 @@ pub(super) unsafe fn transcriber_with_id_and_preset<P: SwiftMetadata>(
     init: *const (),
 ) -> *mut () {
     unsafe {
-        let locale = with_id(locale_id);
+        let locale = foundation::Locale::with_id(locale_id);
 
         let mut preset_storage = Storage::<P>::new();
         abi::call0_value(preset_getter, preset_storage.as_mut_ptr());
         let preset = preset_storage.assume_init();
 
         let class_metadata = abi::call_int_to_int(class_metadata_accessor, 0) as *const ();
-        call_with_owned_values(locale, preset, |locale, preset| {
+        call_with_owned_values(locale.into_value(), preset, |locale, preset| {
             abi::call_static_values_to_object(init, class_metadata, locale, preset)
         })
     }

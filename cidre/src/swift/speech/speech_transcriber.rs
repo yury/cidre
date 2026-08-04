@@ -1,15 +1,21 @@
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
-use crate::{api, arc, ns, swift, swift::abi};
+use crate::{
+    api, arc, ns,
+    swift::abi,
+    swift::foundation::{self, AttrStringValue},
+};
 
-use crate::swift::async_task::{
+use crate::swift::concurrency::{
+    self, ASYNC_ITERATOR_CONFORMANCE, ASYNC_ITERATOR_NEXT_ASYNC_FN,
+    ASYNC_SEQUENCE_ASSOCIATED_TYPES, async_iterator_next, async_sequence_make_iterator,
     swift_async_epilogue, swift_async_function_pointer, swift_async_load_parent,
     swift_async_load_resume, swift_async_prologue, swift_async_task_descriptor,
     swift_opaque_iterator_typeref, swift_task_alloc, swift_task_dealloc, swift_task_switch,
 };
 
 use super::locale;
-use crate::swift::value::{AnyValue, DynamicStorage, Storage, call_with_owned_value};
+use crate::swift::value::{AnyValue, DynamicStorage, Storage};
 
 crate::define_swift_class!(pub SpeechTranscriber);
 
@@ -65,42 +71,9 @@ unsafe extern "C" {
     #[link_name = "$s6Speech0A11TranscriberC6ResultV4text10Foundation16AttributedStringVvg"]
     fn speech_transcriber_result_text();
 
-    #[link_name = "$s10Foundation16AttributedStringVMa"]
-    fn attributed_string_metadata();
-
-    #[link_name = "$s10Foundation16AttributedStringV13CharacterViewVMa"]
-    fn attributed_string_character_view_metadata();
-
-    #[link_name = "$s10Foundation16AttributedStringV10charactersAC13CharacterViewVvg"]
-    fn attributed_string_characters();
-
-    #[link_name = "$sSS10FoundationE11_charactersSSAA16AttributedStringV13CharacterViewV_tcfC"]
-    fn string_from_attributed_string_characters();
-
-    #[link_name = "$sSci17makeAsyncIterator0bC0QzyFTj"]
-    fn async_sequence_make_iterator();
-
-    #[link_name = "$sSciTL"]
-    static ASYNC_SEQUENCE_ASSOCIATED_TYPES: u8;
-
-    #[link_name = "$sSci13AsyncIteratorSci_ScITn"]
-    static ASYNC_ITERATOR_CONFORMANCE: u8;
-}
-
-//#[link(name = "swift_Concurrency")]
-unsafe extern "C" {
-    #[link_name = "$sScI4next9isolation7ElementQzSgScA_pSgYi_tYa7FailureQzYKFTj"]
-    fn async_iterator_next();
-
-    #[link_name = "$sScI4next9isolation7ElementQzSgScA_pSgYi_tYa7FailureQzYKFTjTu"]
-    static ASYNC_ITERATOR_NEXT_ASYNC_FN: u8;
 }
 
 crate::define_swift_marker!(SpeechTranscriberPreset = accessor speech_transcriber_preset_metadata);
-
-crate::define_swift_marker!(AttributedString = accessor attributed_string_metadata);
-
-crate::define_swift_marker!(AttributedStringCharacterView = accessor attributed_string_character_view_metadata);
 
 crate::define_swift_marker!(SwiftError = mangled "s5Error_p");
 
@@ -257,7 +230,7 @@ impl ResultsTask {
             );
 
             let mut iterator_storage = DynamicStorage::new(iterator_metadata);
-            abi::call_make_async_iterator(
+            concurrency::call_make_async_iterator(
                 async_sequence_make_iterator as *const (),
                 sequence_value.as_mut_ptr(),
                 sequence_metadata,
@@ -293,8 +266,8 @@ impl ResultsTask {
                 callback: Box::new(callback),
             });
             let context = Box::into_raw(task).cast();
-            let (_task, _) = abi::task_create(
-                abi::ENQUEUED_DISCARDING_TASK_FLAGS,
+            let (_task, _) = concurrency::task_create(
+                concurrency::ENQUEUED_DISCARDING_TASK_FLAGS,
                 core::ptr::null(),
                 (&raw const cidre_speech_transcriber_results_task_descriptor).cast(),
                 context,
@@ -393,25 +366,9 @@ impl Drop for OwnedPayload {
 
 unsafe fn speech_result_text(result: *const (), text_getter: *const ()) -> std::string::String {
     unsafe {
-        let mut attributed_storage = Storage::<AttributedString>::new();
-        abi::call_value_to_value(text_getter, result, attributed_storage.as_mut_ptr());
-        let attributed = attributed_storage.assume_init();
-
-        let mut characters_storage = Storage::<AttributedStringCharacterView>::new();
-        abi::call_value_to_value(
-            attributed_string_characters as *const (),
-            attributed.as_ptr(),
-            characters_storage.as_mut_ptr(),
-        );
-        let characters = characters_storage.assume_init();
-
-        let value = swift::String::from_raw(call_with_owned_value(characters, |characters| {
-            abi::call_value_to_string(
-                string_from_attributed_string_characters as *const (),
-                characters.cast_const(),
-            )
-        }));
-        value.to_rust_string()
+        let mut storage = Storage::<AttrStringValue>::new();
+        abi::call_value_to_value(text_getter, result, storage.as_mut_ptr());
+        foundation::AttrString::from_storage(storage).to_rust_string()
     }
 }
 
@@ -442,8 +399,8 @@ macro_rules! results_task_next {
             "bl {task_alloc}\n",
             "mov x9, x0\n",
             "str x9, [x22, #72]\n",
-            $crate::swift::async_task::swift_async_store_parent!(), "\n",
-            $crate::swift::async_task::swift_async_store_resume!("{resume}"), "\n",
+            $crate::swift::concurrency::swift_async_store_parent!(), "\n",
+            $crate::swift::concurrency::swift_async_store_resume!("{resume}"), "\n",
             "ldr x0, [x22, #32]\n",
             "mov x1, #0\n",
             "mov x2, #0\n",
@@ -452,7 +409,7 @@ macro_rules! results_task_next {
             "ldr x5, [x22, #64]\n",
             "ldr x20, [x22, #48]\n",
             "mov x22, x9\n",
-            $crate::swift::async_task::swift_async_epilogue!(frame: "32", fp: "16"), "\n",
+            $crate::swift::concurrency::swift_async_epilogue!(frame: "32", fp: "16"), "\n",
             "b {next}",
         )
     };

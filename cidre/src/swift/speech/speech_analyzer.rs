@@ -1,8 +1,8 @@
 use crate::{api, arc, ns, swift, swift::abi};
 
 #[cfg(feature = "av")]
-use crate::swift::async_task::{
-    swift_async_epilogue, swift_async_function_pointer, swift_async_load_parent,
+use crate::swift::concurrency::{
+    self, swift_async_epilogue, swift_async_function_pointer, swift_async_load_parent,
     swift_async_load_resume, swift_async_prologue, swift_async_store_parent,
     swift_async_store_resume, swift_async_task_descriptor, swift_task_alloc, swift_task_dealloc,
     swift_task_switch,
@@ -119,8 +119,8 @@ impl AnalyzerTask {
                 callback: Some(Box::new(callback)),
             });
             let context = Box::into_raw(task).cast();
-            let (_task, _) = abi::task_create(
-                abi::ENQUEUED_DISCARDING_TASK_FLAGS,
+            let (_task, _) = concurrency::task_create(
+                concurrency::ENQUEUED_DISCARDING_TASK_FLAGS,
                 core::ptr::null(),
                 (&raw const cidre_speech_analyzer_task_descriptor).cast(),
                 context,

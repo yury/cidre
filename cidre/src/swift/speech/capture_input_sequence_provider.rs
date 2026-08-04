@@ -2,11 +2,11 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 
 use crate::{api, arc, av, ns, swift, swift::abi};
 
-use crate::swift::async_task::{
-    swift_async_epilogue, swift_async_function_pointer, swift_async_load_parent,
-    swift_async_load_resume, swift_async_prologue, swift_async_store_parent,
-    swift_async_store_resume, swift_async_task_descriptor, swift_task_alloc, swift_task_dealloc,
-    swift_task_switch,
+use crate::swift::concurrency::{
+    self, TaskPriority, swift_async_epilogue, swift_async_function_pointer,
+    swift_async_load_parent, swift_async_load_resume, swift_async_prologue,
+    swift_async_store_parent, swift_async_store_resume, swift_async_task_descriptor,
+    swift_task_alloc, swift_task_dealloc, swift_task_switch,
 };
 
 use super::SpeechModule;
@@ -48,9 +48,6 @@ unsafe extern "C" {
     #[link_name = "$s6Speech28CaptureInputSequenceProviderC14analyzerInputsQrvpQOMQ"]
     static CAPTURE_INPUT_SEQUENCE_PROVIDER_ANALYZER_INPUTS_DESCRIPTOR: u8;
 
-    #[link_name = "$sScPMa"]
-    fn task_priority_metadata();
-
     #[link_name = "$s6Speech28CaptureInputSequenceProviderC19providerWithSession4from010compatibleG08priorityACSo15AVCaptureDeviceC_SayAA0A6Module_pGScPSgtYaKFZ"]
     fn provider_with_session();
 
@@ -62,8 +59,6 @@ crate::define_swift_marker!(
     pub(super) AnalyzerInputs =
         opaque (&raw const CAPTURE_INPUT_SEQUENCE_PROVIDER_ANALYZER_INPUTS_DESCRIPTOR).cast(), 0
 );
-
-crate::define_swift_marker!(TaskPriority = accessor task_priority_metadata);
 
 impl CaptureInputSequenceProvider {
     #[doc(alias = "CaptureInputSequenceProvider.providerWithSession")]
@@ -155,8 +150,8 @@ impl ProviderTask {
                 callback: Some(Box::new(callback)),
             });
             let context = Box::into_raw(task).cast();
-            let (_task, _) = abi::task_create(
-                abi::ENQUEUED_DISCARDING_TASK_FLAGS,
+            let (_task, _) = concurrency::task_create(
+                concurrency::ENQUEUED_DISCARDING_TASK_FLAGS,
                 core::ptr::null(),
                 (&raw const cidre_speech_capture_provider_task_descriptor).cast(),
                 context,

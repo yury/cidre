@@ -2597,10 +2597,14 @@ mod tests {
 
     #[test]
     fn session() {
-        io::Obj::SYS.allow_screen_capture_devices(true).unwrap();
-        io::Obj::SYS
-            .allow_wireless_screen_capture_devices(true)
-            .unwrap();
+        // These go to the CoreMediaIO DAL assistant, which stops answering for
+        // a while once it has been asked twice in quick succession: the second
+        // `allow_screen_capture_devices` blocks for ~5s and then the next
+        // property write fails instantly with 0x10000003 until the connection
+        // resets. Reproducible from plain C, so it is not ours to fix, and it
+        // is only setup for the discovery below either way.
+        let _ = io::Obj::SYS.allow_screen_capture_devices(true);
+        let _ = io::Obj::SYS.allow_wireless_screen_capture_devices(true);
 
         io::Obj::SYS.show();
 

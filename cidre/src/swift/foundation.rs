@@ -1,0 +1,73 @@
+//! Foundation's Swift-native value types.
+//!
+//! These are the Swift `struct`s — `Locale`, `UUID`, `AttributedString` — not
+//! the Objective-C classes in [`crate::ns`]. Their layouts are only known at
+//! runtime, so each keeps its Swift representation and is read through the
+//! framework's own accessors.
+
+mod attr_string;
+mod date;
+mod locale;
+mod uuid;
+
+pub use attr_string::AttrString;
+#[allow(unused_imports)]
+pub(crate) use attr_string::AttrStringValue;
+pub use date::Date;
+pub(crate) use date::DateValue;
+pub use locale::Locale;
+pub use uuid::Uuid;
+pub(crate) use uuid::UuidValue;
+
+#[link(name = "Foundation", kind = "framework")]
+unsafe extern "C" {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::swift;
+
+    #[test]
+    fn uuid_generates_and_round_trips() {
+        let a = Uuid::new();
+        let b = Uuid::new();
+        assert_ne!(a, b, "two generated identifiers must differ");
+
+        let text = a.to_swift_string().to_rust_string();
+        assert_eq!(36, text.len(), "{text}");
+        assert_eq!(text, text.to_uppercase(), "Swift renders them uppercase");
+
+        let parsed = Uuid::with_str(&text).expect("the rendered form must parse");
+        assert_eq!(a, parsed);
+        assert_eq!(a, a.clone());
+    }
+
+    #[test]
+    fn uuid_rejects_malformed_input() {
+        assert!(Uuid::with_str("").is_none());
+        assert!(Uuid::with_str("not-a-uuid").is_none());
+        assert!(Uuid::with_str("00000000-0000-0000-0000-00000000000").is_none());
+        assert!(Uuid::with_str("00000000-0000-0000-0000-000000000000").is_some());
+    }
+
+    #[test]
+    fn locale_round_trips_its_identifier() {
+        for id in ["en_US", "fr_FR", "zh-Hans"] {
+            let locale = Locale::with_id(id);
+            assert_eq!(id, locale.id().to_rust_string(), "{id}");
+        }
+
+        // A `const` literal is the zero-cost path, so it must agree.
+        const EN: swift::String = swift::String::from_ascii_literal("en_GB");
+        assert_eq!("en_GB", Locale::with_swift_id(EN).id().to_rust_string());
+    }
+
+    #[test]
+    fn attr_string_is_reachable_through_speech_results() {
+        // `AttrString` has no public constructor yet; this pins the metadata so
+        // a symbol change is caught here rather than inside a transcription.
+        use crate::swift::SwiftMetadata;
+        let metadata = AttrStringValue::metadata();
+        assert!(!metadata.is_null(), "AttributedString metadata must exist");
+    }
+}

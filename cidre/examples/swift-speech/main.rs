@@ -1,4 +1,4 @@
-use cidre::{av, speech};
+use cidre::{av, swift::speech};
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {

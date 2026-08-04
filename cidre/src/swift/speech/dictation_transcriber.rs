@@ -1,4 +1,4 @@
-use crate::{api, arc, ns, swift::async_task::swift_opaque_iterator_typeref};
+use crate::{api, arc, ns, swift::concurrency::swift_opaque_iterator_typeref};
 
 use super::{locale, speech_transcriber::ResultsTask};
 
@@ -233,7 +233,7 @@ mod tests {
         for preset in DictationPreset::all() {
             unsafe {
                 let transcriber = DictationTranscriber::with_locale_id("en_US", preset);
-                let _module = crate::speech::SpeechModule::from(transcriber.as_ref());
+                let _module = crate::swift::speech::SpeechModule::from(transcriber.as_ref());
             }
         }
     }

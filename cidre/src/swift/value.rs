@@ -1,3 +1,10 @@
+//! Rust-owned storage for Swift values whose layout is only known at runtime.
+//!
+//! This is interop plumbing rather than API: which pieces are reachable depends
+//! on which framework bindings are compiled, so an unused one here is expected
+//! rather than a sign of dead code.
+#![allow(dead_code)]
+
 use std::{
     alloc::{self, Layout},
     marker::PhantomData,
@@ -134,6 +141,17 @@ impl<T: SwiftMetadata> Value<T> {
     pub(crate) unsafe fn assume_consumed(self) {
         let this = ManuallyDrop::new(self);
         unsafe { drop(core::ptr::read(&this.storage)) };
+    }
+
+    /// Erases the marker type while preserving ownership of the Swift value.
+    pub(crate) fn erase(mut self) -> AnyValue {
+        unsafe {
+            let metadata = T::metadata();
+            let mut storage = DynamicStorage::new(metadata);
+            abi::initialize_with_take(storage.as_mut_ptr(), self.as_mut_ptr(), metadata);
+            self.assume_consumed();
+            storage.assume_init()
+        }
     }
 }
 
@@ -272,6 +290,11 @@ pub(crate) struct AnyValue {
 }
 
 impl AnyValue {
+    #[inline]
+    pub(crate) fn as_ptr(&self) -> *const () {
+        self.storage.as_ptr()
+    }
+
     #[inline]
     pub(crate) fn as_mut_ptr(&mut self) -> *mut () {
         self.storage.as_mut_ptr()

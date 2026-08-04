@@ -1,6 +1,6 @@
 //! MusicUnderstanding.framework native Swift ABI bindings.
 //!
-//! Like [`crate::speech`], these call framework and Swift runtime symbols
+//! Like [`crate::swift::speech`], these call framework and Swift runtime symbols
 //! directly. No C or Objective-C wrapper functions are used.
 
 mod analysis_type;

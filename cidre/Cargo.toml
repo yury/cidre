@@ -55,10 +55,12 @@ full = [
   "dispatch",
   "da",
   "dk",
+  "spatial",
   "simd",
   "cat",
   "vn",
   "sn",
+  "foundation",
   "speech",
   "music_understanding",
   "ui",
@@ -103,6 +105,7 @@ ax = ["cf"]
 cf = []
 cat = []
 simd = []
+spatial = []
 app = ["ns"]
 am = ["private", "cf", "dep:tokio"]
 at = ["cf", "cat"]
@@ -126,7 +129,8 @@ io_surface = ["cf"]
 io_kit = []
 io_pm = []
 sn = ["ns"]
-speech = ["swift", "ns"]
+foundation = ["swift"]
+speech = ["swift", "ns", "foundation"]
 music_understanding = ["swift", "ns", "av", "cm"]
 sec = ["cf"]
 vn = ["ns"]
@@ -151,7 +155,7 @@ mps = ["mtl"]
 mpsg = ["mps"]
 dispatch = ["cf", "ns"]
 da = ["cf"]
-dk = ["swift", "cg"]
+dk = ["foundation", "cg", "ns", "spatial"]
 core_motion = ["ns"]
 core_audio = []
 compression = []
