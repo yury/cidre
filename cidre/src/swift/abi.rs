@@ -653,6 +653,29 @@ const HAS_ENUM_WITNESSES: usize = 0x0020_0000;
 /// `ValueWitnessFlags::IsNonBitwiseTakable`.
 const IS_NON_BITWISE_TAKABLE: usize = 0x0010_0000;
 
+/// Offset of the element count inside native Swift array storage.
+pub(crate) const ARRAY_COUNT_OFFSET: usize = 16;
+
+/// Offset of the first element inside native array storage, past the heap
+/// object header and `_ArrayBody`. Valid for elements aligned to at most 16.
+///
+/// These two are an internal standard-library layout, but a stable one: an
+/// optimized `a[i]` on `[Double]` inlines to `ldr x8, [x0, #16]` for the count
+/// and `ldr d0, [x0, x1, lsl #3, #32]` for the element. Every caller still
+/// checks the stored count against the one the array reports, so a layout
+/// change shows up as a fallback rather than a wild read.
+pub(crate) const ARRAY_ELEMENTS_OFFSET: usize = 32;
+
+/// Bits the standard library sets on an array's storage word when the buffer is
+/// an `NSArray` rather than native Swift storage.
+///
+/// Swift's own subscript tests exactly these before touching the buffer and
+/// branches to `_ArrayBuffer._getElementSlowPath` when any is set.
+pub(crate) const ARRAY_BRIDGED_TAG: usize = 0xc000_0000_0000_0001;
+
+/// Clears the spare bits Swift keeps in the storage word before dereferencing.
+pub(crate) const ARRAY_STORAGE_MASK: usize = !0x7;
+
 /// Whether an initialized value may be relocated with a plain byte copy.
 ///
 /// Most Swift values may; the exceptions keep pointers into themselves, so

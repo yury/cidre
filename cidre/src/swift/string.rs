@@ -192,11 +192,6 @@ const fn small_ascii_raw(bytes: &[u8]) -> Result<RawString, SmallStringError> {
 
 /// Offset of `_ArrayBody`'s count word inside native array storage, past the
 /// heap object header.
-const ARRAY_COUNT_OFFSET: usize = 16;
-
-/// Offset of the first element inside native array storage, past the heap
-/// object header and `_ArrayBody`. Valid for elements aligned to at most 16.
-const ARRAY_ELEMENTS_OFFSET: usize = 32;
 
 /// Returns the element buffer of a `ContiguousArray<Int8>` when its storage
 /// matches the standard library's native layout.
@@ -217,8 +212,8 @@ unsafe fn contiguous_int8_elements(storage: *mut (), count: isize) -> Option<*co
     }
 
     let base = storage.cast::<u8>().cast_const();
-    let stored_count = unsafe { base.add(ARRAY_COUNT_OFFSET).cast::<isize>().read() };
-    (stored_count == count).then(|| unsafe { base.add(ARRAY_ELEMENTS_OFFSET) })
+    let stored_count = unsafe { base.add(abi::ARRAY_COUNT_OFFSET).cast::<isize>().read() };
+    (stored_count == count).then(|| unsafe { base.add(abi::ARRAY_ELEMENTS_OFFSET) })
 }
 
 unsafe impl SwiftMetadata for String {

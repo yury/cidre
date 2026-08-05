@@ -128,6 +128,47 @@ impl<T: SwiftType> Array<T> {
         }
     }
 
+    /// Borrows the elements as a Rust slice, when the array is backed by native
+    /// Swift storage.
+    ///
+    /// This is what makes `array[i]` possible without a Swift call per element:
+    /// take the slice once and index it. Note that it borrows rather than
+    /// copies, which is why [`std::ops::Index`] is deliberately not implemented
+    /// on `Array` itself — Swift's own subscript hands back an owned `+1`
+    /// element, and an array bridged from `NSArray` has no buffer to borrow at
+    /// all, which `Index` would have no way to report.
+    ///
+    /// Returns `None` for a bridged array, for an element type Swift lays out
+    /// differently than Rust does, and if the standard library's array header
+    /// ever moves.
+    pub fn as_slice(&self) -> Option<&[T]> {
+        let storage = self.storage;
+        if storage == 0 || storage & abi::ARRAY_BRIDGED_TAG != 0 {
+            return None;
+        }
+
+        // `SwiftType` promises the layouts match, but the array is only
+        // borrowable as `[T]` if Swift also strides it the way Rust does.
+        let layout = unsafe { abi::value_layout(Self::element_metadata()) };
+        if layout.stride != core::mem::size_of::<T>() || layout.align > 16 {
+            return None;
+        }
+
+        unsafe {
+            let base = (storage & abi::ARRAY_STORAGE_MASK) as *const u8;
+            let stored = base.add(abi::ARRAY_COUNT_OFFSET).cast::<usize>().read();
+            // Disagreement means the header moved out from under these offsets.
+            if stored != self.len() {
+                return None;
+            }
+
+            Some(core::slice::from_raw_parts(
+                base.add(abi::ARRAY_ELEMENTS_OFFSET).cast::<T>(),
+                stored,
+            ))
+        }
+    }
+
     #[inline]
     pub fn iter(&self) -> ArrayIter<'_, T> {
         ArrayIter {
@@ -170,12 +211,18 @@ impl<T> Drop for Array<T> {
 
 impl<T: SwiftType + fmt::Debug> fmt::Debug for Array<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_list().entries(self.iter()).finish()
+        match self.as_slice() {
+            Some(elements) => f.debug_list().entries(elements).finish(),
+            None => f.debug_list().entries(self.iter()).finish(),
+        }
     }
 }
 
 impl<T: SwiftType + PartialEq> PartialEq for Array<T> {
     fn eq(&self, other: &Self) -> bool {
+        if let (Some(lhs), Some(rhs)) = (self.as_slice(), other.as_slice()) {
+            return lhs == rhs;
+        }
         self.len() == other.len() && self.iter().zip(other.iter()).all(|(lhs, rhs)| lhs == rhs)
     }
 }
@@ -245,6 +292,56 @@ impl<'a, T: SwiftType> IntoIterator for &'a Array<T> {
 mod tests {
     use super::Array;
     use crate::swift::String;
+
+    /// The borrowed buffer has to agree with what Swift's own subscript
+    /// returns, element for element — that is the whole guard on the hardcoded
+    /// header offsets.
+    #[test]
+    fn a_borrowed_slice_agrees_with_the_swift_subscript() {
+        let values: Vec<isize> = (0..64).map(|i| i * 7 - 13).collect();
+        let array = Array::<isize>::from_slice(&values);
+
+        let slice = array.as_slice().expect("a Rust-built array is native");
+        assert_eq!(values.len(), slice.len());
+        assert_eq!(values.as_slice(), slice);
+
+        for index in 0..array.len() {
+            assert_eq!(
+                array.get(index).unwrap(),
+                slice[index],
+                "element {index} disagrees with Swift's subscript"
+            );
+        }
+    }
+
+    /// An empty array is the standard library's shared singleton, which still
+    /// has to produce a valid empty slice rather than a wild pointer.
+    #[test]
+    fn an_empty_array_borrows_as_an_empty_slice() {
+        let array = Array::<isize>::from_slice(&[]);
+        assert_eq!(Some(&[][..]), array.as_slice());
+    }
+
+    /// A nontrivial element type: the slice must borrow, so the array still
+    /// owns every element and nothing is released twice.
+    #[test]
+    fn a_slice_of_nontrivial_values_only_borrows() {
+        let array = Array::<String>::from_slice(&[
+            String::from("alpha"),
+            String::from("beta"),
+            String::from("gamma"),
+        ]);
+
+        {
+            let slice = array.as_slice().expect("native storage");
+            assert_eq!(3, slice.len());
+            assert_eq!("beta", slice[1].to_string());
+        }
+
+        // If the borrow had taken ownership, this would read released strings.
+        assert_eq!("alpha", array.get(0).unwrap().to_string());
+        assert_eq!("gamma", array.get(2).unwrap().to_string());
+    }
 
     #[test]
     fn int_array_uses_swift_subscript() {

@@ -17,7 +17,6 @@ macro_rules! dictation_presets {
             $( $(#[$meta])* $variant, )*
         }
 
-        #[link(name = "Speech", kind = "framework")]
         unsafe extern "C" {
             $(
                 $(#[$meta])*
