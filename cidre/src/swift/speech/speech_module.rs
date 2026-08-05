@@ -68,7 +68,8 @@ impl From<&DictationTranscriber> for SpeechModule {
 unsafe impl SwiftMetadata for SpeechModule {
     #[inline]
     fn metadata() -> *const abi::TypeMetadata {
-        unsafe { abi::type_by_mangled_name("6Speech0A6Module_p") }
+        static CACHE: abi::MetadataCache = abi::MetadataCache::new();
+        CACHE.get(|| unsafe { abi::type_by_mangled_name("6Speech0A6Module_p") })
     }
 }
 

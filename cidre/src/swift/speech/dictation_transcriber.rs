@@ -2,7 +2,7 @@ use crate::{api, arc, ns, swift::concurrency::swift_opaque_iterator_typeref};
 
 use super::{locale, speech_transcriber::ResultsTask};
 
-crate::define_swift_class!(pub DictationTranscriber);
+crate::define_swift_class!(pub DictationTranscriber = accessor dictation_transcriber_metadata);
 
 /// Declares `DictationTranscriber.Preset` cases together with the Swift static
 /// getter each one reads, so a case can never drift from its symbol.

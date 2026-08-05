@@ -10,21 +10,17 @@ use crate::{
     swift::{
         SwiftMetadata, abi,
         concurrency::{
-            self, swift_async_epilogue, swift_async_function_pointer, swift_async_load_parent,
-            swift_async_load_resume, swift_async_prologue, swift_async_store_parent,
-            swift_async_store_resume, swift_async_task_descriptor, swift_task_alloc,
-            swift_task_dealloc, swift_task_switch,
+            self, define_async_sequence, swift_async_epilogue, swift_async_function_pointer,
+            swift_async_load_parent, swift_async_load_resume, swift_async_prologue,
+            swift_async_store_parent, swift_async_store_resume, swift_async_task_descriptor,
+            swift_task_alloc, swift_task_dealloc, swift_task_switch,
         },
         foundation::{Date, DateValue, Uuid, UuidValue},
-        value::{Optional, Storage, Value},
+        value::{Optional, Storage, Value, define_swift_value},
     },
 };
 
 crate::define_swift_class!(pub Accessory);
-
-pub struct StateChanges(Value<StateChangesValue>);
-
-pub struct StateChangesIter(Value<StateChangesIteratorValue>);
 
 pub struct StateChange {
     pub accessory: Option<arc::R<Accessory>>,
@@ -32,20 +28,89 @@ pub struct StateChange {
     pub tracking_button_enabled: bool,
 }
 
-/// `DockAccessory.Identifier`.
-pub struct Identifier(Value<IdentifierValue>);
+impl StateChange {
+    /// Reads the three stored properties out of a borrowed Swift
+    /// `DockAccessory.StateChange`. The caller still owns the value.
+    unsafe fn copy_from_ptr(value: *const ()) -> Self {
+        unsafe {
+            let mut state_storage = Storage::<StateValue>::new();
+            abi::call_value_to_value(
+                dock_accessory_state_change_state as *const (),
+                value,
+                state_storage.as_mut_ptr(),
+            );
+            let state_value = state_storage.assume_init();
+            let state = State(*(state_value.as_ptr().cast::<u8>()));
+            drop(state_value);
 
-/// One sample from `DockAccessory.motionStates`.
-pub struct MotionState(Value<MotionStateValue>);
+            let tracking_button_enabled = abi::call_value_to_bool(
+                dock_accessory_state_change_tracking_button_enabled as *const (),
+                value,
+            );
+            let accessory = NonNull::new(abi::call_value_to_object(
+                dock_accessory_state_change_accessory as *const (),
+                value,
+            ))
+            .map(|accessory| arc::R::from_raw(accessory.as_ptr().cast()));
 
-/// One sample from `DockAccessory.batteryStates`.
-pub struct BatteryState(Value<BatteryStateValue>);
+            Self {
+                accessory,
+                state,
+                tracking_button_enabled,
+            }
+        }
+    }
+}
 
-/// The accessory's mechanical movement limits.
-pub struct Limits(Value<LimitsValue>);
+impl core::fmt::Debug for StateChange {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("StateChange")
+            .field("state", &self.state)
+            .field("tracking_button_enabled", &self.tracking_button_enabled)
+            .field("accessory", &self.accessory.as_deref())
+            .finish()
+    }
+}
 
-/// Limits for one rotational axis.
-pub struct Limit(Value<LimitValue>);
+define_swift_value!(
+    /// `DockAccessory.Identifier`.
+    pub Identifier, IdentifierValue = accessor dock_accessory_identifier_metadata
+);
+
+unsafe impl Send for Identifier {}
+unsafe impl Sync for Identifier {}
+
+define_swift_value!(
+    /// One sample from `DockAccessory.motionStates`.
+    pub MotionState, MotionStateValue = accessor dock_accessory_motion_state_metadata
+);
+
+unsafe impl Send for MotionState {}
+unsafe impl Sync for MotionState {}
+
+define_swift_value!(
+    /// One sample from `DockAccessory.batteryStates`.
+    pub BatteryState, BatteryStateValue = accessor dock_accessory_battery_state_metadata
+);
+
+unsafe impl Send for BatteryState {}
+unsafe impl Sync for BatteryState {}
+
+define_swift_value!(
+    /// The accessory's mechanical movement limits.
+    pub Limits, LimitsValue = accessor dock_accessory_limits_metadata
+);
+
+unsafe impl Send for Limits {}
+unsafe impl Sync for Limits {}
+
+define_swift_value!(
+    /// Limits for one rotational axis.
+    pub Limit, LimitValue = accessor dock_accessory_limit_metadata
+);
+
+unsafe impl Send for Limit {}
+unsafe impl Sync for Limit {}
 
 /// A physical event reported by the dock accessory.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -73,11 +138,21 @@ impl std::hash::Hash for AccessoryEvent {
     }
 }
 
-/// A person currently tracked by DockKit.
-pub struct TrackedPerson(Value<TrackedPersonValue>);
+define_swift_value!(
+    /// A person currently tracked by DockKit.
+    pub TrackedPerson, TrackedPersonValue = accessor dock_accessory_tracked_person_metadata
+);
 
-/// An object currently tracked by DockKit.
-pub struct TrackedObject(Value<TrackedObjectValue>);
+unsafe impl Send for TrackedPerson {}
+unsafe impl Sync for TrackedPerson {}
+
+define_swift_value!(
+    /// An object currently tracked by DockKit.
+    pub TrackedObject, TrackedObjectValue = accessor dock_accessory_tracked_object_metadata
+);
+
+unsafe impl Send for TrackedObject {}
+unsafe impl Sync for TrackedObject {}
 
 /// A tracked subject and its concrete payload.
 pub enum TrackedSubject {
@@ -86,8 +161,13 @@ pub enum TrackedSubject {
     Unknown(u32),
 }
 
-/// One sample from `DockAccessory.trackingStates`.
-pub struct TrackingState(Value<TrackingStateValue>);
+define_swift_value!(
+    /// One sample from `DockAccessory.trackingStates`.
+    pub TrackingState, TrackingStateValue = accessor dock_accessory_tracking_state_metadata
+);
+
+unsafe impl Send for TrackingState {}
+unsafe impl Sync for TrackingState {}
 
 /// The native Swift array returned by `TrackingState.trackedSubjects`.
 pub struct TrackedSubjects {
@@ -97,8 +177,13 @@ pub struct TrackedSubjects {
 unsafe impl Send for TrackedSubjects {}
 unsafe impl Sync for TrackedSubjects {}
 
-/// One subject observation supplied to DockKit tracking.
-pub struct Observation(Value<ObservationValue>);
+define_swift_value!(
+    /// One subject observation supplied to DockKit tracking.
+    pub Observation, ObservationValue = accessor dock_accessory_observation_metadata
+);
+
+unsafe impl Send for Observation {}
+unsafe impl Sync for Observation {}
 
 /// A native Swift `[DockAccessory.Observation]`.
 pub struct Observations {
@@ -108,9 +193,15 @@ pub struct Observations {
 unsafe impl Send for Observations {}
 unsafe impl Sync for Observations {}
 
-/// Camera calibration supplied with tracking observations.
 #[cfg(feature = "av")]
-pub struct CameraInformation(Value<CameraInformationValue>);
+define_swift_value!(
+    /// Camera calibration supplied with tracking observations.
+    #[cfg(feature = "av")]
+    pub CameraInformation, CameraInformationValue = accessor dock_accessory_camera_information_metadata
+);
+
+unsafe impl Send for CameraInformation {}
+unsafe impl Sync for CameraInformation {}
 
 /// Native layout of `simd_float3x3`, stored as three padded column vectors.
 #[cfg(feature = "av")]
@@ -141,167 +232,8 @@ impl CameraIntrinsics {
     }
 }
 
-struct StateChangeNextTask {
-    state_changes: Option<StateChanges>,
-    iter: Option<StateChangesIter>,
-    result: Option<NonNull<u8>>,
-    callback: Box<dyn FnMut(Option<StateChange>) -> bool + Send>,
-}
-
-swift_async_task_descriptor!(
-    #[cfg(all(target_vendor = "apple", target_arch = "aarch64"))]
-    cidre_dk_state_changes_next_task_descriptor,
-    entry: state_changes_next_task_entry,
-    context_size: "64",
-);
-
-/// Allocates the callee context, wires up the resume symbol, and tail-calls
-/// `Accessory.StateChanges.Iterator.next()`.
-///
-/// Shared by the first iteration and by every subsequent one, which is why the
-/// context slots are re-read rather than kept in registers.
-macro_rules! state_changes_next_call {
-    () => {
-        concat!(
-            // Word 1 of the async function pointer is the callee's context size.
-            "adrp x8, {next_async}@GOTPAGE\n",
-            "ldr x8, [x8, {next_async}@GOTPAGEOFF]\n",
-            "ldr w0, [x8, #4]\n",
-            "bl {task_alloc}\n",
-            "mov x9, x0\n",
-            "str x9, [x22, #48]\n",
-            $crate::swift::concurrency::swift_async_store_parent!(), "\n",
-            $crate::swift::concurrency::swift_async_store_resume!("{resume}"), "\n",
-            "ldr x0, [x22, #40]\n",
-            "ldr x20, [x22, #32]\n",
-            "mov x22, x9\n",
-            "mov x21, #0\n",
-            $crate::swift::concurrency::swift_async_epilogue!(frame: "32", fp: "16"), "\n",
-            "b {next}",
-        )
-    };
-}
-
-/// Allocates the reusable result buffer from Swift's task allocator, records it
-/// in the Rust context, then hops to a plain frame for the remaining setup.
-#[cfg(all(target_vendor = "apple", target_arch = "aarch64"))]
-#[unsafe(naked)]
-unsafe extern "C" fn state_changes_next_task_entry() {
-    core::arch::naked_asm!(
-        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
-        "str x20, [x22, #24]",
-        "str x22, [x22, #16]",
-        "mov x0, x20",
-        "bl {result_size}",
-        "bl {task_alloc}",
-        "mov x1, x0",
-        "str x1, [x22, #40]",
-        "ldr x0, [x22, #24]",
-        "bl {set_task_result}",
-        swift_async_function_pointer!("{run}"),
-        "mov x1, #0",
-        "mov x2, #0",
-        swift_async_epilogue!(frame: "32", fp: "16"),
-        "b {task_switch}",
-        result_size = sym cidre_dk_state_changes_next_result_size,
-        set_task_result = sym cidre_dk_state_changes_next_set_task_result,
-        task_alloc = sym swift_task_alloc,
-        task_switch = sym swift_task_switch,
-        run = sym state_changes_next_task_run,
-    );
-}
-
-/// Makes the async iterator on the Rust side, then starts iterating.
-#[cfg(all(target_vendor = "apple", target_arch = "aarch64"))]
-#[unsafe(naked)]
-unsafe extern "C" fn state_changes_next_task_run() {
-    core::arch::naked_asm!(
-        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
-        "ldr x0, [x22, #24]",
-        "bl {prepare}",
-        "ldr x0, [x22, #24]",
-        "bl {iter_ptr}",
-        "str x0, [x22, #32]",
-        "str x22, [x22, #16]",
-        state_changes_next_call!(),
-        prepare = sym cidre_dk_state_changes_next_prepare,
-        iter_ptr = sym cidre_dk_state_changes_next_iter_ptr,
-        next_async = sym STATE_CHANGES_ITERATOR_NEXT_ASYNC_FN,
-        next = sym state_changes_iterator_next,
-        task_alloc = sym swift_task_alloc,
-        resume = sym state_changes_next_task_resume,
-    );
-}
-
-/// Resumed once per element. Hops to a plain frame before calling into Rust.
-#[cfg(all(target_vendor = "apple", target_arch = "aarch64"))]
-#[unsafe(naked)]
-unsafe extern "C" fn state_changes_next_task_resume() {
-    core::arch::naked_asm!(
-        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
-        swift_async_load_parent!(),
-        "str x9, [sp]",
-        "str x9, [x9, #16]",
-        "ldr x0, [x9, #48]",
-        "bl {task_dealloc}",
-        "ldr x22, [sp]",
-        swift_async_function_pointer!("{complete}"),
-        "mov x1, #0",
-        "mov x2, #0",
-        swift_async_epilogue!(frame: "32", fp: "16"),
-        "b {task_switch}",
-        task_dealloc = sym swift_task_dealloc,
-        task_switch = sym swift_task_switch,
-        complete = sym state_changes_next_task_complete,
-    );
-}
-
-/// Delivers one state change to Rust, then either asks for the next one or
-/// returns to whoever created the task.
-#[cfg(all(target_vendor = "apple", target_arch = "aarch64"))]
-#[unsafe(naked)]
-unsafe extern "C" fn state_changes_next_task_complete() {
-    core::arch::naked_asm!(
-        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
-        "ldr x0, [x22, #24]",
-        "bl {process}",
-        "ldr x22, [sp, #8]",
-        "cbnz x0, 0f",
-        "ldr x0, [x22, #24]",
-        "bl {take_result}",
-        "bl {task_dealloc}",
-        "ldr x0, [x22, #24]",
-        "bl {drop_task}",
-        "ldr x9, [x22, #16]",
-        swift_async_load_resume!(),
-        "mov x22, x9",
-        swift_async_epilogue!(frame: "32", fp: "16"),
-        "br x16",
-        "0:",
-        "str x22, [x22, #16]",
-        state_changes_next_call!(),
-        process = sym cidre_dk_state_changes_next_process,
-        take_result = sym cidre_dk_state_changes_next_take_result,
-        drop_task = sym cidre_dk_state_changes_next_drop,
-        task_dealloc = sym swift_task_dealloc,
-        next_async = sym STATE_CHANGES_ITERATOR_NEXT_ASYNC_FN,
-        next = sym state_changes_iterator_next,
-        task_alloc = sym swift_task_alloc,
-        resume = sym state_changes_next_task_resume,
-    );
-}
-
 #[link(name = "DockKit", kind = "framework")]
 unsafe extern "C" {
-    #[link_name = "$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaF"]
-    fn state_changes_iterator_next();
-
-    #[link_name = "$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaFTu"]
-    static STATE_CHANGES_ITERATOR_NEXT_ASYNC_FN: u8;
-
-    #[link_name = "$s7DockKit0A9AccessoryC12StateChangesV8IteratorVMa"]
-    fn dock_accessory_state_changes_iterator_metadata();
-
     #[link_name = "$s7DockKit0A9AccessoryC15firmwareVersionSSSgvg"]
     fn dock_accessory_firmware_version();
 
@@ -313,12 +245,6 @@ unsafe extern "C" {
 
     #[link_name = "$s7DockKit0A9AccessoryC13hardwareModelSSSgvg"]
     fn dock_accessory_hardware_model();
-
-    #[link_name = "$s7DockKit0A9AccessoryC12StateChangesVMa"]
-    fn dock_accessory_state_changes_metadata();
-
-    #[link_name = "$s7DockKit0A9AccessoryC12StateChangesV17makeAsyncIteratorAE0H0VyF"]
-    fn dock_accessory_state_changes_make_async_iterator();
 
     #[link_name = "$s7DockKit0A9AccessoryC11StateChangeVMa"]
     fn dock_accessory_state_change_metadata();
@@ -532,77 +458,37 @@ unsafe extern "C" {
     fn dock_accessory_camera_information_init();
 }
 
-crate::define_swift_marker!(
-    pub(crate) StateChangesValue = accessor dock_accessory_state_changes_metadata
-);
+crate::define_swift_marker!(pub(crate) StateChangeValue = accessor dock_accessory_state_change_metadata);
 
-crate::define_swift_marker!(
-    StateChangesIteratorValue = accessor dock_accessory_state_changes_iterator_metadata
-);
+unsafe impl crate::swift::FromSwift for StateChange {
+    type Swift = StateChangeValue;
 
-crate::define_swift_marker!(StateChangeValue = accessor dock_accessory_state_change_metadata);
-
-crate::define_swift_marker!(StateValue = mangled "7DockKit0A9AccessoryC5StateO");
-
-crate::define_swift_marker!(IdentifierValue = accessor dock_accessory_identifier_metadata);
-crate::define_swift_marker!(MotionStateValue = accessor dock_accessory_motion_state_metadata);
-crate::define_swift_marker!(BatteryStateValue = accessor dock_accessory_battery_state_metadata);
-crate::define_swift_marker!(LimitsValue = accessor dock_accessory_limits_metadata);
-crate::define_swift_marker!(LimitValue = accessor dock_accessory_limit_metadata);
-crate::define_swift_marker!(AccessoryEventValue = accessor dock_accessory_event_metadata);
-crate::define_swift_marker!(TrackedPersonValue = accessor dock_accessory_tracked_person_metadata);
-crate::define_swift_marker!(TrackedObjectValue = accessor dock_accessory_tracked_object_metadata);
-crate::define_swift_marker!(TrackedSubjectValue = accessor dock_accessory_tracked_subject_metadata);
-crate::define_swift_marker!(TrackingStateValue = accessor dock_accessory_tracking_state_metadata);
-crate::define_swift_marker!(ObservationValue = accessor dock_accessory_observation_metadata);
-crate::define_swift_marker!(MeasurementAngleValue = mangled "10Foundation11MeasurementVySo11NSUnitAngleCG");
-
-#[cfg(feature = "av")]
-crate::define_swift_marker!(CameraInformationValue = accessor dock_accessory_camera_information_metadata);
-#[cfg(feature = "av")]
-crate::define_swift_marker!(CameraIntrinsicsValue = mangled "So13simd_float3x3a");
-#[cfg(feature = "av")]
-crate::define_swift_marker!(ReferenceDimensionsValue = mangled "So6CGSizeV");
-
-macro_rules! impl_value_wrapper {
-    ($ty:ident, $marker:ident) => {
-        unsafe impl Send for $ty {}
-        unsafe impl Sync for $ty {}
-
-        impl Clone for $ty {
-            fn clone(&self) -> Self {
-                unsafe { Self::copy_from_ptr(self.0.as_ptr()) }
-            }
-        }
-
-        impl $ty {
-            unsafe fn copy_from_ptr(value: *const ()) -> Self {
-                unsafe {
-                    let mut storage = Storage::<$marker>::new();
-                    abi::initialize_with_copy(storage.as_mut_ptr(), value, $marker::metadata());
-                    Self(storage.assume_init())
-                }
-            }
-
-            #[inline]
-            fn as_ptr(&self) -> *const () {
-                self.0.as_ptr()
-            }
-        }
-    };
+    #[inline]
+    unsafe fn from_swift(value: *const ()) -> Self {
+        unsafe { Self::copy_from_ptr(value) }
+    }
 }
 
-impl_value_wrapper!(Identifier, IdentifierValue);
-impl_value_wrapper!(MotionState, MotionStateValue);
-impl_value_wrapper!(BatteryState, BatteryStateValue);
-impl_value_wrapper!(Limits, LimitsValue);
-impl_value_wrapper!(Limit, LimitValue);
-impl_value_wrapper!(TrackedPerson, TrackedPersonValue);
-impl_value_wrapper!(TrackedObject, TrackedObjectValue);
-impl_value_wrapper!(TrackingState, TrackingStateValue);
-impl_value_wrapper!(Observation, ObservationValue);
+crate::define_swift_marker!(pub(crate) StateValue = mangled "7DockKit0A9AccessoryC5StateO");
+
+crate::define_swift_marker!(pub(crate) AccessoryEventValue = accessor dock_accessory_event_metadata);
+
+unsafe impl crate::swift::FromSwift for AccessoryEvent {
+    type Swift = AccessoryEventValue;
+
+    #[inline]
+    unsafe fn from_swift(value: *const ()) -> Self {
+        unsafe { Self::copy_from_ptr(value) }
+    }
+}
+crate::define_swift_marker!(pub(crate) TrackedSubjectValue = accessor dock_accessory_tracked_subject_metadata);
+crate::define_swift_marker!(pub(crate) MeasurementAngleValue = mangled "10Foundation11MeasurementVySo11NSUnitAngleCG");
+
 #[cfg(feature = "av")]
-impl_value_wrapper!(CameraInformation, CameraInformationValue);
+#[cfg(feature = "av")]
+crate::define_swift_marker!(pub(crate) CameraIntrinsicsValue = mangled "So13simd_float3x3a");
+#[cfg(feature = "av")]
+crate::define_swift_marker!(pub(crate) ReferenceDimensionsValue = mangled "So6CGSizeV");
 
 impl Identifier {
     pub fn category(&self) -> Category {
@@ -679,33 +565,27 @@ impl std::hash::Hash for Identifier {
 
 impl MotionState {
     pub fn angular_velocities(&self) -> spatial::Vector3D {
-        unsafe {
-            let mut storage = Storage::<spatial::Vector3D>::new();
-            abi::call_value_to_value(
+        // `SPVector3D` comes back in d0-d2 rather than through an indirect
+        // result, so it cannot be read out of a `Storage`.
+        let [x, y, z] = unsafe {
+            abi::call_value_to_doubles3(
                 dock_accessory_motion_state_angular_velocities as *const (),
                 self.as_ptr(),
-                storage.as_mut_ptr(),
-            );
-            let value = storage.assume_init();
-            let result = value.as_ptr().cast::<spatial::Vector3D>().read();
-            value.assume_consumed();
-            result
-        }
+            )
+        };
+        spatial::Vector3D::new(x, y, z)
     }
 
     pub fn angular_positions(&self) -> spatial::Vector3D {
-        unsafe {
-            let mut storage = Storage::<spatial::Vector3D>::new();
-            abi::call_value_to_value(
+        // `SPVector3D` comes back in d0-d2 rather than through an indirect
+        // result, so it cannot be read out of a `Storage`.
+        let [x, y, z] = unsafe {
+            abi::call_value_to_doubles3(
                 dock_accessory_motion_state_angular_positions as *const (),
                 self.as_ptr(),
-                storage.as_mut_ptr(),
-            );
-            let value = storage.assume_init();
-            let result = value.as_ptr().cast::<spatial::Vector3D>().read();
-            value.assume_consumed();
-            result
-        }
+            )
+        };
+        spatial::Vector3D::new(x, y, z)
     }
 
     pub fn timestamp(&self) -> f64 {
@@ -1412,319 +1292,76 @@ impl CameraInformation {
     }
 }
 
-macro_rules! define_async_sequence {
-    (
-        $(#[$meta:meta])*
-        $sequence:ident, $sequence_value:ident, $iterator_value:ident,
-        element = $element:ident, $element_value:ident,
-        sequence_metadata = $sequence_metadata:ident => $sequence_metadata_link:literal,
-        iterator_metadata = $iterator_metadata:ident => $iterator_metadata_link:literal,
-        make_iterator = $make_iterator:ident => $make_iterator_link:literal,
-        next = $next:ident => $next_link:literal,
-        next_async = $next_async:ident => $next_async_link:literal $(,)?
-    ) => {
-        $(#[$meta])*
-        pub struct $sequence(Value<$sequence_value>);
+define_async_sequence! {
+    /// `DockAccessory.StateChanges`.
+    StateChanges, StateChangesValue, StateChangesIteratorValue,
+    framework = "DockKit",
+    element = StateChange,
+    sequence_metadata = dock_accessory_state_changes_metadata => "$s7DockKit0A9AccessoryC12StateChangesVMa",
+    iterator_metadata = dock_accessory_state_changes_iterator_metadata => "$s7DockKit0A9AccessoryC12StateChangesV8IteratorVMa",
+    make_iterator = dock_accessory_state_changes_make_iterator => "$s7DockKit0A9AccessoryC12StateChangesV17makeAsyncIteratorAE0H0VyF",
+    next = dock_accessory_state_changes_next => "$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaF",
+    next_async = DOCK_ACCESSORY_STATE_CHANGES_NEXT_ASYNC => "$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaFTu",
+    async_iter = StateChangesAsyncIter,
+}
 
-        #[link(name = "DockKit", kind = "framework")]
-        unsafe extern "C" {
-            #[link_name = $sequence_metadata_link]
-            fn $sequence_metadata();
-
-            #[link_name = $iterator_metadata_link]
-            fn $iterator_metadata();
-
-            #[link_name = $make_iterator_link]
-            fn $make_iterator();
-
-            #[link_name = $next_link]
-            fn $next();
-
-            #[link_name = $next_async_link]
-            static $next_async: u8;
-        }
-
-        crate::define_swift_marker!($sequence_value = accessor $sequence_metadata);
-        crate::define_swift_marker!($iterator_value = accessor $iterator_metadata);
-
-        impl $sequence {
-            unsafe fn from_storage(storage: Storage<$sequence_value>) -> Self {
-                Self(unsafe { storage.assume_init() })
-            }
-
-            pub fn for_each_while<F>(self, mut callback: F)
-            where
-                F: FnMut(Option<$element>) -> bool + Send + 'static,
-            {
-                concurrency::iterate_async_sequence(
-                    self.0,
-                    concurrency::AsyncSequenceSymbols {
-                        iterator_metadata: $iterator_value::metadata(),
-                        element_metadata: $element_value::metadata(),
-                        make_iterator: $make_iterator as *const (),
-                        next: $next as *const (),
-                        next_async_fn: (&raw const $next_async).cast(),
-                    },
-                    move |value| match value {
-                        Some(value) => callback(Some(unsafe { $element::copy_from_ptr(value) })),
-                        None => {
-                            callback(None);
-                            false
-                        }
-                    },
-                );
-            }
-
-            pub fn for_each<F>(self, mut callback: F)
-            where
-                F: FnMut(Option<$element>) + Send + 'static,
-            {
-                self.for_each_while(move |value| {
-                    let has_value = value.is_some();
-                    callback(value);
-                    has_value
-                });
-            }
-
-            /// Compatibility spelling for [`Self::for_each`].
-            pub fn next<F>(self, mut callback: F)
-            where
-                F: FnMut(Option<$element>) + Send + 'static,
-            {
-                self.for_each(move |value| callback(value));
-            }
-        }
-    };
+impl StateChanges {
+    /// The manager writes the sequence into caller-provided storage.
+    pub(crate) fn storage() -> Storage<StateChangesValue> {
+        Storage::new()
+    }
 }
 
 define_async_sequence! {
     /// `DockAccessory.MotionStates`.
     MotionStates, MotionStatesValue, MotionStatesIteratorValue,
-    element = MotionState, MotionStateValue,
+    framework = "DockKit",
+    element = MotionState,
     sequence_metadata = dock_accessory_motion_states_metadata => "$s7DockKit0A9AccessoryC12MotionStatesVMa",
     iterator_metadata = dock_accessory_motion_states_iterator_metadata => "$s7DockKit0A9AccessoryC12MotionStatesV8IteratorVMa",
     make_iterator = dock_accessory_motion_states_make_iterator => "$s7DockKit0A9AccessoryC12MotionStatesV17makeAsyncIteratorAE0H0VyF",
     next = dock_accessory_motion_states_next => "$s7DockKit0A9AccessoryC12MotionStatesV8IteratorV4nextAC0D5StateVSgyYaF",
     next_async = DOCK_ACCESSORY_MOTION_STATES_NEXT_ASYNC => "$s7DockKit0A9AccessoryC12MotionStatesV8IteratorV4nextAC0D5StateVSgyYaFTu",
+    async_iter = MotionStatesAsyncIter,
 }
 
 define_async_sequence! {
     /// `DockAccessory.AccessoryEvents`.
     AccessoryEvents, AccessoryEventsValue, AccessoryEventsIteratorValue,
-    element = AccessoryEvent, AccessoryEventValue,
+    framework = "DockKit",
+    element = AccessoryEvent,
     sequence_metadata = dock_accessory_events_metadata => "$s7DockKit0A9AccessoryC0C6EventsVMa",
     iterator_metadata = dock_accessory_events_iterator_metadata => "$s7DockKit0A9AccessoryC0C6EventsV8IteratorVMa",
     make_iterator = dock_accessory_events_make_iterator => "$s7DockKit0A9AccessoryC0C6EventsV17makeAsyncIteratorAE0G0VyF",
     next = dock_accessory_events_next => "$s7DockKit0A9AccessoryC0C6EventsV8IteratorV4nextAC0C5EventOSgyYaF",
     next_async = DOCK_ACCESSORY_EVENTS_NEXT_ASYNC => "$s7DockKit0A9AccessoryC0C6EventsV8IteratorV4nextAC0C5EventOSgyYaFTu",
+    async_iter = AccessoryEventsAsyncIter,
 }
 
 define_async_sequence! {
     /// `DockAccessory.TrackingStates`.
     TrackingStates, TrackingStatesValue, TrackingStatesIteratorValue,
-    element = TrackingState, TrackingStateValue,
+    framework = "DockKit",
+    element = TrackingState,
     sequence_metadata = dock_accessory_tracking_states_metadata => "$s7DockKit0A9AccessoryC14TrackingStatesVMa",
     iterator_metadata = dock_accessory_tracking_states_iterator_metadata => "$s7DockKit0A9AccessoryC14TrackingStatesV8IteratorVMa",
     make_iterator = dock_accessory_tracking_states_make_iterator => "$s7DockKit0A9AccessoryC14TrackingStatesV17makeAsyncIteratorAE0H0VyF",
     next = dock_accessory_tracking_states_next => "$s7DockKit0A9AccessoryC14TrackingStatesV8IteratorV4nextAC0D5StateVSgyYaF",
     next_async = DOCK_ACCESSORY_TRACKING_STATES_NEXT_ASYNC => "$s7DockKit0A9AccessoryC14TrackingStatesV8IteratorV4nextAC0D5StateVSgyYaFTu",
+    async_iter = TrackingStatesAsyncIter,
 }
 
 define_async_sequence! {
     /// `DockAccessory.BatteryStates`.
     BatteryStates, BatteryStatesValue, BatteryStatesIteratorValue,
-    element = BatteryState, BatteryStateValue,
+    framework = "DockKit",
+    element = BatteryState,
     sequence_metadata = dock_accessory_battery_states_metadata => "$s7DockKit0A9AccessoryC13BatteryStatesVMa",
     iterator_metadata = dock_accessory_battery_states_iterator_metadata => "$s7DockKit0A9AccessoryC13BatteryStatesV8IteratorVMa",
     make_iterator = dock_accessory_battery_states_make_iterator => "$s7DockKit0A9AccessoryC13BatteryStatesV17makeAsyncIteratorAE0H0VyF",
     next = dock_accessory_battery_states_next => "$s7DockKit0A9AccessoryC13BatteryStatesV8IteratorV4nextAC0D5StateVSgyYaF",
     next_async = DOCK_ACCESSORY_BATTERY_STATES_NEXT_ASYNC => "$s7DockKit0A9AccessoryC13BatteryStatesV8IteratorV4nextAC0D5StateVSgyYaFTu",
-}
-
-impl StateChanges {
-    pub(crate) fn storage() -> Storage<StateChangesValue> {
-        Storage::new()
-    }
-
-    #[inline]
-    pub(crate) unsafe fn from_storage(storage: Storage<StateChangesValue>) -> Self {
-        Self(unsafe { storage.assume_init() })
-    }
-
-    #[inline]
-    pub fn make_async_iter(&self) -> StateChangesIter {
-        unsafe {
-            let mut storage = Storage::<StateChangesIteratorValue>::new();
-            abi::call_value_to_value(
-                dock_accessory_state_changes_make_async_iterator as *const (),
-                self.0.as_ptr(),
-                storage.as_mut_ptr(),
-            );
-            StateChangesIter(storage.assume_init())
-        }
-    }
-
-    #[inline]
-    pub fn for_each_while<F>(self, callback: F)
-    where
-        F: FnMut(Option<StateChange>) -> bool + Send + 'static,
-    {
-        StateChangeNextTask::start(self, callback);
-    }
-
-    #[inline]
-    pub fn for_each<F>(self, mut callback: F)
-    where
-        F: FnMut(Option<StateChange>) + Send + 'static,
-    {
-        self.for_each_while(move |value| {
-            let has_value = value.is_some();
-            callback(value);
-            has_value
-        });
-    }
-
-    /// Compatibility spelling for [`Self::for_each`].
-    #[inline]
-    pub fn next<F>(self, mut callback: F)
-    where
-        F: FnMut(Option<StateChange>) + Send + 'static,
-    {
-        self.for_each(move |value| callback(value));
-    }
-}
-
-impl StateChangesIter {
-    #[inline]
-    pub(crate) fn as_mut_ptr(&mut self) -> *mut () {
-        self.0.as_mut_ptr()
-    }
-}
-
-impl StateChangeNextTask {
-    fn start<F>(state_changes: StateChanges, callback: F)
-    where
-        F: FnMut(Option<StateChange>) -> bool + Send + 'static,
-    {
-        unsafe {
-            let task = Box::new(Self {
-                state_changes: Some(state_changes),
-                iter: None,
-                result: None,
-                callback: Box::new(callback),
-            });
-            let context: *mut () = Box::into_raw(task).cast();
-            let (_task, _) = concurrency::task_create(
-                concurrency::ENQUEUED_DISCARDING_TASK_FLAGS,
-                core::ptr::null(),
-                (&raw const cidre_dk_state_changes_next_task_descriptor).cast(),
-                context,
-            );
-        }
-    }
-}
-
-extern "C" fn cidre_dk_state_changes_next_result_size(_: *mut StateChangeNextTask) -> usize {
-    unsafe {
-        abi::value_layout(Optional::<StateChangeValue>::metadata())
-            .stride
-            .max(1)
-    }
-}
-
-extern "C" fn cidre_dk_state_changes_next_set_task_result(
-    task: *mut StateChangeNextTask,
-    result: *mut u8,
-) {
-    unsafe {
-        let task = &mut *task;
-        let result = NonNull::new(result).expect("swift task result allocation failed");
-        assert!(
-            task.result.replace(result).is_none(),
-            "Swift task result already set"
-        );
-    }
-}
-
-extern "C" fn cidre_dk_state_changes_next_prepare(task: *mut StateChangeNextTask) {
-    unsafe {
-        let task = &mut *task;
-        if task.iter.is_some() {
-            return;
-        }
-        let state_changes = task
-            .state_changes
-            .take()
-            .expect("state changes sequence already prepared");
-        task.iter = Some(state_changes.make_async_iter());
-    }
-}
-
-extern "C" fn cidre_dk_state_changes_next_iter_ptr(task: *mut StateChangeNextTask) -> *mut () {
-    unsafe {
-        let task = &mut *task;
-        let iter = task.iter.as_mut().expect("state changes iterator missing");
-        iter.as_mut_ptr().cast()
-    }
-}
-
-extern "C" fn cidre_dk_state_changes_next_process(task: *mut StateChangeNextTask) -> bool {
-    match catch_unwind(AssertUnwindSafe(|| unsafe {
-        let task = &mut *task;
-        let result = task.result.expect("Swift task result missing");
-        let payload_metadata = StateChangeValue::metadata();
-        let result_metadata = Optional::<StateChangeValue>::metadata();
-        let tag = abi::get_enum_tag_single_payload(result.as_ptr().cast(), 1, payload_metadata);
-        if tag == 1 {
-            abi::destroy_value(result.as_ptr().cast(), result_metadata);
-            let _ = (task.callback)(None);
-            return false;
-        }
-
-        let mut state_storage = Storage::<StateValue>::new();
-        abi::call_value_to_value(
-            dock_accessory_state_change_state as *const (),
-            result.as_ptr().cast_const().cast(),
-            state_storage.as_mut_ptr(),
-        );
-        let state_value = state_storage.assume_init();
-        let state = State(*(state_value.as_ptr().cast::<u8>()));
-        drop(state_value);
-
-        let tracking_button_enabled = abi::call_value_to_bool(
-            dock_accessory_state_change_tracking_button_enabled as *const (),
-            result.as_ptr().cast_const().cast(),
-        );
-        let accessory = NonNull::new(abi::call_value_to_object(
-            dock_accessory_state_change_accessory as *const (),
-            result.as_ptr().cast_const().cast(),
-        ))
-        .map(|accessory| arc::R::from_raw(accessory.as_ptr().cast()));
-        abi::destroy_value(result.as_ptr().cast(), payload_metadata);
-        (task.callback)(Some(StateChange {
-            accessory,
-            state,
-            tracking_button_enabled,
-        }))
-    })) {
-        Ok(keep_going) => keep_going,
-        Err(_) => false,
-    }
-}
-
-extern "C" fn cidre_dk_state_changes_next_take_result(task: *mut StateChangeNextTask) -> *mut () {
-    unsafe {
-        (*task)
-            .result
-            .take()
-            .expect("Swift task result missing")
-            .as_ptr()
-            .cast()
-    }
-}
-
-extern "C" fn cidre_dk_state_changes_next_drop(task: *mut StateChangeNextTask) {
-    unsafe { drop(Box::from_raw(task)) }
+    async_iter = BatteryStatesAsyncIter,
 }
 
 macro_rules! resilient_enum {
@@ -1737,9 +1374,16 @@ macro_rules! resilient_enum {
         }
     ) => {
         $(#[$meta])*
-        #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+        #[derive(Clone, Copy, Eq, Hash, PartialEq)]
         #[repr(transparent)]
         $vis struct $name(u8);
+
+        impl core::fmt::Debug for $name {
+            /// Renders Swift's own `debugDescription` rather than the tag byte.
+            fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+                f.write_str(&self.debug_desc().to_string())
+            }
+        }
 
         #[link(name = "DockKit", kind = "framework")]
         unsafe extern "C" {
@@ -1792,9 +1436,22 @@ macro_rules! resilient_enum {
         }
     ) => {
         $(#[$meta])*
-        #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+        #[derive(Clone, Copy, Eq, Hash, PartialEq)]
         #[repr(transparent)]
         $vis struct $name(u8);
+
+        impl core::fmt::Debug for $name {
+            /// Swift publishes no `debugDescription` for this one, so the tag is
+            /// matched against the cases the framework does export.
+            fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+                $(
+                    if *self == Self::$case() {
+                        return f.write_str(stringify!($case));
+                    }
+                )+
+                write!(f, concat!(stringify!($name), "({})"), self.0)
+            }
+        }
 
         #[link(name = "DockKit", kind = "framework")]
         unsafe extern "C" {
@@ -3384,5 +3041,12 @@ mod abi_tests {
         assert_eq!(Some(dimensions), calibrated.reference_dimensions());
 
         let _ = MetadataObjects::from_slice(&[]);
+    }
+}
+
+impl core::fmt::Debug for Accessory {
+    /// Renders Swift's `DockAccessory.debugDescription`.
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.write_str(&self.debug_desc().to_string())
     }
 }

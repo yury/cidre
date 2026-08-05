@@ -17,7 +17,7 @@ use crate::swift::concurrency::{
 use super::locale;
 use crate::swift::value::{AnyValue, DynamicStorage, Storage};
 
-crate::define_swift_class!(pub SpeechTranscriber);
+crate::define_swift_class!(pub SpeechTranscriber = accessor speech_transcriber_metadata);
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum TranscriberPreset {
@@ -88,8 +88,7 @@ impl SpeechTranscriber {
     )]
     pub fn is_available() -> bool {
         unsafe {
-            let metadata =
-                abi::call_int_to_int(speech_transcriber_metadata as *const (), 0) as *const ();
+            let metadata = <SpeechTranscriber as crate::swift::SwiftMetadata>::metadata().cast();
             abi::call_static0_bool(speech_transcriber_is_available as *const (), metadata)
         }
     }

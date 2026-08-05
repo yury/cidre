@@ -60,17 +60,13 @@ crate::define_swift_marker!(
     TimedValueF32 = mangled "18MusicUnderstanding0aB7SessionC10TimedValueVy_SfG"
 );
 
-crate::define_swift_marker!(pub(super) SessionResultValue = accessor session_result_metadata);
-
-crate::define_swift_marker!(pub(super) RhythmResultValue = accessor rhythm_result_metadata);
-
-/// `MusicUnderstandingSession.SessionResult`.
-///
-/// A Swift value type whose layout is only known at runtime, so it is kept in
-/// its Swift representation and read through the framework's getters.
-pub struct SessionResult {
-    pub(super) value: Value<SessionResultValue>,
-}
+define_swift_value!(
+    /// `MusicUnderstandingSession.SessionResult`.
+    ///
+    /// A Swift value type whose layout is only known at runtime, so it is kept
+    /// in its Swift representation and read through the framework's getters.
+    pub SessionResult, SessionResultValue = accessor session_result_metadata
+);
 
 unsafe impl Send for SessionResult {}
 
@@ -82,11 +78,10 @@ impl SessionResult {
             let mut storage = Storage::<Optional<RhythmResultValue>>::new();
             abi::call_value_to_value(
                 session_result_rhythm as *const (),
-                self.value.as_ptr(),
+                self.as_ptr(),
                 storage.as_mut_ptr(),
             );
-            let value = storage.assume_init();
-            value.is_some().then(|| RhythmResult { value })
+            RhythmResult::from_optional_storage(storage)
         }
     }
 
@@ -97,11 +92,10 @@ impl SessionResult {
             let mut storage = Storage::<Optional<LoudnessResultValue>>::new();
             abi::call_value_to_value(
                 session_result_loudness as *const (),
-                self.value.as_ptr(),
+                self.as_ptr(),
                 storage.as_mut_ptr(),
             );
-            let value = storage.assume_init();
-            value.is_some().then(|| LoudnessResult { value })
+            LoudnessResult::from_optional_storage(storage)
         }
     }
 
@@ -112,21 +106,18 @@ impl SessionResult {
             let mut storage = Storage::<Optional<InstrumentActivityResultValue>>::new();
             abi::call_value_to_value(
                 session_result_instrument_activity as *const (),
-                self.value.as_ptr(),
+                self.as_ptr(),
                 storage.as_mut_ptr(),
             );
-            let value = storage.assume_init();
-            value.is_some().then(|| InstrumentActivityResult { value })
+            InstrumentActivityResult::from_optional_storage(storage)
         }
     }
 }
 
-/// `MusicUnderstanding.RhythmResult`.
-pub struct RhythmResult {
-    // An `Optional`'s payload starts at offset 0, so this doubles as the
-    // unwrapped `RhythmResult` when the tag says `.some`.
-    value: Value<Optional<RhythmResultValue>>,
-}
+define_swift_value!(
+    /// `MusicUnderstanding.RhythmResult`.
+    pub RhythmResult, RhythmResultValue = optional accessor rhythm_result_metadata
+);
 
 unsafe impl Send for RhythmResult {}
 
@@ -139,10 +130,8 @@ impl RhythmResult {
     #[doc(alias = "RhythmResult.beatsPerMinute")]
     pub fn beats_per_minute(&self) -> Option<f32> {
         unsafe {
-            let word = abi::call_value_to_int(
-                rhythm_result_beats_per_minute as *const (),
-                self.value.as_ptr(),
-            );
+            let word =
+                abi::call_value_to_int(rhythm_result_beats_per_minute as *const (), self.as_ptr());
 
             let mut storage = Storage::<Optional<f32>>::new();
             let out = storage.as_mut_ptr().cast::<usize>();
@@ -169,16 +158,16 @@ impl RhythmResult {
     /// representation directly rather than through an indirect result.
     unsafe fn times(&self, getter: *const ()) -> swift::Array<cm::Time> {
         unsafe {
-            let raw = abi::call_value_to_int(getter, self.value.as_ptr()) as *mut ();
+            let raw = abi::call_value_to_int(getter, self.as_ptr()) as *mut ();
             swift::Array::from_raw(raw)
         }
     }
 }
 
-/// `MusicUnderstanding.LoudnessResult`.
-pub struct LoudnessResult {
-    value: Value<Optional<LoudnessResultValue>>,
-}
+define_swift_value!(
+    /// `MusicUnderstanding.LoudnessResult`.
+    pub LoudnessResult, LoudnessResultValue = optional accessor loudness_result_metadata
+);
 
 unsafe impl Send for LoudnessResult {}
 
@@ -198,18 +187,17 @@ impl LoudnessResult {
     unsafe fn timed(&self, getter: *const ()) -> TimedValue {
         unsafe {
             let mut storage = Storage::<TimedValueF32>::new();
-            abi::call_value_to_value(getter, self.value.as_ptr(), storage.as_mut_ptr());
-            TimedValue {
-                value: storage.assume_init(),
-            }
+            abi::call_value_to_value(getter, self.as_ptr(), storage.as_mut_ptr());
+            TimedValue::from_value(storage.assume_init())
         }
     }
 }
 
-/// A `TimedValue<Float>`: a measurement and the time it applies to.
-pub struct TimedValue {
-    value: Value<TimedValueF32>,
-}
+define_swift_value!(
+    /// A `TimedValue<Float>`: a measurement and the time it applies to.
+    pub TimedValue, TimedValueF32 =
+        optional mangled "18MusicUnderstanding0aB7SessionC10TimedValueVy_SfG"
+);
 
 unsafe impl Send for TimedValue {}
 
@@ -224,7 +212,7 @@ impl TimedValue {
             let mut out = core::mem::MaybeUninit::<f32>::uninit();
             abi::call_generic_value_to_value(
                 timed_value_value as *const (),
-                self.value.as_ptr(),
+                self.as_ptr(),
                 TimedValueF32::metadata(),
                 out.as_mut_ptr().cast(),
             );
@@ -238,7 +226,7 @@ impl TimedValue {
         unsafe {
             let words = abi::call_generic_value_to_words3(
                 timed_value_time as *const (),
-                self.value.as_ptr(),
+                self.as_ptr(),
                 TimedValueF32::metadata(),
             );
             core::mem::transmute::<[usize; 3], cm::Time>(words)

@@ -14,7 +14,7 @@ use crate::{
     },
 };
 
-crate::define_swift_class!(pub AccessoryManager);
+crate::define_swift_class!(pub AccessoryManager = accessor dock_accessory_manager_metadata);
 
 #[link(name = "DockKit", kind = "framework")]
 unsafe extern "C" {
@@ -44,11 +44,13 @@ impl AccessoryManager {
     pub fn shared() -> arc::R<Self> {
         unsafe {
             // Swift emits a class metadata access before calling this static getter.
-            let metadata =
-                abi::call_int_to_int(dock_accessory_manager_metadata as *const (), 0) as *const ();
+            let metadata = <Self as crate::swift::SwiftMetadata>::metadata();
             arc::R::from_raw(
-                abi::call_static0_object(dock_accessory_manager_shared as *const (), metadata)
-                    .cast(),
+                abi::call_static0_object(
+                    dock_accessory_manager_shared as *const (),
+                    metadata.cast(),
+                )
+                .cast(),
             )
         }
     }

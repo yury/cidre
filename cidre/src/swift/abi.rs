@@ -425,6 +425,121 @@ pub unsafe fn value_witness_table(metadata: *const TypeMetadata) -> *const usize
     unsafe { *metadata.cast::<*const usize>().sub(1) }
 }
 
+/// A process-lifetime cache for one Swift type's metadata.
+///
+/// Swift emits a cache word beside every mangled type reference and only calls
+/// the runtime while that word is still empty; resolving a type otherwise means
+/// re-demangling its name through the runtime's locked type cache on every use.
+pub struct MetadataCache(core::sync::atomic::AtomicPtr<TypeMetadata>);
+
+impl MetadataCache {
+    #[allow(clippy::new_without_default)]
+    pub const fn new() -> Self {
+        Self(core::sync::atomic::AtomicPtr::new(core::ptr::null_mut()))
+    }
+
+    /// Returns the metadata, calling `resolve` only on the first use.
+    ///
+    /// Relaxed is enough, as it is for the equivalent Swift stub: `resolve`
+    /// returns the same pointer every time, so a race just resolves twice, and
+    /// reading the metadata is an address-dependent load from storage the
+    /// runtime published before it ever handed out the pointer.
+    ///
+    /// A failed lookup stays uncached, so callers keep seeing null and assert
+    /// rather than the cache making the failure permanent.
+    #[inline]
+    pub fn get(&self, resolve: impl FnOnce() -> *const TypeMetadata) -> *const TypeMetadata {
+        use core::sync::atomic::Ordering::Relaxed;
+
+        let cached = self.0.load(Relaxed);
+        if !cached.is_null() {
+            return cached;
+        }
+
+        let metadata = resolve();
+        if !metadata.is_null() {
+            self.0.store(metadata.cast_mut(), Relaxed);
+        }
+        metadata
+    }
+}
+
+/// A Swift type's metadata paired with its value witness table.
+///
+/// The free functions below re-derive the witness table from the metadata on
+/// every call. Swift instead loads it once and then indexes it directly for the
+/// rest of a loop — its `for await` bodies keep both pointers in the async
+/// context and never look at the metadata header again. This is that pair, for
+/// the paths that touch the same type once per element.
+#[derive(Clone, Copy, Debug)]
+pub struct ValueWitnesses {
+    metadata: *const TypeMetadata,
+    vwt: *const usize,
+}
+
+// The tables are immutable process-lifetime runtime data.
+unsafe impl Send for ValueWitnesses {}
+unsafe impl Sync for ValueWitnesses {}
+
+impl ValueWitnesses {
+    /// # Safety
+    ///
+    /// `metadata` must be metadata the Swift runtime published, and it must
+    /// stay valid for as long as this value is used.
+    #[inline]
+    pub unsafe fn new(metadata: *const TypeMetadata) -> Self {
+        assert!(!metadata.is_null(), "Swift type metadata must exist");
+        Self {
+            metadata,
+            vwt: unsafe { value_witness_table(metadata) },
+        }
+    }
+
+    #[inline]
+    pub fn metadata(&self) -> *const TypeMetadata {
+        self.metadata
+    }
+
+    #[inline]
+    pub fn layout(&self) -> ValueLayout {
+        let size = unsafe { *self.vwt.add(8) };
+        let stride = unsafe { *self.vwt.add(9) };
+        let flags = unsafe { *self.vwt.add(10) };
+        ValueLayout {
+            size,
+            stride,
+            align: ((flags & 0xff) + 1).max(16),
+        }
+    }
+
+    #[inline]
+    pub fn is_bitwise_takable(&self) -> bool {
+        unsafe { *self.vwt.add(10) & IS_NON_BITWISE_TAKABLE == 0 }
+    }
+
+    /// # Safety
+    ///
+    /// `value` must be an initialized value of this type, and the caller must
+    /// own it.
+    #[inline]
+    pub unsafe fn destroy(&self, value: *mut ()) {
+        let destroy: unsafe extern "C" fn(*mut (), *const TypeMetadata) =
+            unsafe { std::mem::transmute(*self.vwt.add(1)) };
+        unsafe { destroy(value, self.metadata) };
+    }
+
+    /// # Safety
+    ///
+    /// `value` must be an initialized single-payload enum whose payload is this
+    /// type, with `empty_cases` empty cases.
+    #[inline]
+    pub unsafe fn enum_tag_single_payload(&self, value: *const (), empty_cases: u32) -> u32 {
+        let get_tag: unsafe extern "C" fn(*const (), u32, *const TypeMetadata) -> u32 =
+            unsafe { std::mem::transmute(*self.vwt.add(6)) };
+        unsafe { get_tag(value, empty_cases, self.metadata) }
+    }
+}
+
 #[inline]
 pub unsafe fn value_layout(metadata: *const TypeMetadata) -> ValueLayout {
     let vwt = unsafe { value_witness_table(metadata) };
@@ -1426,6 +1541,30 @@ pub unsafe fn call_value_to_object(function: *const (), value: *const ()) -> *mu
         );
     }
     result as *mut ()
+}
+
+/// Calls a member that returns three doubles in `d0`-`d2`, which is how a
+/// three-lane vector such as `SPVector3D` comes back.
+///
+/// # Safety
+///
+/// `function` must be a member of `value`'s type returning such a vector.
+#[inline]
+pub unsafe fn call_value_to_doubles3(function: *const (), value: *const ()) -> [f64; 3] {
+    let (x, y, z);
+    unsafe {
+        asm!(
+            "blr {function}",
+            function = in(reg) function,
+            in("x20") value,
+            in("x0") value,
+            lateout("d0") x,
+            lateout("d1") y,
+            lateout("d2") z,
+            clobber_abi("C"),
+        );
+    }
+    [x, y, z]
 }
 
 #[inline]

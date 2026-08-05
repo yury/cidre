@@ -5,7 +5,7 @@ use crate::{
 
 use crate::swift::value::{Storage, call_with_owned_value};
 
-crate::define_swift_class!(pub SpeechDetector);
+crate::define_swift_class!(pub SpeechDetector = accessor speech_detector_metadata);
 
 /// `SpeechDetector.SensitivityLevel`.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
@@ -52,8 +52,7 @@ impl SpeechDetector {
     )]
     pub fn new() -> arc::R<Self> {
         unsafe {
-            let metadata =
-                abi::call_int_to_int(speech_detector_metadata as *const (), 0) as *const ();
+            let metadata = <SpeechDetector as crate::swift::SwiftMetadata>::metadata().cast();
             arc::R::from_raw(
                 abi::call_static0_object(speech_detector_new as *const (), metadata).cast(),
             )
@@ -96,7 +95,7 @@ impl SpeechDetector {
             let options = options_storage.assume_init();
 
             let detector_metadata =
-                abi::call_int_to_int(speech_detector_metadata as *const (), 0) as *const ();
+                <SpeechDetector as crate::swift::SwiftMetadata>::metadata().cast();
             let object = call_with_owned_value(options, |options| {
                 abi::call_static_value_bool_to_object(
                     speech_detector_init as *const (),

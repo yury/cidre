@@ -402,7 +402,7 @@ required-features = ["av", "mt", "dispatch"]
 
 [[example]]
 name = "dock-kit"
-required-features = ["dk"]
+required-features = ["dk", "async", "av", "cm", "dispatch"]
 
 [[example]]
 name = "swift-speech"

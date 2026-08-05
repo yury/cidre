@@ -12,7 +12,7 @@ use crate::swift::concurrency::{
 use super::SpeechModule;
 use crate::swift::value::{Optional, Storage, Value};
 
-crate::define_swift_class!(pub CaptureInputSequenceProvider);
+crate::define_swift_class!(pub CaptureInputSequenceProvider = accessor capture_input_sequence_provider_metadata);
 
 pub(super) struct AnalyzerInputSequence {
     pub(super) value: Value<AnalyzerInputs>,
@@ -173,9 +173,7 @@ extern "C" fn cidre_speech_capture_provider_priority(task: *mut ProviderTask) ->
 }
 
 extern "C" fn cidre_speech_capture_provider_metadata(_: *mut ProviderTask) -> *const () {
-    unsafe {
-        abi::call_int_to_int(capture_input_sequence_provider_metadata as *const (), 0) as *const ()
-    }
+    unsafe { <CaptureInputSequenceProvider as crate::swift::SwiftMetadata>::metadata().cast() }
 }
 
 extern "C" fn cidre_speech_capture_provider_set_result(

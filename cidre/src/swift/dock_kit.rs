@@ -8,8 +8,8 @@ pub use accessory::{
     Accessory, AccessoryEvent, AccessoryEvents, Animation, BatteryChargeState, BatteryState,
     BatteryStates, CameraOrientation, Category, FramingMode, Identifier, Limit, Limits,
     MotionState, MotionStates, Observation, ObservationType, Observations, State, StateChange,
-    StateChanges, StateChangesIter, TrackedObject, TrackedPerson, TrackedSubject, TrackedSubjects,
-    TrackingState, TrackingStates,
+    StateChanges, TrackedObject, TrackedPerson, TrackedSubject, TrackedSubjects, TrackingState,
+    TrackingStates,
 };
 #[cfg(feature = "av")]
 pub use accessory::{CameraInformation, CameraIntrinsics};

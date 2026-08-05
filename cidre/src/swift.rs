@@ -39,12 +39,45 @@ pub mod speech;
 
 pub use array::{Array, ArrayIter};
 pub use string::{RawString, SmallStringError, String};
-pub use types::{SwiftMetadata, SwiftType};
+pub(crate) use types::FromSwift;
+pub use types::{SwiftClass, SwiftMetadata, SwiftType};
 
 /// Defines an opaque native Swift class marker type and implements Cidre's
 /// shared retain/release ownership traits for it.
+///
+/// Given the class's metadata accessor, it also implements
+/// [`SwiftMetadata`](swift::SwiftMetadata) and [`SwiftClass`](swift::SwiftClass),
+/// which is what lets `arc::R<Self>` stand in as the class's ABI value wherever
+/// a Swift value is expected.
 #[macro_export]
 macro_rules! define_swift_class {
+    (
+        $(#[$outer:meta])*
+        $vis:vis $ty:ident = accessor $accessor:expr
+    ) => {
+        $crate::define_swift_class!($(#[$outer])* $vis $ty);
+
+        unsafe impl $crate::swift::SwiftMetadata for $ty {
+            #[inline]
+            fn metadata() -> *const $crate::swift::abi::TypeMetadata {
+                static CACHE: $crate::swift::abi::MetadataCache =
+                    $crate::swift::abi::MetadataCache::new();
+                CACHE.get(|| unsafe {
+                    $crate::swift::abi::call_int_to_int($accessor as *const (), 0)
+                        as *const $crate::swift::abi::TypeMetadata
+                })
+            }
+        }
+
+        unsafe impl $crate::swift::SwiftClass for $ty {
+            #[inline]
+            fn optional_metadata_cache() -> &'static $crate::swift::abi::MetadataCache {
+                static CACHE: $crate::swift::abi::MetadataCache =
+                    $crate::swift::abi::MetadataCache::new();
+                &CACHE
+            }
+        }
+    };
     (
         $(#[$outer:meta])*
         $vis:vis $ty:ident

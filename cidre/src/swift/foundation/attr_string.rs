@@ -1,6 +1,6 @@
 use crate::swift::{
     self, abi,
-    value::{Storage, Value},
+    value::{Storage, define_swift_value},
 };
 
 #[link(name = "Foundation", kind = "framework")]
@@ -18,32 +18,17 @@ unsafe extern "C" {
     fn string_from_characters();
 }
 
-crate::define_swift_marker!(pub(crate) AttrStringValue = accessor attr_string_metadata);
 crate::define_swift_marker!(CharacterViewValue = accessor character_view_metadata);
 
-/// `Foundation.AttributedString`.
-#[doc(alias = "AttributedString")]
-pub struct AttrString {
-    pub(crate) value: Value<AttrStringValue>,
-}
+define_swift_value!(
+    /// `Foundation.AttributedString`.
+    #[doc(alias = "AttributedString")]
+    pub AttrString, AttrStringValue = accessor attr_string_metadata
+);
 
 unsafe impl Send for AttrString {}
 
 impl AttrString {
-    /// Wraps a value Swift has already written into `storage`.
-    ///
-    /// Used by the framework modules that produce attributed text.
-    ///
-    /// # Safety
-    ///
-    /// `storage` must hold an initialized `AttributedString`.
-    #[allow(dead_code)]
-    pub(crate) unsafe fn from_storage(storage: Storage<AttrStringValue>) -> Self {
-        Self {
-            value: unsafe { storage.assume_init() },
-        }
-    }
-
     /// The text without its attributes, via `String(_characters:)`.
     #[doc(alias = "AttributedString.characters")]
     pub fn to_swift_string(&self) -> swift::String {
@@ -51,7 +36,7 @@ impl AttrString {
             let mut characters = Storage::<CharacterViewValue>::new();
             abi::call_value_to_value(
                 attr_string_characters as *const (),
-                self.value.as_ptr(),
+                self.as_ptr(),
                 characters.as_mut_ptr(),
             );
             let characters = characters.assume_init();

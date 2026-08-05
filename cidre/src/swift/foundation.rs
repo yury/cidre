@@ -44,6 +44,26 @@ mod tests {
         assert_eq!(a, a.clone());
     }
 
+    /// `Hash` must agree with `Eq`, since both are used to key collections.
+    #[test]
+    fn uuid_hashes_consistently_with_equality() {
+        use std::collections::HashSet;
+
+        let a = Uuid::new();
+        let same = Uuid::with_str(&a.to_swift_string().to_string()).unwrap();
+        let other = Uuid::new();
+
+        let mut set = HashSet::new();
+        assert!(set.insert(a.clone()));
+        assert!(
+            !set.insert(same),
+            "an equal identifier must not be inserted twice"
+        );
+        assert!(set.insert(other));
+        assert_eq!(2, set.len());
+        assert!(set.contains(&a));
+    }
+
     #[test]
     fn uuid_rejects_malformed_input() {
         assert!(Uuid::with_str("").is_none());
@@ -62,6 +82,24 @@ mod tests {
         // A `const` literal is the zero-cost path, so it must agree.
         const EN: swift::String = swift::String::from_ascii_literal("en_GB");
         assert_eq!("en_GB", Locale::with_swift_id(EN).id().to_string());
+    }
+
+    /// Cloning goes through `initializeWithCopy`, so the copy has to own its
+    /// own contents: both must still read correctly after either is dropped.
+    #[test]
+    fn a_swift_value_clone_owns_its_contents() {
+        let locale = Locale::with_id("fr_FR");
+        let copy = locale.clone();
+        assert_eq!("fr_FR", copy.id().to_string());
+
+        // If the copy had aliased rather than retained, this would leave the
+        // survivor reading freed storage.
+        drop(locale);
+        assert_eq!("fr_FR", copy.id().to_string());
+
+        let second = copy.clone();
+        drop(copy);
+        assert_eq!("fr_FR", second.id().to_string());
     }
 
     #[test]

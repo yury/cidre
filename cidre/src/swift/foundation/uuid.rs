@@ -1,6 +1,6 @@
 use crate::swift::{
     self, SwiftMetadata, abi,
-    value::{Optional, Storage, Value},
+    value::{Optional, Storage, define_swift_value},
 };
 
 #[link(name = "Foundation", kind = "framework")]
@@ -19,41 +19,24 @@ unsafe extern "C" {
 
 }
 
-crate::define_swift_marker!(pub(crate) UuidValue = accessor uuid_metadata);
-
-/// `Foundation.UUID`.
-#[doc(alias = "UUID")]
-pub struct Uuid {
-    pub(super) value: Value<UuidValue>,
-}
+define_swift_value!(
+    /// `Foundation.UUID`.
+    #[doc(alias = "UUID")]
+    pub Uuid, UuidValue = accessor uuid_metadata
+);
 
 unsafe impl Send for Uuid {}
 unsafe impl Sync for Uuid {}
 
 impl Uuid {
-    // Bridges for the framework modules that hand back these values.
-    #[allow(dead_code)]
-    #[inline]
-    pub(crate) unsafe fn from_value(value: Value<UuidValue>) -> Self {
-        Self { value }
-    }
-
-    #[allow(dead_code)]
-    #[inline]
-    pub(crate) fn as_ptr(&self) -> *const () {
-        self.value.as_ptr()
-    }
-
     /// Generates a new random identifier.
     #[doc(alias = "UUID.init()")]
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         unsafe {
-            let mut storage = Storage::<UuidValue>::new();
+            let mut storage = Self::storage();
             abi::call0_value(uuid_init as *const (), storage.as_mut_ptr());
-            Self {
-                value: storage.assume_init(),
-            }
+            Self::from_storage(storage)
         }
     }
 
@@ -78,11 +61,9 @@ impl Uuid {
             // An optional's payload starts at offset 0, so the storage already
             // holds the unwrapped value.
             let raw = value.as_ptr();
-            let mut unwrapped = Storage::<UuidValue>::new();
+            let mut unwrapped = Self::storage();
             abi::initialize_with_copy(unwrapped.as_mut_ptr(), raw, UuidValue::metadata());
-            Some(Self {
-                value: unwrapped.assume_init(),
-            })
+            Some(Self::from_storage(unwrapped))
         }
     }
 
@@ -92,7 +73,7 @@ impl Uuid {
         unsafe {
             swift::String::from_raw(abi::call_value_to_string(
                 uuid_string as *const (),
-                self.value.as_ptr(),
+                self.as_ptr(),
             ))
         }
     }
@@ -110,33 +91,32 @@ impl std::fmt::Debug for Uuid {
     }
 }
 
-impl PartialEq for Uuid {
-    /// A `UUID` is sixteen plain bytes, so comparing them needs no call into
+impl Uuid {
+    /// The identifier's raw bytes.
+    ///
+    /// A `UUID` is plain data, so comparing and hashing it needs no call into
     /// Swift.
-    fn eq(&self, other: &Self) -> bool {
+    #[inline]
+    fn bytes(&self) -> &[u8] {
         unsafe {
             let size = abi::value_layout(UuidValue::metadata()).size;
-            let lhs = core::slice::from_raw_parts(self.value.as_ptr().cast::<u8>(), size);
-            let rhs = core::slice::from_raw_parts(other.value.as_ptr().cast::<u8>(), size);
-            lhs == rhs
+            core::slice::from_raw_parts(self.as_ptr().cast::<u8>(), size)
         }
+    }
+}
+
+impl PartialEq for Uuid {
+    fn eq(&self, other: &Self) -> bool {
+        self.bytes() == other.bytes()
     }
 }
 
 impl Eq for Uuid {}
 
-impl Clone for Uuid {
-    fn clone(&self) -> Self {
-        unsafe {
-            let mut storage = Storage::<UuidValue>::new();
-            abi::initialize_with_copy(
-                storage.as_mut_ptr(),
-                self.value.as_ptr(),
-                UuidValue::metadata(),
-            );
-            Self {
-                value: storage.assume_init(),
-            }
-        }
+impl std::hash::Hash for Uuid {
+    /// Hashes the same bytes [`PartialEq`] compares, so equal identifiers hash
+    /// equally.
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.bytes().hash(state);
     }
 }

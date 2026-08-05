@@ -17,7 +17,7 @@ use super::CaptureInputSequenceProvider;
 use super::SpeechModule;
 use crate::swift::value::{Optional, Value, call_with_owned_value};
 
-crate::define_swift_class!(pub SpeechAnalyzer);
+crate::define_swift_class!(pub SpeechAnalyzer = accessor speech_analyzer_metadata);
 
 #[link(name = "Speech", kind = "framework")]
 unsafe extern "C" {
@@ -56,7 +56,7 @@ impl SpeechAnalyzer {
             let modules = swift::Array::from_slice(modules);
             let options = Value::<Optional<AnalyzerOptions>>::none();
             let analyzer_metadata =
-                abi::call_int_to_int(speech_analyzer_metadata as *const (), 0) as *const ();
+                <SpeechAnalyzer as crate::swift::SwiftMetadata>::metadata().cast();
             let object = call_with_owned_value(options, |options| {
                 abi::call_static_array_value_to_object(
                     speech_analyzer_init as *const (),

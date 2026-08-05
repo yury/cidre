@@ -80,6 +80,23 @@ impl<T: SwiftMetadata> Storage<T> {
     }
 }
 
+impl<T: super::SwiftClass> Storage<crate::arc::R<T>> {
+    /// Moves a class reference into storage for the class's Swift value.
+    ///
+    /// The reference is the value, so this is a one-word write rather than a
+    /// call through the runtime.
+    pub(crate) fn from_class_ref(value: crate::arc::R<T>) -> Self {
+        let mut storage = Self::new();
+        unsafe {
+            storage
+                .as_mut_ptr()
+                .cast::<*mut T>()
+                .write(value.into_raw())
+        };
+        storage
+    }
+}
+
 impl<T: SwiftMetadata> Drop for Storage<T> {
     fn drop(&mut self) {
         if let Some(ptr) = self.heap {
@@ -94,16 +111,17 @@ impl<T: SwiftMetadata> Drop for Storage<T> {
 ///
 /// `metadata` must be non-null.
 unsafe fn allocate_if_large(metadata: *const abi::TypeMetadata) -> Option<NonNull<u8>> {
-    let value_layout = unsafe { abi::value_layout(metadata) };
+    // One witness table load answers both questions.
+    let witnesses = unsafe { abi::ValueWitnesses::new(metadata) };
+    let value_layout = witnesses.layout();
     if value_layout.stride <= INLINE_CAPACITY
         && value_layout.align <= 16
-        && unsafe { abi::is_bitwise_takable(metadata) }
+        && witnesses.is_bitwise_takable()
     {
         return None;
     }
 
-    let layout = Layout::from_size_align(value_layout.stride.max(1), value_layout.align)
-        .expect("valid Swift value layout");
+    let layout = rust_layout(value_layout);
     Some(
         NonNull::new(unsafe { alloc::alloc(layout) })
             .unwrap_or_else(|| alloc::handle_alloc_error(layout)),
@@ -150,6 +168,22 @@ impl<T: SwiftMetadata> Value<T> {
             let mut storage = DynamicStorage::new(metadata);
             abi::initialize_with_take(storage.as_mut_ptr(), self.as_mut_ptr(), metadata);
             self.assume_consumed();
+            storage.assume_init()
+        }
+    }
+}
+
+/// Copies through the type's `initializeWithCopy` witness, which is what
+/// retains whatever the value owns.
+///
+/// Without this the wrappers around a `Value` cannot be cloned at all, since
+/// none of them can copy runtime-laid-out bytes by hand.
+impl<T: SwiftMetadata> Clone for Value<T> {
+    fn clone(&self) -> Self {
+        unsafe {
+            let metadata = T::metadata();
+            let mut storage = Storage::<T>::new();
+            abi::initialize_with_copy(storage.as_mut_ptr(), self.as_ptr(), metadata);
             storage.assume_init()
         }
     }
@@ -205,6 +239,136 @@ where
     result
 }
 
+/// Defines a wrapper over a Swift value type whose layout is only known at
+/// runtime, together with the marker naming it.
+///
+/// Every one of these needs the same pieces: a marker, a newtype holding a
+/// [`Value`], the pointer accessors the ABI shims take, and a `Clone` that goes
+/// through the copy witness. The `optional` forms are for getters that return
+/// `Payload?`, where the wrapper holds the optional itself — an optional's
+/// payload starts at offset 0, so the same storage doubles as the unwrapped
+/// value once the tag says `.some`.
+macro_rules! define_swift_value {
+    ($(#[$meta:meta])* $vis:vis $ty:ident, $marker:ident = accessor $accessor:expr) => {
+        $crate::define_swift_marker!(pub(crate) $marker = accessor $accessor);
+        define_swift_value!(@wrap $(#[$meta])* $vis $ty, $marker);
+        define_swift_value!(@read $ty, $marker);
+    };
+    ($(#[$meta:meta])* $vis:vis $ty:ident, $marker:ident = mangled $name:literal) => {
+        $crate::define_swift_marker!(pub(crate) $marker = mangled $name);
+        define_swift_value!(@wrap $(#[$meta])* $vis $ty, $marker);
+        define_swift_value!(@read $ty, $marker);
+    };
+    // Only the unwrapped forms get this: copying an `Optional<Payload>` is not
+    // what a caller reading a `Payload` out of Swift is asking for.
+    (@read $ty:ident, $marker:ident) => {
+        impl $ty {
+            /// Copies a borrowed Swift value, leaving the original to its owner.
+            #[allow(dead_code)]
+            #[inline]
+            pub(crate) unsafe fn copy_from_ptr(value: *const ()) -> Self {
+                unsafe {
+                    let mut storage = Self::storage();
+                    $crate::swift::abi::initialize_with_copy(
+                        storage.as_mut_ptr(),
+                        value,
+                        <$marker as $crate::swift::SwiftMetadata>::metadata(),
+                    );
+                    Self::from_storage(storage)
+                }
+            }
+        }
+
+        unsafe impl $crate::swift::FromSwift for $ty {
+            type Swift = $marker;
+
+            #[inline]
+            unsafe fn from_swift(value: *const ()) -> Self {
+                unsafe { Self::copy_from_ptr(value) }
+            }
+        }
+    };
+    ($(#[$meta:meta])* $vis:vis $ty:ident, $marker:ident = optional accessor $accessor:expr) => {
+        $crate::define_swift_marker!(pub(crate) $marker = accessor $accessor);
+        define_swift_value!(@wrap $(#[$meta])* $vis $ty, $crate::swift::value::Optional<$marker>);
+        define_swift_value!(@optional $ty, $marker);
+    };
+    ($(#[$meta:meta])* $vis:vis $ty:ident, $marker:ident = optional mangled $name:literal) => {
+        $crate::define_swift_marker!(pub(crate) $marker = mangled $name);
+        define_swift_value!(@wrap $(#[$meta])* $vis $ty, $crate::swift::value::Optional<$marker>);
+        define_swift_value!(@optional $ty, $marker);
+    };
+    (@optional $ty:ident, $marker:ident) => {
+        impl $ty {
+            /// Reads what Swift wrote into `storage`, or `None` when the tag
+            /// says the getter had nothing to return.
+            #[allow(dead_code)]
+            #[inline]
+            pub(crate) unsafe fn from_optional_storage(
+                storage: $crate::swift::value::Storage<$crate::swift::value::Optional<$marker>>,
+            ) -> Option<Self> {
+                let value = unsafe { storage.assume_init() };
+                value.is_some().then(|| Self(value))
+            }
+        }
+    };
+    (@wrap $(#[$meta:meta])* $vis:vis $ty:ident, $value:ty) => {
+        $(#[$meta])*
+        #[derive(Clone)]
+        $vis struct $ty($crate::swift::value::Value<$value>);
+
+        #[allow(dead_code)]
+        impl $ty {
+            /// Uninitialized storage for a getter to write into.
+            #[inline]
+            pub(crate) fn storage() -> $crate::swift::value::Storage<$value> {
+                $crate::swift::value::Storage::new()
+            }
+
+            /// Takes what Swift wrote into `storage`.
+            ///
+            /// # Safety
+            ///
+            /// `storage` must hold an initialized value of this type.
+            #[inline]
+            pub(crate) unsafe fn from_storage(
+                storage: $crate::swift::value::Storage<$value>,
+            ) -> Self {
+                Self(unsafe { storage.assume_init() })
+            }
+
+            #[inline]
+            pub(crate) fn from_value(value: $crate::swift::value::Value<$value>) -> Self {
+                Self(value)
+            }
+
+            #[inline]
+            pub(crate) fn as_ptr(&self) -> *const () {
+                self.0.as_ptr()
+            }
+
+            #[inline]
+            pub(crate) fn as_mut_ptr(&mut self) -> *mut () {
+                self.0.as_mut_ptr()
+            }
+
+            #[inline]
+            pub(crate) fn value(&self) -> &$crate::swift::value::Value<$value> {
+                &self.0
+            }
+
+            /// Surrenders the Swift value, for handing to something that
+            /// consumes it.
+            #[inline]
+            pub(crate) fn into_value(self) -> $crate::swift::value::Value<$value> {
+                self.0
+            }
+        }
+    };
+}
+
+pub(crate) use define_swift_value;
+
 /// `Swift.Optional<T>`, whose metadata comes from the standard library's
 /// generic accessor rather than a hand-written mangled name.
 pub(crate) struct Optional<T: SwiftMetadata>(OptionalMarker<T>);
@@ -240,16 +404,18 @@ impl<T: SwiftMetadata> Value<Optional<T>> {
 /// context rather than from a Rust marker type.
 pub(crate) struct DynamicStorage {
     ptr: NonNull<u8>,
-    metadata: *const abi::TypeMetadata,
+    /// Held rather than just the metadata, so destroying and deallocating the
+    /// value need no further runtime lookups.
+    witnesses: abi::ValueWitnesses,
 }
 
 impl DynamicStorage {
     pub(crate) unsafe fn new(metadata: *const abi::TypeMetadata) -> Self {
-        assert!(!metadata.is_null(), "Swift type metadata must exist");
-        let layout = unsafe { layout(metadata) };
+        let witnesses = unsafe { abi::ValueWitnesses::new(metadata) };
+        let layout = rust_layout(witnesses.layout());
         let ptr = NonNull::new(unsafe { alloc::alloc(layout) })
             .unwrap_or_else(|| alloc::handle_alloc_error(layout));
-        Self { ptr, metadata }
+        Self { ptr, witnesses }
     }
 
     #[inline]
@@ -264,7 +430,7 @@ impl DynamicStorage {
 
     #[inline]
     pub(crate) fn metadata(&self) -> *const abi::TypeMetadata {
-        self.metadata
+        self.witnesses.metadata()
     }
 
     /// Treats the bytes in this allocation as an initialized Swift value.
@@ -281,7 +447,7 @@ impl DynamicStorage {
 
 impl Drop for DynamicStorage {
     fn drop(&mut self) {
-        unsafe { dealloc(self.ptr, self.metadata) }
+        unsafe { alloc::dealloc(self.ptr.as_ptr(), rust_layout(self.witnesses.layout())) }
     }
 }
 
@@ -308,20 +474,20 @@ impl AnyValue {
 
 impl Drop for AnyValue {
     fn drop(&mut self) {
-        unsafe { abi::destroy_value(self.storage.as_mut_ptr(), self.storage.metadata) }
+        let witnesses = self.storage.witnesses;
+        unsafe { witnesses.destroy(self.storage.as_mut_ptr()) }
     }
 }
 
 #[inline]
 unsafe fn dealloc(ptr: NonNull<u8>, metadata: *const abi::TypeMetadata) {
-    unsafe { alloc::dealloc(ptr.as_ptr(), layout(metadata)) }
+    unsafe { alloc::dealloc(ptr.as_ptr(), rust_layout(abi::value_layout(metadata))) }
 }
 
+/// The Rust allocation that backs a Swift value of this layout.
 #[inline]
-unsafe fn layout(metadata: *const abi::TypeMetadata) -> Layout {
-    let value_layout = unsafe { abi::value_layout(metadata) };
-    Layout::from_size_align(value_layout.stride.max(1), value_layout.align)
-        .expect("valid Swift value layout")
+fn rust_layout(value: abi::ValueLayout) -> Layout {
+    Layout::from_size_align(value.stride.max(1), value.align).expect("valid Swift value layout")
 }
 
 #[cfg(test)]

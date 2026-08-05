@@ -17,7 +17,7 @@ use crate::{
 use super::analysis_type::{AnalysisType, AnalysisTypeSet};
 use super::results::{SessionResult, SessionResultValue};
 
-crate::define_swift_class!(pub MusicUnderstandingSession);
+crate::define_swift_class!(pub MusicUnderstandingSession = accessor session_metadata);
 
 #[link(name = "MusicUnderstanding", kind = "framework")]
 unsafe extern "C" {
@@ -139,7 +139,7 @@ extern "C" fn cidre_mu_init_asset(task: *mut InitTask) -> *mut () {
 }
 
 extern "C" fn cidre_mu_init_metadata(_: *mut InitTask) -> *const () {
-    unsafe { abi::call_int_to_int(session_metadata as *const (), 0) as *const () }
+    <MusicUnderstandingSession as crate::swift::SwiftMetadata>::metadata().cast()
 }
 
 extern "C" fn cidre_mu_init_set_result(task: *mut InitTask, result: *mut (), error: *mut ()) {

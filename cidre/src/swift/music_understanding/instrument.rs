@@ -31,8 +31,6 @@ unsafe extern "C" {
     fn other();
 }
 
-crate::define_swift_marker!(pub(super) InstrumentActivityResultValue = accessor instrument_activity_result_metadata);
-
 crate::define_swift_marker!(InstrumentValue = accessor instrument_metadata);
 
 /// `InstrumentActivityResult.Instrument`.
@@ -56,10 +54,10 @@ impl Instrument {
     }
 }
 
-/// `MusicUnderstanding.InstrumentActivityResult`.
-pub struct InstrumentActivityResult {
-    pub(super) value: Value<Optional<InstrumentActivityResultValue>>,
-}
+define_swift_value!(
+    /// `MusicUnderstanding.InstrumentActivityResult`.
+    pub InstrumentActivityResult, InstrumentActivityResultValue = optional accessor instrument_activity_result_metadata
+);
 
 unsafe impl Send for InstrumentActivityResult {}
 
@@ -75,7 +73,7 @@ impl InstrumentActivityResult {
             // The getter hands back an owned dictionary.
             let dictionary = RawDictionary(abi::call_value_to_int(
                 instrument_activity_result_ranges as *const (),
-                self.value.as_ptr(),
+                self.as_ptr(),
             ) as *mut ());
 
             let mut key = Storage::<InstrumentValue>::new();

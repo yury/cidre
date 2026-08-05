@@ -1,7 +1,4 @@
-use crate::swift::{
-    self, abi,
-    value::{Storage, Value},
-};
+use crate::swift::{self, abi, value::define_swift_value};
 
 #[link(name = "Foundation", kind = "framework")]
 unsafe extern "C" {
@@ -15,12 +12,10 @@ unsafe extern "C" {
     fn locale_identifier();
 }
 
-crate::define_swift_marker!(pub(crate) LocaleValue = accessor locale_metadata);
-
-/// `Foundation.Locale`.
-pub struct Locale {
-    pub(crate) value: Value<LocaleValue>,
-}
+define_swift_value!(
+    /// `Foundation.Locale`.
+    pub Locale, LocaleValue = accessor locale_metadata
+);
 
 unsafe impl Send for Locale {}
 unsafe impl Sync for Locale {}
@@ -37,15 +32,13 @@ impl Locale {
     #[doc(alias = "Locale.init(identifier:)")]
     pub fn with_swift_id(identifier: swift::String) -> Self {
         unsafe {
-            let mut storage = Storage::<LocaleValue>::new();
+            let mut storage = Self::storage();
             abi::call_string_to_value(
                 locale_init_with_identifier as *const (),
                 identifier.into_raw(),
                 storage.as_mut_ptr(),
             );
-            Self {
-                value: storage.assume_init(),
-            }
+            Self::from_storage(storage)
         }
     }
 
@@ -55,16 +48,9 @@ impl Locale {
         unsafe {
             swift::String::from_raw(abi::call_value_to_string(
                 locale_identifier as *const (),
-                self.value.as_ptr(),
+                self.as_ptr(),
             ))
         }
-    }
-
-    /// Surrenders the Swift value, for handing to an initializer that consumes
-    /// it.
-    #[allow(dead_code)]
-    pub(crate) fn into_value(self) -> Value<LocaleValue> {
-        self.value
     }
 }
 
