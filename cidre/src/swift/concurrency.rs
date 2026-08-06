@@ -342,7 +342,7 @@ unsafe impl Send for PulledIterTask {}
 pub(crate) trait PullControl: Send + Sync {
     /// Records the continuation the task is about to wait on.
     ///
-    /// Returns whether a request has already arrived, in which case the task
+    /// Returns whether a request is already in flight, in which case the task
     /// resumes itself instead of parking — the continuation's own
     /// synchronization makes that await fall straight through.
     fn publish(&self, continuation: *mut ()) -> bool;
@@ -379,8 +379,14 @@ struct PullState<T> {
     /// Set only while the Swift task is parked and nobody has resumed it yet;
     /// whoever takes it owns the single resume that continuation allows.
     continuation: Option<*mut ()>,
-    /// A request that arrived while the task was not parked.
-    requested: bool,
+    /// Whether the task has been asked for an element it has not delivered
+    /// yet. At most one request is ever in flight, so the task fetches exactly
+    /// one element per [`PullNext`] that asks for one, and `delivered` can
+    /// never be overwritten.
+    ///
+    /// While it is set the task is running rather than parked, so it also
+    /// means `continuation` is empty.
+    outstanding: bool,
     delivered: Option<Option<T>>,
     waker: Option<std::task::Waker>,
     ended: bool,
@@ -395,20 +401,20 @@ unsafe impl<T: Send> Send for PullShared<T> {}
 unsafe impl<T: Send> Sync for PullShared<T> {}
 
 #[cfg(feature = "async")]
-impl<T> PullShared<T> {
-    /// Asks the Swift task for one more element.
-    fn request(&self) {
-        let mut state = self.state.lock();
-        if state.ended || state.stop {
-            return;
+impl<T> PullState<T> {
+    /// Asks the Swift task for one more element, unless it is already fetching
+    /// one, and returns the continuation that has to be resumed to wake it.
+    ///
+    /// The caller resumes it after dropping the lock: a resume can run the task
+    /// synchronously on this thread, and it re-enters this state as soon as it
+    /// has an element.
+    fn request(&mut self) -> Option<*mut ()> {
+        if self.ended || self.stop || self.outstanding {
+            return None;
         }
-        match state.continuation.take() {
-            Some(continuation) => {
-                drop(state);
-                unsafe { swift_continuation_resume(continuation) };
-            }
-            None => state.requested = true,
-        }
+        self.outstanding = true;
+        // Empty whenever the task is mid-fetch, so this parks nothing.
+        self.continuation.take()
     }
 }
 
@@ -416,8 +422,7 @@ impl<T> PullShared<T> {
 impl<T: Send> PullControl for PullShared<T> {
     fn publish(&self, continuation: *mut ()) -> bool {
         let mut state = self.state.lock();
-        if state.requested || state.stop {
-            state.requested = false;
+        if state.outstanding || state.stop {
             // Resumed by the task itself, so it must not also be parked here.
             return true;
         }
@@ -435,6 +440,10 @@ impl<T: Send> PullControl for PullShared<T> {
 
         let mut state = self.state.lock();
         state.ended |= ended;
+        // The one request this answers is what let the task fetch at all, so
+        // there is never an element here waiting to be overwritten.
+        debug_assert!(state.delivered.is_none());
+        state.outstanding = false;
         state.delivered = Some(value);
         let waker = state.waker.take();
         let keep_going = !ended && !state.stop;
@@ -451,8 +460,11 @@ impl<T: Send> PullControl for PullShared<T> {
 #[cfg(feature = "async")]
 impl<T: Send + 'static> PulledIter<T> {
     /// Awaits the next element, or `None` once the sequence has ended.
+    ///
+    /// Nothing is asked of the Swift task until the future is polled, so a
+    /// `next()` that is dropped before then — the losing branch of a `select!`,
+    /// a timeout — costs nothing and consumes no element.
     pub fn next(&mut self) -> PullNext<'_, T> {
-        self.shared.request();
         PullNext {
             shared: &self.shared,
         }
@@ -476,6 +488,11 @@ impl<T> Drop for PulledIter<T> {
 }
 
 /// The future returned by [`PulledIter::next`].
+///
+/// Asking the task for an element is the first poll's job rather than
+/// `next()`'s, so at most one request is ever in flight even if a future is
+/// dropped between the request and the element that answers it: that element
+/// stays in `delivered` for whoever polls next.
 #[cfg(feature = "async")]
 pub struct PullNext<'a, T> {
     shared: &'a std::sync::Arc<PullShared<T>>,
@@ -492,19 +509,29 @@ impl<T> std::future::Future for PullNext<'_, T> {
         let mut state = self.shared.state.lock();
 
         if let Some(value) = state.delivered.take() {
-            std::task::Poll::Ready(value)
-        } else if state.ended {
-            std::task::Poll::Ready(None)
-        } else {
-            if !state
-                .waker
-                .as_ref()
-                .is_some_and(|waker| waker.will_wake(cx.waker()))
-            {
-                state.waker = Some(cx.waker().clone());
-            }
-            std::task::Poll::Pending
+            return std::task::Poll::Ready(value);
         }
+        if state.ended {
+            return std::task::Poll::Ready(None);
+        }
+
+        if !state
+            .waker
+            .as_ref()
+            .is_some_and(|waker| waker.will_wake(cx.waker()))
+        {
+            state.waker = Some(cx.waker().clone());
+        }
+
+        // Registered first, so an element delivered from the task's thread
+        // between the request and the end of this poll still wakes us.
+        let resume = state.request();
+        drop(state);
+
+        if let Some(continuation) = resume {
+            unsafe { swift_continuation_resume(continuation) };
+        }
+        std::task::Poll::Pending
     }
 }
 
@@ -527,7 +554,7 @@ where
         let shared = std::sync::Arc::new(PullShared {
             state: parking_lot::Mutex::new(PullState {
                 continuation: None,
-                requested: false,
+                outstanding: false,
                 delivered: None,
                 waker: None,
                 ended: false,
@@ -1503,6 +1530,11 @@ macro_rules! define_async_sequence {
         #[cfg(feature = "async")]
         impl $async_iter {
             /// Awaits the next element, or `None` once the sequence has ended.
+            ///
+            /// Cancel-safe: dropping the future without awaiting it to
+            /// completion loses no element, so it can be the losing branch of a
+            /// `select!` or a timeout. An element the dropped future had
+            /// already asked for is handed to the next caller instead.
             pub fn next(
                 &mut self,
             ) -> impl ::core::future::Future<Output = Option<$element>> + use<'_> {
@@ -1747,6 +1779,13 @@ mod tests {
         }
     }
 
+    /// Polls `fut` once against a waker nobody listens to, which is what puts a
+    /// request in flight without waiting for the element that answers it.
+    fn poll_once<F: Future + Unpin>(fut: &mut F) -> std::task::Poll<F::Output> {
+        let mut cx = std::task::Context::from_waker(std::task::Waker::noop());
+        std::pin::Pin::new(fut).poll(&mut cx)
+    }
+
     #[test]
     fn buffers_elements_until_awaited() {
         let (mut stream, mut feed) = Stream::<u32>::new();
@@ -1788,6 +1827,78 @@ mod tests {
             !feed(Some(2)),
             "the Swift side must be told to stop iterating"
         );
+    }
+
+    /// A `next()` asks the Swift task for an element only once it is polled, so
+    /// dropping one must not consume an element that no later `next()` sees.
+    ///
+    /// The task is stood in for here: driving a real one would need a sequence
+    /// that yields on demand, and what is under test is the state machine, not
+    /// the trampolines.
+    #[test]
+    fn a_dropped_next_future_consumes_no_element() {
+        use super::{PullControl, PullShared, PullState, PulledIter};
+        use std::task::Poll;
+
+        unsafe fn copy(value: *const ()) -> u32 {
+            unsafe { value.cast::<u32>().read() }
+        }
+
+        let shared = std::sync::Arc::new(PullShared {
+            state: parking_lot::Mutex::new(PullState {
+                continuation: None,
+                outstanding: false,
+                delivered: None,
+                waker: None,
+                ended: false,
+                stop: false,
+            }),
+            copy,
+        });
+        let mut iter = PulledIter {
+            shared: shared.clone(),
+        };
+
+        // The task fetches one element per request in flight, and never runs
+        // otherwise. It is parked throughout, so no continuation is involved.
+        let mut produced = 0u32;
+        let run_task = |produced: &mut u32| {
+            while shared.state.lock().outstanding {
+                *produced += 1;
+                let value = *produced;
+                shared.deliver(Some((&raw const value).cast()));
+            }
+        };
+
+        drop(iter.next());
+        run_task(&mut produced);
+        assert_eq!(0, produced, "an unpolled `next()` asks for nothing");
+
+        // Polled and then dropped: the one request it made is answered, and
+        // that element has to be waiting for the next caller.
+        let mut abandoned = iter.next();
+        assert!(poll_once(&mut abandoned).is_pending());
+        drop(abandoned);
+        run_task(&mut produced);
+        assert_eq!(1, produced);
+
+        let mut next = iter.next();
+        assert_eq!(
+            Poll::Ready(Some(1)),
+            poll_once(&mut next),
+            "the abandoned future's element must not be lost"
+        );
+        drop(next);
+        run_task(&mut produced);
+        assert_eq!(1, produced, "taking a delivered element refetches nothing");
+
+        // Repeated polls of one future are a single request, not one each.
+        let mut next = iter.next();
+        assert!(poll_once(&mut next).is_pending());
+        assert!(poll_once(&mut next).is_pending());
+        run_task(&mut produced);
+        assert_eq!(2, produced);
+        assert_eq!(Poll::Ready(Some(2)), poll_once(&mut next));
     }
 
     /// Keeps posting `name` until `arrived` reports the element landed.
@@ -1875,6 +1986,53 @@ mod tests {
         poster.join().unwrap();
     }
 
+    /// The cancel-safety the pulled iterator advertises, against a real Swift
+    /// task rather than a stand-in: abandoning a polled `next()` must leave the
+    /// iterator able to deliver, with the abandoned request's element going to
+    /// the next caller instead of being dropped on the floor.
+    #[cfg(feature = "ns")]
+    #[test]
+    fn a_dropped_next_leaves_the_iterator_usable() {
+        use super::notification_sequence::Notifications;
+        use crate::ns;
+        use std::sync::atomic::{AtomicBool, Ordering};
+
+        let name = ns::NotificationName::with_raw(ns::str!(c"cidre.swift.async.cancel"));
+        let center = ns::NotificationCenter::default();
+        let mut iter = Notifications::named(&center, name).async_iter();
+
+        let stop = std::sync::Arc::new(AtomicBool::new(false));
+        let poster = std::thread::spawn({
+            let stop = stop.clone();
+            move || {
+                let name = ns::NotificationName::with_raw(ns::str!(c"cidre.swift.async.cancel"));
+                let center = ns::NotificationCenter::default();
+                while !stop.load(Ordering::Relaxed) {
+                    center.post_with_name_obj(name, None);
+                    std::thread::sleep(std::time::Duration::from_millis(10));
+                }
+            }
+        });
+
+        for round in 0..25 {
+            // A request really goes out here, and is then abandoned while the
+            // Swift task is still inside `next()`.
+            let mut abandoned = iter.next();
+            assert!(poll_once(&mut abandoned).is_pending());
+            drop(abandoned);
+
+            // Whatever that request fetched has to still be reachable, and the
+            // iterator has to keep advancing afterwards.
+            assert!(
+                block_on(iter.next()).is_some(),
+                "element {round} must survive the abandoned future"
+            );
+        }
+
+        stop.store(true, Ordering::Relaxed);
+        poster.join().unwrap();
+    }
+
     /// Dropping the iterator while its Swift task is parked has to wind the
     /// task up, not strand it waiting for a request that will never come.
     #[cfg(feature = "ns")]
@@ -1889,9 +2047,12 @@ mod tests {
         for _ in 0..200 {
             let mut iter = Notifications::named(&center, name).async_iter();
 
-            // Ask for an element and leave the request outstanding, so the task
-            // is somewhere between parked and fetching when the drop lands.
-            let pending = iter.next();
+            // Polling is what asks for an element, so the future has to be
+            // polled and not merely built to leave the request outstanding and
+            // put the task somewhere between parked and fetching when the drop
+            // lands.
+            let mut pending = iter.next();
+            assert!(poll_once(&mut pending).is_pending());
             drop(pending);
             drop(iter);
         }
