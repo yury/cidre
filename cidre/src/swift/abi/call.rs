@@ -1,0 +1,578 @@
+//! Calling Swift functions from Rust.
+//!
+//! Swift's calling convention is the C one plus three registers Rust cannot
+//! name in a function type: `x20` carries `self`, `x21` carries a thrown error,
+//! and `x8` points at storage for a value returned indirectly. So every call
+//! goes through the one macro below, which names only those registers the
+//! callee actually reads.
+//!
+//! Filling every register instead — one assembly block taking the whole set as
+//! data — costs a `mov` of zero per unused register at each call site, which is
+//! a dozen instructions Swift itself never emits. So the register list is per
+//! shape, while the `blr` and the clobbers stay here.
+
+use super::{RawString, TypeMetadata};
+
+/// Calls a Swift entry point with `operands` naming the registers it reads and
+/// writes.
+///
+/// The clobbers are the C ones. That covers all of `v8`–`v15`, where the ABI
+/// preserves only their low halves, so a call spills `d8`–`d15` where Swift
+/// would not; Rust's assembly syntax cannot describe a half-preserved register,
+/// and the spill is per function rather than per call.
+///
+/// # Safety
+///
+/// `function` must be a Swift entry point whose parameters are what `operands`
+/// fills in, still owned as its convention expects, and any value it returns
+/// indirectly must have storage to be written into.
+macro_rules! swift_call {
+    ($function:expr, $($operands:tt)*) => {
+        core::arch::asm!(
+            "blr {__fn}",
+            __fn = in(reg) $function,
+            $($operands)*
+            clobber_abi("C"),
+        )
+    };
+}
+
+/// Calls a member of a generic type that returns its value indirectly.
+///
+/// Unlike [`value_to_value`], the callee also needs the generic context,
+/// which is the enclosing type's metadata.
+///
+/// # Safety
+///
+/// `function` must be a member of the type `metadata` describes, `value` a
+/// valid instance of it, and `out` uninitialized storage for the result.
+#[inline]
+pub unsafe fn generic_value_to_value(
+    function: *const (),
+    value: *const (),
+    metadata: *const TypeMetadata,
+    out: *mut (),
+) {
+    unsafe {
+        swift_call!(function, in("x20") value, in("x0") metadata, in("x8") out,);
+    }
+}
+
+/// Calls a member of a generic type that returns three words directly, such as
+/// a `CMTime`.
+///
+/// # Safety
+///
+/// As [`generic_value_to_value`], and the member must return exactly three
+/// words in registers.
+#[inline]
+pub unsafe fn generic_value_to_words3(
+    function: *const (),
+    value: *const (),
+    metadata: *const TypeMetadata,
+) -> (u64, u64, u64) {
+    let (w0, w1, w2): (u64, u64, u64);
+    unsafe {
+        swift_call!(function,
+            in("x20") value,
+            inlateout("x0") metadata => w0, lateout("x1") w1, lateout("x2") w2,
+        );
+    }
+    (w0, w1, w2)
+}
+
+#[inline]
+pub unsafe fn int_to_int(function: *const (), arg: isize) -> isize {
+    let result: isize;
+    unsafe {
+        swift_call!(function, inlateout("x0") arg => result,);
+    }
+    result
+}
+
+#[inline]
+pub unsafe fn double_to_words2(function: *const (), value: f64) -> (u64, u64) {
+    let (w0, w1): (u64, u64);
+    unsafe {
+        swift_call!(function, in("d0") value, lateout("x0") w0, lateout("x1") w1,);
+    }
+    (w0, w1)
+}
+
+/// The deprecated synchronous `setOrientation(_:duration:relative:)`, taking a
+/// vector.
+///
+/// # Safety
+///
+/// `object` must be the accessory the method is called on.
+#[inline]
+pub unsafe fn vector_duration_bool_object(
+    function: *const (),
+    vector: (f64, f64, f64),
+    duration: (u64, u64),
+    relative: bool,
+    object: *const (),
+) -> (*mut (), *mut ()) {
+    let (result, error): (usize, *mut ());
+    unsafe {
+        swift_call!(function,
+            in("d0") vector.0, in("d1") vector.1, in("d2") vector.2,
+            inlateout("x0") duration.0 as usize => result,
+            in("x1") duration.1 as usize,
+            in("x2") relative as usize,
+            in("x20") object,
+            inlateout("x21") 0usize => error,
+        );
+    }
+    (result as *mut (), error)
+}
+
+/// The same, taking a rotation.
+///
+/// Note that this passes the quaternion's four `Double`s in `d0`–`d3`, where
+/// the asynchronous entry point passes the same value as two vector registers.
+///
+/// # Safety
+///
+/// As [`vector_duration_bool_object`].
+#[inline]
+pub unsafe fn rotation_duration_bool_object(
+    function: *const (),
+    rotation: (f64, f64, f64, f64),
+    duration: (u64, u64),
+    relative: bool,
+    object: *const (),
+) -> (*mut (), *mut ()) {
+    let (result, error): (usize, *mut ());
+    unsafe {
+        swift_call!(function,
+            in("d0") rotation.0, in("d1") rotation.1,
+            in("d2") rotation.2, in("d3") rotation.3,
+            inlateout("x0") duration.0 as usize => result,
+            in("x1") duration.1 as usize,
+            in("x2") relative as usize,
+            in("x20") object,
+            inlateout("x21") 0usize => error,
+        );
+    }
+    (result as *mut (), error)
+}
+
+/// # Safety
+///
+/// `out` must be uninitialized storage for what the initializer returns.
+#[inline]
+pub unsafe fn doubles3_to_throwing_value(
+    function: *const (),
+    values: (f64, f64, f64),
+    out: *mut (),
+) -> *mut () {
+    let error: *mut ();
+    unsafe {
+        swift_call!(function,
+            in("d0") values.0, in("d1") values.1, in("d2") values.2,
+            in("x8") out,
+            inlateout("x21") 0usize => error,
+        );
+    }
+    error
+}
+
+/// # Safety
+///
+/// The three values must be what the callee takes, and `out` uninitialized
+/// storage for what it returns.
+#[inline]
+pub unsafe fn values3_to_value(
+    function: *const (),
+    first: *const (),
+    second: *const (),
+    third: *const (),
+    out: *mut (),
+) {
+    unsafe {
+        swift_call!(function,
+            in("x0") first, in("x1") second, in("x2") third,
+            in("x8") out,
+        );
+    }
+}
+
+#[inline]
+pub unsafe fn static0_object(function: *const (), type_metadata: *const ()) -> *mut () {
+    let object: usize;
+    unsafe {
+        swift_call!(function, in("x20") type_metadata, lateout("x0") object,);
+    }
+    object as *mut ()
+}
+
+#[inline]
+pub unsafe fn static0_bool(function: *const (), type_metadata: *const ()) -> bool {
+    let flag: usize;
+    unsafe {
+        swift_call!(function, in("x20") type_metadata, lateout("x0") flag,);
+    }
+    flag & 1 != 0
+}
+
+/// # Safety
+///
+/// `value` must be what the static method takes, and `type_metadata` the
+/// metadata of the type it belongs to.
+#[inline]
+pub unsafe fn static_value_bool_to_object(
+    function: *const (),
+    type_metadata: *const (),
+    value: *const (),
+    flag: bool,
+) -> *mut () {
+    let object: usize;
+    unsafe {
+        swift_call!(function,
+            in("x20") type_metadata,
+            inlateout("x0") value => object,
+            in("x1") flag as usize,
+        );
+    }
+    object as *mut ()
+}
+
+/// # Safety
+///
+/// As [`static_value_bool_to_object`], for a method taking two values.
+#[inline]
+pub unsafe fn static_values_to_object(
+    function: *const (),
+    type_metadata: *const (),
+    first: *const (),
+    second: *const (),
+) -> *mut () {
+    let object: usize;
+    unsafe {
+        swift_call!(function,
+            in("x20") type_metadata,
+            inlateout("x0") first => object,
+            in("x1") second,
+        );
+    }
+    object as *mut ()
+}
+
+/// # Safety
+///
+/// `array` must be an owned array the method consumes, and `value` what it
+/// takes alongside it.
+#[inline]
+pub unsafe fn static_array_value_to_object(
+    function: *const (),
+    type_metadata: *const (),
+    array: *mut (),
+    value: *const (),
+) -> *mut () {
+    let object: usize;
+    unsafe {
+        swift_call!(function,
+            in("x20") type_metadata,
+            inlateout("x0") array => object,
+            in("x1") value,
+        );
+    }
+    object as *mut ()
+}
+
+/// # Safety
+///
+/// `string` must be owned as the callee expects, and `out` uninitialized
+/// storage for what it returns.
+#[inline]
+pub unsafe fn string_to_value(function: *const (), string: RawString, out: *mut ()) {
+    unsafe {
+        swift_call!(function,
+            in("x0") string.word0, in("x1") string.word1,
+            in("x8") out,
+        );
+    }
+}
+
+/// `DockAccessory.Observation.init(identifier:type:rect:faceYawAngle:)`.
+///
+/// # Safety
+///
+/// The arguments must be what that initializer takes, and `out` uninitialized
+/// storage for an observation.
+#[inline]
+pub unsafe fn int_value_rect_value_to_value(
+    function: *const (),
+    integer: isize,
+    value: *const (),
+    rect: (f64, f64, f64, f64),
+    trailing_value: *const (),
+    out: *mut (),
+) {
+    unsafe {
+        swift_call!(function,
+            in("x0") integer, in("x1") value, in("x2") trailing_value,
+            in("d0") rect.0, in("d1") rect.1, in("d2") rect.2, in("d3") rect.3,
+            in("x8") out,
+        );
+    }
+}
+
+/// `DockAccessory.CameraInformation.init(...)`, whose seven arguments are more
+/// than any other call these bindings make.
+///
+/// # Safety
+///
+/// The arguments must be what that initializer takes, and `out` uninitialized
+/// storage for the camera information.
+#[cfg(feature = "av")]
+#[inline]
+pub unsafe fn camera_information_init(
+    function: *const (),
+    device_type: *const (),
+    position: isize,
+    orientation: *const (),
+    intrinsics: *const (),
+    reference_dimensions: (u64, u64, u64),
+    out: *mut (),
+) {
+    unsafe {
+        swift_call!(function,
+            in("x0") device_type, in("x1") position,
+            in("x2") orientation, in("x3") intrinsics,
+            in("x4") reference_dimensions.0 as usize,
+            in("x5") reference_dimensions.1 as usize,
+            in("x6") reference_dimensions.2 as usize,
+            in("x8") out,
+        );
+    }
+}
+
+/// # Safety
+///
+/// `out` must be uninitialized storage for what the getter returns.
+#[inline]
+pub unsafe fn to_value(function: *const (), out: *mut ()) {
+    unsafe {
+        swift_call!(function, in("x8") out,);
+    }
+}
+
+#[inline]
+pub unsafe fn object_to_bool(function: *const (), object: *const ()) -> bool {
+    let flag: usize;
+    unsafe {
+        swift_call!(function, in("x20") object, lateout("x0") flag,);
+    }
+    flag & 1 != 0
+}
+
+#[inline]
+pub unsafe fn object_to_int(function: *const (), object: *const ()) -> isize {
+    let result: isize;
+    unsafe {
+        swift_call!(function, in("x20") object, lateout("x0") result,);
+    }
+    result
+}
+
+/// A static `==`, which takes both operands as arguments.
+///
+/// # Safety
+///
+/// Both must be values of the type the operator belongs to.
+#[inline]
+pub unsafe fn objects_to_bool(function: *const (), lhs: *const (), rhs: *const ()) -> bool {
+    let flag: usize;
+    unsafe {
+        swift_call!(function, inlateout("x0") lhs => flag, in("x1") rhs,);
+    }
+    flag & 1 != 0
+}
+
+#[inline]
+pub unsafe fn object_to_string(function: *const (), object: *const ()) -> RawString {
+    let (word0, word1): (usize, usize);
+    unsafe {
+        swift_call!(function,
+            in("x20") object,
+            lateout("x0") word0, lateout("x1") word1,
+        );
+    }
+    RawString { word0, word1 }
+}
+
+#[inline]
+pub unsafe fn object_to_rect(function: *const (), object: *const ()) -> (f64, f64, f64, f64) {
+    let (d0, d1, d2, d3): (f64, f64, f64, f64);
+    unsafe {
+        swift_call!(function,
+            in("x20") object,
+            lateout("d0") d0, lateout("d1") d1,
+            lateout("d2") d2, lateout("d3") d3,
+        );
+    }
+    (d0, d1, d2, d3)
+}
+
+#[inline]
+pub unsafe fn value_to_int(function: *const (), value: *const ()) -> isize {
+    let result: isize;
+    unsafe {
+        swift_call!(function, in("x20") value, inlateout("x0") value => result,);
+    }
+    result
+}
+
+#[inline]
+pub unsafe fn value_to_bool(function: *const (), value: *const ()) -> bool {
+    let flag: usize;
+    unsafe {
+        swift_call!(function, in("x20") value, inlateout("x0") value => flag,);
+    }
+    flag & 1 != 0
+}
+
+#[inline]
+pub unsafe fn value_to_double(function: *const (), value: *const ()) -> f64 {
+    let d0: f64;
+    unsafe {
+        swift_call!(function, in("x20") value, in("x0") value, lateout("d0") d0,);
+    }
+    d0
+}
+
+#[inline]
+pub unsafe fn value_to_words3(function: *const (), value: *const ()) -> (u64, u64, u64) {
+    let (w0, w1, w2): (u64, u64, u64);
+    unsafe {
+        swift_call!(function,
+            in("x20") value,
+            inlateout("x0") value => w0, lateout("x1") w1, lateout("x2") w2,
+        );
+    }
+    (w0, w1, w2)
+}
+
+#[inline]
+pub unsafe fn value_to_doubles2(function: *const (), value: *const ()) -> (f64, f64) {
+    let (d0, d1): (f64, f64);
+    unsafe {
+        swift_call!(function,
+            in("x20") value, in("x0") value,
+            lateout("d0") d0, lateout("d1") d1,
+        );
+    }
+    (d0, d1)
+}
+
+#[inline]
+pub unsafe fn value_to_rect(function: *const (), value: *const ()) -> (f64, f64, f64, f64) {
+    let (d0, d1, d2, d3): (f64, f64, f64, f64);
+    unsafe {
+        swift_call!(function,
+            in("x20") value, in("x0") value,
+            lateout("d0") d0, lateout("d1") d1,
+            lateout("d2") d2, lateout("d3") d3,
+        );
+    }
+    (d0, d1, d2, d3)
+}
+
+#[inline]
+pub unsafe fn value_to_object(function: *const (), value: *const ()) -> *mut () {
+    let object: usize;
+    unsafe {
+        swift_call!(function, in("x20") value, inlateout("x0") value => object,);
+    }
+    object as *mut ()
+}
+
+#[inline]
+pub unsafe fn value_to_doubles3(function: *const (), value: *const ()) -> [f64; 3] {
+    let (d0, d1, d2): (f64, f64, f64);
+    unsafe {
+        swift_call!(function,
+            in("x20") value, in("x0") value,
+            lateout("d0") d0, lateout("d1") d1, lateout("d2") d2,
+        );
+    }
+    [d0, d1, d2]
+}
+
+#[inline]
+pub unsafe fn value_to_string(function: *const (), value: *const ()) -> RawString {
+    let (word0, word1): (usize, usize);
+    unsafe {
+        swift_call!(function,
+            in("x20") value,
+            inlateout("x0") value => word0, lateout("x1") word1,
+        );
+    }
+    RawString { word0, word1 }
+}
+
+/// # Safety
+///
+/// `out` must be uninitialized storage for what the getter returns.
+#[inline]
+pub unsafe fn object_to_value(function: *const (), object: *const (), out: *mut ()) {
+    unsafe {
+        swift_call!(function, in("x20") object, in("x0") object, in("x8") out,);
+    }
+}
+
+/// # Safety
+///
+/// As [`object_to_value`].
+#[inline]
+pub unsafe fn value_to_value(function: *const (), value: *const (), out: *mut ()) {
+    unsafe {
+        swift_call!(function, in("x20") value, in("x0") value, in("x8") out,);
+    }
+}
+
+/// Returns the error the getter threw, or null.
+///
+/// # Safety
+///
+/// `out` must be uninitialized storage for what the getter returns, and is only
+/// initialized when this returns null.
+#[inline]
+pub unsafe fn object_to_throwing_value(
+    function: *const (),
+    object: *const (),
+    out: *mut (),
+) -> *mut () {
+    let error: *mut ();
+    unsafe {
+        swift_call!(function,
+            in("x20") object, in("x0") object, in("x8") out,
+            inlateout("x21") 0usize => error,
+        );
+    }
+    error
+}
+
+/// Returns the error the method threw, or null.
+///
+/// # Safety
+///
+/// `value` must be what the method takes and `object` the instance it is called
+/// on.
+#[inline]
+pub unsafe fn value_object_to_throwing_void(
+    function: *const (),
+    value: *const (),
+    object: *const (),
+) -> *mut () {
+    let error: *mut ();
+    unsafe {
+        swift_call!(function,
+            in("x0") value, in("x20") object,
+            inlateout("x21") 0usize => error,
+        );
+    }
+    error
+}

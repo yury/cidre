@@ -264,9 +264,7 @@ pub fn protocol(args: TokenStream, ts: TokenStream) -> TokenStream {
                         Cow::Owned(TokenStream::from_iter(generics.clone().into_iter()).to_string())
                     };
 
-                    let gen_rar_version = !sel.starts_with("new")
-                        && ret.contains("arc :: R <")
-                        && !sel.starts_with("initWith");
+                    let gen_rar_version = ret.contains("arc :: R <") && !returns_retained(&sel);
 
                     let impl_fn = if skip {
                         format!(
@@ -555,8 +553,7 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
     if debug {
         println!("{option}: {ret_full}");
     }
-    let gen_rar_version =
-        !sel.starts_with("new") && ret.contains("arc :: R <") && !sel.starts_with("initWith");
+    let gen_rar_version = ret.contains("arc :: R <") && !returns_retained(&sel);
 
     if debug {
         println!("option: {option}, gen_rar_version {gen_rar_version} ret: {ret}");
@@ -1629,6 +1626,39 @@ fn upper_case(str: &str) -> String {
     }
 
     String::from_utf8(res).unwrap()
+}
+
+/// Whether `sel` belongs to an Objective-C method family.
+///
+/// A selector is in family `F` when, after any leading underscores, it begins
+/// with `F` and the next character is not a lowercase letter. That word
+/// boundary is what separates `initWithFoo:`/`initFileURLWithPath:` (the `init`
+/// family, which returns at +1) from `initialize` (which does not).
+fn in_method_family(sel: &str, family: &str) -> bool {
+    match sel.trim_start_matches('_').strip_prefix(family) {
+        Some(rest) => !rest.starts_with(|c: char| c.is_ascii_lowercase()),
+        None => false,
+    }
+}
+
+/// Whether the callee hands back an object it already owns, so the caller must
+/// not retain it again.
+///
+/// These are Objective-C's returns-retained method families. `alloc` is absent
+/// only because it yields `arc::A` rather than `arc::R`, so it never reaches
+/// the retaining path.
+///
+/// A binding can also opt out of the retain by spelling its return type
+/// `arc::Retained<T>` instead of the `arc::R<T>` alias, which is how cidre
+/// marks a method annotated `CF_RETURNS_RETAINED` in its header. Getting that
+/// spelling wrong on a +0 method releases an object the caller never owned, so
+/// only use it where the header says so.
+fn returns_retained(sel: &str) -> bool {
+    const RETAINING_FAMILIES: [&str; 4] = ["init", "new", "mutableCopy", "copy"];
+    // `mutableCopy` is tested before `copy` so the longer name wins.
+    RETAINING_FAMILIES
+        .iter()
+        .any(|family| in_method_family(sel, family))
 }
 
 fn choose_msg_send_fn(ret: &str) -> &'static str {

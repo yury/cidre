@@ -215,6 +215,13 @@ pub mod time;
 #[cfg(feature = "simd")]
 pub mod simd;
 
+/// Spatial framework value types.
+#[cfg(feature = "spatial")]
+pub mod spatial;
+
+#[cfg(all(target_vendor = "apple", target_arch = "aarch64", feature = "swift"))]
+pub mod swift;
+
 /// Vision
 #[cfg(feature = "vn")]
 pub mod vn;

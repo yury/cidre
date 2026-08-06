@@ -1,0 +1,566 @@
+use super::abi::{self, TypeMetadata};
+
+/// A Swift type whose runtime metadata is determined by the Rust type.
+///
+/// Unlike [`SwiftType`], an implementor may be a zero-sized marker for a Swift
+/// value whose layout is only available through its runtime metadata.
+///
+/// # Safety
+///
+/// [`metadata`](Self::metadata) must always return metadata for the same Swift
+/// type. The metadata must remain valid for the duration of the process.
+pub unsafe trait SwiftMetadata {
+    fn metadata() -> *const TypeMetadata;
+
+    /// Whether a value of this type is a single reference held directly.
+    ///
+    /// Swift passes such a value as the reference itself where it passes every
+    /// other value by address, so callers that build a `self` operand have to
+    /// know which they have. Deriving it from the type keeps a binding from
+    /// stating the wrong one, which is a silent ABI mismatch rather than a
+    /// compile error.
+    const IS_CLASS_REF: bool = false;
+}
+
+/// A Rust type with the same value representation and ownership semantics as a
+/// Swift type.
+///
+/// # Safety
+///
+/// Implementors must have the exact size, alignment, valid bit patterns, and
+/// ownership semantics described by the metadata returned from [`metadata`].
+/// A value may be copied or destroyed through that metadata's value witnesses.
+///
+/// [`metadata`]: SwiftMetadata::metadata
+pub unsafe trait SwiftType: SwiftMetadata + Sized {}
+
+/// A Swift type whose values may cross threads, which is Swift's `Sendable`.
+///
+/// [`Storage`](super::value::Storage) holds a raw pointer, so a wrapper around
+/// one is neither `Send` nor `Sync` by inference and every binding used to
+/// declare both by hand — inconsistently, since nothing said what the answer
+/// depended on. It depends on the Swift type, so that is where it is stated:
+/// the storage and every wrapper over it then follow.
+///
+/// # Safety
+///
+/// The Swift type must be safe to move between threads and to read from
+/// several at once: value semantics over atomically reference-counted
+/// contents, which is what Swift's own `Sendable` conformance promises.
+pub unsafe trait SwiftSendable: SwiftMetadata {}
+
+/// States that a Swift type is `Sendable`, so its values are `Send` and `Sync`.
+#[macro_export]
+macro_rules! impl_swift_sendable {
+    ($($ty:ty),+ $(,)?) => {
+        $(unsafe impl $crate::swift::SwiftSendable for $ty {})+
+    };
+}
+
+/// A Rust value that can be read out of a Swift value of the type it names.
+///
+/// This is what lets the generic containers — [`Array`](super::Array),
+/// [`Set`](super::Set), [`Dictionary`](super::Dictionary) — hold both kinds of
+/// Rust type: one whose layout *is* the Swift value's ([`SwiftType`]), and one
+/// that owns runtime-laid-out storage or decodes into a native Rust value. The
+/// container only ever needs the two operations below plus the element's
+/// metadata, so it does not care which kind it has.
+///
+/// # Safety
+///
+/// [`copy_swift`](Self::copy_swift) must read a value of [`Self::metadata`] at
+/// the pointer without taking ownership of it: the caller still destroys the
+/// Swift value afterwards. [`take_swift`](Self::take_swift) must leave the
+/// storage uninitialized, so the caller must not destroy it again.
+pub unsafe trait FromSwift: SwiftMetadata + Sized {
+    /// Copies a borrowed Swift value, leaving the original to its owner.
+    ///
+    /// # Safety
+    ///
+    /// `value` must point to an initialized Swift value of this type that
+    /// outlives the call.
+    unsafe fn copy_swift(value: *const ()) -> Self;
+
+    /// Takes ownership of the Swift value at `value`, leaving its storage
+    /// uninitialized.
+    ///
+    /// This is what a `+1` result — an array subscript, a getter's indirect
+    /// return — hands back, so the default copy-then-destroy exists only for
+    /// types that decode into something Rust owns outright.
+    ///
+    /// # Safety
+    ///
+    /// `value` must point to an initialized Swift value of this type, and the
+    /// caller must own it and not destroy it afterwards.
+    unsafe fn take_swift(value: *mut ()) -> Self {
+        unsafe {
+            let taken = Self::copy_swift(value.cast_const());
+            abi::destroy_value(value, Self::metadata());
+            taken
+        }
+    }
+}
+
+/// A Rust value that can be written into storage for the Swift type it names.
+///
+/// The counterpart of [`FromSwift`]: together they are what a container needs
+/// to move elements in either direction without knowing how the Rust type
+/// stores them.
+///
+/// # Safety
+///
+/// [`copy_to_swift`](Self::copy_to_swift) must leave `dst` holding an
+/// initialized, independently owned value of [`Self::metadata`].
+/// [`IS_CONTIGUOUS`](Self::IS_CONTIGUOUS) may only be set when a Rust slice of
+/// `Self` is already a run of Swift values at that type's stride.
+pub unsafe trait ToSwift: SwiftMetadata {
+    /// Whether `&[Self]` is already a run of Swift values, so a whole slice can
+    /// be copied with one call instead of one per element.
+    const IS_CONTIGUOUS: bool = false;
+
+    /// Copies this value into uninitialized storage for its Swift type.
+    ///
+    /// # Safety
+    ///
+    /// `dst` must be uninitialized storage laid out for this type.
+    unsafe fn copy_to_swift(&self, dst: *mut ());
+}
+
+/// Implements the value traits for a type whose Rust layout is the Swift one,
+/// so reading is a move out of the buffer, writing goes through the type's own
+/// copy witness, and a Rust slice is already a run of Swift values.
+///
+/// The second form takes the generic parameters and their bounds, for the
+/// container and reference types that are one word whatever they hold.
+#[macro_export]
+macro_rules! impl_swift_memcpy_value {
+    ($ty:ty) => {
+        $crate::impl_swift_memcpy_value!(@impls $ty, <>);
+    };
+    ($ty:ty, <$($param:ident : $bound:path),+ $(,)?>) => {
+        $crate::impl_swift_memcpy_value!(@impls $ty, <$($param: $bound),+>);
+    };
+    (@impls $ty:ty, <$($param:ident : $bound:path),*>) => {
+        unsafe impl<$($param: $bound),*> $crate::swift::FromSwift for $ty {
+            #[inline]
+            unsafe fn copy_swift(value: *const ()) -> Self {
+                unsafe {
+                    let mut copy = ::core::mem::MaybeUninit::<Self>::uninit();
+                    $crate::swift::abi::initialize_with_copy(
+                        copy.as_mut_ptr().cast(),
+                        value,
+                        <Self as $crate::swift::SwiftMetadata>::metadata(),
+                    );
+                    copy.assume_init()
+                }
+            }
+
+            #[inline]
+            unsafe fn take_swift(value: *mut ()) -> Self {
+                unsafe { value.cast::<Self>().read() }
+            }
+        }
+
+        unsafe impl<$($param: $bound),*> $crate::swift::ToSwift for $ty {
+            const IS_CONTIGUOUS: bool = true;
+
+            #[inline]
+            unsafe fn copy_to_swift(&self, dst: *mut ()) {
+                unsafe {
+                    $crate::swift::abi::initialize_with_copy(
+                        dst,
+                        ::core::ptr::from_ref(self).cast(),
+                        <Self as $crate::swift::SwiftMetadata>::metadata(),
+                    )
+                };
+            }
+        }
+    };
+}
+
+/// Declares a newtype for a retained Objective-C object used where Swift
+/// expects a value of that class.
+///
+/// Swift imports an Objective-C class as a class type whose metadata the
+/// runtime derives from the class object, and whose value is one retained
+/// reference — the same shape as a native Swift class, but reached differently.
+/// The newtype is what carries that metadata, so an imported class composes
+/// with the generic containers instead of needing a hand-written array type.
+#[macro_export]
+macro_rules! define_swift_objc_ref {
+    ($(#[$meta:meta])* $vis:vis $ty:ident($obj:ty) = class $class:literal) => {
+        $(#[$meta])*
+        #[repr(transparent)]
+        $vis struct $ty(pub $crate::arc::R<$obj>);
+
+        unsafe impl $crate::swift::SwiftMetadata for $ty {
+            const IS_CLASS_REF: bool = true;
+
+            fn metadata() -> *const $crate::swift::abi::TypeMetadata {
+                static CACHE: $crate::swift::abi::MetadataCache =
+                    $crate::swift::abi::MetadataCache::new();
+                CACHE.get(|| unsafe {
+                    let class =
+                        $crate::objc::objc_getClass(concat!($class, "\0").as_ptr().cast())
+                            .expect(concat!($class, " class must exist"));
+                    $crate::swift::abi::objc_class_metadata(
+                        (class as *const $crate::objc::Class<$crate::objc::Id>).cast(),
+                    )
+                })
+            }
+        }
+
+        /// One retained reference is the whole value, and the class's own value
+        /// witnesses are what copy and destroy it.
+        unsafe impl $crate::swift::SwiftType for $ty {}
+
+        $crate::impl_swift_memcpy_value!($ty);
+    };
+}
+
+/// A Swift type whose `Hashable` conformance a binding can hand to the runtime.
+///
+/// `Set` and `Dictionary` are generic over `Hashable`, so every call into them
+/// carries that conformance's witness table alongside the element metadata. A
+/// framework exports only the conformance descriptor, so the table is
+/// instantiated on first use and cached from then on.
+///
+/// # Safety
+///
+/// [`hashable_witness`](Self::hashable_witness) must return `Self`'s own
+/// `Hashable` witness table, which must not be null.
+pub unsafe trait SwiftHashable: SwiftMetadata {
+    fn hashable_witness() -> *const ();
+}
+
+/// Implements [`SwiftHashable`] from the conformance descriptor a framework
+/// exports for it, caching the table the runtime builds.
+#[macro_export]
+macro_rules! impl_swift_hashable {
+    ($ty:ty = descriptor $descriptor:expr) => {
+        unsafe impl $crate::swift::SwiftHashable for $ty {
+            fn hashable_witness() -> *const () {
+                static CACHE: $crate::swift::abi::WitnessCache =
+                    $crate::swift::abi::WitnessCache::new();
+                CACHE.get(|| unsafe {
+                    let witness = $crate::swift::abi::witness_table(
+                        $descriptor,
+                        <$ty as $crate::swift::SwiftMetadata>::metadata(),
+                    );
+                    assert!(!witness.is_null(), "Hashable witness table must exist");
+                    witness
+                })
+            }
+        }
+    };
+}
+
+/// A native Swift class.
+///
+/// A class type names a Swift type but has none of its value's layout, exactly
+/// like a marker: the *value* of a class-typed variable is one reference, which
+/// is what [`arc::R<Self>`](crate::arc::R) already is. The impls below give that
+/// pointer the [`SwiftType`] role, so a class composes with everything built on
+/// value witnesses — arrays, optionals, dictionaries, sequence elements —
+/// instead of needing hand-written glue at each use.
+///
+/// # Safety
+///
+/// `Self` must be a native Swift class whose references are retained and
+/// released by `swift_retain`/`swift_release`. Objective-C classes are not
+/// these: they have their own metadata and their own ARC entry points.
+pub unsafe trait SwiftClass: SwiftMetadata + crate::arc::Retain + 'static {
+    /// Per-class cache for `Self?`'s metadata.
+    ///
+    /// A `static` inside a generic function is shared by every instantiation,
+    /// so the cache has to be handed in from a place that is monomorphic in the
+    /// class. [`define_swift_class!`](crate::define_swift_class) generates it.
+    #[doc(hidden)]
+    fn optional_metadata_cache() -> &'static abi::MetadataCache;
+}
+
+/// A retained reference is the ABI value of a class-typed variable: one word,
+/// destroyed by release and copied by retain, which is what the runtime's value
+/// witnesses for a class do.
+unsafe impl<T: SwiftClass> SwiftMetadata for crate::arc::R<T> {
+    const IS_CLASS_REF: bool = true;
+
+    #[inline]
+    fn metadata() -> *const TypeMetadata {
+        <T as SwiftMetadata>::metadata()
+    }
+}
+
+unsafe impl<T: SwiftClass> SwiftType for crate::arc::R<T> {}
+
+impl_swift_memcpy_value!(crate::arc::R<T>, <T: SwiftClass>);
+
+/// Swift represents `C?` for a class `C` by using the null reference as `.none`,
+/// which is the same niche Rust picks for `Option<arc::R<C>>`, so the two are
+/// bit-for-bit the same value.
+unsafe impl<T: SwiftClass> SwiftMetadata for Option<crate::arc::R<T>> {
+    #[inline]
+    fn metadata() -> *const TypeMetadata {
+        T::optional_metadata_cache()
+            .get(|| unsafe { abi::optional_metadata(<T as SwiftMetadata>::metadata()) })
+    }
+}
+
+unsafe impl<T: SwiftClass> SwiftType for Option<crate::arc::R<T>> {}
+
+impl_swift_memcpy_value!(Option<crate::arc::R<T>>, <T: SwiftClass>);
+
+/// Declares a zero-sized marker naming a Swift type, and implements
+/// [`SwiftMetadata`] for it.
+///
+/// Deliberately not [`SwiftType`]: a marker has none of the Swift value's
+/// layout, so it may name a type but never stand in for one.
+///
+/// The three forms match how Swift publishes a type's metadata — a generated
+/// accessor symbol, a mangled name resolved at runtime, or an opaque return
+/// type's descriptor.
+///
+/// Each marker caches the metadata it resolves, the way Swift emits a per-type
+/// cache word and only calls the runtime while that word is still empty. The
+/// mangled form matters most: without a cache every use re-demangles the name
+/// through the runtime's locked type cache, and markers are resolved once per
+/// [`Storage`](crate::swift::value::Storage) construction and once more per
+/// drop.
+#[macro_export]
+macro_rules! define_swift_marker {
+    ($(#[$meta:meta])* $vis:vis $ty:ident = accessor $accessor:expr) => {
+        $crate::define_swift_marker!(@marker $(#[$meta])* $vis $ty, unsafe {
+            $crate::swift::abi::call::int_to_int($accessor as *const (), 0)
+                as *const $crate::swift::abi::TypeMetadata
+        });
+    };
+    ($(#[$meta:meta])* $vis:vis $ty:ident = mangled $name:literal) => {
+        $crate::define_swift_marker!(@marker $(#[$meta])* $vis $ty, unsafe {
+            $crate::swift::abi::type_by_mangled_name($name)
+        });
+    };
+    ($(#[$meta:meta])* $vis:vis $ty:ident = opaque $descriptor:expr, $index:literal) => {
+        $crate::define_swift_marker!(@marker $(#[$meta])* $vis $ty, unsafe {
+            $crate::swift::abi::opaque_type_metadata($descriptor, $index)
+        });
+    };
+    (@marker $(#[$meta:meta])* $vis:vis $ty:ident, $resolve:expr) => {
+        $(#[$meta])*
+        $vis struct $ty;
+
+        unsafe impl $crate::swift::SwiftMetadata for $ty {
+            #[inline]
+            fn metadata() -> *const $crate::swift::abi::TypeMetadata {
+                static CACHE: $crate::swift::abi::MetadataCache =
+                    $crate::swift::abi::MetadataCache::new();
+                CACHE.get(|| $resolve)
+            }
+        }
+    };
+}
+
+macro_rules! impl_swift_type {
+    ($ty:ty, $metadata:ident) => {
+        unsafe impl SwiftMetadata for $ty {
+            #[inline]
+            fn metadata() -> *const TypeMetadata {
+                abi::$metadata()
+            }
+        }
+
+        unsafe impl SwiftType for $ty {}
+
+        impl_swift_memcpy_value!($ty);
+    };
+}
+
+#[link(name = "swiftCore")]
+unsafe extern "C" {
+    #[link_name = "$sSiSHsMc"]
+    static INT_HASHABLE: u8;
+
+    #[link_name = "$sSSSHsMc"]
+    static STRING_HASHABLE: u8;
+}
+
+impl_swift_hashable!(isize = descriptor(&raw const INT_HASHABLE).cast());
+impl_swift_hashable!(super::String = descriptor(&raw const STRING_HASHABLE).cast());
+
+impl_swift_type!(bool, bool_metadata);
+impl_swift_type!(isize, int_metadata);
+impl_swift_type!(usize, uint_metadata);
+impl_swift_type!(i8, int8_metadata);
+impl_swift_type!(u8, uint8_metadata);
+impl_swift_type!(i16, int16_metadata);
+impl_swift_type!(u16, uint16_metadata);
+impl_swift_type!(i32, int32_metadata);
+impl_swift_type!(u32, uint32_metadata);
+impl_swift_type!(i64, int64_metadata);
+impl_swift_type!(u64, uint64_metadata);
+impl_swift_type!(f32, float_metadata);
+impl_swift_type!(f64, double_metadata);
+
+/// `CMTime` is imported from C, so Swift has no exported metadata accessor for
+/// it and the runtime resolves it from the mangled name instead.
+#[cfg(feature = "cm")]
+unsafe impl SwiftMetadata for crate::cm::Time {
+    #[inline]
+    fn metadata() -> *const TypeMetadata {
+        static CACHE: abi::MetadataCache = abi::MetadataCache::new();
+        CACHE.get(|| unsafe { abi::type_by_mangled_name("So6CMTimea") })
+    }
+}
+
+#[cfg(feature = "cm")]
+unsafe impl SwiftType for crate::cm::Time {}
+
+#[cfg(feature = "cm")]
+impl_swift_memcpy_value!(crate::cm::Time);
+
+#[cfg(feature = "cm")]
+unsafe impl SwiftMetadata for crate::cm::TimeRange {
+    #[inline]
+    fn metadata() -> *const TypeMetadata {
+        static CACHE: abi::MetadataCache = abi::MetadataCache::new();
+        CACHE.get(|| unsafe { abi::type_by_mangled_name("So11CMTimeRangea") })
+    }
+}
+
+#[cfg(feature = "cm")]
+unsafe impl SwiftType for crate::cm::TimeRange {}
+
+#[cfg(feature = "cm")]
+impl_swift_memcpy_value!(crate::cm::TimeRange);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    crate::define_swift_marker!(CachedString = mangled "SS");
+
+    /// A marker must hand back exactly what an uncached lookup resolves, and
+    /// keep handing back the same pointer once it has cached one.
+    #[test]
+    fn a_cached_marker_matches_an_uncached_lookup() {
+        let direct = unsafe { abi::type_by_mangled_name("SS") };
+        assert!(!direct.is_null(), "Swift.String metadata must resolve");
+        assert_eq!(direct, abi::string_metadata(), "the mangled name is right");
+
+        // The first call fills the cache; the second must read it back.
+        assert_eq!(direct, CachedString::metadata());
+        assert_eq!(direct, CachedString::metadata());
+    }
+
+    /// The cached witness table must describe the same type as the free
+    /// functions that re-derive it from the metadata on every call.
+    #[test]
+    fn cached_witnesses_agree_with_the_derived_ones() {
+        let metadata = abi::string_metadata();
+        let witnesses = unsafe { abi::ValueWitnesses::new(metadata) };
+
+        assert_eq!(metadata, witnesses.metadata());
+        assert_eq!(unsafe { abi::value_layout(metadata) }, witnesses.layout());
+        assert_eq!(
+            unsafe { abi::is_bitwise_takable(metadata) },
+            witnesses.is_bitwise_takable()
+        );
+    }
+
+    /// A class reference has to satisfy `SwiftType`'s contract against the
+    /// runtime's own witnesses, since that is what lets `arc::R` stand in for a
+    /// class-typed value.
+    #[cfg(all(
+        any(target_os = "macos", all(target_os = "ios", not(target_abi = "sim"))),
+        feature = "dk"
+    ))]
+    #[test]
+    fn a_class_reference_matches_the_swift_value_layout() {
+        use crate::{arc, swift::dock_kit::AccessoryManager};
+
+        let metadata = <AccessoryManager as SwiftMetadata>::metadata();
+        assert!(!metadata.is_null(), "class metadata must resolve");
+        assert_eq!(
+            metadata,
+            <arc::R<AccessoryManager> as SwiftMetadata>::metadata()
+        );
+
+        let layout = unsafe { abi::value_layout(metadata) };
+        assert_eq!(size_of::<arc::R<AccessoryManager>>(), layout.size);
+        assert_eq!(size_of::<arc::R<AccessoryManager>>(), layout.stride);
+
+        // `C?` must be the null-niche `Option`, not a wider tagged layout.
+        let optional = <Option<arc::R<AccessoryManager>> as SwiftMetadata>::metadata();
+        let optional_layout = unsafe { abi::value_layout(optional) };
+        assert_eq!(
+            size_of::<Option<arc::R<AccessoryManager>>>(),
+            optional_layout.size
+        );
+    }
+
+    /// The point of the whole exercise: a class now composes with the generic
+    /// value machinery, which could not name one before.
+    #[cfg(all(
+        any(target_os = "macos", all(target_os = "ios", not(target_abi = "sim"))),
+        feature = "dk"
+    ))]
+    #[test]
+    fn a_swift_array_can_hold_class_references() {
+        use crate::{arc, swift, swift::dock_kit::AccessoryManager};
+
+        let shared = AccessoryManager::shared();
+        let array = swift::Array::from_slice(&[shared.clone(), shared.clone()]);
+        assert_eq!(2, array.len());
+
+        // Reading back through the value witnesses must hand out live, retained
+        // references rather than borrowed or over-released ones.
+        for index in 0..array.len() {
+            let element: arc::R<AccessoryManager> = array.get(index).expect("in bounds");
+            assert_eq!(shared.as_ptr(), element.as_ptr());
+            let _ = element.is_system_tracking_enabled();
+        }
+
+        drop(array);
+        let _ = shared.is_system_tracking_enabled();
+    }
+
+    #[test]
+    fn rust_primitives_match_swift_value_witness_layouts() {
+        fn check<T: SwiftType>() {
+            let layout = unsafe { abi::value_layout(T::metadata()) };
+            assert_eq!(core::mem::size_of::<T>(), layout.size);
+            assert_eq!(core::mem::size_of::<T>(), layout.stride);
+        }
+
+        check::<bool>();
+        check::<isize>();
+        check::<usize>();
+        check::<i8>();
+        check::<u8>();
+        check::<i16>();
+        check::<u16>();
+        check::<i32>();
+        check::<u32>();
+        check::<i64>();
+        check::<u64>();
+        check::<f32>();
+        check::<f64>();
+    }
+
+    /// Guards both the mangled name and that Rust's `cm::Time` really matches
+    /// the layout Swift will copy through.
+    #[cfg(feature = "cm")]
+    #[test]
+    fn imported_cm_time_resolves_and_matches_layout() {
+        let metadata = crate::cm::Time::metadata();
+        assert!(!metadata.is_null(), "CMTime metadata must resolve");
+
+        let layout = unsafe { abi::value_layout(metadata) };
+        assert_eq!(core::mem::size_of::<crate::cm::Time>(), layout.size);
+        assert_eq!(core::mem::size_of::<crate::cm::Time>(), layout.stride);
+
+        let metadata = crate::cm::TimeRange::metadata();
+        assert!(!metadata.is_null(), "CMTimeRange metadata must resolve");
+        let layout = unsafe { abi::value_layout(metadata) };
+        assert_eq!(core::mem::size_of::<crate::cm::TimeRange>(), layout.size);
+    }
+}

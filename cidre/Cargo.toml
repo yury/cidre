@@ -54,10 +54,15 @@ full = [
   "mpsg",
   "dispatch",
   "da",
+  "dk",
+  "spatial",
   "simd",
   "cat",
   "vn",
   "sn",
+  "foundation",
+  "speech",
+  "music_understanding",
   "ui",
   "ut",
   "un",
@@ -76,6 +81,7 @@ full = [
   "vdsp",
   "cblas",
   "vimage",
+  "swift",
 
   "macos_15_0",
   "ios_18_0",
@@ -99,6 +105,7 @@ ax = ["cf"]
 cf = []
 cat = []
 simd = []
+spatial = []
 app = ["ns"]
 am = ["private", "cf", "dep:tokio"]
 at = ["cf", "cat"]
@@ -122,6 +129,9 @@ io_surface = ["cf"]
 io_kit = []
 io_pm = []
 sn = ["ns"]
+foundation = ["swift"]
+speech = ["swift", "ns", "foundation"]
+music_understanding = ["swift", "ns", "av", "cm"]
 sec = ["cf"]
 vn = ["ns"]
 vdsp = []
@@ -145,6 +155,7 @@ mps = ["mtl"]
 mpsg = ["mps"]
 dispatch = ["cf", "ns"]
 da = ["cf"]
+dk = ["foundation", "cg", "ns", "spatial"]
 core_motion = ["ns"]
 core_audio = []
 compression = []
@@ -155,6 +166,7 @@ xpc = ["ns", "blocks"]
 custom-allocator = []
 classic-objc-retain-release = []
 half = ["dep:half"]
+swift = []
 
 # deployment targets
 
@@ -304,14 +316,13 @@ cc = "1"
 
 tokio = { optional = true, version = "1", default-features = false, features = ["macros", "rt", "rt-multi-thread", "time", "net", "process", "io-util"] }
 parking_lot = { optional = true, version = "0.12" }
-# cidre-macros = { version = "0.6", path = "../cidre-macros" }
-cidre-macros = { version = "0.6" }
+cidre-macros = { version = "0.6", path = "../cidre-macros" }
 half = { optional = true, version = "2.6" }
 
 [dev-dependencies]
 criterion = "0.8"
 clap = { version = "4.5", features = ["default", "derive"] }
-tokio = { version = "1", features = ["signal", "sync"] }
+tokio = { version = "1", features = ["macros", "rt", "signal", "sync"] }
 mimalloc = { version = "0.1" }
 uuid = { version = "1.9", features = ["v4", "v7", "fast-rng", "serde"] }
 
@@ -389,6 +400,13 @@ required-features = ["av"]
 name = "av-player-item-tap"
 required-features = ["av", "mt", "dispatch"]
 
+[[example]]
+name = "dock-kit"
+required-features = ["dk", "async", "av", "cm", "dispatch"]
+
+[[example]]
+name = "swift-speech"
+required-features = ["speech", "av", "async", "cm", "dispatch", "macos_27_0"]
 
 [package.metadata.playground]
 features = ["full"]
@@ -403,3 +421,7 @@ targets = [
     "aarch64-apple-watchos",
     "aarch64-apple-visionos",
 ]
+
+[[example]]
+name = "music-understanding"
+required-features = ["music_understanding", "av", "async", "cm", "dispatch", "macos_27_0"]

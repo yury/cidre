@@ -164,12 +164,14 @@ mod tests {
         let block_counter = counter.clone();
         let mut block = blocks::SyncBlock::new1(move |note: &ns::Notification| {
             println!("{note:?}");
-            let expected_name = ns::String::with_str("test");
+            let expected_name = ns::String::with_str("cidre.test.notification.basics");
             assert!(expected_name.is_equal(&note.name()));
             let mut guard = block_counter.lock().unwrap();
             *guard += 1;
         });
-        let name = ns::NotificationName::with_raw(ns::str!(c"test"));
+        // The default centre is shared by the whole process, so each test needs
+        // its own name or a sibling test's post will run this observer too.
+        let name = ns::NotificationName::with_raw(ns::str!(c"cidre.test.notification.basics"));
         let token = nc.add_observer_block(name, None, None, &mut block);
         nc.post_with_name_obj(name, None);
         nc.post_with_name_obj(name, None);
@@ -192,7 +194,8 @@ mod tests {
         let mut nc = ns::NotificationCenter::default();
         let counter = Arc::new(Mutex::new(0));
         let block_counter = counter.clone();
-        let name = ns::NotificationName::with_raw(ns::str!(c"test"));
+        // A name of this test's own; see `basics`.
+        let name = ns::NotificationName::with_raw(ns::str!(c"cidre.test.notification.guard"));
         {
             let _g = nc.add_observer_guard(name, None, None, move |_note| {
                 let mut guard = block_counter.lock().unwrap();

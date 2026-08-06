@@ -33,6 +33,12 @@ PRODUCT_NAME = box
 PRODUCT_DISPLAY_NAME = $(PRODUCT_NAME)
 
 INFOPLIST_KEY_NSCameraUsageDescription = Testing Camera
+
+// Without these, iOS warns that an app targeting iPad must either support every
+// orientation or declare that it requires full screen.
+INFOPLIST_KEY_UILaunchScreen_Generation = YES
+INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
+INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
 // INFOPLIST_KEY_NSMotionUsageDescription = Testing Motion
 
 BOX_ID = box
