@@ -100,6 +100,12 @@ unsafe extern "C" {
     #[link_name = "$sSS5countSivg"]
     fn swift_string_count();
 
+    #[link_name = "$sSS7isEmptySbvg"]
+    fn swift_string_is_empty();
+
+    #[link_name = "$sSS9hashValueSivg"]
+    fn swift_string_hash_value();
+
     #[link_name = "$sSS18_uncheckedFromUTF8ySSSRys5UInt8VGFZ"]
     fn swift_string_from_utf8();
 
@@ -866,6 +872,47 @@ pub unsafe fn string_count(string: RawString) -> isize {
         );
     }
     count
+}
+
+/// Whether the string is empty, which Swift answers without walking it.
+///
+/// # Safety
+///
+/// `string` must be a valid Swift `String` value.
+#[inline]
+pub unsafe fn string_is_empty(string: RawString) -> bool {
+    let result: usize;
+    unsafe {
+        asm!(
+            "bl {f}",
+            f = sym swift_string_is_empty,
+            inlateout("x0") string.word0 => result,
+            in("x1") string.word1,
+            clobber_abi("C"),
+        );
+    }
+    result & 1 != 0
+}
+
+/// The string's own hash, so equal strings hash equally however they are
+/// composed.
+///
+/// # Safety
+///
+/// `string` must be a valid Swift `String` value.
+#[inline]
+pub unsafe fn string_hash_value(string: RawString) -> isize {
+    let result: isize;
+    unsafe {
+        asm!(
+            "bl {f}",
+            f = sym swift_string_hash_value,
+            inlateout("x0") string.word0 => result,
+            in("x1") string.word1,
+            clobber_abi("C"),
+        );
+    }
+    result
 }
 
 #[inline]

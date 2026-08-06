@@ -30,8 +30,8 @@ impl String {
     /// which needs no allocation and no call into the standard library; longer
     /// or non-ASCII ones go through `_uncheckedFromUTF8`.
     #[inline]
-    pub fn from_str(str: &str) -> Self {
-        if let Ok(small) = Self::from_small_ascii(str) {
+    pub fn with_str(str: &str) -> Self {
+        if let Ok(small) = Self::with_small_ascii(str) {
             return small;
         }
 
@@ -40,8 +40,8 @@ impl String {
     }
 
     #[inline]
-    pub fn from_c_str(str: &CStr) -> Self {
-        unsafe { Self::from_c_str_ptr(str.as_ptr()) }
+    pub fn with_c_str(str: &CStr) -> Self {
+        unsafe { Self::with_c_str_ptr(str.as_ptr()) }
     }
 
     /// Creates a Swift `String` by calling Swift's `String(cString:)` ABI entry.
@@ -50,7 +50,7 @@ impl String {
     ///
     /// `ptr` must be a valid pointer to a nul-terminated C string.
     #[inline]
-    pub unsafe fn from_c_str_ptr(ptr: *const c_char) -> Self {
+    pub unsafe fn with_c_str_ptr(ptr: *const c_char) -> Self {
         let raw = unsafe { abi::string_from_c_str(ptr) };
         unsafe { Self::from_raw(raw) }
     }
@@ -58,7 +58,7 @@ impl String {
     /// Builds Swift's small-string form, which stores up to fifteen ASCII
     /// bytes inside the value itself.
     #[inline]
-    pub const fn from_small_ascii(str: &str) -> Result<Self, SmallStringError> {
+    pub const fn with_small_ascii(str: &str) -> Result<Self, SmallStringError> {
         match small_ascii_raw(str.as_bytes()) {
             Ok(raw) => Ok(unsafe { Self::from_raw(raw) }),
             Err(err) => Err(err),
@@ -75,7 +75,7 @@ impl String {
     /// At compile time, when used in a `const`, if `str` is not at most fifteen
     /// ASCII bytes.
     #[inline]
-    pub const fn from_ascii_literal(str: &str) -> Self {
+    pub const fn with_ascii_literal(str: &str) -> Self {
         match small_ascii_raw(str.as_bytes()) {
             Ok(raw) => unsafe { Self::from_raw(raw) },
             Err(_) => panic!("expected at most 15 ASCII bytes"),
@@ -105,14 +105,28 @@ impl String {
         raw
     }
 
+    /// The number of `Character`s — grapheme clusters — the string has, which
+    /// is what Swift's own `count` means and is walked rather than stored.
+    #[doc(alias = "String.count")]
     #[inline]
-    pub fn count(&self) -> isize {
-        unsafe { abi::string_count(self.raw) }
+    pub fn count(&self) -> usize {
+        let count = unsafe { abi::string_count(self.raw) };
+        debug_assert!(count >= 0);
+        count as usize
     }
 
+    #[doc(alias = "String.isEmpty")]
     #[inline]
     pub fn is_empty(&self) -> bool {
-        self.count() == 0
+        unsafe { abi::string_is_empty(self.raw) }
+    }
+
+    /// `String.hashValue`, which is what [`Hash`](std::hash::Hash) hashes so it
+    /// agrees with equality however the two strings are composed.
+    #[doc(alias = "String.hashValue")]
+    #[inline]
+    pub fn hash_value(&self) -> isize {
+        unsafe { abi::string_hash_value(self.raw) }
     }
 
     /// Copies this value's UTF-8 representation into a Rust string.
@@ -253,6 +267,15 @@ impl PartialEq for String {
 
 impl Eq for String {}
 
+impl std::hash::Hash for String {
+    /// Hashes what Swift hashes, since [`PartialEq`] compares what Swift
+    /// compares: canonically equivalent strings are equal and hash equally.
+    #[inline]
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        state.write_isize(self.hash_value());
+    }
+}
+
 impl fmt::Display for String {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(&self.to_string())
@@ -268,28 +291,28 @@ impl fmt::Debug for String {
 impl Default for String {
     #[inline]
     fn default() -> Self {
-        Self::from_str("")
+        Self::with_str("")
     }
 }
 
 impl From<&str> for String {
     #[inline]
     fn from(value: &str) -> Self {
-        Self::from_str(value)
+        Self::with_str(value)
     }
 }
 
 impl From<std::string::String> for String {
     #[inline]
     fn from(value: std::string::String) -> Self {
-        Self::from_str(&value)
+        Self::with_str(&value)
     }
 }
 
 impl From<&std::string::String> for String {
     #[inline]
     fn from(value: &std::string::String) -> Self {
-        Self::from_str(value)
+        Self::with_str(value)
     }
 }
 
@@ -323,13 +346,31 @@ mod tests {
 
     #[test]
     fn small_ascii_count_uses_swift_abi() {
-        let str = String::from_small_ascii("hello").unwrap();
+        let str = String::with_small_ascii("hello").unwrap();
         assert_eq!(5, str.count());
+        assert!(!str.is_empty());
+        assert!(String::default().is_empty());
+    }
+
+    /// `Hash` has to agree with `Eq`, which is Swift's `==` rather than a byte
+    /// comparison.
+    #[test]
+    fn hashing_agrees_with_swift_equality() {
+        use std::collections::HashSet;
+
+        let composed = String::from("é");
+        let decomposed = String::from("e\u{301}");
+        assert_eq!(composed, decomposed);
+        assert_eq!(composed.hash_value(), decomposed.hash_value());
+
+        let mut set = HashSet::new();
+        assert!(set.insert(composed));
+        assert!(!set.insert(decomposed), "an equal string hashes to it");
     }
 
     #[test]
     fn c_string_count_uses_swift_abi() {
-        let str = String::from_c_str(c"hello from rust");
+        let str = String::with_c_str(c"hello from rust");
         assert_eq!(15, str.count());
     }
 
@@ -339,7 +380,7 @@ mod tests {
         let str = String::from(value);
 
         assert_eq!(value, str.to_string());
-        assert_eq!(value.chars().count() as isize, str.count());
+        assert_eq!(value.chars().count(), str.count());
     }
 
     /// Guards the native storage offsets that let `to_string` copy the

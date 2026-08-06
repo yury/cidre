@@ -80,7 +80,7 @@ mod tests {
         }
 
         // A `const` literal is the zero-cost path, so it must agree.
-        const EN: swift::String = swift::String::from_ascii_literal("en_GB");
+        const EN: swift::String = swift::String::with_ascii_literal("en_GB");
         assert_eq!("en_GB", Locale::with_swift_id(EN).id().to_string());
     }
 

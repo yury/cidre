@@ -347,7 +347,7 @@ unsafe fn speech_result_text(result: *const (), text_getter: *const ()) -> std::
     unsafe {
         let mut storage = Storage::<AttrStringValue>::new();
         abi::call_value_to_value(text_getter, result, storage.as_mut_ptr());
-        foundation::AttrString::from_storage(storage).to_rust_string()
+        foundation::AttrString::from_storage(storage).to_string()
     }
 }
 
