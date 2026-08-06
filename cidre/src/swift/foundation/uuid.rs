@@ -52,17 +52,7 @@ impl Uuid {
                 text.as_raw(),
                 storage.as_mut_ptr(),
             );
-            let value = storage.assume_init();
-            if !value.is_some() {
-                return None;
-            }
-
-            // An optional's payload starts at offset 0, so the storage already
-            // holds the unwrapped value.
-            let raw = value.as_ptr();
-            let mut unwrapped = Self::storage();
-            abi::initialize_with_copy(unwrapped.as_mut_ptr(), raw, UuidValue::metadata());
-            Some(Self::from_storage(unwrapped))
+            storage.assume_init().take_value().map(Self::from_value)
         }
     }
 

@@ -14,7 +14,7 @@ use std::{
 
 use core::marker::PhantomData as OptionalMarker;
 
-use super::{SwiftMetadata, abi};
+use super::{FromSwift, SwiftMetadata, abi};
 
 /// How many bytes a [`Storage`] keeps inline before falling back to the heap.
 ///
@@ -434,6 +434,45 @@ impl<T: SwiftMetadata> Value<Optional<T>> {
     #[inline]
     pub(crate) fn is_some(&self) -> bool {
         unsafe { abi::get_enum_tag_single_payload(self.as_ptr(), 1, T::metadata()) == 0 }
+    }
+
+    /// Decodes the payload, or `None` when the optional is `.none`.
+    ///
+    /// A single-payload enum lays its payload out at offset zero, so `.some`
+    /// storage already holds the wrapped value; taking it leaves the optional
+    /// with nothing to destroy. A `.none` is destroyed through its witness like
+    /// any other value.
+    pub(crate) fn take(mut self) -> Option<T>
+    where
+        T: FromSwift,
+    {
+        if !self.is_some() {
+            return None;
+        }
+        unsafe {
+            let value = T::take_swift(self.as_mut_ptr());
+            self.assume_consumed();
+            Some(value)
+        }
+    }
+
+    /// Moves the payload into storage of its own, or `None` when the optional
+    /// is `.none`.
+    ///
+    /// The counterpart of [`take`](Self::take) for a payload that stays a Swift
+    /// value instead of decoding into a Rust one. Moving rather than copying is
+    /// what keeps this off the type's copy witness, which would retain whatever
+    /// the payload owns only for the optional to release it again.
+    pub(crate) fn take_value(mut self) -> Option<Value<T>> {
+        if !self.is_some() {
+            return None;
+        }
+        unsafe {
+            let mut storage = Storage::<T>::new();
+            abi::initialize_with_take(storage.as_mut_ptr(), self.as_mut_ptr(), T::metadata());
+            self.assume_consumed();
+            Some(storage.assume_init())
+        }
     }
 }
 

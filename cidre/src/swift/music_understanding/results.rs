@@ -123,9 +123,7 @@ impl RhythmResult {
             let mut storage = Storage::<Optional<f32>>::new();
             let out = storage.as_mut_ptr().cast::<usize>();
             out.write(word as usize);
-            let value = storage.assume_init();
-
-            value.is_some().then(|| value.as_ptr().cast::<f32>().read())
+            storage.assume_init().take()
         }
     }
 

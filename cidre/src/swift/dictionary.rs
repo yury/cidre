@@ -84,17 +84,7 @@ impl<K: ToSwift + SwiftHashable, V: FromSwift> Dictionary<K, V> {
                 out.as_mut_ptr(),
             );
 
-            let mut out = out.assume_init();
-            if !out.is_some() {
-                return None;
-            }
-
-            // An optional's payload starts at offset 0, so the storage already
-            // holds the value; taking it leaves nothing for the optional to
-            // destroy.
-            let value = V::take_swift(out.as_mut_ptr());
-            out.assume_consumed();
-            Some(value)
+            out.assume_init().take()
         }
     }
 

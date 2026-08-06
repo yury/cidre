@@ -334,8 +334,7 @@ impl<'a, T: FromSwift> IntoIterator for &'a Array<T> {
 
 #[cfg(test)]
 mod tests {
-    use super::Array;
-    use crate::swift::String;
+    use crate::swift::{Array, String};
 
     /// The borrowed buffer has to agree with what Swift's own subscript
     /// returns, element for element — that is the whole guard on the hardcoded
