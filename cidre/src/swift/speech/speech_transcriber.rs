@@ -19,14 +19,28 @@ use crate::swift::value::{AnyValue, DynamicStorage, Storage};
 
 crate::define_swift_class!(pub SpeechTranscriber = accessor speech_transcriber_metadata);
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub enum TranscriberPreset {
-    #[default]
-    Transcription,
-    TranscriptionWithAlternatives,
-    TimeIndexedTranscriptionWithAlternatives,
-    ProgressiveTranscription,
-    TimeIndexedProgressiveTranscription,
+crate::define_swift_getter_enum!(
+    /// `SpeechTranscriber.Preset`.
+    pub TranscriberPreset in "Speech"
+        = accessor "$s6Speech0A11TranscriberC6PresetVMa"
+    {
+        Transcription = "$s6Speech0A11TranscriberC6PresetV13transcriptionAEvgZ",
+        TranscriptionWithAlternatives =
+            "$s6Speech0A11TranscriberC6PresetV29transcriptionWithAlternativesAEvgZ",
+        TimeIndexedTranscriptionWithAlternatives =
+            "$s6Speech0A11TranscriberC6PresetV40timeIndexedTranscriptionWithAlternativesAEvgZ",
+        ProgressiveTranscription =
+            "$s6Speech0A11TranscriberC6PresetV24progressiveTranscriptionAEvgZ",
+        TimeIndexedProgressiveTranscription =
+            "$s6Speech0A11TranscriberC6PresetV35timeIndexedProgressiveTranscriptionAEvgZ",
+    }
+);
+
+impl Default for TranscriberPreset {
+    #[inline]
+    fn default() -> Self {
+        Self::Transcription
+    }
 }
 
 #[link(name = "Speech", kind = "framework")]
@@ -37,24 +51,6 @@ unsafe extern "C" {
 
     #[link_name = "$s6Speech0A11TranscriberC11isAvailableSbvgZ"]
     fn speech_transcriber_is_available();
-
-    #[link_name = "$s6Speech0A11TranscriberC6PresetVMa"]
-    fn speech_transcriber_preset_metadata();
-
-    #[link_name = "$s6Speech0A11TranscriberC6PresetV13transcriptionAEvgZ"]
-    fn transcription_preset();
-
-    #[link_name = "$s6Speech0A11TranscriberC6PresetV29transcriptionWithAlternativesAEvgZ"]
-    fn transcription_with_alternatives_preset();
-
-    #[link_name = "$s6Speech0A11TranscriberC6PresetV40timeIndexedTranscriptionWithAlternativesAEvgZ"]
-    fn time_indexed_transcription_with_alternatives_preset();
-
-    #[link_name = "$s6Speech0A11TranscriberC6PresetV24progressiveTranscriptionAEvgZ"]
-    fn progressive_transcription_preset();
-
-    #[link_name = "$s6Speech0A11TranscriberC6PresetV35timeIndexedProgressiveTranscriptionAEvgZ"]
-    fn time_indexed_progressive_transcription_preset();
 
     #[link_name = "$s6Speech0A11TranscriberC6locale6presetAC10Foundation6LocaleV_AC6PresetVtcfC"]
     fn speech_transcriber_init();
@@ -72,8 +68,6 @@ unsafe extern "C" {
     fn speech_transcriber_result_text();
 
 }
-
-crate::define_swift_marker!(SpeechTranscriberPreset = accessor speech_transcriber_preset_metadata);
 
 crate::define_swift_marker!(SwiftError = mangled "s5Error_p");
 
@@ -104,25 +98,11 @@ impl SpeechTranscriber {
         visionos = 26.0
     )]
     pub fn with_locale_id(locale_id: &str, preset: TranscriberPreset) -> arc::R<Self> {
-        let preset_getter = match preset {
-            TranscriberPreset::Transcription => transcription_preset as _,
-            TranscriberPreset::TranscriptionWithAlternatives => {
-                transcription_with_alternatives_preset as _
-            }
-            TranscriberPreset::TimeIndexedTranscriptionWithAlternatives => {
-                time_indexed_transcription_with_alternatives_preset as _
-            }
-            TranscriberPreset::ProgressiveTranscription => progressive_transcription_preset as _,
-            TranscriberPreset::TimeIndexedProgressiveTranscription => {
-                time_indexed_progressive_transcription_preset as _
-            }
-        };
-
         unsafe {
             arc::R::from_raw(
-                locale::transcriber_with_id_and_preset::<SpeechTranscriberPreset>(
+                locale::transcriber_with_id_and_preset(
                     locale_id,
-                    preset_getter,
+                    preset,
                     speech_transcriber_metadata as _,
                     speech_transcriber_init as _,
                 )

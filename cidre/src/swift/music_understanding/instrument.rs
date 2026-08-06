@@ -1,8 +1,4 @@
-use crate::{
-    cm, swift,
-    swift::value::define_swift_value,
-    swift::{SwiftMetadata, ToSwift, abi},
-};
+use crate::{cm, define_swift_getter_enum, swift, swift::abi, swift::value::define_swift_value};
 
 #[link(name = "MusicUnderstanding", kind = "framework")]
 unsafe extern "C" {
@@ -12,63 +8,22 @@ unsafe extern "C" {
     #[link_name = "$s18MusicUnderstanding24InstrumentActivityResultV6rangesSDyAC0C0VSaySo11CMTimeRangeaGGvg"]
     fn instrument_activity_result_ranges();
 
-    #[link_name = "$s18MusicUnderstanding24InstrumentActivityResultV0C0VMa"]
-    fn instrument_metadata();
-
     #[link_name = "$s18MusicUnderstanding24InstrumentActivityResultV0C0VSHAAMc"]
     static INSTRUMENT_HASHABLE: u8;
 
-    #[link_name = "$s18MusicUnderstanding24InstrumentActivityResultV0C0V5vocalAEvgZ"]
-    fn vocal();
-
-    #[link_name = "$s18MusicUnderstanding24InstrumentActivityResultV0C0V4drumAEvgZ"]
-    fn drum();
-
-    #[link_name = "$s18MusicUnderstanding24InstrumentActivityResultV0C0V4bassAEvgZ"]
-    fn bass();
-
-    #[link_name = "$s18MusicUnderstanding24InstrumentActivityResultV0C0V5otherAEvgZ"]
-    fn other();
 }
 
-crate::define_swift_marker!(InstrumentValue = accessor instrument_metadata);
-
-/// `InstrumentActivityResult.Instrument`.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
-#[non_exhaustive]
-pub enum Instrument {
-    Vocal,
-    Drum,
-    Bass,
-    Other,
-}
-
-impl Instrument {
-    fn getter(self) -> *const () {
-        match self {
-            Self::Vocal => vocal as _,
-            Self::Drum => drum as _,
-            Self::Bass => bass as _,
-            Self::Other => other as _,
-        }
+define_swift_getter_enum!(
+    /// `InstrumentActivityResult.Instrument`.
+    pub Instrument in "MusicUnderstanding"
+        = accessor "$s18MusicUnderstanding24InstrumentActivityResultV0C0VMa"
+    {
+        Vocal = "$s18MusicUnderstanding24InstrumentActivityResultV0C0V5vocalAEvgZ",
+        Drum = "$s18MusicUnderstanding24InstrumentActivityResultV0C0V4drumAEvgZ",
+        Bass = "$s18MusicUnderstanding24InstrumentActivityResultV0C0V4bassAEvgZ",
+        Other = "$s18MusicUnderstanding24InstrumentActivityResultV0C0V5otherAEvgZ",
     }
-}
-
-unsafe impl SwiftMetadata for Instrument {
-    #[inline]
-    fn metadata() -> *const abi::TypeMetadata {
-        InstrumentValue::metadata()
-    }
-}
-
-/// Each case is a static property of the Swift type, so making the value means
-/// calling its getter straight into the destination.
-unsafe impl ToSwift for Instrument {
-    #[inline]
-    unsafe fn copy_to_swift(&self, dst: *mut ()) {
-        unsafe { abi::call0_value(self.getter(), dst) }
-    }
-}
+);
 
 crate::impl_swift_hashable!(Instrument = descriptor(&raw const INSTRUMENT_HASHABLE).cast());
 

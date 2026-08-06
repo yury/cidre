@@ -1,7 +1,7 @@
 use std::{hash::Hash, mem::size_of, ptr::NonNull};
 
 use crate::{
-    arc, cg, ns, spatial, swift,
+    arc, cg, define_swift_tag_enum, ns, spatial, swift,
     swift::{
         FromSwift, SwiftMetadata, abi,
         concurrency::{self, define_async_sequence},
@@ -1250,223 +1250,102 @@ define_async_sequence! {
     async_iter = BatteryStatesAsyncIter,
 }
 
-macro_rules! resilient_enum {
-    (
-        $(#[$meta:meta])*
-        $vis:vis struct $name:ident {
-            hash = $hash_fn:ident = $hash_link:literal,
-            debug = $debug_fn:ident = $debug_link:literal,
-            cases { $($case:ident => $symbol:ident = $link:literal),+ $(,)? }
-        }
-    ) => {
-        $(#[$meta])*
-        #[derive(Clone, Copy, Eq, Hash, PartialEq)]
-        #[repr(transparent)]
-        $vis struct $name(u8);
-
-        impl core::fmt::Debug for $name {
-            /// Renders Swift's own `debugDescription` rather than the tag byte.
-            fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                f.write_str(&self.debug_desc().to_string())
-            }
-        }
-
-        #[link(name = "DockKit", kind = "framework")]
-        unsafe extern "C" {
-            $(
-                #[link_name = $link]
-                static $symbol: u8;
-            )+
-
-            #[link_name = $hash_link]
-            fn $hash_fn();
-
-            #[link_name = $debug_link]
-            fn $debug_fn();
-        }
-
-        impl $name {
-            $(
-                #[inline]
-                pub fn $case() -> Self {
-                    unsafe { Self($symbol) }
-                }
-            )+
-
-            #[inline]
-            pub fn as_abi_ptr(&self) -> *const () {
-                (self as *const Self).cast()
-            }
-
-            #[inline]
-            pub fn hash_value(&self) -> isize {
-                unsafe { abi::call_value_to_int($hash_fn as *const (), self.as_abi_ptr()) }
-            }
-
-            #[inline]
-            pub fn debug_desc(&self) -> swift::String {
-                unsafe {
-                    swift::String::from_raw(abi::call_value_to_string(
-                        $debug_fn as *const (),
-                        self.as_abi_ptr(),
-                    ))
-                }
-            }
-        }
-    };
-    (
-        $(#[$meta:meta])*
-        $vis:vis struct $name:ident {
-            hash = $hash_fn:ident = $hash_link:literal,
-            cases { $($case:ident => $symbol:ident = $link:literal),+ $(,)? }
-        }
-    ) => {
-        $(#[$meta])*
-        #[derive(Clone, Copy, Eq, Hash, PartialEq)]
-        #[repr(transparent)]
-        $vis struct $name(u8);
-
-        impl core::fmt::Debug for $name {
-            /// Swift publishes no `debugDescription` for this one, so the tag is
-            /// matched against the cases the framework does export.
-            fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                $(
-                    if *self == Self::$case() {
-                        return f.write_str(stringify!($case));
-                    }
-                )+
-                write!(f, concat!(stringify!($name), "({})"), self.0)
-            }
-        }
-
-        #[link(name = "DockKit", kind = "framework")]
-        unsafe extern "C" {
-            $(
-                #[link_name = $link]
-                static $symbol: u8;
-            )+
-
-            #[link_name = $hash_link]
-            fn $hash_fn();
-        }
-
-        impl $name {
-            $(
-                #[inline]
-                pub fn $case() -> Self {
-                    unsafe { Self($symbol) }
-                }
-            )+
-
-            #[inline]
-            pub fn as_abi_ptr(&self) -> *const () {
-                (self as *const Self).cast()
-            }
-
-            #[inline]
-            pub fn hash_value(&self) -> isize {
-                unsafe { abi::call_value_to_int($hash_fn as *const (), self.as_abi_ptr()) }
-            }
-        }
-    };
-}
-
-resilient_enum! {
+define_swift_tag_enum!(
     /// DockKit `DockAccessory.State`.
     #[doc(alias = "DockAccessory.State")]
-    pub struct State {
-        hash = dock_accessory_state_hash_value = "$s7DockKit0A9AccessoryC5StateO9hashValueSivg",
-        debug = dock_accessory_state_debug_description = "$s7DockKit0A9AccessoryC5StateO16debugDescriptionSSvg",
+    pub State in "DockKit" {
+        hash = "$s7DockKit0A9AccessoryC5StateO9hashValueSivg",
+        debug = "$s7DockKit0A9AccessoryC5StateO16debugDescriptionSSvg",
         cases {
-            undocked => DOCK_ACCESSORY_STATE_UNDOCKED = "$s7DockKit0A9AccessoryC5StateO8undockedyA2EmFWC",
-            docked => DOCK_ACCESSORY_STATE_DOCKED = "$s7DockKit0A9AccessoryC5StateO6dockedyA2EmFWC",
+            undocked = "$s7DockKit0A9AccessoryC5StateO8undockedyA2EmFWC",
+            docked = "$s7DockKit0A9AccessoryC5StateO6dockedyA2EmFWC",
         }
     }
-}
+);
 
-resilient_enum! {
+define_swift_tag_enum!(
     /// DockKit `DockAccessory.Category`.
     #[doc(alias = "DockAccessory.Category")]
-    pub struct Category {
-        hash = dock_accessory_category_hash_value = "$s7DockKit0A9AccessoryC8CategoryO9hashValueSivg",
-        debug = dock_accessory_category_debug_description = "$s7DockKit0A9AccessoryC8CategoryO16debugDescriptionSSvg",
+    pub Category in "DockKit" {
+        hash = "$s7DockKit0A9AccessoryC8CategoryO9hashValueSivg",
+        debug = "$s7DockKit0A9AccessoryC8CategoryO16debugDescriptionSSvg",
         cases {
-            tracking_stand => DOCK_ACCESSORY_CATEGORY_TRACKING_STAND = "$s7DockKit0A9AccessoryC8CategoryO13trackingStandyA2EmFWC",
+            tracking_stand = "$s7DockKit0A9AccessoryC8CategoryO13trackingStandyA2EmFWC",
         }
     }
-}
+);
 
-resilient_enum! {
+define_swift_tag_enum!(
     /// DockKit `DockAccessory.CameraOrientation`.
     #[doc(alias = "DockAccessory.CameraOrientation")]
-    pub struct CameraOrientation {
-        hash = dock_accessory_camera_orientation_hash_value = "$s7DockKit0A9AccessoryC17CameraOrientationO9hashValueSivg",
+    pub CameraOrientation in "DockKit" {
+        hash = "$s7DockKit0A9AccessoryC17CameraOrientationO9hashValueSivg",
         cases {
-            unknown => DOCK_ACCESSORY_CAMERA_ORIENTATION_UNKNOWN = "$s7DockKit0A9AccessoryC17CameraOrientationO7unknownyA2EmFWC",
-            portrait => DOCK_ACCESSORY_CAMERA_ORIENTATION_PORTRAIT = "$s7DockKit0A9AccessoryC17CameraOrientationO8portraityA2EmFWC",
-            portrait_upside_down => DOCK_ACCESSORY_CAMERA_ORIENTATION_PORTRAIT_UPSIDE_DOWN = "$s7DockKit0A9AccessoryC17CameraOrientationO18portraitUpsideDownyA2EmFWC",
-            landscape_right => DOCK_ACCESSORY_CAMERA_ORIENTATION_LANDSCAPE_RIGHT = "$s7DockKit0A9AccessoryC17CameraOrientationO14landscapeRightyA2EmFWC",
-            landscape_left => DOCK_ACCESSORY_CAMERA_ORIENTATION_LANDSCAPE_LEFT = "$s7DockKit0A9AccessoryC17CameraOrientationO13landscapeLeftyA2EmFWC",
-            face_up => DOCK_ACCESSORY_CAMERA_ORIENTATION_FACE_UP = "$s7DockKit0A9AccessoryC17CameraOrientationO6faceUpyA2EmFWC",
-            face_down => DOCK_ACCESSORY_CAMERA_ORIENTATION_FACE_DOWN = "$s7DockKit0A9AccessoryC17CameraOrientationO8faceDownyA2EmFWC",
-            corrected => DOCK_ACCESSORY_CAMERA_ORIENTATION_CORRECTED = "$s7DockKit0A9AccessoryC17CameraOrientationO9correctedyA2EmFWC",
+            unknown = "$s7DockKit0A9AccessoryC17CameraOrientationO7unknownyA2EmFWC",
+            portrait = "$s7DockKit0A9AccessoryC17CameraOrientationO8portraityA2EmFWC",
+            portrait_upside_down = "$s7DockKit0A9AccessoryC17CameraOrientationO18portraitUpsideDownyA2EmFWC",
+            landscape_right = "$s7DockKit0A9AccessoryC17CameraOrientationO14landscapeRightyA2EmFWC",
+            landscape_left = "$s7DockKit0A9AccessoryC17CameraOrientationO13landscapeLeftyA2EmFWC",
+            face_up = "$s7DockKit0A9AccessoryC17CameraOrientationO6faceUpyA2EmFWC",
+            face_down = "$s7DockKit0A9AccessoryC17CameraOrientationO8faceDownyA2EmFWC",
+            corrected = "$s7DockKit0A9AccessoryC17CameraOrientationO9correctedyA2EmFWC",
         }
     }
-}
+);
 
-resilient_enum! {
+define_swift_tag_enum!(
     /// DockKit `DockAccessory.Observation.ObservationType`.
     #[doc(alias = "DockAccessory.Observation.ObservationType")]
-    pub struct ObservationType {
-        hash = dock_accessory_observation_type_hash_value = "$s7DockKit0A9AccessoryC11ObservationV0D4TypeO9hashValueSivg",
+    pub ObservationType in "DockKit" {
+        hash = "$s7DockKit0A9AccessoryC11ObservationV0D4TypeO9hashValueSivg",
         cases {
-            human_face => DOCK_ACCESSORY_OBSERVATION_TYPE_HUMAN_FACE = "$s7DockKit0A9AccessoryC11ObservationV0D4TypeO9humanFaceyA2GmFWC",
-            human_body => DOCK_ACCESSORY_OBSERVATION_TYPE_HUMAN_BODY = "$s7DockKit0A9AccessoryC11ObservationV0D4TypeO9humanBodyyA2GmFWC",
-            object => DOCK_ACCESSORY_OBSERVATION_TYPE_OBJECT = "$s7DockKit0A9AccessoryC11ObservationV0D4TypeO6objectyA2GmFWC",
+            human_face = "$s7DockKit0A9AccessoryC11ObservationV0D4TypeO9humanFaceyA2GmFWC",
+            human_body = "$s7DockKit0A9AccessoryC11ObservationV0D4TypeO9humanBodyyA2GmFWC",
+            object = "$s7DockKit0A9AccessoryC11ObservationV0D4TypeO6objectyA2GmFWC",
         }
     }
-}
+);
 
-resilient_enum! {
+define_swift_tag_enum!(
     /// DockKit `DockAccessory.BatteryChargeState`.
     #[doc(alias = "DockAccessory.BatteryChargeState")]
-    pub struct BatteryChargeState {
-        hash = dock_accessory_battery_charge_state_hash_value = "$s7DockKit0A9AccessoryC18BatteryChargeStateO9hashValueSivg",
+    pub BatteryChargeState in "DockKit" {
+        hash = "$s7DockKit0A9AccessoryC18BatteryChargeStateO9hashValueSivg",
         cases {
-            not_charging => DOCK_ACCESSORY_BATTERY_CHARGE_STATE_NOT_CHARGING = "$s7DockKit0A9AccessoryC18BatteryChargeStateO11notChargingyA2EmFWC",
-            charging => DOCK_ACCESSORY_BATTERY_CHARGE_STATE_CHARGING = "$s7DockKit0A9AccessoryC18BatteryChargeStateO8chargingyA2EmFWC",
-            not_chargeable => DOCK_ACCESSORY_BATTERY_CHARGE_STATE_NOT_CHARGEABLE = "$s7DockKit0A9AccessoryC18BatteryChargeStateO13notChargeableyA2EmFWC",
+            not_charging = "$s7DockKit0A9AccessoryC18BatteryChargeStateO11notChargingyA2EmFWC",
+            charging = "$s7DockKit0A9AccessoryC18BatteryChargeStateO8chargingyA2EmFWC",
+            not_chargeable = "$s7DockKit0A9AccessoryC18BatteryChargeStateO13notChargeableyA2EmFWC",
         }
     }
-}
+);
 
-resilient_enum! {
+define_swift_tag_enum!(
     /// DockKit `DockAccessory.FramingMode`.
     #[doc(alias = "DockAccessory.FramingMode")]
-    pub struct FramingMode {
-        hash = dock_accessory_framing_mode_hash_value = "$s7DockKit0A9AccessoryC11FramingModeO9hashValueSivg",
+    pub FramingMode in "DockKit" {
+        hash = "$s7DockKit0A9AccessoryC11FramingModeO9hashValueSivg",
         cases {
-            automatic => DOCK_ACCESSORY_FRAMING_MODE_AUTOMATIC = "$s7DockKit0A9AccessoryC11FramingModeO9automaticyA2EmFWC",
-            center => DOCK_ACCESSORY_FRAMING_MODE_CENTER = "$s7DockKit0A9AccessoryC11FramingModeO6centeryA2EmFWC",
-            left => DOCK_ACCESSORY_FRAMING_MODE_LEFT = "$s7DockKit0A9AccessoryC11FramingModeO4leftyA2EmFWC",
-            right => DOCK_ACCESSORY_FRAMING_MODE_RIGHT = "$s7DockKit0A9AccessoryC11FramingModeO5rightyA2EmFWC",
+            automatic = "$s7DockKit0A9AccessoryC11FramingModeO9automaticyA2EmFWC",
+            center = "$s7DockKit0A9AccessoryC11FramingModeO6centeryA2EmFWC",
+            left = "$s7DockKit0A9AccessoryC11FramingModeO4leftyA2EmFWC",
+            right = "$s7DockKit0A9AccessoryC11FramingModeO5rightyA2EmFWC",
         }
     }
-}
+);
 
-resilient_enum! {
+define_swift_tag_enum!(
     /// DockKit `DockAccessory.Animation`.
     #[doc(alias = "DockAccessory.Animation")]
-    pub struct Animation {
-        hash = dock_accessory_animation_hash_value = "$s7DockKit0A9AccessoryC9AnimationO9hashValueSivg",
+    pub Animation in "DockKit" {
+        hash = "$s7DockKit0A9AccessoryC9AnimationO9hashValueSivg",
         cases {
-            wakeup => DOCK_ACCESSORY_ANIMATION_WAKEUP = "$s7DockKit0A9AccessoryC9AnimationO6wakeupyA2EmFWC",
-            yes => DOCK_ACCESSORY_ANIMATION_YES = "$s7DockKit0A9AccessoryC9AnimationO3yesyA2EmFWC",
-            no => DOCK_ACCESSORY_ANIMATION_NO = "$s7DockKit0A9AccessoryC9AnimationO2noyA2EmFWC",
-            kapow => DOCK_ACCESSORY_ANIMATION_KAPOW = "$s7DockKit0A9AccessoryC9AnimationO5kapowyA2EmFWC",
+            wakeup = "$s7DockKit0A9AccessoryC9AnimationO6wakeupyA2EmFWC",
+            yes = "$s7DockKit0A9AccessoryC9AnimationO3yesyA2EmFWC",
+            no = "$s7DockKit0A9AccessoryC9AnimationO2noyA2EmFWC",
+            kapow = "$s7DockKit0A9AccessoryC9AnimationO5kapowyA2EmFWC",
         }
     }
-}
+);
 
 #[link(name = "DockKit", kind = "framework")]
 unsafe extern "C" {

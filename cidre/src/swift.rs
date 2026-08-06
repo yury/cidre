@@ -7,6 +7,7 @@ pub mod abi;
 mod array;
 pub(crate) mod concurrency;
 mod dictionary;
+mod enums;
 mod set;
 mod string;
 mod types;

@@ -7,25 +7,22 @@
 
 use crate::{
     swift::foundation,
-    swift::{SwiftMetadata, abi},
+    swift::{ToSwift, abi},
 };
 
 use crate::swift::value::{Storage, call_with_owned_values};
 
 /// Creates a transcriber through `init(locale:preset:)`.
 ///
-/// `preset_getter` is one of the preset type's static getters, which returns its
-/// value indirectly; `P` is that preset type. Both the locale and the preset are
-/// consumed by the initializer.
+/// Both the locale and the preset are consumed by the initializer.
 ///
 /// # Safety
 ///
 /// The symbols must belong to one type: `class_metadata_accessor` and `init`
-/// must name a transcriber whose `Preset` is `P`, and `preset_getter` must be
-/// one of that `Preset`'s static getters.
-pub(super) unsafe fn transcriber_with_id_and_preset<P: SwiftMetadata>(
+/// must name a transcriber whose `Preset` is `P`.
+pub(super) unsafe fn transcriber_with_id_and_preset<P: ToSwift>(
     locale_id: &str,
-    preset_getter: *const (),
+    preset: P,
     class_metadata_accessor: *const (),
     init: *const (),
 ) -> *mut () {
@@ -33,7 +30,7 @@ pub(super) unsafe fn transcriber_with_id_and_preset<P: SwiftMetadata>(
         let locale = foundation::Locale::with_id(locale_id);
 
         let mut preset_storage = Storage::<P>::new();
-        abi::call0_value(preset_getter, preset_storage.as_mut_ptr());
+        preset.copy_to_swift(preset_storage.as_mut_ptr());
         let preset = preset_storage.assume_init();
 
         let class_metadata = abi::call_int_to_int(class_metadata_accessor, 0) as *const ();
