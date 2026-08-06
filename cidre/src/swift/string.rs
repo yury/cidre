@@ -225,6 +225,8 @@ unsafe impl SwiftMetadata for String {
 
 unsafe impl SwiftType for String {}
 
+crate::impl_swift_memcpy_value!(String);
+
 impl Clone for String {
     #[inline]
     fn clone(&self) -> Self {

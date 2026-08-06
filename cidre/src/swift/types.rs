@@ -34,28 +34,202 @@ pub unsafe trait SwiftMetadata {
 /// [`metadata`]: SwiftMetadata::metadata
 pub unsafe trait SwiftType: SwiftMetadata + Sized {}
 
-/// A Rust value that can be read out of a borrowed Swift value.
+/// A Rust value that can be read out of a Swift value of the type it names.
 ///
-/// This ties a Rust type to the Swift type it is read from, which the old
-/// convention — an inherent `copy_from_ptr` plus a separately named marker
-/// passed alongside it — left to the binding author to keep consistent. Getting
-/// that pair wrong is a value-witness misuse, not a compile error, so the
-/// association belongs in the type system.
+/// This is what lets the generic containers — [`Array`](super::Array),
+/// [`Set`](super::Set), [`Dictionary`](super::Dictionary) — hold both kinds of
+/// Rust type: one whose layout *is* the Swift value's ([`SwiftType`]), and one
+/// that owns runtime-laid-out storage or decodes into a native Rust value. The
+/// container only ever needs the two operations below plus the element's
+/// metadata, so it does not care which kind it has.
 ///
 /// # Safety
 ///
-/// [`from_swift`](Self::from_swift) must read a value of [`Self::Swift`] at the
-/// pointer without taking ownership of it: the caller still destroys the Swift
-/// value afterwards.
-pub(crate) unsafe trait FromSwift: Sized {
-    /// The Swift type a value is read from.
-    type Swift: SwiftMetadata;
-
+/// [`copy_swift`](Self::copy_swift) must read a value of [`Self::metadata`] at
+/// the pointer without taking ownership of it: the caller still destroys the
+/// Swift value afterwards. [`take_swift`](Self::take_swift) must leave the
+/// storage uninitialized, so the caller must not destroy it again.
+pub unsafe trait FromSwift: SwiftMetadata + Sized {
+    /// Copies a borrowed Swift value, leaving the original to its owner.
+    ///
     /// # Safety
     ///
-    /// `value` must point to an initialized `Self::Swift` that outlives the
-    /// call.
-    unsafe fn from_swift(value: *const ()) -> Self;
+    /// `value` must point to an initialized Swift value of this type that
+    /// outlives the call.
+    unsafe fn copy_swift(value: *const ()) -> Self;
+
+    /// Takes ownership of the Swift value at `value`, leaving its storage
+    /// uninitialized.
+    ///
+    /// This is what a `+1` result — an array subscript, a getter's indirect
+    /// return — hands back, so the default copy-then-destroy exists only for
+    /// types that decode into something Rust owns outright.
+    ///
+    /// # Safety
+    ///
+    /// `value` must point to an initialized Swift value of this type, and the
+    /// caller must own it and not destroy it afterwards.
+    unsafe fn take_swift(value: *mut ()) -> Self {
+        unsafe {
+            let taken = Self::copy_swift(value.cast_const());
+            abi::destroy_value(value, Self::metadata());
+            taken
+        }
+    }
+}
+
+/// A Rust value that can be written into storage for the Swift type it names.
+///
+/// The counterpart of [`FromSwift`]: together they are what a container needs
+/// to move elements in either direction without knowing how the Rust type
+/// stores them.
+///
+/// # Safety
+///
+/// [`copy_to_swift`](Self::copy_to_swift) must leave `dst` holding an
+/// initialized, independently owned value of [`Self::metadata`].
+/// [`IS_CONTIGUOUS`](Self::IS_CONTIGUOUS) may only be set when a Rust slice of
+/// `Self` is already a run of Swift values at that type's stride.
+pub unsafe trait ToSwift: SwiftMetadata {
+    /// Whether `&[Self]` is already a run of Swift values, so a whole slice can
+    /// be copied with one call instead of one per element.
+    const IS_CONTIGUOUS: bool = false;
+
+    /// Copies this value into uninitialized storage for its Swift type.
+    ///
+    /// # Safety
+    ///
+    /// `dst` must be uninitialized storage laid out for this type.
+    unsafe fn copy_to_swift(&self, dst: *mut ());
+}
+
+/// Implements the value traits for a type whose Rust layout is the Swift one,
+/// so reading is a move out of the buffer, writing goes through the type's own
+/// copy witness, and a Rust slice is already a run of Swift values.
+///
+/// The second form takes the generic parameters and their bounds, for the
+/// container and reference types that are one word whatever they hold.
+#[macro_export]
+macro_rules! impl_swift_memcpy_value {
+    ($ty:ty) => {
+        $crate::impl_swift_memcpy_value!(@impls $ty, <>);
+    };
+    ($ty:ty, <$($param:ident : $bound:path),+ $(,)?>) => {
+        $crate::impl_swift_memcpy_value!(@impls $ty, <$($param: $bound),+>);
+    };
+    (@impls $ty:ty, <$($param:ident : $bound:path),*>) => {
+        unsafe impl<$($param: $bound),*> $crate::swift::FromSwift for $ty {
+            #[inline]
+            unsafe fn copy_swift(value: *const ()) -> Self {
+                unsafe {
+                    let mut copy = ::core::mem::MaybeUninit::<Self>::uninit();
+                    $crate::swift::abi::initialize_with_copy(
+                        copy.as_mut_ptr().cast(),
+                        value,
+                        <Self as $crate::swift::SwiftMetadata>::metadata(),
+                    );
+                    copy.assume_init()
+                }
+            }
+
+            #[inline]
+            unsafe fn take_swift(value: *mut ()) -> Self {
+                unsafe { value.cast::<Self>().read() }
+            }
+        }
+
+        unsafe impl<$($param: $bound),*> $crate::swift::ToSwift for $ty {
+            const IS_CONTIGUOUS: bool = true;
+
+            #[inline]
+            unsafe fn copy_to_swift(&self, dst: *mut ()) {
+                unsafe {
+                    $crate::swift::abi::initialize_with_copy(
+                        dst,
+                        ::core::ptr::from_ref(self).cast(),
+                        <Self as $crate::swift::SwiftMetadata>::metadata(),
+                    )
+                };
+            }
+        }
+    };
+}
+
+/// Declares a newtype for a retained Objective-C object used where Swift
+/// expects a value of that class.
+///
+/// Swift imports an Objective-C class as a class type whose metadata the
+/// runtime derives from the class object, and whose value is one retained
+/// reference — the same shape as a native Swift class, but reached differently.
+/// The newtype is what carries that metadata, so an imported class composes
+/// with the generic containers instead of needing a hand-written array type.
+#[macro_export]
+macro_rules! define_swift_objc_ref {
+    ($(#[$meta:meta])* $vis:vis $ty:ident($obj:ty) = class $class:literal) => {
+        $(#[$meta])*
+        #[repr(transparent)]
+        $vis struct $ty(pub $crate::arc::R<$obj>);
+
+        unsafe impl $crate::swift::SwiftMetadata for $ty {
+            const IS_CLASS_REF: bool = true;
+
+            fn metadata() -> *const $crate::swift::abi::TypeMetadata {
+                static CACHE: $crate::swift::abi::MetadataCache =
+                    $crate::swift::abi::MetadataCache::new();
+                CACHE.get(|| unsafe {
+                    let class =
+                        $crate::objc::objc_getClass(concat!($class, "\0").as_ptr().cast())
+                            .expect(concat!($class, " class must exist"));
+                    $crate::swift::abi::objc_class_metadata(
+                        (class as *const $crate::objc::Class<$crate::objc::Id>).cast(),
+                    )
+                })
+            }
+        }
+
+        /// One retained reference is the whole value, and the class's own value
+        /// witnesses are what copy and destroy it.
+        unsafe impl $crate::swift::SwiftType for $ty {}
+
+        $crate::impl_swift_memcpy_value!($ty);
+    };
+}
+
+/// A Swift type whose `Hashable` conformance a binding can hand to the runtime.
+///
+/// `Set` and `Dictionary` are generic over `Hashable`, so every call into them
+/// carries that conformance's witness table alongside the element metadata. A
+/// framework exports only the conformance descriptor, so the table is
+/// instantiated on first use and cached from then on.
+///
+/// # Safety
+///
+/// [`hashable_witness`](Self::hashable_witness) must return `Self`'s own
+/// `Hashable` witness table, which must not be null.
+pub unsafe trait SwiftHashable: SwiftMetadata {
+    fn hashable_witness() -> *const ();
+}
+
+/// Implements [`SwiftHashable`] from the conformance descriptor a framework
+/// exports for it, caching the table the runtime builds.
+#[macro_export]
+macro_rules! impl_swift_hashable {
+    ($ty:ty = descriptor $descriptor:expr) => {
+        unsafe impl $crate::swift::SwiftHashable for $ty {
+            fn hashable_witness() -> *const () {
+                static CACHE: $crate::swift::abi::WitnessCache =
+                    $crate::swift::abi::WitnessCache::new();
+                CACHE.get(|| unsafe {
+                    let witness = $crate::swift::abi::witness_table(
+                        $descriptor,
+                        <$ty as $crate::swift::SwiftMetadata>::metadata(),
+                    );
+                    assert!(!witness.is_null(), "Hashable witness table must exist");
+                    witness
+                })
+            }
+        }
+    };
 }
 
 /// A native Swift class.
@@ -96,6 +270,8 @@ unsafe impl<T: SwiftClass> SwiftMetadata for crate::arc::R<T> {
 
 unsafe impl<T: SwiftClass> SwiftType for crate::arc::R<T> {}
 
+impl_swift_memcpy_value!(crate::arc::R<T>, <T: SwiftClass>);
+
 /// Swift represents `C?` for a class `C` by using the null reference as `.none`,
 /// which is the same niche Rust picks for `Option<arc::R<C>>`, so the two are
 /// bit-for-bit the same value.
@@ -108,6 +284,8 @@ unsafe impl<T: SwiftClass> SwiftMetadata for Option<crate::arc::R<T>> {
 }
 
 unsafe impl<T: SwiftClass> SwiftType for Option<crate::arc::R<T>> {}
+
+impl_swift_memcpy_value!(Option<crate::arc::R<T>>, <T: SwiftClass>);
 
 /// Declares a zero-sized marker naming a Swift type, and implements
 /// [`SwiftMetadata`] for it.
@@ -168,8 +346,22 @@ macro_rules! impl_swift_type {
         }
 
         unsafe impl SwiftType for $ty {}
+
+        impl_swift_memcpy_value!($ty);
     };
 }
+
+#[link(name = "swiftCore")]
+unsafe extern "C" {
+    #[link_name = "$sSiSHsMc"]
+    static INT_HASHABLE: u8;
+
+    #[link_name = "$sSSSHsMc"]
+    static STRING_HASHABLE: u8;
+}
+
+impl_swift_hashable!(isize = descriptor(&raw const INT_HASHABLE).cast());
+impl_swift_hashable!(super::String = descriptor(&raw const STRING_HASHABLE).cast());
 
 impl_swift_type!(bool, bool_metadata);
 impl_swift_type!(isize, int_metadata);
@@ -200,6 +392,9 @@ unsafe impl SwiftMetadata for crate::cm::Time {
 unsafe impl SwiftType for crate::cm::Time {}
 
 #[cfg(feature = "cm")]
+impl_swift_memcpy_value!(crate::cm::Time);
+
+#[cfg(feature = "cm")]
 unsafe impl SwiftMetadata for crate::cm::TimeRange {
     #[inline]
     fn metadata() -> *const TypeMetadata {
@@ -210,6 +405,9 @@ unsafe impl SwiftMetadata for crate::cm::TimeRange {
 
 #[cfg(feature = "cm")]
 unsafe impl SwiftType for crate::cm::TimeRange {}
+
+#[cfg(feature = "cm")]
+impl_swift_memcpy_value!(crate::cm::TimeRange);
 
 #[cfg(test)]
 mod tests {

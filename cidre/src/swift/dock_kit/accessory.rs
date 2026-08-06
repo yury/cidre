@@ -8,7 +8,7 @@ use std::{
 use crate::{
     arc, cg, ns, spatial, swift,
     swift::{
-        SwiftMetadata, abi,
+        FromSwift, SwiftMetadata, abi,
         concurrency::{
             self, define_async_sequence, swift_async_epilogue, swift_async_function_pointer,
             swift_async_load_parent, swift_async_load_resume, swift_async_prologue,
@@ -169,14 +169,6 @@ define_swift_value!(
 unsafe impl Send for TrackingState {}
 unsafe impl Sync for TrackingState {}
 
-/// The native Swift array returned by `TrackingState.trackedSubjects`.
-pub struct TrackedSubjects {
-    raw: *mut (),
-}
-
-unsafe impl Send for TrackedSubjects {}
-unsafe impl Sync for TrackedSubjects {}
-
 define_swift_value!(
     /// One subject observation supplied to DockKit tracking.
     pub Observation, ObservationValue = accessor dock_accessory_observation_metadata
@@ -185,14 +177,6 @@ define_swift_value!(
 unsafe impl Send for Observation {}
 unsafe impl Sync for Observation {}
 
-/// A native Swift `[DockAccessory.Observation]`.
-pub struct Observations {
-    raw: *mut (),
-}
-
-unsafe impl Send for Observations {}
-unsafe impl Sync for Observations {}
-
 #[cfg(feature = "av")]
 define_swift_value!(
     /// Camera calibration supplied with tracking observations.
@@ -200,7 +184,9 @@ define_swift_value!(
     pub CameraInformation, CameraInformationValue = accessor dock_accessory_camera_information_metadata
 );
 
+#[cfg(feature = "av")]
 unsafe impl Send for CameraInformation {}
+#[cfg(feature = "av")]
 unsafe impl Sync for CameraInformation {}
 
 /// Native layout of `simd_float3x3`, stored as three padded column vectors.
@@ -460,11 +446,16 @@ unsafe extern "C" {
 
 crate::define_swift_marker!(pub(crate) StateChangeValue = accessor dock_accessory_state_change_metadata);
 
-unsafe impl crate::swift::FromSwift for StateChange {
-    type Swift = StateChangeValue;
-
+unsafe impl SwiftMetadata for StateChange {
     #[inline]
-    unsafe fn from_swift(value: *const ()) -> Self {
+    fn metadata() -> *const abi::TypeMetadata {
+        StateChangeValue::metadata()
+    }
+}
+
+unsafe impl crate::swift::FromSwift for StateChange {
+    #[inline]
+    unsafe fn copy_swift(value: *const ()) -> Self {
         unsafe { Self::copy_from_ptr(value) }
     }
 }
@@ -473,11 +464,16 @@ crate::define_swift_marker!(pub(crate) StateValue = mangled "7DockKit0A9Accessor
 
 crate::define_swift_marker!(pub(crate) AccessoryEventValue = accessor dock_accessory_event_metadata);
 
-unsafe impl crate::swift::FromSwift for AccessoryEvent {
-    type Swift = AccessoryEventValue;
-
+unsafe impl SwiftMetadata for AccessoryEvent {
     #[inline]
-    unsafe fn from_swift(value: *const ()) -> Self {
+    fn metadata() -> *const abi::TypeMetadata {
+        AccessoryEventValue::metadata()
+    }
+}
+
+unsafe impl crate::swift::FromSwift for AccessoryEvent {
+    #[inline]
+    unsafe fn copy_swift(value: *const ()) -> Self {
         unsafe { Self::copy_from_ptr(value) }
     }
 }
@@ -720,9 +716,7 @@ impl Limits {
             let mut storage = Storage::<Optional<LimitValue>>::new();
             abi::call_value_to_value(getter, self.as_ptr(), storage.as_mut_ptr());
             let value = storage.assume_init();
-            value
-                .is_some()
-                .then(|| Limit::copy_from_ptr(value.as_ptr()))
+            value.is_some().then(|| Limit::copy_swift(value.as_ptr()))
         }
     }
 
@@ -947,8 +941,15 @@ impl PartialEq for TrackedObject {
     }
 }
 
-impl TrackedSubject {
-    unsafe fn copy_from_ptr(value: *const ()) -> Self {
+unsafe impl SwiftMetadata for TrackedSubject {
+    #[inline]
+    fn metadata() -> *const abi::TypeMetadata {
+        TrackedSubjectValue::metadata()
+    }
+}
+
+unsafe impl FromSwift for TrackedSubject {
+    unsafe fn copy_swift(value: *const ()) -> Self {
         unsafe {
             let mut storage = Storage::<TrackedSubjectValue>::new();
             abi::initialize_with_copy(storage.as_mut_ptr(), value, TrackedSubjectValue::metadata());
@@ -960,7 +961,7 @@ impl TrackedSubject {
                     value.as_mut_ptr(),
                     TrackedSubjectValue::metadata(),
                 );
-                let person = TrackedPerson::copy_from_ptr(value.as_ptr());
+                let person = TrackedPerson::copy_swift(value.as_ptr());
                 abi::destroy_value(value.as_mut_ptr(), TrackedPersonValue::metadata());
                 value.assume_consumed();
                 Self::Person(person)
@@ -969,7 +970,7 @@ impl TrackedSubject {
                     value.as_mut_ptr(),
                     TrackedSubjectValue::metadata(),
                 );
-                let object = TrackedObject::copy_from_ptr(value.as_ptr());
+                let object = TrackedObject::copy_swift(value.as_ptr());
                 abi::destroy_value(value.as_mut_ptr(), TrackedObjectValue::metadata());
                 value.assume_consumed();
                 Self::Object(object)
@@ -977,56 +978,6 @@ impl TrackedSubject {
                 Self::Unknown(tag)
             }
         }
-    }
-}
-
-impl TrackedSubjects {
-    unsafe fn from_raw(raw: *mut ()) -> Self {
-        Self { raw }
-    }
-
-    pub fn len(&self) -> usize {
-        unsafe { abi::array_count(self.raw.cast_const(), TrackedSubjectValue::metadata()) as usize }
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
-
-    pub fn get(&self, index: usize) -> Option<TrackedSubject> {
-        if index >= self.len() {
-            return None;
-        }
-        unsafe {
-            let mut storage = Storage::<TrackedSubjectValue>::new();
-            abi::array_get(
-                self.raw.cast_const(),
-                index as isize,
-                storage.as_mut_ptr(),
-                TrackedSubjectValue::metadata(),
-            );
-            let value = storage.assume_init();
-            let result = TrackedSubject::copy_from_ptr(value.as_ptr());
-            drop(value);
-            Some(result)
-        }
-    }
-
-    pub fn iter(&self) -> impl ExactSizeIterator<Item = TrackedSubject> + '_ {
-        (0..self.len()).map(|index| unsafe { self.get(index).unwrap_unchecked() })
-    }
-}
-
-impl Clone for TrackedSubjects {
-    fn clone(&self) -> Self {
-        unsafe { abi::bridge_object_retain(self.raw as usize) };
-        Self { raw: self.raw }
-    }
-}
-
-impl Drop for TrackedSubjects {
-    fn drop(&mut self) {
-        unsafe { abi::bridge_object_release(self.raw as usize) }
     }
 }
 
@@ -1043,9 +994,9 @@ impl TrackingState {
         }
     }
 
-    pub fn tracked_subjects(&self) -> TrackedSubjects {
+    pub fn tracked_subjects(&self) -> swift::Array<TrackedSubject> {
         unsafe {
-            TrackedSubjects::from_raw(abi::call_value_to_object(
+            swift::Array::from_raw(abi::call_value_to_object(
                 dock_accessory_tracking_state_subjects as *const (),
                 self.as_ptr(),
             ))
@@ -1108,50 +1059,6 @@ impl Observation {
 
     pub fn rect(&self) -> cg::Rect {
         unsafe { rect_property(self.as_ptr(), dock_accessory_observation_rect as *const ()) }
-    }
-}
-
-impl Observations {
-    pub fn from_slice(values: &[Observation]) -> Self {
-        unsafe {
-            let metadata = ObservationValue::metadata();
-            let (raw, elements) = abi::allocate_uninitialized_array(values.len(), metadata);
-            let stride = abi::value_layout(metadata).stride;
-            for (index, value) in values.iter().enumerate() {
-                abi::initialize_with_copy(
-                    elements.cast::<u8>().add(index * stride).cast(),
-                    value.as_ptr(),
-                    metadata,
-                );
-            }
-            Self { raw }
-        }
-    }
-
-    pub fn len(&self) -> usize {
-        unsafe { abi::array_count(self.raw.cast_const(), ObservationValue::metadata()) as usize }
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
-
-    #[cfg(feature = "av")]
-    fn as_raw(&self) -> *mut () {
-        self.raw
-    }
-}
-
-impl Clone for Observations {
-    fn clone(&self) -> Self {
-        unsafe { abi::bridge_object_retain(self.raw as usize) };
-        Self { raw: self.raw }
-    }
-}
-
-impl Drop for Observations {
-    fn drop(&mut self) {
-        unsafe { abi::bridge_object_release(self.raw as usize) }
     }
 }
 
@@ -2013,7 +1920,7 @@ impl Accessory {
     {
         AsyncVoidTask::start(
             self,
-            AsyncVoidArg::Subjects(UuidArray::from_slice(ids)),
+            AsyncVoidArg::Subjects(swift::Array::from_slice(ids)),
             dock_accessory_select_subjects as *const (),
             (&raw const DOCK_ACCESSORY_SELECT_SUBJECTS_ASYNC).cast(),
             callback,
@@ -2024,7 +1931,7 @@ impl Accessory {
     #[doc(alias = "DockAccessory.track(_:cameraInformation:)")]
     pub fn track_handler<F>(
         &self,
-        observations: Observations,
+        observations: swift::Array<Observation>,
         camera: CameraInformation,
         callback: F,
     ) where
@@ -2047,7 +1954,7 @@ impl Accessory {
     #[doc(alias = "DockAccessory.track(_:cameraInformation:image:)")]
     pub fn track_with_image_handler<F>(
         &self,
-        observations: Observations,
+        observations: swift::Array<Observation>,
         camera: CameraInformation,
         image: &crate::cv::PixelBuf,
         callback: F,
@@ -2080,7 +1987,7 @@ impl Accessory {
         AsyncVoidTask::start(
             self,
             AsyncVoidArg::Track {
-                data: TrackData::Metadata(MetadataObjects::from_slice(metadata)),
+                data: TrackData::Metadata(metadata_objects(metadata)),
                 camera,
                 image: None,
             },
@@ -2104,7 +2011,7 @@ impl Accessory {
         AsyncVoidTask::start(
             self,
             AsyncVoidArg::Track {
-                data: TrackData::Metadata(MetadataObjects::from_slice(metadata)),
+                data: TrackData::Metadata(metadata_objects(metadata)),
                 camera,
                 image: Some(arc::Retain::retained(image)),
             },
@@ -2160,7 +2067,7 @@ impl Accessory {
         &self,
         ids: &[Uuid],
     ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
-        let ids = UuidArray::from_slice(ids);
+        let ids = swift::Array::from_slice(ids);
         self.async_void(move |accessory, callback| {
             AsyncVoidTask::start(
                 accessory,
@@ -2175,7 +2082,7 @@ impl Accessory {
     #[cfg(all(feature = "async", feature = "av"))]
     pub fn track(
         &self,
-        observations: Observations,
+        observations: swift::Array<Observation>,
         camera: CameraInformation,
     ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
         self.async_void(move |accessory, callback| {
@@ -2186,7 +2093,7 @@ impl Accessory {
     #[cfg(all(feature = "async", feature = "av"))]
     pub fn track_with_image(
         &self,
-        observations: Observations,
+        observations: swift::Array<Observation>,
         camera: CameraInformation,
         image: &crate::cv::PixelBuf,
     ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
@@ -2202,7 +2109,7 @@ impl Accessory {
         metadata: &[&crate::av::MetadataObj],
         camera: CameraInformation,
     ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
-        let metadata = MetadataObjects::from_slice(metadata);
+        let metadata = metadata_objects(metadata);
         self.async_void(move |accessory, callback| {
             AsyncVoidTask::start(
                 accessory,
@@ -2225,7 +2132,7 @@ impl Accessory {
         camera: CameraInformation,
         image: &crate::cv::PixelBuf,
     ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
-        let metadata = MetadataObjects::from_slice(metadata);
+        let metadata = metadata_objects(metadata);
         let image = arc::Retain::retained(image);
         self.async_void(move |accessory, callback| {
             AsyncVoidTask::start(
@@ -2402,7 +2309,7 @@ enum AsyncVoidArg {
     Point(cg::Point),
     Rect(cg::Rect),
     FramingMode(FramingMode),
-    Subjects(UuidArray),
+    Subjects(swift::Array<Uuid>),
     #[cfg(feature = "av")]
     Track {
         data: TrackData,
@@ -2412,9 +2319,21 @@ enum AsyncVoidArg {
 }
 
 #[cfg(feature = "av")]
+crate::define_swift_objc_ref!(
+    /// One `AVMetadataObject` as DockKit's tracking API takes it.
+    pub(crate) MetadataObjRef(crate::av::MetadataObj) = class "AVMetadataObject"
+);
+
+/// Retains the borrowed metadata objects into a Swift array of them.
+#[cfg(feature = "av")]
+fn metadata_objects(values: &[&crate::av::MetadataObj]) -> swift::Array<MetadataObjRef> {
+    swift::Array::from_iter(values.iter().map(|value| MetadataObjRef(value.retained())))
+}
+
+#[cfg(feature = "av")]
 enum TrackData {
-    Observations(Observations),
-    Metadata(MetadataObjects),
+    Observations(swift::Array<Observation>),
+    Metadata(swift::Array<MetadataObjRef>),
 }
 
 #[cfg(feature = "av")]
@@ -2422,7 +2341,7 @@ impl TrackData {
     fn as_raw(&self) -> *mut () {
         match self {
             Self::Observations(value) => value.as_raw(),
-            Self::Metadata(value) => value.raw,
+            Self::Metadata(value) => value.as_raw(),
         }
     }
 }
@@ -2612,7 +2531,7 @@ extern "C" fn cidre_dk_async_void_prepare(task: *mut AsyncVoidTask, context: *mu
                 context.add(12).write(3);
             }
             AsyncVoidArg::Subjects(ids) => {
-                context.add(8).write(ids.raw as u64);
+                context.add(8).write(ids.as_raw() as u64);
                 context.add(12).write(6);
             }
             #[cfg(feature = "av")]
@@ -2632,77 +2551,6 @@ extern "C" fn cidre_dk_async_void_prepare(task: *mut AsyncVoidTask, context: *mu
                 context.add(12).write(if image.is_some() { 5 } else { 4 });
             }
         }
-    }
-}
-
-struct UuidArray {
-    raw: *mut (),
-}
-
-unsafe impl Send for UuidArray {}
-
-impl UuidArray {
-    fn from_slice(values: &[Uuid]) -> Self {
-        unsafe {
-            let metadata = UuidValue::metadata();
-            let (raw, elements) = abi::allocate_uninitialized_array(values.len(), metadata);
-            let stride = abi::value_layout(metadata).stride;
-            for (index, value) in values.iter().enumerate() {
-                abi::initialize_with_copy(
-                    elements.cast::<u8>().add(index * stride).cast(),
-                    value.as_ptr(),
-                    metadata,
-                );
-            }
-            Self { raw }
-        }
-    }
-}
-
-impl Drop for UuidArray {
-    fn drop(&mut self) {
-        unsafe { abi::bridge_object_release(self.raw as usize) }
-    }
-}
-
-#[cfg(feature = "av")]
-struct MetadataObjects {
-    raw: *mut (),
-}
-
-#[cfg(feature = "av")]
-unsafe impl Send for MetadataObjects {}
-
-#[cfg(feature = "av")]
-impl MetadataObjects {
-    fn from_slice(values: &[&crate::av::MetadataObj]) -> Self {
-        unsafe {
-            let class = crate::objc::objc_getClass(c"AVMetadataObject".as_ptr().cast())
-                .expect("AVMetadataObject class missing");
-            let metadata = abi::objc_class_metadata(
-                (class as *const crate::objc::Class<crate::objc::Id>).cast(),
-            );
-            let (raw, elements) = abi::allocate_uninitialized_array(values.len(), metadata);
-            let stride = abi::value_layout(metadata).stride;
-            for (index, value) in values.iter().enumerate() {
-                let object = (*value as *const crate::av::MetadataObj)
-                    .cast_mut()
-                    .cast::<()>();
-                abi::initialize_with_copy(
-                    elements.cast::<u8>().add(index * stride).cast(),
-                    (&raw const object).cast(),
-                    metadata,
-                );
-            }
-            Self { raw }
-        }
-    }
-}
-
-#[cfg(feature = "av")]
-impl Drop for MetadataObjects {
-    fn drop(&mut self) {
-        unsafe { abi::bridge_object_release(self.raw as usize) }
     }
 }
 
@@ -2961,7 +2809,7 @@ mod abi_tests {
         assert_eq!(ObservationType::human_face(), observation.ty());
         assert_eq!(rect, observation.rect());
 
-        let observations = Observations::from_slice(&[observation]);
+        let observations = swift::Array::from_slice(&[observation]);
         assert_eq!(1, observations.len());
     }
 
@@ -3040,7 +2888,7 @@ mod abi_tests {
         assert_eq!(Some(intrinsics), calibrated.camera_intrinsics());
         assert_eq!(Some(dimensions), calibrated.reference_dimensions());
 
-        let _ = MetadataObjects::from_slice(&[]);
+        let _ = metadata_objects(&[]);
     }
 }
 

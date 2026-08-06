@@ -104,6 +104,12 @@ unsafe extern "C" {
     #[link_name = "$sSqMa"]
     fn swift_optional_metadata();
 
+    #[link_name = "$sShMa"]
+    fn swift_set_metadata();
+
+    #[link_name = "$sSDMa"]
+    fn swift_dictionary_metadata();
+
     #[link_name = "$ss15ContiguousArrayV5countSivg"]
     fn swift_contiguous_array_count();
 
@@ -138,6 +144,13 @@ unsafe extern "C" {
     static SWIFT_DOUBLE_METADATA: u8;
     #[link_name = "$sSSN"]
     static SWIFT_STRING_METADATA: u8;
+
+    /// The immortal storage every empty `Dictionary` shares, which is what
+    /// Swift's own `[:]` literal is.
+    static _swiftEmptyDictionarySingleton: u8;
+
+    /// The same, for `Set`.
+    static _swiftEmptySetSingleton: u8;
 }
 
 /// Retains a native Swift object.
@@ -237,6 +250,68 @@ pub unsafe fn array_metadata(element: *const TypeMetadata) -> *const TypeMetadat
             f = sym swift_array_metadata,
             inlateout("x0") 0usize => metadata,
             in("x1") element,
+            clobber_abi("C"),
+        );
+    }
+    metadata
+}
+
+/// The storage word of an empty `Dictionary`.
+#[inline]
+pub fn empty_dictionary_storage() -> *mut () {
+    (&raw const _swiftEmptyDictionarySingleton)
+        .cast_mut()
+        .cast()
+}
+
+/// The storage word of an empty `Set`.
+#[inline]
+pub fn empty_set_storage() -> *mut () {
+    (&raw const _swiftEmptySetSingleton).cast_mut().cast()
+}
+
+/// Returns `Set<Element>`'s metadata from the standard library's generic
+/// metadata accessor.
+///
+/// # Safety
+///
+/// `element` must be metadata for a type that conforms to `Hashable`, which is
+/// what `Set` constrains its parameter to.
+#[inline]
+pub unsafe fn set_metadata(element: *const TypeMetadata) -> *const TypeMetadata {
+    let metadata: *const TypeMetadata;
+    unsafe {
+        asm!(
+            "bl {f}",
+            f = sym swift_set_metadata,
+            inlateout("x0") 0usize => metadata,
+            in("x1") element,
+            clobber_abi("C"),
+        );
+    }
+    metadata
+}
+
+/// Returns `Dictionary<Key, Value>`'s metadata from the standard library's
+/// generic metadata accessor.
+///
+/// # Safety
+///
+/// `key` must be metadata for a type that conforms to `Hashable`, which is what
+/// `Dictionary` constrains its key parameter to.
+#[inline]
+pub unsafe fn dictionary_metadata(
+    key: *const TypeMetadata,
+    value: *const TypeMetadata,
+) -> *const TypeMetadata {
+    let metadata: *const TypeMetadata;
+    unsafe {
+        asm!(
+            "bl {f}",
+            f = sym swift_dictionary_metadata,
+            inlateout("x0") 0usize => metadata,
+            in("x1") key,
+            in("x2") value,
             clobber_abi("C"),
         );
     }
@@ -425,30 +500,38 @@ pub unsafe fn value_witness_table(metadata: *const TypeMetadata) -> *const usize
     unsafe { *metadata.cast::<*const usize>().sub(1) }
 }
 
-/// A process-lifetime cache for one Swift type's metadata.
+/// A process-lifetime cache for one pointer the Swift runtime resolves.
 ///
 /// Swift emits a cache word beside every mangled type reference and only calls
 /// the runtime while that word is still empty; resolving a type otherwise means
 /// re-demangling its name through the runtime's locked type cache on every use.
-pub struct MetadataCache(core::sync::atomic::AtomicPtr<TypeMetadata>);
+/// A conformance is the same story: the runtime builds the witness table on
+/// demand and every call that carries one would otherwise rebuild it.
+pub struct RuntimeCache<T>(core::sync::atomic::AtomicPtr<T>);
 
-impl MetadataCache {
+/// The cache for one Swift type's metadata.
+pub type MetadataCache = RuntimeCache<TypeMetadata>;
+
+/// The cache for one protocol conformance's witness table.
+pub type WitnessCache = RuntimeCache<()>;
+
+impl<T> RuntimeCache<T> {
     #[allow(clippy::new_without_default)]
     pub const fn new() -> Self {
         Self(core::sync::atomic::AtomicPtr::new(core::ptr::null_mut()))
     }
 
-    /// Returns the metadata, calling `resolve` only on the first use.
+    /// Returns the pointer, calling `resolve` only on the first use.
     ///
     /// Relaxed is enough, as it is for the equivalent Swift stub: `resolve`
     /// returns the same pointer every time, so a race just resolves twice, and
-    /// reading the metadata is an address-dependent load from storage the
-    /// runtime published before it ever handed out the pointer.
+    /// reading through the pointer is an address-dependent load from storage the
+    /// runtime published before it ever handed it out.
     ///
     /// A failed lookup stays uncached, so callers keep seeing null and assert
     /// rather than the cache making the failure permanent.
     #[inline]
-    pub fn get(&self, resolve: impl FnOnce() -> *const TypeMetadata) -> *const TypeMetadata {
+    pub fn get(&self, resolve: impl FnOnce() -> *const T) -> *const T {
         use core::sync::atomic::Ordering::Relaxed;
 
         let cached = self.0.load(Relaxed);
@@ -456,11 +539,11 @@ impl MetadataCache {
             return cached;
         }
 
-        let metadata = resolve();
-        if !metadata.is_null() {
-            self.0.store(metadata.cast_mut(), Relaxed);
+        let resolved = resolve();
+        if !resolved.is_null() {
+            self.0.store(resolved.cast_mut(), Relaxed);
         }
-        metadata
+        resolved
     }
 }
 

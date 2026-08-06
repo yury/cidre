@@ -1,13 +1,14 @@
-use core::{fmt, marker::PhantomData, mem::MaybeUninit};
+use core::{fmt, marker::PhantomData};
 
-use super::{SwiftMetadata, SwiftType, abi};
+use super::{FromSwift, SwiftMetadata, SwiftType, ToSwift, abi, value::Storage};
 
 /// An owned Swift `Array` value.
 ///
 /// The array keeps its native one-word Swift ABI representation. Element
 /// access and construction go through Swift standard-library ABI entries and
-/// value witnesses, so this also supports nontrivial values such as
-/// [`super::String`].
+/// value witnesses, so this holds any element a binding can name: primitives,
+/// class references, nontrivial values such as [`super::String`], and the
+/// wrappers around values whose layout is only known at runtime.
 #[repr(transparent)]
 pub struct Array<T> {
     storage: usize,
@@ -45,7 +46,7 @@ impl<T> Array<T> {
     }
 }
 
-impl<T: SwiftType> Array<T> {
+impl<T: SwiftMetadata> Array<T> {
     /// `T`'s Swift metadata.
     ///
     /// Some element types resolve their metadata through a runtime mangled-name
@@ -57,32 +58,6 @@ impl<T: SwiftType> Array<T> {
         let metadata = T::metadata();
         assert!(!metadata.is_null(), "Swift type metadata must exist");
         metadata
-    }
-
-    /// Allocates a Swift array and copies the values through `T`'s Swift value
-    /// witness table.
-    #[inline]
-    pub fn from_slice(values: &[T]) -> Self {
-        unsafe {
-            let metadata = Self::element_metadata();
-            let (storage, elements) = abi::allocate_uninitialized_array(values.len(), metadata);
-
-            // `SwiftType` guarantees `T` matches the Swift type's size and
-            // alignment, so a Rust slice is already laid out at the Swift
-            // stride and the runtime can copy the whole run in one call.
-            debug_assert_eq!(
-                core::mem::size_of::<T>(),
-                abi::value_layout(metadata).stride
-            );
-            abi::array_initialize_with_copy(
-                elements,
-                values.as_ptr().cast(),
-                values.len(),
-                metadata,
-            );
-
-            Self::from_raw(storage)
-        }
     }
 
     /// Returns the element count through Swift's `Array.count` getter.
@@ -98,7 +73,51 @@ impl<T: SwiftType> Array<T> {
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
+}
 
+impl<T: ToSwift> Array<T> {
+    /// Allocates a Swift array and copies the values through `T`'s Swift value
+    /// witness table.
+    #[inline]
+    pub fn from_slice(values: &[T]) -> Self {
+        unsafe {
+            let metadata = Self::element_metadata();
+            let (storage, elements) = abi::allocate_uninitialized_array(values.len(), metadata);
+
+            if T::IS_CONTIGUOUS {
+                // The Rust slice is already laid out at the Swift stride, so
+                // the runtime can copy the whole run in one call.
+                debug_assert_eq!(size_of::<T>(), abi::value_layout(metadata).stride);
+                abi::array_initialize_with_copy(
+                    elements,
+                    values.as_ptr().cast(),
+                    values.len(),
+                    metadata,
+                );
+            } else {
+                write_elements::<T, _, _>(elements, metadata, values.iter());
+            }
+
+            Self::from_raw(storage)
+        }
+    }
+
+    /// Allocates a Swift array and copies in the values the iterator yields.
+    ///
+    /// Building the buffer in place is what keeps a caller that has to make its
+    /// elements — retaining borrowed references, reading each one out of Swift —
+    /// from collecting them into a `Vec` first.
+    pub fn from_iter(values: impl ExactSizeIterator<Item = T>) -> Self {
+        unsafe {
+            let metadata = Self::element_metadata();
+            let (storage, elements) = abi::allocate_uninitialized_array(values.len(), metadata);
+            write_elements::<T, _, _>(elements, metadata, values);
+            Self::from_raw(storage)
+        }
+    }
+}
+
+impl<T: FromSwift> Array<T> {
     /// Copies one element through Swift's generic `Array.subscript` getter.
     #[inline]
     pub fn get(&self, index: usize) -> Option<T> {
@@ -116,27 +135,46 @@ impl<T: SwiftType> Array<T> {
     /// `index` must be less than [`Self::len`].
     #[inline]
     pub unsafe fn get_unchecked(&self, index: usize) -> T {
-        let mut value = MaybeUninit::<T>::uninit();
         unsafe {
+            // The subscript hands back an owned element, so the scratch buffer
+            // is only there for `T` to take it out of.
+            let mut scratch = Storage::<T>::new();
             abi::array_get(
                 self.as_raw().cast_const(),
                 index as isize,
-                value.as_mut_ptr().cast(),
+                scratch.as_mut_ptr(),
                 Self::element_metadata(),
             );
-            value.assume_init()
+            T::take_swift(scratch.as_mut_ptr())
         }
     }
 
+    #[inline]
+    pub fn iter(&self) -> ArrayIter<'_, T> {
+        ArrayIter {
+            array: self,
+            range: 0..self.len(),
+        }
+    }
+
+    #[inline]
+    pub fn to_vec(&self) -> Vec<T> {
+        self.iter().collect()
+    }
+}
+
+impl<T: SwiftType> Array<T> {
     /// Borrows the elements as a Rust slice, when the array is backed by native
     /// Swift storage.
     ///
     /// This is what makes `array[i]` possible without a Swift call per element:
-    /// take the slice once and index it. Note that it borrows rather than
-    /// copies, which is why [`std::ops::Index`] is deliberately not implemented
-    /// on `Array` itself — Swift's own subscript hands back an owned `+1`
-    /// element, and an array bridged from `NSArray` has no buffer to borrow at
-    /// all, which `Index` would have no way to report.
+    /// take the slice once and index it. Only an element whose Rust type *is*
+    /// the Swift value can be borrowed this way, which is what [`SwiftType`]
+    /// states. Note that it borrows rather than copies, which is why
+    /// [`std::ops::Index`] is deliberately not implemented on `Array` itself —
+    /// Swift's own subscript hands back an owned `+1` element, and an array
+    /// bridged from `NSArray` has no buffer to borrow at all, which `Index`
+    /// would have no way to report.
     ///
     /// Returns `None` for a bridged array, for an element type Swift lays out
     /// differently than Rust does, and if the standard library's array header
@@ -168,29 +206,41 @@ impl<T: SwiftType> Array<T> {
             ))
         }
     }
+}
 
-    #[inline]
-    pub fn iter(&self) -> ArrayIter<'_, T> {
-        ArrayIter {
-            array: self,
-            range: 0..self.len(),
+/// Copies each value into its slot of a freshly allocated element buffer.
+///
+/// # Safety
+///
+/// `elements` must be uninitialized storage for as many values of `metadata`
+/// as the iterator yields.
+unsafe fn write_elements<T, B, I>(elements: *mut (), metadata: *const abi::TypeMetadata, values: I)
+where
+    T: ToSwift,
+    B: core::borrow::Borrow<T>,
+    I: Iterator<Item = B>,
+{
+    unsafe {
+        let stride = abi::value_layout(metadata).stride;
+        for (index, value) in values.enumerate() {
+            value
+                .borrow()
+                .copy_to_swift(elements.cast::<u8>().add(index * stride).cast());
         }
-    }
-
-    #[inline]
-    pub fn to_vec(&self) -> Vec<T> {
-        self.iter().collect()
     }
 }
 
-unsafe impl<T: SwiftType> SwiftMetadata for Array<T> {
+/// An array is one word whatever it holds, so it is its own Swift value.
+unsafe impl<T: SwiftMetadata> SwiftMetadata for Array<T> {
     #[inline]
     fn metadata() -> *const abi::TypeMetadata {
         unsafe { abi::array_metadata(Self::element_metadata()) }
     }
 }
 
-unsafe impl<T: SwiftType> SwiftType for Array<T> {}
+unsafe impl<T: SwiftMetadata> SwiftType for Array<T> {}
+
+crate::impl_swift_memcpy_value!(Array<T>, <T: SwiftMetadata>);
 
 impl<T> Clone for Array<T> {
     #[inline]
@@ -209,34 +259,28 @@ impl<T> Drop for Array<T> {
     }
 }
 
-impl<T: SwiftType + fmt::Debug> fmt::Debug for Array<T> {
+impl<T: FromSwift + fmt::Debug> fmt::Debug for Array<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self.as_slice() {
-            Some(elements) => f.debug_list().entries(elements).finish(),
-            None => f.debug_list().entries(self.iter()).finish(),
-        }
+        f.debug_list().entries(self.iter()).finish()
     }
 }
 
-impl<T: SwiftType + PartialEq> PartialEq for Array<T> {
+impl<T: FromSwift + PartialEq> PartialEq for Array<T> {
     fn eq(&self, other: &Self) -> bool {
-        if let (Some(lhs), Some(rhs)) = (self.as_slice(), other.as_slice()) {
-            return lhs == rhs;
-        }
         self.len() == other.len() && self.iter().zip(other.iter()).all(|(lhs, rhs)| lhs == rhs)
     }
 }
 
-impl<T: SwiftType + Eq> Eq for Array<T> {}
+impl<T: FromSwift + Eq> Eq for Array<T> {}
 
-impl<T: SwiftType> From<&[T]> for Array<T> {
+impl<T: ToSwift> From<&[T]> for Array<T> {
     #[inline]
     fn from(values: &[T]) -> Self {
         Self::from_slice(values)
     }
 }
 
-impl<T: SwiftType, const N: usize> From<&[T; N]> for Array<T> {
+impl<T: ToSwift, const N: usize> From<&[T; N]> for Array<T> {
     #[inline]
     fn from(values: &[T; N]) -> Self {
         Self::from_slice(values)
@@ -250,7 +294,7 @@ pub struct ArrayIter<'a, T> {
     range: core::ops::Range<usize>,
 }
 
-impl<T: SwiftType> Iterator for ArrayIter<'_, T> {
+impl<T: FromSwift> Iterator for ArrayIter<'_, T> {
     type Item = T;
 
     #[inline]
@@ -266,7 +310,7 @@ impl<T: SwiftType> Iterator for ArrayIter<'_, T> {
     }
 }
 
-impl<T: SwiftType> DoubleEndedIterator for ArrayIter<'_, T> {
+impl<T: FromSwift> DoubleEndedIterator for ArrayIter<'_, T> {
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         self.range
@@ -275,10 +319,10 @@ impl<T: SwiftType> DoubleEndedIterator for ArrayIter<'_, T> {
     }
 }
 
-impl<T: SwiftType> ExactSizeIterator for ArrayIter<'_, T> {}
-impl<T: SwiftType> core::iter::FusedIterator for ArrayIter<'_, T> {}
+impl<T: FromSwift> ExactSizeIterator for ArrayIter<'_, T> {}
+impl<T: FromSwift> core::iter::FusedIterator for ArrayIter<'_, T> {}
 
-impl<'a, T: SwiftType> IntoIterator for &'a Array<T> {
+impl<'a, T: FromSwift> IntoIterator for &'a Array<T> {
     type Item = T;
     type IntoIter = ArrayIter<'a, T>;
 

@@ -1339,8 +1339,8 @@ macro_rules! swift_opaque_iterator_typeref {
 /// Binds one concrete Swift `AsyncSequence` whose iterator and element types
 /// both have metadata accessors.
 ///
-/// `element` is a [`FromSwift`](crate::swift::FromSwift) type, which carries
-/// the Swift type it reads from, so there is no separate marker to keep in step
+/// `element` is a [`FromSwift`](crate::swift::FromSwift) type, which names the
+/// Swift type it reads from, so there is no separate marker to keep in step
 /// with it.
 ///
 /// A struct-typed sequence mints a marker for its own metadata; a class-typed
@@ -1455,7 +1455,7 @@ macro_rules! define_async_sequence {
                     self.0,
                     Self::symbols(),
                     move |value| match value {
-                        Some(value) => callback(Some(unsafe { <$element as $crate::swift::FromSwift>::from_swift(value) })),
+                        Some(value) => callback(Some(unsafe { <$element as $crate::swift::FromSwift>::copy_swift(value) })),
                         None => {
                             callback(None);
                             false
@@ -1487,8 +1487,7 @@ macro_rules! define_async_sequence {
                 unsafe {
                     $crate::swift::concurrency::AsyncSequenceSymbols::new(
                         <$iterator_value as $crate::swift::SwiftMetadata>::metadata(),
-                        <<$element as $crate::swift::FromSwift>::Swift
-                            as $crate::swift::SwiftMetadata>::metadata(),
+                        <$element as $crate::swift::SwiftMetadata>::metadata(),
                         $make_iterator as *const (),
                         <$sequence_value as $crate::swift::SwiftMetadata>::IS_CLASS_REF,
                         $next as *const (),
@@ -1503,7 +1502,7 @@ macro_rules! define_async_sequence {
             #[cfg(feature = "async")]
             pub fn async_iter(self) -> $async_iter {
                 unsafe fn copy(value: *const ()) -> $element {
-                    unsafe { <$element as $crate::swift::FromSwift>::from_swift(value) }
+                    unsafe { <$element as $crate::swift::FromSwift>::copy_swift(value) }
                 }
 
                 $async_iter {
@@ -1658,7 +1657,7 @@ impl<T> std::future::Future for Next<'_, T> {
 /// `NotificationCenter.post`, so a test can produce elements on demand.
 #[cfg(all(test, feature = "async", feature = "ns"))]
 mod notification_sequence {
-    use crate::{ns, swift::value::Storage};
+    use crate::{ns, swift::SwiftMetadata, swift::value::Storage};
 
     /// One delivered `Foundation.Notification`.
     ///
@@ -1666,10 +1665,19 @@ mod notification_sequence {
     /// machinery, so an element only has to arrive and then be destroyed.
     pub struct Notification;
 
-    unsafe impl crate::swift::FromSwift for Notification {
-        type Swift = NotificationValue;
+    unsafe impl crate::swift::SwiftMetadata for Notification {
+        fn metadata() -> *const crate::swift::abi::TypeMetadata {
+            NotificationValue::metadata()
+        }
+    }
 
-        unsafe fn from_swift(_value: *const ()) -> Self {
+    unsafe impl crate::swift::FromSwift for Notification {
+        unsafe fn copy_swift(_value: *const ()) -> Self {
+            Self
+        }
+
+        unsafe fn take_swift(value: *mut ()) -> Self {
+            unsafe { crate::swift::abi::destroy_value(value, Self::metadata()) };
             Self
         }
     }

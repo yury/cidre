@@ -102,6 +102,26 @@ mod tests {
         assert_eq!("fr_FR", second.id().to_string());
     }
 
+    /// A wrapper around a runtime-laid-out value has to work as an array
+    /// element like any other, which is what replaced the hand-written
+    /// `[UUID]` these bindings used to carry.
+    #[test]
+    fn an_array_holds_values_whose_layout_is_only_known_at_runtime() {
+        let first = Uuid::new();
+        let second = Uuid::new();
+        let array = swift::Array::from_slice(&[first.clone(), second.clone()]);
+
+        assert_eq!(2, array.len());
+        assert_eq!(Some(first.clone()), array.get(0));
+        assert_eq!(Some(second), array.get(1));
+        assert_eq!(None, array.get(2));
+
+        // The array owns copies, so the originals stay usable and nothing is
+        // released twice.
+        drop(array);
+        assert_eq!(36, first.to_swift_string().to_string().len());
+    }
+
     #[test]
     fn attr_string_is_reachable_through_speech_results() {
         // `AttrString` has no public constructor yet; this pins the metadata so

@@ -1,4 +1,4 @@
-use crate::swift::{SwiftMetadata, abi};
+use crate::swift::{SwiftMetadata, ToSwift, abi};
 
 #[link(name = "MusicUnderstanding", kind = "framework")]
 unsafe extern "C" {
@@ -56,55 +56,29 @@ impl AnalysisType {
     }
 }
 
-/// An owned Swift `Set<AnalysisType>`.
-///
-/// Building one needs the element's `Hashable` witness table, which the
-/// framework does not export, so it is instantiated from the conformance
-/// descriptor at runtime.
-pub(super) struct AnalysisTypeSet(*mut ());
-
-unsafe impl Send for AnalysisTypeSet {}
-
-impl AnalysisTypeSet {
-    pub(super) fn new(types: &[AnalysisType]) -> Self {
-        unsafe {
-            let metadata = AnalysisTypeValue::metadata();
-            assert!(!metadata.is_null(), "AnalysisType metadata must exist");
-
-            // Each case reads its value through a static getter, so the array is
-            // filled element by element rather than copied from a Rust slice.
-            let (array, elements) = abi::allocate_uninitialized_array(types.len(), metadata);
-            let stride = abi::value_layout(metadata).stride;
-            for (index, ty) in types.iter().enumerate() {
-                abi::call0_value(
-                    ty.getter(),
-                    elements.cast::<u8>().add(index * stride).cast(),
-                );
-            }
-
-            let witness = abi::witness_table((&raw const ANALYSIS_TYPE_HASHABLE).cast(), metadata);
-            assert!(!witness.is_null(), "Hashable witness table must exist");
-
-            Self(abi::set_from_array(array, metadata, witness))
-        }
-    }
-
+unsafe impl SwiftMetadata for AnalysisType {
     #[inline]
-    pub(super) fn as_raw(&self) -> *mut () {
-        self.0
+    fn metadata() -> *const abi::TypeMetadata {
+        AnalysisTypeValue::metadata()
     }
 }
 
-impl Drop for AnalysisTypeSet {
-    fn drop(&mut self) {
-        unsafe { abi::bridge_object_release(self.0 as usize) }
+/// Each case is a static property of the Swift type rather than a tag this
+/// binding could write itself, so making the value means calling its getter
+/// straight into the destination.
+unsafe impl ToSwift for AnalysisType {
+    #[inline]
+    unsafe fn copy_to_swift(&self, dst: *mut ()) {
+        unsafe { abi::call0_value(self.getter(), dst) }
     }
 }
+
+crate::impl_swift_hashable!(AnalysisType = descriptor(&raw const ANALYSIS_TYPE_HASHABLE).cast());
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::swift::value::Storage;
+    use crate::{swift, swift::value::Storage};
 
     const ALL: [AnalysisType; 6] = [
         AnalysisType::InstrumentActivity,
@@ -142,10 +116,10 @@ mod tests {
     /// Exercises the witness-table instantiation and `Set.init(arrayLiteral:)`.
     #[test]
     fn set_is_built_from_the_hashable_conformance() {
-        let set = AnalysisTypeSet::new(&ALL);
+        let set = swift::Set::from_slice(&ALL);
         assert!(!set.as_raw().is_null());
 
-        let duplicates = AnalysisTypeSet::new(&[AnalysisType::Rhythm, AnalysisType::Rhythm]);
+        let duplicates = swift::Set::from_slice(&[AnalysisType::Rhythm, AnalysisType::Rhythm]);
         assert!(!duplicates.as_raw().is_null());
     }
 }

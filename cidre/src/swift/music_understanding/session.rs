@@ -1,7 +1,7 @@
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
 use crate::{
-    api, arc, av, ns,
+    api, arc, av, ns, swift,
     swift::{
         abi,
         concurrency::{
@@ -14,7 +14,7 @@ use crate::{
     },
 };
 
-use super::analysis_type::{AnalysisType, AnalysisTypeSet};
+use super::analysis_type::AnalysisType;
 use super::results::{SessionResult, SessionResultValue};
 
 crate::define_swift_class!(pub MusicUnderstandingSession = accessor session_metadata);
@@ -82,7 +82,7 @@ impl MusicUnderstandingSession {
     ) -> impl Future<Output = Result<SessionResult, arc::R<ns::Error>>> {
         let shared = crate::blocks::Shared::new();
         let comp = crate::blocks::Completion(shared.clone());
-        AnalyzeTask::start(self, Some(AnalysisTypeSet::new(types)), move |res| {
+        AnalyzeTask::start(self, Some(swift::Set::from_slice(types)), move |res| {
             shared.lock().ready(res)
         });
         comp
@@ -168,7 +168,7 @@ extern "C" fn cidre_mu_init_complete(task: *mut InitTask) {
 struct AnalyzeTask {
     session: arc::R<MusicUnderstandingSession>,
     /// Kept alive for the call; `analyze(for:)` borrows it.
-    types: Option<AnalysisTypeSet>,
+    types: Option<swift::Set<AnalysisType>>,
     result: Option<Storage<SessionResultValue>>,
     error: *mut (),
     callback: Option<Box<dyn FnOnce(Result<SessionResult, arc::R<ns::Error>>) + Send>>,
@@ -177,8 +177,11 @@ struct AnalyzeTask {
 unsafe impl Send for AnalyzeTask {}
 
 impl AnalyzeTask {
-    fn start<F>(session: &MusicUnderstandingSession, types: Option<AnalysisTypeSet>, callback: F)
-    where
+    fn start<F>(
+        session: &MusicUnderstandingSession,
+        types: Option<swift::Set<AnalysisType>>,
+        callback: F,
+    ) where
         F: FnOnce(Result<SessionResult, arc::R<ns::Error>>) + Send + 'static,
     {
         let descriptor = if types.is_some() {

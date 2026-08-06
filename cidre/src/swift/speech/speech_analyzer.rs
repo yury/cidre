@@ -1,4 +1,7 @@
-use crate::{api, arc, ns, swift, swift::abi};
+use crate::{api, arc, swift, swift::abi};
+
+#[cfg(feature = "av")]
+use crate::ns;
 
 #[cfg(feature = "av")]
 use crate::swift::concurrency::{
@@ -173,8 +176,10 @@ extern "C" fn cidre_speech_analyzer_complete(task: *mut AnalyzerTask) {
     }));
 }
 
+// The whole invocation is gated, not just the items it expands to: without
+// `av` the macro itself is not imported.
+#[cfg(feature = "av")]
 swift_async_task_descriptor!(
-    #[cfg(feature = "av")]
     cidre_speech_analyzer_task_descriptor,
     entry: analyzer_task_entry,
     context_size: "96",

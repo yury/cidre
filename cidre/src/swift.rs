@@ -6,6 +6,8 @@
 pub mod abi;
 mod array;
 pub(crate) mod concurrency;
+mod dictionary;
+mod set;
 mod string;
 mod types;
 pub(crate) mod value;
@@ -38,9 +40,10 @@ pub mod music_understanding;
 pub mod speech;
 
 pub use array::{Array, ArrayIter};
+pub use dictionary::Dictionary;
+pub use set::Set;
 pub use string::{RawString, SmallStringError, String};
-pub(crate) use types::FromSwift;
-pub use types::{SwiftClass, SwiftMetadata, SwiftType};
+pub use types::{FromSwift, SwiftClass, SwiftHashable, SwiftMetadata, SwiftType, ToSwift};
 
 /// Defines an opaque native Swift class marker type and implements Cidre's
 /// shared retain/release ownership traits for it.

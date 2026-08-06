@@ -7,9 +7,8 @@ pub mod err;
 pub use accessory::{
     Accessory, AccessoryEvent, AccessoryEvents, Animation, BatteryChargeState, BatteryState,
     BatteryStates, CameraOrientation, Category, FramingMode, Identifier, Limit, Limits,
-    MotionState, MotionStates, Observation, ObservationType, Observations, State, StateChange,
-    StateChanges, TrackedObject, TrackedPerson, TrackedSubject, TrackedSubjects, TrackingState,
-    TrackingStates,
+    MotionState, MotionStates, Observation, ObservationType, State, StateChange, StateChanges,
+    TrackedObject, TrackedPerson, TrackedSubject, TrackingState, TrackingStates,
 };
 #[cfg(feature = "av")]
 pub use accessory::{CameraInformation, CameraIntrinsics};

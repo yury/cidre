@@ -259,14 +259,22 @@ macro_rules! define_swift_value {
         define_swift_value!(@wrap $(#[$meta])* $vis $ty, $marker);
         define_swift_value!(@read $ty, $marker);
     };
-    // Only the unwrapped forms get this: copying an `Optional<Payload>` is not
-    // what a caller reading a `Payload` out of Swift is asking for.
+    // Only the unwrapped forms get this: an `Optional<Payload>` wrapper names
+    // the payload's type but does not have its layout, so it can be neither
+    // read as one nor written where one is expected.
     (@read $ty:ident, $marker:ident) => {
-        impl $ty {
-            /// Copies a borrowed Swift value, leaving the original to its owner.
-            #[allow(dead_code)]
+        /// The wrapper stands for the Swift type its marker names, which is
+        /// what lets it be an element, a key, or an argument like any other.
+        unsafe impl $crate::swift::SwiftMetadata for $ty {
             #[inline]
-            pub(crate) unsafe fn copy_from_ptr(value: *const ()) -> Self {
+            fn metadata() -> *const $crate::swift::abi::TypeMetadata {
+                <$marker as $crate::swift::SwiftMetadata>::metadata()
+            }
+        }
+
+        unsafe impl $crate::swift::FromSwift for $ty {
+            #[inline]
+            unsafe fn copy_swift(value: *const ()) -> Self {
                 unsafe {
                     let mut storage = Self::storage();
                     $crate::swift::abi::initialize_with_copy(
@@ -277,14 +285,33 @@ macro_rules! define_swift_value {
                     Self::from_storage(storage)
                 }
             }
+
+            /// Moving the bytes out is what the wrapper's own storage is for,
+            /// so an owned value never goes through a copy and a destroy.
+            #[inline]
+            unsafe fn take_swift(value: *mut ()) -> Self {
+                unsafe {
+                    let mut storage = Self::storage();
+                    $crate::swift::abi::initialize_with_take(
+                        storage.as_mut_ptr(),
+                        value,
+                        <$marker as $crate::swift::SwiftMetadata>::metadata(),
+                    );
+                    Self::from_storage(storage)
+                }
+            }
         }
 
-        unsafe impl $crate::swift::FromSwift for $ty {
-            type Swift = $marker;
-
+        unsafe impl $crate::swift::ToSwift for $ty {
             #[inline]
-            unsafe fn from_swift(value: *const ()) -> Self {
-                unsafe { Self::copy_from_ptr(value) }
+            unsafe fn copy_to_swift(&self, dst: *mut ()) {
+                unsafe {
+                    $crate::swift::abi::initialize_with_copy(
+                        dst,
+                        self.as_ptr(),
+                        <$marker as $crate::swift::SwiftMetadata>::metadata(),
+                    )
+                };
             }
         }
     };

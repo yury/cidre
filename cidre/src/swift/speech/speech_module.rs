@@ -75,6 +75,8 @@ unsafe impl SwiftMetadata for SpeechModule {
 
 unsafe impl SwiftType for SpeechModule {}
 
+crate::impl_swift_memcpy_value!(SpeechModule);
+
 impl Clone for SpeechModule {
     #[inline]
     fn clone(&self) -> Self {
