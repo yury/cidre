@@ -1,7 +1,7 @@
 use core::{fmt, marker::PhantomData};
 
 use super::{
-    FromSwift, SwiftHashable, SwiftMetadata, ToSwift, abi,
+    FromSwift, SwiftHashable, SwiftMetadata, SwiftOptional, ToSwift, abi,
     value::{Optional, Storage},
 };
 
@@ -64,7 +64,7 @@ impl<K, V> Default for Dictionary<K, V> {
     }
 }
 
-impl<K: ToSwift + SwiftHashable, V: FromSwift> Dictionary<K, V> {
+impl<K: ToSwift + SwiftHashable, V: FromSwift + SwiftOptional> Dictionary<K, V> {
     /// Looks `key` up through Swift's generic `Dictionary.subscript` getter.
     pub fn get(&self, key: &K) -> Option<V> {
         unsafe {

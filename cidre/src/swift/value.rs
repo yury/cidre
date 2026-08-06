@@ -13,7 +13,7 @@ use std::{
 
 use core::marker::PhantomData as OptionalMarker;
 
-use super::{FromSwift, SwiftMetadata, abi};
+use super::{FromSwift, SwiftMetadata, SwiftOptional, abi};
 
 /// How many bytes a [`Storage`] keeps inline before falling back to the heap.
 ///
@@ -161,24 +161,24 @@ where
 ///
 /// `Swift.Optional<T>`, whose metadata comes from the standard library's
 /// generic accessor rather than a hand-written mangled name.
-pub(crate) struct Optional<T: SwiftMetadata>(OptionalMarker<T>);
+pub(crate) struct Optional<T: SwiftOptional>(OptionalMarker<T>);
 
 /// An optional is as sendable as what it wraps.
-unsafe impl<T: super::SwiftSendable> super::SwiftSendable for Optional<T> {}
+unsafe impl<T: SwiftOptional + super::SwiftSendable> super::SwiftSendable for Optional<T> {}
 
-unsafe impl<T: SwiftMetadata> SwiftMetadata for Optional<T> {
+/// Read out of the wrapped type's own cache, so naming `T?` costs one relaxed
+/// load rather than a trip through the runtime's generic metadata cache.
+unsafe impl<T: SwiftOptional> SwiftMetadata for Optional<T> {
     #[inline]
     fn metadata() -> *const abi::TypeMetadata {
-        let wrapped = T::metadata();
-        assert!(!wrapped.is_null(), "Swift type metadata must exist");
-        unsafe { abi::optional_metadata(wrapped) }
+        <T as SwiftOptional>::optional_metadata()
     }
 }
 
 /// A wrapper a Swift `Optional` result can be read back into.
 pub(crate) trait SwiftOptionalValue: Sized {
     /// The marker naming the payload's Swift type.
-    type Marker: SwiftMetadata;
+    type Marker: SwiftOptional;
 
     /// # Safety
     ///
@@ -244,7 +244,7 @@ pub(crate) fn check_declared_layout(
 
 /// A `T?` written into scratch storage, which is what a Swift getter returning
 /// an optional hands back.
-impl<T: SwiftMetadata> Storage<Optional<T>> {
+impl<T: SwiftOptional> Storage<Optional<T>> {
     /// Builds `Optional<T>.none`.
     pub(crate) fn none() -> Self {
         let mut storage = Self::new();
@@ -375,7 +375,6 @@ fn rust_layout(value: abi::ValueLayout) -> Layout {
 mod tests {
     use super::*;
 
-
     #[test]
     fn new_wrappers_and_auto_traits() {
         fn assert_send<T: Send>() {}
@@ -385,6 +384,27 @@ mod tests {
         println!("Date is Send + Sync purely by inference");
     }
 
+    /// The cached `T?` must be exactly what an uncached instantiation resolves,
+    /// and two payloads must not share a cache — a `static` in a generic
+    /// function would have given every type the first one's answer, which is
+    /// silent memory corruption rather than a failure.
+    #[test]
+    fn each_optional_caches_its_own_metadata() {
+        use crate::swift::{String, SwiftOptional};
+
+        let int = unsafe { abi::optional_metadata(<isize as SwiftMetadata>::metadata()) };
+        let string = unsafe { abi::optional_metadata(<String as SwiftMetadata>::metadata()) };
+        assert!(!int.is_null() && !string.is_null(), "`T?` must resolve");
+        assert_ne!(int, string, "different payloads are different types");
+
+        // The first call fills each cache; the second must read it back.
+        for _ in 0..2 {
+            assert_eq!(int, <isize as SwiftOptional>::optional_metadata());
+            assert_eq!(int, <Optional<isize> as SwiftMetadata>::metadata());
+            assert_eq!(string, <String as SwiftOptional>::optional_metadata());
+            assert_eq!(string, <Optional<String> as SwiftMetadata>::metadata());
+        }
+    }
 
     /// Small values must stay off the heap, and the address must survive a
     /// move, since that is what makes the inline buffer sound.
@@ -523,6 +543,8 @@ macro_rules! swift_value {
 
         /// The Rust type has the Swift value's exact layout and ownership.
         unsafe impl $crate::swift::SwiftType for $ty {}
+
+        $crate::impl_swift_optional!($ty);
 
         unsafe impl $crate::swift::SwiftSelf for $ty {
             #[inline]

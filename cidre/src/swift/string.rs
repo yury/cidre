@@ -240,6 +240,7 @@ unsafe impl SwiftMetadata for String {
 unsafe impl SwiftType for String {}
 
 crate::impl_swift_memcpy_value!(String);
+crate::impl_swift_optional!(String);
 
 impl Clone for String {
     #[inline]

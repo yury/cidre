@@ -46,7 +46,7 @@ pub use set::Set;
 pub use string::{RawString, SmallStringError, String};
 pub use types::{
     AbiClass, FromSwift, FromSwiftDoubles, SwiftAbi, SwiftClass, SwiftError, SwiftHashable,
-    SwiftMetadata, SwiftSelf, SwiftSendable, SwiftType, ToSwift,
+    SwiftMetadata, SwiftOptional, SwiftSelf, SwiftSendable, SwiftType, ToSwift,
 };
 
 /// Calls a Swift entry point instead of writing out the call.
@@ -185,14 +185,9 @@ macro_rules! define_swift_class {
             }
         }
 
-        unsafe impl $crate::swift::SwiftClass for $ty {
-            #[inline]
-            fn optional_metadata_cache() -> &'static $crate::swift::abi::MetadataCache {
-                static CACHE: $crate::swift::abi::MetadataCache =
-                    $crate::swift::abi::MetadataCache::new();
-                &CACHE
-            }
-        }
+        $crate::impl_swift_optional!($ty);
+
+        unsafe impl $crate::swift::SwiftClass for $ty {}
     };
     (
         $(#[$outer:meta])*

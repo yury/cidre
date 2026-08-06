@@ -3,7 +3,7 @@ use std::{hash::Hash, mem::size_of, ptr::NonNull};
 use crate::{
     arc, cg, define_swift_tag_enum, ns, spatial, swift,
     swift::{
-        FromSwift, SwiftMetadata, abi,
+        FromSwift, SwiftMetadata, SwiftOptional, SwiftType, abi,
         concurrency::{self, define_async_sequence},
         foundation::{Date, Uuid},
         value::{Optional, Storage},
@@ -615,7 +615,7 @@ impl AccessoryEvent {
     }
 }
 
-unsafe fn optional_primitive<T: crate::swift::SwiftType + FromSwift + Copy>(
+unsafe fn optional_primitive<T: SwiftType + SwiftOptional + FromSwift + Copy>(
     owner: *const (),
     getter: *const (),
 ) -> Option<T> {

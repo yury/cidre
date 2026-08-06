@@ -396,6 +396,56 @@ macro_rules! define_swift_objc_ref {
         unsafe impl $crate::swift::SwiftType for $ty {}
 
         $crate::impl_swift_memcpy_value!($ty);
+        $crate::impl_swift_optional!($ty);
+    };
+}
+
+/// A Swift type whose `Optional` metadata is resolved once and kept.
+///
+/// `T?` has no accessor symbol of its own: the runtime instantiates it from the
+/// standard library's generic accessor, which is a lookup in a locked cache
+/// keyed by the type arguments. Swift never pays that twice — it emits a cache
+/// word beside every `T?` it names and only calls the accessor while the word
+/// is still empty. This is that word, and without it every optional-returning
+/// binding resolved `T?` afresh on the way in and again on the way out.
+///
+/// The cache has to come from somewhere monomorphic in `T`, because a `static`
+/// inside a generic function is shared by every instantiation rather than
+/// duplicated per type. That is the whole reason this is a trait and not a
+/// method on [`SwiftMetadata`].
+///
+/// # Safety
+///
+/// [`optional_metadata_cache`](Self::optional_metadata_cache) must return a
+/// cache used for no other type, since whatever lands in it is handed out as
+/// `Self?`'s metadata from then on.
+pub unsafe trait SwiftOptional: SwiftMetadata {
+    #[doc(hidden)]
+    fn optional_metadata_cache() -> &'static abi::MetadataCache;
+
+    /// `Optional<Self>`'s metadata, resolved on first use.
+    #[inline]
+    fn optional_metadata() -> *const TypeMetadata {
+        Self::optional_metadata_cache().get(|| {
+            let wrapped = Self::metadata();
+            assert!(!wrapped.is_null(), "Swift type metadata must exist");
+            unsafe { abi::optional_metadata(wrapped) }
+        })
+    }
+}
+
+/// Gives a type its own cache for the metadata of its `Optional`.
+#[macro_export]
+macro_rules! impl_swift_optional {
+    ($($ty:ty),+ $(,)?) => {
+        $(unsafe impl $crate::swift::SwiftOptional for $ty {
+            #[inline]
+            fn optional_metadata_cache() -> &'static $crate::swift::abi::MetadataCache {
+                static CACHE: $crate::swift::abi::MetadataCache =
+                    $crate::swift::abi::MetadataCache::new();
+                &CACHE
+            }
+        })+
     };
 }
 
@@ -450,15 +500,7 @@ macro_rules! impl_swift_hashable {
 /// `Self` must be a native Swift class whose references are retained and
 /// released by `swift_retain`/`swift_release`. Objective-C classes are not
 /// these: they have their own metadata and their own ARC entry points.
-pub unsafe trait SwiftClass: SwiftMetadata + crate::arc::Retain + 'static {
-    /// Per-class cache for `Self?`'s metadata.
-    ///
-    /// A `static` inside a generic function is shared by every instantiation,
-    /// so the cache has to be handed in from a place that is monomorphic in the
-    /// class. [`define_swift_class!`](crate::define_swift_class) generates it.
-    #[doc(hidden)]
-    fn optional_metadata_cache() -> &'static abi::MetadataCache;
-}
+pub unsafe trait SwiftClass: SwiftOptional + crate::arc::Retain + 'static {}
 
 /// A retained reference is the ABI value of a class-typed variable: one word,
 /// destroyed by release and copied by retain, which is what the runtime's value
@@ -482,8 +524,16 @@ impl_swift_memcpy_value!(crate::arc::R<T>, <T: SwiftClass>);
 unsafe impl<T: SwiftClass> SwiftMetadata for Option<crate::arc::R<T>> {
     #[inline]
     fn metadata() -> *const TypeMetadata {
-        T::optional_metadata_cache()
-            .get(|| unsafe { abi::optional_metadata(<T as SwiftMetadata>::metadata()) })
+        <T as SwiftOptional>::optional_metadata()
+    }
+}
+
+/// A class reference *is* the class's value, so `arc::R<T>?` and `T?` are the
+/// same Swift type and share the one cache.
+unsafe impl<T: SwiftClass> SwiftOptional for crate::arc::R<T> {
+    #[inline]
+    fn optional_metadata_cache() -> &'static abi::MetadataCache {
+        <T as SwiftOptional>::optional_metadata_cache()
     }
 }
 
@@ -536,6 +586,8 @@ macro_rules! define_swift_marker {
                 CACHE.get(|| $resolve)
             }
         }
+
+        $crate::impl_swift_optional!($ty);
     };
 }
 
@@ -551,6 +603,7 @@ macro_rules! impl_swift_type {
         unsafe impl SwiftType for $ty {}
 
         impl_swift_memcpy_value!($ty);
+        crate::impl_swift_optional!($ty);
     };
 }
 
@@ -608,6 +661,9 @@ unsafe impl SwiftType for crate::cm::Time {}
 impl_swift_memcpy_value!(crate::cm::Time);
 
 #[cfg(feature = "cm")]
+crate::impl_swift_optional!(crate::cm::Time);
+
+#[cfg(feature = "cm")]
 unsafe impl SwiftMetadata for crate::cm::TimeRange {
     #[inline]
     fn metadata() -> *const TypeMetadata {
@@ -621,6 +677,9 @@ unsafe impl SwiftType for crate::cm::TimeRange {}
 
 #[cfg(feature = "cm")]
 impl_swift_memcpy_value!(crate::cm::TimeRange);
+
+#[cfg(feature = "cm")]
+crate::impl_swift_optional!(crate::cm::TimeRange);
 
 #[cfg(test)]
 mod tests {
