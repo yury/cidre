@@ -237,6 +237,21 @@ macro_rules! impl_swift_sendable {
 /// Swift value afterwards. [`take_swift`](Self::take_swift) must leave the
 /// storage uninitialized, so the caller must not destroy it again.
 pub unsafe trait FromSwift: SwiftMetadata + Sized {
+    /// Whether a value can be copied out of Swift's own storage by reading its
+    /// bytes, with no witness call and nothing to retain.
+    ///
+    /// True only when the Rust type *is* the Swift value, laid out at Swift's
+    /// stride, and the value owns nothing — which is what lets a container read
+    /// an element straight out of its buffer instead of asking Swift for a copy.
+    /// The counterpart of [`ToSwift::IS_CONTIGUOUS`] for the reading direction.
+    ///
+    /// # Safety
+    ///
+    /// Setting this on a type that owns a reference produces a copy nobody
+    /// retained, and on a type Swift strides differently produces a misaligned
+    /// read.
+    const IS_BITWISE_COPY: bool = false;
+
     /// Copies a borrowed Swift value, leaving the original to its owner.
     ///
     /// # Safety
@@ -311,13 +326,20 @@ pub unsafe trait ToSwift: SwiftMetadata {
 #[macro_export]
 macro_rules! impl_swift_memcpy_value {
     ($ty:ty) => {
-        $crate::impl_swift_memcpy_value!(@impls $ty, <>);
+        $crate::impl_swift_memcpy_value!(@impls $ty, <>, false);
+    };
+    // A value Swift copies and destroys by moving bytes, so a reader may take
+    // it straight out of a buffer.
+    (pod $ty:ty) => {
+        $crate::impl_swift_memcpy_value!(@impls $ty, <>, true);
     };
     ($ty:ty, <$($param:ident : $bound:path),+ $(,)?>) => {
-        $crate::impl_swift_memcpy_value!(@impls $ty, <$($param: $bound),+>);
+        $crate::impl_swift_memcpy_value!(@impls $ty, <$($param: $bound),+>, false);
     };
-    (@impls $ty:ty, <$($param:ident : $bound:path),*>) => {
+    (@impls $ty:ty, <$($param:ident : $bound:path),*>, $pod:literal) => {
         unsafe impl<$($param: $bound),*> $crate::swift::FromSwift for $ty {
+            const IS_BITWISE_COPY: bool = $pod;
+
             #[inline]
             unsafe fn copy_swift(value: *const ()) -> Self {
                 unsafe {
@@ -602,7 +624,7 @@ macro_rules! impl_swift_type {
 
         unsafe impl SwiftType for $ty {}
 
-        impl_swift_memcpy_value!($ty);
+        impl_swift_memcpy_value!(pod $ty);
         crate::impl_swift_optional!($ty);
     };
 }
@@ -658,7 +680,7 @@ unsafe impl SwiftMetadata for crate::cm::Time {
 unsafe impl SwiftType for crate::cm::Time {}
 
 #[cfg(feature = "cm")]
-impl_swift_memcpy_value!(crate::cm::Time);
+impl_swift_memcpy_value!(pod crate::cm::Time);
 
 #[cfg(feature = "cm")]
 crate::impl_swift_optional!(crate::cm::Time);
@@ -676,7 +698,7 @@ unsafe impl SwiftMetadata for crate::cm::TimeRange {
 unsafe impl SwiftType for crate::cm::TimeRange {}
 
 #[cfg(feature = "cm")]
-impl_swift_memcpy_value!(crate::cm::TimeRange);
+impl_swift_memcpy_value!(pod crate::cm::TimeRange);
 
 #[cfg(feature = "cm")]
 crate::impl_swift_optional!(crate::cm::TimeRange);

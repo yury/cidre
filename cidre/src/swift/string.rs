@@ -260,8 +260,17 @@ impl Drop for String {
 }
 
 impl PartialEq for String {
+    /// Swift's own `==` opens with exactly this test — `_stringCompare` returns
+    /// early when the two `_guts` have identical raw bits — so comparing a
+    /// string with itself, or with a copy sharing its storage, never reaches
+    /// the standard library. Two strings that are bit-identical are the same
+    /// storage over the same range with the same flags, so they are equal;
+    /// unequal bits prove nothing, and still go to Swift.
     #[inline]
     fn eq(&self, other: &Self) -> bool {
+        if self.raw == other.raw {
+            return true;
+        }
         unsafe { abi::string_equal(self.raw, other.raw) }
     }
 }

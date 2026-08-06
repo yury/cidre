@@ -558,6 +558,10 @@ macro_rules! swift_value {
         }
 
         unsafe impl $crate::swift::FromSwift for $ty {
+            /// A trivial Swift value owns nothing, and the declaration states
+            /// Swift's own stride, so a reader may take its bytes directly.
+            const IS_BITWISE_COPY: bool = $trivial;
+
             #[inline]
             unsafe fn copy_swift(value: *const ()) -> Self {
                 unsafe {
