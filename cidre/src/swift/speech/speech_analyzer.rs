@@ -53,7 +53,7 @@ impl SpeechAnalyzer {
             let analyzer_metadata =
                 <SpeechAnalyzer as crate::swift::SwiftMetadata>::metadata().cast();
             let object = call_with_owned_value(options, |options| {
-                abi::call_static_array_value_to_object(
+                abi::call::static_array_value_to_object(
                     speech_analyzer_init as *const (),
                     analyzer_metadata,
                     modules.into_raw(),

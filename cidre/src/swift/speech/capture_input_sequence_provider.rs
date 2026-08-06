@@ -108,7 +108,7 @@ impl CaptureInputSequenceProvider {
     pub fn capture_session(&self) -> arc::R<av::CaptureSession> {
         unsafe {
             arc::R::from_raw(
-                abi::call_value_to_object(
+                abi::call::value_to_object(
                     capture_input_sequence_provider_capture_session as *const (),
                     (self as *const Self).cast(),
                 )
@@ -122,7 +122,7 @@ impl CaptureInputSequenceProvider {
             let descriptor =
                 (&raw const CAPTURE_INPUT_SEQUENCE_PROVIDER_ANALYZER_INPUTS_DESCRIPTOR).cast();
             let mut storage = Storage::<AnalyzerInputs>::new();
-            abi::call_object_to_value(
+            abi::call::object_to_value(
                 capture_input_sequence_provider_analyzer_inputs as *const (),
                 (self as *const Self).cast(),
                 storage.as_mut_ptr(),

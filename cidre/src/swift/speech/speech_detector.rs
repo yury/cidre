@@ -54,7 +54,7 @@ impl SpeechDetector {
         unsafe {
             let metadata = <SpeechDetector as crate::swift::SwiftMetadata>::metadata().cast();
             arc::R::from_raw(
-                abi::call_static0_object(speech_detector_new as *const (), metadata).cast(),
+                abi::call::static0_object(speech_detector_new as *const (), metadata).cast(),
             )
         }
     }
@@ -86,7 +86,7 @@ impl SpeechDetector {
 
             let mut options_storage = Storage::<DetectionOptions>::new();
             call_with_owned_value(sensitivity_value, |sensitivity| {
-                abi::call_value_to_value(
+                abi::call::value_to_value(
                     detection_options_init as *const (),
                     sensitivity.cast_const(),
                     options_storage.as_mut_ptr(),
@@ -97,7 +97,7 @@ impl SpeechDetector {
             let detector_metadata =
                 <SpeechDetector as crate::swift::SwiftMetadata>::metadata().cast();
             let object = call_with_owned_value(options, |options| {
-                abi::call_static_value_bool_to_object(
+                abi::call::static_value_bool_to_object(
                     speech_detector_init as *const (),
                     detector_metadata,
                     options,

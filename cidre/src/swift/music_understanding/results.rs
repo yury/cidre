@@ -63,7 +63,7 @@ impl SessionResult {
     pub fn rhythm(&self) -> Option<RhythmResult> {
         unsafe {
             let mut storage = Storage::<Optional<RhythmResultValue>>::new();
-            abi::call_value_to_value(
+            abi::call::value_to_value(
                 session_result_rhythm as *const (),
                 self.as_ptr(),
                 storage.as_mut_ptr(),
@@ -77,7 +77,7 @@ impl SessionResult {
     pub fn loudness(&self) -> Option<LoudnessResult> {
         unsafe {
             let mut storage = Storage::<Optional<LoudnessResultValue>>::new();
-            abi::call_value_to_value(
+            abi::call::value_to_value(
                 session_result_loudness as *const (),
                 self.as_ptr(),
                 storage.as_mut_ptr(),
@@ -91,7 +91,7 @@ impl SessionResult {
     pub fn instrument_activity(&self) -> Option<InstrumentActivityResult> {
         unsafe {
             let mut storage = Storage::<Optional<InstrumentActivityResultValue>>::new();
-            abi::call_value_to_value(
+            abi::call::value_to_value(
                 session_result_instrument_activity as *const (),
                 self.as_ptr(),
                 storage.as_mut_ptr(),
@@ -118,7 +118,7 @@ impl RhythmResult {
     pub fn beats_per_minute(&self) -> Option<f32> {
         unsafe {
             let word =
-                abi::call_value_to_int(rhythm_result_beats_per_minute as *const (), self.as_ptr());
+                abi::call::value_to_int(rhythm_result_beats_per_minute as *const (), self.as_ptr());
 
             let mut storage = Storage::<Optional<f32>>::new();
             let out = storage.as_mut_ptr().cast::<usize>();
@@ -145,7 +145,7 @@ impl RhythmResult {
     /// representation directly rather than through an indirect result.
     unsafe fn times(&self, getter: *const ()) -> swift::Array<cm::Time> {
         unsafe {
-            let raw = abi::call_value_to_int(getter, self.as_ptr()) as *mut ();
+            let raw = abi::call::value_to_int(getter, self.as_ptr()) as *mut ();
             swift::Array::from_raw(raw)
         }
     }
@@ -174,7 +174,7 @@ impl LoudnessResult {
     unsafe fn timed(&self, getter: *const ()) -> TimedValue {
         unsafe {
             let mut storage = Storage::<TimedValueF32>::new();
-            abi::call_value_to_value(getter, self.as_ptr(), storage.as_mut_ptr());
+            abi::call::value_to_value(getter, self.as_ptr(), storage.as_mut_ptr());
             TimedValue::from_value(storage.assume_init())
         }
     }
@@ -202,7 +202,7 @@ impl TimedValue {
     pub fn value(&self) -> f32 {
         unsafe {
             let mut out = core::mem::MaybeUninit::<f32>::uninit();
-            abi::call_generic_value_to_value(
+            abi::call::generic_value_to_value(
                 timed_value_value as *const (),
                 self.as_ptr(),
                 TimedValueF32::metadata(),
@@ -216,7 +216,7 @@ impl TimedValue {
     #[doc(alias = "TimedValue.time")]
     pub fn time(&self) -> cm::Time {
         unsafe {
-            let words = abi::call_generic_value_to_words3(
+            let words = abi::call::generic_value_to_words3(
                 timed_value_time as *const (),
                 self.as_ptr(),
                 TimedValueF32::metadata(),

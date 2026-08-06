@@ -330,7 +330,7 @@ impl_swift_memcpy_value!(Option<crate::arc::R<T>>, <T: SwiftClass>);
 macro_rules! define_swift_marker {
     ($(#[$meta:meta])* $vis:vis $ty:ident = accessor $accessor:expr) => {
         $crate::define_swift_marker!(@marker $(#[$meta])* $vis $ty, unsafe {
-            $crate::swift::abi::call_int_to_int($accessor as *const (), 0)
+            $crate::swift::abi::call::int_to_int($accessor as *const (), 0)
                 as *const $crate::swift::abi::TypeMetadata
         });
     };

@@ -49,7 +49,7 @@ impl InstrumentActivityResult {
         &self,
     ) -> swift::Dictionary<Instrument, swift::Array<cm::TimeRange>> {
         unsafe {
-            swift::Dictionary::from_raw(abi::call_value_to_object(
+            swift::Dictionary::from_raw(abi::call::value_to_object(
                 instrument_activity_result_ranges as *const (),
                 self.as_ptr(),
             ))

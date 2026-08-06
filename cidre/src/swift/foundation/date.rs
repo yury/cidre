@@ -19,7 +19,7 @@ crate::impl_swift_sendable!(DateValue);
 impl Date {
     pub fn time_interval_since_reference_date(&self) -> f64 {
         unsafe {
-            abi::call_value_to_double(
+            abi::call::value_to_double(
                 date_time_interval_since_reference_date as *const (),
                 self.as_ptr(),
             )

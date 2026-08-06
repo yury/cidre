@@ -69,7 +69,7 @@ macro_rules! define_swift_class {
                 static CACHE: $crate::swift::abi::MetadataCache =
                     $crate::swift::abi::MetadataCache::new();
                 CACHE.get(|| unsafe {
-                    $crate::swift::abi::call_int_to_int($accessor as *const (), 0)
+                    $crate::swift::abi::call::int_to_int($accessor as *const (), 0)
                         as *const $crate::swift::abi::TypeMetadata
                 })
             }

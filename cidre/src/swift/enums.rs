@@ -61,7 +61,7 @@ macro_rules! define_swift_tag_enum {
                     fn hash_value();
                 }
                 unsafe {
-                    $crate::swift::abi::call_value_to_int(
+                    $crate::swift::abi::call::value_to_int(
                         hash_value as *const (),
                         self.as_abi_ptr(),
                     )
@@ -78,7 +78,7 @@ macro_rules! define_swift_tag_enum {
                         fn debug_description();
                     }
                     unsafe {
-                        $crate::swift::String::from_raw($crate::swift::abi::call_value_to_string(
+                        $crate::swift::String::from_raw($crate::swift::abi::call::value_to_string(
                             debug_description as *const (),
                             self.as_abi_ptr(),
                         ))
@@ -174,7 +174,7 @@ macro_rules! define_swift_getter_enum {
                         fn metadata();
                     }
                     unsafe {
-                        $crate::swift::abi::call_int_to_int(metadata as *const (), 0)
+                        $crate::swift::abi::call::int_to_int(metadata as *const (), 0)
                             as *const $crate::swift::abi::TypeMetadata
                     }
                 })
@@ -187,7 +187,7 @@ macro_rules! define_swift_getter_enum {
         unsafe impl $crate::swift::ToSwift for $ty {
             #[inline]
             unsafe fn copy_to_swift(&self, dst: *mut ()) {
-                unsafe { $crate::swift::abi::call0_value(self.getter(), dst) }
+                unsafe { $crate::swift::abi::call::to_value(self.getter(), dst) }
             }
         }
     };

@@ -36,7 +36,7 @@ impl AccessoryManager {
             // Swift emits a class metadata access before calling this static getter.
             let metadata = <Self as crate::swift::SwiftMetadata>::metadata();
             arc::R::from_raw(
-                abi::call_static0_object(
+                abi::call::static0_object(
                     dock_accessory_manager_shared as *const (),
                     metadata.cast(),
                 )
@@ -49,7 +49,7 @@ impl AccessoryManager {
     #[inline]
     pub fn is_system_tracking_enabled(&self) -> bool {
         unsafe {
-            abi::call_object_to_bool(
+            abi::call::object_to_bool(
                 dock_accessory_manager_is_system_tracking_enabled as *const (),
                 (self as *const Self).cast(),
             )
@@ -61,7 +61,7 @@ impl AccessoryManager {
     pub fn accessory_state_changes(&self) -> Result<StateChanges, arc::R<ns::Error>> {
         unsafe {
             let mut storage = StateChanges::storage();
-            let error = abi::call_object_to_throwing_value(
+            let error = abi::call::object_to_throwing_value(
                 dock_accessory_manager_accessory_state_changes as *const (),
                 (self as *const Self).cast(),
                 storage.as_mut_ptr(),

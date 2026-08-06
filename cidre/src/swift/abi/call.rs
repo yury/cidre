@@ -6,7 +6,7 @@
 //! goes through the one assembly block below, told which registers to fill.
 //!
 //! It used to be one hand-written `asm!` per argument shape — forty of them,
-//! named things like `call_static_array_value_to_object` — which is why the
+//! named things like `static_array_value_to_object` — which is why the
 //! shapes below are just data now.
 
 use core::arch::asm;
@@ -211,7 +211,7 @@ pub unsafe fn generic_metadata1(
 
 /// Calls a member of a generic type that returns its value indirectly.
 ///
-/// Unlike [`call_value_to_value`], the callee also needs the generic context,
+/// Unlike [`value_to_value`], the callee also needs the generic context,
 /// which is the enclosing type's metadata.
 ///
 /// # Safety
@@ -219,7 +219,7 @@ pub unsafe fn generic_metadata1(
 /// `function` must be a member of the type `metadata` describes, `value` a
 /// valid instance of it, and `out` uninitialized storage for the result.
 #[inline]
-pub unsafe fn call_generic_value_to_value(
+pub unsafe fn generic_value_to_value(
     function: *const (),
     value: *const (),
     metadata: *const TypeMetadata,
@@ -241,10 +241,10 @@ pub unsafe fn call_generic_value_to_value(
 ///
 /// # Safety
 ///
-/// As [`call_generic_value_to_value`], and the member must return exactly three
+/// As [`generic_value_to_value`], and the member must return exactly three
 /// words in registers.
 #[inline]
-pub unsafe fn call_generic_value_to_words3(
+pub unsafe fn generic_value_to_words3(
     function: *const (),
     value: *const (),
     metadata: *const TypeMetadata,
@@ -263,12 +263,12 @@ pub unsafe fn call_generic_value_to_words3(
 }
 
 #[inline]
-pub unsafe fn call_int_to_int(function: *const (), arg: isize) -> isize {
+pub unsafe fn int_to_int(function: *const (), arg: isize) -> isize {
     unsafe { call(function, Call::new().int(0, arg)).int() }
 }
 
 #[inline]
-pub unsafe fn call_double_to_words2(function: *const (), value: f64) -> (u64, u64) {
+pub unsafe fn double_to_words2(function: *const (), value: f64) -> (u64, u64) {
     unsafe {
         let result = call(function, Call::new().double(0, value));
         (result.word(0) as u64, result.word(1) as u64)
@@ -282,7 +282,7 @@ pub unsafe fn call_double_to_words2(function: *const (), value: f64) -> (u64, u6
 ///
 /// `object` must be the accessory the method is called on.
 #[inline]
-pub unsafe fn call_vector_duration_bool_object(
+pub unsafe fn vector_duration_bool_object(
     function: *const (),
     vector: (f64, f64, f64),
     duration: (u64, u64),
@@ -310,9 +310,9 @@ pub unsafe fn call_vector_duration_bool_object(
 ///
 /// # Safety
 ///
-/// As [`call_vector_duration_bool_object`].
+/// As [`vector_duration_bool_object`].
 #[inline]
-pub unsafe fn call_rotation_duration_bool_object(
+pub unsafe fn rotation_duration_bool_object(
     function: *const (),
     rotation: (f64, f64, f64, f64),
     duration: (u64, u64),
@@ -337,7 +337,7 @@ pub unsafe fn call_rotation_duration_bool_object(
 ///
 /// `out` must be uninitialized storage for what the initializer returns.
 #[inline]
-pub unsafe fn call_doubles3_to_throwing_value(
+pub unsafe fn doubles3_to_throwing_value(
     function: *const (),
     values: (f64, f64, f64),
     out: *mut (),
@@ -358,7 +358,7 @@ pub unsafe fn call_doubles3_to_throwing_value(
 /// The three values must be what the callee takes, and `out` uninitialized
 /// storage for what it returns.
 #[inline]
-pub unsafe fn call_values3_to_value(
+pub unsafe fn values3_to_value(
     function: *const (),
     first: *const (),
     second: *const (),
@@ -378,12 +378,12 @@ pub unsafe fn call_values3_to_value(
 }
 
 #[inline]
-pub unsafe fn call_static0_object(function: *const (), type_metadata: *const ()) -> *mut () {
+pub unsafe fn static0_object(function: *const (), type_metadata: *const ()) -> *mut () {
     unsafe { call(function, Call::new().swift_self(type_metadata)).ptr() }
 }
 
 #[inline]
-pub unsafe fn call_static0_bool(function: *const (), type_metadata: *const ()) -> bool {
+pub unsafe fn static0_bool(function: *const (), type_metadata: *const ()) -> bool {
     unsafe { call(function, Call::new().swift_self(type_metadata)).bool() }
 }
 
@@ -392,7 +392,7 @@ pub unsafe fn call_static0_bool(function: *const (), type_metadata: *const ()) -
 /// `value` must be what the static method takes, and `type_metadata` the
 /// metadata of the type it belongs to.
 #[inline]
-pub unsafe fn call_static_value_bool_to_object(
+pub unsafe fn static_value_bool_to_object(
     function: *const (),
     type_metadata: *const (),
     value: *const (),
@@ -412,9 +412,9 @@ pub unsafe fn call_static_value_bool_to_object(
 
 /// # Safety
 ///
-/// As [`call_static_value_bool_to_object`], for a method taking two values.
+/// As [`static_value_bool_to_object`], for a method taking two values.
 #[inline]
-pub unsafe fn call_static_values_to_object(
+pub unsafe fn static_values_to_object(
     function: *const (),
     type_metadata: *const (),
     first: *const (),
@@ -437,7 +437,7 @@ pub unsafe fn call_static_values_to_object(
 /// `array` must be an owned array the method consumes, and `value` what it
 /// takes alongside it.
 #[inline]
-pub unsafe fn call_static_array_value_to_object(
+pub unsafe fn static_array_value_to_object(
     function: *const (),
     type_metadata: *const (),
     array: *mut (),
@@ -460,7 +460,7 @@ pub unsafe fn call_static_array_value_to_object(
 /// `string` must be owned as the callee expects, and `out` uninitialized
 /// storage for what it returns.
 #[inline]
-pub unsafe fn call_string_to_value(function: *const (), string: RawString, out: *mut ()) {
+pub unsafe fn string_to_value(function: *const (), string: RawString, out: *mut ()) {
     unsafe {
         call(function, Call::new().string(0, string).indirect(out));
     }
@@ -473,7 +473,7 @@ pub unsafe fn call_string_to_value(function: *const (), string: RawString, out: 
 /// The arguments must be what that initializer takes, and `out` uninitialized
 /// storage for an observation.
 #[inline]
-pub unsafe fn call_int_value_rect_value_to_value(
+pub unsafe fn int_value_rect_value_to_value(
     function: *const (),
     integer: isize,
     value: *const (),
@@ -503,7 +503,7 @@ pub unsafe fn call_int_value_rect_value_to_value(
 /// storage for the camera information.
 #[cfg(feature = "av")]
 #[inline]
-pub unsafe fn call_camera_information_init(
+pub unsafe fn camera_information_init(
     function: *const (),
     device_type: *const (),
     position: isize,
@@ -532,19 +532,19 @@ pub unsafe fn call_camera_information_init(
 ///
 /// `out` must be uninitialized storage for what the getter returns.
 #[inline]
-pub unsafe fn call0_value(function: *const (), out: *mut ()) {
+pub unsafe fn to_value(function: *const (), out: *mut ()) {
     unsafe {
         call(function, Call::new().indirect(out));
     }
 }
 
 #[inline]
-pub unsafe fn call_object_to_bool(function: *const (), object: *const ()) -> bool {
+pub unsafe fn object_to_bool(function: *const (), object: *const ()) -> bool {
     unsafe { call(function, Call::new().swift_self(object)).bool() }
 }
 
 #[inline]
-pub unsafe fn call_object_to_int(function: *const (), object: *const ()) -> isize {
+pub unsafe fn object_to_int(function: *const (), object: *const ()) -> isize {
     unsafe { call(function, Call::new().swift_self(object)).int() }
 }
 
@@ -554,17 +554,17 @@ pub unsafe fn call_object_to_int(function: *const (), object: *const ()) -> isiz
 ///
 /// Both must be values of the type the operator belongs to.
 #[inline]
-pub unsafe fn call_objects_to_bool(function: *const (), lhs: *const (), rhs: *const ()) -> bool {
+pub unsafe fn objects_to_bool(function: *const (), lhs: *const (), rhs: *const ()) -> bool {
     unsafe { call(function, Call::new().ptr(0, lhs).ptr(1, rhs)).bool() }
 }
 
 #[inline]
-pub unsafe fn call_object_to_string(function: *const (), object: *const ()) -> RawString {
+pub unsafe fn object_to_string(function: *const (), object: *const ()) -> RawString {
     unsafe { call(function, Call::new().swift_self(object)).string() }
 }
 
 #[inline]
-pub unsafe fn call_object_to_rect(function: *const (), object: *const ()) -> (f64, f64, f64, f64) {
+pub unsafe fn object_to_rect(function: *const (), object: *const ()) -> (f64, f64, f64, f64) {
     unsafe {
         let result = call(function, Call::new().swift_self(object));
         (
@@ -577,22 +577,22 @@ pub unsafe fn call_object_to_rect(function: *const (), object: *const ()) -> (f6
 }
 
 #[inline]
-pub unsafe fn call_value_to_int(function: *const (), value: *const ()) -> isize {
+pub unsafe fn value_to_int(function: *const (), value: *const ()) -> isize {
     unsafe { call(function, Call::new().value_self(value)).int() }
 }
 
 #[inline]
-pub unsafe fn call_value_to_bool(function: *const (), value: *const ()) -> bool {
+pub unsafe fn value_to_bool(function: *const (), value: *const ()) -> bool {
     unsafe { call(function, Call::new().value_self(value)).bool() }
 }
 
 #[inline]
-pub unsafe fn call_value_to_double(function: *const (), value: *const ()) -> f64 {
+pub unsafe fn value_to_double(function: *const (), value: *const ()) -> f64 {
     unsafe { call(function, Call::new().value_self(value)).double(0) }
 }
 
 #[inline]
-pub unsafe fn call_value_to_words3(function: *const (), value: *const ()) -> (u64, u64, u64) {
+pub unsafe fn value_to_words3(function: *const (), value: *const ()) -> (u64, u64, u64) {
     unsafe {
         let result = call(function, Call::new().value_self(value));
         (
@@ -604,7 +604,7 @@ pub unsafe fn call_value_to_words3(function: *const (), value: *const ()) -> (u6
 }
 
 #[inline]
-pub unsafe fn call_value_to_doubles2(function: *const (), value: *const ()) -> (f64, f64) {
+pub unsafe fn value_to_doubles2(function: *const (), value: *const ()) -> (f64, f64) {
     unsafe {
         let result = call(function, Call::new().value_self(value));
         (result.double(0), result.double(1))
@@ -612,7 +612,7 @@ pub unsafe fn call_value_to_doubles2(function: *const (), value: *const ()) -> (
 }
 
 #[inline]
-pub unsafe fn call_value_to_rect(function: *const (), value: *const ()) -> (f64, f64, f64, f64) {
+pub unsafe fn value_to_rect(function: *const (), value: *const ()) -> (f64, f64, f64, f64) {
     unsafe {
         let result = call(function, Call::new().value_self(value));
         (
@@ -625,12 +625,12 @@ pub unsafe fn call_value_to_rect(function: *const (), value: *const ()) -> (f64,
 }
 
 #[inline]
-pub unsafe fn call_value_to_object(function: *const (), value: *const ()) -> *mut () {
+pub unsafe fn value_to_object(function: *const (), value: *const ()) -> *mut () {
     unsafe { call(function, Call::new().value_self(value)).ptr() }
 }
 
 #[inline]
-pub unsafe fn call_value_to_doubles3(function: *const (), value: *const ()) -> [f64; 3] {
+pub unsafe fn value_to_doubles3(function: *const (), value: *const ()) -> [f64; 3] {
     unsafe {
         let result = call(function, Call::new().value_self(value));
         [result.double(0), result.double(1), result.double(2)]
@@ -638,7 +638,7 @@ pub unsafe fn call_value_to_doubles3(function: *const (), value: *const ()) -> [
 }
 
 #[inline]
-pub unsafe fn call_value_to_string(function: *const (), value: *const ()) -> RawString {
+pub unsafe fn value_to_string(function: *const (), value: *const ()) -> RawString {
     unsafe { call(function, Call::new().value_self(value)).string() }
 }
 
@@ -646,7 +646,7 @@ pub unsafe fn call_value_to_string(function: *const (), value: *const ()) -> Raw
 ///
 /// `out` must be uninitialized storage for what the getter returns.
 #[inline]
-pub unsafe fn call_object_to_value(function: *const (), object: *const (), out: *mut ()) {
+pub unsafe fn object_to_value(function: *const (), object: *const (), out: *mut ()) {
     unsafe {
         call(function, Call::new().value_self(object).indirect(out));
     }
@@ -654,9 +654,9 @@ pub unsafe fn call_object_to_value(function: *const (), object: *const (), out: 
 
 /// # Safety
 ///
-/// As [`call_object_to_value`].
+/// As [`object_to_value`].
 #[inline]
-pub unsafe fn call_value_to_value(function: *const (), value: *const (), out: *mut ()) {
+pub unsafe fn value_to_value(function: *const (), value: *const (), out: *mut ()) {
     unsafe {
         call(function, Call::new().value_self(value).indirect(out));
     }
@@ -669,7 +669,7 @@ pub unsafe fn call_value_to_value(function: *const (), value: *const (), out: *m
 /// `out` must be uninitialized storage for what the getter returns, and is only
 /// initialized when this returns null.
 #[inline]
-pub unsafe fn call_object_to_throwing_value(
+pub unsafe fn object_to_throwing_value(
     function: *const (),
     object: *const (),
     out: *mut (),
@@ -684,7 +684,7 @@ pub unsafe fn call_object_to_throwing_value(
 /// `value` must be what the method takes and `object` the instance it is called
 /// on.
 #[inline]
-pub unsafe fn call_value_object_to_throwing_void(
+pub unsafe fn value_object_to_throwing_void(
     function: *const (),
     value: *const (),
     object: *const (),

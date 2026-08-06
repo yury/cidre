@@ -1,22 +1,4 @@
-mod calls;
-
-pub use calls::{Call, CallResult, call};
-pub use calls::{
-    call_double_to_words2, call_doubles3_to_throwing_value, call_generic_value_to_value,
-    call_generic_value_to_words3, call_int_to_int, call_int_value_rect_value_to_value,
-    call_object_to_bool, call_object_to_int, call_object_to_rect, call_object_to_string,
-    call_object_to_throwing_value, call_object_to_value, call_objects_to_bool,
-    call_rotation_duration_bool_object, call_static_array_value_to_object,
-    call_static_value_bool_to_object, call_static_values_to_object, call_static0_bool,
-    call_static0_object, call_string_to_value, call_value_object_to_throwing_void,
-    call_value_to_bool, call_value_to_double, call_value_to_doubles2, call_value_to_doubles3,
-    call_value_to_int, call_value_to_object, call_value_to_rect, call_value_to_string,
-    call_value_to_value, call_value_to_words3, call_values3_to_value,
-    call_vector_duration_bool_object, call0_value, generic_metadata1,
-};
-
-#[cfg(feature = "av")]
-pub use calls::call_camera_information_init;
+pub mod call;
 
 use core::{arch::asm, ffi::c_char};
 

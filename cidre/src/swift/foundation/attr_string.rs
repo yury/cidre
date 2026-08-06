@@ -34,7 +34,7 @@ impl AttrString {
     pub fn to_swift_string(&self) -> swift::String {
         unsafe {
             let mut characters = Storage::<CharacterViewValue>::new();
-            abi::call_value_to_value(
+            abi::call::value_to_value(
                 attr_string_characters as *const (),
                 self.as_ptr(),
                 characters.as_mut_ptr(),
@@ -44,7 +44,7 @@ impl AttrString {
             swift::String::from_raw(swift::value::call_with_owned_value(
                 characters,
                 |characters| {
-                    abi::call_value_to_string(
+                    abi::call::value_to_string(
                         string_from_characters as *const (),
                         characters.cast_const(),
                     )

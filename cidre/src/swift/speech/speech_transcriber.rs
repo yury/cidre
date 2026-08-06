@@ -83,7 +83,7 @@ impl SpeechTranscriber {
     pub fn is_available() -> bool {
         unsafe {
             let metadata = <SpeechTranscriber as crate::swift::SwiftMetadata>::metadata().cast();
-            abi::call_static0_bool(speech_transcriber_is_available as *const (), metadata)
+            abi::call::static0_bool(speech_transcriber_is_available as *const (), metadata)
         }
     }
 
@@ -197,7 +197,7 @@ impl ResultsTask {
             let sequence_metadata = abi::opaque_type_metadata(descriptor, 0);
             let sequence_witness = abi::opaque_type_conformance(descriptor, 1);
             let mut sequence_storage = DynamicStorage::new(sequence_metadata);
-            abi::call_object_to_value(results_getter, object, sequence_storage.as_mut_ptr());
+            abi::call::object_to_value(results_getter, object, sequence_storage.as_mut_ptr());
             let mut sequence_value = sequence_storage.assume_init();
 
             let type_len = iterator_type_end.offset_from(iterator_type_start) as usize;
@@ -226,7 +226,7 @@ impl ResultsTask {
                 (&raw const ASYNC_ITERATOR_CONFORMANCE).cast(),
             );
             let payload_metadata =
-                abi::call_int_to_int(result_metadata_getter, 0) as *const abi::TypeMetadata;
+                abi::call::int_to_int(result_metadata_getter, 0) as *const abi::TypeMetadata;
             let result_metadata = abi::type_by_mangled_name(optional_result_mangled_name);
 
             let task = Box::new(Self {
@@ -346,7 +346,7 @@ impl Drop for OwnedPayload {
 unsafe fn speech_result_text(result: *const (), text_getter: *const ()) -> std::string::String {
     unsafe {
         let mut storage = Storage::<AttrStringValue>::new();
-        abi::call_value_to_value(text_getter, result, storage.as_mut_ptr());
+        abi::call::value_to_value(text_getter, result, storage.as_mut_ptr());
         foundation::AttrString::from_storage(storage).to_string()
     }
 }

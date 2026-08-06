@@ -32,7 +32,7 @@ impl Locale {
     pub fn with_swift_id(identifier: swift::String) -> Self {
         unsafe {
             let mut storage = Self::storage();
-            abi::call_string_to_value(
+            abi::call::string_to_value(
                 locale_init_with_identifier as *const (),
                 identifier.into_raw(),
                 storage.as_mut_ptr(),
@@ -45,7 +45,7 @@ impl Locale {
     #[doc(alias = "Locale.identifier")]
     pub fn id(&self) -> swift::String {
         unsafe {
-            swift::String::from_raw(abi::call_value_to_string(
+            swift::String::from_raw(abi::call::value_to_string(
                 locale_identifier as *const (),
                 self.as_ptr(),
             ))

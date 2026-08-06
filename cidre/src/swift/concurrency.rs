@@ -309,7 +309,7 @@ impl AsyncSequenceSymbols {
             } else {
                 sequence
             };
-            abi::call_value_to_value(self.make_iterator, this, out);
+            abi::call::value_to_value(self.make_iterator, this, out);
         }
     }
 }

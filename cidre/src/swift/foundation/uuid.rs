@@ -34,7 +34,7 @@ impl Uuid {
     pub fn new() -> Self {
         unsafe {
             let mut storage = Self::storage();
-            abi::call0_value(uuid_init as *const (), storage.as_mut_ptr());
+            abi::call::to_value(uuid_init as *const (), storage.as_mut_ptr());
             Self::from_storage(storage)
         }
     }
@@ -47,7 +47,7 @@ impl Uuid {
             // stays ours to release.
             let text = swift::String::from(str);
             let mut storage = Storage::<Optional<UuidValue>>::new();
-            abi::call_string_to_value(
+            abi::call::string_to_value(
                 uuid_init_with_string as *const (),
                 text.as_raw(),
                 storage.as_mut_ptr(),
@@ -70,7 +70,7 @@ impl Uuid {
     #[doc(alias = "UUID.uuidString")]
     pub fn to_swift_string(&self) -> swift::String {
         unsafe {
-            swift::String::from_raw(abi::call_value_to_string(
+            swift::String::from_raw(abi::call::value_to_string(
                 uuid_string as *const (),
                 self.as_ptr(),
             ))

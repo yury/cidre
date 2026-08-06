@@ -24,7 +24,7 @@ impl StateChange {
     unsafe fn copy_from_ptr(value: *const ()) -> Self {
         unsafe {
             let mut state_storage = Storage::<StateValue>::new();
-            abi::call_value_to_value(
+            abi::call::value_to_value(
                 dock_accessory_state_change_state as *const (),
                 value,
                 state_storage.as_mut_ptr(),
@@ -33,11 +33,11 @@ impl StateChange {
             let state = State(*(state_value.as_ptr().cast::<u8>()));
             drop(state_value);
 
-            let tracking_button_enabled = abi::call_value_to_bool(
+            let tracking_button_enabled = abi::call::value_to_bool(
                 dock_accessory_state_change_tracking_button_enabled as *const (),
                 value,
             );
-            let accessory = NonNull::new(abi::call_value_to_object(
+            let accessory = NonNull::new(abi::call::value_to_object(
                 dock_accessory_state_change_accessory as *const (),
                 value,
             ))
@@ -469,7 +469,7 @@ impl Identifier {
     pub fn category(&self) -> Category {
         let mut value = Category::tracking_stand();
         unsafe {
-            abi::call_value_to_value(
+            abi::call::value_to_value(
                 dock_accessory_identifier_category as *const (),
                 self.as_ptr(),
                 (&mut value as *mut Category).cast(),
@@ -480,7 +480,7 @@ impl Identifier {
 
     pub fn name(&self) -> swift::String {
         unsafe {
-            swift::String::from_raw(abi::call_value_to_string(
+            swift::String::from_raw(abi::call::value_to_string(
                 dock_accessory_identifier_name as *const (),
                 self.as_ptr(),
             ))
@@ -490,7 +490,7 @@ impl Identifier {
     pub fn uuid(&self) -> Uuid {
         unsafe {
             let mut storage = Storage::<UuidValue>::new();
-            abi::call_value_to_value(
+            abi::call::value_to_value(
                 dock_accessory_identifier_uuid as *const (),
                 self.as_ptr(),
                 storage.as_mut_ptr(),
@@ -501,7 +501,7 @@ impl Identifier {
 
     pub fn debug_desc(&self) -> swift::String {
         unsafe {
-            swift::String::from_raw(abi::call_value_to_string(
+            swift::String::from_raw(abi::call::value_to_string(
                 dock_accessory_identifier_debug_description as *const (),
                 self.as_ptr(),
             ))
@@ -510,7 +510,7 @@ impl Identifier {
 
     pub fn hash_value(&self) -> isize {
         unsafe {
-            abi::call_value_to_int(
+            abi::call::value_to_int(
                 dock_accessory_identifier_hash_value as *const (),
                 self.as_ptr(),
             )
@@ -521,7 +521,7 @@ impl Identifier {
 impl PartialEq for Identifier {
     fn eq(&self, other: &Self) -> bool {
         unsafe {
-            abi::call_objects_to_bool(
+            abi::call::objects_to_bool(
                 dock_accessory_identifier_equal as *const (),
                 self.as_ptr(),
                 other.as_ptr(),
@@ -543,7 +543,7 @@ impl MotionState {
         // `SPVector3D` comes back in d0-d2 rather than through an indirect
         // result, so it cannot be read out of a `Storage`.
         let [x, y, z] = unsafe {
-            abi::call_value_to_doubles3(
+            abi::call::value_to_doubles3(
                 dock_accessory_motion_state_angular_velocities as *const (),
                 self.as_ptr(),
             )
@@ -555,7 +555,7 @@ impl MotionState {
         // `SPVector3D` comes back in d0-d2 rather than through an indirect
         // result, so it cannot be read out of a `Storage`.
         let [x, y, z] = unsafe {
-            abi::call_value_to_doubles3(
+            abi::call::value_to_doubles3(
                 dock_accessory_motion_state_angular_positions as *const (),
                 self.as_ptr(),
             )
@@ -565,7 +565,7 @@ impl MotionState {
 
     pub fn timestamp(&self) -> f64 {
         unsafe {
-            abi::call_value_to_double(
+            abi::call::value_to_double(
                 dock_accessory_motion_state_timestamp as *const (),
                 self.as_ptr(),
             )
@@ -574,7 +574,7 @@ impl MotionState {
 
     pub fn error(&self) -> Option<arc::R<ns::Error>> {
         unsafe {
-            NonNull::new(abi::call_value_to_object(
+            NonNull::new(abi::call::value_to_object(
                 dock_accessory_motion_state_error as *const (),
                 self.as_ptr(),
             ))
@@ -586,7 +586,7 @@ impl MotionState {
 impl BatteryState {
     pub fn name(&self) -> swift::String {
         unsafe {
-            swift::String::from_raw(abi::call_value_to_string(
+            swift::String::from_raw(abi::call::value_to_string(
                 dock_accessory_battery_state_name as *const (),
                 self.as_ptr(),
             ))
@@ -595,7 +595,7 @@ impl BatteryState {
 
     pub fn battery_level(&self) -> f64 {
         unsafe {
-            abi::call_value_to_double(
+            abi::call::value_to_double(
                 dock_accessory_battery_state_level as *const (),
                 self.as_ptr(),
             )
@@ -604,14 +604,14 @@ impl BatteryState {
 
     pub fn is_low_battery(&self) -> bool {
         unsafe {
-            abi::call_value_to_bool(dock_accessory_battery_state_low as *const (), self.as_ptr())
+            abi::call::value_to_bool(dock_accessory_battery_state_low as *const (), self.as_ptr())
         }
     }
 
     pub fn charge_state(&self) -> BatteryChargeState {
         let mut value = BatteryChargeState::not_charging();
         unsafe {
-            abi::call_value_to_value(
+            abi::call::value_to_value(
                 dock_accessory_battery_state_charge_state as *const (),
                 self.as_ptr(),
                 (&mut value as *mut BatteryChargeState).cast(),
@@ -622,7 +622,7 @@ impl BatteryState {
 
     pub fn hash_value(&self) -> isize {
         unsafe {
-            abi::call_value_to_int(
+            abi::call::value_to_int(
                 dock_accessory_battery_state_hash_value as *const (),
                 self.as_ptr(),
             )
@@ -633,7 +633,7 @@ impl BatteryState {
 impl PartialEq for BatteryState {
     fn eq(&self, other: &Self) -> bool {
         unsafe {
-            abi::call_objects_to_bool(
+            abi::call::objects_to_bool(
                 dock_accessory_battery_state_equal as *const (),
                 self.as_ptr(),
                 other.as_ptr(),
@@ -676,7 +676,7 @@ impl Limits {
             let mut pitch = optional(pitch);
             let mut roll = optional(roll);
             let mut storage = Storage::<LimitsValue>::new();
-            abi::call_values3_to_value(
+            abi::call::values3_to_value(
                 dock_accessory_limits_init as *const (),
                 yaw.as_mut_ptr(),
                 pitch.as_mut_ptr(),
@@ -693,7 +693,7 @@ impl Limits {
     unsafe fn optional_limit(&self, getter: *const ()) -> Option<Limit> {
         unsafe {
             let mut storage = Storage::<Optional<LimitValue>>::new();
-            abi::call_value_to_value(getter, self.as_ptr(), storage.as_mut_ptr());
+            abi::call::value_to_value(getter, self.as_ptr(), storage.as_mut_ptr());
             let value = storage.assume_init();
             value.is_some().then(|| Limit::copy_swift(value.as_ptr()))
         }
@@ -723,7 +723,7 @@ impl Limit {
         );
         unsafe {
             let mut storage = Storage::<LimitValue>::new();
-            let error = abi::call_doubles3_to_throwing_value(
+            let error = abi::call::doubles3_to_throwing_value(
                 dock_accessory_limit_init as *const (),
                 (position_range.start, position_range.end, maximum_speed),
                 storage.as_mut_ptr(),
@@ -738,7 +738,7 @@ impl Limit {
 
     pub fn position_range(&self) -> std::ops::Range<f64> {
         let (start, end) = unsafe {
-            abi::call_value_to_doubles2(
+            abi::call::value_to_doubles2(
                 dock_accessory_limit_position_range as *const (),
                 self.as_ptr(),
             )
@@ -748,7 +748,7 @@ impl Limit {
 
     pub fn maximum_speed(&self) -> f64 {
         unsafe {
-            abi::call_value_to_double(
+            abi::call::value_to_double(
                 dock_accessory_limit_maximum_speed as *const (),
                 self.as_ptr(),
             )
@@ -798,7 +798,7 @@ unsafe fn optional_primitive<T: SwiftMetadata + Copy>(
 ) -> Option<T> {
     unsafe {
         let mut storage = Storage::<Optional<T>>::new();
-        abi::call_value_to_value(getter, owner, storage.as_mut_ptr());
+        abi::call::value_to_value(getter, owner, storage.as_mut_ptr());
         let value = storage.assume_init();
         value.is_some().then(|| value.as_ptr().cast::<T>().read())
     }
@@ -807,13 +807,13 @@ unsafe fn optional_primitive<T: SwiftMetadata + Copy>(
 unsafe fn uuid_property(owner: *const (), getter: *const ()) -> Uuid {
     unsafe {
         let mut storage = Storage::<UuidValue>::new();
-        abi::call_value_to_value(getter, owner, storage.as_mut_ptr());
+        abi::call::value_to_value(getter, owner, storage.as_mut_ptr());
         Uuid::from_value(storage.assume_init())
     }
 }
 
 unsafe fn rect_property(owner: *const (), getter: *const ()) -> cg::Rect {
-    let (x, y, width, height) = unsafe { abi::call_value_to_rect(getter, owner) };
+    let (x, y, width, height) = unsafe { abi::call::value_to_rect(getter, owner) };
     cg::Rect {
         origin: cg::Point { x, y },
         size: cg::Size { width, height },
@@ -870,7 +870,7 @@ impl TrackedPerson {
 impl PartialEq for TrackedPerson {
     fn eq(&self, other: &Self) -> bool {
         unsafe {
-            abi::call_objects_to_bool(
+            abi::call::objects_to_bool(
                 dock_accessory_tracked_person_equal as *const (),
                 self.as_ptr(),
                 other.as_ptr(),
@@ -911,7 +911,7 @@ impl TrackedObject {
 impl PartialEq for TrackedObject {
     fn eq(&self, other: &Self) -> bool {
         unsafe {
-            abi::call_objects_to_bool(
+            abi::call::objects_to_bool(
                 dock_accessory_tracked_object_equal as *const (),
                 self.as_ptr(),
                 other.as_ptr(),
@@ -964,7 +964,7 @@ impl TrackingState {
     pub fn time(&self) -> Date {
         unsafe {
             let mut storage = Storage::<DateValue>::new();
-            abi::call_value_to_value(
+            abi::call::value_to_value(
                 dock_accessory_tracking_state_time as *const (),
                 self.as_ptr(),
                 storage.as_mut_ptr(),
@@ -975,7 +975,7 @@ impl TrackingState {
 
     pub fn tracked_subjects(&self) -> swift::Array<TrackedSubject> {
         unsafe {
-            swift::Array::from_raw(abi::call_value_to_object(
+            swift::Array::from_raw(abi::call::value_to_object(
                 dock_accessory_tracking_state_subjects as *const (),
                 self.as_ptr(),
             ))
@@ -984,7 +984,7 @@ impl TrackingState {
 
     pub fn description(&self) -> swift::String {
         unsafe {
-            swift::String::from_raw(abi::call_value_to_string(
+            swift::String::from_raw(abi::call::value_to_string(
                 dock_accessory_tracking_state_description as *const (),
                 self.as_ptr(),
             ))
@@ -998,7 +998,7 @@ impl Observation {
         unsafe {
             let face_yaw = Value::<Optional<MeasurementAngleValue>>::none();
             let mut storage = Storage::<ObservationValue>::new();
-            abi::call_int_value_rect_value_to_value(
+            abi::call::int_value_rect_value_to_value(
                 dock_accessory_observation_init as *const (),
                 identifier,
                 ty.as_abi_ptr(),
@@ -1017,7 +1017,7 @@ impl Observation {
 
     pub fn identifier(&self) -> isize {
         unsafe {
-            abi::call_value_to_int(
+            abi::call::value_to_int(
                 dock_accessory_observation_identifier as *const (),
                 self.as_ptr(),
             )
@@ -1027,7 +1027,7 @@ impl Observation {
     pub fn ty(&self) -> ObservationType {
         let mut value = ObservationType::human_face();
         unsafe {
-            abi::call_value_to_value(
+            abi::call::value_to_value(
                 dock_accessory_observation_type as *const (),
                 self.as_ptr(),
                 (&mut value as *mut ObservationType).cast(),
@@ -1098,7 +1098,7 @@ impl CameraInformation {
             };
             let words = dimensions.as_ptr().cast::<u64>();
             let mut storage = Storage::<CameraInformationValue>::new();
-            abi::call_camera_information_init(
+            abi::call::camera_information_init(
                 dock_accessory_camera_information_init as *const (),
                 (device_type as *const crate::av::CaptureDeviceType).cast(),
                 position as isize,
@@ -1114,7 +1114,7 @@ impl CameraInformation {
     pub fn capture_device(&self) -> arc::R<crate::av::CaptureDeviceType> {
         unsafe {
             arc::R::from_raw(
-                abi::call_value_to_object(
+                abi::call::value_to_object(
                     dock_accessory_camera_information_capture_device as *const (),
                     self.0.as_ptr(),
                 )
@@ -1125,7 +1125,7 @@ impl CameraInformation {
 
     pub fn camera_position(&self) -> crate::av::CaptureDevicePos {
         unsafe {
-            std::mem::transmute(abi::call_value_to_int(
+            std::mem::transmute(abi::call::value_to_int(
                 dock_accessory_camera_information_camera_position as *const (),
                 self.0.as_ptr(),
             ))
@@ -1135,7 +1135,7 @@ impl CameraInformation {
     pub fn orientation(&self) -> CameraOrientation {
         let mut value = CameraOrientation::portrait();
         unsafe {
-            abi::call_value_to_value(
+            abi::call::value_to_value(
                 dock_accessory_camera_information_orientation as *const (),
                 self.0.as_ptr(),
                 (&mut value as *mut CameraOrientation).cast(),
@@ -1147,7 +1147,7 @@ impl CameraInformation {
     pub fn camera_intrinsics(&self) -> Option<CameraIntrinsics> {
         unsafe {
             let mut storage = Storage::<Optional<CameraIntrinsicsValue>>::new();
-            abi::call_value_to_value(
+            abi::call::value_to_value(
                 dock_accessory_camera_information_intrinsics as *const (),
                 self.0.as_ptr(),
                 storage.as_mut_ptr(),
@@ -1161,7 +1161,7 @@ impl CameraInformation {
 
     pub fn reference_dimensions(&self) -> Option<cg::Size> {
         unsafe {
-            let words = abi::call_value_to_words3(
+            let words = abi::call::value_to_words3(
                 dock_accessory_camera_information_reference_dimensions as *const (),
                 self.0.as_ptr(),
             );
@@ -1473,7 +1473,7 @@ impl Accessory {
     #[doc(alias = "DockAccessory.hashValue")]
     pub fn hash_value(&self) -> isize {
         unsafe {
-            abi::call_object_to_int(
+            abi::call::object_to_int(
                 dock_accessory_hash_value as *const (),
                 (self as *const Self).cast(),
             )
@@ -1484,7 +1484,7 @@ impl Accessory {
     pub fn identifier(&self) -> Identifier {
         unsafe {
             let mut storage = Storage::<IdentifierValue>::new();
-            abi::call_object_to_value(
+            abi::call::object_to_value(
                 dock_accessory_identifier as *const (),
                 (self as *const Self).cast(),
                 storage.as_mut_ptr(),
@@ -1497,7 +1497,7 @@ impl Accessory {
     #[inline]
     pub fn debug_desc(&self) -> swift::String {
         unsafe {
-            swift::String::from_raw(abi::call_object_to_string(
+            swift::String::from_raw(abi::call::object_to_string(
                 dock_accessory_debug_description as *const (),
                 (self as *const Self).cast(),
             ))
@@ -1509,7 +1509,7 @@ impl Accessory {
     pub fn framing_mode(&self) -> FramingMode {
         let mut value = FramingMode::automatic();
         unsafe {
-            abi::call_object_to_value(
+            abi::call::object_to_value(
                 dock_accessory_framing_mode as *const (),
                 (self as *const Self).cast(),
                 (&mut value as *mut FramingMode).cast(),
@@ -1534,14 +1534,14 @@ impl Accessory {
     /// spells the empty case as a string with a null discriminator word.
     unsafe fn optional_string(&self, getter: *const ()) -> Option<swift::String> {
         unsafe {
-            let raw = abi::call_object_to_string(getter, (self as *const Self).cast());
+            let raw = abi::call::object_to_string(getter, (self as *const Self).cast());
             (raw.word0 != 0 || raw.word1 != 0).then(|| swift::String::from_raw(raw))
         }
     }
 
     pub fn region_of_interest(&self) -> cg::Rect {
         let (x, y, width, height) = unsafe {
-            abi::call_object_to_rect(
+            abi::call::object_to_rect(
                 dock_accessory_region_of_interest as *const (),
                 (self as *const Self).cast(),
             )
@@ -1556,7 +1556,7 @@ impl Accessory {
     pub fn limits(&self) -> Result<Limits, arc::R<ns::Error>> {
         unsafe {
             let mut storage = Storage::<LimitsValue>::new();
-            let error = abi::call_object_to_throwing_value(
+            let error = abi::call::object_to_throwing_value(
                 dock_accessory_limits as *const (),
                 (self as *const Self).cast(),
                 storage.as_mut_ptr(),
@@ -1573,7 +1573,7 @@ impl Accessory {
     pub fn motion_states(&self) -> Result<MotionStates, arc::R<ns::Error>> {
         unsafe {
             let mut storage = Storage::<MotionStatesValue>::new();
-            let error = abi::call_object_to_throwing_value(
+            let error = abi::call::object_to_throwing_value(
                 dock_accessory_motion_states as *const (),
                 (self as *const Self).cast(),
                 storage.as_mut_ptr(),
@@ -1591,7 +1591,7 @@ impl Accessory {
     pub fn battery_states(&self) -> Result<BatteryStates, arc::R<ns::Error>> {
         unsafe {
             let mut storage = Storage::<BatteryStatesValue>::new();
-            let error = abi::call_object_to_throwing_value(
+            let error = abi::call::object_to_throwing_value(
                 dock_accessory_battery_states as *const (),
                 (self as *const Self).cast(),
                 storage.as_mut_ptr(),
@@ -1609,7 +1609,7 @@ impl Accessory {
     pub fn accessory_events(&self) -> Result<AccessoryEvents, arc::R<ns::Error>> {
         unsafe {
             let mut storage = Storage::<AccessoryEventsValue>::new();
-            let error = abi::call_object_to_throwing_value(
+            let error = abi::call::object_to_throwing_value(
                 dock_accessory_events as *const (),
                 (self as *const Self).cast(),
                 storage.as_mut_ptr(),
@@ -1627,7 +1627,7 @@ impl Accessory {
     pub fn tracking_states(&self) -> Result<TrackingStates, arc::R<ns::Error>> {
         unsafe {
             let mut storage = Storage::<TrackingStatesValue>::new();
-            let error = abi::call_object_to_throwing_value(
+            let error = abi::call::object_to_throwing_value(
                 dock_accessory_tracking_states as *const (),
                 (self as *const Self).cast(),
                 storage.as_mut_ptr(),
@@ -1643,7 +1643,7 @@ impl Accessory {
     #[doc(alias = "DockAccessory.setLimits(_:)")]
     pub fn set_limits(&self, limits: &Limits) -> Result<(), arc::R<ns::Error>> {
         unsafe {
-            let error = abi::call_value_object_to_throwing_void(
+            let error = abi::call::value_object_to_throwing_void(
                 dock_accessory_set_limits as *const (),
                 limits.as_ptr(),
                 (self as *const Self).cast(),
@@ -1666,11 +1666,11 @@ impl Accessory {
         relative: bool,
     ) -> Result<arc::R<ns::Progress>, arc::R<ns::Error>> {
         unsafe {
-            let duration = abi::call_double_to_words2(
+            let duration = abi::call::double_to_words2(
                 swift_duration_seconds as *const (),
                 duration.as_secs_f64(),
             );
-            let (result, error) = abi::call_vector_duration_bool_object(
+            let (result, error) = abi::call::vector_duration_bool_object(
                 dock_accessory_set_vector_orientation_sync as *const (),
                 (rotation.x, rotation.y, rotation.z),
                 duration,
@@ -1695,11 +1695,11 @@ impl Accessory {
         relative: bool,
     ) -> Result<arc::R<ns::Progress>, arc::R<ns::Error>> {
         unsafe {
-            let duration = abi::call_double_to_words2(
+            let duration = abi::call::double_to_words2(
                 swift_duration_seconds as *const (),
                 duration.as_secs_f64(),
             );
-            let (result, error) = abi::call_rotation_duration_bool_object(
+            let (result, error) = abi::call::rotation_duration_bool_object(
                 dock_accessory_set_rotation_orientation_sync as *const (),
                 (rotation.x, rotation.y, rotation.z, rotation.w),
                 duration,
@@ -2130,7 +2130,7 @@ impl Accessory {
         F: FnOnce(Result<arc::R<ns::Progress>, arc::R<ns::Error>>) + Send + 'static,
     {
         let duration = unsafe {
-            abi::call_double_to_words2(swift_duration_seconds as *const (), duration.as_secs_f64())
+            abi::call::double_to_words2(swift_duration_seconds as *const (), duration.as_secs_f64())
         };
         self.call_progress(
             dock_accessory_set_vector_orientation as *const (),
@@ -2161,7 +2161,7 @@ impl Accessory {
         F: FnOnce(Result<arc::R<ns::Progress>, arc::R<ns::Error>>) + Send + 'static,
     {
         let duration = unsafe {
-            abi::call_double_to_words2(swift_duration_seconds as *const (), duration.as_secs_f64())
+            abi::call::double_to_words2(swift_duration_seconds as *const (), duration.as_secs_f64())
         };
         self.call_progress(
             dock_accessory_set_rotation_orientation as *const (),
@@ -2240,7 +2240,7 @@ impl Accessory {
 impl PartialEq for Accessory {
     fn eq(&self, other: &Self) -> bool {
         unsafe {
-            abi::call_objects_to_bool(
+            abi::call::objects_to_bool(
                 dock_accessory_equal as *const (),
                 (self as *const Self).cast(),
                 (other as *const Self).cast(),
