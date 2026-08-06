@@ -1,6 +1,5 @@
 use crate::swift::{abi, value::define_swift_value};
 
-#[link(name = "Foundation", kind = "framework")]
 unsafe extern "C" {
     #[link_name = "$s10Foundation4DateVMa"]
     fn date_metadata();

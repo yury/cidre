@@ -26,7 +26,6 @@ use crate::swift::{
 };
 
 #[link(name = "Speech", kind = "framework")]
-#[link(name = "swiftFoundation")]
 unsafe extern "C" {}
 
 /// Creates a transcriber through `init(locale:preset:)`.

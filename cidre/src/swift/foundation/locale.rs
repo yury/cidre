@@ -1,6 +1,5 @@
 use crate::swift::{self, abi, value::define_swift_value};
 
-#[link(name = "Foundation", kind = "framework")]
 unsafe extern "C" {
     #[link_name = "$s10Foundation6LocaleVMa"]
     fn locale_metadata();

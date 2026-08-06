@@ -3,7 +3,6 @@ use crate::swift::{
     value::{Optional, Storage, define_swift_value},
 };
 
-#[link(name = "Foundation", kind = "framework")]
 unsafe extern "C" {
     #[link_name = "$s10Foundation4UUIDVMa"]
     fn uuid_metadata();

@@ -3,7 +3,6 @@ use crate::swift::{
     value::{Storage, define_swift_value},
 };
 
-#[link(name = "Foundation", kind = "framework")]
 unsafe extern "C" {
     #[link_name = "$s10Foundation16AttributedStringVMa"]
     fn attr_string_metadata();
