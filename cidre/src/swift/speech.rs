@@ -7,7 +7,6 @@
 #[cfg(feature = "av")]
 mod capture_input_sequence_provider;
 mod dictation_transcriber;
-mod locale;
 mod speech_analyzer;
 mod speech_detector;
 mod speech_module;
@@ -21,9 +20,46 @@ pub use speech_detector::{SensitivityLevel, SpeechDetector};
 pub use speech_module::SpeechModule;
 pub use speech_transcriber::{SpeechTranscriber, TranscriberPreset};
 
+use crate::swift::{
+    ToSwift, abi, foundation,
+    value::{Storage, call_with_owned_values},
+};
+
 #[link(name = "Speech", kind = "framework")]
 #[link(name = "swiftFoundation")]
 unsafe extern "C" {}
+
+/// Creates a transcriber through `init(locale:preset:)`.
+///
+/// `SpeechTranscriber` and `DictationTranscriber` both conform to
+/// `LocaleDependentSpeechModule` and are both created by an `init(locale:preset:)`
+/// taking two indirect `@owned` values. Only the symbols differ, so the
+/// construction sequence lives here once. Both the locale and the preset are
+/// consumed by the initializer.
+///
+/// # Safety
+///
+/// The symbols must belong to one type: `class_metadata_accessor` and `init`
+/// must name a transcriber whose `Preset` is `P`.
+unsafe fn transcriber_with_id_and_preset<P: ToSwift>(
+    locale_id: &str,
+    preset: P,
+    class_metadata_accessor: *const (),
+    init: *const (),
+) -> *mut () {
+    unsafe {
+        let locale = foundation::Locale::with_id(locale_id);
+
+        let mut preset_storage = Storage::<P>::new();
+        preset.copy_to_swift(preset_storage.as_mut_ptr());
+        let preset = preset_storage.assume_init();
+
+        let class_metadata = abi::call::int_to_int(class_metadata_accessor, 0) as *const ();
+        call_with_owned_values(locale.into_value(), preset, |locale, preset| {
+            abi::call::static_values_to_object(init, class_metadata, locale, preset)
+        })
+    }
+}
 
 #[cfg(test)]
 mod tests {

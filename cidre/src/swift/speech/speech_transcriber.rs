@@ -14,7 +14,7 @@ use crate::swift::concurrency::{
     swift_opaque_iterator_typeref, swift_task_alloc, swift_task_dealloc, swift_task_switch,
 };
 
-use super::locale;
+use super::transcriber_with_id_and_preset;
 use crate::swift::value::{AnyValue, DynamicStorage, Storage};
 
 crate::define_swift_class!(pub SpeechTranscriber = accessor speech_transcriber_metadata);
@@ -100,7 +100,7 @@ impl SpeechTranscriber {
     pub fn with_locale_id(locale_id: &str, preset: TranscriberPreset) -> arc::R<Self> {
         unsafe {
             arc::R::from_raw(
-                locale::transcriber_with_id_and_preset(
+                transcriber_with_id_and_preset(
                     locale_id,
                     preset,
                     speech_transcriber_metadata as _,

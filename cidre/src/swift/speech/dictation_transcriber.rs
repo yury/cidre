@@ -2,7 +2,7 @@ use crate::{
     api, arc, define_swift_getter_enum, ns, swift::concurrency::swift_opaque_iterator_typeref,
 };
 
-use super::{locale, speech_transcriber::ResultsTask};
+use super::{speech_transcriber::ResultsTask, transcriber_with_id_and_preset};
 
 crate::define_swift_class!(pub DictationTranscriber = accessor dictation_transcriber_metadata);
 
@@ -109,7 +109,7 @@ impl DictationTranscriber {
     pub fn with_locale_id(locale_id: &str, preset: DictationPreset) -> arc::R<Self> {
         unsafe {
             arc::R::from_raw(
-                locale::transcriber_with_id_and_preset(
+                transcriber_with_id_and_preset(
                     locale_id,
                     preset,
                     dictation_transcriber_metadata as _,
