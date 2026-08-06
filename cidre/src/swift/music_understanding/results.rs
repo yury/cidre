@@ -1,7 +1,7 @@
 use super::instrument::{InstrumentActivityResult, InstrumentActivityResultValue};
 use crate::{
     cm, swift,
-    swift::value::{Optional, Storage, Value},
+    swift::value::{Optional, Storage, define_swift_value},
     swift::{SwiftMetadata, abi},
 };
 
@@ -46,19 +46,6 @@ unsafe extern "C" {
     #[link_name = "$s18MusicUnderstanding0aB7SessionC10TimedValueV4timeSo6CMTimeavg"]
     fn timed_value_time();
 }
-
-crate::define_swift_marker!(pub(super) LoudnessResultValue = accessor loudness_result_metadata);
-
-crate::define_swift_marker!(
-    /// `MusicUnderstandingSession.TimedValue<Float>`.
-    ///
-    /// `TimedValue`'s generic parameter is constrained to Decodable, Encodable
-    /// and Equatable, so its metadata accessor wants the argument metadata plus
-    /// three witness tables — more arguments than an accessor passes in
-    /// registers. Resolving the mangled name instead lets the runtime assemble
-    /// the conformances.
-    TimedValueF32 = mangled "18MusicUnderstanding0aB7SessionC10TimedValueVy_SfG"
-);
 
 define_swift_value!(
     /// `MusicUnderstandingSession.SessionResult`.
@@ -195,8 +182,13 @@ impl LoudnessResult {
 
 define_swift_value!(
     /// A `TimedValue<Float>`: a measurement and the time it applies to.
-    pub TimedValue, TimedValueF32 =
-        optional mangled "18MusicUnderstanding0aB7SessionC10TimedValueVy_SfG"
+    ///
+    /// `TimedValue`'s generic parameter is constrained to Decodable, Encodable
+    /// and Equatable, so its metadata accessor wants the argument metadata plus
+    /// three witness tables — more arguments than an accessor passes in
+    /// registers. Resolving the mangled name instead lets the runtime assemble
+    /// the conformances.
+    pub TimedValue, TimedValueF32 = mangled "18MusicUnderstanding0aB7SessionC10TimedValueVy_SfG"
 );
 
 crate::impl_swift_sendable!(TimedValueF32);

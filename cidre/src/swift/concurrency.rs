@@ -80,6 +80,8 @@ unsafe extern "C" {
 
 crate::define_swift_marker!(pub(crate) TaskPriority = accessor task_priority_metadata);
 
+crate::impl_swift_sendable!(TaskPriority);
+
 /// An owned reference to a Swift `AsyncTask`.
 ///
 /// `swift_task_create` returns the task at +1, and the enqueued job holds a
@@ -176,6 +178,38 @@ pub(crate) unsafe fn task_create(
 #[inline]
 pub(crate) unsafe fn task_enqueue_global(task: *mut ()) {
     unsafe { swift_task_enqueueGlobal(task) }
+}
+
+/// Turns a call that takes a callback into one that returns a future.
+///
+/// Every binding that awaits Swift offers both, and the future half was the
+/// same five lines each time.
+#[cfg(feature = "async")]
+pub(crate) fn future_from<T: Send + 'static>(
+    start: impl FnOnce(Box<dyn FnOnce(T) + Send>),
+) -> crate::blocks::Completion<T> {
+    let shared = crate::blocks::Shared::new();
+    let completion = crate::blocks::Completion(shared.clone());
+    start(Box::new(move |value| shared.lock().ready(value)));
+    completion
+}
+
+/// The trampolines above address the task by offset, so a field moving is a
+/// silent miscompile rather than a build failure. This is what notices.
+#[cfg(test)]
+#[test]
+fn async_call_task_matches_the_offsets_the_trampolines_use() {
+    use core::mem::offset_of;
+
+    assert_eq!(0, offset_of!(AsyncCallTask, function));
+    assert_eq!(8, offset_of!(AsyncCallTask, async_fn));
+    assert_eq!(16, offset_of!(AsyncCallTask, swift_self));
+    assert_eq!(24, offset_of!(AsyncCallTask, result));
+    assert_eq!(32, offset_of!(AsyncCallTask, error));
+    assert_eq!(40, offset_of!(AsyncCallTask, args));
+    assert_eq!(80, offset_of!(AsyncCallTask, vectors));
+    // A 128-bit load only reaches offsets that are a multiple of sixteen.
+    assert_eq!(0, offset_of!(AsyncCallTask, vectors) % 16);
 }
 
 /// Calls `AsyncSequence.makeAsyncIterator()` through its protocol witness.
@@ -1551,6 +1585,300 @@ pub(crate) use {
 };
 
 define_async_sequence_runner!();
+
+/// One suspending Swift call, driven on a Swift task.
+///
+/// Every binding that awaits a Swift function used to hand-write the same three
+/// trampolines, differing only in which registers its arguments went in and
+/// which symbol was tail-called. Both are data, so they live in this
+/// fixed-layout struct instead: the trampolines below read them by offset and
+/// serve every such call, which is why there is exactly one copy of the
+/// assembly and one task descriptor.
+///
+/// The layout is the ABI these trampolines are written against. `offsets` in
+/// the tests is what checks it, since nothing else would notice a reordering.
+#[repr(C, align(16))]
+struct AsyncCallTask {
+    /// The Swift function to tail-call.
+    function: *const (),
+    /// Its async function pointer, whose second word is the context size the
+    /// callee needs.
+    async_fn: *const u8,
+    /// `swiftself`: the instance for a method, the metadata for a static.
+    swift_self: *mut (),
+    /// Where the resume trampoline puts what the call produced.
+    result: *mut (),
+    /// The error box Swift threw, or null.
+    error: *mut (),
+    /// `x0`–`x3`.
+    args: [*mut (); 4],
+    /// Keeps the vector registers at an offset a 128-bit load can reach.
+    _pad: usize,
+    /// `v0`–`v3`, loaded whole: a `Double` argument is the low half, and a
+    /// two-`Double` vector — half of a quaternion, say — is both.
+    vectors: [[u64; 2]; 4],
+    completion: Box<dyn AsyncCompletion>,
+}
+
+/// What the arguments of one call are, in the registers Swift passes them in.
+///
+/// Every register is loaded whether or not the callee reads it: a Swift
+/// function ignores the argument registers past its own arity, so one
+/// trampoline can serve calls of different shapes without branching on which.
+#[derive(Default)]
+pub(crate) struct AsyncCallArgs {
+    swift_self: *mut (),
+    args: [*mut (); 4],
+    vectors: [[u64; 2]; 4],
+}
+
+impl AsyncCallArgs {
+    #[inline]
+    pub(crate) fn new() -> Self {
+        Self::default()
+    }
+
+    /// The instance a method is called on, or a static method's metadata.
+    #[inline]
+    pub(crate) fn swift_self(mut self, value: *mut ()) -> Self {
+        self.swift_self = value;
+        self
+    }
+
+    /// One integer, pointer, or reference argument, in declaration order.
+    #[inline]
+    pub(crate) fn arg(mut self, index: usize, value: *mut ()) -> Self {
+        self.args[index] = value;
+        self
+    }
+
+    /// One floating-point argument, counted separately, as the ABI does.
+    #[inline]
+    pub(crate) fn float(mut self, index: usize, value: f64) -> Self {
+        self.vectors[index][0] = value.to_bits();
+        self
+    }
+
+    /// One two-`Double` vector argument, which is how Swift passes the halves
+    /// of a quaternion and the other short vector types.
+    #[inline]
+    pub(crate) fn vector2(mut self, index: usize, value: [f64; 2]) -> Self {
+        self.vectors[index] = [value[0].to_bits(), value[1].to_bits()];
+        self
+    }
+}
+
+/// Runs when the call finishes, with whatever it produced.
+trait AsyncCompletion: Send {
+    fn complete(self: Box<Self>, result: *mut (), error: *mut ());
+}
+
+struct OwnedCompletion<O, F> {
+    /// Everything the call borrowed, kept alive until it finishes.
+    owned: Box<O>,
+    callback: F,
+}
+
+impl<O, F> AsyncCompletion for OwnedCompletion<O, F>
+where
+    O: Send + 'static,
+    F: FnOnce(Box<O>, *mut (), *mut ()) + Send + 'static,
+{
+    fn complete(self: Box<Self>, result: *mut (), error: *mut ()) {
+        let this = *self;
+        (this.callback)(this.owned, result, error);
+    }
+}
+
+/// Awaits `function` on a Swift task, then runs `completion` with the register
+/// the call returned in and the error box it threw.
+///
+/// `owned` is whatever the call needs kept alive — retained objects, argument
+/// storage, the buffer an indirect result is written into. It is boxed before
+/// `args` runs, so a pointer taken into it stays valid for the whole call.
+///
+/// # Safety
+///
+/// `function` must be the entry point of a suspending Swift function and
+/// `async_fn` its async function pointer, and the arguments `args` builds must
+/// be what that function takes, still owned as its convention expects.
+pub(crate) unsafe fn call_async<O, F>(
+    function: *const (),
+    async_fn: *const u8,
+    owned: O,
+    args: impl FnOnce(&mut O) -> AsyncCallArgs,
+    completion: F,
+) where
+    O: Send + 'static,
+    F: FnOnce(Box<O>, *mut (), *mut ()) + Send + 'static,
+{
+    let mut owned = Box::new(owned);
+    let args = args(&mut owned);
+    let task = Box::new(AsyncCallTask {
+        function,
+        async_fn,
+        swift_self: args.swift_self,
+        result: core::ptr::null_mut(),
+        error: core::ptr::null_mut(),
+        args: args.args,
+        _pad: 0,
+        vectors: args.vectors,
+        completion: Box::new(OwnedCompletion {
+            owned,
+            callback: completion,
+        }),
+    });
+
+    unsafe {
+        task_create(
+            ENQUEUED_DISCARDING_TASK_FLAGS,
+            core::ptr::null(),
+            (&raw const CIDRE_SWIFT_ASYNC_CALL_TASK_DESCRIPTOR).cast(),
+            Box::into_raw(task).cast(),
+        );
+    }
+}
+
+/// [`call_async`] for the shape every binding actually wants: a `Result` whose
+/// error is the thrown Swift error bridged to an [`ns::Error`](crate::ns::Error).
+///
+/// `output` turns what the call produced into the success value, and only runs
+/// when nothing was thrown.
+///
+/// # Safety
+///
+/// As [`call_async`].
+#[cfg(feature = "ns")]
+pub(crate) unsafe fn call_async_result<O, T, F>(
+    function: *const (),
+    async_fn: *const u8,
+    owned: O,
+    args: impl FnOnce(&mut O) -> AsyncCallArgs,
+    output: impl FnOnce(Box<O>, *mut ()) -> T + Send + 'static,
+    callback: F,
+) where
+    O: Send + 'static,
+    T: 'static,
+    F: FnOnce(Result<T, crate::arc::R<crate::ns::Error>>) + Send + 'static,
+{
+    unsafe {
+        call_async(
+            function,
+            async_fn,
+            owned,
+            args,
+            move |owned, result, error| {
+                if error.is_null() {
+                    callback(Ok(output(owned, result)));
+                } else {
+                    // Bridging hands back the error box itself, so the task's
+                    // reference becomes the `ns::Error`'s and is not released again.
+                    callback(Err(crate::arc::R::from_raw(
+                        abi::error_as_ns_error(error).cast(),
+                    )));
+                }
+            },
+        );
+    }
+}
+
+/// Runs the Rust completion once the call is over, and frees the task.
+extern "C" fn cidre_swift_async_call_complete(task: *mut AsyncCallTask) {
+    let _ = catch_unwind(AssertUnwindSafe(|| {
+        let task = *unsafe { Box::from_raw(task) };
+        task.completion.complete(task.result, task.error);
+    }));
+}
+
+swift_async_task_descriptor!(
+    CIDRE_SWIFT_ASYNC_CALL_TASK_DESCRIPTOR,
+    entry: async_call_entry,
+    context_size: "96",
+);
+
+/// Loads the call's arguments out of the task, allocates the callee's context,
+/// and tail-calls it.
+#[unsafe(naked)]
+unsafe extern "C" fn async_call_entry() {
+    core::arch::naked_asm!(
+        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
+        // The task is our context; keep it and our own async context where the
+        // resume and finish trampolines can find them.
+        "str x20, [x22, #24]",
+        "str x22, [x22, #16]",
+        // Word 1 of the callee's async function pointer is its context size.
+        "ldr x8, [x20, #8]",
+        "ldr w0, [x8, #4]",
+        "bl {task_alloc}",
+        "mov x9, x0",
+        "str x9, [x22, #40]",
+        swift_async_store_parent!(),
+        swift_async_store_resume!("{resume}"),
+        "ldr x10, [x22, #24]",
+        "ldr x16, [x10]",
+        "ldr x0, [x10, #40]",
+        "ldr x1, [x10, #48]",
+        "ldr x2, [x10, #56]",
+        "ldr x3, [x10, #64]",
+        "ldr q0, [x10, #80]",
+        "ldr q1, [x10, #96]",
+        "ldr q2, [x10, #112]",
+        "ldr q3, [x10, #128]",
+        "ldr x20, [x10, #16]",
+        "mov x22, x9",
+        swift_async_epilogue!(frame: "32", fp: "16"),
+        "br x16",
+        task_alloc = sym swift_task_alloc,
+        resume = sym async_call_resume,
+    );
+}
+
+/// Resumed with the result in `x0` and any thrown error in `x20`. Records both
+/// in the task, then hops to a plain frame before running Rust.
+#[unsafe(naked)]
+unsafe extern "C" fn async_call_resume() {
+    core::arch::naked_asm!(
+        swift_async_prologue!(frame: "48", fp: "32", ctx: "24"),
+        swift_async_load_parent!(),
+        "str x9, [sp, #16]",
+        "str x0, [sp, #8]",
+        "str x20, [sp]",
+        "mov x0, x22",
+        "bl {task_dealloc}",
+        "ldr x9, [sp, #16]",
+        "ldr x10, [x9, #24]",
+        "ldr x11, [sp, #8]",
+        "str x11, [x10, #24]",
+        "ldr x11, [sp]",
+        "str x11, [x10, #32]",
+        "ldr x22, [sp, #16]",
+        swift_async_function_pointer!("{finish}"),
+        "mov x1, #0",
+        "mov x2, #0",
+        swift_async_epilogue!(frame: "48", fp: "32"),
+        "b {task_switch}",
+        task_dealloc = sym swift_task_dealloc,
+        finish = sym async_call_finish,
+        task_switch = sym swift_task_switch,
+    );
+}
+
+/// Runs the Rust completion, then returns to whoever created the task.
+#[unsafe(naked)]
+unsafe extern "C" fn async_call_finish() {
+    core::arch::naked_asm!(
+        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
+        "ldr x0, [x22, #24]",
+        "bl {complete}",
+        "ldr x22, [sp, #8]",
+        "ldr x9, [x22, #16]",
+        swift_async_load_resume!(),
+        "mov x22, x9",
+        swift_async_epilogue!(frame: "32", fp: "16"),
+        "br x16",
+        complete = sym cidre_swift_async_call_complete,
+    );
+}
 
 /// A Rust view of a Swift `AsyncSequence`.
 ///

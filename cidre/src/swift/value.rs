@@ -384,8 +384,10 @@ macro_rules! define_swift_value {
                 self.0.as_mut_ptr()
             }
 
+            /// Deliberately not `value`: a wrapper's own API often has a
+            /// Swift property by that name.
             #[inline]
-            pub(crate) fn value(&self) -> &$crate::swift::value::Value<$value> {
+            pub(crate) fn swift_value(&self) -> &$crate::swift::value::Value<$value> {
                 &self.0
             }
 

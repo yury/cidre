@@ -1,20 +1,10 @@
-use std::{
-    hash::Hash,
-    mem::size_of,
-    panic::{AssertUnwindSafe, catch_unwind},
-    ptr::NonNull,
-};
+use std::{hash::Hash, mem::size_of, ptr::NonNull};
 
 use crate::{
     arc, cg, ns, spatial, swift,
     swift::{
         FromSwift, SwiftMetadata, abi,
-        concurrency::{
-            self, define_async_sequence, swift_async_epilogue, swift_async_function_pointer,
-            swift_async_load_parent, swift_async_load_resume, swift_async_prologue,
-            swift_async_store_parent, swift_async_store_resume, swift_async_task_descriptor,
-            swift_task_alloc, swift_task_dealloc, swift_task_switch,
-        },
+        concurrency::{self, define_async_sequence},
         foundation::{Date, DateValue, Uuid, UuidValue},
         value::{Optional, Storage, Value, define_swift_value},
     },
@@ -1845,16 +1835,72 @@ impl Accessory {
         }
     }
 
+    /// Awaits one of the accessory's `Void`-returning methods.
+    ///
+    /// They differ only in which registers their arguments go in, so the call
+    /// itself is `owned` — whatever has to stay alive — plus where it goes.
+    fn call_void<O, F>(
+        &self,
+        function: *const (),
+        async_fn: *const u8,
+        owned: O,
+        args: impl FnOnce(&mut O) -> concurrency::AsyncCallArgs,
+        callback: F,
+    ) where
+        O: Send + 'static,
+        F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
+    {
+        unsafe {
+            concurrency::call_async_result(
+                function,
+                async_fn,
+                (arc::Retain::retained(self), owned),
+                |(accessory, owned)| args(owned).swift_self(accessory.as_ptr().cast()),
+                |_, _| (),
+                callback,
+            );
+        }
+    }
+
+    /// The same for the ones that return an `ns::Progress`.
+    fn call_progress<O, F>(
+        &self,
+        function: *const (),
+        async_fn: *const u8,
+        owned: O,
+        args: impl FnOnce(&mut O) -> concurrency::AsyncCallArgs,
+        callback: F,
+    ) where
+        O: Send + 'static,
+        F: FnOnce(Result<arc::R<ns::Progress>, arc::R<ns::Error>>) + Send + 'static,
+    {
+        unsafe {
+            concurrency::call_async_result(
+                function,
+                async_fn,
+                (arc::Retain::retained(self), owned),
+                |(accessory, owned)| args(owned).swift_self(accessory.as_ptr().cast()),
+                |_, progress| arc::R::from_raw(progress.cast()),
+                callback,
+            );
+        }
+    }
+
     #[doc(alias = "DockAccessory.setAngularVelocity(_:)")]
     pub fn set_angular_velocity_handler<F>(&self, velocity: spatial::Vector3D, callback: F)
     where
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
-        AsyncVoidTask::start(
-            self,
-            AsyncVoidArg::Vector(velocity),
+        self.call_void(
             dock_accessory_set_angular_velocity as *const (),
             (&raw const DOCK_ACCESSORY_SET_ANGULAR_VELOCITY_ASYNC).cast(),
+            (),
+            |_| {
+                concurrency::AsyncCallArgs::new()
+                    .float(0, velocity.x)
+                    .float(1, velocity.y)
+                    .float(2, velocity.z)
+            },
             callback,
         );
     }
@@ -1864,11 +1910,15 @@ impl Accessory {
     where
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
-        AsyncVoidTask::start(
-            self,
-            AsyncVoidArg::Point(point),
+        self.call_void(
             dock_accessory_select_subject as *const (),
             (&raw const DOCK_ACCESSORY_SELECT_SUBJECT_ASYNC).cast(),
+            (),
+            |_| {
+                concurrency::AsyncCallArgs::new()
+                    .float(0, point.x)
+                    .float(1, point.y)
+            },
             callback,
         );
     }
@@ -1878,11 +1928,13 @@ impl Accessory {
     where
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
-        AsyncVoidTask::start(
-            self,
-            AsyncVoidArg::FramingMode(mode),
+        self.call_void(
             dock_accessory_set_framing_mode as *const (),
             (&raw const DOCK_ACCESSORY_SET_FRAMING_MODE_ASYNC).cast(),
+            // A resilient enum is passed indirectly, so the call needs
+            // somewhere stable to point at.
+            mode,
+            |mode| concurrency::AsyncCallArgs::new().arg(0, mode.as_abi_ptr().cast_mut()),
             callback,
         );
     }
@@ -1892,11 +1944,17 @@ impl Accessory {
     where
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
-        AsyncVoidTask::start(
-            self,
-            AsyncVoidArg::Rect(rect),
+        self.call_void(
             dock_accessory_set_region_of_interest as *const (),
             (&raw const DOCK_ACCESSORY_SET_REGION_OF_INTEREST_ASYNC).cast(),
+            (),
+            |_| {
+                concurrency::AsyncCallArgs::new()
+                    .float(0, rect.origin.x)
+                    .float(1, rect.origin.y)
+                    .float(2, rect.size.width)
+                    .float(3, rect.size.height)
+            },
             callback,
         );
     }
@@ -1907,11 +1965,53 @@ impl Accessory {
     where
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
-        AsyncVoidTask::start(
-            self,
-            AsyncVoidArg::Subjects(swift::Array::from_slice(ids)),
+        self.select_subjects_array(swift::Array::from_slice(ids), callback);
+    }
+
+    fn select_subjects_array<F>(&self, ids: swift::Array<Uuid>, callback: F)
+    where
+        F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
+    {
+        self.call_void(
             dock_accessory_select_subjects as *const (),
             (&raw const DOCK_ACCESSORY_SELECT_SUBJECTS_ASYNC).cast(),
+            ids,
+            |ids| concurrency::AsyncCallArgs::new().arg(0, ids.as_raw()),
+            callback,
+        );
+    }
+
+    /// The four `track` overloads differ only in what they hand over as the
+    /// observations and whether they carry an image.
+    #[cfg(feature = "av")]
+    fn track_data<F>(
+        &self,
+        function: *const (),
+        async_fn: *const u8,
+        data: TrackData,
+        camera: CameraInformation,
+        image: Option<arc::R<crate::cv::PixelBuf>>,
+        callback: F,
+    ) where
+        F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
+    {
+        self.call_void(
+            function,
+            async_fn,
+            TrackArgs {
+                data,
+                camera,
+                image,
+            },
+            |track| {
+                let args = concurrency::AsyncCallArgs::new()
+                    .arg(0, track.data.as_raw())
+                    .arg(1, track.camera.as_ptr().cast_mut());
+                match &track.image {
+                    Some(image) => args.arg(2, image.as_ptr().cast()),
+                    None => args,
+                }
+            },
             callback,
         );
     }
@@ -1926,15 +2026,12 @@ impl Accessory {
     ) where
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
-        AsyncVoidTask::start(
-            self,
-            AsyncVoidArg::Track {
-                data: TrackData::Observations(observations),
-                camera,
-                image: None,
-            },
+        self.track_data(
             dock_accessory_track_observations as *const (),
             (&raw const DOCK_ACCESSORY_TRACK_OBSERVATIONS_ASYNC).cast(),
+            TrackData::Observations(observations),
+            camera,
+            None,
             callback,
         );
     }
@@ -1950,15 +2047,12 @@ impl Accessory {
     ) where
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
-        AsyncVoidTask::start(
-            self,
-            AsyncVoidArg::Track {
-                data: TrackData::Observations(observations),
-                camera,
-                image: Some(arc::Retain::retained(image)),
-            },
+        self.track_data(
             dock_accessory_track_observations_with_image as *const (),
             (&raw const DOCK_ACCESSORY_TRACK_OBSERVATIONS_WITH_IMAGE_ASYNC).cast(),
+            TrackData::Observations(observations),
+            camera,
+            Some(arc::Retain::retained(image)),
             callback,
         );
     }
@@ -1973,15 +2067,12 @@ impl Accessory {
     ) where
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
-        AsyncVoidTask::start(
-            self,
-            AsyncVoidArg::Track {
-                data: TrackData::Metadata(metadata_objects(metadata)),
-                camera,
-                image: None,
-            },
+        self.track_data(
             dock_accessory_track_metadata as *const (),
             (&raw const DOCK_ACCESSORY_TRACK_METADATA_ASYNC).cast(),
+            TrackData::Metadata(metadata_objects(metadata)),
+            camera,
+            None,
             callback,
         );
     }
@@ -1997,15 +2088,12 @@ impl Accessory {
     ) where
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
-        AsyncVoidTask::start(
-            self,
-            AsyncVoidArg::Track {
-                data: TrackData::Metadata(metadata_objects(metadata)),
-                camera,
-                image: Some(arc::Retain::retained(image)),
-            },
+        self.track_data(
             dock_accessory_track_metadata_with_image as *const (),
             (&raw const DOCK_ACCESSORY_TRACK_METADATA_WITH_IMAGE_ASYNC).cast(),
+            TrackData::Metadata(metadata_objects(metadata)),
+            camera,
+            Some(arc::Retain::retained(image)),
             callback,
         );
     }
@@ -2057,15 +2145,7 @@ impl Accessory {
         ids: &[Uuid],
     ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
         let ids = swift::Array::from_slice(ids);
-        self.async_void(move |accessory, callback| {
-            AsyncVoidTask::start(
-                accessory,
-                AsyncVoidArg::Subjects(ids),
-                dock_accessory_select_subjects as *const (),
-                (&raw const DOCK_ACCESSORY_SELECT_SUBJECTS_ASYNC).cast(),
-                callback,
-            )
-        })
+        self.async_void(move |accessory, callback| accessory.select_subjects_array(ids, callback))
     }
 
     #[cfg(all(feature = "async", feature = "av"))]
@@ -2098,17 +2178,14 @@ impl Accessory {
         metadata: &[&crate::av::MetadataObj],
         camera: CameraInformation,
     ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
-        let metadata = metadata_objects(metadata);
+        let data = TrackData::Metadata(metadata_objects(metadata));
         self.async_void(move |accessory, callback| {
-            AsyncVoidTask::start(
-                accessory,
-                AsyncVoidArg::Track {
-                    data: TrackData::Metadata(metadata),
-                    camera,
-                    image: None,
-                },
+            accessory.track_data(
                 dock_accessory_track_metadata as *const (),
                 (&raw const DOCK_ACCESSORY_TRACK_METADATA_ASYNC).cast(),
+                data,
+                camera,
+                None,
                 callback,
             )
         })
@@ -2121,18 +2198,15 @@ impl Accessory {
         camera: CameraInformation,
         image: &crate::cv::PixelBuf,
     ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
-        let metadata = metadata_objects(metadata);
+        let data = TrackData::Metadata(metadata_objects(metadata));
         let image = arc::Retain::retained(image);
         self.async_void(move |accessory, callback| {
-            AsyncVoidTask::start(
-                accessory,
-                AsyncVoidArg::Track {
-                    data: TrackData::Metadata(metadata),
-                    camera,
-                    image: Some(image),
-                },
+            accessory.track_data(
                 dock_accessory_track_metadata_with_image as *const (),
                 (&raw const DOCK_ACCESSORY_TRACK_METADATA_WITH_IMAGE_ASYNC).cast(),
+                data,
+                camera,
+                Some(image),
                 callback,
             )
         })
@@ -2154,11 +2228,13 @@ impl Accessory {
     where
         F: FnOnce(Result<arc::R<ns::Progress>, arc::R<ns::Error>>) + Send + 'static,
     {
-        AsyncProgressTask::start(
-            self,
-            AsyncProgressArg::Animation(animation),
+        self.call_progress(
             dock_accessory_animate as *const (),
             (&raw const DOCK_ACCESSORY_ANIMATE_ASYNC).cast(),
+            // A resilient enum is passed indirectly, so the call needs
+            // somewhere stable to point at.
+            animation,
+            |animation| concurrency::AsyncCallArgs::new().arg(0, animation.as_abi_ptr().cast_mut()),
             callback,
         );
     }
@@ -2177,15 +2253,19 @@ impl Accessory {
         let duration = unsafe {
             abi::call_double_to_words2(swift_duration_seconds as *const (), duration.as_secs_f64())
         };
-        AsyncProgressTask::start(
-            self,
-            AsyncProgressArg::Vector {
-                rotation,
-                duration,
-                relative,
-            },
+        self.call_progress(
             dock_accessory_set_vector_orientation as *const (),
             (&raw const DOCK_ACCESSORY_SET_VECTOR_ORIENTATION_ASYNC).cast(),
+            (),
+            |_| {
+                concurrency::AsyncCallArgs::new()
+                    .float(0, rotation.x)
+                    .float(1, rotation.y)
+                    .float(2, rotation.z)
+                    .arg(0, duration.0 as *mut ())
+                    .arg(1, duration.1 as *mut ())
+                    .arg(2, relative as usize as *mut ())
+            },
             callback,
         );
     }
@@ -2204,15 +2284,20 @@ impl Accessory {
         let duration = unsafe {
             abi::call_double_to_words2(swift_duration_seconds as *const (), duration.as_secs_f64())
         };
-        AsyncProgressTask::start(
-            self,
-            AsyncProgressArg::Rotation {
-                rotation,
-                duration,
-                relative,
-            },
+        self.call_progress(
             dock_accessory_set_rotation_orientation as *const (),
             (&raw const DOCK_ACCESSORY_SET_ROTATION_ORIENTATION_ASYNC).cast(),
+            (),
+            |_| {
+                // A `Rotation3D` is a four-`Double` vector, which Swift passes
+                // as two of them rather than as four scalars.
+                concurrency::AsyncCallArgs::new()
+                    .vector2(0, [rotation.x, rotation.y])
+                    .vector2(1, [rotation.z, rotation.w])
+                    .arg(0, duration.0 as *mut ())
+                    .arg(1, duration.1 as *mut ())
+                    .arg(2, relative as usize as *mut ())
+            },
             callback,
         );
     }
@@ -2293,20 +2378,6 @@ impl std::hash::Hash for Accessory {
     }
 }
 
-enum AsyncVoidArg {
-    Vector(spatial::Vector3D),
-    Point(cg::Point),
-    Rect(cg::Rect),
-    FramingMode(FramingMode),
-    Subjects(swift::Array<Uuid>),
-    #[cfg(feature = "av")]
-    Track {
-        data: TrackData,
-        camera: CameraInformation,
-        image: Option<arc::R<crate::cv::PixelBuf>>,
-    },
-}
-
 #[cfg(feature = "av")]
 crate::define_swift_objc_ref!(
     /// One `AVMetadataObject` as DockKit's tracking API takes it.
@@ -2325,6 +2396,22 @@ enum TrackData {
     Metadata(swift::Array<MetadataObjRef>),
 }
 
+/// What one `track` call keeps alive while Swift runs it.
+///
+/// `arc::R<cv::PixelBuf>` is not `Send` — a CoreFoundation type carries no such
+/// promise in these bindings — but a pixel buffer is reference-counted
+/// atomically and DockKit's own API takes one across the same boundary, so
+/// handing this to the task is what the framework already expects.
+#[cfg(feature = "av")]
+struct TrackArgs {
+    data: TrackData,
+    camera: CameraInformation,
+    image: Option<arc::R<crate::cv::PixelBuf>>,
+}
+
+#[cfg(feature = "av")]
+unsafe impl Send for TrackArgs {}
+
 #[cfg(feature = "av")]
 impl TrackData {
     fn as_raw(&self) -> *mut () {
@@ -2333,451 +2420,6 @@ impl TrackData {
             Self::Metadata(value) => value.as_raw(),
         }
     }
-}
-
-struct AsyncVoidTask {
-    accessory: arc::R<Accessory>,
-    arg: AsyncVoidArg,
-    function: *const (),
-    async_fn: *const u8,
-    error: *mut (),
-    callback: Option<Box<dyn FnOnce(Result<(), arc::R<ns::Error>>) + Send>>,
-}
-
-unsafe impl Send for AsyncVoidTask {}
-
-impl AsyncVoidTask {
-    fn start<F>(
-        accessory: &Accessory,
-        arg: AsyncVoidArg,
-        function: *const (),
-        async_fn: *const u8,
-        callback: F,
-    ) where
-        F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
-    {
-        unsafe {
-            let task = Box::new(Self {
-                accessory: arc::Retain::retained(accessory),
-                arg,
-                function,
-                async_fn,
-                error: core::ptr::null_mut(),
-                callback: Some(Box::new(callback)),
-            });
-            let context = Box::into_raw(task).cast();
-            let _ = concurrency::task_create(
-                concurrency::ENQUEUED_DISCARDING_TASK_FLAGS,
-                core::ptr::null(),
-                (&raw const CIDRE_DK_ASYNC_VOID_TASK_DESCRIPTOR).cast(),
-                context,
-            );
-        }
-    }
-}
-
-swift_async_task_descriptor!(
-    CIDRE_DK_ASYNC_VOID_TASK_DESCRIPTOR,
-    entry: dock_accessory_async_void_entry,
-    context_size: "112",
-);
-
-#[unsafe(naked)]
-unsafe extern "C" fn dock_accessory_async_void_entry() {
-    core::arch::naked_asm!(
-        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
-        "str x20, [x22, #24]",
-        "str x22, [x22, #16]",
-        "mov x0, x20",
-        "mov x1, x22",
-        "bl {prepare}",
-        "ldr x8, [x22, #48]",
-        "ldr w0, [x8, #4]",
-        "bl {task_alloc}",
-        "mov x9, x0",
-        "str x9, [x22, #56]",
-        swift_async_store_parent!(),
-        swift_async_store_resume!("{resume}"),
-        "ldr x10, [x22, #96]",
-        "cmp x10, #0",
-        "b.eq 0f",
-        "cmp x10, #1",
-        "b.eq 1f",
-        "cmp x10, #2",
-        "b.eq 2f",
-        "cmp x10, #3",
-        "b.ne 4f",
-        "ldr x0, [x22, #64]",
-        "b 3f",
-        "0:",
-        "ldr d0, [x22, #64]",
-        "ldr d1, [x22, #72]",
-        "ldr d2, [x22, #80]",
-        "b 3f",
-        "1:",
-        "ldr d0, [x22, #64]",
-        "ldr d1, [x22, #72]",
-        "b 3f",
-        "2:",
-        "ldr d0, [x22, #64]",
-        "ldr d1, [x22, #72]",
-        "ldr d2, [x22, #80]",
-        "ldr d3, [x22, #88]",
-        "b 3f",
-        "4:",
-        "cmp x10, #6",
-        "b.ne 5f",
-        "ldr x0, [x22, #64]",
-        "b 3f",
-        "5:",
-        "ldr x0, [x22, #64]",
-        "ldr x1, [x22, #72]",
-        "cmp x10, #4",
-        "b.eq 3f",
-        "ldr x2, [x22, #80]",
-        "3:",
-        "ldr x20, [x22, #32]",
-        "ldr x16, [x22, #40]",
-        "mov x22, x9",
-        swift_async_epilogue!(frame: "32", fp: "16"),
-        "br x16",
-        prepare = sym cidre_dk_async_void_prepare,
-        task_alloc = sym swift_task_alloc,
-        resume = sym dock_accessory_async_void_resume,
-    );
-}
-
-#[unsafe(naked)]
-unsafe extern "C" fn dock_accessory_async_void_resume() {
-    core::arch::naked_asm!(
-        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
-        swift_async_load_parent!(),
-        "str x9, [sp]",
-        "mov x0, x22",
-        "bl {task_dealloc}",
-        "ldr x9, [sp]",
-        "ldr x0, [x9, #24]",
-        "mov x1, x20",
-        "bl {set_error}",
-        "ldr x22, [sp]",
-        swift_async_function_pointer!("{finish}"),
-        "mov x1, #0",
-        "mov x2, #0",
-        swift_async_epilogue!(frame: "32", fp: "16"),
-        "b {task_switch}",
-        task_dealloc = sym swift_task_dealloc,
-        set_error = sym cidre_dk_async_void_set_error,
-        finish = sym dock_accessory_async_void_finish,
-        task_switch = sym swift_task_switch,
-    );
-}
-
-#[unsafe(naked)]
-unsafe extern "C" fn dock_accessory_async_void_finish() {
-    core::arch::naked_asm!(
-        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
-        "ldr x0, [x22, #24]",
-        "bl {complete}",
-        "ldr x22, [sp, #8]",
-        "ldr x9, [x22, #16]",
-        swift_async_load_resume!(),
-        "mov x22, x9",
-        swift_async_epilogue!(frame: "32", fp: "16"),
-        "br x16",
-        complete = sym cidre_dk_async_void_complete,
-    );
-}
-
-extern "C" fn cidre_dk_async_void_prepare(task: *mut AsyncVoidTask, context: *mut u64) {
-    unsafe {
-        let task = &mut *task;
-        context
-            .add(4)
-            .write(task.accessory.as_ptr().cast::<()>() as u64);
-        context.add(5).write(task.function as u64);
-        context.add(6).write(task.async_fn as u64);
-        match &task.arg {
-            AsyncVoidArg::Vector(value) => {
-                context.add(8).write(value.x.to_bits());
-                context.add(9).write(value.y.to_bits());
-                context.add(10).write(value.z.to_bits());
-                context.add(12).write(0);
-            }
-            AsyncVoidArg::Point(value) => {
-                context.add(8).write(value.x.to_bits());
-                context.add(9).write(value.y.to_bits());
-                context.add(12).write(1);
-            }
-            AsyncVoidArg::Rect(value) => {
-                context.add(8).write(value.origin.x.to_bits());
-                context.add(9).write(value.origin.y.to_bits());
-                context.add(10).write(value.size.width.to_bits());
-                context.add(11).write(value.size.height.to_bits());
-                context.add(12).write(2);
-            }
-            AsyncVoidArg::FramingMode(value) => {
-                context.add(8).write((value as *const FramingMode) as u64);
-                context.add(12).write(3);
-            }
-            AsyncVoidArg::Subjects(ids) => {
-                context.add(8).write(ids.as_raw() as u64);
-                context.add(12).write(6);
-            }
-            #[cfg(feature = "av")]
-            AsyncVoidArg::Track {
-                data,
-                camera,
-                image,
-            } => {
-                context.add(8).write(data.as_raw() as u64);
-                context.add(9).write(camera.as_ptr() as u64);
-                context.add(10).write(
-                    image
-                        .as_ref()
-                        .map_or(core::ptr::null_mut(), |image| image.as_ptr())
-                        .cast::<()>() as u64,
-                );
-                context.add(12).write(if image.is_some() { 5 } else { 4 });
-            }
-        }
-    }
-}
-
-extern "C" fn cidre_dk_async_void_set_error(task: *mut AsyncVoidTask, error: *mut ()) {
-    unsafe { (*task).error = error }
-}
-
-extern "C" fn cidre_dk_async_void_complete(task: *mut AsyncVoidTask) {
-    let _ = catch_unwind(AssertUnwindSafe(|| unsafe {
-        let mut task = Box::from_raw(task);
-        let callback = task.callback.take().expect("DockKit callback missing");
-        if task.error.is_null() {
-            callback(Ok(()));
-        } else {
-            callback(Err(arc::R::from_raw(
-                abi::error_as_ns_error(task.error).cast(),
-            )));
-        }
-    }));
-}
-
-enum AsyncProgressArg {
-    Animation(Animation),
-    Vector {
-        rotation: spatial::Vector3D,
-        duration: (u64, u64),
-        relative: bool,
-    },
-    Rotation {
-        rotation: spatial::Rotation3D,
-        duration: (u64, u64),
-        relative: bool,
-    },
-}
-
-struct AsyncProgressTask {
-    accessory: arc::R<Accessory>,
-    arg: AsyncProgressArg,
-    function: *const (),
-    async_fn: *const u8,
-    result: *mut (),
-    error: *mut (),
-    callback: Option<Box<dyn FnOnce(Result<arc::R<ns::Progress>, arc::R<ns::Error>>) + Send>>,
-}
-
-unsafe impl Send for AsyncProgressTask {}
-
-impl AsyncProgressTask {
-    fn start<F>(
-        accessory: &Accessory,
-        arg: AsyncProgressArg,
-        function: *const (),
-        async_fn: *const u8,
-        callback: F,
-    ) where
-        F: FnOnce(Result<arc::R<ns::Progress>, arc::R<ns::Error>>) + Send + 'static,
-    {
-        unsafe {
-            let task = Box::new(Self {
-                accessory: arc::Retain::retained(accessory),
-                arg,
-                function,
-                async_fn,
-                result: core::ptr::null_mut(),
-                error: core::ptr::null_mut(),
-                callback: Some(Box::new(callback)),
-            });
-            let context = Box::into_raw(task).cast();
-            let _ = concurrency::task_create(
-                concurrency::ENQUEUED_DISCARDING_TASK_FLAGS,
-                core::ptr::null(),
-                (&raw const CIDRE_DK_ASYNC_PROGRESS_TASK_DESCRIPTOR).cast(),
-                context,
-            );
-        }
-    }
-}
-
-swift_async_task_descriptor!(
-    CIDRE_DK_ASYNC_PROGRESS_TASK_DESCRIPTOR,
-    entry: dock_accessory_async_progress_entry,
-    context_size: "128",
-);
-
-#[unsafe(naked)]
-unsafe extern "C" fn dock_accessory_async_progress_entry() {
-    core::arch::naked_asm!(
-        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
-        "str x20, [x22, #24]",
-        "str x22, [x22, #16]",
-        "mov x0, x20",
-        "mov x1, x22",
-        "bl {prepare}",
-        "ldr x8, [x22, #48]",
-        "ldr w0, [x8, #4]",
-        "bl {task_alloc}",
-        "mov x9, x0",
-        "str x9, [x22, #56]",
-        swift_async_store_parent!(),
-        swift_async_store_resume!("{resume}"),
-        "ldr x10, [x22, #120]",
-        "cbnz x10, 0f",
-        "ldr x0, [x22, #64]",
-        "b 2f",
-        "0:",
-        "cmp x10, #1",
-        "b.ne 1f",
-        "ldr d0, [x22, #64]",
-        "ldr d1, [x22, #72]",
-        "ldr d2, [x22, #80]",
-        "b 3f",
-        "1:",
-        "ldr q0, [x22, #64]",
-        "ldr q1, [x22, #80]",
-        "3:",
-        "ldr x0, [x22, #96]",
-        "ldr x1, [x22, #104]",
-        "ldr x2, [x22, #112]",
-        "2:",
-        "ldr x20, [x22, #32]",
-        "ldr x16, [x22, #40]",
-        "mov x22, x9",
-        swift_async_epilogue!(frame: "32", fp: "16"),
-        "br x16",
-        prepare = sym cidre_dk_async_progress_prepare,
-        task_alloc = sym swift_task_alloc,
-        resume = sym dock_accessory_async_progress_resume,
-    );
-}
-
-#[unsafe(naked)]
-unsafe extern "C" fn dock_accessory_async_progress_resume() {
-    core::arch::naked_asm!(
-        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
-        swift_async_load_parent!(),
-        "str x9, [sp]",
-        "mov x1, x0",
-        "ldr x0, [x9, #24]",
-        "mov x2, x20",
-        "bl {set_result}",
-        "mov x0, x22",
-        "bl {task_dealloc}",
-        "ldr x22, [sp]",
-        swift_async_function_pointer!("{finish}"),
-        "mov x1, #0",
-        "mov x2, #0",
-        swift_async_epilogue!(frame: "32", fp: "16"),
-        "b {task_switch}",
-        set_result = sym cidre_dk_async_progress_set_result,
-        task_dealloc = sym swift_task_dealloc,
-        finish = sym dock_accessory_async_progress_finish,
-        task_switch = sym swift_task_switch,
-    );
-}
-
-#[unsafe(naked)]
-unsafe extern "C" fn dock_accessory_async_progress_finish() {
-    core::arch::naked_asm!(
-        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
-        "ldr x0, [x22, #24]",
-        "bl {complete}",
-        "ldr x22, [sp, #8]",
-        "ldr x9, [x22, #16]",
-        swift_async_load_resume!(),
-        "mov x22, x9",
-        swift_async_epilogue!(frame: "32", fp: "16"),
-        "br x16",
-        complete = sym cidre_dk_async_progress_complete,
-    );
-}
-
-extern "C" fn cidre_dk_async_progress_prepare(task: *mut AsyncProgressTask, context: *mut u64) {
-    unsafe {
-        let task = &mut *task;
-        context
-            .add(4)
-            .write(task.accessory.as_ptr().cast::<()>() as u64);
-        context.add(5).write(task.function as u64);
-        context.add(6).write(task.async_fn as u64);
-        match &task.arg {
-            AsyncProgressArg::Animation(value) => {
-                context.add(8).write((value as *const Animation) as u64);
-                context.add(15).write(0);
-            }
-            AsyncProgressArg::Vector {
-                rotation,
-                duration,
-                relative,
-            } => {
-                context.add(8).write(rotation.x.to_bits());
-                context.add(9).write(rotation.y.to_bits());
-                context.add(10).write(rotation.z.to_bits());
-                context.add(12).write(duration.0);
-                context.add(13).write(duration.1);
-                context.add(14).write(*relative as u64);
-                context.add(15).write(1);
-            }
-            AsyncProgressArg::Rotation {
-                rotation,
-                duration,
-                relative,
-            } => {
-                context.add(8).write(rotation.x.to_bits());
-                context.add(9).write(rotation.y.to_bits());
-                context.add(10).write(rotation.z.to_bits());
-                context.add(11).write(rotation.w.to_bits());
-                context.add(12).write(duration.0);
-                context.add(13).write(duration.1);
-                context.add(14).write(*relative as u64);
-                context.add(15).write(2);
-            }
-        }
-    }
-}
-
-extern "C" fn cidre_dk_async_progress_set_result(
-    task: *mut AsyncProgressTask,
-    result: *mut (),
-    error: *mut (),
-) {
-    unsafe {
-        (*task).result = result;
-        (*task).error = error;
-    }
-}
-
-extern "C" fn cidre_dk_async_progress_complete(task: *mut AsyncProgressTask) {
-    let _ = catch_unwind(AssertUnwindSafe(|| unsafe {
-        let mut task = Box::from_raw(task);
-        let callback = task.callback.take().expect("DockKit callback missing");
-        if task.error.is_null() {
-            callback(Ok(arc::R::from_raw(task.result.cast())));
-        } else {
-            callback(Err(arc::R::from_raw(
-                abi::error_as_ns_error(task.error).cast(),
-            )));
-        }
-    }));
 }
 
 #[cfg(test)]
