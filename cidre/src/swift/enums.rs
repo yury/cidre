@@ -120,9 +120,48 @@ macro_rules! define_swift_tag_enum {
 /// element, a dictionary key, or an argument.
 #[macro_export]
 macro_rules! define_swift_getter_enum {
+    // The enum's own metadata accessor is derived from the Swift type's name;
+    // each case's static getter keeps its symbol, since a member's mangling
+    // needs substitutions this cannot reproduce.
+    (
+        $(#[$meta:meta])*
+        $vis:vis $ty:ident in $framework:literal = swift $name:literal {
+            $($(#[$case_meta:meta])* $case:ident = $getter:literal),+ $(,)?
+        }
+    ) => {
+        $crate::define_swift_getter_enum!(
+            $(#[$meta])*
+            $vis $ty in $framework
+                = accessor_ptr $crate::swift::metadata_accessor!(struct, $name), cases {
+                $($(#[$case_meta])* $case = $getter),+
+            }
+        );
+    };
+    // A case's getter symbol is still needed, so the framework to link stays
+    // even when the accessor arrives as a pointer.
     (
         $(#[$meta:meta])*
         $vis:vis $ty:ident in $framework:literal = accessor $metadata:literal {
+            $($(#[$case_meta:meta])* $case:ident = $getter:literal),+ $(,)?
+        }
+    ) => {
+        $crate::define_swift_getter_enum!(
+            $(#[$meta])*
+            $vis $ty in $framework = accessor_ptr {
+                #[link(name = $framework, kind = "framework")]
+                unsafe extern "C" {
+                    #[link_name = $metadata]
+                    fn metadata();
+                }
+                metadata as *const ()
+            }, cases {
+                $($(#[$case_meta])* $case = $getter),+
+            }
+        );
+    };
+    (
+        $(#[$meta:meta])*
+        $vis:vis $ty:ident in $framework:literal = accessor_ptr $accessor:expr, cases {
             $($(#[$case_meta:meta])* $case:ident = $getter:literal),+ $(,)?
         }
     ) => {
@@ -167,16 +206,9 @@ macro_rules! define_swift_getter_enum {
             fn metadata() -> *const $crate::swift::abi::TypeMetadata {
                 static CACHE: $crate::swift::abi::MetadataCache =
                     $crate::swift::abi::MetadataCache::new();
-                CACHE.get(|| {
-                    #[link(name = $framework, kind = "framework")]
-                    unsafe extern "C" {
-                        #[link_name = $metadata]
-                        fn metadata();
-                    }
-                    unsafe {
-                        $crate::swift::abi::call::int_to_int(metadata as *const (), 0)
-                            as *const $crate::swift::abi::TypeMetadata
-                    }
+                CACHE.get(|| unsafe {
+                    $crate::swift::abi::call::int_to_int($accessor as *const (), 0)
+                        as *const $crate::swift::abi::TypeMetadata
                 })
             }
         }

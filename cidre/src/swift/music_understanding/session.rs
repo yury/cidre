@@ -10,13 +10,13 @@ use crate::{
 use super::analysis_type::AnalysisType;
 use super::results::{SessionResult, SessionResultValue};
 
-crate::define_swift_class!(pub MusicUnderstandingSession = accessor session_metadata);
+crate::define_swift!(
+    #[swift::class("MusicUnderstanding.MusicUnderstandingSession")]
+    pub MusicUnderstandingSession
+);
 
 #[link(name = "MusicUnderstanding", kind = "framework")]
 unsafe extern "C" {
-    #[link_name = "$s18MusicUnderstanding0aB7SessionCMa"]
-    fn session_metadata();
-
     /// The allocating initializer, which takes the `AVAsset` at +1.
     #[link_name = "$s18MusicUnderstanding0aB7SessionC5assetACs8Sendable_So7AVAssetCXc_tYaKcfC"]
     fn session_init_with_asset();

@@ -1,25 +1,16 @@
 use crate::{
-    api, arc, ns,
+    api, arc, ns, swift,
     swift::dock_kit::StateChanges,
-    swift::{abi, concurrency},
+    swift::concurrency,
 };
 
-crate::define_swift_class!(pub AccessoryManager = accessor dock_accessory_manager_metadata);
+crate::define_swift!(
+    #[swift::class("DockKit.DockAccessoryManager")]
+    pub AccessoryManager
+);
 
 #[link(name = "DockKit", kind = "framework")]
 unsafe extern "C" {
-    #[link_name = "$s7DockKit0A16AccessoryManagerCMa"]
-    fn dock_accessory_manager_metadata();
-
-    #[link_name = "$s7DockKit0A16AccessoryManagerC6sharedACvgZ"]
-    fn dock_accessory_manager_shared();
-
-    #[link_name = "$s7DockKit0A16AccessoryManagerC23isSystemTrackingEnabledSbvgTj"]
-    fn dock_accessory_manager_is_system_tracking_enabled();
-
-    #[link_name = "$s7DockKit0A16AccessoryManagerC21accessoryStateChangesAA0aC0C0fG0VvgTj"]
-    fn dock_accessory_manager_accessory_state_changes();
-
     #[link_name = "$s7DockKit0A16AccessoryManagerC24setSystemTrackingEnabledyySbYaKFTj"]
     fn dock_accessory_manager_set_system_tracking_enabled();
 
@@ -29,52 +20,19 @@ unsafe extern "C" {
 
 impl AccessoryManager {
     /// DockKit `DockAccessoryManager.shared`.
-    #[doc(alias = "DockAccessoryManager.shared")]
-    #[inline]
-    pub fn shared() -> arc::R<Self> {
-        unsafe {
-            // Swift emits a class metadata access before calling this static getter.
-            let metadata = <Self as crate::swift::SwiftMetadata>::metadata();
-            arc::R::from_raw(
-                abi::call::static0_object(
-                    dock_accessory_manager_shared as *const (),
-                    metadata.cast(),
-                )
-                .cast(),
-            )
-        }
-    }
+    ///
+    /// Swift emits a class metadata access before calling a static member, and
+    /// the generated call does the same.
+    #[swift::call(sym = "$s7DockKit0A16AccessoryManagerC6sharedACvgZ")]
+    pub fn shared() -> arc::R<Self>;
 
-    #[doc(alias = "DockAccessoryManager.isSystemTrackingEnabled")]
-    #[inline]
-    pub fn is_system_tracking_enabled(&self) -> bool {
-        unsafe {
-            abi::call::object_to_bool(
-                dock_accessory_manager_is_system_tracking_enabled as *const (),
-                (self as *const Self).cast(),
-            )
-        }
-    }
+    #[swift::call("DockKit.DockAccessoryManager(class).isSystemTrackingEnabled: Bool { get } thunk")]
+    pub fn is_system_tracking_enabled(&self) -> bool;
 
-    #[doc(alias = "DockAccessoryManager.accessoryStateChanges")]
-    #[inline]
-    pub fn accessory_state_changes(&self) -> Result<StateChanges, arc::R<ns::Error>> {
-        unsafe {
-            let mut storage = StateChanges::storage();
-            let error = abi::call::object_to_throwing_value(
-                dock_accessory_manager_accessory_state_changes as *const (),
-                (self as *const Self).cast(),
-                storage.as_mut_ptr(),
-            );
-            if error.is_null() {
-                Ok(StateChanges::from_storage(storage))
-            } else {
-                // Bridging returns the error box itself, so our reference
-                // becomes the `ns::Error`'s and must not be released again.
-                Err(arc::R::from_raw(abi::error_as_ns_error(error).cast()))
-            }
-        }
-    }
+    /// Bridging returns the error box itself, so the reference the call gets
+    /// back becomes the `ns::Error`'s and is not released again.
+    #[swift::call(sym = "$s7DockKit0A16AccessoryManagerC21accessoryStateChangesAA0aC0C0fG0VvgTj")]
+    pub fn accessory_state_changes(&self) -> Result<StateChanges, arc::R<ns::Error>>;
 
     /// Turns system tracking on or off.
     #[doc(alias = "DockAccessoryManager.setSystemTrackingEnabled(_:)")]

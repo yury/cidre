@@ -45,8 +45,91 @@ pub use dictionary::Dictionary;
 pub use set::Set;
 pub use string::{RawString, SmallStringError, String};
 pub use types::{
-    FromSwift, SwiftClass, SwiftHashable, SwiftMetadata, SwiftSendable, SwiftType, ToSwift,
+    AbiClass, FromSwift, FromSwiftDoubles, SwiftAbi, SwiftClass, SwiftHashable, SwiftMetadata, SwiftSelf, SwiftSendable, SwiftType,
+    ToSwift,
 };
+
+/// Calls a Swift entry point instead of writing out the call.
+///
+/// The attribute names the Swift declaration; the Rust signature it is written
+/// on says how each value is represented, which is what picks the registers.
+pub use cidre_macros::swift_call as call;
+
+/// The address of a Swift type's metadata accessor, named as Swift spells the
+/// type rather than as the symbol spells it.
+pub use cidre_macros::swift_metadata_accessor as metadata_accessor;
+
+/// Declares the Rust type standing for a Swift one, given the Swift type's
+/// name.
+///
+/// The name is what the metadata accessor's symbol is made of, so a binding
+/// states the type once, in the form a reader can check against the framework's
+/// own documentation, instead of a mangled symbol and a hand-written `extern`
+/// block that no longer resembles it.
+///
+/// ```ignore
+/// define_swift!(#[swift::class("DockKit.DockAccessoryManager")] pub AccessoryManager);
+/// define_swift!(#[swift::struct("Foundation.UUID")] pub Uuid, UuidValue);
+/// define_swift!(#[swift::enum("DockKit.DockAccessory(class).TrackedSubjectType")] pub(crate) TrackedSubjectTypeValue);
+/// ```
+///
+/// A type nested inside another carries the enclosing type's kind in
+/// parentheses, since the symbol encodes it and the Swift spelling does not.
+#[macro_export]
+macro_rules! define_swift {
+    (
+        #[swift::class($name:literal)]
+        $(#[$outer:meta])*
+        $vis:vis $ty:ident
+    ) => {
+        $crate::define_swift_class!(
+            $(#[$outer])*
+            $vis $ty = accessor $crate::swift::metadata_accessor!(class, $name)
+        );
+    };
+    (
+        #[swift::struct($name:literal)]
+        $(#[$outer:meta])*
+        $vis:vis $ty:ident, $marker:ident
+    ) => {
+        $crate::swift::value::define_swift_value!(
+            $(#[$outer])*
+            $vis $ty, $marker = accessor $crate::swift::metadata_accessor!(struct, $name)
+        );
+    };
+    // A getter whose result is `Payload?` writes the optional itself into the
+    // wrapper, so the wrapper names the payload but has the optional's layout.
+    (
+        #[swift::struct($name:literal)]
+        $(#[$outer:meta])*
+        $vis:vis $ty:ident, optional $marker:ident
+    ) => {
+        $crate::swift::value::define_swift_value!(
+            $(#[$outer])*
+            $vis $ty, $marker = optional accessor $crate::swift::metadata_accessor!(struct, $name)
+        );
+    };
+    (
+        #[swift::enum($name:literal)]
+        $(#[$outer:meta])*
+        $vis:vis $ty:ident
+    ) => {
+        $crate::define_swift_marker!(
+            $(#[$outer])*
+            $vis $ty = accessor $crate::swift::metadata_accessor!(enum, $name)
+        );
+    };
+    (
+        #[swift::struct($name:literal)]
+        $(#[$outer:meta])*
+        $vis:vis $ty:ident
+    ) => {
+        $crate::define_swift_marker!(
+            $(#[$outer])*
+            $vis $ty = accessor $crate::swift::metadata_accessor!(struct, $name)
+        );
+    };
+}
 
 /// Defines an opaque native Swift class marker type and implements Cidre's
 /// shared retain/release ownership traits for it.
@@ -92,6 +175,14 @@ macro_rules! define_swift_class {
         #[repr(C)]
         $vis struct $ty {
             _priv: [u8; 0],
+        }
+
+        /// A class-typed value *is* the reference, so that is what `self` is.
+        unsafe impl $crate::swift::SwiftSelf for $ty {
+            #[inline]
+            fn swift_self_ptr(&self) -> *const () {
+                (self as *const Self).cast()
+            }
         }
 
         impl $crate::arc::Release for $ty {

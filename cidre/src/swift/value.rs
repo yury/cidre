@@ -244,6 +244,39 @@ where
     result
 }
 
+/// A wrapper over a Swift value held in storage the wrapper owns.
+///
+/// A call returning one of these gets the address of that storage in the
+/// indirect-result register and hands the wrapper back what Swift wrote, so a
+/// generated call needs to name the storage and take it without knowing which
+/// wrapper it has.
+pub(crate) trait SwiftValue: Sized {
+    /// The marker naming the Swift type, which is what sizes the storage.
+    type Marker: SwiftMetadata;
+
+    /// # Safety
+    ///
+    /// `storage` must hold an initialized value of this type.
+    unsafe fn from_storage(storage: Storage<Self::Marker>) -> Self;
+
+    fn from_value(value: Value<Self::Marker>) -> Self;
+}
+
+/// A wrapper a Swift `Optional` result can be read back into.
+///
+/// The two flavours of wrapper differ in what they hold — the payload, or the
+/// optional itself — so the storage a call allocates is described here and the
+/// wrapper decides what to make of it.
+pub(crate) trait SwiftOptionalValue: Sized {
+    /// The marker naming the payload's Swift type.
+    type Marker: SwiftMetadata;
+
+    /// # Safety
+    ///
+    /// `storage` must hold an initialized `Optional<Self::Marker>`.
+    unsafe fn from_optional_storage(storage: Storage<Optional<Self::Marker>>) -> Option<Self>;
+}
+
 /// Defines a wrapper over a Swift value type whose layout is only known at
 /// runtime, together with the marker naming it.
 ///
@@ -256,13 +289,64 @@ where
 macro_rules! define_swift_value {
     ($(#[$meta:meta])* $vis:vis $ty:ident, $marker:ident = accessor $accessor:expr) => {
         $crate::define_swift_marker!(pub(crate) $marker = accessor $accessor);
-        define_swift_value!(@wrap $(#[$meta])* $vis $ty, $marker);
-        define_swift_value!(@read $ty, $marker);
+        $crate::swift::value::define_swift_value!(@wrap $(#[$meta])* $vis $ty, $marker);
+        $crate::swift::value::define_swift_value!(@read $ty, $marker);
+        $crate::swift::value::define_swift_value!(@value $ty, $marker);
     };
     ($(#[$meta:meta])* $vis:vis $ty:ident, $marker:ident = mangled $name:literal) => {
         $crate::define_swift_marker!(pub(crate) $marker = mangled $name);
-        define_swift_value!(@wrap $(#[$meta])* $vis $ty, $marker);
-        define_swift_value!(@read $ty, $marker);
+        $crate::swift::value::define_swift_value!(@wrap $(#[$meta])* $vis $ty, $marker);
+        $crate::swift::value::define_swift_value!(@read $ty, $marker);
+        $crate::swift::value::define_swift_value!(@value $ty, $marker);
+    };
+    // The wrapper's own storage, named so a generated call can allocate the
+    // result buffer and take what Swift wrote into it without either side
+    // spelling out the marker type.
+    (@value $ty:ident, $marker:ident) => {
+        impl $crate::swift::value::SwiftValue for $ty {
+            type Marker = $marker;
+
+            #[inline]
+            unsafe fn from_storage(
+                storage: $crate::swift::value::Storage<Self::Marker>,
+            ) -> Self {
+                Self(unsafe { storage.assume_init() })
+            }
+
+            #[inline]
+            fn from_value(value: $crate::swift::value::Value<Self::Marker>) -> Self {
+                Self(value)
+            }
+        }
+
+        /// The wrapper holds the payload, so an optional result is unwrapped
+        /// into it and the `.none` case is destroyed with the optional.
+        impl $crate::swift::value::SwiftOptionalValue for $ty {
+            type Marker = $marker;
+
+            #[inline]
+            unsafe fn from_optional_storage(
+                storage: $crate::swift::value::Storage<
+                    $crate::swift::value::Optional<Self::Marker>,
+                >,
+            ) -> Option<Self> {
+                unsafe { storage.assume_init().take_value().map(Self::from_value) }
+            }
+        }
+
+        /// A value type is passed by address, which is what the wrapper holds.
+        unsafe impl $crate::swift::SwiftSelf for $ty {
+            #[inline]
+            fn swift_self_ptr(&self) -> *const () {
+                self.0.as_ptr()
+            }
+        }
+
+        /// Its layout is only known at runtime, so Swift returns it into
+        /// storage the caller provides.
+        unsafe impl $crate::swift::SwiftAbi for $ty {
+            const CLASS: $crate::swift::AbiClass = $crate::swift::AbiClass::Indirect;
+        }
     };
     // Only the unwrapped forms get this: an `Optional<Payload>` wrapper names
     // the payload's type but does not have its layout, so it can be neither
@@ -322,15 +406,43 @@ macro_rules! define_swift_value {
     };
     ($(#[$meta:meta])* $vis:vis $ty:ident, $marker:ident = optional accessor $accessor:expr) => {
         $crate::define_swift_marker!(pub(crate) $marker = accessor $accessor);
-        define_swift_value!(@wrap $(#[$meta])* $vis $ty, $crate::swift::value::Optional<$marker>);
-        define_swift_value!(@optional $ty, $marker);
+        $crate::swift::value::define_swift_value!(@wrap $(#[$meta])* $vis $ty, $crate::swift::value::Optional<$marker>);
+        $crate::swift::value::define_swift_value!(@optional $ty, $marker);
     };
     ($(#[$meta:meta])* $vis:vis $ty:ident, $marker:ident = optional mangled $name:literal) => {
         $crate::define_swift_marker!(pub(crate) $marker = mangled $name);
-        define_swift_value!(@wrap $(#[$meta])* $vis $ty, $crate::swift::value::Optional<$marker>);
-        define_swift_value!(@optional $ty, $marker);
+        $crate::swift::value::define_swift_value!(@wrap $(#[$meta])* $vis $ty, $crate::swift::value::Optional<$marker>);
+        $crate::swift::value::define_swift_value!(@optional $ty, $marker);
     };
     (@optional $ty:ident, $marker:ident) => {
+        /// The wrapper holds the optional itself, so the storage becomes the
+        /// wrapper unchanged once the tag says `.some`.
+        impl $crate::swift::value::SwiftOptionalValue for $ty {
+            type Marker = $marker;
+
+            #[inline]
+            unsafe fn from_optional_storage(
+                storage: $crate::swift::value::Storage<
+                    $crate::swift::value::Optional<Self::Marker>,
+                >,
+            ) -> Option<Self> {
+                let value = unsafe { storage.assume_init() };
+                value.is_some().then(|| Self(value))
+            }
+        }
+
+        /// A value type is passed by address, which is what the wrapper holds.
+        unsafe impl $crate::swift::SwiftSelf for $ty {
+            #[inline]
+            fn swift_self_ptr(&self) -> *const () {
+                self.0.as_ptr()
+            }
+        }
+
+        unsafe impl $crate::swift::SwiftAbi for $ty {
+            const CLASS: $crate::swift::AbiClass = $crate::swift::AbiClass::Indirect;
+        }
+
         impl $ty {
             /// Reads what Swift wrote into `storage`, or `None` when the tag
             /// says the getter had nothing to return.

@@ -198,23 +198,7 @@ pub unsafe fn values3_to_value(
     }
 }
 
-#[inline]
-pub unsafe fn static0_object(function: *const (), type_metadata: *const ()) -> *mut () {
-    let object: usize;
-    unsafe {
-        swift_call!(function, in("x20") type_metadata, lateout("x0") object,);
-    }
-    object as *mut ()
-}
 
-#[inline]
-pub unsafe fn static0_bool(function: *const (), type_metadata: *const ()) -> bool {
-    let flag: usize;
-    unsafe {
-        swift_call!(function, in("x20") type_metadata, lateout("x0") flag,);
-    }
-    flag & 1 != 0
-}
 
 /// # Safety
 ///
@@ -281,19 +265,6 @@ pub unsafe fn static_array_value_to_object(
     object as *mut ()
 }
 
-/// # Safety
-///
-/// `string` must be owned as the callee expects, and `out` uninitialized
-/// storage for what it returns.
-#[inline]
-pub unsafe fn string_to_value(function: *const (), string: RawString, out: *mut ()) {
-    unsafe {
-        swift_call!(function,
-            in("x0") string.word0, in("x1") string.word1,
-            in("x8") out,
-        );
-    }
-}
 
 /// `DockAccessory.Observation.init(identifier:type:rect:faceYawAngle:)`.
 ///
@@ -359,62 +330,10 @@ pub unsafe fn to_value(function: *const (), out: *mut ()) {
     }
 }
 
-#[inline]
-pub unsafe fn object_to_bool(function: *const (), object: *const ()) -> bool {
-    let flag: usize;
-    unsafe {
-        swift_call!(function, in("x20") object, lateout("x0") flag,);
-    }
-    flag & 1 != 0
-}
 
-#[inline]
-pub unsafe fn object_to_int(function: *const (), object: *const ()) -> isize {
-    let result: isize;
-    unsafe {
-        swift_call!(function, in("x20") object, lateout("x0") result,);
-    }
-    result
-}
 
-/// A static `==`, which takes both operands as arguments.
-///
-/// # Safety
-///
-/// Both must be values of the type the operator belongs to.
-#[inline]
-pub unsafe fn objects_to_bool(function: *const (), lhs: *const (), rhs: *const ()) -> bool {
-    let flag: usize;
-    unsafe {
-        swift_call!(function, inlateout("x0") lhs => flag, in("x1") rhs,);
-    }
-    flag & 1 != 0
-}
 
-#[inline]
-pub unsafe fn object_to_string(function: *const (), object: *const ()) -> RawString {
-    let (word0, word1): (usize, usize);
-    unsafe {
-        swift_call!(function,
-            in("x20") object,
-            lateout("x0") word0, lateout("x1") word1,
-        );
-    }
-    RawString { word0, word1 }
-}
 
-#[inline]
-pub unsafe fn object_to_rect(function: *const (), object: *const ()) -> (f64, f64, f64, f64) {
-    let (d0, d1, d2, d3): (f64, f64, f64, f64);
-    unsafe {
-        swift_call!(function,
-            in("x20") object,
-            lateout("d0") d0, lateout("d1") d1,
-            lateout("d2") d2, lateout("d3") d3,
-        );
-    }
-    (d0, d1, d2, d3)
-}
 
 #[inline]
 pub unsafe fn value_to_int(function: *const (), value: *const ()) -> isize {
@@ -434,14 +353,6 @@ pub unsafe fn value_to_bool(function: *const (), value: *const ()) -> bool {
     flag & 1 != 0
 }
 
-#[inline]
-pub unsafe fn value_to_double(function: *const (), value: *const ()) -> f64 {
-    let d0: f64;
-    unsafe {
-        swift_call!(function, in("x20") value, in("x0") value, lateout("d0") d0,);
-    }
-    d0
-}
 
 #[inline]
 pub unsafe fn value_to_words3(function: *const (), value: *const ()) -> (u64, u64, u64) {
@@ -489,17 +400,6 @@ pub unsafe fn value_to_object(function: *const (), value: *const ()) -> *mut () 
     object as *mut ()
 }
 
-#[inline]
-pub unsafe fn value_to_doubles3(function: *const (), value: *const ()) -> [f64; 3] {
-    let (d0, d1, d2): (f64, f64, f64);
-    unsafe {
-        swift_call!(function,
-            in("x20") value, in("x0") value,
-            lateout("d0") d0, lateout("d1") d1, lateout("d2") d2,
-        );
-    }
-    [d0, d1, d2]
-}
 
 #[inline]
 pub unsafe fn value_to_string(function: *const (), value: *const ()) -> RawString {

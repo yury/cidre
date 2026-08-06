@@ -1,45 +1,12 @@
-use super::instrument::{InstrumentActivityResult, InstrumentActivityResultValue};
+use super::instrument::InstrumentActivityResult;
 use crate::{
     cm, swift,
-    swift::value::{Optional, Storage, define_swift_value},
+    swift::value::define_swift_value,
     swift::{SwiftMetadata, abi},
 };
 
 #[link(name = "MusicUnderstanding", kind = "framework")]
 unsafe extern "C" {
-    #[link_name = "$s18MusicUnderstanding0aB7SessionC0C6ResultVMa"]
-    fn session_result_metadata();
-
-    #[link_name = "$s18MusicUnderstanding0aB7SessionC0C6ResultV6rhythmAA06RhythmD0VSgvg"]
-    fn session_result_rhythm();
-
-    #[link_name = "$s18MusicUnderstanding12RhythmResultVMa"]
-    fn rhythm_result_metadata();
-
-    #[link_name = "$s18MusicUnderstanding12RhythmResultV14beatsPerMinuteSfSgvg"]
-    fn rhythm_result_beats_per_minute();
-
-    #[link_name = "$s18MusicUnderstanding12RhythmResultV5beatsSaySo6CMTimeaGvg"]
-    fn rhythm_result_beats();
-
-    #[link_name = "$s18MusicUnderstanding12RhythmResultV4barsSaySo6CMTimeaGvg"]
-    fn rhythm_result_bars();
-
-    #[link_name = "$s18MusicUnderstanding0aB7SessionC0C6ResultV8loudnessAA08LoudnessD0VSgvg"]
-    fn session_result_loudness();
-
-    #[link_name = "$s18MusicUnderstanding0aB7SessionC0C6ResultV18instrumentActivityAA010InstrumentfD0VSgvg"]
-    fn session_result_instrument_activity();
-
-    #[link_name = "$s18MusicUnderstanding14LoudnessResultVMa"]
-    fn loudness_result_metadata();
-
-    #[link_name = "$s18MusicUnderstanding14LoudnessResultV10integratedAA0aB7SessionC10TimedValueVy_SfGvg"]
-    fn loudness_result_integrated();
-
-    #[link_name = "$s18MusicUnderstanding14LoudnessResultV4peakAA0aB7SessionC10TimedValueVy_SfGvg"]
-    fn loudness_result_peak();
-
     #[link_name = "$s18MusicUnderstanding0aB7SessionC10TimedValueV5valuexvg"]
     fn timed_value_value();
 
@@ -47,63 +14,39 @@ unsafe extern "C" {
     fn timed_value_time();
 }
 
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("MusicUnderstanding.MusicUnderstandingSession(class).SessionResult")]
     /// `MusicUnderstandingSession.SessionResult`.
     ///
     /// A Swift value type whose layout is only known at runtime, so it is kept
     /// in its Swift representation and read through the framework's getters.
-    pub SessionResult, SessionResultValue = accessor session_result_metadata
+    pub SessionResult, SessionResultValue
 );
 
 crate::impl_swift_sendable!(SessionResultValue);
 
 impl SessionResult {
     /// `SessionResult.rhythm`, present only when rhythm analysis ran.
+    #[swift::call(sym = "$s18MusicUnderstanding0aB7SessionC0C6ResultV6rhythmAA06RhythmD0VSgvg")]
     #[doc(alias = "SessionResult.rhythm")]
-    pub fn rhythm(&self) -> Option<RhythmResult> {
-        unsafe {
-            let mut storage = Storage::<Optional<RhythmResultValue>>::new();
-            abi::call::value_to_value(
-                session_result_rhythm as *const (),
-                self.as_ptr(),
-                storage.as_mut_ptr(),
-            );
-            RhythmResult::from_optional_storage(storage)
-        }
-    }
+    pub fn rhythm(&self) -> Option<RhythmResult>;
 
     /// `SessionResult.loudness`, present only when loudness analysis ran.
+    #[swift::call(sym = "$s18MusicUnderstanding0aB7SessionC0C6ResultV8loudnessAA08LoudnessD0VSgvg")]
     #[doc(alias = "SessionResult.loudness")]
-    pub fn loudness(&self) -> Option<LoudnessResult> {
-        unsafe {
-            let mut storage = Storage::<Optional<LoudnessResultValue>>::new();
-            abi::call::value_to_value(
-                session_result_loudness as *const (),
-                self.as_ptr(),
-                storage.as_mut_ptr(),
-            );
-            LoudnessResult::from_optional_storage(storage)
-        }
-    }
+    pub fn loudness(&self) -> Option<LoudnessResult>;
 
-    /// `SessionResult.instrumentActivity`.
+    #[swift::call(
+        sym = "$s18MusicUnderstanding0aB7SessionC0C6ResultV18instrumentActivityAA010InstrumentfD0VSgvg"
+    )]
     #[doc(alias = "SessionResult.instrumentActivity")]
-    pub fn instrument_activity(&self) -> Option<InstrumentActivityResult> {
-        unsafe {
-            let mut storage = Storage::<Optional<InstrumentActivityResultValue>>::new();
-            abi::call::value_to_value(
-                session_result_instrument_activity as *const (),
-                self.as_ptr(),
-                storage.as_mut_ptr(),
-            );
-            InstrumentActivityResult::from_optional_storage(storage)
-        }
-    }
+    pub fn instrument_activity(&self) -> Option<InstrumentActivityResult>;
 }
 
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("MusicUnderstanding.RhythmResult")]
     /// `MusicUnderstanding.RhythmResult`.
-    pub RhythmResult, RhythmResultValue = optional accessor rhythm_result_metadata
+    pub RhythmResult, optional RhythmResultValue
 );
 
 crate::impl_swift_sendable!(RhythmResultValue);
@@ -111,71 +54,44 @@ crate::impl_swift_sendable!(RhythmResultValue);
 impl RhythmResult {
     /// `RhythmResult.beatsPerMinute`.
     ///
-    /// Swift returns this `Float?` directly in a register rather than through
-    /// an indirect result, so the word is decoded through the runtime instead
-    /// of by assuming where the tag sits.
-    #[doc(alias = "RhythmResult.beatsPerMinute")]
-    pub fn beats_per_minute(&self) -> Option<f32> {
-        unsafe {
-            let word =
-                abi::call::value_to_int(rhythm_result_beats_per_minute as *const (), self.as_ptr());
+    /// Swift returns this `Float?` in a register rather than through an
+    /// indirect result, so the word is decoded through the runtime instead of
+    /// by assuming where the tag sits.
+    #[swift::call("MusicUnderstanding.RhythmResult(struct).beatsPerMinute: Float? { get }")]
+    pub fn beats_per_minute(&self) -> Option<f32>;
 
-            let mut storage = Storage::<Optional<f32>>::new();
-            let out = storage.as_mut_ptr().cast::<usize>();
-            out.write(word as usize);
-            storage.assume_init().take()
-        }
-    }
-
-    /// `RhythmResult.beats`.
-    #[doc(alias = "RhythmResult.beats")]
-    pub fn beats(&self) -> swift::Array<cm::Time> {
-        unsafe { self.times(rhythm_result_beats as *const ()) }
-    }
+    /// `RhythmResult.beats`, whose array arrives as its one-word representation
+    /// rather than through an indirect result.
+    #[swift::call("MusicUnderstanding.RhythmResult(struct).beats: [__C.CMTime] { get }")]
+    pub fn beats(&self) -> swift::Array<cm::Time>;
 
     /// `RhythmResult.bars`.
-    #[doc(alias = "RhythmResult.bars")]
-    pub fn bars(&self) -> swift::Array<cm::Time> {
-        unsafe { self.times(rhythm_result_bars as *const ()) }
-    }
-
-    /// Reads a `[CMTime]` getter, which hands back the array's one-word
-    /// representation directly rather than through an indirect result.
-    unsafe fn times(&self, getter: *const ()) -> swift::Array<cm::Time> {
-        unsafe {
-            let raw = abi::call::value_to_int(getter, self.as_ptr()) as *mut ();
-            swift::Array::from_raw(raw)
-        }
-    }
+    #[swift::call("MusicUnderstanding.RhythmResult(struct).bars: [__C.CMTime] { get }")]
+    pub fn bars(&self) -> swift::Array<cm::Time>;
 }
 
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("MusicUnderstanding.LoudnessResult")]
     /// `MusicUnderstanding.LoudnessResult`.
-    pub LoudnessResult, LoudnessResultValue = optional accessor loudness_result_metadata
+    pub LoudnessResult, optional LoudnessResultValue
 );
 
 crate::impl_swift_sendable!(LoudnessResultValue);
 
 impl LoudnessResult {
     /// `LoudnessResult.integrated`, the whole track's loudness.
+    #[swift::call(
+        sym = "$s18MusicUnderstanding14LoudnessResultV10integratedAA0aB7SessionC10TimedValueVy_SfGvg"
+    )]
     #[doc(alias = "LoudnessResult.integrated")]
-    pub fn integrated(&self) -> TimedValue {
-        unsafe { self.timed(loudness_result_integrated as *const ()) }
-    }
+    pub fn integrated(&self) -> TimedValue;
 
     /// `LoudnessResult.peak`.
+    #[swift::call(
+        sym = "$s18MusicUnderstanding14LoudnessResultV4peakAA0aB7SessionC10TimedValueVy_SfGvg"
+    )]
     #[doc(alias = "LoudnessResult.peak")]
-    pub fn peak(&self) -> TimedValue {
-        unsafe { self.timed(loudness_result_peak as *const ()) }
-    }
-
-    unsafe fn timed(&self, getter: *const ()) -> TimedValue {
-        unsafe {
-            let mut storage = Storage::<TimedValueF32>::new();
-            abi::call::value_to_value(getter, self.as_ptr(), storage.as_mut_ptr());
-            TimedValue::from_value(storage.assume_init())
-        }
-    }
+    pub fn peak(&self) -> TimedValue;
 }
 
 define_swift_value!(

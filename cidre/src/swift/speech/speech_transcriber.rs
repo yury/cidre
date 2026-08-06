@@ -1,7 +1,7 @@
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
 use crate::{
-    api, arc, ns,
+    api, arc, ns, swift,
     swift::abi,
     swift::foundation::{self, AttrStringValue},
 };
@@ -49,8 +49,6 @@ unsafe extern "C" {
     #[link_name = "$s6Speech0A11TranscriberCMa"]
     fn speech_transcriber_metadata();
 
-    #[link_name = "$s6Speech0A11TranscriberC11isAvailableSbvgZ"]
-    fn speech_transcriber_is_available();
 
     #[link_name = "$s6Speech0A11TranscriberC6locale6presetAC10Foundation6LocaleV_AC6PresetVtcfC"]
     fn speech_transcriber_init();
@@ -80,12 +78,8 @@ impl SpeechTranscriber {
         tvos = 26.0,
         visionos = 26.0
     )]
-    pub fn is_available() -> bool {
-        unsafe {
-            let metadata = <SpeechTranscriber as crate::swift::SwiftMetadata>::metadata().cast();
-            abi::call::static0_bool(speech_transcriber_is_available as *const (), metadata)
-        }
-    }
+    #[swift::call("static Speech.SpeechTranscriber(class).isAvailable: Bool { get }")]
+    pub fn is_available() -> bool;
 
     /// Creates a transcriber using `Foundation.Locale(identifier:)` and one of
     /// Speech's standard presets.

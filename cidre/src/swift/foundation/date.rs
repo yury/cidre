@@ -1,27 +1,19 @@
-use crate::swift::{abi, value::define_swift_value};
+use crate::swift;
 
-unsafe extern "C" {
-    #[link_name = "$s10Foundation4DateVMa"]
-    fn date_metadata();
-
-    #[link_name = "$s10Foundation4DateV026timeIntervalSinceReferenceB0Sdvg"]
-    fn date_time_interval_since_reference_date();
-}
-
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("Foundation.Date")]
     /// Swift `Foundation.Date`.
-    pub Date, DateValue = accessor date_metadata
+    pub Date, DateValue
 );
 
 crate::impl_swift_sendable!(DateValue);
 
 impl Date {
-    pub fn time_interval_since_reference_date(&self) -> f64 {
-        unsafe {
-            abi::call::value_to_double(
-                date_time_interval_since_reference_date as *const (),
-                self.as_ptr(),
-            )
-        }
-    }
+    /// `Date()`, which is the current instant.
+    #[allow(clippy::new_without_default)]
+    #[swift::call("Foundation.Date(struct).init()")]
+    pub fn now() -> Self;
+
+    #[swift::call("Foundation.Date(struct).timeIntervalSinceReferenceDate: Double { get }")]
+    pub fn time_interval_since_reference_date(&self) -> f64;
 }

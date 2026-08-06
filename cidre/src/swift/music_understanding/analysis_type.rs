@@ -11,8 +11,7 @@ unsafe extern "C" {
 define_swift_getter_enum!(
     /// `MusicUnderstanding.AnalysisType`.
     pub AnalysisType in "MusicUnderstanding"
-        = accessor "$s18MusicUnderstanding12AnalysisTypeVMa"
-    {
+        = swift "MusicUnderstanding.AnalysisType" {
         InstrumentActivity = "$s18MusicUnderstanding12AnalysisTypeV18instrumentActivityACvgZ",
         Loudness = "$s18MusicUnderstanding12AnalysisTypeV8loudnessACvgZ",
         Pace = "$s18MusicUnderstanding12AnalysisTypeV4paceACvgZ",

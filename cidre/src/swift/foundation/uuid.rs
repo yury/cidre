@@ -1,70 +1,34 @@
-use crate::swift::{
-    self, SwiftMetadata, abi,
-    value::{Optional, Storage, define_swift_value},
-};
+use crate::swift::{self, SwiftMetadata, abi};
 
-unsafe extern "C" {
-    #[link_name = "$s10Foundation4UUIDVMa"]
-    fn uuid_metadata();
-
-    #[link_name = "$s10Foundation4UUIDVACycfC"]
-    fn uuid_init();
-
-    #[link_name = "$s10Foundation4UUIDV10uuidStringACSgSSh_tcfC"]
-    fn uuid_init_with_string();
-
-    #[link_name = "$s10Foundation4UUIDV10uuidStringSSvg"]
-    fn uuid_string();
-
-}
-
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("Foundation.UUID")]
     /// `Foundation.UUID`.
     #[doc(alias = "UUID")]
-    pub Uuid, UuidValue = accessor uuid_metadata
+    pub Uuid, UuidValue
 );
 
 crate::impl_swift_sendable!(UuidValue);
 
 impl Uuid {
     /// Generates a new random identifier.
-    #[doc(alias = "UUID.init()")]
     #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        unsafe {
-            let mut storage = Self::storage();
-            abi::call::to_value(uuid_init as *const (), storage.as_mut_ptr());
-            Self::from_storage(storage)
-        }
-    }
+    #[swift::call("Foundation.UUID(struct).init()")]
+    pub fn new() -> Self;
 
     /// Parses the standard 36-character form, or `None` when it does not parse.
-    #[doc(alias = "UUID.init(uuidString:)")]
+    ///
+    /// The initializer takes its argument `__shared`, which the borrow here is
+    /// the Rust side of: the string stays the caller's.
+    #[swift::call("Foundation.UUID(struct).init?(uuidString: __shared String)")]
+    pub fn with_swift_str(text: &swift::String) -> Option<Self>;
+
     pub fn with_str(str: &str) -> Option<Self> {
-        unsafe {
-            // `init(uuidString:)` takes its argument `__shared`, so the string
-            // stays ours to release.
-            let text = swift::String::from(str);
-            let mut storage = Storage::<Optional<UuidValue>>::new();
-            abi::call::string_to_value(
-                uuid_init_with_string as *const (),
-                text.as_raw(),
-                storage.as_mut_ptr(),
-            );
-            storage.assume_init().take_value().map(Self::from_value)
-        }
+        Self::with_swift_str(&swift::String::from(str))
     }
 
     /// `UUID.uuidString`, the uppercase 36-character form.
-    #[doc(alias = "UUID.uuidString")]
-    pub fn to_swift_string(&self) -> swift::String {
-        unsafe {
-            swift::String::from_raw(abi::call::value_to_string(
-                uuid_string as *const (),
-                self.as_ptr(),
-            ))
-        }
-    }
+    #[swift::call("Foundation.UUID(struct).uuidString: String { get }")]
+    pub fn to_swift_string(&self) -> swift::String;
 }
 
 impl std::fmt::Display for Uuid {
@@ -106,5 +70,32 @@ impl std::hash::Hash for Uuid {
     /// equally.
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.bytes().hash(state);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn generated_calls_match_the_hand_written_ones() {
+        let uuid = Uuid::new();
+        let text = uuid.to_swift_string().to_string();
+        assert_eq!(36, text.len(), "{text}");
+        assert_eq!(text, text.to_uppercase());
+
+        let parsed = Uuid::with_str(&text).expect("round trips");
+        assert_eq!(uuid, parsed);
+        assert_eq!(text, parsed.to_swift_string().to_string());
+
+        assert!(Uuid::with_str("not a uuid").is_none());
+        assert_ne!(Uuid::new(), Uuid::new());
+    }
+
+    #[test]
+    fn a_date_reads_its_interval() {
+        let now = crate::swift::foundation::Date::now();
+        let a = now.time_interval_since_reference_date();
+        assert!(a > 700_000_000.0, "{a}");
     }
 }

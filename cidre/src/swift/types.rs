@@ -34,6 +34,170 @@ pub unsafe trait SwiftMetadata {
 /// [`metadata`]: SwiftMetadata::metadata
 pub unsafe trait SwiftType: SwiftMetadata + Sized {}
 
+/// A Rust value that can stand as the `self` operand of a Swift call.
+///
+/// Swift passes `self` in a register of its own, holding the reference itself
+/// for a class and the address of the value for everything else.
+/// [`#[swift::call]`](crate::swift::call) builds that operand through this
+/// trait rather than deciding per binding which of the two it has, which is the
+/// one thing about a call site that cannot be read off the Rust signature.
+///
+/// # Safety
+///
+/// [`swift_self_ptr`](Self::swift_self_ptr) must return what Swift's convention
+/// expects in the context register: a class reference, or the address of an
+/// initialized value of the type the callee belongs to.
+pub unsafe trait SwiftSelf {
+    fn swift_self_ptr(&self) -> *const ();
+}
+
+/// Which registers a value of this type occupies when Swift returns it.
+///
+/// [`#[swift::call]`](crate::swift::call) picks the registers by reading the
+/// Rust type, and treats a name it does not recognise as a value returned
+/// indirectly, because that is what every framework value type is. A type that
+/// is really something else would otherwise be called with the wrong registers
+/// and no diagnostic at all, so the expansion asserts its guess against this.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[repr(u8)]
+pub enum AbiClass {
+    /// Written into caller-provided storage through the indirect-result
+    /// register.
+    Indirect,
+    /// One integer register.
+    Word,
+    /// Two integer registers, which is a `Swift.String`.
+    Words2,
+    /// Three integer registers, which is a `CMTime`.
+    Words3,
+    /// One floating-point register, as a `double`.
+    Double,
+    /// One floating-point register, as a `float`.
+    Float,
+    /// A run of floating-point registers.
+    Doubles(u8),
+}
+
+impl AbiClass {
+    /// A discriminant the expansion can compare in a `const` assertion, since
+    /// `PartialEq` is not available there.
+    pub const fn tag(self) -> u16 {
+        match self {
+            Self::Indirect => 0,
+            Self::Word => 1,
+            Self::Words2 => 2,
+            Self::Words3 => 3,
+            Self::Double => 4,
+            Self::Float => 5,
+            Self::Doubles(count) => 0x100 | count as u16,
+        }
+    }
+}
+
+/// The registers Swift returns this type in.
+///
+/// # Safety
+///
+/// [`CLASS`](Self::CLASS) must be the convention Swift really uses for the type,
+/// since a binding calls through it without further checking.
+pub unsafe trait SwiftAbi {
+    const CLASS: AbiClass;
+}
+
+macro_rules! impl_swift_abi {
+    ($($ty:ty => $class:expr),+ $(,)?) => {
+        $(unsafe impl SwiftAbi for $ty {
+            const CLASS: AbiClass = $class;
+        })+
+    };
+}
+
+impl_swift_abi!(
+    bool => AbiClass::Word,
+    isize => AbiClass::Word,
+    usize => AbiClass::Word,
+    i8 => AbiClass::Word,
+    u8 => AbiClass::Word,
+    i16 => AbiClass::Word,
+    u16 => AbiClass::Word,
+    i32 => AbiClass::Word,
+    u32 => AbiClass::Word,
+    i64 => AbiClass::Word,
+    u64 => AbiClass::Word,
+    f32 => AbiClass::Float,
+    f64 => AbiClass::Double,
+    super::String => AbiClass::Words2,
+);
+
+/// A class-typed value is one retained reference.
+unsafe impl<T: SwiftClass> SwiftAbi for crate::arc::R<T> {
+    const CLASS: AbiClass = AbiClass::Word;
+}
+
+/// A container is one word whatever it holds.
+unsafe impl<T> SwiftAbi for super::Array<T> {
+    const CLASS: AbiClass = AbiClass::Word;
+}
+
+unsafe impl<T> SwiftAbi for super::Set<T> {
+    const CLASS: AbiClass = AbiClass::Word;
+}
+
+unsafe impl<K, V> SwiftAbi for super::Dictionary<K, V> {
+    const CLASS: AbiClass = AbiClass::Word;
+}
+
+#[cfg(feature = "cm")]
+unsafe impl SwiftAbi for crate::cm::Time {
+    const CLASS: AbiClass = AbiClass::Words3;
+}
+
+#[cfg(feature = "cg")]
+unsafe impl SwiftAbi for crate::cg::Rect {
+    const CLASS: AbiClass = AbiClass::Doubles(4);
+}
+
+#[cfg(feature = "spatial")]
+unsafe impl SwiftAbi for crate::spatial::Vector3D {
+    const CLASS: AbiClass = AbiClass::Doubles(3);
+}
+
+/// A geometric value Swift returns in floating-point registers.
+///
+/// How many registers that is belongs to the Swift type, not the Rust one — a
+/// [`spatial::Vector3D`](crate::spatial::Vector3D) is four doubles wide but
+/// comes back in three — so the value is built through this rather than by
+/// reinterpreting a register block as the Rust struct.
+///
+/// # Safety
+///
+/// [`from_doubles`](Self::from_doubles) must accept exactly the registers
+/// Swift's convention returns for the type.
+pub unsafe trait FromSwiftDoubles: Sized {
+    fn from_doubles(values: &[f64]) -> Self;
+}
+
+#[cfg(feature = "cg")]
+unsafe impl FromSwiftDoubles for crate::cg::Rect {
+    #[inline]
+    fn from_doubles(values: &[f64]) -> Self {
+        let [x, y, width, height] = values.try_into().expect("a rect is four doubles");
+        Self {
+            origin: crate::cg::Point { x, y },
+            size: crate::cg::Size { width, height },
+        }
+    }
+}
+
+#[cfg(feature = "spatial")]
+unsafe impl FromSwiftDoubles for crate::spatial::Vector3D {
+    #[inline]
+    fn from_doubles(values: &[f64]) -> Self {
+        let [x, y, z] = values.try_into().expect("a vector is three doubles");
+        Self::new(x, y, z)
+    }
+}
+
 /// A Swift type whose values may cross threads, which is Swift's `Sendable`.
 ///
 /// [`Storage`](super::value::Storage) holds a raw pointer, so a wrapper around

@@ -1456,6 +1456,28 @@ macro_rules! define_async_sequence {
         $(#[$meta])*
         pub struct $sequence($crate::swift::value::Value<$sequence_value>);
 
+        /// The sequence is a Swift value like any other, so a generated call
+        /// can allocate its result storage and take what Swift wrote there.
+        impl $crate::swift::value::SwiftValue for $sequence {
+            type Marker = $sequence_value;
+
+            #[inline]
+            unsafe fn from_storage(
+                storage: $crate::swift::value::Storage<Self::Marker>,
+            ) -> Self {
+                Self(unsafe { storage.assume_init() })
+            }
+
+            #[inline]
+            fn from_value(value: $crate::swift::value::Value<Self::Marker>) -> Self {
+                Self(value)
+            }
+        }
+
+        unsafe impl $crate::swift::SwiftAbi for $sequence {
+            const CLASS: $crate::swift::AbiClass = $crate::swift::AbiClass::Indirect;
+        }
+
         #[link(name = $framework, kind = "framework")]
         unsafe extern "C" {
             #[link_name = $iterator_metadata_link]

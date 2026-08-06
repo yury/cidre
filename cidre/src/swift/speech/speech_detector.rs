@@ -1,5 +1,5 @@
 use crate::{
-    api, arc,
+    api, arc, swift,
     swift::{SwiftMetadata, abi},
 };
 
@@ -21,8 +21,6 @@ unsafe extern "C" {
     #[link_name = "$s6Speech0A8DetectorCMa"]
     fn speech_detector_metadata();
 
-    #[link_name = "$s6Speech0A8DetectorCACycfC"]
-    fn speech_detector_new();
 
     #[link_name = "$s6Speech0A8DetectorC16SensitivityLevelOMa"]
     fn sensitivity_level_metadata();
@@ -50,14 +48,8 @@ impl SpeechDetector {
         tvos = 26.0,
         visionos = 26.0
     )]
-    pub fn new() -> arc::R<Self> {
-        unsafe {
-            let metadata = <SpeechDetector as crate::swift::SwiftMetadata>::metadata().cast();
-            arc::R::from_raw(
-                abi::call::static0_object(speech_detector_new as *const (), metadata).cast(),
-            )
-        }
-    }
+    #[swift::call("Speech.SpeechDetector(class).init()")]
+    pub fn new() -> arc::R<Self>;
 
     #[doc(alias = "SpeechDetector.init(detectionOptions:reportResults:)")]
     #[api::available(

@@ -6,11 +6,14 @@ use crate::{
         FromSwift, SwiftMetadata, abi,
         concurrency::{self, define_async_sequence},
         foundation::{Date, DateValue, Uuid, UuidValue},
-        value::{Optional, Storage, Value, define_swift_value},
+        value::{Optional, Storage, Value},
     },
 };
 
-crate::define_swift_class!(pub Accessory);
+crate::define_swift!(
+    #[swift::class("DockKit.DockAccessory")]
+    pub Accessory
+);
 
 pub struct StateChange {
     pub accessory: Option<arc::R<Accessory>>,
@@ -62,37 +65,42 @@ impl core::fmt::Debug for StateChange {
     }
 }
 
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("DockKit.DockAccessory(class).Identifier")]
     /// `DockAccessory.Identifier`.
-    pub Identifier, IdentifierValue = accessor dock_accessory_identifier_metadata
+    pub Identifier, IdentifierValue
 );
 
 crate::impl_swift_sendable!(IdentifierValue);
 
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("DockKit.DockAccessory(class).MotionState")]
     /// One sample from `DockAccessory.motionStates`.
-    pub MotionState, MotionStateValue = accessor dock_accessory_motion_state_metadata
+    pub MotionState, MotionStateValue
 );
 
 crate::impl_swift_sendable!(MotionStateValue);
 
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("DockKit.DockAccessory(class).BatteryState")]
     /// One sample from `DockAccessory.batteryStates`.
-    pub BatteryState, BatteryStateValue = accessor dock_accessory_battery_state_metadata
+    pub BatteryState, BatteryStateValue
 );
 
 crate::impl_swift_sendable!(BatteryStateValue);
 
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("DockKit.DockAccessory(class).Limits")]
     /// The accessory's mechanical movement limits.
-    pub Limits, LimitsValue = accessor dock_accessory_limits_metadata
+    pub Limits, LimitsValue
 );
 
 crate::impl_swift_sendable!(LimitsValue);
 
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("DockKit.DockAccessory(class).Limits(struct).Limit")]
     /// Limits for one rotational axis.
-    pub Limit, LimitValue = accessor dock_accessory_limit_metadata
+    pub Limit, LimitValue
 );
 
 crate::impl_swift_sendable!(LimitValue);
@@ -123,16 +131,18 @@ impl std::hash::Hash for AccessoryEvent {
     }
 }
 
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("DockKit.DockAccessory(class).TrackedPerson")]
     /// A person currently tracked by DockKit.
-    pub TrackedPerson, TrackedPersonValue = accessor dock_accessory_tracked_person_metadata
+    pub TrackedPerson, TrackedPersonValue
 );
 
 crate::impl_swift_sendable!(TrackedPersonValue);
 
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("DockKit.DockAccessory(class).TrackedObject")]
     /// An object currently tracked by DockKit.
-    pub TrackedObject, TrackedObjectValue = accessor dock_accessory_tracked_object_metadata
+    pub TrackedObject, TrackedObjectValue
 );
 
 crate::impl_swift_sendable!(TrackedObjectValue);
@@ -144,25 +154,28 @@ pub enum TrackedSubject {
     Unknown(u32),
 }
 
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("DockKit.DockAccessory(class).TrackingState")]
     /// One sample from `DockAccessory.trackingStates`.
-    pub TrackingState, TrackingStateValue = accessor dock_accessory_tracking_state_metadata
+    pub TrackingState, TrackingStateValue
 );
 
 crate::impl_swift_sendable!(TrackingStateValue);
 
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("DockKit.DockAccessory(class).Observation")]
     /// One subject observation supplied to DockKit tracking.
-    pub Observation, ObservationValue = accessor dock_accessory_observation_metadata
+    pub Observation, ObservationValue
 );
 
 crate::impl_swift_sendable!(ObservationValue);
 
 #[cfg(feature = "av")]
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("DockKit.DockAccessory(class).CameraInformation")]
     /// Camera calibration supplied with tracking observations.
     #[cfg(feature = "av")]
-    pub CameraInformation, CameraInformationValue = accessor dock_accessory_camera_information_metadata
+    pub CameraInformation, CameraInformationValue
 );
 
 #[cfg(feature = "av")]
@@ -199,20 +212,10 @@ impl CameraIntrinsics {
 
 #[link(name = "DockKit", kind = "framework")]
 unsafe extern "C" {
-    #[link_name = "$s7DockKit0A9AccessoryC15firmwareVersionSSSgvg"]
-    fn dock_accessory_firmware_version();
 
-    #[link_name = "$s7DockKit0A9AccessoryC2eeoiySbAC_ACtFZ"]
-    fn dock_accessory_equal();
 
-    #[link_name = "$s7DockKit0A9AccessoryC9hashValueSivg"]
-    fn dock_accessory_hash_value();
 
-    #[link_name = "$s7DockKit0A9AccessoryC13hardwareModelSSSgvg"]
-    fn dock_accessory_hardware_model();
 
-    #[link_name = "$s7DockKit0A9AccessoryC11StateChangeVMa"]
-    fn dock_accessory_state_change_metadata();
 
     #[link_name = "$s7DockKit0A9AccessoryC11StateChangeV5stateAC0D0Ovg"]
     fn dock_accessory_state_change_state();
@@ -223,68 +226,32 @@ unsafe extern "C" {
     #[link_name = "$s7DockKit0A9AccessoryC11StateChangeV9accessoryACSgvg"]
     fn dock_accessory_state_change_accessory();
 
-    #[link_name = "$s7DockKit0A9AccessoryC10IdentifierVMa"]
-    fn dock_accessory_identifier_metadata();
 
     #[link_name = "$s7DockKit0A9AccessoryC10IdentifierV8categoryAC8CategoryOvg"]
     fn dock_accessory_identifier_category();
 
-    #[link_name = "$s7DockKit0A9AccessoryC10IdentifierV4nameSSvg"]
-    fn dock_accessory_identifier_name();
 
-    #[link_name = "$s7DockKit0A9AccessoryC10IdentifierV4uuid10Foundation4UUIDVvg"]
-    fn dock_accessory_identifier_uuid();
 
-    #[link_name = "$s7DockKit0A9AccessoryC10IdentifierV16debugDescriptionSSvg"]
-    fn dock_accessory_identifier_debug_description();
 
-    #[link_name = "$s7DockKit0A9AccessoryC10IdentifierV9hashValueSivg"]
-    fn dock_accessory_identifier_hash_value();
 
-    #[link_name = "$s7DockKit0A9AccessoryC10IdentifierV2eeoiySbAE_AEtFZ"]
-    fn dock_accessory_identifier_equal();
 
-    #[link_name = "$s7DockKit0A9AccessoryC11MotionStateVMa"]
-    fn dock_accessory_motion_state_metadata();
 
-    #[link_name = "$s7DockKit0A9AccessoryC11MotionStateV17angularVelocitiesSo10SPVector3Davg"]
-    fn dock_accessory_motion_state_angular_velocities();
 
-    #[link_name = "$s7DockKit0A9AccessoryC11MotionStateV16angularPositionsSo10SPVector3Davg"]
-    fn dock_accessory_motion_state_angular_positions();
 
-    #[link_name = "$s7DockKit0A9AccessoryC11MotionStateV9timestampSdvg"]
-    fn dock_accessory_motion_state_timestamp();
 
     #[link_name = "$s7DockKit0A9AccessoryC11MotionStateV5errors5Error_pSgvg"]
     fn dock_accessory_motion_state_error();
 
-    #[link_name = "$s7DockKit0A9AccessoryC12BatteryStateVMa"]
-    fn dock_accessory_battery_state_metadata();
 
-    #[link_name = "$s7DockKit0A9AccessoryC12BatteryStateV4nameSSvg"]
-    fn dock_accessory_battery_state_name();
 
-    #[link_name = "$s7DockKit0A9AccessoryC12BatteryStateV12batteryLevelSdvg"]
-    fn dock_accessory_battery_state_level();
 
-    #[link_name = "$s7DockKit0A9AccessoryC12BatteryStateV03lowD0Sbvg"]
-    fn dock_accessory_battery_state_low();
 
     #[link_name = "$s7DockKit0A9AccessoryC12BatteryStateV06chargeE0AC0d6ChargeE0Ovg"]
     fn dock_accessory_battery_state_charge_state();
 
-    #[link_name = "$s7DockKit0A9AccessoryC12BatteryStateV9hashValueSivg"]
-    fn dock_accessory_battery_state_hash_value();
 
-    #[link_name = "$s7DockKit0A9AccessoryC12BatteryStateV2eeoiySbAE_AEtFZ"]
-    fn dock_accessory_battery_state_equal();
 
-    #[link_name = "$s7DockKit0A9AccessoryC6LimitsVMa"]
-    fn dock_accessory_limits_metadata();
 
-    #[link_name = "$s7DockKit0A9AccessoryC6LimitsV5LimitVMa"]
-    fn dock_accessory_limit_metadata();
 
     #[link_name = "$s7DockKit0A9AccessoryC6LimitsV3yawAE5LimitVSgvg"]
     fn dock_accessory_limits_yaw();
@@ -295,8 +262,6 @@ unsafe extern "C" {
     #[link_name = "$s7DockKit0A9AccessoryC6LimitsV4rollAE5LimitVSgvg"]
     fn dock_accessory_limits_roll();
 
-    #[link_name = "$s7DockKit0A9AccessoryC6LimitsV5LimitV12maximumSpeedSdvg"]
-    fn dock_accessory_limit_maximum_speed();
 
     #[link_name = "$s7DockKit0A9AccessoryC6LimitsV5LimitV13positionRangeSnySdGvg"]
     fn dock_accessory_limit_position_range();
@@ -327,8 +292,6 @@ unsafe extern "C" {
     #[link_name = "$s7DockKit0A9AccessoryC17CameraInformationV19referenceDimensionsSo6CGSizeVSgvg"]
     fn dock_accessory_camera_information_reference_dimensions();
 
-    #[link_name = "$s7DockKit0A9AccessoryC0C5EventOMa"]
-    fn dock_accessory_event_metadata();
 
     #[link_name = "$s7DockKit0A9AccessoryC0C5EventO6buttonyAESi_SbtcAEmFWC"]
     static DOCK_ACCESSORY_EVENT_BUTTON_TAG: u32;
@@ -342,14 +305,10 @@ unsafe extern "C" {
     #[link_name = "$s7DockKit0A9AccessoryC0C5EventO10cameraZoomyAESd_tcAEmFWC"]
     static DOCK_ACCESSORY_EVENT_CAMERA_ZOOM_TAG: u32;
 
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackedPersonVMa"]
-    fn dock_accessory_tracked_person_metadata();
 
     #[link_name = "$s7DockKit0A9AccessoryC13TrackedPersonV10identifier10Foundation4UUIDVvg"]
     fn dock_accessory_tracked_person_identifier();
 
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackedPersonV2eeoiySbAE_AEtFZ"]
-    fn dock_accessory_tracked_person_equal();
 
     #[link_name = "$s7DockKit0A9AccessoryC13TrackedPersonV4rectSo6CGRectVvg"]
     fn dock_accessory_tracked_person_rect();
@@ -363,14 +322,10 @@ unsafe extern "C" {
     #[link_name = "$s7DockKit0A9AccessoryC13TrackedPersonV25lookingAtCameraConfidenceSdSgvg"]
     fn dock_accessory_tracked_person_looking_at_camera_confidence();
 
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackedObjectVMa"]
-    fn dock_accessory_tracked_object_metadata();
 
     #[link_name = "$s7DockKit0A9AccessoryC13TrackedObjectV10identifier10Foundation4UUIDVvg"]
     fn dock_accessory_tracked_object_identifier();
 
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackedObjectV2eeoiySbAE_AEtFZ"]
-    fn dock_accessory_tracked_object_equal();
 
     #[link_name = "$s7DockKit0A9AccessoryC13TrackedObjectV4rectSo6CGRectVvg"]
     fn dock_accessory_tracked_object_rect();
@@ -378,8 +333,6 @@ unsafe extern "C" {
     #[link_name = "$s7DockKit0A9AccessoryC13TrackedObjectV12saliencyRankSiSgvg"]
     fn dock_accessory_tracked_object_saliency_rank();
 
-    #[link_name = "$s7DockKit0A9AccessoryC18TrackedSubjectTypeOMa"]
-    fn dock_accessory_tracked_subject_metadata();
 
     #[link_name = "$s7DockKit0A9AccessoryC18TrackedSubjectTypeO6personyAeC0D6PersonVcAEmFWC"]
     static DOCK_ACCESSORY_TRACKED_SUBJECT_PERSON_TAG: u32;
@@ -387,26 +340,16 @@ unsafe extern "C" {
     #[link_name = "$s7DockKit0A9AccessoryC18TrackedSubjectTypeO6objectyAeC0D6ObjectVcAEmFWC"]
     static DOCK_ACCESSORY_TRACKED_SUBJECT_OBJECT_TAG: u32;
 
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackingStateVMa"]
-    fn dock_accessory_tracking_state_metadata();
 
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackingStateV4time10Foundation4DateVvg"]
-    fn dock_accessory_tracking_state_time();
 
     #[link_name = "$s7DockKit0A9AccessoryC13TrackingStateV15trackedSubjectsSayAC18TrackedSubjectTypeOGvg"]
     fn dock_accessory_tracking_state_subjects();
 
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackingStateV11descriptionSSvg"]
-    fn dock_accessory_tracking_state_description();
 
-    #[link_name = "$s7DockKit0A9AccessoryC11ObservationVMa"]
-    fn dock_accessory_observation_metadata();
 
     #[link_name = "$s7DockKit0A9AccessoryC11ObservationV10identifier4type4rect12faceYawAngleAESi_AE0D4TypeOSo6CGRectV10Foundation11MeasurementVySo06NSUnitJ0CGSgtcfC"]
     fn dock_accessory_observation_init();
 
-    #[link_name = "$s7DockKit0A9AccessoryC11ObservationV10identifierSivg"]
-    fn dock_accessory_observation_identifier();
 
     #[link_name = "$s7DockKit0A9AccessoryC11ObservationV4typeAE0D4TypeOvg"]
     fn dock_accessory_observation_type();
@@ -415,15 +358,13 @@ unsafe extern "C" {
     fn dock_accessory_observation_rect();
 
     #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC17CameraInformationVMa"]
-    fn dock_accessory_camera_information_metadata();
 
     #[cfg(feature = "av")]
     #[link_name = "$s7DockKit0A9AccessoryC17CameraInformationV13captureDevice14cameraPosition11orientation0H10Intrinsics19referenceDimensionsAESo09AVCaptureG4Typea_So0ngI0VAC0D11OrientationOSo13simd_float3x3aSgSo6CGSizeVSgtcfC"]
     fn dock_accessory_camera_information_init();
 }
 
-crate::define_swift_marker!(pub(crate) StateChangeValue = accessor dock_accessory_state_change_metadata);
+crate::define_swift!(#[swift::struct("DockKit.DockAccessory(class).StateChange")] pub(crate) StateChangeValue);
 
 unsafe impl SwiftMetadata for StateChange {
     #[inline]
@@ -441,7 +382,7 @@ unsafe impl crate::swift::FromSwift for StateChange {
 
 crate::define_swift_marker!(pub(crate) StateValue = mangled "7DockKit0A9AccessoryC5StateO");
 
-crate::define_swift_marker!(pub(crate) AccessoryEventValue = accessor dock_accessory_event_metadata);
+crate::define_swift!(#[swift::enum("DockKit.DockAccessory(class).AccessoryEvent")] pub(crate) AccessoryEventValue);
 
 unsafe impl SwiftMetadata for AccessoryEvent {
     #[inline]
@@ -456,7 +397,7 @@ unsafe impl crate::swift::FromSwift for AccessoryEvent {
         unsafe { Self::copy_from_ptr(value) }
     }
 }
-crate::define_swift_marker!(pub(crate) TrackedSubjectValue = accessor dock_accessory_tracked_subject_metadata);
+crate::define_swift!(#[swift::enum("DockKit.DockAccessory(class).TrackedSubjectType")] pub(crate) TrackedSubjectValue);
 crate::define_swift_marker!(pub(crate) MeasurementAngleValue = mangled "10Foundation11MeasurementVySo11NSUnitAngleCG");
 
 #[cfg(feature = "av")]
@@ -478,55 +419,29 @@ impl Identifier {
         value
     }
 
-    pub fn name(&self) -> swift::String {
-        unsafe {
-            swift::String::from_raw(abi::call::value_to_string(
-                dock_accessory_identifier_name as *const (),
-                self.as_ptr(),
-            ))
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).Identifier(struct).name: String { get }")]
+    pub fn name(&self) -> swift::String;
 
-    pub fn uuid(&self) -> Uuid {
-        unsafe {
-            let mut storage = Storage::<UuidValue>::new();
-            abi::call::value_to_value(
-                dock_accessory_identifier_uuid as *const (),
-                self.as_ptr(),
-                storage.as_mut_ptr(),
-            );
-            Uuid::from_value(storage.assume_init())
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).Identifier(struct).uuid: Foundation.UUID(struct) { get }")]
+    pub fn uuid(&self) -> Uuid;
 
-    pub fn debug_desc(&self) -> swift::String {
-        unsafe {
-            swift::String::from_raw(abi::call::value_to_string(
-                dock_accessory_identifier_debug_description as *const (),
-                self.as_ptr(),
-            ))
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).Identifier(struct).debugDescription: String { get }")]
+    pub fn debug_desc(&self) -> swift::String;
 
-    pub fn hash_value(&self) -> isize {
-        unsafe {
-            abi::call::value_to_int(
-                dock_accessory_identifier_hash_value as *const (),
-                self.as_ptr(),
-            )
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).Identifier(struct).hashValue: Int { get }")]
+    pub fn hash_value(&self) -> isize;
+}
+
+impl Identifier {
+    /// Swift's `==` is a static member taking both operands as arguments
+    /// rather than one of them as `self`.
+    #[swift::call(sym = "$s7DockKit0A9AccessoryC10IdentifierV2eeoiySbAE_AEtFZ")]
+    fn swift_eq(lhs: &Self, rhs: &Self) -> bool;
 }
 
 impl PartialEq for Identifier {
     fn eq(&self, other: &Self) -> bool {
-        unsafe {
-            abi::call::objects_to_bool(
-                dock_accessory_identifier_equal as *const (),
-                self.as_ptr(),
-                other.as_ptr(),
-            )
-        }
+        Self::swift_eq(self, other)
     }
 }
 
@@ -539,38 +454,16 @@ impl std::hash::Hash for Identifier {
 }
 
 impl MotionState {
-    pub fn angular_velocities(&self) -> spatial::Vector3D {
-        // `SPVector3D` comes back in d0-d2 rather than through an indirect
-        // result, so it cannot be read out of a `Storage`.
-        let [x, y, z] = unsafe {
-            abi::call::value_to_doubles3(
-                dock_accessory_motion_state_angular_velocities as *const (),
-                self.as_ptr(),
-            )
-        };
-        spatial::Vector3D::new(x, y, z)
-    }
+    /// An `SPVector3D` comes back in `d0`-`d2` rather than through an
+    /// indirect result.
+    #[swift::call("DockKit.DockAccessory(class).MotionState(struct).angularVelocities: __C.SPVector3D { get }")]
+    pub fn angular_velocities(&self) -> spatial::Vector3D;
 
-    pub fn angular_positions(&self) -> spatial::Vector3D {
-        // `SPVector3D` comes back in d0-d2 rather than through an indirect
-        // result, so it cannot be read out of a `Storage`.
-        let [x, y, z] = unsafe {
-            abi::call::value_to_doubles3(
-                dock_accessory_motion_state_angular_positions as *const (),
-                self.as_ptr(),
-            )
-        };
-        spatial::Vector3D::new(x, y, z)
-    }
+    #[swift::call("DockKit.DockAccessory(class).MotionState(struct).angularPositions: __C.SPVector3D { get }")]
+    pub fn angular_positions(&self) -> spatial::Vector3D;
 
-    pub fn timestamp(&self) -> f64 {
-        unsafe {
-            abi::call::value_to_double(
-                dock_accessory_motion_state_timestamp as *const (),
-                self.as_ptr(),
-            )
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).MotionState(struct).timestamp: Double { get }")]
+    pub fn timestamp(&self) -> f64;
 
     pub fn error(&self) -> Option<arc::R<ns::Error>> {
         unsafe {
@@ -584,29 +477,14 @@ impl MotionState {
 }
 
 impl BatteryState {
-    pub fn name(&self) -> swift::String {
-        unsafe {
-            swift::String::from_raw(abi::call::value_to_string(
-                dock_accessory_battery_state_name as *const (),
-                self.as_ptr(),
-            ))
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).BatteryState(struct).name: String { get }")]
+    pub fn name(&self) -> swift::String;
 
-    pub fn battery_level(&self) -> f64 {
-        unsafe {
-            abi::call::value_to_double(
-                dock_accessory_battery_state_level as *const (),
-                self.as_ptr(),
-            )
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).BatteryState(struct).batteryLevel: Double { get }")]
+    pub fn battery_level(&self) -> f64;
 
-    pub fn is_low_battery(&self) -> bool {
-        unsafe {
-            abi::call::value_to_bool(dock_accessory_battery_state_low as *const (), self.as_ptr())
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).BatteryState(struct).lowBattery: Bool { get }")]
+    pub fn is_low_battery(&self) -> bool;
 
     pub fn charge_state(&self) -> BatteryChargeState {
         let mut value = BatteryChargeState::not_charging();
@@ -620,25 +498,20 @@ impl BatteryState {
         value
     }
 
-    pub fn hash_value(&self) -> isize {
-        unsafe {
-            abi::call::value_to_int(
-                dock_accessory_battery_state_hash_value as *const (),
-                self.as_ptr(),
-            )
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).BatteryState(struct).hashValue: Int { get }")]
+    pub fn hash_value(&self) -> isize;
+}
+
+impl BatteryState {
+    /// Swift's `==` is a static member taking both operands as arguments
+    /// rather than one of them as `self`.
+    #[swift::call(sym = "$s7DockKit0A9AccessoryC12BatteryStateV2eeoiySbAE_AEtFZ")]
+    fn swift_eq(lhs: &Self, rhs: &Self) -> bool;
 }
 
 impl PartialEq for BatteryState {
     fn eq(&self, other: &Self) -> bool {
-        unsafe {
-            abi::call::objects_to_bool(
-                dock_accessory_battery_state_equal as *const (),
-                self.as_ptr(),
-                other.as_ptr(),
-            )
-        }
+        Self::swift_eq(self, other)
     }
 }
 
@@ -746,14 +619,8 @@ impl Limit {
         start..end
     }
 
-    pub fn maximum_speed(&self) -> f64 {
-        unsafe {
-            abi::call::value_to_double(
-                dock_accessory_limit_maximum_speed as *const (),
-                self.as_ptr(),
-            )
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).Limits(struct).Limit(struct).maximumSpeed: Double { get }")]
+    pub fn maximum_speed(&self) -> f64;
 }
 
 impl AccessoryEvent {
@@ -867,15 +734,16 @@ impl TrackedPerson {
     }
 }
 
+impl TrackedPerson {
+    /// Swift's `==` is a static member taking both operands as arguments
+    /// rather than one of them as `self`.
+    #[swift::call(sym = "$s7DockKit0A9AccessoryC13TrackedPersonV2eeoiySbAE_AEtFZ")]
+    fn swift_eq(lhs: &Self, rhs: &Self) -> bool;
+}
+
 impl PartialEq for TrackedPerson {
     fn eq(&self, other: &Self) -> bool {
-        unsafe {
-            abi::call::objects_to_bool(
-                dock_accessory_tracked_person_equal as *const (),
-                self.as_ptr(),
-                other.as_ptr(),
-            )
-        }
+        Self::swift_eq(self, other)
     }
 }
 
@@ -908,15 +776,16 @@ impl TrackedObject {
     }
 }
 
+impl TrackedObject {
+    /// Swift's `==` is a static member taking both operands as arguments
+    /// rather than one of them as `self`.
+    #[swift::call(sym = "$s7DockKit0A9AccessoryC13TrackedObjectV2eeoiySbAE_AEtFZ")]
+    fn swift_eq(lhs: &Self, rhs: &Self) -> bool;
+}
+
 impl PartialEq for TrackedObject {
     fn eq(&self, other: &Self) -> bool {
-        unsafe {
-            abi::call::objects_to_bool(
-                dock_accessory_tracked_object_equal as *const (),
-                self.as_ptr(),
-                other.as_ptr(),
-            )
-        }
+        Self::swift_eq(self, other)
     }
 }
 
@@ -961,17 +830,8 @@ unsafe impl FromSwift for TrackedSubject {
 }
 
 impl TrackingState {
-    pub fn time(&self) -> Date {
-        unsafe {
-            let mut storage = Storage::<DateValue>::new();
-            abi::call::value_to_value(
-                dock_accessory_tracking_state_time as *const (),
-                self.as_ptr(),
-                storage.as_mut_ptr(),
-            );
-            Date::from_value(storage.assume_init())
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).TrackingState(struct).time: Foundation.Date(struct) { get }")]
+    pub fn time(&self) -> Date;
 
     pub fn tracked_subjects(&self) -> swift::Array<TrackedSubject> {
         unsafe {
@@ -982,14 +842,8 @@ impl TrackingState {
         }
     }
 
-    pub fn description(&self) -> swift::String {
-        unsafe {
-            swift::String::from_raw(abi::call::value_to_string(
-                dock_accessory_tracking_state_description as *const (),
-                self.as_ptr(),
-            ))
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).TrackingState(struct).description: String { get }")]
+    pub fn description(&self) -> swift::String;
 }
 
 impl Observation {
@@ -1015,14 +869,8 @@ impl Observation {
         }
     }
 
-    pub fn identifier(&self) -> isize {
-        unsafe {
-            abi::call::value_to_int(
-                dock_accessory_observation_identifier as *const (),
-                self.as_ptr(),
-            )
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).Observation(struct).identifier: Int { get }")]
+    pub fn identifier(&self) -> isize;
 
     pub fn ty(&self) -> ObservationType {
         let mut value = ObservationType::human_face();
@@ -1191,13 +1039,6 @@ define_async_sequence! {
     async_iter = StateChangesAsyncIter,
 }
 
-impl StateChanges {
-    /// The manager writes the sequence into caller-provided storage.
-    pub(crate) fn storage() -> Storage<StateChangesValue> {
-        Storage::new()
-    }
-}
-
 define_async_sequence! {
     /// `DockAccessory.MotionStates`.
     MotionStates, MotionStatesValue, MotionStatesIteratorValue,
@@ -1349,26 +1190,14 @@ define_swift_tag_enum!(
 
 #[link(name = "DockKit", kind = "framework")]
 unsafe extern "C" {
-    #[link_name = "$s7DockKit0A9AccessoryC16debugDescriptionSSvg"]
-    fn dock_accessory_debug_description();
 
     #[link_name = "$s7DockKit0A9AccessoryC11framingModeAC07FramingE0Ovg"]
     fn dock_accessory_framing_mode();
 
-    #[link_name = "$s7DockKit0A9AccessoryC16regionOfInterestSo6CGRectVvg"]
-    fn dock_accessory_region_of_interest();
 
-    #[link_name = "$s7DockKit0A9AccessoryC10identifierAC10IdentifierVvg"]
-    fn dock_accessory_identifier();
 
-    #[link_name = "$s7DockKit0A9AccessoryC6limitsAC6LimitsVvg"]
-    fn dock_accessory_limits();
 
-    #[link_name = "$s7DockKit0A9AccessoryC12motionStatesAC06MotionE0Vvg"]
-    fn dock_accessory_motion_states();
 
-    #[link_name = "$s7DockKit0A9AccessoryC13batteryStatesAC07BatteryE0Vvg"]
-    fn dock_accessory_battery_states();
 
     #[link_name = "$s7DockKit0A9AccessoryC15accessoryEventsAC0cE0Vvg"]
     fn dock_accessory_events();
@@ -1470,39 +1299,15 @@ unsafe extern "C" {
 }
 
 impl Accessory {
-    #[doc(alias = "DockAccessory.hashValue")]
-    pub fn hash_value(&self) -> isize {
-        unsafe {
-            abi::call::object_to_int(
-                dock_accessory_hash_value as *const (),
-                (self as *const Self).cast(),
-            )
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).hashValue: Int { get }")]
+    pub fn hash_value(&self) -> isize;
 
+    #[swift::call(sym = "$s7DockKit0A9AccessoryC10identifierAC10IdentifierVvg")]
     #[doc(alias = "DockAccessory.identifier")]
-    pub fn identifier(&self) -> Identifier {
-        unsafe {
-            let mut storage = Storage::<IdentifierValue>::new();
-            abi::call::object_to_value(
-                dock_accessory_identifier as *const (),
-                (self as *const Self).cast(),
-                storage.as_mut_ptr(),
-            );
-            Identifier(storage.assume_init())
-        }
-    }
+    pub fn identifier(&self) -> Identifier;
 
-    #[doc(alias = "DockAccessory.debugDescription")]
-    #[inline]
-    pub fn debug_desc(&self) -> swift::String {
-        unsafe {
-            swift::String::from_raw(abi::call::object_to_string(
-                dock_accessory_debug_description as *const (),
-                (self as *const Self).cast(),
-            ))
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).debugDescription: String { get }")]
+    pub fn debug_desc(&self) -> swift::String;
 
     #[doc(alias = "DockAccessory.framingMode")]
     #[inline]
@@ -1518,91 +1323,31 @@ impl Accessory {
         value
     }
 
-    /// `DockAccessory.firmwareVersion`.
-    #[doc(alias = "DockAccessory.firmwareVersion")]
-    pub fn firmware_version(&self) -> Option<swift::String> {
-        unsafe { self.optional_string(dock_accessory_firmware_version as *const ()) }
-    }
+    /// A `String?` getter hands back the string's own two words, and Swift
+    /// spells the empty case as a null word pair.
+    #[swift::call("DockKit.DockAccessory(class).firmwareVersion: String? { get }")]
+    pub fn firmware_version(&self) -> Option<swift::String>;
 
-    /// `DockAccessory.hardwareModel`.
-    #[doc(alias = "DockAccessory.hardwareModel")]
-    pub fn hardware_model(&self) -> Option<swift::String> {
-        unsafe { self.optional_string(dock_accessory_hardware_model as *const ()) }
-    }
+    #[swift::call("DockKit.DockAccessory(class).hardwareModel: String? { get }")]
+    pub fn hardware_model(&self) -> Option<swift::String>;
 
-    /// Reads a `String?` getter, whose two words are the string itself; Swift
-    /// spells the empty case as a string with a null discriminator word.
-    unsafe fn optional_string(&self, getter: *const ()) -> Option<swift::String> {
-        unsafe {
-            let raw = abi::call::object_to_string(getter, (self as *const Self).cast());
-            (raw.word0 != 0 || raw.word1 != 0).then(|| swift::String::from_raw(raw))
-        }
-    }
+    /// A `CGRect` comes back in `d0`-`d3` rather than through an indirect
+    /// result.
+    #[swift::call("DockKit.DockAccessory(class).regionOfInterest: __C.CGRect(struct) { get }")]
+    pub fn region_of_interest(&self) -> cg::Rect;
 
-    pub fn region_of_interest(&self) -> cg::Rect {
-        let (x, y, width, height) = unsafe {
-            abi::call::object_to_rect(
-                dock_accessory_region_of_interest as *const (),
-                (self as *const Self).cast(),
-            )
-        };
-        cg::Rect {
-            origin: cg::Point { x, y },
-            size: cg::Size { width, height },
-        }
-    }
-
+    #[swift::call(sym = "$s7DockKit0A9AccessoryC6limitsAC6LimitsVvg")]
     #[doc(alias = "DockAccessory.limits")]
-    pub fn limits(&self) -> Result<Limits, arc::R<ns::Error>> {
-        unsafe {
-            let mut storage = Storage::<LimitsValue>::new();
-            let error = abi::call::object_to_throwing_value(
-                dock_accessory_limits as *const (),
-                (self as *const Self).cast(),
-                storage.as_mut_ptr(),
-            );
-            if error.is_null() {
-                Ok(Limits(storage.assume_init()))
-            } else {
-                Err(arc::R::from_raw(abi::error_as_ns_error(error).cast()))
-            }
-        }
-    }
+    pub fn limits(&self) -> Result<Limits, arc::R<ns::Error>>;
 
+    #[swift::call(sym = "$s7DockKit0A9AccessoryC12motionStatesAC06MotionE0Vvg")]
     #[doc(alias = "DockAccessory.motionStates")]
-    pub fn motion_states(&self) -> Result<MotionStates, arc::R<ns::Error>> {
-        unsafe {
-            let mut storage = Storage::<MotionStatesValue>::new();
-            let error = abi::call::object_to_throwing_value(
-                dock_accessory_motion_states as *const (),
-                (self as *const Self).cast(),
-                storage.as_mut_ptr(),
-            );
-            if error.is_null() {
-                Ok(MotionStates::from_storage(storage))
-            } else {
-                Err(arc::R::from_raw(abi::error_as_ns_error(error).cast()))
-            }
-        }
-    }
+    pub fn motion_states(&self) -> Result<MotionStates, arc::R<ns::Error>>;
 
-    #[doc(alias = "DockAccessory.batteryStates")]
     #[crate::api::available(macos = 15.0, ios = 18.0)]
-    pub fn battery_states(&self) -> Result<BatteryStates, arc::R<ns::Error>> {
-        unsafe {
-            let mut storage = Storage::<BatteryStatesValue>::new();
-            let error = abi::call::object_to_throwing_value(
-                dock_accessory_battery_states as *const (),
-                (self as *const Self).cast(),
-                storage.as_mut_ptr(),
-            );
-            if error.is_null() {
-                Ok(BatteryStates::from_storage(storage))
-            } else {
-                Err(arc::R::from_raw(abi::error_as_ns_error(error).cast()))
-            }
-        }
-    }
+    #[swift::call(sym = "$s7DockKit0A9AccessoryC13batteryStatesAC07BatteryE0Vvg")]
+    #[doc(alias = "DockAccessory.batteryStates")]
+    pub fn battery_states(&self) -> Result<BatteryStates, arc::R<ns::Error>>;
 
     #[doc(alias = "DockAccessory.accessoryEvents")]
     #[crate::api::available(macos = 14.4, ios = 17.4)]
@@ -2237,15 +1982,16 @@ impl Accessory {
     }
 }
 
+impl Accessory {
+    /// Swift's `==` is a static member taking both operands as arguments
+    /// rather than one of them as `self`.
+    #[swift::call(sym = "$s7DockKit0A9AccessoryC2eeoiySbAC_ACtFZ")]
+    fn swift_eq(lhs: &Self, rhs: &Self) -> bool;
+}
+
 impl PartialEq for Accessory {
     fn eq(&self, other: &Self) -> bool {
-        unsafe {
-            abi::call::objects_to_bool(
-                dock_accessory_equal as *const (),
-                (self as *const Self).cast(),
-                (other as *const Self).cast(),
-            )
-        }
+        Self::swift_eq(self, other)
     }
 }
 

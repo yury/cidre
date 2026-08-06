@@ -4,6 +4,9 @@ use std::{borrow::Cow, str::FromStr};
 
 use proc_macro::{Delimiter, Group, Ident, Punct, Spacing, Span, TokenStream, TokenTree};
 
+mod swift;
+mod swift_mangle;
+
 enum Attr {
     Optional,
     MsgSend(String),
@@ -76,6 +79,19 @@ impl Attr {
 
         panic!("Unexpected attribute")
     }
+}
+
+/// Calls a Swift entry point named by its declaration, with the registers its
+/// convention asks for derived from the Rust signature.
+#[proc_macro_attribute]
+pub fn swift_call(decl: TokenStream, func: TokenStream) -> TokenStream {
+    swift::gen_swift_call(decl, func)
+}
+
+/// The address of a Swift type's metadata accessor, from the type's name.
+#[proc_macro]
+pub fn swift_metadata_accessor(args: TokenStream) -> TokenStream {
+    swift::gen_metadata_accessor(args)
 }
 
 /// Should generate static fn sel_xxx function that gets selector.
