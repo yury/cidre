@@ -34,6 +34,29 @@ pub unsafe trait SwiftMetadata {
 /// [`metadata`]: SwiftMetadata::metadata
 pub unsafe trait SwiftType: SwiftMetadata + Sized {}
 
+/// A Swift type whose values may cross threads, which is Swift's `Sendable`.
+///
+/// [`Storage`](super::value::Storage) holds a raw pointer, so a wrapper around
+/// one is neither `Send` nor `Sync` by inference and every binding used to
+/// declare both by hand — inconsistently, since nothing said what the answer
+/// depended on. It depends on the Swift type, so that is where it is stated:
+/// the storage and every wrapper over it then follow.
+///
+/// # Safety
+///
+/// The Swift type must be safe to move between threads and to read from
+/// several at once: value semantics over atomically reference-counted
+/// contents, which is what Swift's own `Sendable` conformance promises.
+pub unsafe trait SwiftSendable: SwiftMetadata {}
+
+/// States that a Swift type is `Sendable`, so its values are `Send` and `Sync`.
+#[macro_export]
+macro_rules! impl_swift_sendable {
+    ($($ty:ty),+ $(,)?) => {
+        $(unsafe impl $crate::swift::SwiftSendable for $ty {})+
+    };
+}
+
 /// A Rust value that can be read out of a Swift value of the type it names.
 ///
 /// This is what lets the generic containers — [`Array`](super::Array),

@@ -17,8 +17,7 @@ define_swift_value!(
     pub Locale, LocaleValue = accessor locale_metadata
 );
 
-unsafe impl Send for Locale {}
-unsafe impl Sync for Locale {}
+crate::impl_swift_sendable!(LocaleValue);
 
 impl Locale {
     /// `Locale(identifier:)`.

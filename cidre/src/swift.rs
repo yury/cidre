@@ -43,7 +43,9 @@ pub use array::{Array, ArrayIter};
 pub use dictionary::Dictionary;
 pub use set::Set;
 pub use string::{RawString, SmallStringError, String};
-pub use types::{FromSwift, SwiftClass, SwiftHashable, SwiftMetadata, SwiftType, ToSwift};
+pub use types::{
+    FromSwift, SwiftClass, SwiftHashable, SwiftMetadata, SwiftSendable, SwiftType, ToSwift,
+};
 
 /// Defines an opaque native Swift class marker type and implements Cidre's
 /// shared retain/release ownership traits for it.

@@ -14,8 +14,7 @@ define_swift_value!(
     pub Date, DateValue = accessor date_metadata
 );
 
-unsafe impl Send for Date {}
-unsafe impl Sync for Date {}
+crate::impl_swift_sendable!(DateValue);
 
 impl Date {
     pub fn time_interval_since_reference_date(&self) -> f64 {

@@ -102,6 +102,21 @@ mod tests {
         assert_eq!("fr_FR", second.id().to_string());
     }
 
+    /// Whether a wrapper may cross threads now follows from the Swift type
+    /// being `Sendable`, so this is the statement that it still reaches the
+    /// wrapper — and everything built over it.
+    #[test]
+    fn sendable_swift_values_stay_send_and_sync() {
+        const fn assert_send_sync<T: Send + Sync>() {}
+
+        assert_send_sync::<swift::String>();
+        assert_send_sync::<Uuid>();
+        assert_send_sync::<Locale>();
+        assert_send_sync::<Date>();
+        assert_send_sync::<AttrString>();
+        assert_send_sync::<swift::Array<Uuid>>();
+    }
+
     /// A wrapper around a runtime-laid-out value has to work as an array
     /// element like any other, which is what replaced the hand-written
     /// `[UUID]` these bindings used to carry.

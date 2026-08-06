@@ -80,6 +80,11 @@ impl<T: SwiftMetadata> Storage<T> {
     }
 }
 
+/// A `Sendable` Swift value is safe to move and to share, and the storage is
+/// only a private allocation holding one, so it inherits both.
+unsafe impl<T: super::SwiftSendable> Send for Storage<T> {}
+unsafe impl<T: super::SwiftSendable> Sync for Storage<T> {}
+
 impl<T: super::SwiftClass> Storage<crate::arc::R<T>> {
     /// Moves a class reference into storage for the class's Swift value.
     ///
@@ -399,6 +404,9 @@ pub(crate) use define_swift_value;
 /// `Swift.Optional<T>`, whose metadata comes from the standard library's
 /// generic accessor rather than a hand-written mangled name.
 pub(crate) struct Optional<T: SwiftMetadata>(OptionalMarker<T>);
+
+/// An optional is as sendable as what it wraps.
+unsafe impl<T: super::SwiftSendable> super::SwiftSendable for Optional<T> {}
 
 unsafe impl<T: SwiftMetadata> SwiftMetadata for Optional<T> {
     #[inline]

@@ -68,7 +68,7 @@ define_swift_value!(
     pub SessionResult, SessionResultValue = accessor session_result_metadata
 );
 
-unsafe impl Send for SessionResult {}
+crate::impl_swift_sendable!(SessionResultValue);
 
 impl SessionResult {
     /// `SessionResult.rhythm`, present only when rhythm analysis ran.
@@ -119,7 +119,7 @@ define_swift_value!(
     pub RhythmResult, RhythmResultValue = optional accessor rhythm_result_metadata
 );
 
-unsafe impl Send for RhythmResult {}
+crate::impl_swift_sendable!(RhythmResultValue);
 
 impl RhythmResult {
     /// `RhythmResult.beatsPerMinute`.
@@ -169,7 +169,7 @@ define_swift_value!(
     pub LoudnessResult, LoudnessResultValue = optional accessor loudness_result_metadata
 );
 
-unsafe impl Send for LoudnessResult {}
+crate::impl_swift_sendable!(LoudnessResultValue);
 
 impl LoudnessResult {
     /// `LoudnessResult.integrated`, the whole track's loudness.
@@ -199,7 +199,7 @@ define_swift_value!(
         optional mangled "18MusicUnderstanding0aB7SessionC10TimedValueVy_SfG"
 );
 
-unsafe impl Send for TimedValue {}
+crate::impl_swift_sendable!(TimedValueF32);
 
 impl TimedValue {
     /// `TimedValue.value`.

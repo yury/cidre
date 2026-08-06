@@ -77,7 +77,7 @@ define_swift_value!(
     pub InstrumentActivityResult, InstrumentActivityResultValue = optional accessor instrument_activity_result_metadata
 );
 
-unsafe impl Send for InstrumentActivityResult {}
+crate::impl_swift_sendable!(InstrumentActivityResultValue);
 
 impl InstrumentActivityResult {
     /// The time ranges an instrument is active in, or `None` when the analysis

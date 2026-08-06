@@ -26,7 +26,7 @@ define_swift_value!(
     pub AttrString, AttrStringValue = accessor attr_string_metadata
 );
 
-unsafe impl Send for AttrString {}
+crate::impl_swift_sendable!(AttrStringValue);
 
 impl AttrString {
     /// The text without its attributes, via `String(_characters:)`.

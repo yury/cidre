@@ -77,40 +77,35 @@ define_swift_value!(
     pub Identifier, IdentifierValue = accessor dock_accessory_identifier_metadata
 );
 
-unsafe impl Send for Identifier {}
-unsafe impl Sync for Identifier {}
+crate::impl_swift_sendable!(IdentifierValue);
 
 define_swift_value!(
     /// One sample from `DockAccessory.motionStates`.
     pub MotionState, MotionStateValue = accessor dock_accessory_motion_state_metadata
 );
 
-unsafe impl Send for MotionState {}
-unsafe impl Sync for MotionState {}
+crate::impl_swift_sendable!(MotionStateValue);
 
 define_swift_value!(
     /// One sample from `DockAccessory.batteryStates`.
     pub BatteryState, BatteryStateValue = accessor dock_accessory_battery_state_metadata
 );
 
-unsafe impl Send for BatteryState {}
-unsafe impl Sync for BatteryState {}
+crate::impl_swift_sendable!(BatteryStateValue);
 
 define_swift_value!(
     /// The accessory's mechanical movement limits.
     pub Limits, LimitsValue = accessor dock_accessory_limits_metadata
 );
 
-unsafe impl Send for Limits {}
-unsafe impl Sync for Limits {}
+crate::impl_swift_sendable!(LimitsValue);
 
 define_swift_value!(
     /// Limits for one rotational axis.
     pub Limit, LimitValue = accessor dock_accessory_limit_metadata
 );
 
-unsafe impl Send for Limit {}
-unsafe impl Sync for Limit {}
+crate::impl_swift_sendable!(LimitValue);
 
 /// A physical event reported by the dock accessory.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -143,16 +138,14 @@ define_swift_value!(
     pub TrackedPerson, TrackedPersonValue = accessor dock_accessory_tracked_person_metadata
 );
 
-unsafe impl Send for TrackedPerson {}
-unsafe impl Sync for TrackedPerson {}
+crate::impl_swift_sendable!(TrackedPersonValue);
 
 define_swift_value!(
     /// An object currently tracked by DockKit.
     pub TrackedObject, TrackedObjectValue = accessor dock_accessory_tracked_object_metadata
 );
 
-unsafe impl Send for TrackedObject {}
-unsafe impl Sync for TrackedObject {}
+crate::impl_swift_sendable!(TrackedObjectValue);
 
 /// A tracked subject and its concrete payload.
 pub enum TrackedSubject {
@@ -166,16 +159,14 @@ define_swift_value!(
     pub TrackingState, TrackingStateValue = accessor dock_accessory_tracking_state_metadata
 );
 
-unsafe impl Send for TrackingState {}
-unsafe impl Sync for TrackingState {}
+crate::impl_swift_sendable!(TrackingStateValue);
 
 define_swift_value!(
     /// One subject observation supplied to DockKit tracking.
     pub Observation, ObservationValue = accessor dock_accessory_observation_metadata
 );
 
-unsafe impl Send for Observation {}
-unsafe impl Sync for Observation {}
+crate::impl_swift_sendable!(ObservationValue);
 
 #[cfg(feature = "av")]
 define_swift_value!(
@@ -185,9 +176,7 @@ define_swift_value!(
 );
 
 #[cfg(feature = "av")]
-unsafe impl Send for CameraInformation {}
-#[cfg(feature = "av")]
-unsafe impl Sync for CameraInformation {}
+crate::impl_swift_sendable!(CameraInformationValue);
 
 /// Native layout of `simd_float3x3`, stored as three padded column vectors.
 #[cfg(feature = "av")]

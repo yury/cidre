@@ -25,8 +25,7 @@ define_swift_value!(
     pub Uuid, UuidValue = accessor uuid_metadata
 );
 
-unsafe impl Send for Uuid {}
-unsafe impl Sync for Uuid {}
+crate::impl_swift_sendable!(UuidValue);
 
 impl Uuid {
     /// Generates a new random identifier.
