@@ -1,7 +1,4 @@
-use crate::swift::{
-    self, abi,
-    value::Storage,
-};
+use crate::swift::{self, abi, value::Storage};
 
 unsafe extern "C" {
 
@@ -19,8 +16,6 @@ crate::define_swift_marker!(CharacterViewValue = accessor character_view_metadat
 
 crate::define_swift!(
     #[swift::struct("Foundation.AttributedString", size(8), align(8), sendable)]
-    /// `Foundation.AttributedString`.
-    #[doc(alias = "AttributedString")]
     pub AttrString
 );
 

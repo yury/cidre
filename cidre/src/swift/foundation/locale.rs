@@ -2,7 +2,6 @@ use crate::swift;
 
 crate::define_swift!(
     #[swift::struct("Foundation.Locale", size(16), align(8), sendable)]
-    /// `Foundation.Locale`.
     pub Locale
 );
 

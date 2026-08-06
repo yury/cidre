@@ -21,7 +21,6 @@ unsafe extern "C" {
     #[link_name = "$s6Speech0A8DetectorCMa"]
     fn speech_detector_metadata();
 
-
     #[link_name = "$s6Speech0A8DetectorC16SensitivityLevelOMa"]
     fn sensitivity_level_metadata();
 

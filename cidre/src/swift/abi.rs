@@ -688,6 +688,34 @@ pub(crate) const ARRAY_BRIDGED_TAG: usize = 0xc000_0000_0000_0001;
 /// Clears the spare bits Swift keeps in the storage word before dereferencing.
 pub(crate) const ARRAY_STORAGE_MASK: usize = !0x7;
 
+/// What a type's metadata accessor hands back: the metadata, and how far the
+/// runtime got building it.
+#[repr(C)]
+pub struct MetadataResponse {
+    pub metadata: *const TypeMetadata,
+    pub state: usize,
+}
+
+/// Calls a type's metadata accessor.
+///
+/// An accessor takes a `MetadataRequest` and returns two words. It reads no
+/// context register, throws nothing, and returns nothing indirectly, so Swift's
+/// convention and C's coincide here — which is why this is a plain call rather
+/// than an assembly shim, and why resolving metadata no longer makes its caller
+/// spill `d8`-`d15`.
+///
+/// # Safety
+///
+/// `accessor` must be a metadata accessor symbol for some type.
+#[inline]
+pub unsafe fn call_metadata_accessor(accessor: *const ()) -> *const TypeMetadata {
+    let accessor: extern "C" fn(usize) -> MetadataResponse =
+        unsafe { core::mem::transmute(accessor) };
+    // `MetadataRequest(0)` asks for complete metadata, which is the only state
+    // a binding can use.
+    accessor(0).metadata
+}
+
 /// Whether an initialized value may be relocated with a plain byte copy.
 ///
 /// Most Swift values may; the exceptions keep pointers into themselves, so

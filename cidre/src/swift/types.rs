@@ -511,8 +511,7 @@ impl_swift_memcpy_value!(Option<crate::arc::R<T>>, <T: SwiftClass>);
 macro_rules! define_swift_marker {
     ($(#[$meta:meta])* $vis:vis $ty:ident = accessor $accessor:expr) => {
         $crate::define_swift_marker!(@marker $(#[$meta])* $vis $ty, unsafe {
-            $crate::swift::abi::call::int_to_int($accessor as *const (), 0)
-                as *const $crate::swift::abi::TypeMetadata
+            $crate::swift::abi::call_metadata_accessor($accessor as *const ())
         });
     };
     ($(#[$meta:meta])* $vis:vis $ty:ident = mangled $name:literal) => {
@@ -580,6 +579,16 @@ impl_swift_type!(i64, int64_metadata);
 impl_swift_type!(u64, uint64_metadata);
 impl_swift_type!(f32, float_metadata);
 impl_swift_type!(f64, double_metadata);
+
+crate::define_swift_marker!(
+    /// `any Error`, the existential every Swift `throws` produces.
+    ///
+    /// A thrown value arrives as one owned pointer to its error box, which is
+    /// what lets a throwing call read the error straight out of `x21` or out of
+    /// an indirect return slot. The marker names the type so that assumption can
+    /// be checked against the runtime rather than trusted.
+    pub SwiftError = mangled "s5Error_p"
+);
 
 /// `CMTime` is imported from C, so Swift has no exported metadata accessor for
 /// it and the runtime resolves it from the mangled name instead.
@@ -702,6 +711,17 @@ mod tests {
 
         drop(array);
         let _ = shared.is_system_tracking_enabled();
+    }
+
+    /// A throwing call reads the thrown error out of a single register or slot,
+    /// which is only valid while the existential stays one word wide.
+    #[test]
+    fn error_existential_is_a_single_pointer() {
+        let metadata = SwiftError::metadata();
+        assert!(!metadata.is_null(), "Swift.Error metadata must exist");
+
+        let layout = unsafe { abi::value_layout(metadata) };
+        assert_eq!(core::mem::size_of::<*mut ()>(), layout.size);
     }
 
     #[test]

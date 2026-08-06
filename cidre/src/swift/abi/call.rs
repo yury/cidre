@@ -82,15 +82,6 @@ pub unsafe fn generic_value_to_words3(
 }
 
 #[inline]
-pub unsafe fn int_to_int(function: *const (), arg: isize) -> isize {
-    let result: isize;
-    unsafe {
-        swift_call!(function, inlateout("x0") arg => result,);
-    }
-    result
-}
-
-#[inline]
 pub unsafe fn double_to_words2(function: *const (), value: f64) -> (u64, u64) {
     let (w0, w1): (u64, u64);
     unsafe {
@@ -198,8 +189,6 @@ pub unsafe fn values3_to_value(
     }
 }
 
-
-
 /// # Safety
 ///
 /// `value` must be what the static method takes, and `type_metadata` the
@@ -265,7 +254,6 @@ pub unsafe fn static_array_value_to_object(
     object as *mut ()
 }
 
-
 /// `DockAccessory.Observation.init(identifier:type:rect:faceYawAngle:)`.
 ///
 /// # Safety
@@ -330,11 +318,6 @@ pub unsafe fn to_value(function: *const (), out: *mut ()) {
     }
 }
 
-
-
-
-
-
 #[inline]
 pub unsafe fn value_to_int(function: *const (), value: *const ()) -> isize {
     let result: isize;
@@ -352,7 +335,6 @@ pub unsafe fn value_to_bool(function: *const (), value: *const ()) -> bool {
     }
     flag & 1 != 0
 }
-
 
 #[inline]
 pub unsafe fn value_to_words3(function: *const (), value: *const ()) -> (u64, u64, u64) {
@@ -399,7 +381,6 @@ pub unsafe fn value_to_object(function: *const (), value: *const ()) -> *mut () 
     }
     object as *mut ()
 }
-
 
 #[inline]
 pub unsafe fn value_to_string(function: *const (), value: *const ()) -> RawString {

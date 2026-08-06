@@ -53,17 +53,12 @@ unsafe fn transcriber_with_id_and_preset<P: ToSwift>(
         preset.copy_to_swift(preset_storage.as_mut_ptr());
         let preset = preset_storage;
 
-        let class_metadata = abi::call::int_to_int(class_metadata_accessor, 0) as *const ();
+        let class_metadata = abi::call_metadata_accessor(class_metadata_accessor).cast();
         // `init(locale:preset:)` takes both at +1, so the locale is handed
         // over rather than dropped here.
         let locale = core::mem::ManuallyDrop::new(locale);
         call_with_owned_value(preset, |preset| {
-            abi::call::static_values_to_object(
-                init,
-                class_metadata,
-                locale.as_ptr(),
-                preset,
-            )
+            abi::call::static_values_to_object(init, class_metadata, locale.as_ptr(), preset)
         })
     }
 }

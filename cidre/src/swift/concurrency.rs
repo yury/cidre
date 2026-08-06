@@ -2081,9 +2081,10 @@ mod notification_sequence {
                 );
                 // A class-typed sequence is one reference, written straight
                 // into the storage the runtime sized for it.
-                let mut storage = crate::swift::value::DynamicStorage::new(
-                    <crate::arc::R<NotificationsClass> as SwiftMetadata>::metadata(),
-                );
+                let mut storage = crate::swift::value::DynamicStorage::new(<crate::arc::R<
+                    NotificationsClass,
+                > as SwiftMetadata>::metadata(
+                ));
                 storage
                     .as_mut_ptr()
                     .cast::<*mut NotificationsClass>()

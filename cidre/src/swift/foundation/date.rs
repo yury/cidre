@@ -3,7 +3,6 @@ use crate::swift;
 crate::define_swift!(
     #[swift::struct("Foundation.Date", size(8), align(8), trivial, sendable)]
     /// Swift `Foundation.Date`.
-    ///
     /// One `Double` since the type shipped: held inline, copied and dropped
     /// without touching Swift at all.
     pub Date

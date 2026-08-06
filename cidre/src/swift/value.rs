@@ -66,7 +66,6 @@ impl<T: SwiftMetadata> Storage<T> {
             None => self.inline.0.as_mut_ptr().cast(),
         }
     }
-
 }
 
 impl<T: SwiftMetadata> Storage<T> {
@@ -271,7 +270,10 @@ impl<T: SwiftMetadata> Storage<Optional<T>> {
     {
         unsafe {
             if !self.is_some() {
-                abi::destroy_value(self.as_mut_ptr(), <Optional<T> as SwiftMetadata>::metadata());
+                abi::destroy_value(
+                    self.as_mut_ptr(),
+                    <Optional<T> as SwiftMetadata>::metadata(),
+                );
                 return None;
             }
             Some(T::take_swift(self.as_mut_ptr()))
@@ -373,7 +375,6 @@ fn rust_layout(value: abi::ValueLayout) -> Layout {
 mod tests {
     use super::*;
 
-
     /// Can these values live inline in a Rust struct at all?
     ///
     /// A Rust move is a `memcpy` with no hook, so a Swift value that is not
@@ -393,7 +394,12 @@ mod tests {
                 let pod = flags & 0x0001_0000 == 0;
                 println!(
                     "{:<40} size {:>3} stride {:>3} align {:>2}  takable {:<5} POD {}",
-                    $name, l.size, l.stride, l.align, w.is_bitwise_takable(), pod
+                    $name,
+                    l.size,
+                    l.stride,
+                    l.align,
+                    w.is_bitwise_takable(),
+                    pod
                 );
             };
         }
@@ -403,7 +409,12 @@ mod tests {
             println!(
                 "  ==> Rust size_of::<Date>() = {}  Copy = {}",
                 core::mem::size_of::<Date>(),
-                { fn is_copy<T: Copy>() -> bool { true } is_copy::<Date>() }
+                {
+                    fn is_copy<T: Copy>() -> bool {
+                        true
+                    }
+                    is_copy::<Date>()
+                }
             );
             row!("Foundation.Date", Date);
             row!("Foundation.UUID", Uuid);
@@ -411,7 +422,10 @@ mod tests {
             row!("Foundation.AttributedString", AttrString);
         }
         row!("Swift.String", crate::swift::String);
-        #[cfg(all(any(target_os = "macos", all(target_os = "ios", not(target_abi = "sim"))), feature = "dk"))]
+        #[cfg(all(
+            any(target_os = "macos", all(target_os = "ios", not(target_abi = "sim"))),
+            feature = "dk"
+        ))]
         {
             use crate::swift::dock_kit::*;
             row!("DockAccessory.Identifier", Identifier);
@@ -433,15 +447,13 @@ mod tests {
         println!("Date is Send + Sync purely by inference");
     }
 
-
     /// Everything a `swift_value!` declaration has to state, read off Swift.
     #[test]
     fn report_declarations() {
         macro_rules! row {
             ($name:literal, $kind:ident) => {{
                 let md = unsafe {
-                    abi::call::int_to_int(crate::swift::metadata_accessor!($kind, $name), 0)
-                        as *const abi::TypeMetadata
+                    abi::call_metadata_accessor(crate::swift::metadata_accessor!($kind, $name))
                 };
                 let w = unsafe { abi::ValueWitnesses::new(md) };
                 let l = w.layout();
@@ -454,9 +466,12 @@ mod tests {
                     .unwrap();
                 println!(
                     "size({:>3}), align({:>2}){:<10} // {name}  [swift size {}, align {}]",
-                    l.stride, align,
+                    l.stride,
+                    align,
                     if trivial { ", trivial" } else { "" },
-                    l.size, l.align, name = $name,
+                    l.size,
+                    l.align,
+                    name = $name,
                 );
             }};
         }
@@ -465,20 +480,34 @@ mod tests {
                 abi::type_by_mangled_name("18MusicUnderstanding0aB7SessionC10TimedValueVy_SfG")
             };
             let l = unsafe { abi::value_layout(md) };
-            println!("TimedValue<Float>: stride {} align {} trivial {}",
-                l.stride, l.align, unsafe { abi::is_pod(md) });
+            println!(
+                "TimedValue<Float>: stride {} align {} trivial {}",
+                l.stride,
+                l.align,
+                unsafe { abi::is_pod(md) }
+            );
         }
         row!("Foundation.UUID", struct);
-        #[cfg(all(not(target_os = "watchos"), feature = "music_understanding", feature = "macos_27_0"))]
+        #[cfg(all(
+            not(target_os = "watchos"),
+            feature = "music_understanding",
+            feature = "macos_27_0"
+        ))]
         {
             row!("MusicUnderstanding.RhythmResult", struct);
             row!("MusicUnderstanding.LoudnessResult", struct);
             row!("MusicUnderstanding.InstrumentActivityResult", struct);
-            row!("MusicUnderstanding.MusicUnderstandingSession(class).SessionResult", struct);
+            row!(
+                "MusicUnderstanding.MusicUnderstandingSession(class).SessionResult",
+                struct
+            );
         }
         row!("Foundation.Locale", struct);
         row!("Foundation.AttributedString", struct);
-        #[cfg(all(any(target_os = "macos", all(target_os = "ios", not(target_abi = "sim"))), feature = "dk"))]
+        #[cfg(all(
+            any(target_os = "macos", all(target_os = "ios", not(target_abi = "sim"))),
+            feature = "dk"
+        ))]
         {
             row!("DockKit.DockAccessory(class).Identifier", struct);
             row!("DockKit.DockAccessory(class).MotionState", struct);
@@ -536,7 +565,7 @@ macro_rules! swift_value {
         $size:literal, $align:literal, $trivial:literal
     ) => {
         $crate::swift_value!(
-            @common $(#[$meta])* $vis $ty, $size, $align, $trivial,
+            @common $(#[$meta])* $vis $ty = $name, $size, $align, $trivial,
             unsafe { $crate::swift::abi::type_by_mangled_name($name) }
         );
     };
@@ -546,20 +575,23 @@ macro_rules! swift_value {
         $size:literal, $align:literal, $trivial:literal
     ) => {
         $crate::swift_value!(
-            @common $(#[$meta])* $vis $ty, $size, $align, $trivial,
+            @common $(#[$meta])* $vis $ty = $name, $size, $align, $trivial,
             unsafe {
-                $crate::swift::abi::call::int_to_int(
+                $crate::swift::abi::call_metadata_accessor(
                     $crate::swift::metadata_accessor!(struct, $name),
-                    0,
-                ) as *const $crate::swift::abi::TypeMetadata
+                )
             }
         );
     };
     (
         @common $(#[$meta:meta])*
-        $vis:vis $ty:ident, $size:literal, $align:literal, $trivial:literal, $resolve:expr
+        $vis:vis $ty:ident = $name:literal,
+        $size:literal, $align:literal, $trivial:literal, $resolve:expr
     ) => {
+        #[doc = concat!("Swift `", $name, "`.")]
+        ///
         $(#[$meta])*
+        #[doc(alias = $name)]
         #[repr(C, align($align))]
         $vis struct $ty {
             bytes: [::core::mem::MaybeUninit<u8>; $size],

@@ -207,8 +207,7 @@ macro_rules! define_swift_getter_enum {
                 static CACHE: $crate::swift::abi::MetadataCache =
                     $crate::swift::abi::MetadataCache::new();
                 CACHE.get(|| unsafe {
-                    $crate::swift::abi::call::int_to_int($accessor as *const (), 0)
-                        as *const $crate::swift::abi::TypeMetadata
+                    $crate::swift::abi::call_metadata_accessor($accessor as *const ())
                 })
             }
         }

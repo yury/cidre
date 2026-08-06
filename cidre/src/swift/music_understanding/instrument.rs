@@ -21,7 +21,6 @@ crate::impl_swift_hashable!(Instrument = descriptor(&raw const INSTRUMENT_HASHAB
 
 crate::define_swift!(
     #[swift::struct("MusicUnderstanding.InstrumentActivityResult", size(16), align(8), sendable)]
-    /// `MusicUnderstanding.InstrumentActivityResult`.
     pub InstrumentActivityResult
 );
 

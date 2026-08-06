@@ -17,7 +17,6 @@ pub use date::Date;
 pub use locale::Locale;
 pub use uuid::Uuid;
 #[allow(unused_imports)]
-
 #[link(name = "Foundation", kind = "framework")]
 unsafe extern "C" {}
 

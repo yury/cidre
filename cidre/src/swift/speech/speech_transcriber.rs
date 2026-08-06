@@ -1,10 +1,6 @@
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
-use crate::{
-    api, arc, ns, swift,
-    swift::abi,
-    swift::foundation,
-};
+use crate::{api, arc, ns, swift, swift::SwiftError, swift::abi, swift::foundation};
 
 use crate::swift::concurrency::{
     self, ASYNC_ITERATOR_CONFORMANCE, ASYNC_ITERATOR_NEXT_ASYNC_FN,
@@ -49,7 +45,6 @@ unsafe extern "C" {
     #[link_name = "$s6Speech0A11TranscriberCMa"]
     fn speech_transcriber_metadata();
 
-
     #[link_name = "$s6Speech0A11TranscriberC6locale6presetAC10Foundation6LocaleV_AC6PresetVtcfC"]
     fn speech_transcriber_init();
 
@@ -66,8 +61,6 @@ unsafe extern "C" {
     fn speech_transcriber_result_text();
 
 }
-
-crate::define_swift_marker!(SwiftError = mangled "s5Error_p");
 
 impl SpeechTranscriber {
     #[doc(alias = "SpeechTranscriber.isAvailable")]
@@ -219,8 +212,7 @@ impl ResultsTask {
                 (&raw const ASYNC_SEQUENCE_ASSOCIATED_TYPES).cast(),
                 (&raw const ASYNC_ITERATOR_CONFORMANCE).cast(),
             );
-            let payload_metadata =
-                abi::call::int_to_int(result_metadata_getter, 0) as *const abi::TypeMetadata;
+            let payload_metadata = abi::call_metadata_accessor(result_metadata_getter);
             let result_metadata = abi::type_by_mangled_name(optional_result_mangled_name);
 
             let task = Box::new(Self {
@@ -481,15 +473,4 @@ unsafe extern "C" fn results_task_process() {
 mod tests {
     use super::*;
     use crate::swift::SwiftMetadata;
-
-    /// The failure path reads the thrown error straight out of its indirect
-    /// return slot, which is only valid while `any Error` stays one word wide.
-    #[test]
-    fn error_existential_is_a_single_pointer() {
-        let metadata = SwiftError::metadata();
-        assert!(!metadata.is_null(), "Swift.Error metadata must exist");
-
-        let layout = unsafe { abi::value_layout(metadata) };
-        assert_eq!(core::mem::size_of::<*mut ()>(), layout.size);
-    }
 }

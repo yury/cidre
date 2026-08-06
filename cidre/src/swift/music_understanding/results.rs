@@ -15,8 +15,6 @@ unsafe extern "C" {
 
 crate::define_swift!(
     #[swift::struct("MusicUnderstanding.MusicUnderstandingSession(class).SessionResult", size(296), align(8), sendable)]
-    /// `MusicUnderstandingSession.SessionResult`.
-    ///
     /// A Swift value type whose layout is only known at runtime, so it is kept
     /// in its Swift representation and read through the framework's getters.
     pub SessionResult
@@ -42,7 +40,6 @@ impl SessionResult {
 
 crate::define_swift!(
     #[swift::struct("MusicUnderstanding.RhythmResult", size(24), align(8), sendable)]
-    /// `MusicUnderstanding.RhythmResult`.
     pub RhythmResult
 );
 
@@ -67,7 +64,6 @@ impl RhythmResult {
 
 crate::define_swift!(
     #[swift::struct("MusicUnderstanding.LoudnessResult", size(80), align(8), sendable)]
-    /// `MusicUnderstanding.LoudnessResult`.
     pub LoudnessResult
 );
 
@@ -93,7 +89,6 @@ crate::define_swift!(
         size(28), align(4), trivial, sendable
     )]
     /// A `TimedValue<Float>`: a measurement and the time it applies to.
-    ///
     /// `TimedValue`'s generic parameter is constrained to Decodable, Encodable
     /// and Equatable, so its metadata accessor wants the argument metadata plus
     /// three witness tables — more arguments than an accessor passes in

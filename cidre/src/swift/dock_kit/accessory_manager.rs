@@ -1,8 +1,4 @@
-use crate::{
-    api, arc, ns, swift,
-    swift::dock_kit::StateChanges,
-    swift::concurrency,
-};
+use crate::{api, arc, ns, swift, swift::concurrency, swift::dock_kit::StateChanges};
 
 crate::define_swift!(
     #[swift::class("DockKit.DockAccessoryManager")]
@@ -26,7 +22,9 @@ impl AccessoryManager {
     #[swift::call(sym = "$s7DockKit0A16AccessoryManagerC6sharedACvgZ")]
     pub fn shared() -> arc::R<Self>;
 
-    #[swift::call("DockKit.DockAccessoryManager(class).isSystemTrackingEnabled: Bool { get } thunk")]
+    #[swift::call(
+        "DockKit.DockAccessoryManager(class).isSystemTrackingEnabled: Bool { get } thunk"
+    )]
     pub fn is_system_tracking_enabled(&self) -> bool;
 
     /// Bridging returns the error box itself, so the reference the call gets

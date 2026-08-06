@@ -66,7 +66,6 @@ impl core::fmt::Debug for StateChange {
 
 crate::define_swift!(
     #[swift::struct("DockKit.DockAccessory(class).Identifier", size(32), align(8), sendable)]
-    /// `DockAccessory.Identifier`.
     pub Identifier
 );
 
@@ -192,10 +191,6 @@ impl CameraIntrinsics {
 #[link(name = "DockKit", kind = "framework")]
 unsafe extern "C" {
 
-
-
-
-
     #[link_name = "$s7DockKit0A9AccessoryC11StateChangeV5stateAC0D0Ovg"]
     fn dock_accessory_state_change_state();
 
@@ -205,32 +200,14 @@ unsafe extern "C" {
     #[link_name = "$s7DockKit0A9AccessoryC11StateChangeV9accessoryACSgvg"]
     fn dock_accessory_state_change_accessory();
 
-
     #[link_name = "$s7DockKit0A9AccessoryC10IdentifierV8categoryAC8CategoryOvg"]
     fn dock_accessory_identifier_category();
-
-
-
-
-
-
-
-
-
 
     #[link_name = "$s7DockKit0A9AccessoryC11MotionStateV5errors5Error_pSgvg"]
     fn dock_accessory_motion_state_error();
 
-
-
-
-
     #[link_name = "$s7DockKit0A9AccessoryC12BatteryStateV06chargeE0AC0d6ChargeE0Ovg"]
     fn dock_accessory_battery_state_charge_state();
-
-
-
-
 
     #[link_name = "$s7DockKit0A9AccessoryC6LimitsV3yawAE5LimitVSgvg"]
     fn dock_accessory_limits_yaw();
@@ -240,7 +217,6 @@ unsafe extern "C" {
 
     #[link_name = "$s7DockKit0A9AccessoryC6LimitsV4rollAE5LimitVSgvg"]
     fn dock_accessory_limits_roll();
-
 
     #[link_name = "$s7DockKit0A9AccessoryC6LimitsV5LimitV13positionRangeSnySdGvg"]
     fn dock_accessory_limit_position_range();
@@ -271,7 +247,6 @@ unsafe extern "C" {
     #[link_name = "$s7DockKit0A9AccessoryC17CameraInformationV19referenceDimensionsSo6CGSizeVSgvg"]
     fn dock_accessory_camera_information_reference_dimensions();
 
-
     #[link_name = "$s7DockKit0A9AccessoryC0C5EventO6buttonyAESi_SbtcAEmFWC"]
     static DOCK_ACCESSORY_EVENT_BUTTON_TAG: u32;
 
@@ -284,10 +259,8 @@ unsafe extern "C" {
     #[link_name = "$s7DockKit0A9AccessoryC0C5EventO10cameraZoomyAESd_tcAEmFWC"]
     static DOCK_ACCESSORY_EVENT_CAMERA_ZOOM_TAG: u32;
 
-
     #[link_name = "$s7DockKit0A9AccessoryC13TrackedPersonV10identifier10Foundation4UUIDVvg"]
     fn dock_accessory_tracked_person_identifier();
-
 
     #[link_name = "$s7DockKit0A9AccessoryC13TrackedPersonV4rectSo6CGRectVvg"]
     fn dock_accessory_tracked_person_rect();
@@ -301,10 +274,8 @@ unsafe extern "C" {
     #[link_name = "$s7DockKit0A9AccessoryC13TrackedPersonV25lookingAtCameraConfidenceSdSgvg"]
     fn dock_accessory_tracked_person_looking_at_camera_confidence();
 
-
     #[link_name = "$s7DockKit0A9AccessoryC13TrackedObjectV10identifier10Foundation4UUIDVvg"]
     fn dock_accessory_tracked_object_identifier();
-
 
     #[link_name = "$s7DockKit0A9AccessoryC13TrackedObjectV4rectSo6CGRectVvg"]
     fn dock_accessory_tracked_object_rect();
@@ -312,23 +283,17 @@ unsafe extern "C" {
     #[link_name = "$s7DockKit0A9AccessoryC13TrackedObjectV12saliencyRankSiSgvg"]
     fn dock_accessory_tracked_object_saliency_rank();
 
-
     #[link_name = "$s7DockKit0A9AccessoryC18TrackedSubjectTypeO6personyAeC0D6PersonVcAEmFWC"]
     static DOCK_ACCESSORY_TRACKED_SUBJECT_PERSON_TAG: u32;
 
     #[link_name = "$s7DockKit0A9AccessoryC18TrackedSubjectTypeO6objectyAeC0D6ObjectVcAEmFWC"]
     static DOCK_ACCESSORY_TRACKED_SUBJECT_OBJECT_TAG: u32;
 
-
-
     #[link_name = "$s7DockKit0A9AccessoryC13TrackingStateV15trackedSubjectsSayAC18TrackedSubjectTypeOGvg"]
     fn dock_accessory_tracking_state_subjects();
 
-
-
     #[link_name = "$s7DockKit0A9AccessoryC11ObservationV10identifier4type4rect12faceYawAngleAESi_AE0D4TypeOSo6CGRectV10Foundation11MeasurementVySo06NSUnitJ0CGSgtcfC"]
     fn dock_accessory_observation_init();
-
 
     #[link_name = "$s7DockKit0A9AccessoryC11ObservationV4typeAE0D4TypeOvg"]
     fn dock_accessory_observation_type();
@@ -337,7 +302,6 @@ unsafe extern "C" {
     fn dock_accessory_observation_rect();
 
     #[cfg(feature = "av")]
-
     #[cfg(feature = "av")]
     #[link_name = "$s7DockKit0A9AccessoryC17CameraInformationV13captureDevice14cameraPosition11orientation0H10Intrinsics19referenceDimensionsAESo09AVCaptureG4Typea_So0ngI0VAC0D11OrientationOSo13simd_float3x3aSgSo6CGSizeVSgtcfC"]
     fn dock_accessory_camera_information_init();
@@ -401,10 +365,14 @@ impl Identifier {
     #[swift::call("DockKit.DockAccessory(class).Identifier(struct).name: String { get }")]
     pub fn name(&self) -> swift::String;
 
-    #[swift::call("DockKit.DockAccessory(class).Identifier(struct).uuid: Foundation.UUID(struct) { get }")]
+    #[swift::call(
+        "DockKit.DockAccessory(class).Identifier(struct).uuid: Foundation.UUID(struct) { get }"
+    )]
     pub fn uuid(&self) -> Uuid;
 
-    #[swift::call("DockKit.DockAccessory(class).Identifier(struct).debugDescription: String { get }")]
+    #[swift::call(
+        "DockKit.DockAccessory(class).Identifier(struct).debugDescription: String { get }"
+    )]
     pub fn debug_desc(&self) -> swift::String;
 
     #[swift::call("DockKit.DockAccessory(class).Identifier(struct).hashValue: Int { get }")]
@@ -435,10 +403,14 @@ impl std::hash::Hash for Identifier {
 impl MotionState {
     /// An `SPVector3D` comes back in `d0`-`d2` rather than through an
     /// indirect result.
-    #[swift::call("DockKit.DockAccessory(class).MotionState(struct).angularVelocities: __C.SPVector3D { get }")]
+    #[swift::call(
+        "DockKit.DockAccessory(class).MotionState(struct).angularVelocities: __C.SPVector3D { get }"
+    )]
     pub fn angular_velocities(&self) -> spatial::Vector3D;
 
-    #[swift::call("DockKit.DockAccessory(class).MotionState(struct).angularPositions: __C.SPVector3D { get }")]
+    #[swift::call(
+        "DockKit.DockAccessory(class).MotionState(struct).angularPositions: __C.SPVector3D { get }"
+    )]
     pub fn angular_positions(&self) -> spatial::Vector3D;
 
     #[swift::call("DockKit.DockAccessory(class).MotionState(struct).timestamp: Double { get }")]
@@ -594,7 +566,9 @@ impl Limit {
         start..end
     }
 
-    #[swift::call("DockKit.DockAccessory(class).Limits(struct).Limit(struct).maximumSpeed: Double { get }")]
+    #[swift::call(
+        "DockKit.DockAccessory(class).Limits(struct).Limit(struct).maximumSpeed: Double { get }"
+    )]
     pub fn maximum_speed(&self) -> f64;
 }
 
@@ -602,7 +576,11 @@ impl AccessoryEvent {
     unsafe fn copy_from_ptr(value: *const ()) -> Self {
         unsafe {
             let mut storage = Storage::<AccessoryEventValue>::new();
-            abi::initialize_with_copy(storage.as_mut_ptr().cast(), value, AccessoryEventValue::metadata());
+            abi::initialize_with_copy(
+                storage.as_mut_ptr().cast(),
+                value,
+                AccessoryEventValue::metadata(),
+            );
             let tag = abi::get_enum_tag(storage.as_ptr(), AccessoryEventValue::metadata());
 
             // Projecting a case is destructive, so the payload is read out and
@@ -777,7 +755,11 @@ unsafe impl FromSwift for TrackedSubject {
     unsafe fn copy_swift(value: *const ()) -> Self {
         unsafe {
             let mut storage = Storage::<TrackedSubjectValue>::new();
-            abi::initialize_with_copy(storage.as_mut_ptr().cast(), value, TrackedSubjectValue::metadata());
+            abi::initialize_with_copy(
+                storage.as_mut_ptr().cast(),
+                value,
+                TrackedSubjectValue::metadata(),
+            );
             let tag = abi::get_enum_tag(storage.as_ptr(), TrackedSubjectValue::metadata());
 
             if tag == DOCK_ACCESSORY_TRACKED_SUBJECT_PERSON_TAG {
@@ -811,7 +793,9 @@ unsafe impl FromSwift for TrackedSubject {
 }
 
 impl TrackingState {
-    #[swift::call("DockKit.DockAccessory(class).TrackingState(struct).time: Foundation.Date(struct) { get }")]
+    #[swift::call(
+        "DockKit.DockAccessory(class).TrackingState(struct).time: Foundation.Date(struct) { get }"
+    )]
     pub fn time(&self) -> Date;
 
     pub fn tracked_subjects(&self) -> swift::Array<TrackedSubject> {
@@ -1172,11 +1156,6 @@ unsafe extern "C" {
 
     #[link_name = "$s7DockKit0A9AccessoryC11framingModeAC07FramingE0Ovg"]
     fn dock_accessory_framing_mode();
-
-
-
-
-
 
     #[link_name = "$s7DockKit0A9AccessoryC15accessoryEventsAC0cE0Vvg"]
     fn dock_accessory_events();

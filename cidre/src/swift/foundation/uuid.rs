@@ -2,8 +2,6 @@ use crate::swift;
 
 crate::define_swift!(
     #[swift::struct("Foundation.UUID", size(16), align(1), trivial, sendable)]
-    /// `Foundation.UUID`.
-    #[doc(alias = "UUID")]
     pub Uuid
 );
 
