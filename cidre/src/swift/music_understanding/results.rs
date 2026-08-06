@@ -221,7 +221,7 @@ impl TimedValue {
                 self.as_ptr(),
                 TimedValueF32::metadata(),
             );
-            core::mem::transmute::<[usize; 3], cm::Time>(words)
+            core::mem::transmute::<(u64, u64, u64), cm::Time>(words)
         }
     }
 }
