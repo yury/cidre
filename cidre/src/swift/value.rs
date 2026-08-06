@@ -375,68 +375,6 @@ fn rust_layout(value: abi::ValueLayout) -> Layout {
 mod tests {
     use super::*;
 
-    /// Can these values live inline in a Rust struct at all?
-    ///
-    /// A Rust move is a `memcpy` with no hook, so a Swift value that is not
-    /// bitwise-takable cannot be relocated that way — it has to stay put behind
-    /// a pointer whatever its size.
-    #[test]
-    fn report_inline_eligibility() {
-        use crate::swift::SwiftMetadata;
-        macro_rules! row {
-            ($name:literal, $ty:ty) => {
-                let md = <$ty as SwiftMetadata>::metadata();
-                let w = unsafe { abi::ValueWitnesses::new(md) };
-                let l = w.layout();
-                // Bit 16 of the value-witness flags is `isNonPOD`: a POD value
-                // needs no destroy and no copy witness at all.
-                let flags = unsafe { *crate::swift::abi::value_witness_table(md).add(10) };
-                let pod = flags & 0x0001_0000 == 0;
-                println!(
-                    "{:<40} size {:>3} stride {:>3} align {:>2}  takable {:<5} POD {}",
-                    $name,
-                    l.size,
-                    l.stride,
-                    l.align,
-                    w.is_bitwise_takable(),
-                    pod
-                );
-            };
-        }
-        #[cfg(feature = "foundation")]
-        {
-            use crate::swift::foundation::*;
-            println!(
-                "  ==> Rust size_of::<Date>() = {}  Copy = {}",
-                core::mem::size_of::<Date>(),
-                {
-                    fn is_copy<T: Copy>() -> bool {
-                        true
-                    }
-                    is_copy::<Date>()
-                }
-            );
-            row!("Foundation.Date", Date);
-            row!("Foundation.UUID", Uuid);
-            row!("Foundation.Locale", Locale);
-            row!("Foundation.AttributedString", AttrString);
-        }
-        row!("Swift.String", crate::swift::String);
-        #[cfg(all(
-            any(target_os = "macos", all(target_os = "ios", not(target_abi = "sim"))),
-            feature = "dk"
-        ))]
-        {
-            use crate::swift::dock_kit::*;
-            row!("DockAccessory.Identifier", Identifier);
-            row!("DockAccessory.MotionState", MotionState);
-            row!("DockAccessory.BatteryState", BatteryState);
-            row!("DockAccessory.Limits", Limits);
-            row!("DockAccessory.Observation", Observation);
-            row!("DockAccessory.CameraInformation", CameraInformation);
-            row!("DockAccessory.TrackingState", TrackingState);
-        }
-    }
 
     #[test]
     fn new_wrappers_and_auto_traits() {
@@ -447,83 +385,6 @@ mod tests {
         println!("Date is Send + Sync purely by inference");
     }
 
-    /// Everything a `swift_value!` declaration has to state, read off Swift.
-    #[test]
-    fn report_declarations() {
-        macro_rules! row {
-            ($name:literal, $kind:ident) => {{
-                let md = unsafe {
-                    abi::call_metadata_accessor(crate::swift::metadata_accessor!($kind, $name))
-                };
-                let w = unsafe { abi::ValueWitnesses::new(md) };
-                let l = w.layout();
-                let trivial = unsafe { abi::is_pod(md) };
-                // The smallest alignment that satisfies Swift and still divides
-                // the stride, so the byte array keeps the declared size.
-                let align = [1usize, 2, 4, 8, 16]
-                    .into_iter()
-                    .find(|a| *a >= l.align && l.stride % a == 0)
-                    .unwrap();
-                println!(
-                    "size({:>3}), align({:>2}){:<10} // {name}  [swift size {}, align {}]",
-                    l.stride,
-                    align,
-                    if trivial { ", trivial" } else { "" },
-                    l.size,
-                    l.align,
-                    name = $name,
-                );
-            }};
-        }
-        {
-            let md = unsafe {
-                abi::type_by_mangled_name("18MusicUnderstanding0aB7SessionC10TimedValueVy_SfG")
-            };
-            let l = unsafe { abi::value_layout(md) };
-            println!(
-                "TimedValue<Float>: stride {} align {} trivial {}",
-                l.stride,
-                l.align,
-                unsafe { abi::is_pod(md) }
-            );
-        }
-        row!("Foundation.UUID", struct);
-        #[cfg(all(
-            not(target_os = "watchos"),
-            feature = "music_understanding",
-            feature = "macos_27_0"
-        ))]
-        {
-            row!("MusicUnderstanding.RhythmResult", struct);
-            row!("MusicUnderstanding.LoudnessResult", struct);
-            row!("MusicUnderstanding.InstrumentActivityResult", struct);
-            row!(
-                "MusicUnderstanding.MusicUnderstandingSession(class).SessionResult",
-                struct
-            );
-        }
-        row!("Foundation.Locale", struct);
-        row!("Foundation.AttributedString", struct);
-        #[cfg(all(
-            any(target_os = "macos", all(target_os = "ios", not(target_abi = "sim"))),
-            feature = "dk"
-        ))]
-        {
-            row!("DockKit.DockAccessory(class).Identifier", struct);
-            row!("DockKit.DockAccessory(class).MotionState", struct);
-            row!("DockKit.DockAccessory(class).BatteryState", struct);
-            row!("DockKit.DockAccessory(class).Limits", struct);
-            row!("DockKit.DockAccessory(class).Limits(struct).Limit", struct);
-            row!("DockKit.DockAccessory(class).TrackedPerson", struct);
-            row!("DockKit.DockAccessory(class).TrackedObject", struct);
-            row!("DockKit.DockAccessory(class).TrackingState", struct);
-            row!("DockKit.DockAccessory(class).Observation", struct);
-            row!("DockKit.DockAccessory(class).CameraInformation", struct);
-            row!("DockKit.DockAccessory(class).StateChange", struct);
-            row!("DockKit.DockAccessory(class).StateChanges", struct);
-            row!("DockKit.DockAccessory(class).MotionStates", struct);
-        }
-    }
 
     /// Small values must stay off the heap, and the address must survive a
     /// move, since that is what makes the inline buffer sound.
@@ -607,11 +468,6 @@ macro_rules! swift_value {
                 self.bytes.as_ptr().cast()
             }
 
-            #[inline]
-            #[allow(dead_code)]
-            pub(crate) fn as_mut_ptr(&mut self) -> *mut () {
-                self.bytes.as_mut_ptr().cast()
-            }
         }
 
         /// A `T?` result is written into storage for the optional, and the
@@ -750,7 +606,7 @@ macro_rules! swift_value {
             fn drop(&mut self) {
                 unsafe {
                     $crate::swift::abi::destroy_value(
-                        self.as_mut_ptr(),
+                        self.bytes.as_mut_ptr().cast(),
                         <Self as $crate::swift::SwiftMetadata>::metadata(),
                     )
                 }

@@ -371,11 +371,7 @@ fn parse_attr(attr: TokenStream) -> Symbol {
         Some((k, r)) if k.trim() == "sym" => ("sym", r.trim()),
         _ => ("decl", text),
     };
-    let unquoted = rest
-        .strip_prefix('"')
-        .and_then(|r| r.strip_suffix('"'))
-        .map(|s| s.to_string())
-        .unwrap_or_else(|| rest.to_string());
+    let unquoted = unescape(rest);
     match kind {
         "sym" => Symbol::Mangled(unquoted),
         _ => Symbol::Decl(unquoted),
@@ -395,11 +391,8 @@ pub fn gen_metadata_accessor(args: TokenStream) -> TokenStream {
         .unwrap_or_else(|| panic!("swift::metadata_accessor: expected `kind, \"Module.Type\"`"));
     let kind = crate::swift_mangle::kind_letter(kind.trim())
         .unwrap_or_else(|e| panic!("swift::metadata_accessor: {e}"));
-    let path = path.trim();
-    let path = path
-        .strip_prefix('"')
-        .and_then(|p| p.strip_suffix('"'))
-        .unwrap_or(path);
+    let path = unescape(path.trim());
+    let path = path.as_str();
 
     let symbol = crate::swift_mangle::mangle_metadata_accessor(path, kind)
         .unwrap_or_else(|e| panic!("swift::metadata_accessor: cannot mangle `{path}`: {e}"));
@@ -415,6 +408,84 @@ pub fn gen_metadata_accessor(args: TokenStream) -> TokenStream {
     )
     .parse()
     .expect("valid accessor expression")
+}
+
+/// Resolves what a string literal's token spells into the string it denotes.
+///
+/// A proc macro is handed the literal's *source* text, so a declaration written
+/// across two lines arrives with its continuation backslash and indentation
+/// still in it — which a mangler would happily count into an identifier's
+/// length prefix and produce a symbol that links to nothing.
+fn unescape(literal: &str) -> String {
+    let body = literal
+        .strip_prefix('"')
+        .and_then(|l| l.strip_suffix('"'))
+        .unwrap_or(literal);
+
+    let chars: Vec<char> = body.chars().collect();
+    let mut out = String::with_capacity(body.len());
+    let mut index = 0;
+    while index < chars.len() {
+        if chars[index] != '\\' {
+            out.push(chars[index]);
+            index += 1;
+            continue;
+        }
+        index += 1;
+        match chars.get(index) {
+            // A line continuation eats the newline and the indentation after it.
+            Some('\n') => {
+                index += 1;
+                while matches!(chars.get(index), Some(c) if c.is_whitespace()) {
+                    index += 1;
+                }
+            }
+            Some('n') => {
+                out.push('\n');
+                index += 1;
+            }
+            Some('t') => {
+                out.push('\t');
+                index += 1;
+            }
+            Some('r') => {
+                out.push('\r');
+                index += 1;
+            }
+            Some(other) => {
+                out.push(*other);
+                index += 1;
+            }
+            None => break,
+        }
+    }
+    out
+}
+
+/// Expands a Swift declaration into the address of the entry point it names.
+///
+/// The pointer-valued sibling of `#[swift::call]`, for the places that hand a
+/// Swift entry point to something else rather than calling it themselves.
+pub fn gen_symbol(args: TokenStream) -> TokenStream {
+    let text = args.to_string();
+    let decl = text.trim();
+    let decl = unescape(decl);
+    let decl = decl.as_str();
+
+    let symbol = crate::swift_mangle::mangle(decl)
+        .unwrap_or_else(|e| panic!("swift::symbol: cannot mangle `{decl}`: {e}"));
+
+    format!(
+        "{{
+            unsafe extern \"C\" {{
+                #[link_name = \"{symbol}\"]
+                fn __swift_symbol();
+            }}
+            __swift_symbol as *const ()
+        }}"
+    )
+    .parse()
+    .expect("valid symbol expression")
 }
 
 pub fn gen_swift_call(attr: TokenStream, func: TokenStream) -> TokenStream {
@@ -790,5 +861,25 @@ fn ret_ok_type(ret: &str) -> String {
             .cloned()
             .unwrap_or_else(|| ret.clone()),
         None => ret,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::unescape;
+
+    /// A declaration written across source lines has to arrive as one line, or
+    /// the continuation ends up inside an identifier's length prefix.
+    #[test]
+    fn a_line_continuation_leaves_no_trace() {
+        assert_eq!(
+            "Speech.SpeechTranscriber(class).Result(struct).text: Foundation.AttributedString",
+            unescape(
+                r#""Speech.SpeechTranscriber(class).Result(struct).text: \
+             Foundation.AttributedString""#
+            )
+        );
+        assert_eq!("plain", unescape(r#""plain""#));
+        assert_eq!("a\"b", unescape(r#""a\"b""#));
     }
 }

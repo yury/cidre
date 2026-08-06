@@ -55,6 +55,10 @@ pub use types::{
 /// on says how each value is represented, which is what picks the registers.
 pub use cidre_macros::swift_call as call;
 
+/// The address of the Swift entry point a declaration names, for handing to
+/// something that will call it rather than calling it here.
+pub use cidre_macros::swift_symbol as symbol;
+
 /// The address of a Swift type's metadata accessor, named as Swift spells the
 /// type rather than as the symbol spells it.
 pub use cidre_macros::swift_metadata_accessor as metadata_accessor;

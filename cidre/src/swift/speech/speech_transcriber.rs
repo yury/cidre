@@ -54,11 +54,7 @@ unsafe extern "C" {
     #[link_name = "$s6Speech0A11TranscriberC7resultsQrvpQOMQ"]
     static SPEECH_TRANSCRIBER_RESULTS_DESCRIPTOR: u8;
 
-    #[link_name = "$s6Speech0A11TranscriberC6ResultVMa"]
-    fn speech_transcriber_result_metadata();
 
-    #[link_name = "$s6Speech0A11TranscriberC6ResultV4text10Foundation16AttributedStringVvg"]
-    fn speech_transcriber_result_text();
 
 }
 
@@ -121,9 +117,12 @@ impl SpeechTranscriber {
                 (&raw const SPEECH_TRANSCRIBER_RESULTS_DESCRIPTOR).cast(),
                 &raw const cidre_speech_transcriber_results_iterator_type_start,
                 &raw const cidre_speech_transcriber_results_iterator_type_end,
-                speech_transcriber_result_metadata as *const (),
+                swift::metadata_accessor!(struct, "Speech.SpeechTranscriber(class).Result"),
                 "6Speech0A11TranscriberC6ResultVSg",
-                speech_transcriber_result_text as *const (),
+                swift::symbol!(
+                    "Speech.SpeechTranscriber(class).Result(struct).text: \
+                     Foundation.AttributedString(struct) { get }"
+                ),
                 callback,
             );
         }
@@ -473,4 +472,24 @@ unsafe extern "C" fn results_task_process() {
 mod tests {
     use super::*;
     use crate::swift::SwiftMetadata;
+}
+
+#[cfg(test)]
+mod symbol_tests {
+    use crate::swift;
+
+    /// The declaration is written across two source lines, so this pins that
+    /// the macro sees the string Rust assembled rather than its source form.
+    #[test]
+    fn the_result_text_getter_resolves() {
+        let getter = swift::symbol!(
+            "Speech.SpeechTranscriber(class).Result(struct).text: \
+             Foundation.AttributedString(struct) { get }"
+        );
+        assert!(!getter.is_null(), "text getter must link");
+
+        let metadata =
+            swift::metadata_accessor!(struct, "Speech.SpeechTranscriber(class).Result");
+        assert!(!metadata.is_null(), "Result metadata accessor must link");
+    }
 }

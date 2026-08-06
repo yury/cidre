@@ -88,6 +88,12 @@ pub fn swift_call(decl: TokenStream, func: TokenStream) -> TokenStream {
     swift::gen_swift_call(decl, func)
 }
 
+/// The address of the Swift entry point a declaration names.
+#[proc_macro]
+pub fn swift_symbol(args: TokenStream) -> TokenStream {
+    swift::gen_symbol(args)
+}
+
 /// The address of a Swift type's metadata accessor, from the type's name.
 #[proc_macro]
 pub fn swift_metadata_accessor(args: TokenStream) -> TokenStream {
