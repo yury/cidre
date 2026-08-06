@@ -6,11 +6,10 @@
 - Zero cost objc interop
 - Mobile devices support
 - No legacy platforms support
-- Rusty API (ObjC and C) 
+- Rusty API (ObjC, C and Swift) 
 - ML friendly
 - API Availability checks
 - Async API support
-- Basic Swift support
 - Battle tested in own apps. (StreamChamp.app for recording, Yoml.app to be released, but it is a beast)
 
 ### Performance 
