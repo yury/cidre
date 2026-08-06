@@ -10,6 +10,7 @@
 - ML friendly
 - API Availability checks
 - Async API support
+- Basic Swift support
 - Battle tested in own apps. (StreamChamp.app for recording, Yoml.app to be released, but it is a beast)
 
 ### Performance 
