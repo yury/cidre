@@ -1,12 +1,26 @@
 pub mod call;
 
-use core::{arch::asm, ffi::c_char};
+use core::{arch::naked_asm, ffi::c_char};
 
 use super::RawString;
 
 #[repr(C)]
 pub struct TypeMetadata {
     _priv: [u8; 0],
+}
+
+/// `MetadataRequest(0)`, which asks for complete metadata — the only state a
+/// binding can use.
+const COMPLETE_METADATA: usize = 0;
+
+/// The two pointers `_allocateUninitializedArray` hands back: the array's
+/// storage word, and the address of its first element.
+///
+/// Two words, so both come back in registers rather than through memory.
+#[repr(C)]
+struct ArrayAllocation {
+    storage: *mut (),
+    elements: *mut (),
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -41,18 +55,22 @@ unsafe extern "C" {
         args: *const *const (),
         descriptor: *const (),
         index: usize,
-    );
-    fn swift_getOpaqueTypeConformance2(args: *const *const (), descriptor: *const (), index: usize);
+    ) -> *const TypeMetadata;
+    fn swift_getOpaqueTypeConformance2(
+        args: *const *const (),
+        descriptor: *const (),
+        index: usize,
+    ) -> *const ();
     fn swift_getAssociatedConformanceWitness(
         witness: *const (),
         conforming_type: *const TypeMetadata,
         associated_type: *const TypeMetadata,
         requirements: *const (),
         conformance: *const (),
-    );
+    ) -> *const ();
 
-    fn swift_bridgeObjectRetain(object: *const ()) -> *const ();
-    fn swift_bridgeObjectRelease(object: *const ());
+    fn swift_bridgeObjectRetain(object: usize) -> usize;
+    fn swift_bridgeObjectRelease(object: usize);
 
     fn _swift_stdlib_bridgeErrorToNSError(error: *mut ()) -> *mut ();
 
@@ -62,9 +80,16 @@ unsafe extern "C" {
         instantiation_args: *const *const (),
     ) -> *const ();
 
+    /// `Set.init(arrayLiteral:)`, whose variadic parameter is an array.
     #[link_name = "$sSh12arrayLiteralShyxGxd_tcfC"]
-    fn swift_set_from_array_literal();
+    fn swift_set_from_array_literal(
+        array: *mut (),
+        element: *const TypeMetadata,
+        hashable: *const (),
+    ) -> *mut ();
 
+    /// `Dictionary.subscript`, which writes `Value?` through the indirect
+    /// result register and so is reached through a thunk rather than directly.
     #[link_name = "$sSDyq_Sgxcig"]
     fn swift_dictionary_subscript();
 
@@ -77,50 +102,63 @@ unsafe extern "C" {
     );
 
     #[link_name = "$sSS7cStringSSSPys4Int8VG_tcfC"]
-    fn swift_string_from_c_string();
+    fn swift_string_from_c_string(ptr: *const c_char) -> RawString;
 
     #[link_name = "$sSS5countSivg"]
-    fn swift_string_count();
+    fn swift_string_count(word0: usize, word1: usize) -> isize;
 
+    /// Returns `Bool`, which occupies one register whose other bits are the
+    /// callee's business, so it is taken as a word and masked.
     #[link_name = "$sSS7isEmptySbvg"]
-    fn swift_string_is_empty();
+    fn swift_string_is_empty(word0: usize, word1: usize) -> usize;
 
     #[link_name = "$sSS9hashValueSivg"]
-    fn swift_string_hash_value();
+    fn swift_string_hash_value(word0: usize, word1: usize) -> isize;
 
     #[link_name = "$sSS18_uncheckedFromUTF8ySSSRys5UInt8VGFZ"]
-    fn swift_string_from_utf8();
+    fn swift_string_from_utf8(ptr: *const u8, len: usize) -> RawString;
 
     #[link_name = "$sSS11utf8CStrings15ContiguousArrayVys4Int8VGvg"]
-    fn swift_string_utf8_c_string();
+    fn swift_string_utf8_c_string(word0: usize, word1: usize) -> *mut ();
 
+    /// The same masking as `isEmpty`.
     #[link_name = "$sSS2eeoiySbSS_SStFZ"]
-    fn swift_string_equal();
+    fn swift_string_equal(l0: usize, l1: usize, r0: usize, r1: usize) -> usize;
 
     #[link_name = "$ss27_allocateUninitializedArrayySayxG_BptBwlF"]
-    fn swift_allocate_uninitialized_array();
+    fn swift_allocate_uninitialized_array(
+        len: usize,
+        element: *const TypeMetadata,
+    ) -> ArrayAllocation;
 
     #[link_name = "$sSa5countSivg"]
-    fn swift_array_count();
+    fn swift_array_count(array: *const (), element: *const TypeMetadata) -> isize;
 
+    /// `Array.subscript`, which returns its element indirectly, so it is
+    /// reached through a thunk.
     #[link_name = "$sSayxSicig"]
     fn swift_array_get();
 
     #[link_name = "$sSaMa"]
-    fn swift_array_metadata();
+    fn swift_array_metadata(request: usize, element: *const TypeMetadata) -> MetadataResponse;
 
     #[link_name = "$sSqMa"]
-    fn swift_optional_metadata();
+    fn swift_optional_metadata(request: usize, wrapped: *const TypeMetadata) -> MetadataResponse;
 
     #[link_name = "$sShMa"]
-    fn swift_set_metadata();
+    fn swift_set_metadata(request: usize, element: *const TypeMetadata) -> MetadataResponse;
 
     #[link_name = "$sSDMa"]
-    fn swift_dictionary_metadata();
+    fn swift_dictionary_metadata(
+        request: usize,
+        key: *const TypeMetadata,
+        value: *const TypeMetadata,
+    ) -> MetadataResponse;
 
     #[link_name = "$ss15ContiguousArrayV5countSivg"]
-    fn swift_contiguous_array_count();
+    fn swift_contiguous_array_count(array: *const (), element: *const TypeMetadata) -> isize;
 
+    /// The same indirect return as `Array.subscript`.
     #[link_name = "$ss15ContiguousArrayVyxSicig"]
     fn swift_contiguous_array_get();
 
@@ -251,17 +289,7 @@ pub unsafe fn objc_class_metadata(class: *const ()) -> *const TypeMetadata {
 
 #[inline]
 pub unsafe fn array_metadata(element: *const TypeMetadata) -> *const TypeMetadata {
-    let metadata: *const TypeMetadata;
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_array_metadata,
-            inlateout("x0") 0usize => metadata,
-            in("x1") element,
-            clobber_abi("C"),
-        );
-    }
-    metadata
+    unsafe { swift_array_metadata(COMPLETE_METADATA, element).metadata }
 }
 
 /// The storage word of an empty `Dictionary`.
@@ -287,17 +315,7 @@ pub fn empty_set_storage() -> *mut () {
 /// what `Set` constrains its parameter to.
 #[inline]
 pub unsafe fn set_metadata(element: *const TypeMetadata) -> *const TypeMetadata {
-    let metadata: *const TypeMetadata;
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_set_metadata,
-            inlateout("x0") 0usize => metadata,
-            in("x1") element,
-            clobber_abi("C"),
-        );
-    }
-    metadata
+    unsafe { swift_set_metadata(COMPLETE_METADATA, element).metadata }
 }
 
 /// Returns `Dictionary<Key, Value>`'s metadata from the standard library's
@@ -312,18 +330,7 @@ pub unsafe fn dictionary_metadata(
     key: *const TypeMetadata,
     value: *const TypeMetadata,
 ) -> *const TypeMetadata {
-    let metadata: *const TypeMetadata;
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_dictionary_metadata,
-            inlateout("x0") 0usize => metadata,
-            in("x1") key,
-            in("x2") value,
-            clobber_abi("C"),
-        );
-    }
-    metadata
+    unsafe { swift_dictionary_metadata(COMPLETE_METADATA, key, value).metadata }
 }
 
 /// Returns `Optional<Wrapped>`'s metadata from the standard library's generic
@@ -361,18 +368,7 @@ pub unsafe fn set_from_array(
     metadata: *const TypeMetadata,
     witness: *const (),
 ) -> *mut () {
-    let set: *mut ();
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_set_from_array_literal,
-            inlateout("x0") array => set,
-            in("x1") metadata,
-            in("x2") witness,
-            clobber_abi("C"),
-        );
-    }
-    set
+    unsafe { swift_set_from_array_literal(array, metadata, witness) }
 }
 
 /// Looks a key up in a `Dictionary<Key, Value>`, writing `Value?` to `out`.
@@ -394,33 +390,30 @@ pub unsafe fn dictionary_get(
     out: *mut (),
 ) {
     unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_dictionary_subscript,
-            in("x0") key,
-            in("x1") dictionary,
-            in("x2") key_metadata,
-            in("x3") value_metadata,
-            in("x4") witness,
-            in("x8") out,
-            clobber_abi("C"),
-        );
+        dictionary_subscript_thunk(key, dictionary, key_metadata, value_metadata, witness, out)
     }
+}
+
+/// Moves the caller's buffer into the indirect-result register and hands off.
+///
+/// `x8` is not an argument register, so C has no way to name it; a naked thunk
+/// is how it gets set without an `asm!` block at the call site marking
+/// `v8`-`v15` clobbered and costing every caller eight registers.
+#[unsafe(naked)]
+unsafe extern "C" fn dictionary_subscript_thunk(
+    _key: *const (),
+    _dictionary: *const (),
+    _key_metadata: *const TypeMetadata,
+    _value_metadata: *const TypeMetadata,
+    _witness: *const (),
+    _out: *mut (),
+) {
+    naked_asm!("mov x8, x5", "b {f}", f = sym swift_dictionary_subscript)
 }
 
 #[inline]
 pub unsafe fn optional_metadata(wrapped: *const TypeMetadata) -> *const TypeMetadata {
-    let metadata: *const TypeMetadata;
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_optional_metadata,
-            inlateout("x0") 0usize => metadata,
-            in("x1") wrapped,
-            clobber_abi("C"),
-        );
-    }
-    metadata
+    unsafe { swift_optional_metadata(COMPLETE_METADATA, wrapped).metadata }
 }
 
 #[inline]
@@ -779,37 +772,12 @@ pub unsafe fn type_by_mangled_name_bytes(name: &[u8]) -> *const TypeMetadata {
 
 #[inline]
 pub unsafe fn opaque_type_metadata(descriptor: *const (), index: usize) -> *const TypeMetadata {
-    let metadata: *const TypeMetadata;
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_getOpaqueTypeMetadata,
-            in("x0") 0usize,
-            in("x1") core::ptr::null::<*const ()>(),
-            in("x2") descriptor,
-            in("x3") index,
-            lateout("x0") metadata,
-            clobber_abi("C"),
-        );
-    }
-    metadata
+    unsafe { swift_getOpaqueTypeMetadata(COMPLETE_METADATA, core::ptr::null(), descriptor, index) }
 }
 
 #[inline]
 pub unsafe fn opaque_type_conformance(descriptor: *const (), index: usize) -> *const () {
-    let witness: *const ();
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_getOpaqueTypeConformance2,
-            in("x0") core::ptr::null::<*const ()>(),
-            in("x1") descriptor,
-            in("x2") index,
-            lateout("x0") witness,
-            clobber_abi("C"),
-        );
-    }
-    witness
+    unsafe { swift_getOpaqueTypeConformance2(core::ptr::null(), descriptor, index) }
 }
 
 #[inline]
@@ -820,77 +788,35 @@ pub unsafe fn associated_conformance_witness(
     requirements: *const (),
     conformance: *const (),
 ) -> *const () {
-    let result: *const ();
     unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_getAssociatedConformanceWitness,
-            inlateout("x0") witness => result,
-            in("x1") conforming_type,
-            in("x2") associated_type,
-            in("x3") requirements,
-            in("x4") conformance,
-            clobber_abi("C"),
-        );
+        swift_getAssociatedConformanceWitness(
+            witness,
+            conforming_type,
+            associated_type,
+            requirements,
+            conformance,
+        )
     }
-    result
 }
 
 #[inline]
 pub unsafe fn bridge_object_retain(object: usize) -> usize {
-    let retained: usize;
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_bridgeObjectRetain,
-            inlateout("x0") object => retained,
-            clobber_abi("C"),
-        );
-    }
-    retained
+    unsafe { swift_bridgeObjectRetain(object) }
 }
 
 #[inline]
 pub unsafe fn bridge_object_release(object: usize) {
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_bridgeObjectRelease,
-            in("x0") object,
-            clobber_abi("C"),
-        );
-    }
+    unsafe { swift_bridgeObjectRelease(object) }
 }
 
 #[inline]
 pub unsafe fn string_from_c_str(ptr: *const c_char) -> RawString {
-    let word0: usize;
-    let word1: usize;
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_string_from_c_string,
-            inlateout("x0") ptr as usize => word0,
-            lateout("x1") word1,
-            clobber_abi("C"),
-        );
-    }
-    RawString { word0, word1 }
+    unsafe { swift_string_from_c_string(ptr) }
 }
 
 #[inline]
 pub unsafe fn string_count(string: RawString) -> isize {
-    let count: isize;
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_string_count,
-            inlateout("x0") string.word0 => count,
-            in("x1") string.word1,
-            clobber_abi("C"),
-        );
-    }
-    count
+    unsafe { swift_string_count(string.word0, string.word1) }
 }
 
 /// Whether the string is empty, which Swift answers without walking it.
@@ -900,17 +826,7 @@ pub unsafe fn string_count(string: RawString) -> isize {
 /// `string` must be a valid Swift `String` value.
 #[inline]
 pub unsafe fn string_is_empty(string: RawString) -> bool {
-    let result: usize;
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_string_is_empty,
-            inlateout("x0") string.word0 => result,
-            in("x1") string.word1,
-            clobber_abi("C"),
-        );
-    }
-    result & 1 != 0
+    unsafe { swift_string_is_empty(string.word0, string.word1) & 1 != 0 }
 }
 
 /// The string's own hash, so equal strings hash equally however they are
@@ -921,65 +837,22 @@ pub unsafe fn string_is_empty(string: RawString) -> bool {
 /// `string` must be a valid Swift `String` value.
 #[inline]
 pub unsafe fn string_hash_value(string: RawString) -> isize {
-    let result: isize;
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_string_hash_value,
-            inlateout("x0") string.word0 => result,
-            in("x1") string.word1,
-            clobber_abi("C"),
-        );
-    }
-    result
+    unsafe { swift_string_hash_value(string.word0, string.word1) }
 }
 
 #[inline]
 pub unsafe fn string_from_utf8(bytes: &[u8]) -> RawString {
-    let word0: usize;
-    let word1: usize;
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_string_from_utf8,
-            inlateout("x0") bytes.as_ptr() => word0,
-            inlateout("x1") bytes.len() => word1,
-            clobber_abi("C"),
-        );
-    }
-    RawString { word0, word1 }
+    unsafe { swift_string_from_utf8(bytes.as_ptr(), bytes.len()) }
 }
 
 #[inline]
 pub unsafe fn string_utf8_c_string(string: RawString) -> *mut () {
-    let storage: *mut ();
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_string_utf8_c_string,
-            inlateout("x0") string.word0 => storage,
-            in("x1") string.word1,
-            clobber_abi("C"),
-        );
-    }
-    storage
+    unsafe { swift_string_utf8_c_string(string.word0, string.word1) }
 }
 
 #[inline]
 pub unsafe fn string_equal(lhs: RawString, rhs: RawString) -> bool {
-    let equal: usize;
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_string_equal,
-            inlateout("x0") lhs.word0 => equal,
-            in("x1") lhs.word1,
-            in("x2") rhs.word0,
-            in("x3") rhs.word1,
-            clobber_abi("C"),
-        );
-    }
-    equal & 1 == 1
+    unsafe { swift_string_equal(lhs.word0, lhs.word1, rhs.word0, rhs.word1) & 1 == 1 }
 }
 
 #[inline]
@@ -987,34 +860,13 @@ pub unsafe fn allocate_uninitialized_array(
     len: usize,
     element: *const TypeMetadata,
 ) -> (*mut (), *mut ()) {
-    let storage: *mut ();
-    let elements: *mut ();
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_allocate_uninitialized_array,
-            inlateout("x0") len => storage,
-            in("x1") element,
-            lateout("x1") elements,
-            clobber_abi("C"),
-        );
-    }
-    (storage, elements)
+    let allocation = unsafe { swift_allocate_uninitialized_array(len, element) };
+    (allocation.storage, allocation.elements)
 }
 
 #[inline]
 pub unsafe fn array_count(array: *const (), element: *const TypeMetadata) -> isize {
-    let count: isize;
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_array_count,
-            inlateout("x0") array => count,
-            in("x1") element,
-            clobber_abi("C"),
-        );
-    }
-    count
+    unsafe { swift_array_count(array, element) }
 }
 
 #[inline]
@@ -1024,32 +876,23 @@ pub unsafe fn array_get(
     out: *mut (),
     element: *const TypeMetadata,
 ) {
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_array_get,
-            in("x8") out,
-            in("x0") index,
-            in("x1") array,
-            in("x2") element,
-            clobber_abi("C"),
-        );
-    }
+    unsafe { array_get_thunk(index, array, element, out) }
+}
+
+/// The same indirect-result hand-off as the dictionary subscript.
+#[unsafe(naked)]
+unsafe extern "C" fn array_get_thunk(
+    _index: isize,
+    _array: *const (),
+    _element: *const TypeMetadata,
+    _out: *mut (),
+) {
+    naked_asm!("mov x8, x3", "b {f}", f = sym swift_array_get)
 }
 
 #[inline]
 pub unsafe fn contiguous_array_count(array: *const (), element: *const TypeMetadata) -> isize {
-    let count: isize;
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_contiguous_array_count,
-            inlateout("x0") array => count,
-            in("x1") element,
-            clobber_abi("C"),
-        );
-    }
-    count
+    unsafe { swift_contiguous_array_count(array, element) }
 }
 
 #[inline]
@@ -1059,15 +902,16 @@ pub unsafe fn contiguous_array_get(
     out: *mut (),
     element: *const TypeMetadata,
 ) {
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_contiguous_array_get,
-            in("x8") out,
-            in("x0") index,
-            in("x1") array,
-            in("x2") element,
-            clobber_abi("C"),
-        );
-    }
+    unsafe { contiguous_array_get_thunk(index, array, element, out) }
+}
+
+/// The same again, for `ContiguousArray`.
+#[unsafe(naked)]
+unsafe extern "C" fn contiguous_array_get_thunk(
+    _index: isize,
+    _array: *const (),
+    _element: *const TypeMetadata,
+    _out: *mut (),
+) {
+    naked_asm!("mov x8, x3", "b {f}", f = sym swift_contiguous_array_get)
 }

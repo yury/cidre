@@ -44,8 +44,24 @@ unsafe extern "C" {
     pub(crate) fn swift_task_dealloc();
     pub(crate) fn swift_task_switch();
 
-    fn swift_task_create();
-    fn swift_task_create_common();
+    /// Both return the new task and the address of its initial context, which
+    /// is two words and so comes back in registers under C's convention as it
+    /// does under Swift's.
+    fn swift_task_create(
+        flags: usize,
+        options: *mut (),
+        future_result_type: *const TypeMetadata,
+        function: *const (),
+        context: *mut (),
+    ) -> CreatedTask;
+    fn swift_task_create_common(
+        flags: usize,
+        options: *mut (),
+        future_result_type: *const TypeMetadata,
+        function: *const (),
+        context: *mut (),
+        initial_context_size: usize,
+    ) -> CreatedTask;
     fn swift_task_enqueueGlobal(task: *mut ());
 
     /// Arms a continuation embedded in `context`, returning the handle that
@@ -84,6 +100,14 @@ crate::impl_swift_sendable!(TaskPriority);
 
 /// An owned reference to a Swift `AsyncTask`.
 ///
+/// The task and the address of its initial context, which is what the two
+/// creation entry points return — two words, so both come back in registers.
+#[repr(C)]
+struct CreatedTask {
+    task: *mut (),
+    initial_context: *mut (),
+}
+
 /// `swift_task_create` returns the task at +1, and the enqueued job holds a
 /// reference of its own: Swift's own codegen for a task whose handle is
 /// discarded releases the returned reference immediately. Dropping this does
@@ -131,23 +155,20 @@ pub(crate) unsafe fn task_create_common(
     context: *mut (),
     initial_context_size: usize,
 ) -> (Task, *mut ()) {
-    let task: *mut ();
-    let initial_context: *mut ();
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_task_create_common,
-            inlateout("x0") flags => task,
-            in("x1") core::ptr::null_mut::<()>(),
-            in("x2") future_result_type,
-            in("x3") function,
-            in("x4") context,
-            in("x5") initial_context_size,
-            lateout("x1") initial_context,
-            clobber_abi("C"),
-        );
-    }
-    (unsafe { Task::from_raw(task) }, initial_context)
+    let created = unsafe {
+        swift_task_create_common(
+            flags,
+            core::ptr::null_mut(),
+            future_result_type,
+            function,
+            context,
+            initial_context_size,
+        )
+    };
+    (
+        unsafe { Task::from_raw(created.task) },
+        created.initial_context,
+    )
 }
 
 #[inline]
@@ -157,22 +178,19 @@ pub(crate) unsafe fn task_create(
     function: *const (),
     context: *mut (),
 ) -> (Task, *mut ()) {
-    let task: *mut ();
-    let initial_context: *mut ();
-    unsafe {
-        asm!(
-            "bl {f}",
-            f = sym swift_task_create,
-            inlateout("x0") flags => task,
-            in("x1") core::ptr::null_mut::<()>(),
-            in("x2") future_result_type,
-            in("x3") function,
-            in("x4") context,
-            lateout("x1") initial_context,
-            clobber_abi("C"),
-        );
-    }
-    (unsafe { Task::from_raw(task) }, initial_context)
+    let created = unsafe {
+        swift_task_create(
+            flags,
+            core::ptr::null_mut(),
+            future_result_type,
+            function,
+            context,
+        )
+    };
+    (
+        unsafe { Task::from_raw(created.task) },
+        created.initial_context,
+    )
 }
 
 #[inline]
@@ -222,15 +240,7 @@ pub(crate) unsafe fn call_make_async_iterator(
     iterator: *mut (),
 ) {
     unsafe {
-        asm!(
-            "blr {function}",
-            function = in(reg) function,
-            in("x20") sequence,
-            in("x0") sequence_metadata,
-            in("x1") witness,
-            in("x8") iterator,
-            clobber_abi("C"),
-        );
+        abi::call::witness_value_to_value(function, sequence, sequence_metadata, witness, iterator)
     }
 }
 
@@ -2102,18 +2112,9 @@ mod notification_sequence {
         first: *const (),
         second: *const (),
     ) -> *mut () {
-        let result: *mut ();
-        unsafe {
-            core::arch::asm!(
-                "blr {function}",
-                function = in(reg) function,
-                in("x20") this,
-                inlateout("x0") first => result,
-                in("x1") second,
-                clobber_abi("C"),
-            );
-        }
-        result
+        // `self` in `x20` and two operands, which is the shape the static
+        // members share.
+        unsafe { crate::swift::abi::call::static_values_to_object(function, this, first, second) }
     }
 }
 
