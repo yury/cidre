@@ -1,12 +1,10 @@
 use crate::swift;
 
 crate::define_swift!(
-    #[swift::struct("Foundation.Locale")]
+    #[swift::struct("Foundation.Locale", size(16), align(8), sendable)]
     /// `Foundation.Locale`.
-    pub Locale, LocaleValue
+    pub Locale
 );
-
-crate::impl_swift_sendable!(LocaleValue);
 
 impl Locale {
     /// `Locale(identifier:)`.

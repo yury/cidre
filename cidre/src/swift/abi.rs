@@ -519,7 +519,7 @@ impl ValueWitnesses {
         ValueLayout {
             size,
             stride,
-            align: ((flags & 0xff) + 1).max(16),
+            align: (flags & 0xff) + 1,
         }
     }
 
@@ -561,7 +561,7 @@ pub unsafe fn value_layout(metadata: *const TypeMetadata) -> ValueLayout {
     ValueLayout {
         size,
         stride,
-        align: (align_mask + 1).max(16),
+        align: align_mask + 1,
     }
 }
 
@@ -663,6 +663,7 @@ const HAS_ENUM_WITNESSES: usize = 0x0020_0000;
 
 /// `ValueWitnessFlags::IsNonBitwiseTakable`.
 const IS_NON_BITWISE_TAKABLE: usize = 0x0010_0000;
+const IS_NON_POD: usize = 0x0001_0000;
 
 /// Offset of the element count inside native Swift array storage.
 pub(crate) const ARRAY_COUNT_OFFSET: usize = 16;
@@ -692,6 +693,14 @@ pub(crate) const ARRAY_STORAGE_MASK: usize = !0x7;
 /// Most Swift values may; the exceptions keep pointers into themselves, so
 /// their address is part of their state.
 #[inline]
+pub unsafe fn is_pod(metadata: *const TypeMetadata) -> bool {
+    let vwt = unsafe { value_witness_table(metadata) };
+    unsafe { *vwt.add(10) & IS_NON_POD == 0 }
+}
+
+/// # Safety
+///
+/// `metadata` must be valid.
 pub unsafe fn is_bitwise_takable(metadata: *const TypeMetadata) -> bool {
     let vwt = unsafe { value_witness_table(metadata) };
     unsafe { *vwt.add(10) & IS_NON_BITWISE_TAKABLE == 0 }

@@ -173,8 +173,10 @@ mod tests {
             .map(|preset| unsafe {
                 let mut storage = Storage::<DictationPreset>::new();
                 preset.copy_to_swift(storage.as_mut_ptr());
-                let value = storage.assume_init();
-                core::slice::from_raw_parts(value.as_ptr().cast::<u8>(), size).to_vec()
+                let bytes =
+                    core::slice::from_raw_parts(storage.as_ptr().cast::<u8>(), size).to_vec();
+                storage.destroy();
+                bytes
             })
             .collect();
 

@@ -1,11 +1,9 @@
 use crate::swift::{
     self, abi,
-    value::{Storage, define_swift_value},
+    value::Storage,
 };
 
 unsafe extern "C" {
-    #[link_name = "$s10Foundation16AttributedStringVMa"]
-    fn attr_string_metadata();
 
     #[link_name = "$s10Foundation16AttributedStringV13CharacterViewVMa"]
     fn character_view_metadata();
@@ -19,13 +17,12 @@ unsafe extern "C" {
 
 crate::define_swift_marker!(CharacterViewValue = accessor character_view_metadata);
 
-define_swift_value!(
+crate::define_swift!(
+    #[swift::struct("Foundation.AttributedString", size(8), align(8), sendable)]
     /// `Foundation.AttributedString`.
     #[doc(alias = "AttributedString")]
-    pub AttrString, AttrStringValue = accessor attr_string_metadata
+    pub AttrString
 );
-
-crate::impl_swift_sendable!(AttrStringValue);
 
 impl AttrString {
     /// The text without its attributes, via `String(_characters:)`.
@@ -38,7 +35,6 @@ impl AttrString {
                 self.as_ptr(),
                 characters.as_mut_ptr(),
             );
-            let characters = characters.assume_init();
 
             swift::String::from_raw(swift::value::call_with_owned_value(
                 characters,

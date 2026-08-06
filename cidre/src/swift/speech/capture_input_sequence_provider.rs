@@ -3,12 +3,12 @@ use crate::{api, arc, av, ns, swift, swift::SwiftMetadata, swift::abi};
 use crate::swift::concurrency::{self, AsyncCallArgs, TaskPriority};
 
 use super::SpeechModule;
-use crate::swift::value::{Optional, Storage, Value};
+use crate::swift::value::{Optional, Storage};
 
 crate::define_swift_class!(pub CaptureInputSequenceProvider = accessor capture_input_sequence_provider_metadata);
 
 pub(super) struct AnalyzerInputSequence {
-    pub(super) value: Value<AnalyzerInputs>,
+    pub(super) value: crate::swift::value::AnyValue,
     pub(super) witness: *const (),
 }
 
@@ -65,7 +65,7 @@ impl CaptureInputSequenceProvider {
                     swift::Array::from_slice(modules),
                     // The call takes a `TaskPriority?`, which these bindings
                     // always leave to the runtime.
-                    Value::<Optional<TaskPriority>>::none(),
+                    Storage::<Optional<TaskPriority>>::none(),
                 ),
                 |(device, modules, priority)| {
                     AsyncCallArgs::new()
@@ -121,7 +121,9 @@ impl CaptureInputSequenceProvider {
         unsafe {
             let descriptor =
                 (&raw const CAPTURE_INPUT_SEQUENCE_PROVIDER_ANALYZER_INPUTS_DESCRIPTOR).cast();
-            let mut storage = Storage::<AnalyzerInputs>::new();
+            let mut storage = crate::swift::value::DynamicStorage::new(
+                <AnalyzerInputs as crate::swift::SwiftMetadata>::metadata(),
+            );
             abi::call::object_to_value(
                 capture_input_sequence_provider_analyzer_inputs as *const (),
                 (self as *const Self).cast(),

@@ -570,7 +570,7 @@ pub fn gen_swift_call(attr: TokenStream, func: TokenStream) -> TokenStream {
                 "{{
             let mut __opt = crate::swift::value::Storage::<crate::swift::value::Optional<{ty}>>::new();
             crate::swift::value::Storage::as_mut_ptr(&mut __opt).cast::<usize>().write(__r0);
-            __opt.assume_init().take()
+            __opt.take()
         }}"
             );
         }
@@ -599,9 +599,9 @@ pub fn gen_swift_call(attr: TokenStream, func: TokenStream) -> TokenStream {
         }
         Class::Indirect(ty) => {
             prelude.push_str(&format!(
-                "let mut __out = crate::swift::value::Storage::<<{ty} as crate::swift::value::SwiftValue>::Marker>::new();\n"
+                "let mut __out = <{ty} as crate::swift::value::SwiftOut>::out_buf();\n"
             ));
-            tail = format!("<{ty} as crate::swift::value::SwiftValue>::from_storage(__out)");
+            tail = format!("<{ty} as crate::swift::value::SwiftOut>::out_take(__out)");
         }
         Class::OptIndirect(ty) => {
             // A wrapper may hold the payload or the optional itself, so which
@@ -665,7 +665,14 @@ pub fn gen_swift_call(attr: TokenStream, func: TokenStream) -> TokenStream {
     if ret_class.is_indirect() {
         operands.push(Operand {
             reg: "x8".into(),
-            input: Some("crate::swift::value::Storage::as_mut_ptr(&mut __out) as usize".into()),
+            // Where the buffer's address comes from depends on which kind of
+            // buffer the return type asked for.
+            input: Some(match &ret_class {
+                Class::Indirect(ty) => format!(
+                    "<{ty} as crate::swift::value::SwiftOut>::out_ptr(&mut __out) as usize"
+                ),
+                _ => "crate::swift::value::Storage::as_mut_ptr(&mut __out) as usize".to_string(),
+            }),
             output: None,
         });
     }

@@ -74,7 +74,7 @@ impl SpeechDetector {
                 },
                 SensitivityLevelValue::metadata(),
             );
-            let sensitivity_value = sensitivity_storage.assume_init();
+            let sensitivity_value = sensitivity_storage;
 
             let mut options_storage = Storage::<DetectionOptions>::new();
             call_with_owned_value(sensitivity_value, |sensitivity| {
@@ -84,7 +84,7 @@ impl SpeechDetector {
                     options_storage.as_mut_ptr(),
                 );
             });
-            let options = options_storage.assume_init();
+            let options = options_storage;
 
             let detector_metadata =
                 <SpeechDetector as crate::swift::SwiftMetadata>::metadata().cast();

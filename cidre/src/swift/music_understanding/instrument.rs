@@ -20,12 +20,10 @@ define_swift_getter_enum!(
 crate::impl_swift_hashable!(Instrument = descriptor(&raw const INSTRUMENT_HASHABLE).cast());
 
 crate::define_swift!(
-    #[swift::struct("MusicUnderstanding.InstrumentActivityResult")]
+    #[swift::struct("MusicUnderstanding.InstrumentActivityResult", size(16), align(8), sendable)]
     /// `MusicUnderstanding.InstrumentActivityResult`.
-    pub InstrumentActivityResult, optional InstrumentActivityResultValue
+    pub InstrumentActivityResult
 );
-
-crate::impl_swift_sendable!(InstrumentActivityResultValue);
 
 impl InstrumentActivityResult {
     /// The time ranges an instrument is active in, or `None` when the analysis

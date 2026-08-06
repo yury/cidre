@@ -1,13 +1,11 @@
-use crate::swift::{self, SwiftMetadata, abi};
+use crate::swift;
 
 crate::define_swift!(
-    #[swift::struct("Foundation.UUID")]
+    #[swift::struct("Foundation.UUID", size(16), align(1), trivial, sendable)]
     /// `Foundation.UUID`.
     #[doc(alias = "UUID")]
-    pub Uuid, UuidValue
+    pub Uuid
 );
-
-crate::impl_swift_sendable!(UuidValue);
 
 impl Uuid {
     /// Generates a new random identifier.
@@ -50,10 +48,8 @@ impl Uuid {
     /// Swift.
     #[inline]
     fn bytes(&self) -> &[u8] {
-        unsafe {
-            let size = abi::value_layout(UuidValue::metadata()).size;
-            core::slice::from_raw_parts(self.as_ptr().cast::<u8>(), size)
-        }
+        // The declared size is Swift's own, checked when the metadata resolved.
+        unsafe { core::slice::from_raw_parts(self.as_ptr().cast::<u8>(), size_of::<Self>()) }
     }
 }
 

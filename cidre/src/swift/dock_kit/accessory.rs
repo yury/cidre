@@ -5,8 +5,8 @@ use crate::{
     swift::{
         FromSwift, SwiftMetadata, abi,
         concurrency::{self, define_async_sequence},
-        foundation::{Date, DateValue, Uuid, UuidValue},
-        value::{Optional, Storage, Value},
+        foundation::{Date, Uuid},
+        value::{Optional, Storage},
     },
 };
 
@@ -32,9 +32,8 @@ impl StateChange {
                 value,
                 state_storage.as_mut_ptr(),
             );
-            let state_value = state_storage.assume_init();
-            let state = State(*(state_value.as_ptr().cast::<u8>()));
-            drop(state_value);
+            let state = State(*(state_storage.as_ptr().cast::<u8>()));
+            state_storage.destroy();
 
             let tracking_button_enabled = abi::call::value_to_bool(
                 dock_accessory_state_change_tracking_button_enabled as *const (),
@@ -66,44 +65,34 @@ impl core::fmt::Debug for StateChange {
 }
 
 crate::define_swift!(
-    #[swift::struct("DockKit.DockAccessory(class).Identifier")]
+    #[swift::struct("DockKit.DockAccessory(class).Identifier", size(32), align(8), sendable)]
     /// `DockAccessory.Identifier`.
-    pub Identifier, IdentifierValue
+    pub Identifier
 );
 
-crate::impl_swift_sendable!(IdentifierValue);
-
 crate::define_swift!(
-    #[swift::struct("DockKit.DockAccessory(class).MotionState")]
+    #[swift::struct("DockKit.DockAccessory(class).MotionState", size(80), align(16), sendable)]
     /// One sample from `DockAccessory.motionStates`.
-    pub MotionState, MotionStateValue
+    pub MotionState
 );
 
-crate::impl_swift_sendable!(MotionStateValue);
-
 crate::define_swift!(
-    #[swift::struct("DockKit.DockAccessory(class).BatteryState")]
+    #[swift::struct("DockKit.DockAccessory(class).BatteryState", size(32), align(8), sendable)]
     /// One sample from `DockAccessory.batteryStates`.
-    pub BatteryState, BatteryStateValue
+    pub BatteryState
 );
 
-crate::impl_swift_sendable!(BatteryStateValue);
-
 crate::define_swift!(
-    #[swift::struct("DockKit.DockAccessory(class).Limits")]
+    #[swift::struct("DockKit.DockAccessory(class).Limits", size(96), align(8), trivial, sendable)]
     /// The accessory's mechanical movement limits.
-    pub Limits, LimitsValue
+    pub Limits
 );
-
-crate::impl_swift_sendable!(LimitsValue);
 
 crate::define_swift!(
-    #[swift::struct("DockKit.DockAccessory(class).Limits(struct).Limit")]
+    #[swift::struct("DockKit.DockAccessory(class).Limits(struct).Limit", size(24), align(8), trivial, sendable)]
     /// Limits for one rotational axis.
-    pub Limit, LimitValue
+    pub Limit
 );
-
-crate::impl_swift_sendable!(LimitValue);
 
 /// A physical event reported by the dock accessory.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -132,20 +121,16 @@ impl std::hash::Hash for AccessoryEvent {
 }
 
 crate::define_swift!(
-    #[swift::struct("DockKit.DockAccessory(class).TrackedPerson")]
+    #[swift::struct("DockKit.DockAccessory(class).TrackedPerson", size(96), align(8), trivial, sendable)]
     /// A person currently tracked by DockKit.
-    pub TrackedPerson, TrackedPersonValue
+    pub TrackedPerson
 );
-
-crate::impl_swift_sendable!(TrackedPersonValue);
 
 crate::define_swift!(
-    #[swift::struct("DockKit.DockAccessory(class).TrackedObject")]
+    #[swift::struct("DockKit.DockAccessory(class).TrackedObject", size(64), align(8), trivial, sendable)]
     /// An object currently tracked by DockKit.
-    pub TrackedObject, TrackedObjectValue
+    pub TrackedObject
 );
-
-crate::impl_swift_sendable!(TrackedObjectValue);
 
 /// A tracked subject and its concrete payload.
 pub enum TrackedSubject {
@@ -155,32 +140,26 @@ pub enum TrackedSubject {
 }
 
 crate::define_swift!(
-    #[swift::struct("DockKit.DockAccessory(class).TrackingState")]
+    #[swift::struct("DockKit.DockAccessory(class).TrackingState", size(16), align(8), sendable)]
     /// One sample from `DockAccessory.trackingStates`.
-    pub TrackingState, TrackingStateValue
+    pub TrackingState
 );
-
-crate::impl_swift_sendable!(TrackingStateValue);
 
 crate::define_swift!(
-    #[swift::struct("DockKit.DockAccessory(class).Observation")]
+    #[swift::struct("DockKit.DockAccessory(class).Observation", size(64), align(8), sendable)]
     /// One subject observation supplied to DockKit tracking.
-    pub Observation, ObservationValue
+    pub Observation
 );
-
-crate::impl_swift_sendable!(ObservationValue);
 
 #[cfg(feature = "av")]
 crate::define_swift!(
-    #[swift::struct("DockKit.DockAccessory(class).CameraInformation")]
+    #[swift::struct("DockKit.DockAccessory(class).CameraInformation", size(112), align(16), sendable)]
     /// Camera calibration supplied with tracking observations.
     #[cfg(feature = "av")]
-    pub CameraInformation, CameraInformationValue
+    pub CameraInformation
 );
 
 #[cfg(feature = "av")]
-crate::impl_swift_sendable!(CameraInformationValue);
-
 /// Native layout of `simd_float3x3`, stored as three padded column vectors.
 #[cfg(feature = "av")]
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -524,23 +503,23 @@ impl std::hash::Hash for BatteryState {
 impl Limits {
     pub fn new(yaw: Option<&Limit>, pitch: Option<&Limit>, roll: Option<&Limit>) -> Self {
         unsafe {
-            fn optional(value: Option<&Limit>) -> Value<Optional<LimitValue>> {
+            fn optional(value: Option<&Limit>) -> Storage<Optional<Limit>> {
                 match value {
-                    None => Value::none(),
+                    None => Storage::none(),
                     Some(value) => unsafe {
-                        let mut storage = Storage::<Optional<LimitValue>>::new();
+                        let mut storage = Storage::<Optional<Limit>>::new();
                         abi::initialize_with_copy(
-                            storage.as_mut_ptr(),
+                            storage.as_mut_ptr().cast(),
                             value.as_ptr(),
-                            LimitValue::metadata(),
+                            <Limit as SwiftMetadata>::metadata(),
                         );
                         abi::store_enum_tag_single_payload(
-                            storage.as_mut_ptr(),
+                            storage.as_mut_ptr().cast(),
                             0,
                             1,
-                            LimitValue::metadata(),
+                            <Limit as SwiftMetadata>::metadata(),
                         );
-                        storage.assume_init()
+                        storage
                     },
                 }
             }
@@ -548,27 +527,23 @@ impl Limits {
             let mut yaw = optional(yaw);
             let mut pitch = optional(pitch);
             let mut roll = optional(roll);
-            let mut storage = Storage::<LimitsValue>::new();
+            let mut storage = core::mem::MaybeUninit::<Limits>::uninit();
             abi::call::values3_to_value(
                 dock_accessory_limits_init as *const (),
                 yaw.as_mut_ptr(),
                 pitch.as_mut_ptr(),
                 roll.as_mut_ptr(),
-                storage.as_mut_ptr(),
+                storage.as_mut_ptr().cast(),
             );
-            yaw.assume_consumed();
-            pitch.assume_consumed();
-            roll.assume_consumed();
-            Self(storage.assume_init())
+            storage.assume_init()
         }
     }
 
     unsafe fn optional_limit(&self, getter: *const ()) -> Option<Limit> {
         unsafe {
-            let mut storage = Storage::<Optional<LimitValue>>::new();
-            abi::call::value_to_value(getter, self.as_ptr(), storage.as_mut_ptr());
-            let value = storage.assume_init();
-            value.is_some().then(|| Limit::copy_swift(value.as_ptr()))
+            let mut storage = Storage::<Optional<Limit>>::new();
+            abi::call::value_to_value(getter, self.as_ptr(), storage.as_mut_ptr().cast());
+            storage.take()
         }
     }
 
@@ -595,14 +570,14 @@ impl Limit {
             "Swift Range requires lowerBound <= upperBound"
         );
         unsafe {
-            let mut storage = Storage::<LimitValue>::new();
+            let mut storage = core::mem::MaybeUninit::<Limit>::uninit();
             let error = abi::call::doubles3_to_throwing_value(
                 dock_accessory_limit_init as *const (),
                 (position_range.start, position_range.end, maximum_speed),
-                storage.as_mut_ptr(),
+                storage.as_mut_ptr().cast(),
             );
             if error.is_null() {
-                Ok(Self(storage.assume_init()))
+                Ok(storage.assume_init())
             } else {
                 Err(arc::R::from_raw(abi::error_as_ns_error(error).cast()))
             }
@@ -627,55 +602,57 @@ impl AccessoryEvent {
     unsafe fn copy_from_ptr(value: *const ()) -> Self {
         unsafe {
             let mut storage = Storage::<AccessoryEventValue>::new();
-            abi::initialize_with_copy(storage.as_mut_ptr(), value, AccessoryEventValue::metadata());
-            let mut value = storage.assume_init();
-            let tag = abi::get_enum_tag(value.as_ptr(), AccessoryEventValue::metadata());
+            abi::initialize_with_copy(storage.as_mut_ptr().cast(), value, AccessoryEventValue::metadata());
+            let tag = abi::get_enum_tag(storage.as_ptr(), AccessoryEventValue::metadata());
 
+            // Projecting a case is destructive, so the payload is read out and
+            // nothing is left to destroy. A case that is not projected still
+            // holds the whole value, which is destroyed through its witness.
             if tag == DOCK_ACCESSORY_EVENT_BUTTON_TAG {
                 abi::destructive_project_enum_data(
-                    value.as_mut_ptr(),
+                    storage.as_mut_ptr(),
                     AccessoryEventValue::metadata(),
                 );
-                let id = value.as_ptr().cast::<isize>().read();
-                let pressed = value.as_ptr().cast::<u8>().add(size_of::<isize>()).read() != 0;
-                value.assume_consumed();
+                let id = storage.as_ptr().cast::<isize>().read();
+                let pressed = storage.as_ptr().cast::<u8>().add(size_of::<isize>()).read() != 0;
                 Self::Button { id, pressed }
             } else if tag == DOCK_ACCESSORY_EVENT_CAMERA_ZOOM_TAG {
                 abi::destructive_project_enum_data(
-                    value.as_mut_ptr(),
+                    storage.as_mut_ptr(),
                     AccessoryEventValue::metadata(),
                 );
-                let factor = value.as_ptr().cast::<f64>().read();
-                value.assume_consumed();
+                let factor = storage.as_ptr().cast::<f64>().read();
                 Self::CameraZoom { factor }
             } else if tag == DOCK_ACCESSORY_EVENT_CAMERA_SHUTTER_TAG {
+                storage.destroy();
                 Self::CameraShutter
             } else if tag == DOCK_ACCESSORY_EVENT_CAMERA_FLIP_TAG {
+                storage.destroy();
                 Self::CameraFlip
             } else {
+                storage.destroy();
                 Self::Unknown(tag)
             }
         }
     }
 }
 
-unsafe fn optional_primitive<T: SwiftMetadata + Copy>(
+unsafe fn optional_primitive<T: crate::swift::SwiftType + FromSwift + Copy>(
     owner: *const (),
     getter: *const (),
 ) -> Option<T> {
     unsafe {
         let mut storage = Storage::<Optional<T>>::new();
-        abi::call::value_to_value(getter, owner, storage.as_mut_ptr());
-        let value = storage.assume_init();
-        value.is_some().then(|| value.as_ptr().cast::<T>().read())
+        abi::call::value_to_value(getter, owner, storage.as_mut_ptr().cast());
+        storage.take()
     }
 }
 
 unsafe fn uuid_property(owner: *const (), getter: *const ()) -> Uuid {
     unsafe {
-        let mut storage = Storage::<UuidValue>::new();
-        abi::call::value_to_value(getter, owner, storage.as_mut_ptr());
-        Uuid::from_value(storage.assume_init())
+        let mut storage = core::mem::MaybeUninit::<Uuid>::uninit();
+        abi::call::value_to_value(getter, owner, storage.as_mut_ptr().cast());
+        storage.assume_init()
     }
 }
 
@@ -800,29 +777,33 @@ unsafe impl FromSwift for TrackedSubject {
     unsafe fn copy_swift(value: *const ()) -> Self {
         unsafe {
             let mut storage = Storage::<TrackedSubjectValue>::new();
-            abi::initialize_with_copy(storage.as_mut_ptr(), value, TrackedSubjectValue::metadata());
-            let mut value = storage.assume_init();
-            let tag = abi::get_enum_tag(value.as_ptr(), TrackedSubjectValue::metadata());
+            abi::initialize_with_copy(storage.as_mut_ptr().cast(), value, TrackedSubjectValue::metadata());
+            let tag = abi::get_enum_tag(storage.as_ptr(), TrackedSubjectValue::metadata());
 
             if tag == DOCK_ACCESSORY_TRACKED_SUBJECT_PERSON_TAG {
                 abi::destructive_project_enum_data(
-                    value.as_mut_ptr(),
+                    storage.as_mut_ptr(),
                     TrackedSubjectValue::metadata(),
                 );
-                let person = TrackedPerson::copy_swift(value.as_ptr());
-                abi::destroy_value(value.as_mut_ptr(), TrackedPersonValue::metadata());
-                value.assume_consumed();
+                let person = TrackedPerson::copy_swift(storage.as_ptr());
+                abi::destroy_value(
+                    storage.as_mut_ptr(),
+                    <TrackedPerson as SwiftMetadata>::metadata(),
+                );
                 Self::Person(person)
             } else if tag == DOCK_ACCESSORY_TRACKED_SUBJECT_OBJECT_TAG {
                 abi::destructive_project_enum_data(
-                    value.as_mut_ptr(),
+                    storage.as_mut_ptr(),
                     TrackedSubjectValue::metadata(),
                 );
-                let object = TrackedObject::copy_swift(value.as_ptr());
-                abi::destroy_value(value.as_mut_ptr(), TrackedObjectValue::metadata());
-                value.assume_consumed();
+                let object = TrackedObject::copy_swift(storage.as_ptr());
+                abi::destroy_value(
+                    storage.as_mut_ptr(),
+                    <TrackedObject as SwiftMetadata>::metadata(),
+                );
                 Self::Object(object)
             } else {
+                storage.destroy();
                 Self::Unknown(tag)
             }
         }
@@ -850,8 +831,8 @@ impl Observation {
     /// Creates an observation without a face-yaw measurement.
     pub fn new(identifier: isize, ty: ObservationType, rect: cg::Rect) -> Self {
         unsafe {
-            let face_yaw = Value::<Optional<MeasurementAngleValue>>::none();
-            let mut storage = Storage::<ObservationValue>::new();
+            let face_yaw = Storage::<Optional<MeasurementAngleValue>>::none();
+            let mut storage = core::mem::MaybeUninit::<Observation>::uninit();
             abi::call::int_value_rect_value_to_value(
                 dock_accessory_observation_init as *const (),
                 identifier,
@@ -863,9 +844,9 @@ impl Observation {
                     rect.size.height,
                 ),
                 face_yaw.as_ptr(),
-                storage.as_mut_ptr(),
+                storage.as_mut_ptr().cast(),
             );
-            Self(storage.assume_init())
+            storage.assume_init()
         }
     }
 
@@ -909,43 +890,43 @@ impl CameraInformation {
     ) -> Self {
         unsafe {
             let intrinsics = match intrinsics {
-                None => Value::<Optional<CameraIntrinsicsValue>>::none(),
+                None => Storage::<Optional<CameraIntrinsicsValue>>::none(),
                 Some(value) => {
                     let mut storage = Storage::<Optional<CameraIntrinsicsValue>>::new();
                     abi::initialize_with_copy(
-                        storage.as_mut_ptr(),
+                        storage.as_mut_ptr().cast(),
                         (&raw const value).cast(),
                         CameraIntrinsicsValue::metadata(),
                     );
                     abi::store_enum_tag_single_payload(
-                        storage.as_mut_ptr(),
+                        storage.as_mut_ptr().cast(),
                         0,
                         1,
                         CameraIntrinsicsValue::metadata(),
                     );
-                    storage.assume_init()
+                    storage
                 }
             };
             let dimensions = match reference_dimensions {
-                None => Value::<Optional<ReferenceDimensionsValue>>::none(),
+                None => Storage::<Optional<ReferenceDimensionsValue>>::none(),
                 Some(value) => {
                     let mut storage = Storage::<Optional<ReferenceDimensionsValue>>::new();
                     abi::initialize_with_copy(
-                        storage.as_mut_ptr(),
+                        storage.as_mut_ptr().cast(),
                         (&raw const value).cast(),
                         ReferenceDimensionsValue::metadata(),
                     );
                     abi::store_enum_tag_single_payload(
-                        storage.as_mut_ptr(),
+                        storage.as_mut_ptr().cast(),
                         0,
                         1,
                         ReferenceDimensionsValue::metadata(),
                     );
-                    storage.assume_init()
+                    storage
                 }
             };
             let words = dimensions.as_ptr().cast::<u64>();
-            let mut storage = Storage::<CameraInformationValue>::new();
+            let mut storage = core::mem::MaybeUninit::<CameraInformation>::uninit();
             abi::call::camera_information_init(
                 dock_accessory_camera_information_init as *const (),
                 (device_type as *const crate::av::CaptureDeviceType).cast(),
@@ -953,9 +934,9 @@ impl CameraInformation {
                 orientation.as_abi_ptr(),
                 intrinsics.as_ptr(),
                 (words.read(), words.add(1).read(), words.add(2).read()),
-                storage.as_mut_ptr(),
+                storage.as_mut_ptr().cast(),
             );
-            Self(storage.assume_init())
+            storage.assume_init()
         }
     }
 
@@ -964,7 +945,7 @@ impl CameraInformation {
             arc::R::from_raw(
                 abi::call::value_to_object(
                     dock_accessory_camera_information_capture_device as *const (),
-                    self.0.as_ptr(),
+                    self.as_ptr(),
                 )
                 .cast(),
             )
@@ -975,7 +956,7 @@ impl CameraInformation {
         unsafe {
             std::mem::transmute(abi::call::value_to_int(
                 dock_accessory_camera_information_camera_position as *const (),
-                self.0.as_ptr(),
+                self.as_ptr(),
             ))
         }
     }
@@ -985,7 +966,7 @@ impl CameraInformation {
         unsafe {
             abi::call::value_to_value(
                 dock_accessory_camera_information_orientation as *const (),
-                self.0.as_ptr(),
+                self.as_ptr(),
                 (&mut value as *mut CameraOrientation).cast(),
             );
         }
@@ -997,13 +978,12 @@ impl CameraInformation {
             let mut storage = Storage::<Optional<CameraIntrinsicsValue>>::new();
             abi::call::value_to_value(
                 dock_accessory_camera_information_intrinsics as *const (),
-                self.0.as_ptr(),
-                storage.as_mut_ptr(),
+                self.as_ptr(),
+                storage.as_mut_ptr().cast(),
             );
-            let value = storage.assume_init();
-            value
+            storage
                 .is_some()
-                .then(|| value.as_ptr().cast::<CameraIntrinsics>().read())
+                .then(|| storage.as_ptr().cast::<CameraIntrinsics>().read())
         }
     }
 
@@ -1011,17 +991,16 @@ impl CameraInformation {
         unsafe {
             let words = abi::call::value_to_words3(
                 dock_accessory_camera_information_reference_dimensions as *const (),
-                self.0.as_ptr(),
+                self.as_ptr(),
             );
             let mut storage = Storage::<Optional<ReferenceDimensionsValue>>::new();
             let ptr = storage.as_mut_ptr().cast::<u64>();
             ptr.write(words.0);
             ptr.add(1).write(words.1);
             ptr.add(2).write(words.2);
-            let value = storage.assume_init();
-            value
+            storage
                 .is_some()
-                .then(|| value.as_ptr().cast::<cg::Size>().read())
+                .then(|| storage.as_ptr().cast::<cg::Size>().read())
         }
     }
 }
@@ -1353,11 +1332,11 @@ impl Accessory {
     #[crate::api::available(macos = 14.4, ios = 17.4)]
     pub fn accessory_events(&self) -> Result<AccessoryEvents, arc::R<ns::Error>> {
         unsafe {
-            let mut storage = Storage::<AccessoryEventsValue>::new();
+            let mut storage = <AccessoryEvents as crate::swift::value::SwiftOut>::out_buf();
             let error = abi::call::object_to_throwing_value(
                 dock_accessory_events as *const (),
                 (self as *const Self).cast(),
-                storage.as_mut_ptr(),
+                storage.as_mut_ptr().cast(),
             );
             if error.is_null() {
                 Ok(AccessoryEvents::from_storage(storage))
@@ -1371,11 +1350,11 @@ impl Accessory {
     #[crate::api::available(macos = 15.0, ios = 18.0)]
     pub fn tracking_states(&self) -> Result<TrackingStates, arc::R<ns::Error>> {
         unsafe {
-            let mut storage = Storage::<TrackingStatesValue>::new();
+            let mut storage = <TrackingStates as crate::swift::value::SwiftOut>::out_buf();
             let error = abi::call::object_to_throwing_value(
                 dock_accessory_tracking_states as *const (),
                 (self as *const Self).cast(),
-                storage.as_mut_ptr(),
+                storage.as_mut_ptr().cast(),
             );
             if error.is_null() {
                 Ok(TrackingStates::from_storage(storage))
@@ -2083,15 +2062,17 @@ mod abi_tests {
 
     #[test]
     fn accessory_event_tags_use_enum_value_witnesses() {
-        unsafe fn event(tag: u32) -> Value<AccessoryEventValue> {
+        // A no-payload case fully initializes the value, so the storage needs
+        // nothing destroyed when it goes.
+        unsafe fn event(tag: u32) -> Storage<AccessoryEventValue> {
             unsafe {
                 let mut storage = Storage::<AccessoryEventValue>::new();
                 abi::destructive_inject_enum_tag(
-                    storage.as_mut_ptr(),
+                    storage.as_mut_ptr().cast(),
                     tag,
                     AccessoryEventValue::metadata(),
                 );
-                storage.assume_init()
+                storage
             }
         }
 

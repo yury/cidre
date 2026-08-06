@@ -68,23 +68,32 @@ impl<K: ToSwift + SwiftHashable, V: FromSwift> Dictionary<K, V> {
     /// Looks `key` up through Swift's generic `Dictionary.subscript` getter.
     pub fn get(&self, key: &K) -> Option<V> {
         unsafe {
-            // The subscript borrows its key, so it goes into scratch storage
-            // that is destroyed again once the call returns.
-            let mut key_storage = Storage::<K>::new();
-            key.copy_to_swift(key_storage.as_mut_ptr());
-            let key_value = key_storage.assume_init();
-
             let mut out = Storage::<Optional<V>>::new();
-            abi::dictionary_get(
-                key_value.as_ptr(),
-                self.as_raw(),
-                K::metadata(),
-                V::metadata(),
-                K::hashable_witness(),
-                out.as_mut_ptr(),
-            );
+            let mut lookup = |key: *const ()| {
+                abi::dictionary_get(
+                    key,
+                    self.as_raw(),
+                    K::metadata(),
+                    V::metadata(),
+                    K::hashable_witness(),
+                    out.as_mut_ptr(),
+                )
+            };
 
-            out.assume_init().take()
+            // The subscript only borrows its key. A key whose Rust type is the
+            // Swift value is lent straight to it; one that merely names a Swift
+            // value has to be materialized first, and destroyed after.
+            match key.as_swift_ptr() {
+                Some(key) => lookup(key),
+                None => {
+                    let mut scratch = Storage::<K>::new();
+                    key.copy_to_swift(scratch.as_mut_ptr());
+                    lookup(scratch.as_ptr());
+                    scratch.destroy();
+                }
+            }
+
+            out.take()
         }
     }
 

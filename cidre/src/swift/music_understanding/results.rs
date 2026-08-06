@@ -1,7 +1,6 @@
 use super::instrument::InstrumentActivityResult;
 use crate::{
     cm, swift,
-    swift::value::define_swift_value,
     swift::{SwiftMetadata, abi},
 };
 
@@ -15,15 +14,13 @@ unsafe extern "C" {
 }
 
 crate::define_swift!(
-    #[swift::struct("MusicUnderstanding.MusicUnderstandingSession(class).SessionResult")]
+    #[swift::struct("MusicUnderstanding.MusicUnderstandingSession(class).SessionResult", size(296), align(8), sendable)]
     /// `MusicUnderstandingSession.SessionResult`.
     ///
     /// A Swift value type whose layout is only known at runtime, so it is kept
     /// in its Swift representation and read through the framework's getters.
-    pub SessionResult, SessionResultValue
+    pub SessionResult
 );
-
-crate::impl_swift_sendable!(SessionResultValue);
 
 impl SessionResult {
     /// `SessionResult.rhythm`, present only when rhythm analysis ran.
@@ -44,12 +41,10 @@ impl SessionResult {
 }
 
 crate::define_swift!(
-    #[swift::struct("MusicUnderstanding.RhythmResult")]
+    #[swift::struct("MusicUnderstanding.RhythmResult", size(24), align(8), sendable)]
     /// `MusicUnderstanding.RhythmResult`.
-    pub RhythmResult, optional RhythmResultValue
+    pub RhythmResult
 );
-
-crate::impl_swift_sendable!(RhythmResultValue);
 
 impl RhythmResult {
     /// `RhythmResult.beatsPerMinute`.
@@ -71,12 +66,10 @@ impl RhythmResult {
 }
 
 crate::define_swift!(
-    #[swift::struct("MusicUnderstanding.LoudnessResult")]
+    #[swift::struct("MusicUnderstanding.LoudnessResult", size(80), align(8), sendable)]
     /// `MusicUnderstanding.LoudnessResult`.
-    pub LoudnessResult, optional LoudnessResultValue
+    pub LoudnessResult
 );
-
-crate::impl_swift_sendable!(LoudnessResultValue);
 
 impl LoudnessResult {
     /// `LoudnessResult.integrated`, the whole track's loudness.
@@ -94,7 +87,11 @@ impl LoudnessResult {
     pub fn peak(&self) -> TimedValue;
 }
 
-define_swift_value!(
+crate::define_swift!(
+    #[swift::mangled(
+        "18MusicUnderstanding0aB7SessionC10TimedValueVy_SfG",
+        size(28), align(4), trivial, sendable
+    )]
     /// A `TimedValue<Float>`: a measurement and the time it applies to.
     ///
     /// `TimedValue`'s generic parameter is constrained to Decodable, Encodable
@@ -102,10 +99,8 @@ define_swift_value!(
     /// three witness tables — more arguments than an accessor passes in
     /// registers. Resolving the mangled name instead lets the runtime assemble
     /// the conformances.
-    pub TimedValue, TimedValueF32 = mangled "18MusicUnderstanding0aB7SessionC10TimedValueVy_SfG"
+    pub TimedValue
 );
-
-crate::impl_swift_sendable!(TimedValueF32);
 
 impl TimedValue {
     /// `TimedValue.value`.
@@ -119,7 +114,7 @@ impl TimedValue {
             abi::call::generic_value_to_value(
                 timed_value_value as *const (),
                 self.as_ptr(),
-                TimedValueF32::metadata(),
+                <TimedValue as SwiftMetadata>::metadata(),
                 out.as_mut_ptr().cast(),
             );
             out.assume_init()
@@ -133,7 +128,7 @@ impl TimedValue {
             let words = abi::call::generic_value_to_words3(
                 timed_value_time as *const (),
                 self.as_ptr(),
-                TimedValueF32::metadata(),
+                <TimedValue as SwiftMetadata>::metadata(),
             );
             core::mem::transmute::<(u64, u64, u64), cm::Time>(words)
         }
@@ -149,7 +144,7 @@ mod tests {
         let float = f32::metadata();
         assert!(!float.is_null(), "Float metadata");
 
-        let md = TimedValueF32::metadata();
+        let md = <TimedValue as SwiftMetadata>::metadata();
         assert!(!md.is_null(), "TimedValue<Float> metadata");
 
         let layout = unsafe { abi::value_layout(md) };
@@ -162,7 +157,7 @@ mod tests {
 
     #[test]
     fn loudness_result_metadata_resolves() {
-        let md = LoudnessResultValue::metadata();
+        let md = LoudnessResult::metadata();
         assert!(!md.is_null());
         let layout = unsafe { abi::value_layout(md) };
         println!(

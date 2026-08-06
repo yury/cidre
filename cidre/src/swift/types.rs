@@ -282,6 +282,18 @@ pub unsafe trait ToSwift: SwiftMetadata {
     /// be copied with one call instead of one per element.
     const IS_CONTIGUOUS: bool = false;
 
+    /// The address of this value as Swift's, when the Rust type *is* the Swift
+    /// value and a callee that only borrows it needs no copy at all.
+    ///
+    /// Returns `None` for a Rust type that merely names a Swift value without
+    /// having its layout — a case read from a static getter, say — which has to
+    /// be materialized before Swift can see it. The answer is fixed per type,
+    /// so the branch folds away.
+    #[inline]
+    fn as_swift_ptr(&self) -> Option<*const ()> {
+        None
+    }
+
     /// Copies this value into uninitialized storage for its Swift type.
     ///
     /// # Safety
@@ -327,6 +339,11 @@ macro_rules! impl_swift_memcpy_value {
 
         unsafe impl<$($param: $bound),*> $crate::swift::ToSwift for $ty {
             const IS_CONTIGUOUS: bool = true;
+
+            #[inline]
+            fn as_swift_ptr(&self) -> Option<*const ()> {
+                Some(::core::ptr::from_ref(self).cast())
+            }
 
             #[inline]
             unsafe fn copy_to_swift(&self, dst: *mut ()) {

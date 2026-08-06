@@ -87,27 +87,51 @@ macro_rules! define_swift {
             $vis $ty = accessor $crate::swift::metadata_accessor!(class, $name)
         );
     };
+    // A generic instantiation, whose metadata the runtime resolves from the
+    // mangled name because no accessor symbol names it.
     (
-        #[swift::struct($name:literal)]
+        #[swift::mangled($name:literal, size($size:literal), align($align:literal), trivial, sendable)]
         $(#[$outer:meta])*
-        $vis:vis $ty:ident, $marker:ident
+        $vis:vis $ty:ident
     ) => {
-        $crate::swift::value::define_swift_value!(
-            $(#[$outer])*
-            $vis $ty, $marker = accessor $crate::swift::metadata_accessor!(struct, $name)
-        );
+        $crate::swift_value!(@build_mangled $(#[$outer])* $vis $ty = $name, $size, $align, true);
+        $crate::swift_value!(@trivial $ty);
+        $crate::swift_value!(@shared $ty);
     };
-    // A getter whose result is `Payload?` writes the optional itself into the
-    // wrapper, so the wrapper names the payload but has the optional's layout.
+    // A Swift value type, held inline at the layout it declares.
     (
-        #[swift::struct($name:literal)]
+        #[swift::struct($name:literal, size($size:literal), align($align:literal), trivial, sendable)]
         $(#[$outer:meta])*
-        $vis:vis $ty:ident, optional $marker:ident
+        $vis:vis $ty:ident
     ) => {
-        $crate::swift::value::define_swift_value!(
-            $(#[$outer])*
-            $vis $ty, $marker = optional accessor $crate::swift::metadata_accessor!(struct, $name)
-        );
+        $crate::swift_value!(@build $(#[$outer])* $vis $ty = $name, $size, $align, true);
+        $crate::swift_value!(@trivial $ty);
+        $crate::swift_value!(@shared $ty);
+    };
+    (
+        #[swift::struct($name:literal, size($size:literal), align($align:literal), trivial)]
+        $(#[$outer:meta])*
+        $vis:vis $ty:ident
+    ) => {
+        $crate::swift_value!(@build $(#[$outer])* $vis $ty = $name, $size, $align, true);
+        $crate::swift_value!(@trivial $ty);
+    };
+    (
+        #[swift::struct($name:literal, size($size:literal), align($align:literal), sendable)]
+        $(#[$outer:meta])*
+        $vis:vis $ty:ident
+    ) => {
+        $crate::swift_value!(@build $(#[$outer])* $vis $ty = $name, $size, $align, false);
+        $crate::swift_value!(@owned $ty);
+        $crate::swift_value!(@shared $ty);
+    };
+    (
+        #[swift::struct($name:literal, size($size:literal), align($align:literal))]
+        $(#[$outer:meta])*
+        $vis:vis $ty:ident
+    ) => {
+        $crate::swift_value!(@build $(#[$outer])* $vis $ty = $name, $size, $align, false);
+        $crate::swift_value!(@owned $ty);
     };
     (
         #[swift::enum($name:literal)]

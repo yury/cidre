@@ -10,7 +10,7 @@ use crate::swift::concurrency::{self, AsyncCallArgs};
 use super::CaptureInputSequenceProvider;
 
 use super::SpeechModule;
-use crate::swift::value::{Optional, Value, call_with_owned_value};
+use crate::swift::value::{Optional, Storage, call_with_owned_value};
 
 crate::define_swift_class!(pub SpeechAnalyzer = accessor speech_analyzer_metadata);
 
@@ -49,7 +49,7 @@ impl SpeechAnalyzer {
     pub fn with_modules(modules: &[SpeechModule]) -> arc::R<Self> {
         unsafe {
             let modules = swift::Array::from_slice(modules);
-            let options = Value::<Optional<AnalyzerOptions>>::none();
+            let options = Storage::<Optional<AnalyzerOptions>>::none();
             let analyzer_metadata =
                 <SpeechAnalyzer as crate::swift::SwiftMetadata>::metadata().cast();
             let object = call_with_owned_value(options, |options| {

@@ -3,7 +3,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use crate::{
     api, arc, ns, swift,
     swift::abi,
-    swift::foundation::{self, AttrStringValue},
+    swift::foundation,
 };
 
 use crate::swift::concurrency::{
@@ -339,9 +339,9 @@ impl Drop for OwnedPayload {
 
 unsafe fn speech_result_text(result: *const (), text_getter: *const ()) -> std::string::String {
     unsafe {
-        let mut storage = Storage::<AttrStringValue>::new();
-        abi::call::value_to_value(text_getter, result, storage.as_mut_ptr());
-        foundation::AttrString::from_storage(storage).to_string()
+        let mut text = core::mem::MaybeUninit::<foundation::AttrString>::uninit();
+        abi::call::value_to_value(text_getter, result, text.as_mut_ptr().cast());
+        text.assume_init().to_string()
     }
 }
 

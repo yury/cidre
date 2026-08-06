@@ -3,12 +3,11 @@ use crate::{
     swift::{
         SwiftMetadata,
         concurrency::{self, AsyncCallArgs},
-        value::Storage,
     },
 };
 
 use super::analysis_type::AnalysisType;
-use super::results::{SessionResult, SessionResultValue};
+use super::results::SessionResult;
 
 crate::define_swift!(
     #[swift::class("MusicUnderstanding.MusicUnderstandingSession")]
@@ -122,12 +121,12 @@ impl MusicUnderstandingSession {
                 (
                     arc::Retain::retained(self),
                     types,
-                    Storage::<SessionResultValue>::new(),
+                    core::mem::MaybeUninit::<SessionResult>::uninit(),
                 ),
                 |(session, types, result)| {
                     let args = AsyncCallArgs::new()
                         .swift_self(session.as_ptr().cast())
-                        .arg(0, result.as_mut_ptr());
+                        .arg(0, result.as_mut_ptr().cast());
                     match types {
                         Some(types) => args.arg(1, types.as_raw()),
                         None => args,
@@ -137,7 +136,7 @@ impl MusicUnderstandingSession {
                     // Swift wrote the result into the storage in place, so what
                     // is left is to take ownership of it.
                     let (_, _, result) = *owned;
-                    SessionResult::from_storage(result)
+                    result.assume_init()
                 },
                 callback,
             );

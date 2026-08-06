@@ -12,14 +12,11 @@ mod uuid;
 
 pub use attr_string::AttrString;
 #[allow(unused_imports)]
-pub(crate) use attr_string::AttrStringValue;
 pub use date::Date;
 #[allow(unused_imports)]
-pub(crate) use date::DateValue;
 pub use locale::Locale;
 pub use uuid::Uuid;
 #[allow(unused_imports)]
-pub(crate) use uuid::UuidValue;
 
 #[link(name = "Foundation", kind = "framework")]
 unsafe extern "C" {}
@@ -142,7 +139,7 @@ mod tests {
         // `AttrString` has no public constructor yet; this pins the metadata so
         // a symbol change is caught here rather than inside a transcription.
         use crate::swift::SwiftMetadata;
-        let metadata = AttrStringValue::metadata();
+        let metadata = AttrString::metadata();
         assert!(!metadata.is_null(), "AttributedString metadata must exist");
     }
 }

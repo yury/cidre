@@ -30,7 +30,7 @@ use core::arch::asm;
 use super::{
     SwiftMetadata, abi,
     abi::TypeMetadata,
-    value::{AnyValue, DynamicStorage, Optional, Value},
+    value::{AnyValue, DynamicStorage, Optional},
 };
 
 /// Medium-priority Swift task that is enqueued immediately, returns no value,
@@ -327,17 +327,16 @@ struct AsyncSequenceTask {
 ///
 /// The callback returns whether iteration should continue after an element.
 /// It is called once with `None` when the sequence finishes naturally.
-pub(crate) fn iterate_async_sequence<S, F>(
-    sequence: Value<S>,
+pub(crate) fn iterate_async_sequence<F>(
+    sequence: AnyValue,
     symbols: AsyncSequenceSymbols,
     callback: F,
 ) where
-    S: SwiftMetadata,
     F: FnMut(Option<*const ()>) -> bool + Send + 'static,
 {
     unsafe {
         let task = Box::new(AsyncSequenceTask {
-            sequence: Some(sequence.erase()),
+            sequence: Some(sequence),
             iterator: None,
             result: None,
             symbols,
@@ -571,18 +570,16 @@ impl<T> std::future::Future for PullNext<'_, T> {
 
 /// Starts the task that will drive `sequence`, and returns the Rust half.
 #[cfg(feature = "async")]
-pub(crate) fn pulled_async_iter<S, T>(
-    sequence: Value<S>,
+pub(crate) fn pulled_async_iter<T>(
+    sequence: AnyValue,
     symbols: AsyncSequenceSymbols,
     copy: unsafe fn(*const ()) -> T,
 ) -> PulledIter<T>
 where
-    S: SwiftMetadata,
     T: Send + 'static,
 {
     unsafe {
-        let sequence = sequence.erase();
-        let mut storage = DynamicStorage::new(symbols.iterator_metadata);
+        let mut storage = crate::swift::value::DynamicStorage::new(symbols.iterator_metadata);
         symbols.call_make_iterator(sequence.as_ptr(), storage.as_mut_ptr());
 
         let shared = std::sync::Arc::new(PullShared {
@@ -1454,28 +1451,35 @@ macro_rules! define_async_sequence {
         async_iter = $async_iter:ident $(,)?
     ) => {
         $(#[$meta])*
-        pub struct $sequence($crate::swift::value::Value<$sequence_value>);
-
-        /// The sequence is a Swift value like any other, so a generated call
-        /// can allocate its result storage and take what Swift wrote there.
-        impl $crate::swift::value::SwiftValue for $sequence {
-            type Marker = $sequence_value;
-
-            #[inline]
-            unsafe fn from_storage(
-                storage: $crate::swift::value::Storage<Self::Marker>,
-            ) -> Self {
-                Self(unsafe { storage.assume_init() })
-            }
-
-            #[inline]
-            fn from_value(value: $crate::swift::value::Value<Self::Marker>) -> Self {
-                Self(value)
-            }
-        }
+        pub struct $sequence($crate::swift::value::AnyValue);
 
         unsafe impl $crate::swift::SwiftAbi for $sequence {
             const CLASS: $crate::swift::AbiClass = $crate::swift::AbiClass::Indirect;
+        }
+
+        /// A sequence is made once and then iterated, so it keeps its value in
+        /// storage the runtime sizes rather than declaring a layout of its own.
+        impl $crate::swift::value::SwiftOut for $sequence {
+            type Buf = $crate::swift::value::DynamicStorage;
+
+            #[inline]
+            fn out_buf() -> Self::Buf {
+                unsafe {
+                    $crate::swift::value::DynamicStorage::new(
+                        <$sequence_value as $crate::swift::SwiftMetadata>::metadata(),
+                    )
+                }
+            }
+
+            #[inline]
+            fn out_ptr(buf: &mut Self::Buf) -> *mut () {
+                buf.as_mut_ptr()
+            }
+
+            #[inline]
+            unsafe fn out_take(buf: Self::Buf) -> Self {
+                Self(unsafe { buf.assume_init() })
+            }
         }
 
         #[link(name = $framework, kind = "framework")]
@@ -1498,7 +1502,7 @@ macro_rules! define_async_sequence {
         impl $sequence {
             #[allow(dead_code)]
             pub(crate) unsafe fn from_storage(
-                storage: $crate::swift::value::Storage<$sequence_value>,
+                storage: $crate::swift::value::DynamicStorage,
             ) -> Self {
                 Self(unsafe { storage.assume_init() })
             }
@@ -2075,7 +2079,16 @@ mod notification_sequence {
                     )
                     .cast(),
                 );
-                Self::from_storage(Storage::from_class_ref(sequence))
+                // A class-typed sequence is one reference, written straight
+                // into the storage the runtime sized for it.
+                let mut storage = crate::swift::value::DynamicStorage::new(
+                    <crate::arc::R<NotificationsClass> as SwiftMetadata>::metadata(),
+                );
+                storage
+                    .as_mut_ptr()
+                    .cast::<*mut NotificationsClass>()
+                    .write(sequence.into_raw());
+                Self::from_storage(storage)
             }
         }
     }
