@@ -704,24 +704,13 @@ pub fn gen_swift_call(attr: TokenStream, func: TokenStream) -> TokenStream {
         );
     }
 
-    // How the call is made.
+    // A naked `extern "C"` thunk beats an `asm!` block here: `clobber_abi`
+    // cannot say a Swift callee keeps the low half of `v8`-`v15`, so it marks
+    // all sixteen and every caller spills `d8`-`d15`. Behind a C call the
+    // register mask applies instead.
     //
-    // A `#[naked]` `extern "C"` thunk that shuffles into Swift's registers is
-    // preferred to an `asm!` block at the call site, because a plain C call is
-    // the only form the compiler will apply a register mask to. `clobber_abi`
-    // has no way to say that a Swift callee keeps the low half of `v8`-`v15`,
-    // so it marks all sixteen clobbered: a function that inlines one saves and
-    // restores `d8`-`d15` in its prologue and gives up all eight for its whole
-    // body, whether or not the Swift call was on a hot path. Behind a C call
-    // the caller pays none of that, and the thunk pays one stack slot.
-    //
-    // Two things the thunk cannot carry, which keep the assembly: the error
-    // register a throwing call reports through, which the caller has no way to
-    // read back out of a C return, and a three-word return, which Swift makes
-    // in `x0`-`x2` where C returns it indirectly.
-    //
-    // Only `x0`-`x7` carry integer arguments, and the thunk needs two of those
-    // slots for operands C cannot name, so a wide enough call falls back too.
+    // Falls back to assembly for what a thunk cannot carry: the error register,
+    // a three-word return, and calls too wide to spare an argument register.
     let indirect_slot = usize::from(ret_class.is_indirect());
     let self_slot = 1;
     let use_thunk = !throws
@@ -877,12 +866,8 @@ pub fn gen_swift_call(attr: TokenStream, func: TokenStream) -> TokenStream {
 
 /// Expands the call as a plain C call to a naked thunk that tail-calls Swift.
 ///
-/// The thunk exists only to place the two operands C has no way to name — the
-/// context register, and the indirect-result register when the callee writes
-/// through it — and to put the first of them back afterwards. Everything else
-/// is an ordinary argument, so the compiler builds the argument list, allocates
-/// the result registers, and applies the AAPCS register mask, which is what
-/// keeps `d8`-`d15` and `x19`-`x28` live across a Swift call.
+/// The thunk places the two operands C cannot name — the context register and
+/// the indirect-result register — and restores the first afterwards.
 #[allow(clippy::too_many_arguments)]
 fn gen_thunk_call(
     sig: &Signature,
@@ -898,9 +883,8 @@ fn gen_thunk_call(
     prelude: &str,
     tail: &str,
 ) -> TokenStream {
-    // Integer-class parameters fill x0 up and floating-point ones d0 up, each
-    // in declaration order and independently of the other, so the thunk names
-    // them in that grouping rather than in the Swift declaration's order.
+    // Integer parameters fill x0 up and floating-point ones d0 up, each in
+    // declaration order, so the thunk groups them that way.
     let mut params: Vec<String> = (0..int_args.len())
         .map(|index| format!("__a{index}: usize"))
         .collect();
@@ -924,18 +908,9 @@ fn gen_thunk_call(
     }
     call_args.extend(float_args.iter().cloned());
 
-    // The shuffle, which is the whole reason the thunk exists.
-    //
-    // `x20` is Swift's context register and AAPCS callee-saved, so the caller
-    // may well have a live value in it: the thunk promises C's convention and
-    // has to give it back. That is what rules out branching straight to Swift
-    // and costs the one stack slot below — the callee cannot restore a value it
-    // never saw, since the thunk overwrote it on the way in. The pair also
-    // saves the link register, which the call itself takes.
-    //
-    // Everything else Swift clobbers, C clobbers too; a non-throwing call
-    // leaves `x21` and `d8`-`d15` alone, which is the whole point of coming
-    // through a C call in the first place.
+    // `x20` is callee-saved under C, so the thunk must restore it: the callee
+    // gives back what the thunk left, not what the caller had. That rules out a
+    // tail call and costs the stack slot. The pair also saves the link register.
     let mut shuffle = String::from("\"stp x20, x30, [sp, #-16]!\",\n            ");
     if indirect_slot == 1 {
         shuffle.push_str(&format!("\"mov x8, x{}\",\n            ", int_args.len()));
@@ -945,9 +920,8 @@ fn gen_thunk_call(
         int_args.len() + indirect_slot
     ));
 
-    // The result, named as a Rust return type so the compiler places the
-    // registers. The bindings match the ones the shared tail expression reads,
-    // so how a value is decoded stays in one place for both call forms.
+    // Named as a Rust return type so the compiler places the registers; the
+    // bindings match what the shared tail expression reads.
     let (thunk_ret, thunk_item, bind) = match ret_class {
         Class::Void | Class::Indirect(_) | Class::OptIndirect(_) => {
             (String::new(), String::new(), "__CALL__;".to_string())

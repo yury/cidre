@@ -237,21 +237,6 @@ macro_rules! impl_swift_sendable {
 /// Swift value afterwards. [`take_swift`](Self::take_swift) must leave the
 /// storage uninitialized, so the caller must not destroy it again.
 pub unsafe trait FromSwift: SwiftMetadata + Sized {
-    /// Whether a value can be copied out of Swift's own storage by reading its
-    /// bytes, with no witness call and nothing to retain.
-    ///
-    /// True only when the Rust type *is* the Swift value, laid out at Swift's
-    /// stride, and the value owns nothing — which is what lets a container read
-    /// an element straight out of its buffer instead of asking Swift for a copy.
-    /// The counterpart of [`ToSwift::IS_CONTIGUOUS`] for the reading direction.
-    ///
-    /// # Safety
-    ///
-    /// Setting this on a type that owns a reference produces a copy nobody
-    /// retained, and on a type Swift strides differently produces a misaligned
-    /// read.
-    const IS_BITWISE_COPY: bool = false;
-
     /// Copies a borrowed Swift value, leaving the original to its owner.
     ///
     /// # Safety
@@ -328,8 +313,6 @@ macro_rules! impl_swift_memcpy_value {
     ($ty:ty) => {
         $crate::impl_swift_memcpy_value!(@impls $ty, <>, false);
     };
-    // A value Swift copies and destroys by moving bytes, so a reader may take
-    // it straight out of a buffer.
     (pod $ty:ty) => {
         $crate::impl_swift_memcpy_value!(@impls $ty, <>, true);
     };
@@ -338,8 +321,6 @@ macro_rules! impl_swift_memcpy_value {
     };
     (@impls $ty:ty, <$($param:ident : $bound:path),*>, $pod:literal) => {
         unsafe impl<$($param: $bound),*> $crate::swift::FromSwift for $ty {
-            const IS_BITWISE_COPY: bool = $pod;
-
             #[inline]
             unsafe fn copy_swift(value: *const ()) -> Self {
                 unsafe {
@@ -424,37 +405,22 @@ macro_rules! define_swift_objc_ref {
 
 /// A Swift type whose `Optional` metadata is resolved once and kept.
 ///
-/// `T?` has no accessor symbol of its own: the runtime instantiates it from the
-/// standard library's generic accessor, which is a lookup in a locked cache
-/// keyed by the type arguments. Swift never pays that twice — it emits a cache
-/// word beside every `T?` it names and only calls the accessor while the word
-/// is still empty. This is that word, and without it every optional-returning
-/// binding resolved `T?` afresh on the way in and again on the way out.
-///
-/// The cache has to come from somewhere monomorphic in `T`, because a `static`
-/// inside a generic function is shared by every instantiation rather than
-/// duplicated per type. That is the whole reason this is a trait and not a
-/// method on [`SwiftMetadata`].
-///
-/// A generic container is the case that cannot name one: a `static` written
-/// inside [`Array`](super::Array) would be shared by `Array<Int>` and
-/// `Array<String>` alike, and the first of them to resolve would answer for
-/// both. Those types say so by leaving the cache `None` and resolving each
-/// time, which is what every type did before this existed.
+/// `T?` has no accessor symbol, so the runtime instantiates it through a locked
+/// cache; this is the per-type cache word Swift emits instead. A `static` in a
+/// generic function is shared by every instantiation, so the cache has to come
+/// from somewhere monomorphic in `T` — hence a trait. Generic containers cannot
+/// name one and return `None`, resolving each time.
 ///
 /// # Safety
 ///
-/// [`optional_metadata_cache`](Self::optional_metadata_cache) must return a
-/// cache used for no other type, since whatever lands in it is handed out as
-/// `Self?`'s metadata from then on. Returning `None` is always sound.
+/// The cache must be used for no other type. `None` is always sound.
 pub unsafe trait SwiftOptional: SwiftMetadata {
-    /// The cache for `Self?`, for a type that can name one of its own.
     #[doc(hidden)]
     fn optional_metadata_cache() -> Option<&'static abi::MetadataCache> {
         None
     }
 
-    /// `Optional<Self>`'s metadata, resolved on first use where it can be kept.
+    /// `Optional<Self>`'s metadata.
     #[inline]
     fn optional_metadata() -> *const TypeMetadata {
         let resolve = || {
@@ -565,8 +531,7 @@ unsafe impl<T: SwiftClass> SwiftMetadata for Option<crate::arc::R<T>> {
     }
 }
 
-/// A class reference *is* the class's value, so `arc::R<T>?` and `T?` are the
-/// same Swift type and share the one cache.
+/// `arc::R<T>?` and `T?` are the same Swift type, so they share one cache.
 unsafe impl<T: SwiftClass> SwiftOptional for crate::arc::R<T> {
     #[inline]
     fn optional_metadata_cache() -> Option<&'static abi::MetadataCache> {

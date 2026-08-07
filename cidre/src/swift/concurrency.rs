@@ -100,8 +100,7 @@ crate::impl_swift_sendable!(TaskPriority);
 
 /// An owned reference to a Swift `AsyncTask`.
 ///
-/// The task and the address of its initial context, which is what the two
-/// creation entry points return — two words, so both come back in registers.
+/// What the two task-creation entry points return.
 #[repr(C)]
 struct CreatedTask {
     task: *mut (),
@@ -2112,8 +2111,6 @@ mod notification_sequence {
         first: *const (),
         second: *const (),
     ) -> *mut () {
-        // `self` in `x20` and two operands, which is the shape the static
-        // members share.
         unsafe { crate::swift::abi::call::static_values_to_object(function, this, first, second) }
     }
 }

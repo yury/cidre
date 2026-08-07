@@ -89,19 +89,24 @@ impl<T: ToSwift + SwiftHashable> Set<T> {
     }
 }
 
+/// A container cannot cache `Self?`; see [`Array`](super::Array).
+unsafe impl<T: SwiftHashable> super::SwiftOptional for Set<T> {}
+
 /// A set is one word whatever it holds, so it is its own Swift value.
-unsafe impl<T: SwiftMetadata> SwiftMetadata for Set<T> {
+///
+/// The accessor is generic over the `Hashable` conformance, not just the type.
+unsafe impl<T: SwiftHashable> SwiftMetadata for Set<T> {
     #[inline]
     fn metadata() -> *const abi::TypeMetadata {
         let element = T::metadata();
         assert!(!element.is_null(), "Swift type metadata must exist");
-        unsafe { abi::set_metadata(element) }
+        unsafe { abi::set_metadata(element, T::hashable_witness()) }
     }
 }
 
-unsafe impl<T: SwiftMetadata> super::SwiftType for Set<T> {}
+unsafe impl<T: SwiftHashable> super::SwiftType for Set<T> {}
 
-crate::impl_swift_memcpy_value!(Set<T>, <T: SwiftMetadata>);
+crate::impl_swift_memcpy_value!(Set<T>, <T: SwiftHashable>);
 
 impl<T> Clone for Set<T> {
     #[inline]

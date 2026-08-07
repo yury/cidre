@@ -13,10 +13,7 @@ pub struct TypeMetadata {
 /// binding can use.
 const COMPLETE_METADATA: usize = 0;
 
-/// The two pointers `_allocateUninitializedArray` hands back: the array's
-/// storage word, and the address of its first element.
-///
-/// Two words, so both come back in registers rather than through memory.
+/// The array's storage word and the address of its first element.
 #[repr(C)]
 struct ArrayAllocation {
     storage: *mut (),
@@ -80,7 +77,6 @@ unsafe extern "C" {
         instantiation_args: *const *const (),
     ) -> *const ();
 
-    /// `Set.init(arrayLiteral:)`, whose variadic parameter is an array.
     #[link_name = "$sSh12arrayLiteralShyxGxd_tcfC"]
     fn swift_set_from_array_literal(
         array: *mut (),
@@ -88,8 +84,6 @@ unsafe extern "C" {
         hashable: *const (),
     ) -> *mut ();
 
-    /// `Dictionary.subscript`, which writes `Value?` through the indirect
-    /// result register and so is reached through a thunk rather than directly.
     #[link_name = "$sSDyq_Sgxcig"]
     fn swift_dictionary_subscript();
 
@@ -107,8 +101,6 @@ unsafe extern "C" {
     #[link_name = "$sSS5countSivg"]
     fn swift_string_count(word0: usize, word1: usize) -> isize;
 
-    /// Returns `Bool`, which occupies one register whose other bits are the
-    /// callee's business, so it is taken as a word and masked.
     #[link_name = "$sSS7isEmptySbvg"]
     fn swift_string_is_empty(word0: usize, word1: usize) -> usize;
 
@@ -121,7 +113,6 @@ unsafe extern "C" {
     #[link_name = "$sSS11utf8CStrings15ContiguousArrayVys4Int8VGvg"]
     fn swift_string_utf8_c_string(word0: usize, word1: usize) -> *mut ();
 
-    /// The same masking as `isEmpty`.
     #[link_name = "$sSS2eeoiySbSS_SStFZ"]
     fn swift_string_equal(l0: usize, l1: usize, r0: usize, r1: usize) -> usize;
 
@@ -134,8 +125,6 @@ unsafe extern "C" {
     #[link_name = "$sSa5countSivg"]
     fn swift_array_count(array: *const (), element: *const TypeMetadata) -> isize;
 
-    /// `Array.subscript`, which returns its element indirectly, so it is
-    /// reached through a thunk.
     #[link_name = "$sSayxSicig"]
     fn swift_array_get();
 
@@ -146,19 +135,23 @@ unsafe extern "C" {
     fn swift_optional_metadata(request: usize, wrapped: *const TypeMetadata) -> MetadataResponse;
 
     #[link_name = "$sShMa"]
-    fn swift_set_metadata(request: usize, element: *const TypeMetadata) -> MetadataResponse;
+    fn swift_set_metadata(
+        request: usize,
+        element: *const TypeMetadata,
+        hashable: *const (),
+    ) -> MetadataResponse;
 
     #[link_name = "$sSDMa"]
     fn swift_dictionary_metadata(
         request: usize,
         key: *const TypeMetadata,
         value: *const TypeMetadata,
+        key_hashable: *const (),
     ) -> MetadataResponse;
 
     #[link_name = "$ss15ContiguousArrayV5countSivg"]
     fn swift_contiguous_array_count(array: *const (), element: *const TypeMetadata) -> isize;
 
-    /// The same indirect return as `Array.subscript`.
     #[link_name = "$ss15ContiguousArrayVyxSicig"]
     fn swift_contiguous_array_get();
 
@@ -311,11 +304,16 @@ pub fn empty_set_storage() -> *mut () {
 ///
 /// # Safety
 ///
-/// `element` must be metadata for a type that conforms to `Hashable`, which is
-/// what `Set` constrains its parameter to.
+/// `element` must be metadata for a type that conforms to `Hashable`, and
+/// `hashable` must be that conformance's witness table — the runtime keys its
+/// cache on the conformance and dereferences it, so a missing one is a fault
+/// rather than a wrong answer.
 #[inline]
-pub unsafe fn set_metadata(element: *const TypeMetadata) -> *const TypeMetadata {
-    unsafe { swift_set_metadata(COMPLETE_METADATA, element).metadata }
+pub unsafe fn set_metadata(
+    element: *const TypeMetadata,
+    hashable: *const (),
+) -> *const TypeMetadata {
+    unsafe { swift_set_metadata(COMPLETE_METADATA, element, hashable).metadata }
 }
 
 /// Returns `Dictionary<Key, Value>`'s metadata from the standard library's
@@ -323,14 +321,16 @@ pub unsafe fn set_metadata(element: *const TypeMetadata) -> *const TypeMetadata 
 ///
 /// # Safety
 ///
-/// `key` must be metadata for a type that conforms to `Hashable`, which is what
-/// `Dictionary` constrains its key parameter to.
+/// `key` must be metadata for a type that conforms to `Hashable`, and
+/// `key_hashable` must be that conformance's witness table, for the same reason
+/// as [`set_metadata`].
 #[inline]
 pub unsafe fn dictionary_metadata(
     key: *const TypeMetadata,
     value: *const TypeMetadata,
+    key_hashable: *const (),
 ) -> *const TypeMetadata {
-    unsafe { swift_dictionary_metadata(COMPLETE_METADATA, key, value).metadata }
+    unsafe { swift_dictionary_metadata(COMPLETE_METADATA, key, value, key_hashable).metadata }
 }
 
 /// Returns `Optional<Wrapped>`'s metadata from the standard library's generic
@@ -394,11 +394,7 @@ pub unsafe fn dictionary_get(
     }
 }
 
-/// Moves the caller's buffer into the indirect-result register and hands off.
-///
-/// `x8` is not an argument register, so C has no way to name it; a naked thunk
-/// is how it gets set without an `asm!` block at the call site marking
-/// `v8`-`v15` clobbered and costing every caller eight registers.
+/// Moves the caller's buffer into `x8`, which C cannot name, and hands off.
 #[unsafe(naked)]
 unsafe extern "C" fn dictionary_subscript_thunk(
     _key: *const (),

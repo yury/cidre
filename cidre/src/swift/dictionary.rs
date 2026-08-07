@@ -103,8 +103,11 @@ impl<K: ToSwift + SwiftHashable, V: FromSwift + SwiftOptional> Dictionary<K, V> 
     }
 }
 
+/// A container cannot cache `Self?`; see [`Array`](super::Array).
+unsafe impl<K: SwiftHashable, V: SwiftMetadata> super::SwiftOptional for Dictionary<K, V> {}
+
 /// A dictionary is one word whatever it holds, so it is its own Swift value.
-unsafe impl<K: SwiftMetadata, V: SwiftMetadata> SwiftMetadata for Dictionary<K, V> {
+unsafe impl<K: SwiftHashable, V: SwiftMetadata> SwiftMetadata for Dictionary<K, V> {
     #[inline]
     fn metadata() -> *const abi::TypeMetadata {
         let key = K::metadata();
@@ -113,13 +116,13 @@ unsafe impl<K: SwiftMetadata, V: SwiftMetadata> SwiftMetadata for Dictionary<K, 
             !key.is_null() && !value.is_null(),
             "Swift type metadata must exist"
         );
-        unsafe { abi::dictionary_metadata(key, value) }
+        unsafe { abi::dictionary_metadata(key, value, K::hashable_witness()) }
     }
 }
 
-unsafe impl<K: SwiftMetadata, V: SwiftMetadata> super::SwiftType for Dictionary<K, V> {}
+unsafe impl<K: SwiftHashable, V: SwiftMetadata> super::SwiftType for Dictionary<K, V> {}
 
-crate::impl_swift_memcpy_value!(Dictionary<K, V>, <K: SwiftMetadata, V: SwiftMetadata>);
+crate::impl_swift_memcpy_value!(Dictionary<K, V>, <K: SwiftHashable, V: SwiftMetadata>);
 
 impl<K, V> Clone for Dictionary<K, V> {
     #[inline]
@@ -163,5 +166,29 @@ mod tests {
         // A nontrivial key and value must take the same path.
         let strings = Dictionary::<swift::String, swift::String>::empty();
         assert_eq!(None, strings.get(&swift::String::from("missing")));
+    }
+
+    /// A container-valued dictionary has to be lookupable too.
+    ///
+    /// `Optional<V>` needs `V` to name a cache for its own optional, and a
+    /// generic container cannot — which is what stopped these from compiling at
+    /// all, and what the uncached default now covers. This is mostly a
+    /// compile-time assertion; that it also runs is a bonus.
+    #[test]
+    fn dict_of_arrays() {
+        let of_arrays = Dictionary::<isize, swift::Array<isize>>::empty();
+        assert!(of_arrays.get(&1).is_none());
+    }
+
+    #[test]
+    fn dict_of_sets() {
+        let of_sets = Dictionary::<isize, swift::Set<swift::String>>::empty();
+        assert!(of_sets.get(&1).is_none());
+    }
+
+    #[test]
+    fn dict_of_dicts() {
+        let nested = Dictionary::<swift::String, Dictionary<isize, isize>>::empty();
+        assert!(nested.get(&swift::String::from("k")).is_none());
     }
 }

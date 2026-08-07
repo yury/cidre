@@ -11,20 +11,14 @@
 //! dozen instructions Swift itself never emits. So the register list is per
 //! shape, and the hand-off stays here.
 //!
-//! Most shapes go through [`swift_thunk!`], a naked function the caller reaches
-//! by an ordinary C call. That matters because an `asm!` block at the call site
-//! has to declare the C clobbers, which cover all of `v8`-`v15` where the ABI
-//! preserves only their low halves: Rust's assembly syntax cannot describe a
-//! half-preserved register, so every function inlining such a call spills
-//! `d8`-`d15` and gives up all eight for its whole body, where Swift spills
-//! none. Behind a C call the register mask applies instead and the caller pays
-//! nothing.
+//! Most shapes go through [`swift_thunk!`], reached by an ordinary C call, so
+//! the AAPCS register mask applies and the caller keeps `d8`-`d15`. An `asm!`
+//! block would have to declare the C clobbers, which cover all of `v8`-`v15`,
+//! costing every caller eight registers.
 //!
-//! What still uses [`swift_call!`] is what a thunk cannot carry: a throwing
-//! call, whose error arrives in `x21` with no C return to put it in; a
-//! three-word result, which Swift returns in `x0`-`x2` where C returns it
-//! indirectly; and the one initializer whose operands leave no argument
-//! register free for the callee's address.
+//! [`swift_call!`] remains for what a thunk cannot carry: throwing calls (`x21`
+//! has no C return), three-word results (`x0`-`x2` vs C's indirect return), and
+//! the one initializer with no argument register free for the callee address.
 
 use super::{RawString, TypeMetadata};
 
@@ -42,15 +36,10 @@ struct Doubles4(f64, f64, f64, f64);
 /// Declares a naked thunk that fills the registers C cannot name and hands off
 /// to a Swift entry point held in one of its own arguments.
 ///
-/// Its parameters are ordinary C ones, so the compiler builds the argument list
-/// and takes the result, and the AAPCS register mask applies at the call site —
-/// which is what keeps `d8`-`d15` off the caller's stack. Integer parameters
-/// fill `x0` up and floating-point ones `d0` up, each in declaration order and
-/// independently of the other, so the instructions below can name them.
-///
-/// A thunk that writes `x20` has to put it back: it is callee-saved under C,
-/// and the Swift callee restores whatever the thunk left there rather than what
-/// the caller had. One that does not touch it branches straight through.
+/// Integer parameters fill `x0` up and floating-point ones `d0` up, each in
+/// declaration order, so the instructions can name them. A thunk that writes
+/// `x20` must restore it — it is callee-saved under C, and the Swift callee
+/// gives back what the thunk left, not what the caller had.
 macro_rules! swift_thunk {
     (
         $(#[$meta:meta])*
@@ -68,9 +57,7 @@ macro_rules! swift_thunk {
 /// Calls a Swift entry point with `operands` naming the registers it reads and
 /// writes.
 ///
-/// Prefer [`swift_thunk!`], which costs its caller nothing. This form spills
-/// `d8`–`d15` in whatever inlines it, for the reason the module note gives, and
-/// is kept only for the shapes a thunk cannot carry.
+/// Prefer [`swift_thunk!`]; this form spills `d8`–`d15` in whatever inlines it.
 ///
 /// # Safety
 ///
@@ -122,9 +109,7 @@ swift_thunk!(
     "ret",
 );
 
-/// Calls a protocol requirement through its witness: the conforming value as
-/// `self`, its metadata and the witness table as the generic context, and the
-/// result written into the caller's buffer.
+/// Calls a protocol requirement through its witness.
 ///
 /// # Safety
 ///
@@ -314,8 +299,7 @@ pub unsafe fn static_value_bool_to_object(
 }
 
 swift_thunk!(
-    /// Two operands and the type's metadata as `self`, which is the shape every
-    /// static member below shares.
+    /// Two operands and the type's metadata as `self`.
     fn static_pair_to_object_thunk(
         _first: *const (),
         _second: *const (),
@@ -446,8 +430,7 @@ swift_thunk!(
     "br x1",
 );
 
-/// Declares a getter that takes its `self` in `x20` and again in `x0`, which is
-/// every reader below; only the register the result lands in differs.
+/// A getter taking `self` in `x20` and again in `x0`; only the result differs.
 macro_rules! value_getter {
     ($(#[$meta:meta])* $vis:vis fn $name:ident -> $ret:ty, $thunk:ident) => {
         swift_thunk!(
@@ -474,8 +457,7 @@ value_getter!(fn value_to_rect_quad -> Doubles4, value_to_rect_thunk);
 value_getter!(pub fn value_to_object -> *mut (), value_to_object_thunk);
 value_getter!(pub fn value_to_string -> RawString, value_to_string_thunk);
 
-/// Swift's `Bool` occupies one register whose other bits are the callee's
-/// business, so it is taken as a word and masked.
+/// Swift's `Bool` leaves the other bits undefined, so it is masked.
 #[inline]
 pub unsafe fn value_to_bool(function: *const (), value: *const ()) -> bool {
     unsafe { value_to_bool_word(function, value) & 1 != 0 }

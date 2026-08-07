@@ -60,105 +60,18 @@ impl<T: SwiftMetadata> Array<T> {
         metadata
     }
 
-    /// The element count.
-    ///
-    /// Swift reads this straight out of the buffer header — an optimized
-    /// `a.count` on a native array is one `ldr` at [`ARRAY_COUNT_OFFSET`], and
-    /// being loop-invariant it usually leaves the loop entirely. So does this,
-    /// falling back to the `count` getter only for a buffer bridged from
-    /// `NSArray`, which has no header to read.
-    ///
-    /// [`ARRAY_COUNT_OFFSET`]: abi::ARRAY_COUNT_OFFSET
+    /// Returns the element count through Swift's `Array.count` getter.
     #[inline]
     pub fn len(&self) -> usize {
-        match self.native_count() {
-            Some(count) => count,
-            None => self.swift_count(),
-        }
-    }
-
-    /// The count as Swift's own getter reports it, which is the authority for
-    /// a bridged buffer and the check the header read is validated against.
-    #[inline]
-    fn swift_count(&self) -> usize {
         let count =
             unsafe { abi::array_count(self.as_raw().cast_const(), Self::element_metadata()) };
         debug_assert!(count >= 0);
         count as usize
     }
 
-    /// The address of the first element in native storage, or `None` when
-    /// there is no buffer to address.
-    ///
-    /// The stride still has to be Swift's, which is what
-    /// [`FromSwift::IS_BITWISE_COPY`](crate::swift::FromSwift::IS_BITWISE_COPY)
-    /// promises for the types that reach this.
-    #[inline]
-    fn native_elements(&self) -> Option<*const u8> {
-        let storage = self.storage;
-        if storage == 0 || storage & abi::ARRAY_BRIDGED_TAG != 0 || !header_layout_is_current() {
-            return None;
-        }
-        let base = (storage & abi::ARRAY_STORAGE_MASK) as *const u8;
-        Some(unsafe { base.add(abi::ARRAY_ELEMENTS_OFFSET) })
-    }
-
-    /// The count read out of native storage, or `None` when there is none to
-    /// read: an `NSArray` buffer, or a header that has moved.
-    #[inline]
-    fn native_count(&self) -> Option<usize> {
-        let storage = self.storage;
-        if storage == 0 || storage & abi::ARRAY_BRIDGED_TAG != 0 || !header_layout_is_current() {
-            return None;
-        }
-        let base = (storage & abi::ARRAY_STORAGE_MASK) as *const u8;
-        Some(unsafe { base.add(abi::ARRAY_COUNT_OFFSET).cast::<usize>().read() })
-    }
-
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.len() == 0
-    }
-}
-
-/// Whether native array storage still keeps its count where
-/// [`abi::ARRAY_COUNT_OFFSET`] says.
-///
-/// The header is the standard library's own business, so rather than trust the
-/// offset, check it once against the authority — Swift's `count` getter, on an
-/// array built here for the purpose — and cache the answer for the process.
-/// Every reader falls back to the getter if it ever stops matching, so a
-/// standard library that moves its header costs speed rather than correctness.
-///
-/// Deliberately checked once globally rather than per element type: the header
-/// is a `HeapObject` and an `_ArrayBody`, neither of which depends on what the
-/// array holds.
-fn header_layout_is_current() -> bool {
-    use core::sync::atomic::{AtomicU8, Ordering::Relaxed};
-    const UNKNOWN: u8 = 0;
-    const CURRENT: u8 = 1;
-    const MOVED: u8 = 2;
-
-    static STATE: AtomicU8 = AtomicU8::new(UNKNOWN);
-
-    match STATE.load(Relaxed) {
-        CURRENT => true,
-        MOVED => false,
-        _ => {
-            // A count no plausible stray word would equal, so a header that has
-            // moved reads as moved rather than passing by coincidence.
-            let probe = Array::<isize>::from_slice(&[-7; 23]);
-            let stored = unsafe {
-                ((probe.storage & abi::ARRAY_STORAGE_MASK) as *const u8)
-                    .add(abi::ARRAY_COUNT_OFFSET)
-                    .cast::<usize>()
-                    .read()
-            };
-            let current =
-                probe.storage & abi::ARRAY_BRIDGED_TAG == 0 && stored == probe.swift_count();
-            STATE.store(if current { CURRENT } else { MOVED }, Relaxed);
-            current
-        }
     }
 }
 
@@ -222,20 +135,6 @@ impl<T: FromSwift> Array<T> {
     /// `index` must be less than [`Self::len`].
     #[inline]
     pub unsafe fn get_unchecked(&self, index: usize) -> T {
-        // Plain data in native storage is just a load, which is what Swift's
-        // own subscript compiles to. The branch folds away for element types
-        // that cannot take it.
-        if T::IS_BITWISE_COPY
-            && let Some(base) = self.native_elements()
-        {
-            debug_assert_eq!(
-                core::mem::size_of::<T>(),
-                unsafe { abi::value_layout(Self::element_metadata()) }.stride,
-                "a bitwise-copy element must be laid out at Swift's stride"
-            );
-            return unsafe { base.cast::<T>().add(index).read() };
-        }
-
         unsafe {
             // The subscript hands back an owned element, so the scratch buffer
             // is only there for `T` to take it out of.
@@ -281,9 +180,10 @@ impl<T: SwiftType> Array<T> {
     /// differently than Rust does, and if the standard library's array header
     /// ever moves.
     pub fn as_slice(&self) -> Option<&[T]> {
-        // Native storage whose header is where it should be, which is what
-        // makes the count below readable and the elements addressable.
-        let count = self.native_count()?;
+        let storage = self.storage;
+        if storage == 0 || storage & abi::ARRAY_BRIDGED_TAG != 0 {
+            return None;
+        }
 
         // `SwiftType` promises the layouts match, but the array is only
         // borrowable as `[T]` if Swift also strides it the way Rust does.
@@ -293,10 +193,16 @@ impl<T: SwiftType> Array<T> {
         }
 
         unsafe {
-            let base = (self.storage & abi::ARRAY_STORAGE_MASK) as *const u8;
+            let base = (storage & abi::ARRAY_STORAGE_MASK) as *const u8;
+            let stored = base.add(abi::ARRAY_COUNT_OFFSET).cast::<usize>().read();
+            // Disagreement means the header moved out from under these offsets.
+            if stored != self.len() {
+                return None;
+            }
+
             Some(core::slice::from_raw_parts(
                 base.add(abi::ARRAY_ELEMENTS_OFFSET).cast::<T>(),
-                count,
+                stored,
             ))
         }
     }
@@ -323,6 +229,10 @@ where
         }
     }
 }
+
+/// A container cannot cache `Self?`: one `static` would be shared by every
+/// element type.
+unsafe impl<T: SwiftMetadata> super::SwiftOptional for Array<T> {}
 
 /// An array is one word whatever it holds, so it is its own Swift value.
 unsafe impl<T: SwiftMetadata> SwiftMetadata for Array<T> {
@@ -451,65 +361,6 @@ mod tests {
         }
     }
 
-    /// The header read and the direct element read have to agree with Swift's
-    /// own getters, which is the whole warrant for skipping them.
-    ///
-    /// `as_slice` and `get` both take the fast path now, so comparing those two
-    /// against each other no longer proves anything — the authority has to be
-    /// Swift's `count` and `subscript`, called here on purpose.
-    #[test]
-    fn the_fast_path_agrees_with_swifts_own_getters() {
-        use crate::swift::{SwiftMetadata, abi};
-
-        for len in [0usize, 1, 2, 7, 64, 1000] {
-            let values: Vec<isize> = (0..len as isize).map(|i| i * 31 - 17).collect();
-            let array = Array::<isize>::from_slice(&values);
-
-            let swift_count =
-                unsafe { abi::array_count(array.as_raw().cast_const(), isize::metadata()) };
-            assert_eq!(
-                swift_count as usize,
-                array.len(),
-                "count disagrees at {len}"
-            );
-            assert_eq!(len, array.len());
-
-            for index in 0..len {
-                // Swift's subscript, called rather than skipped.
-                let mut from_swift = 0isize;
-                unsafe {
-                    abi::array_get(
-                        array.as_raw().cast_const(),
-                        index as isize,
-                        core::ptr::from_mut(&mut from_swift).cast(),
-                        isize::metadata(),
-                    );
-                }
-                assert_eq!(from_swift, unsafe { array.get_unchecked(index) });
-                assert_eq!(from_swift, values[index]);
-            }
-        }
-    }
-
-    /// A nontrivial element must never take the bitwise path, or the copy is a
-    /// reference nobody retained.
-    #[test]
-    fn nontrivial_elements_are_not_bitwise_copyable() {
-        use crate::swift::FromSwift;
-
-        assert!(<isize as FromSwift>::IS_BITWISE_COPY);
-        assert!(!<String as FromSwift>::IS_BITWISE_COPY);
-        assert!(!<Array<isize> as FromSwift>::IS_BITWISE_COPY);
-
-        // Reading the same element repeatedly must keep the array's own
-        // reference intact, which a stray bitwise copy would not.
-        let array = Array::<String>::from_slice(&[String::from("held")]);
-        for _ in 0..64 {
-            assert_eq!("held", array.get(0).unwrap().to_string());
-        }
-        assert_eq!("held", array.get(0).unwrap().to_string());
-    }
-
     /// An empty array is the standard library's shared singleton, which still
     /// has to produce a valid empty slice rather than a wild pointer.
     #[test]
@@ -589,10 +440,3 @@ mod tests {
         assert_eq!(vec![3], nested.get(1).unwrap().to_vec());
     }
 }
-
-/// A container cannot name a cache for `Self?`: a `static` written here would
-/// be shared by every element type rather than one per instantiation, so the
-/// first `Array<T>?` resolved would answer for all of them. The default
-/// resolves each time instead, which is correct and no slower than before the
-/// cache existed.
-unsafe impl<T: SwiftMetadata> super::SwiftOptional for Array<T> {}
