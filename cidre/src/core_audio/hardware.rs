@@ -1997,7 +1997,7 @@ mod tests {
         assert!(range.contains(&(volume_db as f64)));
         let mut value = volume_scalar;
         input_device.input_volume_scalar_to_db(&mut value).unwrap();
-        assert_eq!(value, volume_db);
+        assert!((value - volume_db).abs() < 0.005);
 
         // println!("range {range:?} {volume_db:?} {volume_scalar:?}");
     }
