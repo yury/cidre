@@ -589,3 +589,10 @@ mod tests {
         assert_eq!(vec![3], nested.get(1).unwrap().to_vec());
     }
 }
+
+/// A container cannot name a cache for `Self?`: a `static` written here would
+/// be shared by every element type rather than one per instantiation, so the
+/// first `Array<T>?` resolved would answer for all of them. The default
+/// resolves each time instead, which is correct and no slower than before the
+/// cache existed.
+unsafe impl<T: SwiftMetadata> super::SwiftOptional for Array<T> {}

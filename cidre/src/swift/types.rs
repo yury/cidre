@@ -436,23 +436,36 @@ macro_rules! define_swift_objc_ref {
 /// duplicated per type. That is the whole reason this is a trait and not a
 /// method on [`SwiftMetadata`].
 ///
+/// A generic container is the case that cannot name one: a `static` written
+/// inside [`Array`](super::Array) would be shared by `Array<Int>` and
+/// `Array<String>` alike, and the first of them to resolve would answer for
+/// both. Those types say so by leaving the cache `None` and resolving each
+/// time, which is what every type did before this existed.
+///
 /// # Safety
 ///
 /// [`optional_metadata_cache`](Self::optional_metadata_cache) must return a
 /// cache used for no other type, since whatever lands in it is handed out as
-/// `Self?`'s metadata from then on.
+/// `Self?`'s metadata from then on. Returning `None` is always sound.
 pub unsafe trait SwiftOptional: SwiftMetadata {
+    /// The cache for `Self?`, for a type that can name one of its own.
     #[doc(hidden)]
-    fn optional_metadata_cache() -> &'static abi::MetadataCache;
+    fn optional_metadata_cache() -> Option<&'static abi::MetadataCache> {
+        None
+    }
 
-    /// `Optional<Self>`'s metadata, resolved on first use.
+    /// `Optional<Self>`'s metadata, resolved on first use where it can be kept.
     #[inline]
     fn optional_metadata() -> *const TypeMetadata {
-        Self::optional_metadata_cache().get(|| {
+        let resolve = || {
             let wrapped = Self::metadata();
             assert!(!wrapped.is_null(), "Swift type metadata must exist");
             unsafe { abi::optional_metadata(wrapped) }
-        })
+        };
+        match Self::optional_metadata_cache() {
+            Some(cache) => cache.get(resolve),
+            None => resolve(),
+        }
     }
 }
 
@@ -462,10 +475,12 @@ macro_rules! impl_swift_optional {
     ($($ty:ty),+ $(,)?) => {
         $(unsafe impl $crate::swift::SwiftOptional for $ty {
             #[inline]
-            fn optional_metadata_cache() -> &'static $crate::swift::abi::MetadataCache {
+            fn optional_metadata_cache()
+                -> Option<&'static $crate::swift::abi::MetadataCache>
+            {
                 static CACHE: $crate::swift::abi::MetadataCache =
                     $crate::swift::abi::MetadataCache::new();
-                &CACHE
+                Some(&CACHE)
             }
         })+
     };
@@ -554,7 +569,7 @@ unsafe impl<T: SwiftClass> SwiftMetadata for Option<crate::arc::R<T>> {
 /// same Swift type and share the one cache.
 unsafe impl<T: SwiftClass> SwiftOptional for crate::arc::R<T> {
     #[inline]
-    fn optional_metadata_cache() -> &'static abi::MetadataCache {
+    fn optional_metadata_cache() -> Option<&'static abi::MetadataCache> {
         <T as SwiftOptional>::optional_metadata_cache()
     }
 }
