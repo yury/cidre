@@ -556,6 +556,8 @@ macro_rules! swift_value {
         }
 
         unsafe impl $crate::swift::FromSwift for $ty {
+            const IS_INLINE_VALUE: bool = true;
+
             #[inline]
             unsafe fn copy_swift(value: *const ()) -> Self {
                 unsafe {

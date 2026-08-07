@@ -135,9 +135,23 @@ impl<T: FromSwift> Array<T> {
     /// `index` must be less than [`Self::len`].
     #[inline]
     pub unsafe fn get_unchecked(&self, index: usize) -> T {
+        // The subscript writes an owned element into the caller's buffer, so
+        // the buffer only has to be the Swift value's size. When the Rust type
+        // is that value, it already is; otherwise `Storage` asks the runtime.
+        if T::IS_INLINE_VALUE {
+            let mut out = core::mem::MaybeUninit::<T>::uninit();
+            unsafe {
+                abi::array_get(
+                    self.as_raw().cast_const(),
+                    index as isize,
+                    out.as_mut_ptr().cast(),
+                    Self::element_metadata(),
+                );
+                return out.assume_init();
+            }
+        }
+
         unsafe {
-            // The subscript hands back an owned element, so the scratch buffer
-            // is only there for `T` to take it out of.
             let mut scratch = Storage::<T>::new();
             abi::array_get(
                 self.as_raw().cast_const(),
