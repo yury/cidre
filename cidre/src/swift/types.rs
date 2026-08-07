@@ -198,6 +198,61 @@ unsafe impl FromSwiftDoubles for crate::spatial::Vector3D {
     }
 }
 
+/// A geometric value Swift takes in a run of floating-point registers.
+///
+/// The passing side of [`FromSwiftDoubles`], and it answers the same question
+/// the other way round: how many registers the value occupies is the Swift
+/// type's business, not the Rust one's, so [`COUNT`](Self::COUNT) is what a
+/// generated call counts its remaining arguments from rather than the width of
+/// the Rust struct.
+///
+/// # Safety
+///
+/// [`write_doubles`](Self::write_doubles) must fill exactly the registers
+/// Swift's convention passes the type in, in their order.
+pub unsafe trait ToSwiftDoubles {
+    /// The registers the value occupies.
+    const COUNT: usize;
+
+    /// Writes them into `out`, which is [`COUNT`](Self::COUNT) long.
+    fn write_doubles(&self, out: &mut [f64]);
+}
+
+#[cfg(feature = "cg")]
+unsafe impl ToSwiftDoubles for crate::cg::Rect {
+    const COUNT: usize = 4;
+
+    #[inline]
+    fn write_doubles(&self, out: &mut [f64]) {
+        out.copy_from_slice(&[
+            self.origin.x,
+            self.origin.y,
+            self.size.width,
+            self.size.height,
+        ]);
+    }
+}
+
+#[cfg(feature = "cg")]
+unsafe impl ToSwiftDoubles for crate::cg::Point {
+    const COUNT: usize = 2;
+
+    #[inline]
+    fn write_doubles(&self, out: &mut [f64]) {
+        out.copy_from_slice(&[self.x, self.y]);
+    }
+}
+
+#[cfg(feature = "spatial")]
+unsafe impl ToSwiftDoubles for crate::spatial::Vector3D {
+    const COUNT: usize = 3;
+
+    #[inline]
+    fn write_doubles(&self, out: &mut [f64]) {
+        out.copy_from_slice(&[self.x, self.y, self.z]);
+    }
+}
+
 /// A Swift type whose values may cross threads, which is Swift's `Sendable`.
 ///
 /// [`Storage`](super::value::Storage) holds a raw pointer, so a wrapper around

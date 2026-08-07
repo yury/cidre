@@ -84,6 +84,15 @@ impl<T: SwiftMetadata> Storage<T> {
     }
 }
 
+/// The address Swift passes the value at is the buffer's own, which is what
+/// lets a storage stand in for the value it holds as a call's argument.
+unsafe impl<T: SwiftMetadata> super::SwiftSelf for Storage<T> {
+    #[inline]
+    fn swift_self_ptr(&self) -> *const () {
+        self.as_ptr()
+    }
+}
+
 /// A `Sendable` Swift value is safe to move and to share, and the storage is
 /// only a private allocation holding one, so it inherits both.
 unsafe impl<T: super::SwiftSendable> Send for Storage<T> {}

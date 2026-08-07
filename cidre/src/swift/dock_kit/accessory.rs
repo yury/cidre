@@ -1166,42 +1166,6 @@ unsafe extern "C" {
     #[link_name = "$s7DockKit0A9AccessoryC9setLimitsyyAC0E0VKF"]
     fn dock_accessory_set_limits();
 
-    #[link_name = "$s7DockKit0A9AccessoryC18setAngularVelocityyySo10SPVector3DaYaKF"]
-    fn dock_accessory_set_angular_velocity();
-
-    #[link_name = "$s7DockKit0A9AccessoryC18setAngularVelocityyySo10SPVector3DaYaKFTu"]
-    static DOCK_ACCESSORY_SET_ANGULAR_VELOCITY_ASYNC: u8;
-
-    #[link_name = "$s7DockKit0A9AccessoryC13selectSubject2atySo7CGPointV_tYaKF"]
-    fn dock_accessory_select_subject();
-
-    #[link_name = "$s7DockKit0A9AccessoryC13selectSubject2atySo7CGPointV_tYaKFTu"]
-    static DOCK_ACCESSORY_SELECT_SUBJECT_ASYNC: u8;
-
-    #[link_name = "$s7DockKit0A9AccessoryC14setFramingModeyyAC0eF0OYaKF"]
-    fn dock_accessory_set_framing_mode();
-
-    #[link_name = "$s7DockKit0A9AccessoryC14setFramingModeyyAC0eF0OYaKFTu"]
-    static DOCK_ACCESSORY_SET_FRAMING_MODE_ASYNC: u8;
-
-    #[link_name = "$s7DockKit0A9AccessoryC19setRegionOfInterestyySo6CGRectVYaKF"]
-    fn dock_accessory_set_region_of_interest();
-
-    #[link_name = "$s7DockKit0A9AccessoryC19setRegionOfInterestyySo6CGRectVYaKFTu"]
-    static DOCK_ACCESSORY_SET_REGION_OF_INTEREST_ASYNC: u8;
-
-    #[link_name = "$s7DockKit0A9AccessoryC14selectSubjectsyySay10Foundation4UUIDVGYaKF"]
-    fn dock_accessory_select_subjects();
-
-    #[link_name = "$s7DockKit0A9AccessoryC14selectSubjectsyySay10Foundation4UUIDVGYaKFTu"]
-    static DOCK_ACCESSORY_SELECT_SUBJECTS_ASYNC: u8;
-
-    #[link_name = "$s7DockKit0A9AccessoryC7animate6motionSo10NSProgressCAC9AnimationO_tYaKF"]
-    fn dock_accessory_animate();
-
-    #[link_name = "$s7DockKit0A9AccessoryC7animate6motionSo10NSProgressCAC9AnimationO_tYaKFTu"]
-    static DOCK_ACCESSORY_ANIMATE_ASYNC: u8;
-
     #[link_name = "$s7DockKit0A9AccessoryC14setOrientation_8duration8relativeSo10NSProgressCSo10SPVector3Da_s8DurationVSbtYaKF"]
     fn dock_accessory_set_vector_orientation();
 
@@ -1224,28 +1188,12 @@ unsafe extern "C" {
     fn swift_duration_seconds();
 
     #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC5track_17cameraInformationySayAC11ObservationVG_AC06CameraF0VtYaKF"]
-    fn dock_accessory_track_observations();
-
-    #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC5track_17cameraInformationySayAC11ObservationVG_AC06CameraF0VtYaKFTu"]
-    static DOCK_ACCESSORY_TRACK_OBSERVATIONS_ASYNC: u8;
-
-    #[cfg(feature = "av")]
     #[link_name = "$s7DockKit0A9AccessoryC5track_17cameraInformation5imageySayAC11ObservationVG_AC06CameraF0VSo11CVBufferRefatYaKF"]
     fn dock_accessory_track_observations_with_image();
 
     #[cfg(feature = "av")]
     #[link_name = "$s7DockKit0A9AccessoryC5track_17cameraInformation5imageySayAC11ObservationVG_AC06CameraF0VSo11CVBufferRefatYaKFTu"]
     static DOCK_ACCESSORY_TRACK_OBSERVATIONS_WITH_IMAGE_ASYNC: u8;
-
-    #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC5track_17cameraInformationySaySo16AVMetadataObjectCG_AC06CameraF0VtYaKF"]
-    fn dock_accessory_track_metadata();
-
-    #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC5track_17cameraInformationySaySo16AVMetadataObjectCG_AC06CameraF0VtYaKFTu"]
-    static DOCK_ACCESSORY_TRACK_METADATA_ASYNC: u8;
 
     #[cfg(feature = "av")]
     #[link_name = "$s7DockKit0A9AccessoryC5track_17cameraInformation5imageySaySo16AVMetadataObjectCG_AC06CameraF0VSo11CVBufferRefatYaKF"]
@@ -1468,78 +1416,81 @@ impl Accessory {
         }
     }
 
-    #[doc(alias = "DockAccessory.setAngularVelocity(_:)")]
-    pub fn set_angular_velocity_handler<F>(&self, velocity: spatial::Vector3D, callback: F)
+    /// The future sibling of [`Self::call_void`], which builds its awaiting
+    /// state on the task's own allocation rather than beside it.
+    #[cfg(feature = "async")]
+    fn call_void_future<O>(
+        &self,
+        function: *const (),
+        async_fn: *const u8,
+        owned: O,
+        args: impl FnOnce(&mut O) -> concurrency::AsyncCallArgs,
+    ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>>
     where
-        F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
+        O: Send + 'static,
     {
-        self.call_void(
-            dock_accessory_set_angular_velocity as *const (),
-            (&raw const DOCK_ACCESSORY_SET_ANGULAR_VELOCITY_ASYNC).cast(),
-            (),
-            |_| {
-                concurrency::AsyncCallArgs::new()
-                    .float(0, velocity.x)
-                    .float(1, velocity.y)
-                    .float(2, velocity.z)
-            },
-            callback,
-        );
+        unsafe {
+            concurrency::call_async_future(
+                function,
+                async_fn,
+                (arc::Retain::retained(self), owned),
+                |(accessory, owned)| args(owned).swift_self(accessory.as_ptr().cast()),
+                |_, _| (),
+            )
+        }
     }
 
-    #[doc(alias = "DockAccessory.selectSubject(at:)")]
-    pub fn select_subject_handler<F>(&self, point: cg::Point, callback: F)
+    /// The same for [`Self::call_progress`].
+    #[cfg(feature = "async")]
+    fn call_progress_future<O>(
+        &self,
+        function: *const (),
+        async_fn: *const u8,
+        owned: O,
+        args: impl FnOnce(&mut O) -> concurrency::AsyncCallArgs,
+    ) -> impl std::future::Future<Output = Result<arc::R<ns::Progress>, arc::R<ns::Error>>>
     where
-        F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
+        O: Send + 'static,
     {
-        self.call_void(
-            dock_accessory_select_subject as *const (),
-            (&raw const DOCK_ACCESSORY_SELECT_SUBJECT_ASYNC).cast(),
-            (),
-            |_| {
-                concurrency::AsyncCallArgs::new()
-                    .float(0, point.x)
-                    .float(1, point.y)
-            },
-            callback,
-        );
+        unsafe {
+            concurrency::call_async_future(
+                function,
+                async_fn,
+                (arc::Retain::retained(self), owned),
+                |(accessory, owned)| args(owned).swift_self(accessory.as_ptr().cast()),
+                |_, progress| arc::R::from_raw(progress.cast()),
+            )
+        }
     }
 
+    #[swift::call(
+        "DockKit.DockAccessory(class).setAngularVelocity(_: __C.SPVector3D) async throws"
+    )]
+    pub fn set_angular_velocity(
+        &self,
+        velocity: spatial::Vector3D,
+    ) -> Result<(), arc::R<ns::Error>>;
+
+    #[swift::call(
+        "DockKit.DockAccessory(class).selectSubject(at: __C.CGPoint(struct)) async throws"
+    )]
+    pub fn select_subject(&self, point: cg::Point) -> Result<(), arc::R<ns::Error>>;
+
+    /// The mode is the accessory's own nested type, which the symbol reaches by
+    /// back reference rather than by name, so this one is given mangled.
     #[doc(alias = "DockAccessory.setFramingMode(_:)")]
-    pub fn set_framing_mode_handler<F>(&self, mode: FramingMode, callback: F)
-    where
-        F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
-    {
-        self.call_void(
-            dock_accessory_set_framing_mode as *const (),
-            (&raw const DOCK_ACCESSORY_SET_FRAMING_MODE_ASYNC).cast(),
-            // A resilient enum is passed indirectly, so the call needs
-            // somewhere stable to point at.
-            mode,
-            |mode| concurrency::AsyncCallArgs::new().arg(0, mode.as_abi_ptr().cast_mut()),
-            callback,
-        );
-    }
+    #[swift::call(sym = "$s7DockKit0A9AccessoryC14setFramingModeyyAC0eF0OYaKF", async)]
+    pub fn set_framing_mode(&self, mode: FramingMode) -> Result<(), arc::R<ns::Error>>;
 
-    #[doc(alias = "DockAccessory.setRegionOfInterest(_:)")]
-    pub fn set_region_of_interest_handler<F>(&self, rect: cg::Rect, callback: F)
-    where
-        F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
-    {
-        self.call_void(
-            dock_accessory_set_region_of_interest as *const (),
-            (&raw const DOCK_ACCESSORY_SET_REGION_OF_INTEREST_ASYNC).cast(),
-            (),
-            |_| {
-                concurrency::AsyncCallArgs::new()
-                    .float(0, rect.origin.x)
-                    .float(1, rect.origin.y)
-                    .float(2, rect.size.width)
-                    .float(3, rect.size.height)
-            },
-            callback,
-        );
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).setRegionOfInterest(_: __C.CGRect(struct)) async throws"
+    )]
+    pub fn set_region_of_interest(&self, rect: cg::Rect) -> Result<(), arc::R<ns::Error>>;
+
+    #[swift::call(
+        "DockKit.DockAccessory(class).selectSubjects(_: [Foundation.UUID(struct)]) async throws"
+    )]
+    fn select_subjects_array(&self, ids: swift::Array<Uuid>) -> Result<(), arc::R<ns::Error>>;
 
     #[doc(alias = "DockAccessory.selectSubjects(_:)")]
     #[crate::api::available(macos = 15.0, ios = 18.0)]
@@ -1547,32 +1498,51 @@ impl Accessory {
     where
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
-        self.select_subjects_array(swift::Array::from_slice(ids), callback);
-    }
-
-    fn select_subjects_array<F>(&self, ids: swift::Array<Uuid>, callback: F)
-    where
-        F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
-    {
-        self.call_void(
-            dock_accessory_select_subjects as *const (),
-            (&raw const DOCK_ACCESSORY_SELECT_SUBJECTS_ASYNC).cast(),
-            ids,
-            |ids| concurrency::AsyncCallArgs::new().arg(0, ids.as_raw()),
-            callback,
-        );
+        self.select_subjects_array_handler(swift::Array::from_slice(ids), callback);
     }
 
     /// The four `track` overloads differ only in what they hand over as the
-    /// observations and whether they carry an image.
+    /// observations and whether they carry an image, so each is declared
+    /// against its own symbol rather than routed through one call.
+    ///
+    /// `Observation` and `CameraInformation` are the accessory's own nested
+    /// types, which the symbols reach by back reference, so these are given
+    /// mangled.
     #[cfg(feature = "av")]
-    fn track_data<F>(
+    #[doc(alias = "DockAccessory.track(_:cameraInformation:)")]
+    #[swift::call(
+        sym = "$s7DockKit0A9AccessoryC5track_17cameraInformationySayAC11ObservationVG_AC06CameraF0VtYaKF",
+        async
+    )]
+    pub fn track(
+        &self,
+        observations: swift::Array<Observation>,
+        camera: CameraInformation,
+    ) -> Result<(), arc::R<ns::Error>>;
+
+    #[cfg(feature = "av")]
+    #[swift::call(
+        sym = "$s7DockKit0A9AccessoryC5track_17cameraInformationySaySo16AVMetadataObjectCG_AC06CameraF0VtYaKF",
+        async
+    )]
+    fn track_metadata_array(
+        &self,
+        metadata: swift::Array<MetadataObjRef>,
+        camera: CameraInformation,
+    ) -> Result<(), arc::R<ns::Error>>;
+
+    /// The two `track` overloads that carry an image, which are still written
+    /// out: `arc::R<cv::PixelBuf>` is deliberately not `Send`, and a generated
+    /// call requires everything it keeps alive to be, so what says the buffer
+    /// may cross is [`TrackArgs`] rather than the pixel buffer's own type.
+    #[cfg(feature = "av")]
+    fn track_image<F>(
         &self,
         function: *const (),
         async_fn: *const u8,
         data: TrackData,
         camera: CameraInformation,
-        image: Option<arc::R<crate::cv::PixelBuf>>,
+        image: arc::R<crate::cv::PixelBuf>,
         callback: F,
     ) where
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
@@ -1583,39 +1553,33 @@ impl Accessory {
             TrackArgs {
                 data,
                 camera,
-                image,
+                image: Some(image),
             },
-            |track| {
-                let args = concurrency::AsyncCallArgs::new()
-                    .arg(0, track.data.as_raw())
-                    .arg(1, track.camera.as_ptr().cast_mut());
-                match &track.image {
-                    Some(image) => args.arg(2, image.as_ptr().cast()),
-                    None => args,
-                }
-            },
+            track_args,
             callback,
         );
     }
 
-    #[cfg(feature = "av")]
-    #[doc(alias = "DockAccessory.track(_:cameraInformation:)")]
-    pub fn track_handler<F>(
+    /// The future sibling of [`Self::track_image`].
+    #[cfg(all(feature = "async", feature = "av"))]
+    fn track_image_future(
         &self,
-        observations: swift::Array<Observation>,
+        function: *const (),
+        async_fn: *const u8,
+        data: TrackData,
         camera: CameraInformation,
-        callback: F,
-    ) where
-        F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
-    {
-        self.track_data(
-            dock_accessory_track_observations as *const (),
-            (&raw const DOCK_ACCESSORY_TRACK_OBSERVATIONS_ASYNC).cast(),
-            TrackData::Observations(observations),
-            camera,
-            None,
-            callback,
-        );
+        image: arc::R<crate::cv::PixelBuf>,
+    ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
+        self.call_void_future(
+            function,
+            async_fn,
+            TrackArgs {
+                data,
+                camera,
+                image: Some(image),
+            },
+            track_args,
+        )
     }
 
     #[cfg(feature = "av")]
@@ -1629,14 +1593,30 @@ impl Accessory {
     ) where
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
-        self.track_data(
+        self.track_image(
             dock_accessory_track_observations_with_image as *const (),
             (&raw const DOCK_ACCESSORY_TRACK_OBSERVATIONS_WITH_IMAGE_ASYNC).cast(),
             TrackData::Observations(observations),
             camera,
-            Some(arc::Retain::retained(image)),
+            arc::Retain::retained(image),
             callback,
         );
+    }
+
+    #[cfg(all(feature = "async", feature = "av"))]
+    pub fn track_with_image(
+        &self,
+        observations: swift::Array<Observation>,
+        camera: CameraInformation,
+        image: &crate::cv::PixelBuf,
+    ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
+        self.track_image_future(
+            dock_accessory_track_observations_with_image as *const (),
+            (&raw const DOCK_ACCESSORY_TRACK_OBSERVATIONS_WITH_IMAGE_ASYNC).cast(),
+            TrackData::Observations(observations),
+            camera,
+            arc::Retain::retained(image),
+        )
     }
 
     #[cfg(feature = "av")]
@@ -1649,14 +1629,7 @@ impl Accessory {
     ) where
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
-        self.track_data(
-            dock_accessory_track_metadata as *const (),
-            (&raw const DOCK_ACCESSORY_TRACK_METADATA_ASYNC).cast(),
-            TrackData::Metadata(metadata_objects(metadata)),
-            camera,
-            None,
-            callback,
-        );
+        self.track_metadata_array_handler(metadata_objects(metadata), camera, callback);
     }
 
     #[cfg(feature = "av")]
@@ -1670,54 +1643,14 @@ impl Accessory {
     ) where
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
-        self.track_data(
+        self.track_image(
             dock_accessory_track_metadata_with_image as *const (),
             (&raw const DOCK_ACCESSORY_TRACK_METADATA_WITH_IMAGE_ASYNC).cast(),
             TrackData::Metadata(metadata_objects(metadata)),
             camera,
-            Some(arc::Retain::retained(image)),
+            arc::Retain::retained(image),
             callback,
         );
-    }
-
-    #[cfg(feature = "async")]
-    pub fn set_angular_velocity(
-        &self,
-        velocity: spatial::Vector3D,
-    ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
-        self.async_void(move |accessory, callback| {
-            accessory.set_angular_velocity_handler(velocity, callback)
-        })
-    }
-
-    #[cfg(feature = "async")]
-    pub fn select_subject(
-        &self,
-        point: cg::Point,
-    ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
-        self.async_void(move |accessory, callback| {
-            accessory.select_subject_handler(point, callback)
-        })
-    }
-
-    #[cfg(feature = "async")]
-    pub fn set_framing_mode(
-        &self,
-        mode: FramingMode,
-    ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
-        self.async_void(move |accessory, callback| {
-            accessory.set_framing_mode_handler(mode, callback)
-        })
-    }
-
-    #[cfg(feature = "async")]
-    pub fn set_region_of_interest(
-        &self,
-        rect: cg::Rect,
-    ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
-        self.async_void(move |accessory, callback| {
-            accessory.set_region_of_interest_handler(rect, callback)
-        })
     }
 
     #[cfg(feature = "async")]
@@ -1726,32 +1659,7 @@ impl Accessory {
         &self,
         ids: &[Uuid],
     ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
-        let ids = swift::Array::from_slice(ids);
-        self.async_void(move |accessory, callback| accessory.select_subjects_array(ids, callback))
-    }
-
-    #[cfg(all(feature = "async", feature = "av"))]
-    pub fn track(
-        &self,
-        observations: swift::Array<Observation>,
-        camera: CameraInformation,
-    ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
-        self.async_void(move |accessory, callback| {
-            accessory.track_handler(observations, camera, callback)
-        })
-    }
-
-    #[cfg(all(feature = "async", feature = "av"))]
-    pub fn track_with_image(
-        &self,
-        observations: swift::Array<Observation>,
-        camera: CameraInformation,
-        image: &crate::cv::PixelBuf,
-    ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
-        let image = arc::Retain::retained(image);
-        self.async_void(move |accessory, callback| {
-            accessory.track_with_image_handler(observations, camera, &image, callback)
-        })
+        self.select_subjects_array(swift::Array::from_slice(ids))
     }
 
     #[cfg(all(feature = "async", feature = "av"))]
@@ -1760,17 +1668,7 @@ impl Accessory {
         metadata: &[&crate::av::MetadataObj],
         camera: CameraInformation,
     ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
-        let data = TrackData::Metadata(metadata_objects(metadata));
-        self.async_void(move |accessory, callback| {
-            accessory.track_data(
-                dock_accessory_track_metadata as *const (),
-                (&raw const DOCK_ACCESSORY_TRACK_METADATA_ASYNC).cast(),
-                data,
-                camera,
-                None,
-                callback,
-            )
-        })
+        self.track_metadata_array(metadata_objects(metadata), camera)
     }
 
     #[cfg(all(feature = "async", feature = "av"))]
@@ -1780,46 +1678,21 @@ impl Accessory {
         camera: CameraInformation,
         image: &crate::cv::PixelBuf,
     ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
-        let data = TrackData::Metadata(metadata_objects(metadata));
-        let image = arc::Retain::retained(image);
-        self.async_void(move |accessory, callback| {
-            accessory.track_data(
-                dock_accessory_track_metadata_with_image as *const (),
-                (&raw const DOCK_ACCESSORY_TRACK_METADATA_WITH_IMAGE_ASYNC).cast(),
-                data,
-                camera,
-                Some(image),
-                callback,
-            )
-        })
-    }
-
-    #[cfg(feature = "async")]
-    fn async_void<F>(&self, start: F) -> crate::blocks::Completion<Result<(), arc::R<ns::Error>>>
-    where
-        F: FnOnce(&Accessory, Box<dyn FnOnce(Result<(), arc::R<ns::Error>>) + Send>),
-    {
-        let shared = crate::blocks::Shared::new();
-        let comp = crate::blocks::Completion(shared.clone());
-        start(self, Box::new(move |result| shared.lock().ready(result)));
-        comp
+        self.track_image_future(
+            dock_accessory_track_metadata_with_image as *const (),
+            (&raw const DOCK_ACCESSORY_TRACK_METADATA_WITH_IMAGE_ASYNC).cast(),
+            TrackData::Metadata(metadata_objects(metadata)),
+            camera,
+            arc::Retain::retained(image),
+        )
     }
 
     #[doc(alias = "DockAccessory.animate(motion:)")]
-    pub fn animate_handler<F>(&self, animation: Animation, callback: F)
-    where
-        F: FnOnce(Result<arc::R<ns::Progress>, arc::R<ns::Error>>) + Send + 'static,
-    {
-        self.call_progress(
-            dock_accessory_animate as *const (),
-            (&raw const DOCK_ACCESSORY_ANIMATE_ASYNC).cast(),
-            // A resilient enum is passed indirectly, so the call needs
-            // somewhere stable to point at.
-            animation,
-            |animation| concurrency::AsyncCallArgs::new().arg(0, animation.as_abi_ptr().cast_mut()),
-            callback,
-        );
-    }
+    #[swift::call(
+        sym = "$s7DockKit0A9AccessoryC7animate6motionSo10NSProgressCAC9AnimationO_tYaKF",
+        async
+    )]
+    pub fn animate(&self, animation: Animation) -> Result<arc::R<ns::Progress>, arc::R<ns::Error>>;
 
     #[doc(alias = "DockAccessory.setOrientation(_:duration:relative:)")]
     #[crate::api::available(macos = 15.0, ios = 18.0)]
@@ -1832,22 +1705,12 @@ impl Accessory {
     ) where
         F: FnOnce(Result<arc::R<ns::Progress>, arc::R<ns::Error>>) + Send + 'static,
     {
-        let duration = unsafe {
-            abi::call::double_to_words2(swift_duration_seconds as *const (), duration.as_secs_f64())
-        };
+        let duration = swift_duration(duration);
         self.call_progress(
             dock_accessory_set_vector_orientation as *const (),
             (&raw const DOCK_ACCESSORY_SET_VECTOR_ORIENTATION_ASYNC).cast(),
             (),
-            |_| {
-                concurrency::AsyncCallArgs::new()
-                    .float(0, rotation.x)
-                    .float(1, rotation.y)
-                    .float(2, rotation.z)
-                    .arg(0, duration.0 as *mut ())
-                    .arg(1, duration.1 as *mut ())
-                    .arg(2, relative as usize as *mut ())
-            },
+            move |_| vector_orientation_args(rotation, duration, relative),
             callback,
         );
     }
@@ -1863,35 +1726,14 @@ impl Accessory {
     ) where
         F: FnOnce(Result<arc::R<ns::Progress>, arc::R<ns::Error>>) + Send + 'static,
     {
-        let duration = unsafe {
-            abi::call::double_to_words2(swift_duration_seconds as *const (), duration.as_secs_f64())
-        };
+        let duration = swift_duration(duration);
         self.call_progress(
             dock_accessory_set_rotation_orientation as *const (),
             (&raw const DOCK_ACCESSORY_SET_ROTATION_ORIENTATION_ASYNC).cast(),
             (),
-            |_| {
-                // A `Rotation3D` is a four-`Double` vector, which Swift passes
-                // as two of them rather than as four scalars.
-                concurrency::AsyncCallArgs::new()
-                    .vector2(0, [rotation.x, rotation.y])
-                    .vector2(1, [rotation.z, rotation.w])
-                    .arg(0, duration.0 as *mut ())
-                    .arg(1, duration.1 as *mut ())
-                    .arg(2, relative as usize as *mut ())
-            },
+            move |_| rotation_orientation_args(rotation, duration, relative),
             callback,
         );
-    }
-
-    #[cfg(feature = "async")]
-    pub fn animate(
-        &self,
-        animation: Animation,
-    ) -> impl std::future::Future<Output = Result<arc::R<ns::Progress>, arc::R<ns::Error>>> {
-        self.async_progress(move |accessory, callback| {
-            accessory.animate_handler(animation, callback)
-        })
     }
 
     #[cfg(feature = "async")]
@@ -1903,9 +1745,13 @@ impl Accessory {
         duration: std::time::Duration,
         relative: bool,
     ) -> impl std::future::Future<Output = Result<arc::R<ns::Progress>, arc::R<ns::Error>>> {
-        self.async_progress(move |accessory, callback| unsafe {
-            accessory.set_orientation_handler(rotation, duration, relative, callback)
-        })
+        let duration = swift_duration(duration);
+        self.call_progress_future(
+            dock_accessory_set_vector_orientation as *const (),
+            (&raw const DOCK_ACCESSORY_SET_VECTOR_ORIENTATION_ASYNC).cast(),
+            (),
+            move |_| vector_orientation_args(rotation, duration, relative),
+        )
     }
 
     #[cfg(feature = "async")]
@@ -1917,26 +1763,13 @@ impl Accessory {
         duration: std::time::Duration,
         relative: bool,
     ) -> impl std::future::Future<Output = Result<arc::R<ns::Progress>, arc::R<ns::Error>>> {
-        self.async_progress(move |accessory, callback| unsafe {
-            accessory.set_rotation_handler(rotation, duration, relative, callback)
-        })
-    }
-
-    #[cfg(feature = "async")]
-    fn async_progress<F>(
-        &self,
-        start: F,
-    ) -> crate::blocks::Completion<Result<arc::R<ns::Progress>, arc::R<ns::Error>>>
-    where
-        F: FnOnce(
-            &Accessory,
-            Box<dyn FnOnce(Result<arc::R<ns::Progress>, arc::R<ns::Error>>) + Send>,
-        ),
-    {
-        let shared = crate::blocks::Shared::new();
-        let comp = crate::blocks::Completion(shared.clone());
-        start(self, Box::new(move |result| shared.lock().ready(result)));
-        comp
+        let duration = swift_duration(duration);
+        self.call_progress_future(
+            dock_accessory_set_rotation_orientation as *const (),
+            (&raw const DOCK_ACCESSORY_SET_ROTATION_ORIENTATION_ASYNC).cast(),
+            (),
+            move |_| rotation_orientation_args(rotation, duration, relative),
+        )
     }
 }
 
@@ -1966,6 +1799,60 @@ crate::define_swift_objc_ref!(
     /// One `AVMetadataObject` as DockKit's tracking API takes it.
     pub(crate) MetadataObjRef(crate::av::MetadataObj) = class "AVMetadataObject"
 );
+
+/// The registers one `track` call goes out in.
+///
+/// A free function rather than a closure at each call site, since the handler
+/// and the future halves have to agree on them exactly.
+#[cfg(feature = "av")]
+fn track_args(track: &mut TrackArgs) -> concurrency::AsyncCallArgs {
+    let args = concurrency::AsyncCallArgs::new()
+        .arg(0, track.data.as_raw())
+        .arg(1, track.camera.as_ptr().cast_mut());
+    match &track.image {
+        Some(image) => args.arg(2, image.as_ptr().cast()),
+        None => args,
+    }
+}
+
+/// Builds the `Swift.Duration` the orientation calls take, which is two words
+/// rather than a value Rust can hand over directly.
+fn swift_duration(duration: std::time::Duration) -> (u64, u64) {
+    unsafe {
+        abi::call::double_to_words2(swift_duration_seconds as *const (), duration.as_secs_f64())
+    }
+}
+
+/// `setOrientation(_:duration:relative:)` with a vector, whose three doubles
+/// each take a register of their own.
+fn vector_orientation_args(
+    rotation: spatial::Vector3D,
+    duration: (u64, u64),
+    relative: bool,
+) -> concurrency::AsyncCallArgs {
+    concurrency::AsyncCallArgs::new()
+        .float(0, rotation.x)
+        .float(1, rotation.y)
+        .float(2, rotation.z)
+        .arg(0, duration.0 as *mut ())
+        .arg(1, duration.1 as *mut ())
+        .arg(2, relative as usize as *mut ())
+}
+
+/// The same with a rotation, which is a four-`Double` vector Swift passes as
+/// two of them rather than as four scalars.
+fn rotation_orientation_args(
+    rotation: spatial::Rotation3D,
+    duration: (u64, u64),
+    relative: bool,
+) -> concurrency::AsyncCallArgs {
+    concurrency::AsyncCallArgs::new()
+        .vector2(0, [rotation.x, rotation.y])
+        .vector2(1, [rotation.z, rotation.w])
+        .arg(0, duration.0 as *mut ())
+        .arg(1, duration.1 as *mut ())
+        .arg(2, relative as usize as *mut ())
+}
 
 /// Retains the borrowed metadata objects into a Swift array of them.
 #[cfg(feature = "av")]

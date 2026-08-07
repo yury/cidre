@@ -52,6 +52,19 @@ macro_rules! define_swift_tag_enum {
             pub fn as_abi_ptr(&self) -> *const () {
                 core::ptr::from_ref(self).cast()
             }
+        }
+
+        /// Passed indirectly, so what a call hands over is the value's address.
+        /// That is also what a generated call asks a value type for, which is
+        /// what lets one of these be an argument without a hand-written call.
+        unsafe impl $crate::swift::SwiftSelf for $ty {
+            #[inline]
+            fn swift_self_ptr(&self) -> *const () {
+                self.as_abi_ptr()
+            }
+        }
+
+        impl $ty {
 
             #[inline]
             pub fn hash_value(&self) -> isize {

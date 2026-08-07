@@ -44,8 +44,8 @@ unsafe extern "C" {
     pub(crate) fn swift_task_dealloc();
     pub(crate) fn swift_task_switch();
 
-    /// Both return the new task and the address of its initial context, which
-    /// is two words and so comes back in registers under C's convention as it
+    /// Returns the new task and the address of its initial context, which is
+    /// two words and so comes back in registers under C's convention as it
     /// does under Swift's.
     fn swift_task_create(
         flags: usize,
@@ -54,15 +54,6 @@ unsafe extern "C" {
         function: *const (),
         context: *mut (),
     ) -> CreatedTask;
-    fn swift_task_create_common(
-        flags: usize,
-        options: *mut (),
-        future_result_type: *const TypeMetadata,
-        function: *const (),
-        context: *mut (),
-        initial_context_size: usize,
-    ) -> CreatedTask;
-    fn swift_task_enqueueGlobal(task: *mut ());
 
     /// Arms a continuation embedded in `context`, returning the handle that
     /// resumes it. Declared `SWIFT_CC(swift)`, which for these arguments is the
@@ -71,6 +62,10 @@ unsafe extern "C" {
 
     /// Resumes a continuation from outside the task. Also effectively C.
     fn swift_continuation_resume(continuation: *mut ());
+
+    /// Flags a task cancelled, which its callee observes at its next suspension
+    /// point. One pointer argument, so `SWIFT_CC(swift)` is C here too.
+    fn swift_task_cancel(task: *mut ());
 
     /// `SWIFT_CC(swiftasync)`, and only ever referenced as a `sym` operand.
     pub(crate) fn swift_continuation_await();
@@ -98,135 +93,242 @@ crate::define_swift_marker!(pub(crate) TaskPriority = accessor task_priority_met
 
 crate::impl_swift_sendable!(TaskPriority);
 
-/// An owned reference to a Swift `AsyncTask`.
-///
-/// What the two task-creation entry points return.
+/// What `swift_task_create` hands back.
 #[repr(C)]
 struct CreatedTask {
     task: *mut (),
     initial_context: *mut (),
 }
 
-/// `swift_task_create` returns the task at +1, and the enqueued job holds a
-/// reference of its own: Swift's own codegen for a task whose handle is
-/// discarded releases the returned reference immediately. Dropping this does
-/// the same, so a task nobody keeps is freed once it finishes instead of
-/// leaking its allocation.
+/// An owned reference to a running Swift task.
 ///
-/// Keeping one alive is what a future cancellation API would hold on to.
+/// Worth keeping only for something that will act on the task later: the
+/// runtime holds its own reference through the enqueued job, so a task nobody
+/// keeps still runs to completion and frees itself.
 #[repr(transparent)]
-pub(crate) struct Task(NonNull<()>);
+struct SwiftTask(NonNull<()>);
 
-// The Swift runtime reference-counts tasks atomically, so a reference may be
-// dropped from whichever thread ends up owning it.
-unsafe impl Send for Task {}
-unsafe impl Sync for Task {}
+// Tasks are atomically reference-counted by the runtime, and cancelling one is
+// defined from any thread, so this may be held wherever the future ends up.
+unsafe impl Send for SwiftTask {}
+unsafe impl Sync for SwiftTask {}
 
-impl Task {
-    /// Takes ownership of a task reference the runtime just handed back.
+impl SwiftTask {
+    /// Asks the task to stop at its next suspension point.
     ///
-    /// # Safety
-    ///
-    /// The caller must own a reference to `task`.
+    /// Advisory, as it is in Swift: the callee decides what to do about it, and
+    /// a call already past its last suspension point finishes regardless. It is
+    /// a no-op on a task that has already completed, which is why holding the
+    /// reference is what makes this safe to call at any time.
     #[inline]
-    unsafe fn from_raw(task: *mut ()) -> Self {
-        Self(NonNull::new(task).expect("Swift task creation failed"))
-    }
-
-    #[inline]
-    pub(crate) fn as_ptr(&self) -> *mut () {
-        self.0.as_ptr()
+    fn cancel(&self) {
+        unsafe { swift_task_cancel(self.0.as_ptr()) }
     }
 }
 
-impl Drop for Task {
+impl Drop for SwiftTask {
     #[inline]
     fn drop(&mut self) {
         unsafe { abi::object_release(self.0.as_ptr().cast_const()) }
     }
 }
 
+/// Starts a task running `descriptor` over `context`, and hands back the
+/// reference the runtime returns.
+///
+/// # Safety
+///
+/// `descriptor` must be an async function pointer whose entry point takes
+/// `context`, and the task takes ownership of whatever `context` points to.
 #[inline]
-pub(crate) unsafe fn task_create_common(
-    flags: usize,
-    future_result_type: *const TypeMetadata,
-    function: *const (),
-    context: *mut (),
-    initial_context_size: usize,
-) -> (Task, *mut ()) {
-    let created = unsafe {
-        swift_task_create_common(
-            flags,
-            core::ptr::null_mut(),
-            future_result_type,
-            function,
-            context,
-            initial_context_size,
-        )
-    };
-    (
-        unsafe { Task::from_raw(created.task) },
-        created.initial_context,
-    )
-}
-
-#[inline]
-pub(crate) unsafe fn task_create(
-    flags: usize,
-    future_result_type: *const TypeMetadata,
-    function: *const (),
-    context: *mut (),
-) -> (Task, *mut ()) {
+unsafe fn start_task(descriptor: *const u8, context: *mut ()) -> SwiftTask {
     let created = unsafe {
         swift_task_create(
-            flags,
+            ENQUEUED_DISCARDING_TASK_FLAGS,
             core::ptr::null_mut(),
-            future_result_type,
-            function,
+            core::ptr::null(),
+            descriptor.cast(),
             context,
         )
     };
-    (
-        unsafe { Task::from_raw(created.task) },
-        created.initial_context,
-    )
+    SwiftTask(NonNull::new(created.task).expect("Swift task creation failed"))
 }
 
-#[inline]
-pub(crate) unsafe fn task_enqueue_global(task: *mut ()) {
-    unsafe { swift_task_enqueueGlobal(task) }
-}
-
-/// Turns a call that takes a callback into one that returns a future.
+/// Starts a task and lets go of it, which is what Swift's own codegen does for
+/// a task whose handle is discarded.
 ///
-/// Every binding that awaits Swift offers both, and the future half was the
-/// same five lines each time.
-#[cfg(feature = "async")]
-pub(crate) fn future_from<T: Send + 'static>(
-    start: impl FnOnce(Box<dyn FnOnce(T) + Send>),
-) -> crate::blocks::Completion<T> {
-    let shared = crate::blocks::Shared::new();
-    let completion = crate::blocks::Completion(shared.clone());
-    start(Box::new(move |value| shared.lock().ready(value)));
-    completion
+/// # Safety
+///
+/// As [`start_task`].
+#[inline]
+pub(crate) unsafe fn spawn_task(descriptor: *const u8, context: *mut ()) {
+    drop(unsafe { start_task(descriptor, context) });
 }
 
-/// The trampolines above address the task by offset, so a field moving is a
-/// silent miscompile rather than a build failure. This is what notices.
-#[cfg(test)]
-#[test]
-fn async_call_task_matches_the_offsets_the_trampolines_use() {
-    use core::mem::offset_of;
+/// A suspending call that is being awaited rather than handed a callback.
+///
+/// The awaiting state is the task's own tail, so one allocation carries the
+/// context Swift runs over, what the call borrowed, and the slot the result
+/// lands in. `Arc` is what makes that shareable: the task holds one reference
+/// until it completes and the future holds the other until it is dropped, so
+/// neither has to outlive the other and whichever finishes last frees.
+#[cfg(all(feature = "async", feature = "ns"))]
+struct AwaitedCall<O, T> {
+    /// Turns what the call produced into the value the future yields.
+    ///
+    /// A plain function pointer: every binding's conversion is generated and
+    /// captures nothing, so there is nothing here to allocate for.
+    output: fn(O, *mut ()) -> T,
+    state: parking_lot::Mutex<AwaitedState<T>>,
+}
 
-    assert_eq!(0, offset_of!(AsyncCallTask, function));
-    assert_eq!(8, offset_of!(AsyncCallTask, async_fn));
-    assert_eq!(16, offset_of!(AsyncCallTask, swift_self));
-    assert_eq!(24, offset_of!(AsyncCallTask, result));
-    assert_eq!(32, offset_of!(AsyncCallTask, error));
-    assert_eq!(40, offset_of!(AsyncCallTask, args));
-    assert_eq!(80, offset_of!(AsyncCallTask, vectors));
-    // A 128-bit load only reaches offsets that are a multiple of sixteen.
-    assert_eq!(0, offset_of!(AsyncCallTask, vectors) % 16);
+#[cfg(all(feature = "async", feature = "ns"))]
+struct AwaitedState<T> {
+    ready: Option<Result<T, crate::arc::R<crate::ns::Error>>>,
+    waker: Option<std::task::Waker>,
+}
+
+/// The future a suspending Swift call returns.
+///
+/// Dropping it before it resolves cancels the Swift task. That is advisory, as
+/// it is in Swift — the call stops at its next suspension point, and one with
+/// none left runs to completion — but the result is discarded either way and
+/// the allocation goes as soon as the task lets go of it.
+#[cfg(all(feature = "async", feature = "ns"))]
+pub struct CallFuture<O, T> {
+    call: std::sync::Arc<AsyncCall<O, AwaitedCall<O, T>>>,
+    task: SwiftTask,
+}
+
+// The header is touched only by the trampolines and by the completion, which
+// run in sequence on the task, and everything the future reads is behind the
+// mutex. `O` crosses to the task and `T` back, so both have to be `Send`.
+#[cfg(all(feature = "async", feature = "ns"))]
+unsafe impl<O: Send, T: Send> Send for CallFuture<O, T> {}
+#[cfg(all(feature = "async", feature = "ns"))]
+unsafe impl<O: Send, T: Send> Sync for CallFuture<O, T> {}
+
+#[cfg(all(feature = "async", feature = "ns"))]
+impl<O, T> Drop for CallFuture<O, T> {
+    #[inline]
+    fn drop(&mut self) {
+        self.task.cancel();
+    }
+}
+
+#[cfg(all(feature = "async", feature = "ns"))]
+impl<O, T> std::future::Future for CallFuture<O, T> {
+    type Output = Result<T, crate::arc::R<crate::ns::Error>>;
+
+    fn poll(
+        self: std::pin::Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Self::Output> {
+        let mut state = self.call.completion.state.lock();
+        match state.ready.take() {
+            Some(value) => std::task::Poll::Ready(value),
+            None => {
+                state.waker = Some(cx.waker().clone());
+                std::task::Poll::Pending
+            }
+        }
+    }
+}
+
+/// Finishes a call that is being awaited: converts what it produced, leaves it
+/// in the slot, and wakes whoever is waiting.
+///
+/// # Safety
+///
+/// `task` must begin an `AsyncCall<O, AwaitedCall<O, T>>` held by an `Arc` that
+/// the task owns a reference to.
+#[cfg(all(feature = "async", feature = "ns"))]
+unsafe fn complete_awaited<O, T>(task: *mut AsyncCallTask) {
+    // The task's own reference, taken back so it is released at the end of this
+    // whether or not a future is still holding the other one.
+    let call = unsafe {
+        std::sync::Arc::from_raw(task.cast_const().cast::<AsyncCall<O, AwaitedCall<O, T>>>())
+    };
+
+    // The completion is the only reader of `owned`, and runs once, so this is
+    // the single move it ever sees. It is dropped here even when the call threw
+    // and the conversion never runs.
+    let owned = unsafe { core::ptr::read(&*call.owned) };
+    let value = if call.header.error.is_null() {
+        Ok((call.completion.output)(owned, call.header.result))
+    } else {
+        drop(owned);
+        // Bridging hands back the error box itself, so the task's reference
+        // becomes the `ns::Error`'s and is not released again.
+        Err(unsafe { crate::arc::R::from_raw(abi::error_as_ns_error(call.header.error).cast()) })
+    };
+
+    let mut state = call.completion.state.lock();
+    state.ready = Some(value);
+    let waker = state.waker.take();
+    drop(state);
+
+    // Waking under the lock would just make the woken thread contend.
+    if let Some(waker) = waker {
+        waker.wake();
+    }
+}
+
+/// Awaits `function` on a Swift task, yielding what it produced or the error it
+/// threw, bridged to an [`ns::Error`](crate::ns::Error).
+///
+/// The future half of [`call_async_result`], and not built on it: going through
+/// a completion handler would mean a second allocation for the shared state the
+/// handler feeds, where this puts that state in the task's own.
+///
+/// # Safety
+///
+/// As [`call_async`].
+#[cfg(all(feature = "async", feature = "ns"))]
+pub(crate) unsafe fn call_async_future<O, T>(
+    function: *const (),
+    async_fn: *const u8,
+    owned: O,
+    args: impl FnOnce(&mut O) -> AsyncCallArgs,
+    output: fn(O, *mut ()) -> T,
+) -> CallFuture<O, T>
+where
+    O: Send + 'static,
+    T: Send + 'static,
+{
+    let mut call = std::sync::Arc::new(AsyncCall {
+        header: AsyncCallTask::new(function, async_fn, complete_awaited::<O, T>),
+        owned: core::mem::ManuallyDrop::new(owned),
+        completion: AwaitedCall {
+            output,
+            state: parking_lot::Mutex::new(AwaitedState {
+                ready: None,
+                waker: None,
+            }),
+        },
+    });
+
+    // Nothing else holds the allocation yet, so the arguments are built through
+    // the one reference there is, into the memory Swift will read them from.
+    {
+        let call = std::sync::Arc::get_mut(&mut call).expect("the call is unshared here");
+        call.header.args = args(&mut call.owned);
+    }
+
+    // The task gets a reference of its own, which its completion takes back.
+    // `Arc::into_raw` addresses the value rather than the header block, so this
+    // is the pointer the trampolines read their offsets from.
+    let context = std::sync::Arc::into_raw(call.clone())
+        .cast_mut()
+        .cast::<()>();
+    let task = unsafe {
+        start_task(
+            (&raw const CIDRE_SWIFT_ASYNC_CALL_TASK_DESCRIPTOR).cast(),
+            context,
+        )
+    };
+
+    CallFuture { call, task }
 }
 
 /// Calls `AsyncSequence.makeAsyncIterator()` through its protocol witness.
@@ -323,13 +425,40 @@ impl AsyncSequenceSymbols {
     }
 }
 
-struct AsyncSequenceTask {
-    // Declaration order is drop order, and the iterator borrows the sequence.
-    iterator: Option<AnyValue>,
-    sequence: Option<AnyValue>,
-    result: Option<NonNull<u8>>,
-    symbols: AsyncSequenceSymbols,
-    callback: Box<dyn FnMut(Option<*const ()>) -> bool + Send>,
+/// Drives a callback-based iteration over the same task the pulled iterator
+/// uses.
+///
+/// A callback always wants the next element, so this never parks: `publish`
+/// reports a request already in flight and the task resumes itself, which turns
+/// the await into a fall-through. That is the only thing separating the two
+/// shapes, so one set of trampolines serves both.
+struct CallbackControl {
+    callback: std::sync::Mutex<Box<dyn FnMut(Option<*const ()>) -> bool + Send>>,
+    stop: std::sync::atomic::AtomicBool,
+}
+
+impl PullControl for CallbackControl {
+    fn publish(&self, _continuation: *mut ()) -> bool {
+        true
+    }
+
+    fn should_stop(&self) -> bool {
+        self.stop.load(std::sync::atomic::Ordering::Relaxed)
+    }
+
+    fn deliver(&self, element: Option<*const ()>) -> bool {
+        // A callback that panicked poisoned this, and iterating on with one
+        // that cannot run would spin, so a poisoned lock winds the task up.
+        let keep_going = match self.callback.lock() {
+            Ok(mut callback) => callback(element),
+            Err(_) => false,
+        };
+        if !keep_going {
+            self.stop
+                .store(true, std::sync::atomic::Ordering::Relaxed);
+        }
+        keep_going
+    }
 }
 
 /// Iterates a concrete Swift `AsyncSequence` on a Swift task.
@@ -343,20 +472,36 @@ pub(crate) fn iterate_async_sequence<F>(
 ) where
     F: FnMut(Option<*const ()>) -> bool + Send + 'static,
 {
+    start_iteration(
+        sequence,
+        symbols,
+        std::sync::Arc::new(CallbackControl {
+            callback: std::sync::Mutex::new(Box::new(callback)),
+            stop: std::sync::atomic::AtomicBool::new(false),
+        }),
+    );
+}
+
+/// Builds the sequence's iterator and starts the task that will drive it.
+fn start_iteration(
+    sequence: AnyValue,
+    symbols: AsyncSequenceSymbols,
+    control: std::sync::Arc<dyn PullControl>,
+) {
     unsafe {
-        let task = Box::new(AsyncSequenceTask {
-            sequence: Some(sequence),
-            iterator: None,
-            result: None,
+        let mut storage = crate::swift::value::DynamicStorage::new(symbols.iterator_metadata);
+        symbols.call_make_iterator(sequence.as_ptr(), storage.as_mut_ptr());
+
+        let task = Box::new(PulledIterTask {
+            iterator: storage.assume_init(),
+            _sequence: sequence,
             symbols,
-            callback: Box::new(callback),
+            result: None,
+            control,
         });
-        let context = Box::into_raw(task).cast();
-        let _ = task_create(
-            ENQUEUED_DISCARDING_TASK_FLAGS,
-            core::ptr::null(),
-            (&raw const CIDRE_SWIFT_ASYNC_SEQUENCE_TASK_DESCRIPTOR).cast(),
-            context,
+        spawn_task(
+            (&raw const CIDRE_SWIFT_PULLED_ITER_TASK_DESCRIPTOR).cast(),
+            Box::into_raw(task).cast(),
         );
     }
 }
@@ -365,7 +510,6 @@ pub(crate) fn iterate_async_sequence<F>(
 ///
 /// Kept alive by the task itself: the trampolines hand this pointer to every
 /// Rust callback, and the last one drops it.
-#[cfg(feature = "async")]
 struct PulledIterTask {
     // Declaration order is drop order, and the iterator borrows the sequence.
     iterator: AnyValue,
@@ -375,12 +519,10 @@ struct PulledIterTask {
     control: std::sync::Arc<dyn PullControl>,
 }
 
-#[cfg(feature = "async")]
 unsafe impl Send for PulledIterTask {}
 
 /// The half of a pulled iterator the Swift task talks to, with the element type
 /// erased so one set of trampolines serves every sequence.
-#[cfg(feature = "async")]
 pub(crate) trait PullControl: Send + Sync {
     /// Records the continuation the task is about to wait on.
     ///
@@ -587,238 +729,20 @@ pub(crate) fn pulled_async_iter<T>(
 where
     T: Send + 'static,
 {
-    unsafe {
-        let mut storage = crate::swift::value::DynamicStorage::new(symbols.iterator_metadata);
-        symbols.call_make_iterator(sequence.as_ptr(), storage.as_mut_ptr());
+    let shared = std::sync::Arc::new(PullShared {
+        state: parking_lot::Mutex::new(PullState {
+            continuation: None,
+            outstanding: false,
+            delivered: None,
+            waker: None,
+            ended: false,
+            stop: false,
+        }),
+        copy,
+    });
 
-        let shared = std::sync::Arc::new(PullShared {
-            state: parking_lot::Mutex::new(PullState {
-                continuation: None,
-                outstanding: false,
-                delivered: None,
-                waker: None,
-                ended: false,
-                stop: false,
-            }),
-            copy,
-        });
-
-        let task = Box::new(PulledIterTask {
-            iterator: storage.assume_init(),
-            _sequence: sequence,
-            symbols,
-            result: None,
-            control: shared.clone(),
-        });
-        let context = Box::into_raw(task).cast();
-        let _ = task_create(
-            ENQUEUED_DISCARDING_TASK_FLAGS,
-            core::ptr::null(),
-            (&raw const CIDRE_SWIFT_PULLED_ITER_TASK_DESCRIPTOR).cast(),
-            context,
-        );
-
-        PulledIter { shared }
-    }
-}
-
-swift_async_task_descriptor!(
-    CIDRE_SWIFT_ASYNC_SEQUENCE_TASK_DESCRIPTOR,
-    entry: async_sequence_task_entry,
-    context_size: "64",
-);
-
-macro_rules! async_sequence_next_call {
-    () => {
-        concat!(
-            "ldr x0, [x22, #24]\n",
-            "bl {next_async_fn}\n",
-            "ldr w0, [x0, #4]\n",
-            "bl {task_alloc}\n",
-            "mov x9, x0\n",
-            "str x9, [x22, #48]\n",
-            $crate::swift::concurrency::swift_async_store_parent!(), "\n",
-            $crate::swift::concurrency::swift_async_store_resume!("{resume}"), "\n",
-            "ldr x0, [x22, #24]\n",
-            "bl {next_fn}\n",
-            "mov x16, x0\n",
-            "ldr x0, [x22, #40]\n",
-            "ldr x20, [x22, #32]\n",
-            "mov x22, x9\n",
-            "mov x21, #0\n",
-            $crate::swift::concurrency::swift_async_epilogue!(frame: "32", fp: "16"), "\n",
-            "br x16",
-        )
-    };
-}
-
-#[unsafe(naked)]
-unsafe extern "C" fn async_sequence_task_entry() {
-    core::arch::naked_asm!(
-        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
-        "str x20, [x22, #24]",
-        "str x22, [x22, #16]",
-        "mov x0, x20",
-        "bl {result_size}",
-        "bl {task_alloc}",
-        "mov x1, x0",
-        "str x1, [x22, #40]",
-        "ldr x0, [x22, #24]",
-        "bl {set_result}",
-        swift_async_function_pointer!("{run}"),
-        "mov x1, #0",
-        "mov x2, #0",
-        swift_async_epilogue!(frame: "32", fp: "16"),
-        "b {task_switch}",
-        result_size = sym cidre_swift_async_sequence_result_size,
-        set_result = sym cidre_swift_async_sequence_set_result,
-        task_alloc = sym swift_task_alloc,
-        task_switch = sym swift_task_switch,
-        run = sym async_sequence_task_run,
-    );
-}
-
-#[unsafe(naked)]
-unsafe extern "C" fn async_sequence_task_run() {
-    core::arch::naked_asm!(
-        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
-        "ldr x0, [x22, #24]",
-        "bl {prepare}",
-        "str x0, [x22, #32]",
-        "str x22, [x22, #16]",
-        async_sequence_next_call!(),
-        prepare = sym cidre_swift_async_sequence_prepare,
-        next_async_fn = sym cidre_swift_async_sequence_next_async_fn,
-        next_fn = sym cidre_swift_async_sequence_next_fn,
-        task_alloc = sym swift_task_alloc,
-        resume = sym async_sequence_task_resume,
-    );
-}
-
-#[unsafe(naked)]
-unsafe extern "C" fn async_sequence_task_resume() {
-    core::arch::naked_asm!(
-        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
-        swift_async_load_parent!(),
-        "str x9, [sp]",
-        "str x9, [x9, #16]",
-        "ldr x0, [x9, #48]",
-        "bl {task_dealloc}",
-        "ldr x22, [sp]",
-        swift_async_function_pointer!("{complete}"),
-        "mov x1, #0",
-        "mov x2, #0",
-        swift_async_epilogue!(frame: "32", fp: "16"),
-        "b {task_switch}",
-        task_dealloc = sym swift_task_dealloc,
-        task_switch = sym swift_task_switch,
-        complete = sym async_sequence_task_complete,
-    );
-}
-
-#[unsafe(naked)]
-unsafe extern "C" fn async_sequence_task_complete() {
-    core::arch::naked_asm!(
-        swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
-        "ldr x0, [x22, #24]",
-        "bl {process}",
-        "ldr x22, [sp, #8]",
-        "cbnz x0, 1f",
-        "ldr x0, [x22, #24]",
-        "bl {take_result}",
-        "bl {task_dealloc}",
-        "ldr x0, [x22, #24]",
-        "bl {drop_task}",
-        "ldr x9, [x22, #16]",
-        swift_async_load_resume!(),
-        "mov x22, x9",
-        swift_async_epilogue!(frame: "32", fp: "16"),
-        "br x16",
-        "1:",
-        "str x22, [x22, #16]",
-        async_sequence_next_call!(),
-        process = sym cidre_swift_async_sequence_process,
-        take_result = sym cidre_swift_async_sequence_take_result,
-        drop_task = sym cidre_swift_async_sequence_drop,
-        task_dealloc = sym swift_task_dealloc,
-        next_async_fn = sym cidre_swift_async_sequence_next_async_fn,
-        next_fn = sym cidre_swift_async_sequence_next_fn,
-        task_alloc = sym swift_task_alloc,
-        resume = sym async_sequence_task_resume,
-    );
-}
-
-extern "C" fn cidre_swift_async_sequence_result_size(task: *mut AsyncSequenceTask) -> usize {
-    unsafe { (*task).symbols.result_stride }
-}
-
-extern "C" fn cidre_swift_async_sequence_set_result(
-    task: *mut AsyncSequenceTask,
-    result: *mut u8,
-) {
-    unsafe {
-        let result = NonNull::new(result).expect("Swift task result allocation failed");
-        assert!((*task).result.replace(result).is_none());
-    }
-}
-
-extern "C" fn cidre_swift_async_sequence_prepare(task: *mut AsyncSequenceTask) -> *mut () {
-    unsafe {
-        let task = &mut *task;
-        if task.iterator.is_none() {
-            let sequence = task.sequence.as_ref().expect("Swift sequence missing");
-            let mut storage = DynamicStorage::new(task.symbols.iterator_metadata);
-            task.symbols
-                .call_make_iterator(sequence.as_ptr(), storage.as_mut_ptr());
-            task.iterator = Some(storage.assume_init());
-        }
-        task.iterator.as_mut().unwrap().as_mut_ptr()
-    }
-}
-
-extern "C" fn cidre_swift_async_sequence_next_async_fn(
-    task: *const AsyncSequenceTask,
-) -> *const u8 {
-    unsafe { (*task).symbols.next_async_fn }
-}
-
-extern "C" fn cidre_swift_async_sequence_next_fn(task: *const AsyncSequenceTask) -> *const () {
-    unsafe { (*task).symbols.next }
-}
-
-extern "C" fn cidre_swift_async_sequence_process(task: *mut AsyncSequenceTask) -> bool {
-    catch_unwind(AssertUnwindSafe(|| unsafe {
-        let task = &mut *task;
-        let result = task.result.expect("Swift task result missing");
-        let symbols = task.symbols;
-        if symbols.element.enum_tag_single_payload(result.as_ptr().cast(), 1) == 1 {
-            symbols.optional.destroy(result.as_ptr().cast());
-            (task.callback)(None);
-            return false;
-        }
-
-        let keep_going = (task.callback)(Some(result.as_ptr().cast_const().cast()));
-        symbols.element.destroy(result.as_ptr().cast());
-        keep_going
-    }))
-    .unwrap_or(false)
-}
-
-extern "C" fn cidre_swift_async_sequence_take_result(
-    task: *mut AsyncSequenceTask,
-) -> *mut () {
-    unsafe {
-        (*task)
-            .result
-            .take()
-            .expect("Swift task result missing")
-            .as_ptr()
-            .cast()
-    }
-}
-
-extern "C" fn cidre_swift_async_sequence_drop(task: *mut AsyncSequenceTask) {
-    unsafe { drop(Box::from_raw(task)) }
+    start_iteration(sequence, symbols, shared.clone());
+    PulledIter { shared }
 }
 
 // A pulled iterator's task context, beyond the `AsyncContext` header:
@@ -833,7 +757,6 @@ extern "C" fn cidre_swift_async_sequence_drop(task: *mut AsyncSequenceTask) {
 //  64  the handle that resumes the parked continuation
 //  80  the embedded `ContinuationAsyncContext`
 // ```
-#[cfg(feature = "async")]
 swift_async_task_descriptor!(
     CIDRE_SWIFT_PULLED_ITER_TASK_DESCRIPTOR,
     entry: pulled_iter_task_entry,
@@ -841,7 +764,6 @@ swift_async_task_descriptor!(
 );
 
 /// Allocates the element buffer once for the whole iteration, then waits.
-#[cfg(feature = "async")]
 #[unsafe(naked)]
 unsafe extern "C" fn pulled_iter_task_entry() {
     core::arch::naked_asm!(
@@ -874,7 +796,6 @@ unsafe extern "C" fn pulled_iter_task_entry() {
 /// If a request already arrived the task resumes itself before awaiting: the
 /// continuation's own synchronization turns that into a fall-through rather
 /// than a suspension, which is the whole reason this cannot race.
-#[cfg(feature = "async")]
 #[unsafe(naked)]
 unsafe extern "C" fn pulled_iter_task_wait() {
     core::arch::naked_asm!(
@@ -908,7 +829,6 @@ unsafe extern "C" fn pulled_iter_task_wait() {
 }
 
 /// Resumed once Rust wants an element, with the continuation context in `x22`.
-#[cfg(feature = "async")]
 #[unsafe(naked)]
 unsafe extern "C" fn pulled_iter_task_requested() {
     core::arch::naked_asm!(
@@ -930,7 +850,6 @@ unsafe extern "C" fn pulled_iter_task_requested() {
 }
 
 /// Tail-calls the iterator's `next()`.
-#[cfg(feature = "async")]
 #[unsafe(naked)]
 unsafe extern "C" fn pulled_iter_task_fetch() {
     core::arch::naked_asm!(
@@ -960,7 +879,6 @@ unsafe extern "C" fn pulled_iter_task_fetch() {
 }
 
 /// Resumed with the element written into the result buffer.
-#[cfg(feature = "async")]
 #[unsafe(naked)]
 unsafe extern "C" fn pulled_iter_task_resumed() {
     core::arch::naked_asm!(
@@ -982,7 +900,6 @@ unsafe extern "C" fn pulled_iter_task_resumed() {
 }
 
 /// Hands the element to Rust, then waits for the next request or winds up.
-#[cfg(feature = "async")]
 #[unsafe(naked)]
 unsafe extern "C" fn pulled_iter_task_deliver() {
     core::arch::naked_asm!(
@@ -1004,7 +921,6 @@ unsafe extern "C" fn pulled_iter_task_deliver() {
 
 /// Frees the element buffer and the Rust task, then returns to whoever created
 /// the task.
-#[cfg(feature = "async")]
 #[unsafe(naked)]
 unsafe extern "C" fn pulled_iter_task_finish() {
     core::arch::naked_asm!(
@@ -1027,12 +943,10 @@ unsafe extern "C" fn pulled_iter_task_finish() {
     );
 }
 
-#[cfg(feature = "async")]
 extern "C" fn cidre_pulled_iter_result_size(task: *mut PulledIterTask) -> usize {
     unsafe { (*task).symbols.result_stride }
 }
 
-#[cfg(feature = "async")]
 extern "C" fn cidre_pulled_iter_set_result(task: *mut PulledIterTask, result: *mut u8) {
     unsafe {
         let result = NonNull::new(result).expect("Swift task result allocation failed");
@@ -1040,12 +954,10 @@ extern "C" fn cidre_pulled_iter_set_result(task: *mut PulledIterTask, result: *m
     }
 }
 
-#[cfg(feature = "async")]
 extern "C" fn cidre_pulled_iter_iterator(task: *mut PulledIterTask) -> *mut () {
     unsafe { (*task).iterator.as_mut_ptr() }
 }
 
-#[cfg(feature = "async")]
 extern "C" fn cidre_pulled_iter_publish(task: *mut PulledIterTask, continuation: *mut ()) -> bool {
     // Parking on a panic would strand the task forever, so fall through to a
     // fetch instead and let `process` wind the iteration up.
@@ -1055,22 +967,18 @@ extern "C" fn cidre_pulled_iter_publish(task: *mut PulledIterTask, continuation:
     .unwrap_or(true)
 }
 
-#[cfg(feature = "async")]
 extern "C" fn cidre_pulled_iter_should_stop(task: *mut PulledIterTask) -> bool {
     catch_unwind(AssertUnwindSafe(|| unsafe { (*task).control.should_stop() })).unwrap_or(true)
 }
 
-#[cfg(feature = "async")]
 extern "C" fn cidre_pulled_iter_next_async_fn(task: *const PulledIterTask) -> *const u8 {
     unsafe { (*task).symbols.next_async_fn }
 }
 
-#[cfg(feature = "async")]
 extern "C" fn cidre_pulled_iter_next_fn(task: *const PulledIterTask) -> *const () {
     unsafe { (*task).symbols.next }
 }
 
-#[cfg(feature = "async")]
 extern "C" fn cidre_pulled_iter_process(task: *mut PulledIterTask) -> bool {
     catch_unwind(AssertUnwindSafe(|| unsafe {
         let task = &mut *task;
@@ -1091,7 +999,6 @@ extern "C" fn cidre_pulled_iter_process(task: *mut PulledIterTask) -> bool {
     .unwrap_or(false)
 }
 
-#[cfg(feature = "async")]
 extern "C" fn cidre_pulled_iter_take_result(task: *mut PulledIterTask) -> *mut () {
     unsafe {
         (*task)
@@ -1103,7 +1010,6 @@ extern "C" fn cidre_pulled_iter_take_result(task: *mut PulledIterTask) -> *mut (
     }
 }
 
-#[cfg(feature = "async")]
 extern "C" fn cidre_pulled_iter_drop(task: *mut PulledIterTask) {
     unsafe { drop(Box::from_raw(task)) }
 }
@@ -1630,8 +1536,9 @@ define_async_sequence_runner!();
 /// serve every such call, which is why there is exactly one copy of the
 /// assembly and one task descriptor.
 ///
-/// The layout is the ABI these trampolines are written against. `offsets` in
-/// the tests is what checks it, since nothing else would notice a reordering.
+/// The layout is the ABI those trampolines are written against, and they reach
+/// every field of it through `offset_of!`, so moving one moves the assembly
+/// with it rather than silently miscompiling.
 #[repr(C, align(16))]
 struct AsyncCallTask {
     /// The Swift function to tail-call.
@@ -1639,20 +1546,96 @@ struct AsyncCallTask {
     /// Its async function pointer, whose second word is the context size the
     /// callee needs.
     async_fn: *const u8,
-    /// `swiftself`: the instance for a method, the metadata for a static.
-    swift_self: *mut (),
     /// Where the resume trampoline puts what the call produced.
     result: *mut (),
     /// The error box Swift threw, or null.
     error: *mut (),
-    /// `x0`–`x3`.
-    args: [*mut (); 4],
-    /// Keeps the vector registers at an offset a 128-bit load can reach.
-    _pad: usize,
-    /// `v0`–`v3`, loaded whole: a `Double` argument is the low half, and a
-    /// two-`Double` vector — half of a quaternion, say — is both.
-    vectors: [[u64; 2]; 4],
-    completion: Box<dyn AsyncCompletion>,
+    /// The registers the call goes out in, which the entry trampoline loads
+    /// straight out of here.
+    args: AsyncCallArgs,
+    /// Runs the completion and frees the allocation this header begins.
+    ///
+    /// A monomorphized function rather than a trait object: the completion and
+    /// what the call borrowed live in that same allocation, so there is nothing
+    /// to point at, and the one word here replaces both a second allocation and
+    /// the vtable half of a fat pointer. It is also what remembers how the
+    /// allocation was made, and so how to free it.
+    complete: unsafe fn(*mut AsyncCallTask),
+}
+
+/// The step from one argument slot to the next, which is what the entry
+/// trampoline's load-pairs advance by.
+const ARG_STRIDE: usize = core::mem::size_of::<*mut ()>();
+
+/// The same for the vector registers, which are twice as wide.
+const VECTOR_STRIDE: usize = core::mem::size_of::<[u64; 2]>();
+
+// A load-pair addresses its operand as a multiple of the access width, so each
+// block has to begin on one: eight bytes for a pair of words, sixteen for a
+// pair of vectors.
+const _: () = assert!(core::mem::offset_of!(AsyncCallTask, args.args) % ARG_STRIDE == 0);
+const _: () = assert!(core::mem::offset_of!(AsyncCallTask, args.vectors) % VECTOR_STRIDE == 0);
+
+// The resume trampoline writes what the call produced as one pair, so the two
+// have to sit next to each other in that order.
+const _: () = assert!(
+    core::mem::offset_of!(AsyncCallTask, error)
+        == core::mem::offset_of!(AsyncCallTask, result) + ARG_STRIDE
+);
+
+impl AsyncCallTask {
+    /// The header of a call that has not gone out yet: the arguments are filled
+    /// in afterwards, from the allocation this ends up in.
+    #[inline]
+    fn new(
+        function: *const (),
+        async_fn: *const u8,
+        complete: unsafe fn(*mut AsyncCallTask),
+    ) -> Self {
+        Self {
+            function,
+            async_fn,
+            result: core::ptr::null_mut(),
+            error: core::ptr::null_mut(),
+            args: AsyncCallArgs::new(),
+            complete,
+        }
+    }
+}
+
+/// A task and everything belonging to it, in one allocation.
+///
+/// The header is first and `repr(C)`, so the trampolines find the fields they
+/// read by the offsets they are written against whatever the tail holds.
+///
+/// Who frees it is the tail's business: a call with a completion handler is a
+/// `Box`, since the task is the only owner, while one that is awaited is an
+/// `Arc`, since the future holds the same allocation and either may outlive the
+/// other. Both hand the trampolines the same pointer.
+#[repr(C)]
+struct AsyncCall<O, C> {
+    header: AsyncCallTask,
+    /// Everything the call borrowed, kept alive until it finishes. Pointers
+    /// into it are taken after this is allocated and stay valid for the call.
+    ///
+    /// Taken out by the completion and by nothing else, so it is not dropped
+    /// when the allocation is.
+    owned: core::mem::ManuallyDrop<O>,
+    completion: C,
+}
+
+/// Finishes a call whose completion is a handler the caller supplied.
+///
+/// # Safety
+///
+/// `task` must begin a boxed `AsyncCall<O, F>` that nothing has taken yet.
+unsafe fn complete_boxed<O, F>(task: *mut AsyncCallTask)
+where
+    F: FnOnce(O, *mut (), *mut ()),
+{
+    let call = *unsafe { Box::from_raw(task.cast::<AsyncCall<O, F>>()) };
+    let owned = core::mem::ManuallyDrop::into_inner(call.owned);
+    (call.completion)(owned, call.header.result, call.header.error);
 }
 
 /// What the arguments of one call are, in the registers Swift passes them in.
@@ -1660,10 +1643,21 @@ struct AsyncCallTask {
 /// Every register is loaded whether or not the callee reads it: a Swift
 /// function ignores the argument registers past its own arity, so one
 /// trampoline can serve calls of different shapes without branching on which.
+///
+/// This is the register block of an [`AsyncCallTask`] rather than a description
+/// of one that has to be copied into it, so the layout the trampolines read is
+/// written down once.
 #[derive(Default)]
+#[repr(C, align(16))]
 pub(crate) struct AsyncCallArgs {
+    /// `swiftself`: the instance for a method, the metadata for a static.
     swift_self: *mut (),
+    /// `x0`–`x3`.
     args: [*mut (); 4],
+    /// Keeps the vector registers at an offset a 128-bit load can reach.
+    _pad: usize,
+    /// `v0`–`v3`, loaded whole: a `Double` argument is the low half, and a
+    /// two-`Double` vector — half of a quaternion, say — is both.
     vectors: [[u64; 2]; 4],
 }
 
@@ -1703,34 +1697,13 @@ impl AsyncCallArgs {
     }
 }
 
-/// Runs when the call finishes, with whatever it produced.
-trait AsyncCompletion: Send {
-    fn complete(self: Box<Self>, result: *mut (), error: *mut ());
-}
-
-struct OwnedCompletion<O, F> {
-    /// Everything the call borrowed, kept alive until it finishes.
-    owned: Box<O>,
-    callback: F,
-}
-
-impl<O, F> AsyncCompletion for OwnedCompletion<O, F>
-where
-    O: Send + 'static,
-    F: FnOnce(Box<O>, *mut (), *mut ()) + Send + 'static,
-{
-    fn complete(self: Box<Self>, result: *mut (), error: *mut ()) {
-        let this = *self;
-        (this.callback)(this.owned, result, error);
-    }
-}
-
 /// Awaits `function` on a Swift task, then runs `completion` with the register
 /// the call returned in and the error box it threw.
 ///
 /// `owned` is whatever the call needs kept alive — retained objects, argument
-/// storage, the buffer an indirect result is written into. It is boxed before
-/// `args` runs, so a pointer taken into it stays valid for the whole call.
+/// storage, the buffer an indirect result is written into. It lives in the
+/// task's own allocation, which is made before `args` runs, so a pointer taken
+/// into it stays valid for the whole call.
 ///
 /// # Safety
 ///
@@ -1745,31 +1718,21 @@ pub(crate) unsafe fn call_async<O, F>(
     completion: F,
 ) where
     O: Send + 'static,
-    F: FnOnce(Box<O>, *mut (), *mut ()) + Send + 'static,
+    F: FnOnce(O, *mut (), *mut ()) + Send + 'static,
 {
-    let mut owned = Box::new(owned);
-    let args = args(&mut owned);
-    let task = Box::new(AsyncCallTask {
-        function,
-        async_fn,
-        swift_self: args.swift_self,
-        result: core::ptr::null_mut(),
-        error: core::ptr::null_mut(),
-        args: args.args,
-        _pad: 0,
-        vectors: args.vectors,
-        completion: Box::new(OwnedCompletion {
-            owned,
-            callback: completion,
-        }),
+    let mut call = Box::new(AsyncCall {
+        header: AsyncCallTask::new(function, async_fn, complete_boxed::<O, F>),
+        owned: core::mem::ManuallyDrop::new(owned),
+        completion,
     });
+    // Built from the allocation the call will point into rather than from
+    // anything on this frame, which is gone by the time Swift reads it.
+    call.header.args = args(&mut call.owned);
 
     unsafe {
-        task_create(
-            ENQUEUED_DISCARDING_TASK_FLAGS,
-            core::ptr::null(),
+        spawn_task(
             (&raw const CIDRE_SWIFT_ASYNC_CALL_TASK_DESCRIPTOR).cast(),
-            Box::into_raw(task).cast(),
+            Box::into_raw(call).cast(),
         );
     }
 }
@@ -1789,7 +1752,7 @@ pub(crate) unsafe fn call_async_result<O, T, F>(
     async_fn: *const u8,
     owned: O,
     args: impl FnOnce(&mut O) -> AsyncCallArgs,
-    output: impl FnOnce(Box<O>, *mut ()) -> T + Send + 'static,
+    output: impl FnOnce(O, *mut ()) -> T + Send + 'static,
     callback: F,
 ) where
     O: Send + 'static,
@@ -1819,9 +1782,9 @@ pub(crate) unsafe fn call_async_result<O, T, F>(
 
 /// Runs the Rust completion once the call is over, and frees the task.
 extern "C" fn cidre_swift_async_call_complete(task: *mut AsyncCallTask) {
-    let _ = catch_unwind(AssertUnwindSafe(|| {
-        let task = *unsafe { Box::from_raw(task) };
-        task.completion.complete(task.result, task.error);
+    let _ = catch_unwind(AssertUnwindSafe(|| unsafe {
+        // The header's own type is what remembers what the tail holds.
+        ((*task).complete)(task);
     }));
 }
 
@@ -1838,31 +1801,38 @@ unsafe extern "C" fn async_call_entry() {
     core::arch::naked_asm!(
         swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
         // The task is our context; keep it and our own async context where the
-        // resume and finish trampolines can find them.
-        "str x20, [x22, #24]",
-        "str x22, [x22, #16]",
+        // resume and finish trampolines can find them. The two slots are
+        // adjacent, so one store puts both away.
+        "stp x22, x20, [x22, #16]",
         // Word 1 of the callee's async function pointer is its context size.
-        "ldr x8, [x20, #8]",
+        "ldr x8, [x20, #{async_fn}]",
         "ldr w0, [x8, #4]",
         "bl {task_alloc}",
         "mov x9, x0",
         "str x9, [x22, #40]",
         swift_async_store_parent!(),
         swift_async_store_resume!("{resume}"),
+        // Every argument register the call could want, whether or not this
+        // callee reads it, so one trampoline serves calls of every shape. Each
+        // pair is contiguous in the block and lands in consecutive registers,
+        // which is what a load-pair wants, so eight loads are four.
         "ldr x10, [x22, #24]",
-        "ldr x16, [x10]",
-        "ldr x0, [x10, #40]",
-        "ldr x1, [x10, #48]",
-        "ldr x2, [x10, #56]",
-        "ldr x3, [x10, #64]",
-        "ldr q0, [x10, #80]",
-        "ldr q1, [x10, #96]",
-        "ldr q2, [x10, #112]",
-        "ldr q3, [x10, #128]",
-        "ldr x20, [x10, #16]",
+        "ldr x16, [x10, #{function}]",
+        "ldp x0, x1, [x10, #{args_lo}]",
+        "ldp x2, x3, [x10, #{args_hi}]",
+        "ldp q0, q1, [x10, #{vectors_lo}]",
+        "ldp q2, q3, [x10, #{vectors_hi}]",
+        "ldr x20, [x10, #{swift_self}]",
         "mov x22, x9",
         swift_async_epilogue!(frame: "32", fp: "16"),
         "br x16",
+        function = const core::mem::offset_of!(AsyncCallTask, function),
+        async_fn = const core::mem::offset_of!(AsyncCallTask, async_fn),
+        swift_self = const core::mem::offset_of!(AsyncCallTask, args.swift_self),
+        args_lo = const core::mem::offset_of!(AsyncCallTask, args.args),
+        args_hi = const core::mem::offset_of!(AsyncCallTask, args.args) + 2 * ARG_STRIDE,
+        vectors_lo = const core::mem::offset_of!(AsyncCallTask, args.vectors),
+        vectors_hi = const core::mem::offset_of!(AsyncCallTask, args.vectors) + 2 * VECTOR_STRIDE,
         task_alloc = sym swift_task_alloc,
         resume = sym async_call_resume,
     );
@@ -1876,22 +1846,26 @@ unsafe extern "C" fn async_call_resume() {
         swift_async_prologue!(frame: "48", fp: "32", ctx: "24"),
         swift_async_load_parent!(),
         "str x9, [sp, #16]",
-        "str x0, [sp, #8]",
-        "str x20, [sp]",
+        // Spilled as a pair, error first, which is the order the store below
+        // reads them back in.
+        "stp x20, x0, [sp]",
         "mov x0, x22",
         "bl {task_dealloc}",
         "ldr x9, [sp, #16]",
         "ldr x10, [x9, #24]",
-        "ldr x11, [sp, #8]",
-        "str x11, [x10, #24]",
-        "ldr x11, [sp]",
-        "str x11, [x10, #32]",
-        "ldr x22, [sp, #16]",
+        // The spill holds the error first and the result second; the task wants
+        // them the other way round, which the pair swaps on the way through.
+        "ldp x11, x12, [sp]",
+        "stp x12, x11, [x10, #{result}]",
+        // Nothing since has touched the parent context, so it is still in `x9`
+        // rather than only in the frame.
+        "mov x22, x9",
         swift_async_function_pointer!("{finish}"),
         "mov x1, #0",
         "mov x2, #0",
         swift_async_epilogue!(frame: "48", fp: "32"),
         "b {task_switch}",
+        result = const core::mem::offset_of!(AsyncCallTask, result),
         task_dealloc = sym swift_task_dealloc,
         finish = sym async_call_finish,
         task_switch = sym swift_task_switch,
@@ -1915,102 +1889,6 @@ unsafe extern "C" fn async_call_finish() {
     );
 }
 
-/// A Rust view of a Swift `AsyncSequence`.
-///
-/// Swift drives the sequence on its own cooperative pool and hands each element
-/// to a callback; this buffers those elements so a Rust task can `await` them.
-/// Dropping the stream stops the Swift-side iteration at its next element.
-///
-/// There is no backpressure: Swift keeps pulling as fast as the sequence
-/// yields, so a consumer that falls behind grows the buffer.
-#[cfg(feature = "async")]
-pub struct Stream<T> {
-    shared: std::sync::Arc<parking_lot::Mutex<StreamShared<T>>>,
-}
-
-#[cfg(feature = "async")]
-struct StreamShared<T> {
-    ready: std::collections::VecDeque<T>,
-    ended: bool,
-    cancelled: bool,
-    waker: Option<std::task::Waker>,
-}
-
-#[cfg(feature = "async")]
-impl<T: Send + 'static> Stream<T> {
-    /// Returns the stream and the callback that feeds it, for handing to one of
-    /// the `for_each_while` entry points.
-    pub(crate) fn new() -> (Self, impl FnMut(Option<T>) -> bool + Send + 'static) {
-        let shared = std::sync::Arc::new(parking_lot::Mutex::new(StreamShared {
-            ready: std::collections::VecDeque::new(),
-            ended: false,
-            cancelled: false,
-            waker: None,
-        }));
-
-        let sink = shared.clone();
-        let feed = move |value: Option<T>| {
-            let mut lock = sink.lock();
-            if lock.cancelled {
-                return false;
-            }
-
-            match value {
-                Some(value) => lock.ready.push_back(value),
-                None => lock.ended = true,
-            }
-
-            if let Some(waker) = lock.waker.take() {
-                waker.wake();
-            }
-            !lock.ended
-        };
-
-        (Self { shared }, feed)
-    }
-
-    /// Waits for the next element, or `None` once the sequence has ended.
-    pub fn next(&mut self) -> Next<'_, T> {
-        Next { stream: self }
-    }
-}
-
-#[cfg(feature = "async")]
-impl<T> Drop for Stream<T> {
-    fn drop(&mut self) {
-        // Tells the Swift task to stop at its next element rather than
-        // buffering into a queue nobody reads.
-        self.shared.lock().cancelled = true;
-    }
-}
-
-/// The future returned by [`Stream::next`].
-#[cfg(feature = "async")]
-pub struct Next<'a, T> {
-    stream: &'a mut Stream<T>,
-}
-
-#[cfg(feature = "async")]
-impl<T> std::future::Future for Next<'_, T> {
-    type Output = Option<T>;
-
-    fn poll(
-        self: std::pin::Pin<&mut Self>,
-        cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Self::Output> {
-        let mut lock = self.stream.shared.lock();
-
-        if let Some(value) = lock.ready.pop_front() {
-            std::task::Poll::Ready(Some(value))
-        } else if lock.ended {
-            std::task::Poll::Ready(None)
-        } else {
-            lock.waker = Some(cx.waker().clone());
-            std::task::Poll::Pending
-        }
-    }
-}
-
 /// A concrete Swift `AsyncSequence` that runs without any hardware.
 ///
 /// Every sequence the crate binds for real needs a device — DockKit's all throw
@@ -2018,7 +1896,7 @@ impl<T> std::future::Future for Next<'_, T> {
 /// actually crossing the boundary, only the failure paths.
 /// `NotificationCenter.Notifications` is driven entirely by
 /// `NotificationCenter.post`, so a test can produce elements on demand.
-#[cfg(all(test, feature = "async", feature = "ns"))]
+#[cfg(all(test, feature = "ns"))]
 mod notification_sequence {
     use crate::{ns, swift::SwiftMetadata, swift::value::Storage};
 
@@ -2115,12 +1993,11 @@ mod notification_sequence {
     }
 }
 
-#[cfg(all(test, feature = "async"))]
+#[cfg(test)]
 mod tests {
-    use super::Stream;
-
     /// Drives the stream through its feed callback, which is what a Swift
     /// sequence does, so the buffering and wake-up can be checked without one.
+    #[cfg(feature = "async")]
     fn block_on<F: Future>(mut fut: F) -> F::Output {
         use std::sync::{Arc, Condvar, Mutex};
         use std::task::{Context, Poll, Wake, Waker};
@@ -2151,52 +2028,10 @@ mod tests {
 
     /// Polls `fut` once against a waker nobody listens to, which is what puts a
     /// request in flight without waiting for the element that answers it.
+    #[cfg(feature = "async")]
     fn poll_once<F: Future + Unpin>(fut: &mut F) -> std::task::Poll<F::Output> {
         let mut cx = std::task::Context::from_waker(std::task::Waker::noop());
         std::pin::Pin::new(fut).poll(&mut cx)
-    }
-
-    #[test]
-    fn buffers_elements_until_awaited() {
-        let (mut stream, mut feed) = Stream::<u32>::new();
-
-        // Elements produced before anyone awaits must not be lost.
-        assert!(feed(Some(1)));
-        assert!(feed(Some(2)));
-        assert!(!feed(None), "the feed stops once the sequence ends");
-
-        assert_eq!(Some(1), block_on(stream.next()));
-        assert_eq!(Some(2), block_on(stream.next()));
-        assert_eq!(None, block_on(stream.next()));
-        assert_eq!(None, block_on(stream.next()), "end is sticky");
-    }
-
-    #[test]
-    fn wakes_a_pending_consumer() {
-        let (mut stream, mut feed) = Stream::<u32>::new();
-
-        let producer = std::thread::spawn(move || {
-            std::thread::sleep(std::time::Duration::from_millis(50));
-            feed(Some(7));
-            feed(None);
-        });
-
-        // Nothing is buffered yet, so this parks until the producer wakes it.
-        assert_eq!(Some(7), block_on(stream.next()));
-        assert_eq!(None, block_on(stream.next()));
-        producer.join().unwrap();
-    }
-
-    #[test]
-    fn dropping_the_stream_stops_the_sequence() {
-        let (stream, mut feed) = Stream::<u32>::new();
-        assert!(feed(Some(1)));
-
-        drop(stream);
-        assert!(
-            !feed(Some(2)),
-            "the Swift side must be told to stop iterating"
-        );
     }
 
     /// A `next()` asks the Swift task for an element only once it is polled, so
@@ -2206,6 +2041,7 @@ mod tests {
     /// that yields on demand, and what is under test is the state machine, not
     /// the trampolines.
     #[test]
+    #[cfg(feature = "async")]
     fn a_dropped_next_future_consumes_no_element() {
         use super::{PullControl, PullShared, PullState, PulledIter};
         use std::task::Poll;
@@ -2319,6 +2155,7 @@ mod tests {
     /// The pulled iterator must advance: two `next().await`s, two elements.
     #[cfg(feature = "ns")]
     #[test]
+    #[cfg(feature = "async")]
     fn async_iter_advances_across_awaits() {
         use super::notification_sequence::Notifications;
         use crate::ns;
@@ -2362,6 +2199,7 @@ mod tests {
     /// the next caller instead of being dropped on the floor.
     #[cfg(feature = "ns")]
     #[test]
+    #[cfg(feature = "async")]
     fn a_dropped_next_leaves_the_iterator_usable() {
         use super::notification_sequence::Notifications;
         use crate::ns;
@@ -2407,6 +2245,7 @@ mod tests {
     /// task up, not strand it waiting for a request that will never come.
     #[cfg(feature = "ns")]
     #[test]
+    #[cfg(feature = "async")]
     fn dropping_a_parked_iterator_releases_its_task() {
         use super::notification_sequence::Notifications;
         use crate::ns;

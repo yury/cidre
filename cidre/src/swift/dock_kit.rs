@@ -59,6 +59,38 @@ mod tests {
         }
     }
 
+    /// The awaited half puts its state in the task's own allocation, which the
+    /// Swift task and the future both own. Dropping the future first has to
+    /// leave the task able to finish and free it, and dropping it after the
+    /// call has landed has to free it too — a mistake either way is a
+    /// use-after-free or a leak rather than a wrong answer.
+    #[cfg(feature = "async")]
+    #[test]
+    fn dropping_an_awaited_call_early_leaves_the_task_able_to_finish() {
+        let manager = AccessoryManager::shared();
+        let before = manager.is_system_tracking_enabled();
+
+        // Dropped without ever being polled, so the task is still on its way to
+        // the callee when the future's reference goes.
+        for _ in 0..200 {
+            drop(manager.set_system_tracking_enabled(before));
+        }
+
+        // Dropped after a poll, which is what leaves a waker registered for a
+        // wake-up that now has nobody to reach.
+        for _ in 0..200 {
+            let mut pending = Box::pin(manager.set_system_tracking_enabled(before));
+            let mut cx = std::task::Context::from_waker(std::task::Waker::noop());
+            let _ = pending.as_mut().poll(&mut cx);
+            drop(pending);
+        }
+
+        // Nothing to assert beyond surviving: a double free or a task writing
+        // into a freed context shows up as a crash here.
+        std::thread::sleep(std::time::Duration::from_millis(200));
+        let _ = manager.is_system_tracking_enabled();
+    }
+
     #[test]
     fn manager_shared_call_uses_swift_class_abi() {
         let manager = AccessoryManager::shared();

@@ -46,7 +46,7 @@ pub use set::Set;
 pub use string::{RawString, SmallStringError, String};
 pub use types::{
     AbiClass, FromSwift, FromSwiftDoubles, SwiftAbi, SwiftClass, SwiftError, SwiftHashable,
-    SwiftMetadata, SwiftOptional, SwiftSelf, SwiftSendable, SwiftType, ToSwift,
+    SwiftMetadata, SwiftOptional, SwiftSelf, SwiftSendable, SwiftType, ToSwift, ToSwiftDoubles,
 };
 
 /// Calls a Swift entry point instead of writing out the call.

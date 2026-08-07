@@ -230,9 +230,7 @@ impl ResultsTask {
                 callback: Box::new(callback),
             });
             let context = Box::into_raw(task).cast();
-            let (_task, _) = concurrency::task_create(
-                concurrency::ENQUEUED_DISCARDING_TASK_FLAGS,
-                core::ptr::null(),
+            concurrency::spawn_task(
                 (&raw const cidre_speech_transcriber_results_task_descriptor).cast(),
                 context,
             );
@@ -466,12 +464,6 @@ unsafe extern "C" fn results_task_process() {
         task_alloc = sym swift_task_alloc,
         resume = sym results_task_resume,
     );
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::swift::SwiftMetadata;
 }
 
 #[cfg(test)]

@@ -75,8 +75,15 @@ impl Class {
     }
 }
 
-/// Normalizes a type as the token stream prints it, so the table below can
-/// match on it without caring how the source spaced it.
+/// Normalizes a type as the token stream prints it, so the tables below can
+/// match on it without caring how it was spaced.
+///
+/// How it was spaced is not the source's business either: a token stream taken
+/// apart and put back together loses the joint-versus-alone spacing the
+/// original carried, so the *same* type prints as `cg::Rect` where it came out
+/// of an argument list and as `cg :: Rect` where it was rebuilt as a return
+/// type. The punctuation that separates a path or opens a generic therefore
+/// gets one spelling here, and every table is written in it.
 fn normalize(ty: &str) -> String {
     let mut out = String::with_capacity(ty.len());
     let mut last_space = true;
@@ -91,12 +98,20 @@ fn normalize(ty: &str) -> String {
             last_space = false;
         }
     }
-    out.trim().to_string()
+
+    let mut out = out.trim().to_string();
+    for token in [":: ", " ::", "< ", " <", "> ", " >"] {
+        let tight: String = token.chars().filter(|c| !c.is_whitespace()).collect();
+        while out.contains(token) {
+            out = out.replace(token, &tight);
+        }
+    }
+    out
 }
 
-/// Strips one layer of `Name < ... >`, returning the inner type.
+/// Strips one layer of `Name<...>`, returning the inner type.
 fn inner_of<'a>(ty: &'a str, name: &str) -> Option<&'a str> {
-    let head = format!("{name} <");
+    let head = format!("{name}<");
     let rest = ty.strip_prefix(&head)?;
     let inner = rest.strip_suffix('>')?;
     Some(inner.trim())
@@ -144,26 +159,14 @@ fn classify_ret(ty: &str) -> Class {
                 });
         return classify_ret(&ok);
     }
-    // A Swift container is one word whatever it holds, and the Rust wrapper
-    // takes that word as its whole representation.
-    for container in ["Array", "Set", "Dictionary"] {
-        let bare = ty.strip_prefix("swift :: ").unwrap_or(&ty);
-        if bare.starts_with(&format!("{container} <")) {
-            return Class::RawWord(ty.clone());
-        }
+    if let Some(class) = container_class(&ty) {
+        return class;
     }
-    if ty == "cm :: Time" {
+    if ty == "cm::Time" {
         return Class::Words3;
     }
-    // Geometry comes back in `d0` up. How many registers that is depends on the
-    // Swift type rather than on the Rust one — a `Vector3D` is four doubles
-    // wide but only three of them are returned — so the count is stated here
-    // and the value is built through its own constructor rather than by
-    // reinterpreting the bytes.
-    for (name, count) in [("cg :: Rect", 4), ("spatial :: Vector3D", 3)] {
-        if ty == name {
-            return Class::Doubles(count, ty.clone());
-        }
+    if let Some(class) = doubles_class(&ty) {
+        return class;
     }
 
     match last_segment(&ty) {
@@ -175,13 +178,45 @@ fn classify_ret(ty: &str) -> Class {
         }
         "String" => Class::String,
         _ => {
-            if let Some(inner) = inner_of(&ty, "arc :: R").or_else(|| inner_of(&ty, "R")) {
+            if let Some(inner) = inner_of(&ty, "arc::R").or_else(|| inner_of(&ty, "R")) {
                 Class::ClassRef(normalize(inner))
             } else {
                 Class::Indirect(ty.clone())
             }
         }
     }
+}
+
+/// Whether a type is a Swift container, which is one word whatever it holds.
+///
+/// The Rust wrapper takes that word as its whole representation, in both
+/// directions: a returned container is the word the call gives back, and one
+/// passed as an argument is the word the wrapper is already holding.
+fn container_class(ty: &str) -> Option<Class> {
+    let bare = ty.strip_prefix("swift::").unwrap_or(ty);
+    ["Array", "Set", "Dictionary"]
+        .iter()
+        .any(|container| bare.starts_with(&format!("{container}<")))
+        .then(|| Class::RawWord(ty.to_string()))
+}
+
+/// Whether a type travels in a run of floating-point registers, and how many.
+///
+/// Geometry goes in `d0` up in both directions. How many registers that is
+/// depends on the Swift type rather than on the Rust one — a `Vector3D` is four
+/// doubles wide but travels in three — so the count is stated here, and the
+/// value is taken apart and put back together through its own conversions
+/// rather than by reinterpreting the bytes. The expansion pins this count to
+/// the type's own, so a wrong entry is a compile error rather than a call that
+/// reads a register the callee never wrote.
+fn doubles_class(ty: &str) -> Option<Class> {
+    let count = match ty {
+        "cg::Rect" => 4,
+        "spatial::Vector3D" => 3,
+        "cg::Point" => 2,
+        _ => return None,
+    };
+    Some(Class::Doubles(count, ty.to_string()))
 }
 
 /// Whether a return type is a `Result`, and so needs the error register.
@@ -205,6 +240,12 @@ fn classify_arg(ty: &str) -> Class {
             Class::String
         };
     }
+    if let Some(class) = doubles_class(&bare) {
+        return class;
+    }
+    if let Some(class) = container_class(&bare) {
+        return class;
+    }
     match last_segment(&bare) {
         "bool" => Class::Bool,
         "f64" => Class::Double,
@@ -214,10 +255,13 @@ fn classify_arg(ty: &str) -> Class {
         }
         "String" => Class::String,
         _ => {
-            if inner_of(&bare, "arc :: R").is_some() || inner_of(&bare, "R").is_some() {
-                Class::Word
-            } else {
-                Class::ValuePtr
+            // A class-typed value *is* the reference, so it goes in one integer
+            // register as itself rather than as the address of storage holding
+            // it. `arc::R<T>` is what says the Rust type is that reference;
+            // anything else named here is a value type passed indirectly.
+            match inner_of(&bare, "arc::R").or_else(|| inner_of(&bare, "R")) {
+                Some(inner) => Class::ClassRef(normalize(inner)),
+                None => Class::ValuePtr,
             }
         }
     }
@@ -365,17 +409,78 @@ enum Symbol {
     Decl(String),
 }
 
-fn parse_attr(attr: TokenStream) -> Symbol {
-    let text = attr.to_string();
-    let text = text.trim();
-    let (kind, rest) = match text.split_once('=') {
-        Some((k, r)) if k.trim() == "sym" => ("sym", r.trim()),
-        _ => ("decl", text),
-    };
-    let unquoted = unescape(rest);
-    match kind {
-        "sym" => Symbol::Mangled(unquoted),
-        _ => Symbol::Decl(unquoted),
+/// What the attribute said, beyond naming the entry point.
+struct Attr {
+    symbol: Symbol,
+    /// Whether the call suspends.
+    ///
+    /// A declaration says so itself, so this is only read from the attribute
+    /// for `sym = "$s..."`, where there is nothing left to read it off: `Ya`
+    /// cannot be looked for in the mangled string, since an identifier like
+    /// `faceYawAngle` contains it too.
+    is_async: bool,
+    /// Parameters the callee takes at `+1`, by name.
+    ///
+    /// Also only for `sym = "$s..."`. A declaration carries each parameter's
+    /// convention and is authoritative; a bare symbol carries nothing, and
+    /// getting this wrong leaks or over-releases with no compile error either
+    /// way, so it is stated rather than assumed.
+    owned: Vec<String>,
+}
+
+/// Splits the attribute on its top-level commas and reads each piece.
+///
+/// Over the token tree rather than the printed text: a declaration is a single
+/// string literal whose own commas must not split it, and only the tree knows
+/// where a literal ends.
+fn parse_attr(attr: TokenStream) -> Attr {
+    let mut segments: Vec<Vec<TokenTree>> = vec![Vec::new()];
+    for tt in attr {
+        match &tt {
+            TokenTree::Punct(p) if p.as_char() == ',' => segments.push(Vec::new()),
+            _ => segments
+                .last_mut()
+                .expect("there is always a segment open")
+                .push(tt),
+        }
+    }
+
+    let mut symbol = None;
+    let mut is_async = false;
+    let mut owned = Vec::new();
+
+    for segment in segments {
+        let Some(head) = segment.first() else { continue };
+        match head.to_string().as_str() {
+            "async" => is_async = true,
+            "owned" => {
+                let Some(TokenTree::Group(group)) = segment.get(1) else {
+                    panic!(
+                        "swift::call: `owned` names the parameters the callee \
+                         takes at `+1`, as in `owned(asset)`"
+                    );
+                };
+                owned.extend(group.stream().into_iter().filter_map(|tt| match tt {
+                    TokenTree::Ident(ident) => Some(ident.to_string()),
+                    _ => None,
+                }));
+            }
+            "sym" => {
+                let literal = segment
+                    .last()
+                    .expect("`sym` is followed by the symbol")
+                    .to_string();
+                symbol = Some(Symbol::Mangled(unescape(&literal)));
+            }
+            // Anything else is the declaration itself, written as one literal.
+            other => symbol = Some(Symbol::Decl(unescape(other))),
+        }
+    }
+
+    Attr {
+        symbol: symbol.expect("swift::call: expected a declaration or `sym = \"$s...\"`"),
+        is_async,
+        owned,
     }
 }
 
@@ -490,21 +595,46 @@ pub fn gen_symbol(args: TokenStream) -> TokenStream {
 }
 
 pub fn gen_swift_call(attr: TokenStream, func: TokenStream) -> TokenStream {
-    let symbol = parse_attr(attr);
-    let (link_name, alias, conventions) = match symbol {
+    let attr = parse_attr(attr);
+    let (link_name, alias, conventions, is_async) = match attr.symbol {
         // Without a declaration there is nothing to read a convention off, so
-        // every argument is taken to be borrowed, which is a method's default.
-        Symbol::Mangled(s) => (s, None, Vec::new()),
+        // every argument is taken to be borrowed unless `owned` says otherwise,
+        // borrowing being a method's default.
+        Symbol::Mangled(s) => (s, None, Vec::new(), attr.is_async),
         Symbol::Decl(d) => {
             let mangled = crate::swift_mangle::mangle(&d)
                 .unwrap_or_else(|e| panic!("swift::call: cannot mangle `{d}`: {e}"));
             let conventions = crate::swift_mangle::param_conventions(&d)
                 .unwrap_or_else(|e| panic!("swift::call: cannot read `{d}`: {e}"));
-            (mangled, Some(d), conventions)
+            let is_async = crate::swift_mangle::is_async(&d)
+                .unwrap_or_else(|e| panic!("swift::call: cannot read `{d}`: {e}"));
+            (mangled, Some(d), conventions, is_async)
         }
     };
 
+    assert!(
+        attr.owned.is_empty() || alias.is_none(),
+        "swift::call: the declaration already says what the callee takes at \
+         `+1`, so `owned` would only be a second answer to the same question"
+    );
+
     let sig = parse_signature(func);
+
+    // A suspending function cannot be called the way a direct one is: the
+    // caller has to allocate its context and hand it a resume pointer, which is
+    // what the shared trampolines do, so the expansion is a different shape
+    // entirely.
+    if is_async {
+        let async_fn = format!("{link_name}Tu");
+        return gen_async_call(
+            sig,
+            &link_name,
+            &async_fn,
+            &alias,
+            &conventions,
+            &attr.owned,
+        );
+    }
     let ret_class = classify_ret(&sig.ret_source);
     let throws = is_throwing(&sig.ret_source);
 
@@ -855,6 +985,368 @@ pub fn gen_swift_call(attr: TokenStream, func: TokenStream) -> TokenStream {
             clobber_abi(\"C\"),
         );
         {tail}
+    }}
+}}
+"
+    );
+
+    out.parse()
+        .unwrap_or_else(|e| panic!("swift::call generated invalid code: {e}\n{out}"))
+}
+
+/// The success half of a `Result<T, arc::R<ns::Error>>`, which is what every
+/// suspending binding returns.
+fn async_ok_type(ret: &str) -> String {
+    let ret = normalize(ret);
+    let inner = inner_of(&ret, "Result").unwrap_or_else(|| {
+        panic!(
+            "swift::call: a suspending call must return \
+             `Result<T, arc::R<ns::Error>>`, not `{ret}`"
+        )
+    });
+    split_top(inner)
+        .into_iter()
+        .next()
+        .expect("a Result names a success type")
+}
+
+/// Rebuilds an argument list with one more parameter on the end.
+fn with_trailing_arg(args_source: &str, extra: &str) -> String {
+    let trimmed = args_source.trim();
+    let inner = trimmed
+        .strip_prefix('(')
+        .and_then(|a| a.strip_suffix(')'))
+        .expect("an argument list is parenthesized")
+        .trim();
+    // A declaration may have a trailing comma, and appending after one would
+    // leave an empty parameter between the two.
+    let inner = inner.strip_suffix(',').unwrap_or(inner).trim_end();
+    if inner.is_empty() {
+        format!("({extra})")
+    } else {
+        format!("({inner}, {extra})")
+    }
+}
+
+/// Expands a suspending Swift call into the pair of entry points every async
+/// binding is written as: one taking a completion handler, and one returning a
+/// future.
+///
+/// Unlike a direct call there are no registers to name here. A suspending call
+/// runs on a Swift task through the shared trampolines, which read the
+/// arguments out of a fixed-layout struct, so what this generates is the
+/// *contents* of that struct: which register each value goes in, and what has
+/// to stay alive until the call resumes.
+fn gen_async_call(
+    sig: Signature,
+    link_name: &str,
+    async_fn: &str,
+    alias: &Option<String>,
+    conventions: &[bool],
+    owned_params: &[String],
+) -> TokenStream {
+    assert!(
+        sig.generics.trim().is_empty(),
+        "swift::call: a suspending call cannot be generic"
+    );
+
+    for name in owned_params {
+        assert!(
+            sig.args.iter().any(|arg| arg.name == *name),
+            "swift::call: `owned` names `{name}`, which is not a parameter"
+        );
+    }
+
+    let ret_class = classify_ret(&sig.ret_source);
+    // Only for the check it makes: every suspending binding throws, and a
+    // return type that is not a `Result` would silently drop the error.
+    async_ok_type(&sig.ret_source);
+
+    // Everything the call borrows has to outlive it, and the caller's frame
+    // does not, so those values are moved into a tuple the task owns. The
+    // closure that fills the argument registers is handed that tuple by
+    // reference, which is what makes a pointer into it valid for the whole call.
+    let mut owned: Vec<String> = Vec::new();
+    let mut owned_pat: Vec<String> = Vec::new();
+    let mut setters: Vec<String> = Vec::new();
+    // What the argument closure has to work out before it can fill a register.
+    let mut closure_prelude = String::new();
+
+    // `self` is the instance for a method and the type's metadata for a static
+    // one, exactly as a direct call passes it.
+    if sig.takes_self {
+        owned.push("crate::arc::Retain::retained(self)".to_string());
+        owned_pat.push("__self".to_string());
+        setters.push(".swift_self(__self.as_ptr().cast())".to_string());
+    } else {
+        setters.push(
+            ".swift_self(<Self as crate::swift::SwiftMetadata>::metadata().cast_mut().cast())"
+                .to_string(),
+        );
+    }
+
+    // A result returned indirectly is written into storage the caller provides,
+    // and for a suspending call that storage is the first argument rather than
+    // the indirect-result register a direct call would use.
+    let mut int_index = 0usize;
+    let mut float_index = 0usize;
+    let out_slot = matches!(ret_class, Class::Indirect(_)).then(|| {
+        let slot = owned.len();
+        let Class::Indirect(ty) = &ret_class else {
+            unreachable!()
+        };
+        owned.push(format!(
+            "<{ty} as crate::swift::value::SwiftOut>::out_buf()"
+        ));
+        owned_pat.push("__out".to_string());
+        setters.push(format!(
+            ".arg(0, <{ty} as crate::swift::value::SwiftOut>::out_ptr(__out))"
+        ));
+        int_index += 1;
+        slot
+    });
+
+    for (index, arg) in sig.args.iter().enumerate() {
+        let name = &arg.name;
+        let consumed = conventions
+            .get(index)
+            .copied()
+            .unwrap_or_else(|| owned_params.iter().any(|owned| *owned == arg.name));
+        match classify_arg(&arg.ty) {
+            // Scalars are copied into the task's own storage, so the caller's
+            // copy going away is nothing to the call.
+            Class::Bool | Class::Word => {
+                setters.push(format!(".arg({int_index}, {name} as usize as *mut ())"));
+                int_index += 1;
+            }
+            Class::Double => {
+                setters.push(format!(".float({float_index}, {name} as f64)"));
+                float_index += 1;
+            }
+            Class::Float => panic!(
+                "swift::call: `{name}` is an `f32`, which a suspending call has \
+                 no way to place yet"
+            ),
+            // The reference itself, in one integer register. It has to be the
+            // task's rather than the caller's, so a class argument is written
+            // `arc::R<T>` and handed over by value; whether Swift then wants it
+            // at +1 is the declaration's business, not the Rust type's.
+            Class::ClassRef(_) => {
+                assert!(
+                    !arg.ty.trim().starts_with('&'),
+                    "swift::call: `{name}` is borrowed, but a suspending call \
+                     outlives the caller's frame, so a class argument has to be \
+                     taken by value as `arc::R<_>`"
+                );
+                let slot = owned.len();
+                owned.push(name.clone());
+                owned_pat.push(format!("__a{slot}"));
+                setters.push(if consumed {
+                    // Consumed, so the callee gets a reference of its own and
+                    // the one the task holds stays intact.
+                    format!(
+                        ".arg({int_index}, crate::arc::Retain::retained(&**__a{slot}).into_raw().cast())"
+                    )
+                } else {
+                    format!(".arg({int_index}, __a{slot}.as_ptr().cast())")
+                });
+                int_index += 1;
+            }
+            // One word, which the container is already holding. The wrapper
+            // owns that word, so like a value passed indirectly it moves into
+            // the task rather than being read out of the caller's frame.
+            Class::RawWord(ty) => {
+                assert!(
+                    !arg.ty.trim().starts_with('&'),
+                    "swift::call: `{name}` is borrowed, but a suspending call \
+                     outlives the caller's frame, so it has to be taken by value"
+                );
+                let slot = owned.len();
+                owned.push(name.clone());
+                owned_pat.push(format!("__a{slot}"));
+                closure_prelude.push_str(&format!(
+                    "const {{
+                        assert!(
+                            <{ty} as crate::swift::SwiftAbi>::CLASS.tag()
+                                == crate::swift::AbiClass::Word.tag(),
+                            \"swift::call: this type is not passed the way the call assumes\"
+                        )
+                    }};\n                    "
+                ));
+                setters.push(format!(".arg({int_index}, __a{slot}.as_raw())"));
+                int_index += 1;
+            }
+            // Several registers from the one value, taken apart through the
+            // type's own conversion. The count the table states is pinned to
+            // the type's here, so an entry that is wrong about how wide a value
+            // travels fails to build rather than leaving a register unwritten.
+            Class::Doubles(count, ty) => {
+                closure_prelude.push_str(&format!(
+                    "const {{
+                        assert!(
+                            <{ty} as crate::swift::ToSwiftDoubles>::COUNT == {count},
+                            \"swift::call: this type does not travel in the registers the call assumes\"
+                        )
+                    }};
+                    let mut __fd{index} = [0f64; {count}];
+                    crate::swift::ToSwiftDoubles::write_doubles(&{name}, &mut __fd{index});\n                    "
+                ));
+                for offset in 0..count {
+                    setters.push(format!(
+                        ".float({}, __fd{index}[{offset}])",
+                        float_index + offset
+                    ));
+                }
+                float_index += count;
+            }
+            // A value held indirectly is passed as a pointer to itself, so the
+            // value has to be the task's rather than the caller's.
+            Class::ValuePtr => {
+                assert!(
+                    !arg.ty.trim().starts_with('&'),
+                    "swift::call: `{name}` is borrowed, but a suspending call \
+                     outlives the caller's frame, so it has to be taken by value"
+                );
+                assert!(
+                    !consumed,
+                    "swift::call: `{name}` is consumed by the callee, which a \
+                     suspending call cannot hand over yet"
+                );
+                let slot = owned.len();
+                owned.push(name.clone());
+                owned_pat.push(format!("__a{slot}"));
+                setters.push(format!(
+                    ".arg({int_index}, crate::swift::SwiftSelf::swift_self_ptr(__a{slot}).cast_mut())"
+                ));
+                int_index += 1;
+            }
+            other => panic!("swift::call: argument `{name}` is {other:?}"),
+        }
+    }
+
+    // What the resume trampoline hands back, turned into the success value.
+    let output = match &ret_class {
+        Class::Void => "|_, _| ()".to_string(),
+        Class::ClassRef(_) => "|_, __result| crate::arc::R::from_raw(__result.cast())".to_string(),
+        Class::Indirect(ty) => {
+            let slot = out_slot.expect("an indirect return owns its buffer");
+            let take: Vec<String> = (0..owned.len())
+                .map(|index| {
+                    if index == slot {
+                        "__out".to_string()
+                    } else {
+                        "_".to_string()
+                    }
+                })
+                .collect();
+            format!(
+                "|__owned, _| {{ let ({},) = __owned; \
+                 <{ty} as crate::swift::value::SwiftOut>::out_take(__out) }}",
+                take.join(", ")
+            )
+        }
+        other => panic!("swift::call: a suspending call cannot return {other:?}"),
+    };
+
+    // The register class was read off the Rust type's name; the type itself
+    // states the truth, so the two are pinned together as a direct call's are.
+    let checks = match ret_class.declared_class() {
+        Some((ty, class)) => format!(
+            "const {{
+            assert!(
+                <{ty} as crate::swift::SwiftAbi>::CLASS.tag()
+                    == crate::swift::AbiClass::{class}.tag(),
+                \"swift::call: this type is not returned the way the call assumes\"
+            )
+        }};"
+        ),
+        None => String::new(),
+    };
+
+    let (owned_tuple, owned_pattern) = if owned.is_empty() {
+        ("()".to_string(), "()".to_string())
+    } else {
+        (
+            format!("({},)", owned.join(", ")),
+            format!("({},)", owned_pat.join(", ")),
+        )
+    };
+    let setters = setters.join("\n                    ");
+
+    let doc_alias = alias
+        .as_ref()
+        .map(|a| format!("#[doc(alias = \"{a}\")]"))
+        .unwrap_or_default();
+
+    let Signature {
+        meta,
+        vis_and_qualifiers,
+        name,
+        args_source,
+        ret_source,
+        ..
+    } = &sig;
+
+    let handler_args = with_trailing_arg(args_source, "__callback: __F");
+
+    let out = format!(
+        "
+{meta}
+{doc_alias}
+#[inline]
+{vis_and_qualifiers} fn {name}_handler<__F>{handler_args}
+where
+    __F: FnOnce({ret_source}) + Send + 'static,
+{{
+    #[allow(non_snake_case)]
+    unsafe extern \"C\" {{
+        #[link_name = \"{link_name}\"]
+        fn __swift_callee();
+
+        #[link_name = \"{async_fn}\"]
+        static __SWIFT_ASYNC_FN: u8;
+    }}
+    unsafe {{
+        {checks}
+        crate::swift::concurrency::call_async_result(
+            __swift_callee as *const (),
+            &raw const __SWIFT_ASYNC_FN,
+            {owned_tuple},
+            |{owned_pattern}| {{
+                    {closure_prelude}crate::swift::concurrency::AsyncCallArgs::new()
+                    {setters}
+            }},
+            {output},
+            __callback,
+        );
+    }}
+}}
+
+{meta}
+{doc_alias}
+#[cfg(feature = \"async\")]
+#[inline]
+{vis_and_qualifiers} fn {name}{args_source} -> impl core::future::Future<Output = {ret_source}> {{
+    #[allow(non_snake_case)]
+    unsafe extern \"C\" {{
+        #[link_name = \"{link_name}\"]
+        fn __swift_callee();
+
+        #[link_name = \"{async_fn}\"]
+        static __SWIFT_ASYNC_FN: u8;
+    }}
+    unsafe {{
+        {checks}
+        crate::swift::concurrency::call_async_future(
+            __swift_callee as *const (),
+            &raw const __SWIFT_ASYNC_FN,
+            {owned_tuple},
+            |{owned_pattern}| {{
+                    {closure_prelude}crate::swift::concurrency::AsyncCallArgs::new()
+                    {setters}
+            }},
+            {output},
+        )
     }}
 }}
 "

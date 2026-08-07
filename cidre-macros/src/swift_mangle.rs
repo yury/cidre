@@ -420,7 +420,29 @@ pub fn param_conventions(decl: &str) -> Result<Vec<bool>, String> {
     })
 }
 
+/// Whether the declaration names a suspending function.
+///
+/// What tells `#[swift::call]` to await the call on a Swift task rather than
+/// make it directly, since a suspending function cannot be called at all
+/// without the caller allocating its context first.
+pub fn is_async(decl: &str) -> Result<bool, String> {
+    let mut decl = decl.trim();
+    decl = decl.strip_prefix("static ").unwrap_or(decl).trim();
+    decl = decl.strip_suffix(" thunk").unwrap_or(decl).trim();
+
+    Ok(match split_member(decl)?.1 {
+        Member::Property { .. } => false,
+        Member::Init { is_async, .. } | Member::Method { is_async, .. } => is_async,
+    })
+}
+
 /// Mangles a Swift declaration into its exported symbol.
+///
+/// A suspending function has a second symbol beside this one: its async
+/// function pointer, the record holding the entry point and the size of the
+/// context a caller has to allocate. That symbol is this one with `Tu`
+/// appended — after the `Tj` of a dispatch thunk, since what a caller awaits
+/// through a thunk is the thunk.
 pub fn mangle(decl: &str) -> Result<String, String> {
     let mut decl = decl.trim();
     let mut is_static = false;
@@ -460,7 +482,12 @@ pub fn mangle(decl: &str) -> Result<String, String> {
             };
             format!("{name}{ty}{accessor}")
         }
-        Member::Init { params, failable } => {
+        Member::Init {
+            params,
+            failable,
+            is_async,
+            throws,
+        } => {
             // An initializer's result is the enclosing type, which the symbol
             // reaches by back reference rather than by name. Only a type
             // directly inside its module gets this reference; one nested in
@@ -475,12 +502,15 @@ pub fn mangle(decl: &str) -> Result<String, String> {
             let labels = mangle_labels(&params, &mut words);
             let result = if failable { "ACSg" } else { "AC" };
             let params = mangle_params(&params, &mut words)?;
-            format!("{labels}{result}{params}cfC")
+            let is_async = if is_async { "Ya" } else { "" };
+            let throws = if throws { "K" } else { "" };
+            format!("{labels}{result}{params}{is_async}{throws}cfC")
         }
         Member::Method {
             name,
             params,
             result,
+            is_async,
             throws,
         } => {
             let name = words.mangle(&name);
@@ -495,8 +525,9 @@ pub fn mangle(decl: &str) -> Result<String, String> {
                 None => "y".to_string(),
             };
             let params = mangle_params(&params, &mut words)?;
+            let is_async = if is_async { "Ya" } else { "" };
             let throws = if throws { "K" } else { "" };
-            format!("{name}{labels}{result}{params}{throws}F")
+            format!("{name}{labels}{result}{params}{is_async}{throws}F")
         }
     };
 
@@ -520,11 +551,14 @@ enum Member {
         params: Vec<Param>,
         /// `init?`, whose result is the enclosing type wrapped in an optional.
         failable: bool,
+        is_async: bool,
+        throws: bool,
     },
     Method {
         name: String,
         params: Vec<Param>,
         result: Option<String>,
+        is_async: bool,
         throws: bool,
     },
 }
@@ -556,7 +590,7 @@ fn split_member(decl: &str) -> Result<(String, Member), String> {
         ));
     }
 
-    // A function: `<path>.<name>(<params>) [throws] [-> Result]`
+    // A function: `<path>.<name>(<params>) [async] [throws] [-> Result]`
     let (before_result, result) = match decl.split_once("->") {
         Some((before, result)) => (before.trim(), Some(result.trim().to_string())),
         None => (decl.trim(), None),
@@ -565,6 +599,12 @@ fn split_member(decl: &str) -> Result<(String, Member), String> {
     let mut throws = false;
     if let Some(rest) = before_result.strip_suffix("throws") {
         throws = true;
+        before_result = rest.trim();
+    }
+    // Stripped after `throws`, since Swift writes the effects in that order.
+    let mut is_async = false;
+    if let Some(rest) = before_result.strip_suffix("async") {
+        is_async = true;
         before_result = rest.trim();
     }
 
@@ -595,7 +635,15 @@ fn split_member(decl: &str) -> Result<(String, Member), String> {
     // `init?` is a failable initializer, whose result is the optional.
     if name == "init" || name == "init?" {
         let failable = name.ends_with('?');
-        return Ok((context, Member::Init { params, failable }));
+        return Ok((
+            context,
+            Member::Init {
+                params,
+                failable,
+                is_async,
+                throws,
+            },
+        ));
     }
     Ok((
         context,
@@ -603,6 +651,7 @@ fn split_member(decl: &str) -> Result<(String, Member), String> {
             name,
             params,
             result,
+            is_async,
             throws,
         },
     ))
@@ -707,6 +756,27 @@ mod tests {
                 "DockKit.DockAccessoryManager(class).isSystemTrackingEnabled: Bool { get } thunk",
                 "$s7DockKit0A16AccessoryManagerC23isSystemTrackingEnabledSbvgTj",
             ),
+            // Suspending functions, whose effects mangle as `Ya` before `K`.
+            (
+                "DockKit.DockAccessory(class).setAngularVelocity(_: __C.SPVector3D) async throws",
+                "$s7DockKit0A9AccessoryC18setAngularVelocityyySo10SPVector3DaYaKF",
+            ),
+            (
+                "DockKit.DockAccessory(class).selectSubject(at: __C.CGPoint(struct)) async throws",
+                "$s7DockKit0A9AccessoryC13selectSubject2atySo7CGPointV_tYaKF",
+            ),
+            (
+                "DockKit.DockAccessory(class).selectSubjects(_: [Foundation.UUID(struct)]) async throws",
+                "$s7DockKit0A9AccessoryC14selectSubjectsyySay10Foundation4UUIDVGYaKF",
+            ),
+            (
+                "DockKit.DockAccessory(class).setRegionOfInterest(_: __C.CGRect(struct)) async throws",
+                "$s7DockKit0A9AccessoryC19setRegionOfInterestyySo6CGRectVYaKF",
+            ),
+            (
+                "DockKit.DockAccessoryManager(class).setSystemTrackingEnabled(_: Bool) async throws thunk",
+                "$s7DockKit0A16AccessoryManagerC24setSystemTrackingEnabledyySbYaKFTj",
+            ),
         ];
 
         let mut failures = Vec::new();
@@ -718,6 +788,53 @@ mod tests {
             }
         }
         assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+    }
+
+    /// A suspending call needs the function's own symbol and the async function
+    /// pointer that sizes its context, and both come from the one declaration.
+    #[test]
+    fn mangles_the_async_function_pointer_beside_the_entry_point() {
+        let decl =
+            "DockKit.DockAccessory(class).selectSubjects(_: [Foundation.UUID(struct)]) async throws";
+        assert_eq!(
+            "$s7DockKit0A9AccessoryC14selectSubjectsyySay10Foundation4UUIDVGYaKFTu",
+            format!("{}Tu", mangle(decl).unwrap())
+        );
+
+        // Through a dispatch thunk the pointer is the thunk's, not the
+        // function's, so `Tu` goes after `Tj` rather than before it.
+        let thunked =
+            "DockKit.DockAccessoryManager(class).setSystemTrackingEnabled(_: Bool) async throws thunk";
+        assert_eq!(
+            "$s7DockKit0A16AccessoryManagerC24setSystemTrackingEnabledyySbYaKFTjTu",
+            format!("{}Tu", mangle(thunked).unwrap())
+        );
+    }
+
+    /// `async` is what picks the expansion, so it has to be read off exactly the
+    /// declarations that carry it.
+    #[test]
+    fn reads_async_off_the_declaration() {
+        let cases = [
+            (
+                "DockKit.DockAccessory(class).selectSubject(at: __C.CGPoint(struct)) async throws",
+                true,
+            ),
+            (
+                "DockKit.DockAccessory(class).setLimits(_: __C.CGRect(struct)) throws",
+                false,
+            ),
+            (
+                "DockKit.DockAccessoryManager(class).setSystemTrackingEnabled(_: Bool) async throws thunk",
+                true,
+            ),
+            ("Foundation.UUID(struct).init()", false),
+            ("Foundation.UUID(struct).uuidString: String { get }", false),
+        ];
+
+        for (decl, expected) in cases {
+            assert_eq!(Ok(expected), is_async(decl), "{decl}");
+        }
     }
 
 

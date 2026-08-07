@@ -1,6 +1,6 @@
-use crate::{api, arc, av, ns, swift, swift::SwiftMetadata, swift::abi};
+use crate::{api, arc, av, ns, swift, swift::abi};
 
-use crate::swift::concurrency::{self, AsyncCallArgs, TaskPriority};
+use crate::swift::concurrency::TaskPriority;
 
 use super::SpeechModule;
 use crate::swift::value::{Optional, Storage};
@@ -28,11 +28,6 @@ unsafe extern "C" {
     #[link_name = "$s6Speech28CaptureInputSequenceProviderC14analyzerInputsQrvpQOMQ"]
     static CAPTURE_INPUT_SEQUENCE_PROVIDER_ANALYZER_INPUTS_DESCRIPTOR: u8;
 
-    #[link_name = "$s6Speech28CaptureInputSequenceProviderC19providerWithSession4from010compatibleG08priorityACSo15AVCaptureDeviceC_SayAA0A6Module_pGScPSgtYaKFZ"]
-    fn provider_with_session();
-
-    #[link_name = "$s6Speech28CaptureInputSequenceProviderC19providerWithSession4from010compatibleG08priorityACSo15AVCaptureDeviceC_SayAA0A6Module_pGScPSgtYaKFZTu"]
-    static PROVIDER_WITH_SESSION_ASYNC_FN: u8;
 }
 
 crate::define_swift_marker!(
@@ -49,6 +44,36 @@ impl CaptureInputSequenceProvider {
         tvos = 27.0,
         visionos = 27.0
     )]
+    /// The `SpeechModule` array is an existential the mangler cannot spell, so
+    /// this one is given mangled.
+    ///
+    /// `priority` is the call's `TaskPriority?`, which these bindings always
+    /// leave to the runtime.
+    #[api::available(
+        macos = 27.0,
+        ios = 27.0,
+        maccatalyst = 27.0,
+        tvos = 27.0,
+        visionos = 27.0
+    )]
+    #[swift::call(
+        sym = "$s6Speech28CaptureInputSequenceProviderC19providerWithSession4from010compatibleG08priorityACSo15AVCaptureDeviceC_SayAA0A6Module_pGScPSgtYaKFZ",
+        async
+    )]
+    fn provider_with_session(
+        device: arc::R<av::CaptureDevice>,
+        modules: swift::Array<SpeechModule>,
+        priority: Storage<Optional<TaskPriority>>,
+    ) -> Result<arc::R<Self>, arc::R<ns::Error>>;
+
+    #[doc(alias = "CaptureInputSequenceProvider.providerWithSession")]
+    #[api::available(
+        macos = 27.0,
+        ios = 27.0,
+        maccatalyst = 27.0,
+        tvos = 27.0,
+        visionos = 27.0
+    )]
     pub fn with_session_handler<F>(
         device: &av::CaptureDevice,
         modules: &[SpeechModule],
@@ -56,29 +81,12 @@ impl CaptureInputSequenceProvider {
     ) where
         F: FnOnce(Result<arc::R<Self>, arc::R<ns::Error>>) + Send + 'static,
     {
-        unsafe {
-            concurrency::call_async_result(
-                provider_with_session as *const (),
-                &raw const PROVIDER_WITH_SESSION_ASYNC_FN,
-                (
-                    device.retained(),
-                    swift::Array::from_slice(modules),
-                    // The call takes a `TaskPriority?`, which these bindings
-                    // always leave to the runtime.
-                    Storage::<Optional<TaskPriority>>::none(),
-                ),
-                |(device, modules, priority)| {
-                    AsyncCallArgs::new()
-                        // A static method's `self` is the class metadata.
-                        .swift_self(<Self as SwiftMetadata>::metadata().cast_mut().cast())
-                        .arg(0, device.as_ptr().cast())
-                        .arg(1, modules.as_raw())
-                        .arg(2, priority.as_mut_ptr())
-                },
-                |_, provider| arc::R::from_raw(provider.cast()),
-                callback,
-            );
-        }
+        Self::provider_with_session_handler(
+            device.retained(),
+            swift::Array::from_slice(modules),
+            Storage::none(),
+            callback,
+        );
     }
 
     #[doc(alias = "CaptureInputSequenceProvider.providerWithSession")]
@@ -94,7 +102,11 @@ impl CaptureInputSequenceProvider {
         device: &av::CaptureDevice,
         modules: &[SpeechModule],
     ) -> impl Future<Output = Result<arc::R<Self>, arc::R<ns::Error>>> {
-        concurrency::future_from(|callback| Self::with_session_handler(device, modules, callback))
+        Self::provider_with_session(
+            device.retained(),
+            swift::Array::from_slice(modules),
+            Storage::none(),
+        )
     }
 
     #[doc(alias = "CaptureInputSequenceProvider.captureSession")]
