@@ -1268,6 +1268,12 @@ impl PropSelector {
     /// then it is not analyzed and this will provide 0.
     #[doc(alias = "kAudioDevicePropertyVoiceActivityDetectionState")]
     pub const DEVICE_VOICE_ACTIVITY_DETECTION_STATE: Self = Self(u32::from_be_bytes(*b"vAdS"));
+
+    /// A Device UID cf::String that suggests which output device to use as a reference
+    /// for echo cancellation when this input device is used with voice activity detection
+    /// enabled. If not set, the system uses the system default output device.
+    #[doc(alias = "kAudioDevicePropertySuggestedReferenceDevice")]
+    pub const SUGGESTED_REFERENCE_DEVICE: Self = Self(u32::from_be_bytes(*b"eord"));
 }
 
 /// AudioObjectPropertySelector values provided by the Tap Object class.
