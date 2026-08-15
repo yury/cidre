@@ -36,6 +36,13 @@ pub use location::accuracy as location_accuracy;
 mod heading;
 pub use heading::Heading;
 
+mod location_updater;
+pub use location_updater::LiveUpdateCfg;
+pub use location_updater::LocationUpdater;
+pub use location_updater::Update as LocationUpdate;
+#[cfg(feature = "blocks")]
+pub use location_updater::UpdateHandler as LocationUpdateHandler;
+
 #[link(name = "CoreLocation", kind = "framework")]
 unsafe extern "C" {}
 
