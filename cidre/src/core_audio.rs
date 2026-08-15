@@ -30,6 +30,13 @@ pub use hardware_tapping::Tap;
 #[cfg(feature = "macos_14_2")]
 pub use hardware_tapping::TapGuard;
 
+mod host_time;
+pub use host_time::current_host_time;
+pub use host_time::host_clock_frequency;
+pub use host_time::host_clock_min_time_delta;
+pub use host_time::host_time_to_nanos;
+pub use host_time::nanos_to_host_time;
+
 #[link(name = "CoreAudio", kind = "framework")]
 unsafe extern "C" {}
 
