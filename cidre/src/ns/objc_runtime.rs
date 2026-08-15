@@ -108,7 +108,7 @@ unsafe extern "C-unwind" {
     fn NSStringFromProtocol(proto: &ns::objc::Protocol) -> arc::Rar<ns::String>;
 }
 
-#[cfg(target_arch = "aarch64")]
+#[cfg(all(target_arch = "aarch64", feature = "wk"))]
 #[cfg(test)]
 mod tests {
     use crate::{ns, wk};

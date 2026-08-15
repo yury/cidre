@@ -87,7 +87,7 @@ unsafe extern "C-unwind" {
     fn CGShieldingWindowID(display_id: cg::DirectDisplayId) -> cg::WindowId;
 }
 
-#[cfg(all(test, target_os = "macos"))]
+#[cfg(all(test, target_os = "macos", feature = "app", feature = "mtl"))]
 mod tests {
     use crate::{cg, ns};
 
