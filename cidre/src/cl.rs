@@ -2,6 +2,21 @@ mod beacon_region;
 pub use beacon_region::Beacon;
 pub use beacon_region::BeaconRegion;
 
+mod condition;
+pub use condition::Condition;
+
+mod beacon_identity_condition;
+pub use beacon_identity_condition::BeaconIdentityCondition;
+pub use beacon_identity_condition::BeaconMajorValue;
+pub use beacon_identity_condition::BeaconMinorValue;
+
+mod beacon_identity_constraint;
+pub use beacon_identity_constraint::BeaconIdentityConstraint;
+
+mod body;
+pub use body::AnyBody;
+pub use body::BodyIdentifiable;
+
 mod region;
 // #[cfg(any(target_os = "ios", target_os = "macos"))]
 pub use region::Proximity;
@@ -15,9 +30,23 @@ mod location_manager;
 pub use location_manager::AccuracyAuthorization;
 pub use location_manager::ActivityType;
 pub use location_manager::AuthorizationStatus;
-pub use location_manager::Delegate as LocationManagerDelegate;
-pub use location_manager::DelegateImpl as LocationManagerDelegateImpl;
+#[cfg(feature = "blocks")]
+pub use location_manager::HistoricalLocationsHandler;
 pub use location_manager::LocationManager;
+#[cfg(feature = "blocks")]
+pub use location_manager::LocationPushHandler;
+#[cfg(feature = "blocks")]
+pub use location_manager::TemporaryFullAccuracyHandler;
+
+mod location_manager_delegate;
+pub use location_manager_delegate::AnyDelegate as AnyLocationManagerDelegate;
+pub use location_manager_delegate::Delegate as LocationManagerDelegate;
+pub use location_manager_delegate::DelegateImpl as LocationManagerDelegateImpl;
+
+mod location_manager_visit_extensions;
+
+mod visit;
+pub use visit::Visit;
 
 mod location;
 pub use location::Accuracy as LocationAccuracy;

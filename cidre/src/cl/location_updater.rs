@@ -51,11 +51,6 @@ impl Update {
     #[objc::available(macos = 15.0, ios = 18.0, tvos = 18.0, watchos = 11.0)]
     pub fn authorization_restricted(&self) -> bool;
 
-    #[deprecated(note = "use stationary()")]
-    #[objc::msg_send(isStationary)]
-    #[objc::available(macos = 14.0, ios = 17.0, tvos = 17.0)]
-    pub fn is_stationary(&self) -> bool;
-
     #[objc::msg_send(stationary)]
     #[objc::available(macos = 15.0, ios = 18.0, tvos = 18.0, watchos = 11.0)]
     pub fn stationary(&self) -> bool;
