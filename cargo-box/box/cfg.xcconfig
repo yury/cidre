@@ -39,7 +39,7 @@ INFOPLIST_KEY_NSCameraUsageDescription = Testing Camera
 INFOPLIST_KEY_UILaunchScreen_Generation = YES
 INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
 INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight
-// INFOPLIST_KEY_NSMotionUsageDescription = Testing Motion
+INFOPLIST_KEY_NSMotionUsageDescription = Tracks the orientation of connected headphones
 
 BOX_ID = box
 BOX_ORG_ID = org.cidre
@@ -55,4 +55,3 @@ BOX_ORG_ID = org.cidre
 PRODUCT_BUNDLE_IDENTIFIER = $(BOX_ORG_ID).$(BOX_ID)
 INFOPLIST_KEY_CFBundleDisplayName = $(PRODUCT_NAME)
 BOX_BIN_PATH = $(PRODUCT_NAME)
-

@@ -405,6 +405,10 @@ name = "dock-kit"
 required-features = ["dk", "async", "av", "cm", "dispatch"]
 
 [[example]]
+name = "cm-headphone"
+required-features = ["core_motion", "blocks"]
+
+[[example]]
 name = "swift-speech"
 required-features = ["speech", "av", "async", "cm", "dispatch", "macos_27_0"]
 

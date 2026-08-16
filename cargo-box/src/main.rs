@@ -410,6 +410,7 @@ mod xcode {
             .args(["-destination", &format!("generic/platform={platform}")])
             .args(["-configuration", conf])
             .args(["-scheme", &project.scheme, "-quiet"])
+            .arg("-allowProvisioningUpdates")
             .args(["-derivedDataPath".as_ref(), target.as_os_str()])
             // .args(env_args)
             .status()
