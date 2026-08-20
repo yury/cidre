@@ -62,6 +62,11 @@ impl ResidencySet {
         unsafe { self.add_allocations_count(allocations.as_ptr(), allocations.len()) };
     }
 
+    #[inline]
+    pub fn add_r_allocations(&mut self, allocations: &[arc::R<mtl::Allocation>]) {
+        unsafe { self.add_allocations_count(allocations.as_ptr().cast(), allocations.len()) };
+    }
+
     /// Marks an allocation to be removed from the set on the next commit call.
     #[objc::msg_send(removeAllocation:)]
     pub fn remove_allocation(&mut self, val: &mtl::Allocation);
@@ -73,6 +78,11 @@ impl ResidencySet {
     #[inline]
     pub fn remove_allocations(&mut self, allocations: &[&mtl::Allocation]) {
         unsafe { self.remove_allocations_count(allocations.as_ptr(), allocations.len()) };
+    }
+
+    #[inline]
+    pub fn remove_r_allocations(&mut self, allocations: &[arc::R<mtl::Allocation>]) {
+        unsafe { self.remove_allocations_count(allocations.as_ptr().cast(), allocations.len()) };
     }
 
     /// Marks all allocations to be removed from the set on the next commit call.
@@ -96,6 +106,16 @@ impl ResidencySet {
     /// This property includes non-committed allocations in the set.
     #[objc::msg_send(allocationCount)]
     pub fn allocation_count(&self) -> usize;
+
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.allocation_count()
+    }
+
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 
     /// Commits any pending adds/removes.
     ///
@@ -133,7 +153,14 @@ mod tests {
         desc.set_initial_capacity(10);
         assert_eq!(10, desc.initial_capacity());
         let device = mtl::Device::sys_default().unwrap();
-        let set = device.new_residency_set(&desc).unwrap();
+        let mut set = device.new_residency_set(&desc).unwrap();
+        assert_eq!(0, set.allocation_count());
+
+        let desc = mtl::TextureDesc::new_2d(mtl::PixelFormat::Bgra8UNorm, 512, 512, false);
+        let tex = device.new_texture(&desc).unwrap();
+        set.add_r_allocations(&[tex.clone().into()]);
+        assert_eq!(1, set.allocation_count());
+        set.remove_r_allocations(&[tex.into()]);
         assert_eq!(0, set.allocation_count());
     }
 }
