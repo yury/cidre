@@ -6,6 +6,7 @@
 ///
 /// // assert_ne!(frr, zero);
 /// ```
+#[doc(alias = "CAFrameRateRange")]
 #[derive(Debug, Copy, Clone)]
 #[repr(C)]
 pub struct FrameRateRange {
