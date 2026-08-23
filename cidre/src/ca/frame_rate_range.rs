@@ -14,6 +14,16 @@ pub struct FrameRateRange {
     pub preferred: f32,
 }
 
+impl FrameRateRange {
+    pub fn new(fps: f32) -> Self {
+        Self {
+            min: fps,
+            max: fps,
+            preferred: fps,
+        }
+    }
+}
+
 impl Default for FrameRateRange {
     fn default() -> Self {
         unsafe { CAFrameRateRangeDefault }
