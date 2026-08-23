@@ -409,14 +409,8 @@ pub fn param_conventions(decl: &str) -> Result<Vec<bool>, String> {
     let (_, member) = split_member(decl)?;
     Ok(match member {
         Member::Property { .. } => Vec::new(),
-        Member::Init { params, .. } => params
-            .iter()
-            .map(|p| p.ownership != Some('h'))
-            .collect(),
-        Member::Method { params, .. } => params
-            .iter()
-            .map(|p| p.ownership == Some('n'))
-            .collect(),
+        Member::Init { params, .. } => params.iter().map(|p| p.ownership != Some('h')).collect(),
+        Member::Method { params, .. } => params.iter().map(|p| p.ownership == Some('n')).collect(),
     })
 }
 
@@ -837,48 +831,167 @@ mod tests {
         }
     }
 
-
     /// Every metadata accessor the bindings link against today, so the mangler
     /// is measured against what the frameworks really export rather than
     /// against a rule written down from the same guess it encodes.
     #[test]
     fn mangles_every_metadata_accessor_the_bindings_use() {
         let cases = [
-            ("Foundation.Notification", 'V', "$s10Foundation12NotificationVMa"),
-            ("Foundation.AttributedString(struct).CharacterView", 'V', "$s10Foundation16AttributedStringV13CharacterViewVMa"),
-            ("Foundation.AttributedString", 'V', "$s10Foundation16AttributedStringVMa"),
+            (
+                "Foundation.Notification",
+                'V',
+                "$s10Foundation12NotificationVMa",
+            ),
+            (
+                "Foundation.AttributedString(struct).CharacterView",
+                'V',
+                "$s10Foundation16AttributedStringV13CharacterViewVMa",
+            ),
+            (
+                "Foundation.AttributedString",
+                'V',
+                "$s10Foundation16AttributedStringVMa",
+            ),
             ("Foundation.Date", 'V', "$s10Foundation4DateVMa"),
             ("Foundation.UUID", 'V', "$s10Foundation4UUIDVMa"),
             ("Foundation.Locale", 'V', "$s10Foundation6LocaleVMa"),
-            ("MusicUnderstanding.MusicUnderstandingSession(class).SessionResult", 'V', "$s18MusicUnderstanding0aB7SessionC0C6ResultVMa"),
-            ("MusicUnderstanding.MusicUnderstandingSession", 'C', "$s18MusicUnderstanding0aB7SessionCMa"),
-            ("MusicUnderstanding.RhythmResult", 'V', "$s18MusicUnderstanding12RhythmResultVMa"),
-            ("MusicUnderstanding.LoudnessResult", 'V', "$s18MusicUnderstanding14LoudnessResultVMa"),
-            ("MusicUnderstanding.InstrumentActivityResult", 'V', "$s18MusicUnderstanding24InstrumentActivityResultVMa"),
-            ("Speech.SpeechTranscriber(class).Result", 'V', "$s6Speech0A11TranscriberC6ResultVMa"),
-            ("Speech.SpeechTranscriber", 'C', "$s6Speech0A11TranscriberCMa"),
-            ("Speech.SpeechAnalyzer(class).Options", 'V', "$s6Speech0A8AnalyzerC7OptionsVMa"),
+            (
+                "MusicUnderstanding.MusicUnderstandingSession(class).SessionResult",
+                'V',
+                "$s18MusicUnderstanding0aB7SessionC0C6ResultVMa",
+            ),
+            (
+                "MusicUnderstanding.MusicUnderstandingSession",
+                'C',
+                "$s18MusicUnderstanding0aB7SessionCMa",
+            ),
+            (
+                "MusicUnderstanding.RhythmResult",
+                'V',
+                "$s18MusicUnderstanding12RhythmResultVMa",
+            ),
+            (
+                "MusicUnderstanding.LoudnessResult",
+                'V',
+                "$s18MusicUnderstanding14LoudnessResultVMa",
+            ),
+            (
+                "MusicUnderstanding.InstrumentActivityResult",
+                'V',
+                "$s18MusicUnderstanding24InstrumentActivityResultVMa",
+            ),
+            (
+                "Speech.SpeechTranscriber(class).Result",
+                'V',
+                "$s6Speech0A11TranscriberC6ResultVMa",
+            ),
+            (
+                "Speech.SpeechTranscriber",
+                'C',
+                "$s6Speech0A11TranscriberCMa",
+            ),
+            (
+                "Speech.SpeechAnalyzer(class).Options",
+                'V',
+                "$s6Speech0A8AnalyzerC7OptionsVMa",
+            ),
             ("Speech.SpeechAnalyzer", 'C', "$s6Speech0A8AnalyzerCMa"),
-            ("Speech.SpeechDetector(class).DetectionOptions", 'V', "$s6Speech0A8DetectorC16DetectionOptionsVMa"),
-            ("Speech.SpeechDetector(class).SensitivityLevel", 'O', "$s6Speech0A8DetectorC16SensitivityLevelOMa"),
+            (
+                "Speech.SpeechDetector(class).DetectionOptions",
+                'V',
+                "$s6Speech0A8DetectorC16DetectionOptionsVMa",
+            ),
+            (
+                "Speech.SpeechDetector(class).SensitivityLevel",
+                'O',
+                "$s6Speech0A8DetectorC16SensitivityLevelOMa",
+            ),
             ("Speech.SpeechDetector", 'C', "$s6Speech0A8DetectorCMa"),
-            ("Speech.DictationTranscriber(class).Result", 'V', "$s6Speech20DictationTranscriberC6ResultVMa"),
-            ("Speech.DictationTranscriber", 'C', "$s6Speech20DictationTranscriberCMa"),
-            ("Speech.CaptureInputSequenceProvider", 'C', "$s6Speech28CaptureInputSequenceProviderCMa"),
-            ("DockKit.DockAccessoryManager", 'C', "$s7DockKit0A16AccessoryManagerCMa"),
-            ("DockKit.DockAccessory(class).AccessoryEvent", 'O', "$s7DockKit0A9AccessoryC0C5EventOMa"),
-            ("DockKit.DockAccessory(class).Identifier", 'V', "$s7DockKit0A9AccessoryC10IdentifierVMa"),
-            ("DockKit.DockAccessory(class).MotionState", 'V', "$s7DockKit0A9AccessoryC11MotionStateVMa"),
-            ("DockKit.DockAccessory(class).Observation", 'V', "$s7DockKit0A9AccessoryC11ObservationVMa"),
-            ("DockKit.DockAccessory(class).StateChange", 'V', "$s7DockKit0A9AccessoryC11StateChangeVMa"),
-            ("DockKit.DockAccessory(class).BatteryState", 'V', "$s7DockKit0A9AccessoryC12BatteryStateVMa"),
-            ("DockKit.DockAccessory(class).TrackedObject", 'V', "$s7DockKit0A9AccessoryC13TrackedObjectVMa"),
-            ("DockKit.DockAccessory(class).TrackedPerson", 'V', "$s7DockKit0A9AccessoryC13TrackedPersonVMa"),
-            ("DockKit.DockAccessory(class).TrackingState", 'V', "$s7DockKit0A9AccessoryC13TrackingStateVMa"),
-            ("DockKit.DockAccessory(class).CameraInformation", 'V', "$s7DockKit0A9AccessoryC17CameraInformationVMa"),
-            ("DockKit.DockAccessory(class).TrackedSubjectType", 'O', "$s7DockKit0A9AccessoryC18TrackedSubjectTypeOMa"),
-            ("DockKit.DockAccessory(class).Limits(struct).Limit", 'V', "$s7DockKit0A9AccessoryC6LimitsV5LimitVMa"),
-            ("DockKit.DockAccessory(class).Limits", 'V', "$s7DockKit0A9AccessoryC6LimitsVMa"),
+            (
+                "Speech.DictationTranscriber(class).Result",
+                'V',
+                "$s6Speech20DictationTranscriberC6ResultVMa",
+            ),
+            (
+                "Speech.DictationTranscriber",
+                'C',
+                "$s6Speech20DictationTranscriberCMa",
+            ),
+            (
+                "Speech.CaptureInputSequenceProvider",
+                'C',
+                "$s6Speech28CaptureInputSequenceProviderCMa",
+            ),
+            (
+                "DockKit.DockAccessoryManager",
+                'C',
+                "$s7DockKit0A16AccessoryManagerCMa",
+            ),
+            (
+                "DockKit.DockAccessory(class).AccessoryEvent",
+                'O',
+                "$s7DockKit0A9AccessoryC0C5EventOMa",
+            ),
+            (
+                "DockKit.DockAccessory(class).Identifier",
+                'V',
+                "$s7DockKit0A9AccessoryC10IdentifierVMa",
+            ),
+            (
+                "DockKit.DockAccessory(class).MotionState",
+                'V',
+                "$s7DockKit0A9AccessoryC11MotionStateVMa",
+            ),
+            (
+                "DockKit.DockAccessory(class).Observation",
+                'V',
+                "$s7DockKit0A9AccessoryC11ObservationVMa",
+            ),
+            (
+                "DockKit.DockAccessory(class).StateChange",
+                'V',
+                "$s7DockKit0A9AccessoryC11StateChangeVMa",
+            ),
+            (
+                "DockKit.DockAccessory(class).BatteryState",
+                'V',
+                "$s7DockKit0A9AccessoryC12BatteryStateVMa",
+            ),
+            (
+                "DockKit.DockAccessory(class).TrackedObject",
+                'V',
+                "$s7DockKit0A9AccessoryC13TrackedObjectVMa",
+            ),
+            (
+                "DockKit.DockAccessory(class).TrackedPerson",
+                'V',
+                "$s7DockKit0A9AccessoryC13TrackedPersonVMa",
+            ),
+            (
+                "DockKit.DockAccessory(class).TrackingState",
+                'V',
+                "$s7DockKit0A9AccessoryC13TrackingStateVMa",
+            ),
+            (
+                "DockKit.DockAccessory(class).CameraInformation",
+                'V',
+                "$s7DockKit0A9AccessoryC17CameraInformationVMa",
+            ),
+            (
+                "DockKit.DockAccessory(class).TrackedSubjectType",
+                'O',
+                "$s7DockKit0A9AccessoryC18TrackedSubjectTypeOMa",
+            ),
+            (
+                "DockKit.DockAccessory(class).Limits(struct).Limit",
+                'V',
+                "$s7DockKit0A9AccessoryC6LimitsV5LimitVMa",
+            ),
+            (
+                "DockKit.DockAccessory(class).Limits",
+                'V',
+                "$s7DockKit0A9AccessoryC6LimitsVMa",
+            ),
         ];
 
         let mut failures = Vec::new();
@@ -937,7 +1050,6 @@ mod tests {
             param_conventions("Some.Type(class).take(_ value: __owned String)").unwrap(),
         );
     }
-
 
     /// The `DockAccessory` getters, against the symbols the bindings linked
     /// against before they were declared.

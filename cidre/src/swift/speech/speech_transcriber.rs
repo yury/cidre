@@ -54,8 +54,6 @@ unsafe extern "C" {
     #[link_name = "$s6Speech0A11TranscriberC7resultsQrvpQOMQ"]
     static SPEECH_TRANSCRIBER_RESULTS_DESCRIPTOR: u8;
 
-
-
 }
 
 impl SpeechTranscriber {
@@ -480,8 +478,7 @@ mod symbol_tests {
         );
         assert!(!getter.is_null(), "text getter must link");
 
-        let metadata =
-            swift::metadata_accessor!(struct, "Speech.SpeechTranscriber(class).Result");
+        let metadata = swift::metadata_accessor!(struct, "Speech.SpeechTranscriber(class).Result");
         assert!(!metadata.is_null(), "Result metadata accessor must link");
     }
 }

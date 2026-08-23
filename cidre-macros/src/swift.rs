@@ -450,7 +450,9 @@ fn parse_attr(attr: TokenStream) -> Attr {
     let mut owned = Vec::new();
 
     for segment in segments {
-        let Some(head) = segment.first() else { continue };
+        let Some(head) = segment.first() else {
+            continue;
+        };
         match head.to_string().as_str() {
             "async" => is_async = true,
             "owned" => {
