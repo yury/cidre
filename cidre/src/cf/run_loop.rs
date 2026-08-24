@@ -260,6 +260,8 @@ define_cf_type!(
     Mode(cf::String)
 );
 
+unsafe impl Send for Mode {}
+
 impl Mode {
     pub fn with_string(name: &cf::String) -> &Self {
         unsafe { std::mem::transmute(name) }
