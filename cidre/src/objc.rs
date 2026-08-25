@@ -16,6 +16,14 @@ pub struct Class<T: Obj>(Type, PhantomData<T>);
 #[repr(transparent)]
 pub struct Protocol(Type);
 
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct Ivar(Type);
+
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct Method(Type);
+
 impl<T: Obj> Class<T> {
     pub unsafe fn method_impl(&self, name: &Sel) -> *const c_void {
         unsafe { class_getMethodImplementation(std::mem::transmute(self), name) }
@@ -23,6 +31,90 @@ impl<T: Obj> Class<T> {
 
     pub unsafe fn add_protocol(&self, protocol: &Protocol) -> bool {
         unsafe { class_addProtocol(std::mem::transmute(self), protocol) }
+    }
+
+    /// The instance variable `name` declares, or `None` if it declares none.
+    ///
+    /// Unlike [`Self::instance_method`] this does not search superclasses.
+    #[doc(alias = "class_getInstanceVariable")]
+    #[inline]
+    pub fn instance_var(&self, name: &std::ffi::CStr) -> Option<&Ivar> {
+        unsafe { class_getInstanceVariable(std::mem::transmute(self), name.as_ptr()) }
+    }
+
+    /// The instance method `sel`, searching this class and its superclasses.
+    #[doc(alias = "class_getInstanceMethod")]
+    #[inline]
+    pub fn instance_method(&self, sel: &Sel) -> Option<&Method> {
+        unsafe { class_getInstanceMethod(std::mem::transmute(self), sel) }
+    }
+}
+
+impl Ivar {
+    #[doc(alias = "ivar_getName")]
+    #[inline]
+    pub fn name(&self) -> &std::ffi::CStr {
+        unsafe { std::ffi::CStr::from_ptr(ivar_getName(self)) }
+    }
+
+    #[doc(alias = "ivar_getTypeEncoding")]
+    #[inline]
+    pub fn type_encoding(&self) -> Option<&std::ffi::CStr> {
+        unsafe {
+            let enc = ivar_getTypeEncoding(self);
+            (!enc.is_null()).then(|| std::ffi::CStr::from_ptr(enc))
+        }
+    }
+
+    /// Byte offset of the variable from the start of an instance.
+    #[doc(alias = "ivar_getOffset")]
+    #[inline]
+    pub fn offset(&self) -> isize {
+        unsafe { ivar_getOffset(self) }
+    }
+
+    /// Where the variable sits inside `obj`.
+    ///
+    /// # Safety
+    /// `obj` must be a live instance of the class this ivar was looked up on,
+    /// and `T` must be what the variable actually holds — check
+    /// [`Self::type_encoding`] when the layout is not yours.
+    #[inline]
+    pub unsafe fn value_ptr<T>(&self, obj: *mut c_void) -> *mut T {
+        unsafe { obj.byte_offset(self.offset()).cast() }
+    }
+}
+
+impl Method {
+    #[doc(alias = "method_getTypeEncoding")]
+    #[inline]
+    pub fn type_encoding(&self) -> Option<&std::ffi::CStr> {
+        unsafe {
+            let enc = method_getTypeEncoding(self);
+            (!enc.is_null()).then(|| std::ffi::CStr::from_ptr(enc))
+        }
+    }
+
+    #[doc(alias = "method_getImplementation")]
+    #[inline]
+    pub fn imp(&self) -> extern "C" fn() {
+        unsafe { method_getImplementation(self) }
+    }
+
+    /// Swaps in `imp` and returns the implementation it displaced.
+    ///
+    /// This replaces the method on whichever class defines it, so an inherited
+    /// method is changed for every subclass too — unlike
+    /// [`class_replaceMethod`], which would add an override to one class.
+    ///
+    /// # Safety
+    /// `imp` must have the signature the method's [`Self::type_encoding`]
+    /// describes, and callers of the original may run concurrently with the
+    /// swap.
+    #[doc(alias = "method_setImplementation")]
+    #[inline]
+    pub unsafe fn set_imp(&self, imp: extern "C" fn()) -> extern "C" fn() {
+        unsafe { method_setImplementation(self, imp) }
     }
 }
 
@@ -419,6 +511,16 @@ unsafe extern "C-unwind" {
     pub fn objc_loadWeakRetained(location: *mut *mut Id) -> Option<arc::R<Id>>;
 
     pub fn object_getIndexedIvars(obj: *const c_void) -> *mut c_void;
+
+    fn class_getInstanceVariable<'a>(cls: &Class<Id>, name: *const i8) -> Option<&'a Ivar>;
+    fn ivar_getName(ivar: &Ivar) -> *const i8;
+    fn ivar_getTypeEncoding(ivar: &Ivar) -> *const i8;
+    fn ivar_getOffset(ivar: &Ivar) -> isize;
+
+    fn class_getInstanceMethod<'a>(cls: &Class<Id>, sel: &Sel) -> Option<&'a Method>;
+    fn method_getTypeEncoding(m: &Method) -> *const i8;
+    fn method_getImplementation(m: &Method) -> extern "C" fn();
+    fn method_setImplementation(m: &Method, imp: extern "C" fn()) -> extern "C" fn();
     pub fn sel_registerName(str: *const i8) -> *const std::ffi::c_void;
     pub fn class_addMethod(
         cls: &Class<Id>,

@@ -21,17 +21,34 @@ impl<T> DlSym<T> {
         }
     }
 
+    /// The resolved function, or `None` when the process has no such symbol.
+    ///
+    /// Unlike [`Self::get_var`] this yields the pointer by value: what `dlsym`
+    /// returns for a function *is* the function pointer, so there is no
+    /// variable to borrow.
     #[inline]
-    pub fn get_fn(&self) -> Option<&T> {
-        unsafe {
-            match self.ptr.load(Ordering::Relaxed) {
-                1 => std::mem::transmute(&self.initialize_fn()),
-                ptr => {
-                    fence(Ordering::Acquire);
-                    std::mem::transmute(&ptr)
-                }
+    pub fn get_fn(&self) -> Option<T>
+    where
+        T: Copy,
+    {
+        assert_eq!(
+            size_of::<T>(),
+            size_of::<usize>(),
+            "DlSym<T>::get_fn needs T to be a function pointer"
+        );
+        let addr = match self.ptr.load(Ordering::Relaxed) {
+            // SAFETY: the sentinel means nothing has been resolved yet.
+            1 => unsafe { self.initialize_fn() },
+            addr => {
+                fence(Ordering::Acquire);
+                addr
             }
+        };
+        if addr == 0 {
+            return None;
         }
+        // SAFETY: `addr` came from `dlsym` and `T` is pointer-sized.
+        Some(unsafe { std::mem::transmute_copy(&addr) })
     }
     #[inline]
     pub fn get_var(&self) -> Option<&T> {
@@ -341,6 +358,25 @@ mod tests {
         assert!(SHOULD_BE_FOUND.get_var().is_some());
         assert!(SHOULD_BE_FOUND.get_var().unwrap().len() > 0);
         assert!(SHOULD_BE_FOUND.get_var().unwrap().len() > 0);
+    }
+
+    #[test]
+    fn dl_sym_fn() {
+        static STRLEN: api::DlSym<extern "C" fn(*const std::ffi::c_char) -> usize> =
+            api::DlSym::new(c"strlen");
+
+        let f = STRLEN.get_fn().expect("strlen is in every process");
+        assert_eq!(f(c"cidre".as_ptr()), 5);
+
+        // and again, now through the cached path
+        let f = STRLEN.get_fn().unwrap();
+        assert_eq!(f(c"".as_ptr()), 0);
+    }
+
+    #[test]
+    fn dl_sym_missing_fn() {
+        static NOPE: api::DlSym<extern "C" fn()> = api::DlSym::new(c"cidre_no_such_symbol");
+        assert!(NOPE.get_fn().is_none());
     }
 
     #[cfg(target_os = "macos")]
