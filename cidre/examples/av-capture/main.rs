@@ -1,7 +1,4 @@
-use cidre::{
-    av::{self, CaptureDevicePos, MediaType},
-    ns,
-};
+use cidre::{av, ns};
 
 extern "C" fn exception_handler(exception: &ns::Exception) {
     println!("{:?}", exception);
@@ -15,8 +12,8 @@ fn main() {
     let mut session = av::capture::Session::new();
     let device = av::capture::Device::with_type_media_and_pos(
         av::CaptureDeviceType::built_in_wide_angle_camera(),
-        Some(MediaType::video()),
-        CaptureDevicePos::Front,
+        Some(av::MediaType::video()),
+        av::CaptureDevicePos::Front,
     )
     .expect("front wide angle camera");
 
@@ -40,7 +37,7 @@ fn main() {
             av::FileType::mp4()
         )
     );
-    let device_input = av::CaptureDeviceInput::with_device(&device).expect("intput");
+    let device_input = av::CaptureDeviceInput::with_device(&device).expect("input");
 
     session.configure(|s| {
         if s.can_add_output(&video_output) {
