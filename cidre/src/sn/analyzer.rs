@@ -101,6 +101,7 @@ impl AudioFileAnalyzer {
     pub fn analyze_with_ch(&mut self, handler: &mut FileCompletionHandler);
 
     /// Analyzes the audio file asynchronously
+    #[cfg(feature = "async")]
     pub async fn analyze_with(&mut self) -> bool {
         let (future, mut block) = blocks::comp1();
         self.analyze_with_ch(&mut block);

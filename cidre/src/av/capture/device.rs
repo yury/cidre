@@ -1391,7 +1391,7 @@ impl<'a> ConfigLockGuard<'a> {
     }
 
     #[cfg(all(
-        feature = "blocks",
+        feature = "async",
         feature = "cm",
         any(target_os = "tvos", target_os = "ios")
     ))]
