@@ -932,6 +932,60 @@ where
 
 #[cfg(target_arch = "aarch64")]
 #[cfg(test)]
+mod is_getter_tests {
+    use std::ffi::CStr;
+
+    unsafe extern "C" {
+        fn objc_getClass(name: *const i8) -> *const std::ffi::c_void;
+        fn class_respondsToSelector(
+            cls: *const std::ffi::c_void,
+            sel: *const std::ffi::c_void,
+        ) -> bool;
+        fn sel_registerName(name: *const i8) -> *const std::ffi::c_void;
+    }
+
+    fn responds(cls: &CStr, sel: &CStr) -> Option<bool> {
+        // SAFETY: both are NUL-terminated literals; a missing class is `None`.
+        unsafe {
+            let c = objc_getClass(cls.as_ptr());
+            if c.is_null() {
+                return None;
+            }
+            Some(class_respondsToSelector(c, sel_registerName(sel.as_ptr())))
+        }
+    }
+
+    /// A property declared `getter=isX` answers `isX`, not `x`. Binding the
+    /// bare name sends a selector the class does not implement, which aborts
+    /// the process the first time it is called — so these have to be right.
+    #[test]
+    fn bindings_use_the_declared_getter() {
+        let cases: &[(&CStr, &CStr, &CStr)] = &[
+            (c"SCContentSharingPicker", c"active", c"isActive"),
+            (
+                c"AVCaptureDeviceFormat",
+                c"globalToneMappingSupported",
+                c"isGlobalToneMappingSupported",
+            ),
+            (c"NSSplitViewItem", c"collapsed", c"isCollapsed"),
+            (c"NSWindow", c"opaque", c"isOpaque"),
+        ];
+        for (cls, bare, getter) in cases {
+            let Some(has_getter) = responds(cls, getter) else {
+                continue; // framework not present on this platform
+            };
+            assert!(has_getter, "{cls:?} should respond to {getter:?}");
+            assert_eq!(
+                responds(cls, bare),
+                Some(false),
+                "{cls:?} must not respond to the bare {bare:?} — cidre would be \
+                 sending an unrecognized selector"
+            );
+        }
+    }
+}
+
+#[cfg(test)]
 mod tests {
 
     use super::ar_pool;
