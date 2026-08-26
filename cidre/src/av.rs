@@ -13,6 +13,11 @@ pub use depth_data::DepthData;
 
 pub mod capture;
 pub use capture::AudioChannel as CaptureAudioChannel;
+pub use capture::AudioDataOutput as CaptureAudioDataOutput;
+#[cfg(feature = "cm")]
+pub use capture::AudioDataOutputSampleBufDelegate as CaptureAudioDataOutputSampleBufDelegate;
+#[cfg(feature = "cm")]
+pub use capture::AudioDataOutputSampleBufDelegateImpl as CaptureAudioDataOutputSampleBufDelegateImpl;
 pub use capture::AuthorizationStatus;
 pub use capture::AutoFocusSys as CaptureAutoFocusSys;
 pub use capture::CamLensSmudgeDetectionStatus;
