@@ -59,7 +59,7 @@ impl SplitViewItem {
     #[objc::msg_send(setViewController:)]
     pub fn set_view_controller(&mut self, val: &ns::ViewController);
 
-    #[objc::msg_send(collapsed)]
+    #[objc::msg_send(isCollapsed)]
     pub fn collapsed(&self) -> bool;
 
     #[objc::msg_send(setCollapsed:)]

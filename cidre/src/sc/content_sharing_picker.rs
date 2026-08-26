@@ -143,7 +143,7 @@ impl Picker {
     pub fn set_max_stream_count(&mut self, val: Option<&ns::Number>);
 
     /// Whether the picker is active.
-    #[objc::msg_send(active)]
+    #[objc::msg_send(isActive)]
     pub fn active(&self) -> bool;
 
     /// Sets whether the picker is active.

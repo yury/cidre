@@ -5,7 +5,7 @@ define_obj_type!(
 );
 
 impl SceneWindowingBehaviors {
-    #[objc::msg_send(closable)]
+    #[objc::msg_send(isClosable)]
     pub fn is_closable(&self) -> bool;
 
     #[objc::msg_send(setClosable:)]

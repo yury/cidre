@@ -2199,7 +2199,7 @@ impl Format {
     }
 
     /// Whether the format supports global tone mapping.
-    #[objc::msg_send(globalToneMappingSupported)]
+    #[objc::msg_send(isGlobalToneMappingSupported)]
     pub fn global_tone_mapping_supported(&self) -> bool;
 }
 

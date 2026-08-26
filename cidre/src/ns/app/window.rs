@@ -281,7 +281,7 @@ impl Window {
     #[objc::msg_send(setHasShadow:)]
     pub fn set_has_shadow(&mut self, val: bool);
 
-    #[objc::msg_send(opaque)]
+    #[objc::msg_send(isOpaque)]
     pub fn opaque(&self) -> bool;
 
     #[objc::msg_send(setOpaque:)]
