@@ -93,6 +93,9 @@ impl Cfg {
     pub fn shows_camera_control(&self) -> bool;
 
     /// Sets whether the picker shows a camera control.
+    ///
+    /// Only applies when presenting the picker for the current app
+    /// Defaults to false
     #[objc::msg_send(setShowsCameraControl:)]
     #[api::available(ios = 27.0)]
     pub fn set_shows_camera_control(&mut self, val: bool);
