@@ -1,5 +1,8 @@
 use crate::{arc, cf, define_cf_type, define_opts, mach::KernReturn, os, sys::_types::MachPort};
 
+#[cfg(feature = "xpc")]
+use crate::xpc;
+
 #[doc(alias = "SurfaceID")]
 pub type SurfId = u32;
 
@@ -200,6 +203,29 @@ impl Surf {
         unsafe { IOSurfaceLookupFromMachPort(port) }
     }
 
+    /// An xpc object holding a reference to this surface, ready to travel in
+    /// a message.
+    ///
+    /// Every live xpc object made this way implicitly raises the surface's
+    /// global use count by one until it is released.
+    #[doc(alias = "IOSurfaceCreateXPCObject")]
+    #[cfg(feature = "xpc")]
+    #[inline]
+    pub fn create_xpc_obj(&self) -> arc::R<xpc::Object> {
+        unsafe { IOSurfaceCreateXPCObject(self) }
+    }
+
+    /// This call takes an xpc object created via io::Surf::create_xpc_obj()
+    /// and recreates an io::Surf from it.
+    ///
+    /// This call does NOT consume the xpc object.
+    #[doc(alias = "IOSurfaceLookupFromXPCObject")]
+    #[cfg(feature = "xpc")]
+    #[inline]
+    pub fn from_xpc_obj(xobj: &xpc::Object) -> Option<arc::R<Surf>> {
+        unsafe { IOSurfaceLookupFromXPCObject(xobj) }
+    }
+
     /// Returns true of an io::Surface is in use by any process in the system, otherwise false.
     #[doc(alias = "IOSurfaceIsInUse")]
     #[inline]
@@ -293,6 +319,11 @@ unsafe extern "C-unwind" {
 
     fn IOSurfaceCreateMachPort(buffer: &Surf) -> MachPort;
     fn IOSurfaceLookupFromMachPort(port: MachPort) -> Option<arc::R<Surf>>;
+
+    #[cfg(feature = "xpc")]
+    fn IOSurfaceCreateXPCObject(buffer: &Surf) -> arc::R<xpc::Object>;
+    #[cfg(feature = "xpc")]
+    fn IOSurfaceLookupFromXPCObject(xobj: &xpc::Object) -> Option<arc::R<Surf>>;
 
     fn IOSurfaceIsInUse(buffer: &Surf) -> bool;
     fn IOSurfaceGetUseCount(buffer: &Surf) -> i32;
@@ -562,6 +593,38 @@ mod test {
         assert_eq!(false, surf2.is_in_use());
         let vals = surf2.all_values().unwrap();
         vals.show();
+    }
+
+    #[cfg(feature = "xpc")]
+    #[test]
+    fn xpc_obj_roundtrip() {
+        use crate::xpc;
+
+        let width = cf::Number::from_i32(100);
+        let height = cf::Number::from_i32(200);
+        let properties = cf::Dictionary::with_keys_values(
+            &[io::surface::key::width(), io::surface::key::height()],
+            &[&width, &height],
+        )
+        .unwrap();
+        let surf = io::Surf::create(&properties).unwrap();
+
+        let xobj = surf.create_xpc_obj();
+        // A live xpc object holds a use count on the surface.
+        assert!(surf.is_in_use());
+
+        let surf2 = io::Surf::from_xpc_obj(&xobj).unwrap();
+        assert!(surf.equal(&surf2));
+
+        // The object survives a round trip through a message.
+        let mut msg = xpc::Dictionary::new();
+        msg.set(c"surface", Some(&xobj));
+        let surf3 = io::Surf::from_xpc_obj(msg.get(c"surface").unwrap()).unwrap();
+        assert!(surf.equal(&surf3));
+
+        drop(xobj);
+        drop(msg);
+        assert!(!surf.is_in_use());
     }
 
     #[cfg(not(feature = "macos_15_0"))]
