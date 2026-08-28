@@ -43,6 +43,82 @@ impl Port {
     }
 }
 
+/// A send right this task holds, released on drop.
+///
+/// [`Name`] is a bare `u32` that copies freely, which is right for naming a
+/// right but says nothing about who has to release one. The calls that hand a
+/// send right *over* — [`crate::io::Surf::create_mach_port`],
+/// [`crate::xpc::Dictionary::copy_mach_send`] — return this instead, so the
+/// release is the compiler's to remember rather than the caller's.
+///
+/// Send rights only: [`Drop`] releases through `mach_port_deallocate`, which is
+/// the send-side release. A receive right or a port set is freed differently and
+/// does not belong in here.
+///
+/// One reference each, not one name each: a task's name space maps a name to a
+/// port, so taking another right to a port you already name yields *that* name
+/// again with the user reference count bumped. Two [`SendRight`]s can therefore
+/// compare equal while each still owes exactly one release — which is why this
+/// is not [`Copy`] and why [`Self::name`] borrows.
+///
+/// Nothing here is a security boundary — [`Self::into_name`] hands the raw name
+/// back and [`Self::from_name`] takes one on the caller's word. The point is
+/// that the ordinary path cannot leak by accident.
+#[derive(Debug, PartialEq, Eq)]
+#[repr(transparent)]
+pub struct SendRight(Name);
+
+impl SendRight {
+    /// Takes ownership of the send right `name` denotes.
+    ///
+    /// # Safety
+    /// `name` must be a send right this task holds, and nothing else may
+    /// release it — this will, exactly once.
+    #[inline]
+    pub const unsafe fn from_name(name: Name) -> Self {
+        Self(name)
+    }
+
+    /// As [`Self::from_name`], but [`None`] for a name that holds nothing:
+    /// [`Name::NULL`] or [`Name::DEAD`].
+    ///
+    /// # Safety
+    /// As [`Self::from_name`], for any name that is neither of those.
+    #[inline]
+    pub unsafe fn try_from_name(name: Name) -> Option<Self> {
+        match name {
+            Name::NULL | Name::DEAD => None,
+            name => Some(Self(name)),
+        }
+    }
+
+    /// The right's name, borrowed for as long as `self` lives.
+    ///
+    /// For a call that reads the right or copies it — `MACH_MSG_TYPE_COPY_SEND`
+    /// and friends. One that *moves* it wants [`Self::into_name`], or the right
+    /// is released twice.
+    #[inline]
+    pub const fn name(&self) -> Name {
+        self.0
+    }
+
+    /// Gives the right up without releasing it, for a call that moves it —
+    /// `MACH_MSG_TYPE_MOVE_SEND`.
+    #[inline]
+    pub fn into_name(self) -> Name {
+        let name = self.0;
+        std::mem::forget(self);
+        name
+    }
+}
+
+impl Drop for SendRight {
+    #[inline]
+    fn drop(&mut self) {
+        self.0.task_self_deallocate();
+    }
+}
+
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
 #[repr(transparent)]
 pub struct Right(pub u32);

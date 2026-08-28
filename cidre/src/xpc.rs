@@ -1021,18 +1021,28 @@ impl Dictionary {
         }
     }
 
-    /// Inserts a send right. XPC consumes the caller's reference.
+    /// Inserts a send right.
+    ///
+    /// XPC sends it with `MACH_MSG_TYPE_COPY_SEND`, so it takes a reference of
+    /// its own and `right` is untouched — still yours, still released on drop.
     #[doc(alias = "xpc_dictionary_set_mach_send")]
     #[inline]
-    pub fn set_mach_send(&mut self, key: &CStr, port: mach::Port) {
-        unsafe { xpc_dictionary_set_mach_send(self, key.as_ptr(), port) }
+    pub fn set_mach_send(&mut self, key: &CStr, right: &mach::SendRight) {
+        unsafe { xpc_dictionary_set_mach_send(self, key.as_ptr(), right.name()) }
     }
 
-    /// A send right the caller must deallocate. [`mach::Port::NULL`] if absent.
+    /// A send right of our own, copied out of the message. [`None`] when the
+    /// key is missing or does not hold a send right.
+    ///
+    /// XPC copies the right with `mach_port_mod_refs` before handing it over,
+    /// so the message keeps its own and this one is released when the
+    /// [`mach::SendRight`] drops.
     #[doc(alias = "xpc_dictionary_copy_mach_send")]
     #[inline]
-    pub fn copy_mach_send(&self, key: &CStr) -> mach::Port {
-        unsafe { xpc_dictionary_copy_mach_send(self, key.as_ptr()) }
+    pub fn copy_mach_send(&self, key: &CStr) -> Option<mach::SendRight> {
+        // SAFETY: the runtime copied the right for us, so releasing it is ours
+        // alone to do.
+        unsafe { mach::SendRight::try_from_name(xpc_dictionary_copy_mach_send(self, key.as_ptr())) }
     }
 
     /// The connection a received message arrived on. `None` for a dictionary

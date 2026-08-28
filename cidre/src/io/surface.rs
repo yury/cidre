@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_cf_type, define_opts, mach::KernReturn, os, sys::_types::MachPort};
+use crate::{arc, cf, define_cf_type, define_opts, mach, mach::KernReturn, os, sys::_types::MachPort};
 
 #[cfg(feature = "xpc")]
 use crate::xpc;
@@ -188,18 +188,41 @@ impl Surf {
         unsafe { IOSurfaceRemoveAllValues(self) }
     }
 
+    /// A send right holding a reference to this surface, ready to travel in a
+    /// message.
+    ///
+    /// [`None`] if the right could not be made. The right releases itself when
+    /// the [`mach::SendRight`] drops, so the surface stays referenced for
+    /// exactly as long as that lives — the same bargain [`Self::create_xpc_obj`]
+    /// offers with an [`arc::R`].
     #[doc(alias = "IOSurfaceCreateMachPort")]
     #[inline]
-    pub fn create_mach_port(&self) -> MachPort {
-        unsafe { IOSurfaceCreateMachPort(self) }
+    pub fn create_mach_port(&self) -> Option<mach::SendRight> {
+        // SAFETY: the right is freshly made and ours alone, which is what
+        // `try_from_name` is being told.
+        unsafe { mach::SendRight::try_from_name(IOSurfaceCreateMachPort(self)) }
     }
 
-    /// This call takes a mach_port_t created via io::Surface::create_mach_port() and recreates an io::Surface from it.
+    /// Recreates a surface from a send right — one made by
+    /// [`Self::create_mach_port`], or copied out of a message by
+    /// [`xpc::Dictionary::copy_mach_send`].
     ///
-    /// This call does NOT destroy the port.
+    /// The lookup borrows the right rather than consuming it, so `right` is
+    /// still good afterwards and still releases itself on drop.
     #[doc(alias = "IOSurfaceLookupFromMachPort")]
     #[inline]
-    pub fn from_mach_port(port: MachPort) -> Option<arc::R<Surf>> {
+    pub fn from_mach_port(right: &mach::SendRight) -> Option<arc::R<Surf>> {
+        Self::from_mach_port_name(right.name())
+    }
+
+    /// As [`Self::from_mach_port`], for a right this task does not own — one
+    /// read out of a `mach::MsgHeader`, say, that something else will release.
+    ///
+    /// A name that does not belong to a surface is [`None`], not a fault, so
+    /// this is safe to call with any name.
+    #[doc(alias = "IOSurfaceLookupFromMachPort")]
+    #[inline]
+    pub fn from_mach_port_name(port: MachPort) -> Option<arc::R<Surf>> {
         unsafe { IOSurfaceLookupFromMachPort(port) }
     }
 
@@ -215,10 +238,11 @@ impl Surf {
         unsafe { IOSurfaceCreateXPCObject(self) }
     }
 
-    /// This call takes an xpc object created via io::Surf::create_xpc_obj()
-    /// and recreates an io::Surf from it.
+    /// Recreates a surface from an object made by [`Self::create_xpc_obj`].
     ///
-    /// This call does NOT consume the xpc object.
+    /// The object is borrowed, not consumed: releasing `xobj` stays [`arc::R`]'s
+    /// job, just as releasing the right [`Self::from_mach_port`] borrows stays
+    /// [`mach::SendRight`]'s.
     #[doc(alias = "IOSurfaceLookupFromXPCObject")]
     #[cfg(feature = "xpc")]
     #[inline]
@@ -585,10 +609,18 @@ mod test {
         .unwrap();
 
         let surf = io::Surf::create(&properties).unwrap();
-        let port = surf.create_mach_port();
-        let surf2 = io::Surf::from_mach_port(port).unwrap();
-        port.task_self_deallocate();
+        let port = surf.create_mach_port().unwrap();
+        let surf2 = io::Surf::from_mach_port(&port).unwrap();
+        // The lookup borrows the right rather than consuming it, so the same
+        // one serves again.
+        assert!(io::Surf::from_mach_port(&port).is_some());
         assert!(surf.equal(&surf2));
+
+        // A live send right holds a use count, exactly as a live xpc object
+        // does, and dropping it hands that back — no `task_self_deallocate`
+        // for the caller to remember.
+        assert!(surf.is_in_use());
+        drop(port);
         assert_eq!(false, surf.is_in_use());
         assert_eq!(false, surf2.is_in_use());
         let vals = surf2.all_values().unwrap();
@@ -625,6 +657,51 @@ mod test {
         drop(xobj);
         drop(msg);
         assert!(!surf.is_in_use());
+    }
+
+    /// `xpc_dictionary_set_mach_send` inserts with `MACH_MSG_TYPE_COPY_SEND`,
+    /// so the dictionary takes a reference of its own and the caller keeps
+    /// theirs. Both sides then hold a right that works on its own, and the
+    /// surface only comes free once both are gone.
+    #[cfg(feature = "xpc")]
+    #[test]
+    fn mach_send_roundtrip() {
+        use crate::xpc;
+
+        let width = cf::Number::from_i32(100);
+        let height = cf::Number::from_i32(200);
+        let properties = cf::Dictionary::with_keys_values(
+            &[io::surface::key::width(), io::surface::key::height()],
+            &[&width, &height],
+        )
+        .unwrap();
+        let surf = io::Surf::create(&properties).unwrap();
+
+        let right = surf.create_mach_port().unwrap();
+        let mut msg = xpc::Dictionary::new();
+        msg.set_mach_send(c"surface", &right);
+
+        // Inserting copied the right; ours still resolves.
+        assert!(surf.equal(&io::Surf::from_mach_port(&right).unwrap()));
+
+        // And the dictionary's copy resolves independently of ours. Same task
+        // and same port, so mach hands back the name we already have, carrying
+        // one more user reference rather than a second name.
+        let copied = msg.copy_mach_send(c"surface").unwrap();
+        assert_eq!(copied, right);
+        assert!(surf.equal(&io::Surf::from_mach_port(&copied).unwrap()));
+
+        // Dropping one gives back one reference, leaving the other good.
+        drop(right);
+        assert!(surf.equal(&io::Surf::from_mach_port(&copied).unwrap()));
+        assert!(surf.is_in_use());
+
+        drop(copied);
+        drop(msg);
+        assert_eq!(false, surf.is_in_use());
+
+        // A key that holds no send right is `None`, not a null name.
+        assert!(xpc::Dictionary::new().copy_mach_send(c"absent").is_none());
     }
 
     #[cfg(not(feature = "macos_15_0"))]

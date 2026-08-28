@@ -14,6 +14,7 @@ pub use kern_return::err as kern_err;
 
 pub mod port;
 pub use port::Name as PortName;
+pub use port::SendRight;
 pub use port::Port;
 pub use port::Right as PortRight;
 pub use port::Type as PortType;
