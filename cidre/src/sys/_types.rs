@@ -4,6 +4,12 @@ pub use crate::mach::Port as MachPort;
 
 pub type Pid = i32;
 
+#[doc(alias = "uid_t")]
+pub type Uid = u32;
+
+#[doc(alias = "gid_t")]
+pub type Gid = u32;
+
 #[doc(alias = "__darwin_time_t")]
 pub type DarwinTime = c_long;
 

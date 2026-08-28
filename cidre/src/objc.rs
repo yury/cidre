@@ -544,6 +544,7 @@ unsafe extern "C-unwind" {
     pub fn object_getClass(obj: Option<&Id>) -> Option<&Class<Id>>;
     pub fn objc_registerClassPair(cls: &Class<Id>);
     pub fn objc_getClass(name: *const u8) -> Option<&'static Class<Id>>;
+    pub fn class_respondsToSelector(cls: &Class<Id>, sel: &Sel) -> bool;
     pub fn objc_getProtocol(name: *const i8) -> Option<&'static Protocol>;
     pub fn objc_msgSendSuper(s: &Super, sel: &Sel);
     pub static NS_OBJECT: &'static crate::objc::Class<Id>;
@@ -935,23 +936,16 @@ where
 mod is_getter_tests {
     use std::ffi::CStr;
 
-    unsafe extern "C" {
-        fn objc_getClass(name: *const i8) -> *const std::ffi::c_void;
-        fn class_respondsToSelector(
-            cls: *const std::ffi::c_void,
-            sel: *const std::ffi::c_void,
-        ) -> bool;
-        fn sel_registerName(name: *const i8) -> *const std::ffi::c_void;
-    }
+    use crate::objc;
 
     fn responds(cls: &CStr, sel: &CStr) -> Option<bool> {
         // SAFETY: both are NUL-terminated literals; a missing class is `None`.
         unsafe {
-            let c = objc_getClass(cls.as_ptr());
-            if c.is_null() {
-                return None;
-            }
-            Some(class_respondsToSelector(c, sel_registerName(sel.as_ptr())))
+            let cls = objc::objc_getClass(cls.as_ptr().cast())?;
+            Some(objc::class_respondsToSelector(
+                cls,
+                objc::sel_reg_name(sel.as_ptr()),
+            ))
         }
     }
 

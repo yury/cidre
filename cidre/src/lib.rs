@@ -236,6 +236,9 @@ pub mod wc;
 #[cfg(feature = "wk")]
 pub mod wk;
 
+#[cfg(feature = "xpc")]
+pub mod xpc;
+
 #[macro_export]
 macro_rules! define_opts {
     (
