@@ -2207,7 +2207,7 @@ impl Format {
 impl Format {
     #[objc::msg_send(isMultiCamSupported)]
     #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
-    pub fn is_mutli_cam_supported(&self) -> bool;
+    pub fn is_multi_cam_supported(&self) -> bool;
 }
 
 /// AVCaptureDeviceFormatSpatialVideoCapture
