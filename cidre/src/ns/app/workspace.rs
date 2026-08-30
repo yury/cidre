@@ -2,6 +2,9 @@ use crate::{arc, define_cls, define_obj_type, mach::CpuType, ns, objc};
 
 use crate::blocks;
 
+#[doc(alias = "NSWorkspaceDesktopImageOptionKey")]
+pub type DesktopImageOptionKey = ns::String;
+
 define_obj_type!(
     #[doc(alias = "NSWorkspace")]
     pub Workspace(ns::Id)
@@ -19,6 +22,41 @@ impl Workspace {
     /// Open a URL, using the default handler for the URL's scheme.
     #[objc::msg_send(openURL:)]
     pub fn open_url(&self, url: &ns::Url) -> bool;
+
+    /// Sets the desktop image for the given screen.
+    #[objc::msg_send(setDesktopImageURL:forScreen:options:error:)]
+    #[objc::available(macos = 10.6)]
+    pub unsafe fn set_desktop_image_url_err<'ear>(
+        &self,
+        url: &ns::Url,
+        screen: &ns::Screen,
+        opts: &ns::Dictionary<DesktopImageOptionKey, ns::Id>,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
+
+    /// Sets the desktop image for the given screen.
+    #[objc::available(macos = 10.6)]
+    pub fn set_desktop_image_url<'ear>(
+        &self,
+        url: &ns::Url,
+        screen: &ns::Screen,
+        opts: &ns::Dictionary<DesktopImageOptionKey, ns::Id>,
+    ) -> ns::Result<'ear> {
+        ns::if_false(|err| unsafe { self.set_desktop_image_url_err(url, screen, opts, err) })
+    }
+
+    /// Returns the URL for the desktop image for the given screen.
+    #[objc::msg_send(desktopImageURLForScreen:)]
+    #[objc::available(macos = 10.6)]
+    pub fn desktop_image_url(&self, screen: &ns::Screen) -> Option<arc::R<ns::Url>>;
+
+    /// Returns the options for the desktop image for the given screen.
+    #[objc::msg_send(desktopImageOptionsForScreen:)]
+    #[objc::available(macos = 10.6)]
+    pub fn desktop_image_opts(
+        &self,
+        screen: &ns::Screen,
+    ) -> Option<arc::R<ns::Dictionary<DesktopImageOptionKey, ns::Id>>>;
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(openURL:configuration:completionHandler:)]
@@ -49,6 +87,43 @@ impl Workspace {
         let (comp, mut block) = blocks::result();
         self.open_url_with_cfg_ch_block(url, configuration, Some(&mut block));
         comp.await
+    }
+}
+
+/// Keys used in desktop image options dictionaries.
+pub mod desktop_image_opts {
+    use super::DesktopImageOptionKey;
+    use crate::api;
+
+    #[doc(alias = "NSWorkspaceDesktopImageScalingKey")]
+    #[api::available(macos = 10.6)]
+    #[inline]
+    pub fn scaling() -> &'static DesktopImageOptionKey {
+        unsafe { NSWorkspaceDesktopImageScalingKey }
+    }
+
+    #[doc(alias = "NSWorkspaceDesktopImageAllowClippingKey")]
+    #[api::available(macos = 10.6)]
+    #[inline]
+    pub fn allow_clipping() -> &'static DesktopImageOptionKey {
+        unsafe { NSWorkspaceDesktopImageAllowClippingKey }
+    }
+
+    #[doc(alias = "NSWorkspaceDesktopImageFillColorKey")]
+    #[api::available(macos = 10.6)]
+    #[inline]
+    pub fn fill_color() -> &'static DesktopImageOptionKey {
+        unsafe { NSWorkspaceDesktopImageFillColorKey }
+    }
+
+    #[api::weak]
+    unsafe extern "C" {
+        #[api::available(macos = 10.6)]
+        static NSWorkspaceDesktopImageScalingKey: &'static DesktopImageOptionKey;
+        #[api::available(macos = 10.6)]
+        static NSWorkspaceDesktopImageAllowClippingKey: &'static DesktopImageOptionKey;
+        #[api::available(macos = 10.6)]
+        static NSWorkspaceDesktopImageFillColorKey: &'static DesktopImageOptionKey;
     }
 }
 
@@ -362,6 +437,20 @@ mod tests {
         assert!(cfg.env().is_empty());
         assert_eq!(cfg.arch(), CpuType::ANY);
         assert!(!cfg.requires_universal_links());
+    }
+
+    #[test]
+    fn desktop_image_basics() {
+        assert!(!ns::workspace::desktop_image_opts::scaling().is_empty());
+        assert!(!ns::workspace::desktop_image_opts::allow_clipping().is_empty());
+        assert!(!ns::workspace::desktop_image_opts::fill_color().is_empty());
+
+        let Some(screen) = ns::Screen::main() else {
+            return;
+        };
+        let workspace = ns::Workspace::shared();
+        let _ = workspace.desktop_image_url(&screen);
+        let _ = workspace.desktop_image_opts(&screen);
     }
 
     #[tokio::test]

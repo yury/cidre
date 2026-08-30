@@ -268,6 +268,7 @@ pub use window::notifications as window_notifications;
 pub mod workspace;
 pub use workspace::Authorization as WorkspaceAuthorization;
 pub use workspace::AuthorizationType as WorkspaceAuthorizationType;
+pub use workspace::DesktopImageOptionKey as WorkspaceDesktopImageOptionKey;
 pub use workspace::Workspace;
 pub use workspace::WorkspaceOpenCfg;
 
