@@ -22,9 +22,9 @@ impl NotificationName {
     }
 }
 
-pub type NotificationCallback = extern "C" fn(
+pub type NotificationCallback<T = c_void> = unsafe extern "C" fn(
     center: &NotificationCenter,
-    observer: *mut c_void,
+    observer: *mut T,
     name: &NotificationName,
     object: *const c_void,
     user_info: Option<&cf::Dictionary>,
@@ -54,21 +54,26 @@ impl NotificationCenter {
         unsafe { CFNotificationCenterGetLocalCenter() }
     }
 
+    /// # Safety
+    ///
+    /// `observer` must remain valid for every operation performed by `callback`
+    /// until this registration is removed. The caller must also ensure that the
+    /// callback's thread-safety and reentrancy requirements are upheld.
     #[doc(alias = "CFNotificationCenterAddObserver")]
     #[inline]
-    pub fn add_observer(
+    pub unsafe fn add_observer<T>(
         &mut self,
-        observer: *const c_void,
-        callback: NotificationCallback,
-        name: &NotificationName,
+        observer: *mut T,
+        callback: NotificationCallback<T>,
+        name: Option<&NotificationName>,
         object: *const c_void,
         suspension_behavior: NotificationSuspensionBehavior,
     ) {
         unsafe {
             CFNotificationCenterAddObserver(
                 self,
-                observer,
-                callback,
+                observer.cast(),
+                std::mem::transmute::<NotificationCallback<T>, NotificationCallback>(callback),
                 name,
                 object,
                 suspension_behavior,
@@ -81,7 +86,7 @@ impl NotificationCenter {
     pub fn remove_observer(
         &mut self,
         observer: *const c_void,
-        name: &NotificationName,
+        name: Option<&NotificationName>,
         object: *const c_void,
     ) {
         unsafe { CFNotificationCenterRemoveObserver(self, observer, name, object) }
@@ -129,14 +134,14 @@ unsafe extern "C-unwind" {
         center: &mut NotificationCenter,
         observer: *const c_void,
         callback: NotificationCallback,
-        name: &NotificationName,
+        name: Option<&NotificationName>,
         object: *const c_void,
         suspension_behavior: NotificationSuspensionBehavior,
     );
     fn CFNotificationCenterRemoveObserver(
         center: &mut NotificationCenter,
         observer: *const c_void,
-        name: &NotificationName,
+        name: Option<&NotificationName>,
         object: *const c_void,
     );
     fn CFNotificationCenterRemoveEveryObserver(
@@ -151,4 +156,44 @@ unsafe extern "C-unwind" {
         user_info: Option<&cf::Dictionary>,
         deliver_immediately: bool,
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use std::{ffi::c_void, sync::atomic};
+
+    use crate::cf;
+
+    unsafe extern "C" fn count_notification(
+        _center: &cf::NotificationCenter,
+        observer: *mut atomic::AtomicUsize,
+        _name: &cf::NotificationName,
+        _object: *const c_void,
+        _user_info: Option<&cf::Dictionary>,
+    ) {
+        unsafe { &*observer }.fetch_add(1, atomic::Ordering::Relaxed);
+    }
+
+    #[test]
+    fn typed_observer_receives_notification() {
+        let center = cf::NotificationCenter::local();
+        let name = cf::NotificationName::with_raw(cf::str!(c"cidre.test.notification"));
+        let count = atomic::AtomicUsize::new(0);
+        let observer = std::ptr::from_ref(&count).cast_mut();
+
+        unsafe {
+            center.add_observer(
+                observer,
+                count_notification,
+                Some(name),
+                std::ptr::null(),
+                cf::notification_center::NotificationSuspensionBehavior::DeliverImmediately,
+            );
+        }
+        center.post(name, std::ptr::null(), None, true);
+        center.remove_observer(observer.cast(), Some(name), std::ptr::null());
+        center.post(name, std::ptr::null(), None, true);
+
+        assert_eq!(count.load(atomic::Ordering::Relaxed), 1);
+    }
 }
