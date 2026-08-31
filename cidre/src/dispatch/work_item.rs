@@ -19,8 +19,8 @@ impl objc::Obj for WorkItem {
     }
 
     #[inline]
-    unsafe fn release(id: &mut Self) {
-        unsafe { _Block_release(std::mem::transmute(id)) }
+    unsafe fn release(id: std::ptr::NonNull<Self>) {
+        unsafe { _Block_release(id.as_ptr().cast()) }
     }
 }
 

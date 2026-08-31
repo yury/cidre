@@ -536,8 +536,8 @@ where
     V: arc::Retain,
 {
     #[inline]
-    unsafe fn release(&mut self) {
-        unsafe { self.0.release() }
+    unsafe fn release(ptr: std::ptr::NonNull<Self>) {
+        unsafe { <Dictionary as arc::Release>::release(ptr.cast()) }
     }
 }
 
@@ -621,8 +621,8 @@ where
     V: arc::Release,
 {
     #[inline]
-    unsafe fn release(&mut self) {
-        unsafe { self.0.release() }
+    unsafe fn release(ptr: std::ptr::NonNull<Self>) {
+        unsafe { <DictionaryMut as arc::Release>::release(ptr.cast()) }
     }
 }
 

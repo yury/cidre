@@ -14,9 +14,15 @@ impl Type {
         unsafe { std::mem::transmute(CFRetain(cf)) }
     }
 
+    /// Releases one ownership reference for a Core Foundation object.
+    ///
+    /// # Safety
+    ///
+    /// `cf` must carry a live ownership reference that has not already been
+    /// released.
     #[inline]
-    pub unsafe fn release(cf: &mut Type) {
-        unsafe { CFRelease(cf) }
+    pub unsafe fn release(cf: NonNull<Type>) {
+        unsafe { CFRelease(cf.as_ptr()) }
     }
 
     #[inline]
@@ -50,8 +56,8 @@ impl arc::Retain for Type {
 
 impl arc::Release for Type {
     #[inline]
-    unsafe fn release(&mut self) {
-        unsafe { Type::release(self) }
+    unsafe fn release(ptr: NonNull<Self>) {
+        unsafe { Type::release(ptr) }
     }
 }
 
@@ -84,8 +90,10 @@ macro_rules! define_cf_type {
 
         impl $crate::arc::Release for $NewType {
             #[inline]
-            unsafe fn release(&mut self) {
-                unsafe { self.0.release() }
+            unsafe fn release(ptr: std::ptr::NonNull<Self>) {
+                unsafe {
+                    <$BaseType as $crate::arc::Release>::release(ptr.cast())
+                }
             }
         }
 
@@ -131,6 +139,6 @@ impl Type {
 
 unsafe extern "C-unwind" {
     fn CFRetain(cf: &Type) -> arc::R<Type>;
-    fn CFRelease(cf: &mut Type);
+    fn CFRelease(cf: *const Type);
     fn CFGetTypeID(cf: &Type) -> TypeId;
 }

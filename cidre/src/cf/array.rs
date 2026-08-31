@@ -135,8 +135,8 @@ where
 
 impl<T> arc::Release for ArrayOf<T> {
     #[inline]
-    unsafe fn release(&mut self) {
-        unsafe { self.0.release() }
+    unsafe fn release(ptr: std::ptr::NonNull<Self>) {
+        unsafe { <Array as arc::Release>::release(ptr.cast()) }
     }
 }
 
@@ -269,8 +269,8 @@ where
 
 impl<T> arc::Release for ArrayOfMut<T> {
     #[inline]
-    unsafe fn release(&mut self) {
-        unsafe { self.0.release() }
+    unsafe fn release(ptr: std::ptr::NonNull<Self>) {
+        unsafe { <ArrayMut as arc::Release>::release(ptr.cast()) }
     }
 }
 

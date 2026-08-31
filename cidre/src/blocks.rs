@@ -5,6 +5,7 @@
 
 use std::{
     ffi::c_void, marker::PhantomData, marker::Send as MarkerSend, marker::Sync as MarkerSync, mem,
+    ptr::NonNull,
 };
 
 use crate::{arc, define_opts, ns, objc};
@@ -66,8 +67,8 @@ impl<Sig, Attr> objc::Obj for Block<Sig, Attr> {
     }
 
     #[inline]
-    unsafe fn release(id: &mut Self) {
-        unsafe { _Block_release(std::mem::transmute(id)) }
+    unsafe fn release(id: NonNull<Self>) {
+        unsafe { _Block_release(id.as_ptr().cast()) }
     }
 }
 
