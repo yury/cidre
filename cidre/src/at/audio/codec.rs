@@ -621,8 +621,8 @@ impl CodecRef<UninitializedState> {
 
     pub fn initialize(
         self,
-        input_format: *const audio::StreamBasicDesc,
-        output_format: *const audio::StreamBasicDesc,
+        input_format: &audio::StreamBasicDesc,
+        output_format: &audio::StreamBasicDesc,
         magic_cookie: Option<&[u8]>,
     ) -> os::Result<CodecRef<InitializedState>> {
         unsafe {
@@ -870,27 +870,20 @@ impl CodecRef<InitializedState> {
 }
 
 impl Codec {
-    pub unsafe fn init_codec(
+    pub fn init_codec(
         &mut self,
-        input_format: *const audio::StreamBasicDesc,
-        output_format: *const audio::StreamBasicDesc,
+        input_format: &audio::StreamBasicDesc,
+        output_format: &audio::StreamBasicDesc,
         magic_cookie: Option<&[u8]>,
     ) -> os::Result {
+        let (cookie_ptr, cookie_len) = magic_cookie.map_or((std::ptr::null(), 0), |cookie| {
+            (
+                cookie.as_ptr(),
+                u32::try_from(cookie.len()).expect("audio codec magic cookie exceeds u32::MAX"),
+            )
+        });
         unsafe {
-            match magic_cookie {
-                Some(cookie) => AudioCodecInitialize(
-                    self,
-                    input_format,
-                    output_format,
-                    cookie.as_ptr(),
-                    cookie.len() as _,
-                )
-                .result(),
-                None => {
-                    AudioCodecInitialize(self, input_format, output_format, std::ptr::null(), 0)
-                        .result()
-                }
-            }
+            AudioCodecInitialize(self, input_format, output_format, cookie_ptr, cookie_len).result()
         }
     }
 
@@ -1309,8 +1302,8 @@ unsafe extern "C-unwind" {
 
     fn AudioCodecInitialize(
         in_codec: &mut Codec,
-        in_input_format: *const audio::StreamBasicDesc,
-        in_output_format: *const audio::StreamBasicDesc,
+        in_input_format: &audio::StreamBasicDesc,
+        in_output_format: &audio::StreamBasicDesc,
         in_magic_cookie: *const u8,
         in_magic_cookie_size: u32,
     ) -> os::Status;
