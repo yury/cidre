@@ -373,14 +373,17 @@ mod tests {
             let arr = cf::Array::from_type_refs(&[null, &num]).unwrap();
 
             let v = b"he".to_vec();
-            let _s = cf::String::create_with_bytes_no_copy_in(
-                &v,
-                cf::StringEncoding::UTF8,
-                false,
-                cf::Allocator::null(),
-                None,
-            )
-            .unwrap();
+            // SAFETY: `v` outlives `_s`, and the null allocator never frees it.
+            let _s = unsafe {
+                cf::String::create_with_bytes_no_copy_in(
+                    &v,
+                    cf::StringEncoding::UTF8,
+                    false,
+                    cf::Allocator::null(),
+                    None,
+                )
+                .unwrap()
+            };
 
             let _f = num;
 

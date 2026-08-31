@@ -51,7 +51,7 @@ impl Url {
 
     #[inline]
     pub fn with_fs_path_str(path: &str, is_dir: bool) -> arc::R<Self> {
-        let string = ns::String::with_str_no_copy(path);
+        let string = ns::String::with_str(path);
         Self::file_url_relative_to(&string, is_dir, None)
     }
 
@@ -70,13 +70,13 @@ impl Url {
 
     #[inline]
     pub fn with_str_relative_to(str: &str, relative_to: Option<&ns::Url>) -> Option<arc::R<Self>> {
-        let string = ns::String::with_str_no_copy(str);
+        let string = ns::String::with_str(str);
         Self::with_string_relative_to(&string, relative_to)
     }
 
     #[inline]
     pub fn with_str(str: &str) -> Option<arc::R<Self>> {
-        let string = ns::String::with_str_no_copy(str);
+        let string = ns::String::with_str(str);
         Self::with_string_relative_to(&string, None)
     }
 

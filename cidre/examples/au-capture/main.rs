@@ -88,7 +88,10 @@ mod macos {
                 return e.status();
             }
 
-            let buf = av::AudioPcmBuf::with_buf_list_no_copy(&ctx.format, &buf_list, None).unwrap();
+            // SAFETY: `buf` is dropped before the stack buffer list and `ctx.data`.
+            let buf = unsafe {
+                av::AudioPcmBuf::with_buf_list_no_copy(&ctx.format, &buf_list, None).unwrap()
+            };
             ctx.file.write(&buf).unwrap();
 
             os::Status::NO_ERR

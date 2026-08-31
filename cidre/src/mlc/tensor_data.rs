@@ -22,12 +22,21 @@ impl TensorData {
         self.len() == 0
     }
 
+    /// # Safety
+    ///
+    /// `bytes` must point to `length` initialized, readable bytes that remain
+    /// alive and unchanged until the returned tensor data is dropped.
     #[objc::msg_send(dataWithImmutableBytesNoCopy:length:)]
-    pub fn with_bytes_no_copy(bytes: *const u8, length: usize) -> arc::R<Self>;
+    pub unsafe fn with_bytes_no_copy(bytes: *const u8, length: usize) -> arc::R<Self>;
 
+    /// # Safety
+    ///
+    /// Every byte in `slice`, including padding, must be initialized. The slice
+    /// must remain alive and unchanged until the returned tensor data is
+    /// dropped.
     #[inline]
-    pub fn with_slice_no_copy<T: Sized>(slice: &[T]) -> arc::R<Self> {
-        Self::with_bytes_no_copy(slice.as_ptr() as _, std::mem::size_of_val(slice))
+    pub unsafe fn with_slice_no_copy<T: Sized>(slice: &[T]) -> arc::R<Self> {
+        unsafe { Self::with_bytes_no_copy(slice.as_ptr() as _, std::mem::size_of_val(slice)) }
     }
 }
 

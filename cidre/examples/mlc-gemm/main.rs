@@ -3,13 +3,18 @@
 use cidre::{blocks, mlc, ns};
 
 fn main() {
+    static DATA_A: [f32; 4] = [1.0, 2.0, 3.0, 4.0];
+    static DATA_B: [f32; 4] = [1.0, 2.0, 3.0, 4.0];
+    static DATA_C: [f32; 4] = [1.0; 4];
+
     let t_a = mlc::Tensor::with_shape_dt([1, 2, 2], mlc::DType::F32);
     let t_b = mlc::Tensor::with_shape_dt([1, 2, 2], mlc::DType::F32);
     let t_c = mlc::Tensor::with_shape_dt([1, 2, 2], mlc::DType::F32);
 
-    let dat_a = mlc::TensorData::with_slice_no_copy(&[1f32, 2.0, 3.0, 4.0]);
-    let dat_b = mlc::TensorData::with_slice_no_copy(&[1f32, 2.0, 3.0, 4.0]);
-    let dat_c = mlc::TensorData::with_slice_no_copy(&[1f32, 1.0, 1.0, 1.0]);
+    // SAFETY: the static arrays outlive the tensor data objects.
+    let dat_a = unsafe { mlc::TensorData::with_slice_no_copy(&DATA_A) };
+    let dat_b = unsafe { mlc::TensorData::with_slice_no_copy(&DATA_B) };
+    let dat_c = unsafe { mlc::TensorData::with_slice_no_copy(&DATA_C) };
 
     let graph = mlc::Graph::new();
 

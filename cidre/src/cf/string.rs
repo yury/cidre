@@ -91,6 +91,11 @@ impl String {
     /// assert!(s1.equal(&s2));
     ///```
     /// NOTE: cf_string benchmark reveals that it is actually do copy
+    ///
+    /// # Safety
+    ///
+    /// `str` must remain alive and unchanged until the returned string is
+    /// dropped.
     #[inline]
     pub unsafe fn from_str_no_copy(str: &str) -> arc::R<Self> {
         let bytes = str.as_bytes();
@@ -131,6 +136,10 @@ impl String {
         }
     }
 
+    /// # Safety
+    ///
+    /// `cstr` must remain alive and unchanged until the returned string is
+    /// dropped.
     #[inline]
     pub unsafe fn from_cstr_no_copy(cstr: &CStr) -> arc::R<Self> {
         unsafe {
@@ -190,8 +199,13 @@ impl String {
         unsafe { std::mem::transmute(self.copy_in(None)) }
     }
 
+    /// # Safety
+    ///
+    /// `bytes` must remain valid and unchanged for as long as the returned
+    /// string can access them. `contents_deallocator` must be appropriate for
+    /// the allocation backing `bytes` and may not free borrowed Rust storage.
     #[inline]
-    pub fn create_with_bytes_no_copy_in(
+    pub unsafe fn create_with_bytes_no_copy_in(
         bytes: &[u8],
         encoding: Encoding,
         is_external_representation: bool,
@@ -210,6 +224,12 @@ impl String {
         }
     }
 
+    /// # Safety
+    ///
+    /// `bytes_with_null` must contain a NUL-terminated string and remain valid
+    /// and unchanged for as long as the returned string can access it.
+    /// `contents_deallocator` must be appropriate for the allocation backing
+    /// the slice and may not free borrowed Rust storage.
     #[inline]
     pub unsafe fn create_with_cstring_no_copy_in(
         bytes_with_null: &[u8],

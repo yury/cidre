@@ -45,9 +45,14 @@ impl arc::A<PcmBuf> {
         frame_capacity: FrameCount,
     ) -> Option<arc::R<PcmBuf>>;
 
+    /// # Safety
+    ///
+    /// The buffer list and every sample buffer it references must remain valid
+    /// until the returned PCM buffer is dropped. If provided, `deallocator`
+    /// must release that storage exactly once.
     #[cfg(feature = "blocks")]
     #[objc::msg_send(initWithPCMFormat:bufferListNoCopy:deallocator:)]
-    pub fn init_with_pcm_format_buf_list_no_copy<const N: usize>(
+    pub unsafe fn init_with_pcm_format_buf_list_no_copy<const N: usize>(
         self,
         format: &Format,
         buf_list: &AudioBufList<N>,
@@ -64,13 +69,22 @@ impl PcmBuf {
         Self::alloc().init_with_pcm_format_frame_capacity(format, frame_capacity)
     }
 
+    /// Creates a PCM buffer that references `buf_list` without copying it.
+    ///
+    /// # Safety
+    ///
+    /// The buffer list and every sample buffer it references must remain valid
+    /// until the returned PCM buffer is dropped. If provided, `deallocator`
+    /// must release that storage exactly once.
     #[cfg(feature = "blocks")]
-    pub fn with_buf_list_no_copy<const N: usize>(
+    pub unsafe fn with_buf_list_no_copy<const N: usize>(
         format: &Format,
         buf_list: &AudioBufList<N>,
         deallocator: Option<&mut blocks::EscBlock<fn(buf_list: *const AudioBufList<N>)>>,
     ) -> Option<arc::R<Self>> {
-        Self::alloc().init_with_pcm_format_buf_list_no_copy(format, buf_list, deallocator)
+        unsafe {
+            Self::alloc().init_with_pcm_format_buf_list_no_copy(format, buf_list, deallocator)
+        }
     }
     /// The current number of valid sample frames in the buffer.
     ///
