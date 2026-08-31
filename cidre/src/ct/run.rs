@@ -23,6 +23,31 @@ impl Status {
 define_cf_type!(Run(cf::Type));
 impl Run {
     #[inline]
+    fn range_for_slice(&self, index: usize, len: usize) -> cf::Range {
+        let glyph_count = usize::try_from(self.glyph_count()).expect("negative glyph count");
+        let end = index.checked_add(len).expect("glyph range overflow");
+        assert!(end <= glyph_count, "glyph range out of bounds");
+        cf::Range::new(index as _, len as _)
+    }
+
+    #[inline]
+    fn range_len(&self, range: cf::Range) -> usize {
+        let glyph_count = usize::try_from(self.glyph_count()).expect("negative glyph count");
+        let index = usize::try_from(range.loc).expect("negative glyph range location");
+        let requested_len = usize::try_from(range.len).expect("negative glyph range length");
+        assert!(index <= glyph_count, "glyph range out of bounds");
+
+        let len = if requested_len == 0 {
+            glyph_count - index
+        } else {
+            requested_len
+        };
+        let end = index.checked_add(len).expect("glyph range overflow");
+        assert!(end <= glyph_count, "glyph range out of bounds");
+        len
+    }
+
+    #[inline]
     pub fn type_id() -> cf::TypeId {
         unsafe { CTRunGetTypeID() }
     }
@@ -66,7 +91,7 @@ impl Run {
 
     #[inline]
     pub fn copy_glyphs(&self, index: usize, buf: &mut [cg::Glyph]) {
-        let range = cf::Range::new(index as isize, buf.len() as isize);
+        let range = self.range_for_slice(index, buf.len());
         unsafe { CTRunGetGlyphs(self, range, buf.as_mut_ptr()) }
     }
 
@@ -77,7 +102,7 @@ impl Run {
 
     #[inline]
     pub fn copy_positions(&self, index: usize, buf: &mut [cg::Point]) {
-        let range = cf::Range::new(index as isize, buf.len() as isize);
+        let range = self.range_for_slice(index, buf.len());
         unsafe { CTRunGetPositions(self, range, buf.as_mut_ptr()) }
     }
 
@@ -88,7 +113,7 @@ impl Run {
 
     #[inline]
     pub fn copy_advances(&self, index: usize, buf: &mut [cg::Size]) {
-        let range = cf::Range::new(index as isize, buf.len() as isize);
+        let range = self.range_for_slice(index, buf.len());
         unsafe { CTRunGetAdvances(self, range, buf.as_mut_ptr()) }
     }
 
@@ -99,7 +124,7 @@ impl Run {
 
     #[inline]
     pub fn copy_string_indices(&self, index: usize, buf: &mut [cf::Index]) {
-        let range = cf::Range::new(index as isize, buf.len() as isize);
+        let range = self.range_for_slice(index, buf.len());
         unsafe { CTRunGetStringIndices(self, range, buf.as_mut_ptr()) }
     }
 
@@ -112,10 +137,11 @@ impl Run {
     pub fn typographic_bounds(
         &self,
         range: cf::Range,
-        ascent: *mut cg::Float,
-        descent: *mut cg::Float,
-        leading: *mut cg::Float,
+        ascent: Option<&mut cg::Float>,
+        descent: Option<&mut cg::Float>,
+        leading: Option<&mut cg::Float>,
     ) -> f64 {
+        self.range_len(range);
         unsafe { CTRunGetTypographicBounds(self, range, ascent, descent, leading) }
     }
 
@@ -128,10 +154,20 @@ impl Run {
     pub fn copy_advances_and_origins(
         &self,
         range: cf::Range,
-        advances_buf: *mut cg::Size,
-        origins_buf: *mut cg::Point,
+        advances_buf: Option<&mut [cg::Size]>,
+        origins_buf: Option<&mut [cg::Point]>,
     ) {
-        unsafe { CTRunGetBaseAdvancesAndOrigins(self, range, advances_buf, origins_buf) }
+        let len = self.range_len(range);
+        if let Some(buf) = &advances_buf {
+            assert!(buf.len() >= len, "advance buffer is too small");
+        }
+        if let Some(buf) = &origins_buf {
+            assert!(buf.len() >= len, "origin buffer is too small");
+        }
+
+        let advances_ptr = advances_buf.map_or(std::ptr::null_mut(), |buf| buf.as_mut_ptr());
+        let origins_ptr = origins_buf.map_or(std::ptr::null_mut(), |buf| buf.as_mut_ptr());
+        unsafe { CTRunGetBaseAdvancesAndOrigins(self, range, advances_ptr, origins_ptr) }
     }
 }
 
@@ -152,9 +188,9 @@ unsafe extern "C-unwind" {
     fn CTRunGetTypographicBounds(
         run: &Run,
         range: cf::Range,
-        ascent: *mut cg::Float,
-        descent: *mut cg::Float,
-        leading: *mut cg::Float,
+        ascent: Option<&mut cg::Float>,
+        descent: Option<&mut cg::Float>,
+        leading: Option<&mut cg::Float>,
     ) -> f64;
 
     fn CTRunGetTextMatrix(run: &Run) -> cg::AffineTransform;
@@ -166,4 +202,30 @@ unsafe extern "C-unwind" {
         origins_buf: *mut cg::Point,
     );
 
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{cf, cg, ct};
+
+    #[test]
+    fn copies_optional_run_outputs() {
+        let attr_string = cf::AttrString::new(cf::str!(c"test"));
+        let line = ct::Line::with_attr_string(&attr_string);
+        let run = &line.glyph_runs()[0];
+        let glyph_count = run.glyph_count() as usize;
+        let range = cf::Range::new(0, 0);
+
+        let mut advances = vec![cg::Size::zero(); glyph_count];
+        let mut origins = vec![cg::Point::zero(); glyph_count];
+        run.copy_advances_and_origins(range, Some(&mut advances), Some(&mut origins));
+        assert!(advances.iter().any(|advance| advance.width > 0.0));
+
+        let mut ascent = 0.0;
+        let mut descent = 0.0;
+        let width = run.typographic_bounds(range, Some(&mut ascent), Some(&mut descent), None);
+        assert!(width > 0.0);
+        assert!(ascent + descent > 0.0);
+        assert_eq!(width, run.typographic_bounds(range, None, None, None));
+    }
 }
