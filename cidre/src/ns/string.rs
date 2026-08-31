@@ -37,8 +37,13 @@ impl arc::A<String> {
         encoding: ns::StringEncoding,
     ) -> Option<arc::R<String>>;
 
+    /// # Safety
+    ///
+    /// `bytes` must point to `length` readable bytes that remain valid and
+    /// unchanged until the returned string is dropped. If `free_when_done` is
+    /// true, the allocation must be compatible with `free(3)`.
     #[objc::msg_send(initWithBytesNoCopy:length:encoding:freeWhenDone:)]
-    pub fn init_with_bytes_no_copy_length_encoding_free_when_done(
+    pub unsafe fn init_with_bytes_no_copy_length_encoding_free_when_done(
         self,
         bytes: *const u8,
         length: usize,
@@ -57,8 +62,14 @@ impl String {
         }
     }
 
+    /// Creates a string that borrows `str` without copying it.
+    ///
+    /// # Safety
+    ///
+    /// `str` must remain alive and unchanged until the returned string is
+    /// dropped.
     #[inline]
-    pub fn with_str_no_copy(str: &str) -> arc::R<Self> {
+    pub unsafe fn with_str_no_copy(str: &str) -> arc::R<Self> {
         unsafe {
             Self::alloc()
                 .init_with_bytes_no_copy_length_encoding_free_when_done(

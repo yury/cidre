@@ -128,8 +128,16 @@ impl PixelBuf {
         }
     }
 
+    /// Creates a pixel buffer over externally managed memory.
+    ///
+    /// # Safety
+    ///
+    /// `base_address` must describe a valid allocation for the supplied
+    /// dimensions, pixel format, and row stride. It must remain valid until
+    /// `release_callback` runs. The callback and `release_ref_con` must release
+    /// the allocation correctly and exactly once.
     #[doc(alias = "CVPixelBufferCreateWithBytes")]
-    pub fn with_bytes(
+    pub unsafe fn with_bytes(
         width: usize,
         height: usize,
         base_address: *mut c_void,
@@ -177,8 +185,15 @@ impl PixelBuf {
         }
     }
 
+    /// # Safety
+    ///
+    /// `base_address` must describe a valid allocation for the supplied
+    /// dimensions, pixel format, and row stride. It must remain valid until
+    /// `release_callback` runs. The callback and `release_ref_con` must release
+    /// the allocation correctly and exactly once. `pixel_buf_out` must be valid
+    /// for writes.
     #[doc(alias = "CVPixelBufferCreateWithBytes")]
-    pub fn create_with_bytes_in(
+    pub unsafe fn create_with_bytes_in(
         width: usize,
         height: usize,
         pixel_format_type: cv::PixelFormat,

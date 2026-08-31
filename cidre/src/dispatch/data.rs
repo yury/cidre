@@ -92,9 +92,16 @@ impl Data {
         unsafe { dispatch_data_create(bytes.as_ptr(), bytes.len(), None, Some(b.as_esc_mut())) }
     }
 
+    /// Creates dispatch data that owns neither `bytes` nor its allocation.
+    ///
+    /// # Safety
+    ///
+    /// `bytes` must point to `len` readable bytes that remain valid until
+    /// `destructor` runs. The destructor must keep the allocation alive until
+    /// then and release it exactly once.
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn with_bytes_no_copy(
+    pub unsafe fn with_bytes_no_copy(
         bytes: *const u8,
         len: usize,
         queue: Option<&dispatch::Queue>,
@@ -142,7 +149,8 @@ impl From<Vec<u8>> for arc::R<Data> {
             let _ = &val;
         });
 
-        Data::with_bytes_no_copy(ptr, len, None, &mut destruct)
+        // SAFETY: the escaping destructor owns `val` until dispatch is done.
+        unsafe { Data::with_bytes_no_copy(ptr, len, None, &mut destruct) }
     }
 }
 
@@ -159,7 +167,8 @@ impl From<Box<[u8]>> for arc::R<Data> {
             let _ = &val;
         });
 
-        Data::with_bytes_no_copy(ptr, len, None, &mut destruct)
+        // SAFETY: the escaping destructor owns `val` until dispatch is done.
+        unsafe { Data::with_bytes_no_copy(ptr, len, None, &mut destruct) }
     }
 }
 

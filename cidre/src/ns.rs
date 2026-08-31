@@ -320,7 +320,7 @@ pub fn log_string(str: &crate::ns::String) {
 macro_rules! log {
     ($($arg:tt)*) => {{
         let rstr = format!("{}",format_args!($($arg)*));
-        let ns_str = $crate::ns::String::with_str_no_copy(&rstr);
+        let ns_str = $crate::ns::String::with_str(&rstr);
         $crate::ns::log_string(ns_str.as_ref());
     }};
 }

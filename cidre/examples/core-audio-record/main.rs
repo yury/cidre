@@ -74,8 +74,10 @@ mod macos {
             ctx: Option<&mut Ctx>,
         ) -> os::Status {
             let ctx = ctx.unwrap();
-            let buf =
-                av::AudioPcmBuf::with_buf_list_no_copy(&ctx.format, input_data, None).unwrap();
+            // SAFETY: `buf` is dropped before the audio callback returns.
+            let buf = unsafe {
+                av::AudioPcmBuf::with_buf_list_no_copy(&ctx.format, input_data, None).unwrap()
+            };
             ctx.file.write(&buf).unwrap();
             Default::default()
         }
