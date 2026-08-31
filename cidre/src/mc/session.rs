@@ -85,16 +85,16 @@ impl Session {
 
     /// Create a session with an MCPeerID for the local peer.
     #[inline]
-    pub fn with_peer<'ear>(peer: &mc::PeerId) -> ns::ExResult<'ear, arc::R<Self>> {
+    pub fn with_peer(peer: &mc::PeerId) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe { Self::alloc().init_with_peer_throws(peer) })
     }
 
     #[inline]
-    pub fn with_encryption<'ear>(
+    pub fn with_encryption(
         peer: &mc::PeerId,
         sec_identity: Option<&ns::Array<ns::Id>>,
         encryption_preference: mc::EncryptionPreference,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe {
             Self::alloc().init_with_encryption_throws(peer, sec_identity, encryption_preference)
         })

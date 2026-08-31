@@ -16,10 +16,10 @@ impl arc::A<AdvertiserAssistant> {
 impl AdvertiserAssistant {
     define_cls!(MC_ADVERTISER_ASSISTANT);
 
-    pub fn with_service_type<'ear>(
+    pub fn with_service_type(
         peer: &mc::PeerId,
         service_type: &ns::String,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe { Self::alloc().init_service_type_throws(peer, service_type) })
     }
 

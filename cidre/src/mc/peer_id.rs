@@ -14,7 +14,7 @@ impl PeerId {
     define_cls!(MC_PEER_ID);
 
     #[inline]
-    pub fn with_display_name<'ear>(name: &ns::String) -> ns::ExResult<'ear, arc::R<Self>> {
+    pub fn with_display_name(name: &ns::String) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe { Self::alloc().init_with_display_name_throws(name) })
     }
 

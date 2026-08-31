@@ -17,10 +17,10 @@ impl arc::A<SysZoomSlider> {
         device: &av::CaptureDevice,
     ) -> arc::R<SysZoomSlider>;
 
-    pub fn init_with_device<'ear>(
+    pub fn init_with_device(
         self,
         device: &av::CaptureDevice,
-    ) -> ns::ExResult<'ear, arc::R<SysZoomSlider>> {
+    ) -> ns::ExResult<arc::R<SysZoomSlider>> {
         ns::try_catch(|| unsafe { self.init_with_device_throws(device) })
     }
 
@@ -33,11 +33,11 @@ impl arc::A<SysZoomSlider> {
     ) -> arc::R<SysZoomSlider>;
 
     #[cfg(feature = "blocks")]
-    pub fn init_with_device_action<'ear>(
+    pub fn init_with_device_action(
         self,
         device: &av::CaptureDevice,
         action: &mut blocks::EscBlock<fn(video_zoom_factor: cg::Float)>,
-    ) -> ns::ExResult<'ear, arc::R<SysZoomSlider>> {
+    ) -> ns::ExResult<arc::R<SysZoomSlider>> {
         ns::try_catch(|| unsafe { self.init_with_device_action_throws(device, action) })
     }
 }
@@ -47,16 +47,16 @@ impl SysZoomSlider {
     crate::define_cls!(AV_CAPTURE_SYSTEM_ZOOM_SLIDER);
 
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
-    pub fn with_device<'ear>(device: &av::CaptureDevice) -> ns::ExResult<'ear, arc::R<Self>> {
+    pub fn with_device(device: &av::CaptureDevice) -> ns::ExResult<arc::R<Self>> {
         Self::alloc().init_with_device(device)
     }
 
     #[cfg(feature = "blocks")]
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
-    pub fn with_device_action<'ear>(
+    pub fn with_device_action(
         device: &av::CaptureDevice,
         action: &mut blocks::EscBlock<fn(video_zoom_factor: cg::Float)>,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         Self::alloc().init_with_device_action(device, action)
     }
 }

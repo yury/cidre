@@ -155,7 +155,7 @@ impl DeviceInput {
     ///
     /// When capturing a Cinematic Video, use this property to control the amount of blur in the simulated depth of field effect.
     #[objc::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
-    pub fn set_simultated_aperture<'ear>(&mut self, val: f32) -> ns::ExResult<'ear> {
+    pub fn set_simultated_aperture(&mut self, val: f32) -> ns::ExResult {
         unsafe { ns::try_catch(|| self.set_simulated_aperture_throws(val)) }
     }
 }

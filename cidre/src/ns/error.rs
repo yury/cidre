@@ -5,8 +5,14 @@ use crate::{arc, define_cls, define_obj_type, ns, objc, os};
 #[cfg(feature = "cf")]
 use crate::cf;
 
-impl<'ear> From<&'ear ns::Error> for ns::ExErr<'ear> {
-    fn from(value: &'ear ns::Error) -> Self {
+impl From<&ns::Error> for ns::ExErr {
+    fn from(value: &ns::Error) -> Self {
+        Self::Err(arc::Retain::retained(value))
+    }
+}
+
+impl From<arc::R<ns::Error>> for ns::ExErr {
+    fn from(value: arc::R<ns::Error>) -> Self {
         Self::Err(value)
     }
 }

@@ -18,13 +18,13 @@ impl arc::A<Slider> {
         max_val: f32,
     ) -> arc::R<Slider>;
 
-    pub fn init_with_range<'ear>(
+    pub fn init_with_range(
         self,
         localized_title: &ns::String,
         symbol_name: &ns::String,
         min_val: f32,
         max_val: f32,
-    ) -> ns::ExResult<'ear, arc::R<Slider>> {
+    ) -> ns::ExResult<arc::R<Slider>> {
         ns::try_catch(|| unsafe {
             self.init_with_range_throws(localized_title, symbol_name, min_val, max_val)
         })
@@ -40,14 +40,14 @@ impl arc::A<Slider> {
         step: f32,
     ) -> arc::R<Slider>;
 
-    pub fn init_with_range_step<'ear>(
+    pub fn init_with_range_step(
         self,
         localized_title: &ns::String,
         symbol_name: &ns::String,
         min_val: f32,
         max_val: f32,
         step: f32,
-    ) -> ns::ExResult<'ear, arc::R<Slider>> {
+    ) -> ns::ExResult<arc::R<Slider>> {
         ns::try_catch(|| unsafe {
             self.init_with_range_step_throws(localized_title, symbol_name, min_val, max_val, step)
         })
@@ -61,12 +61,12 @@ impl arc::A<Slider> {
         vals: &ns::Array<ns::Number>,
     ) -> arc::R<Slider>;
 
-    pub fn init_with_vals<'ear>(
+    pub fn init_with_vals(
         self,
         localized_title: &ns::String,
         symbol_name: &ns::String,
         vals: &ns::Array<ns::Number>,
-    ) -> ns::ExResult<'ear, arc::R<Slider>> {
+    ) -> ns::ExResult<arc::R<Slider>> {
         ns::try_catch(|| unsafe { self.init_with_vals_throws(localized_title, symbol_name, vals) })
     }
 }
@@ -76,32 +76,32 @@ impl Slider {
     crate::define_cls!(AV_CAPTURE_SLIDER);
 
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
-    pub fn with_range<'ear>(
+    pub fn with_range(
         localized_title: &ns::String,
         symbol_name: &ns::String,
         min_val: f32,
         max_val: f32,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         Self::alloc().init_with_range(localized_title, symbol_name, min_val, max_val)
     }
 
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
-    pub fn with_range_step<'ear>(
+    pub fn with_range_step(
         localized_title: &ns::String,
         symbol_name: &ns::String,
         min_val: f32,
         max_val: f32,
         step: f32,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         Self::alloc().init_with_range_step(localized_title, symbol_name, min_val, max_val, step)
     }
 
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
-    pub fn with_vals<'ear>(
+    pub fn with_vals(
         localized_title: &ns::String,
         symbol_name: &ns::String,
         vals: &ns::Array<ns::Number>,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         Self::alloc().init_with_vals(localized_title, symbol_name, vals)
     }
 
@@ -109,14 +109,14 @@ impl Slider {
     pub unsafe fn value_throws(&self) -> f32;
 
     /// The current value of the slider.
-    pub fn value<'ear>(&self) -> ns::ExResult<'ear, f32> {
+    pub fn value(&self) -> ns::ExResult<f32> {
         ns::try_catch(|| unsafe { self.value_throws() })
     }
 
     #[objc::msg_send(setValue:)]
     pub unsafe fn set_value_throws(&mut self, val: f32);
 
-    pub fn set_value<'ear>(&mut self, val: f32) -> ns::ExResult<'ear> {
+    pub fn set_value(&mut self, val: f32) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.set_value_throws(val) })
     }
 

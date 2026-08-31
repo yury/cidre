@@ -48,10 +48,7 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn items_n_in_section_throws(&self, section_id: &S) -> ns::Integer;
 
     #[inline]
-    pub fn items_n_in_section<'ear>(
-        &self,
-        section_id: impl AsRef<S>,
-    ) -> ns::ExResult<'ear, ns::Integer> {
+    pub fn items_n_in_section(&self, section_id: impl AsRef<S>) -> ns::ExResult<ns::Integer> {
         ns::try_catch(|| unsafe { self.items_n_in_section_throws(section_id.as_ref()) })
     }
 
@@ -59,10 +56,10 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn item_ids_in_section_throws(&self, section_id: &S) -> arc::R<ns::Array<I>>;
 
     #[inline]
-    pub fn item_ids_in_section<'ear>(
+    pub fn item_ids_in_section(
         &self,
         section_id: impl AsRef<S>,
-    ) -> ns::ExResult<'ear, arc::R<ns::Array<I>>> {
+    ) -> ns::ExResult<arc::R<ns::Array<I>>> {
         ns::try_catch(|| unsafe { self.item_ids_in_section_throws(section_id.as_ref()) })
     }
 
@@ -79,7 +76,7 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn append_items_throws(&mut self, items: &ns::Array<I>);
 
     #[inline]
-    pub fn append_items<'ear>(&mut self, items: &ns::Array<I>) -> ns::ExResult<'ear> {
+    pub fn append_items(&mut self, items: &ns::Array<I>) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.append_items_throws(items) })
     }
 
@@ -87,11 +84,11 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn append_items_to_section_throws(&mut self, items: &ns::Array<I>, section_id: &S);
 
     #[inline]
-    pub fn append_items_to_section<'ear>(
+    pub fn append_items_to_section(
         &mut self,
         items: &ns::Array<I>,
         section_id: impl AsRef<S>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.append_items_to_section_throws(items, section_id.as_ref()) })
     }
 
@@ -99,11 +96,11 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn insert_items_before_item_throws(&mut self, items: &ns::Array<I>, item: &I);
 
     #[inline]
-    pub fn insert_items_before_item<'ear>(
+    pub fn insert_items_before_item(
         &mut self,
         items: &ns::Array<I>,
         item: impl AsRef<I>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.insert_items_before_item_throws(items, item.as_ref()) })
     }
 
@@ -111,11 +108,11 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn insert_items_after_item_throws(&mut self, items: &ns::Array<I>, item: &I);
 
     #[inline]
-    pub fn insert_items_after_item<'ear>(
+    pub fn insert_items_after_item(
         &mut self,
         items: &ns::Array<I>,
         item: impl AsRef<I>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.insert_items_after_item_throws(items, item.as_ref()) })
     }
 
@@ -123,7 +120,7 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn delete_items_throws(&mut self, items: &ns::Array<I>);
 
     #[inline]
-    pub fn delete_items<'ear>(&mut self, items: &ns::Array<I>) -> ns::ExResult<'ear> {
+    pub fn delete_items(&mut self, items: &ns::Array<I>) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.delete_items_throws(items) })
     }
 
@@ -134,11 +131,11 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn move_item_before_item_throws(&mut self, item: &I, before: &I);
 
     #[inline]
-    pub fn move_item_before_item<'ear>(
+    pub fn move_item_before_item(
         &mut self,
         item: impl AsRef<I>,
         before: impl AsRef<I>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe {
             self.move_item_before_item_throws(item.as_ref(), before.as_ref())
         })
@@ -148,11 +145,11 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn move_item_after_item_throws(&mut self, item: &I, after: &I);
 
     #[inline]
-    pub fn move_item_after_item<'ear>(
+    pub fn move_item_after_item(
         &mut self,
         item: impl AsRef<I>,
         after: impl AsRef<I>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.move_item_after_item_throws(item.as_ref(), after.as_ref()) })
     }
 
@@ -160,7 +157,7 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn reload_items_throws(&mut self, items: &ns::Array<I>);
 
     #[inline]
-    pub fn reload_items<'ear>(&mut self, items: &ns::Array<I>) -> ns::ExResult<'ear> {
+    pub fn reload_items(&mut self, items: &ns::Array<I>) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.reload_items_throws(items) })
     }
 
@@ -170,7 +167,7 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
 
     #[inline]
     #[api::available(ios = 15.0, tvos = 15.0)]
-    pub fn reconfigure_items<'ear>(&mut self, items: &ns::Array<I>) -> ns::ExResult<'ear> {
+    pub fn reconfigure_items(&mut self, items: &ns::Array<I>) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.reconfigure_items_throws(items) })
     }
 
@@ -178,7 +175,7 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn append_sections_throws(&mut self, sections: &ns::Array<S>);
 
     #[inline]
-    pub fn append_sections<'ear>(&mut self, sections: &ns::Array<S>) -> ns::ExResult<'ear> {
+    pub fn append_sections(&mut self, sections: &ns::Array<S>) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.append_sections_throws(sections) })
     }
 
@@ -190,11 +187,11 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     );
 
     #[inline]
-    pub fn insert_sections_before_section<'ear>(
+    pub fn insert_sections_before_section(
         &mut self,
         sections: &ns::Array<S>,
         before: impl AsRef<S>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe {
             self.insert_sections_before_section_throws(sections, before.as_ref())
         })
@@ -208,11 +205,11 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     );
 
     #[inline]
-    pub fn insert_sections_after_section<'ear>(
+    pub fn insert_sections_after_section(
         &mut self,
         sections: &ns::Array<S>,
         after: impl AsRef<S>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe {
             self.insert_sections_after_section_throws(sections, after.as_ref())
         })
@@ -222,7 +219,7 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn delete_sections_throws(&mut self, sections: &ns::Array<S>);
 
     #[inline]
-    pub fn delete_sections<'ear>(&mut self, sections: &ns::Array<S>) -> ns::ExResult<'ear> {
+    pub fn delete_sections(&mut self, sections: &ns::Array<S>) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.delete_sections_throws(sections) })
     }
 
@@ -230,11 +227,11 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn move_section_before_section_throws(&mut self, section: &S, before: &S);
 
     #[inline]
-    pub fn move_section_before_section<'ear>(
+    pub fn move_section_before_section(
         &mut self,
         section: impl AsRef<S>,
         before: impl AsRef<S>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe {
             self.move_section_before_section_throws(section.as_ref(), before.as_ref())
         })
@@ -244,11 +241,11 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn move_section_after_section_throws(&mut self, section: &S, after: &S);
 
     #[inline]
-    pub fn move_section_after_section<'ear>(
+    pub fn move_section_after_section(
         &mut self,
         section: impl AsRef<S>,
         after: impl AsRef<S>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe {
             self.move_section_after_section_throws(section.as_ref(), after.as_ref())
         })
@@ -258,7 +255,7 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     pub unsafe fn reload_sections_throws(&mut self, sections: &ns::Array<S>);
 
     #[inline]
-    pub fn reload_sections<'ear>(&mut self, sections: &ns::Array<S>) -> ns::ExResult<'ear> {
+    pub fn reload_sections(&mut self, sections: &ns::Array<S>) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.reload_sections_throws(sections) })
     }
 }

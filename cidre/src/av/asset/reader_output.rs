@@ -84,7 +84,7 @@ impl ReaderOutput {
 
     #[cfg(feature = "cm")]
     #[inline]
-    pub fn next_sample_buf<'ear>(&mut self) -> ns::ExResult<'ear, Option<arc::R<cm::SampleBuf>>> {
+    pub fn next_sample_buf(&mut self) -> ns::ExResult<Option<arc::R<cm::SampleBuf>>> {
         ns::try_catch(|| unsafe { self.next_sample_buf_throws() })
     }
 }
@@ -145,10 +145,10 @@ impl ReaderTrackOutput {
         Self::alloc().init_with_track_throws(track, output_settings)
     }
 
-    pub fn with_track<'ear>(
+    pub fn with_track(
         track: &av::asset::Track,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| Self::with_track_throws(track, output_settings))
     }
 

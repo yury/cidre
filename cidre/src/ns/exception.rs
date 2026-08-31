@@ -188,10 +188,10 @@ unsafe extern "C" {
 
 unsafe extern "C-unwind" {
     fn cidre_raise_exception(message: &ns::String) -> !;
-    fn cidre_try_catch<'ar>(
+    fn cidre_try_catch(
         during: extern "C" fn(ctx: *mut c_void),
         ctx: *mut c_void,
-    ) -> Option<&'ar ns::Id>;
+    ) -> Option<arc::Rar<ns::Id>>;
 }
 
 #[inline]
@@ -208,7 +208,7 @@ where
     during
 }
 
-pub fn try_catch<'ar, F, R>(f: F) -> ns::ExResult<'ar, R>
+pub fn try_catch<F, R>(f: F) -> ns::ExResult<R>
 where
     F: FnOnce() -> R,
 {
@@ -219,24 +219,34 @@ where
     let ctx = &mut wrapper as *mut _ as *mut c_void;
 
     unsafe {
-        match cidre_try_catch(std::mem::transmute(f), ctx) {
+        match arc::rar_retain_option(cidre_try_catch(std::mem::transmute(f), ctx)) {
             None => Ok(result.unwrap_unchecked()),
-            Some(e) => Err(std::mem::transmute(e)),
+            Some(exception) => Err(arc::R::from_raw(exception.into_raw().cast())),
         }
     }
 }
 
-impl<'ear> From<&'ear ns::Exception> for ns::ExErr<'ear> {
-    fn from(value: &'ear ns::Exception) -> Self {
+impl From<&ns::Exception> for ns::ExErr {
+    fn from(value: &ns::Exception) -> Self {
+        Self::Ex(arc::Retain::retained(value))
+    }
+}
+
+impl From<arc::R<ns::Exception>> for ns::ExErr {
+    fn from(value: arc::R<ns::Exception>) -> Self {
         Self::Ex(value)
     }
 }
 
-pub fn try_catch_err<'ar, F, R>(f: F) -> Result<R, ns::ExErr<'ar>>
+pub fn try_catch_err<F, R, E>(f: F) -> Result<R, ns::ExErr>
 where
-    F: FnOnce() -> Result<R, &'ar ns::Error>,
+    F: FnOnce() -> Result<R, E>,
+    E: Into<ns::ExErr>,
 {
-    Ok(try_catch(f)??)
+    match try_catch(f).map_err(ns::ExErr::from)? {
+        Ok(value) => Ok(value),
+        Err(err) => Err(err.into()),
+    }
 }
 
 #[cfg(test)]

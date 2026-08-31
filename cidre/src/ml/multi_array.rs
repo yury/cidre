@@ -102,7 +102,7 @@ impl MultiArray {
     pub fn with_pixel_buf<'ear, S: AsRef<ns::Array<ns::Number>>>(
         pixel_buf: &cv::PixelBuf,
         shape: S,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe {
             Self::alloc().init_with_pixel_buf_throws(pixel_buf, shape.as_ref())
         })
@@ -176,7 +176,7 @@ impl MultiArray {
         multi_arrays: S,
         axis: isize,
         d_type: MultiArrayDType,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe { Self::concat_throws(multi_arrays.as_ref(), axis, d_type) })
     }
 }

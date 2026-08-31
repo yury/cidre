@@ -42,19 +42,19 @@ impl arc::A<BrowserViewController> {
 impl BrowserViewController {
     define_cls!(MC_BROWSER_VIEW_CONTROLLER);
 
-    pub fn with_service_type<'ear>(
+    pub fn with_service_type(
         service_type: &ns::String,
         session: &mc::Session,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe {
             Self::alloc().init_with_service_type_throws(service_type, session)
         })
     }
 
-    pub fn with_browser<'ear>(
+    pub fn with_browser(
         browser: &mc::NearbyServiceBrowser,
         session: &mc::Session,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe { Self::alloc().init_with_browser_throws(browser, session) })
     }
 

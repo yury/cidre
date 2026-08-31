@@ -85,7 +85,7 @@ impl PcmBuf {
     #[objc::msg_send(setFrameLength:)]
     pub fn set_frame_len_throws<'ear>(&mut self, value: FrameCount);
 
-    pub fn set_frame_len<'ear>(&mut self, value: FrameCount) -> ns::ExResult<'ear> {
+    pub fn set_frame_len(&mut self, value: FrameCount) -> ns::ExResult {
         ns::try_catch(|| self.set_frame_len_throws(value))
     }
 

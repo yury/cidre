@@ -57,7 +57,7 @@ impl Writer {
     #[objc::msg_send(addInput:)]
     pub unsafe fn add_input_throws(&mut self, input: &WriterInput);
 
-    pub fn add_input<'ear>(&mut self, input: &WriterInput) -> ns::ExResult<'ear> {
+    pub fn add_input(&mut self, input: &WriterInput) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.add_input_throws(input) })
     }
 
@@ -79,7 +79,7 @@ impl Writer {
     pub unsafe fn end_session_at_src_time_throws(&mut self, end_time: cm::Time);
 
     #[cfg(feature = "cm")]
-    pub fn end_session_at_src_time<'ear>(&mut self, end_time: cm::Time) -> ns::ExResult<'ear> {
+    pub fn end_session_at_src_time(&mut self, end_time: cm::Time) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.end_session_at_src_time_throws(end_time) })
     }
 
@@ -112,9 +112,7 @@ impl Writer {
         ns::if_none(|err| Self::alloc().init_with_url_file_type_err(url, file_type, err))
     }
 
-    pub fn with_content_type<'ear>(
-        output_content_type: &ut::Type,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    pub fn with_content_type(output_content_type: &ut::Type) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe {
             Self::alloc().init_with_content_type_throws(output_content_type)
         })
@@ -167,7 +165,7 @@ impl Writer {
 
     /// Closes the current segment and outputs it to the -assetWriter:didOutputSegmentData:segmentType:segmentReport:
     /// or -assetWriter:didOutputSegmentData:segmentType: delegate method.
-    pub fn flush_segment<'ear>(&mut self) -> ns::ExResult<'ear> {
+    pub fn flush_segment(&mut self) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.flush_segment_throws() })
     }
 }

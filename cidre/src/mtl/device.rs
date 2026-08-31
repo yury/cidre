@@ -435,10 +435,10 @@ impl Device {
         format: mtl::PixelFormat,
     ) -> usize;
 
-    pub fn min_linear_texture_alignment_for_pixel_format<'ear>(
+    pub fn min_linear_texture_alignment_for_pixel_format(
         &self,
         format: mtl::PixelFormat,
-    ) -> ns::ExResult<'ear, usize> {
+    ) -> ns::ExResult<usize> {
         ns::try_catch(|| unsafe {
             self.min_linear_texture_alignment_for_pixel_format_throws(format)
         })

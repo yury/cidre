@@ -49,7 +49,7 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
     pub unsafe fn append_items_throws(&mut self, items: &ns::Array<I>);
 
     #[inline]
-    pub fn append_items<'ear>(&mut self, items: &ns::Array<I>) -> ns::ExResult<'ear> {
+    pub fn append_items(&mut self, items: &ns::Array<I>) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.append_items_throws(items) })
     }
 
@@ -57,11 +57,11 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
     pub unsafe fn append_items_into_throws(&mut self, items: &ns::Array<I>, parent: &I);
 
     #[inline]
-    pub fn append_items_into<'ear>(
+    pub fn append_items_into(
         &mut self,
         items: &ns::Array<I>,
         parent: impl AsRef<I>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.append_items_into_throws(items, parent.as_ref()) })
     }
 
@@ -69,11 +69,11 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
     pub unsafe fn insert_items_before_item_throws(&mut self, items: &ns::Array<I>, item: &I);
 
     #[inline]
-    pub fn insert_items_before_item<'ear>(
+    pub fn insert_items_before_item(
         &mut self,
         items: &ns::Array<I>,
         item: impl AsRef<I>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.insert_items_before_item_throws(items, item.as_ref()) })
     }
 
@@ -81,11 +81,11 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
     pub unsafe fn insert_items_after_item_throws(&mut self, items: &ns::Array<I>, item: &I);
 
     #[inline]
-    pub fn insert_items_after_item<'ear>(
+    pub fn insert_items_after_item(
         &mut self,
         items: &ns::Array<I>,
         item: impl AsRef<I>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.insert_items_after_item_throws(items, item.as_ref()) })
     }
 
@@ -93,7 +93,7 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
     pub unsafe fn delete_items_throws(&mut self, items: &ns::Array<I>);
 
     #[inline]
-    pub fn delete_items<'ear>(&mut self, items: &ns::Array<I>) -> ns::ExResult<'ear> {
+    pub fn delete_items(&mut self, items: &ns::Array<I>) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.delete_items_throws(items) })
     }
 
@@ -104,11 +104,11 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
     pub unsafe fn move_item_before_item_throws(&mut self, item: &I, before: &I);
 
     #[inline]
-    pub fn move_item_before_item<'ear>(
+    pub fn move_item_before_item(
         &mut self,
         item: impl AsRef<I>,
         before: impl AsRef<I>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe {
             self.move_item_before_item_throws(item.as_ref(), before.as_ref())
         })
@@ -118,11 +118,11 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
     pub unsafe fn move_item_after_item_throws(&mut self, item: &I, after: &I);
 
     #[inline]
-    pub fn move_item_after_item<'ear>(
+    pub fn move_item_after_item(
         &mut self,
         item: impl AsRef<I>,
         after: impl AsRef<I>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.move_item_after_item_throws(item.as_ref(), after.as_ref()) })
     }
 
@@ -130,7 +130,7 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
     pub unsafe fn reload_items_throws(&mut self, items: &ns::Array<I>);
 
     #[inline]
-    pub fn reload_items<'ear>(&mut self, items: &ns::Array<I>) -> ns::ExResult<'ear> {
+    pub fn reload_items(&mut self, items: &ns::Array<I>) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.reload_items_throws(items) })
     }
 
@@ -142,7 +142,7 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
     pub unsafe fn expand_items_throws(&mut self, items: &ns::Array<I>);
 
     #[inline]
-    pub fn expand_items<'ear>(&mut self, items: &ns::Array<I>) -> ns::ExResult<'ear> {
+    pub fn expand_items(&mut self, items: &ns::Array<I>) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.expand_items_throws(items) })
     }
 
@@ -150,7 +150,7 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
     pub unsafe fn collapse_items_throws(&mut self, items: &ns::Array<I>);
 
     #[inline]
-    pub fn collapse_items<'ear>(&mut self, items: &ns::Array<I>) -> ns::ExResult<'ear> {
+    pub fn collapse_items(&mut self, items: &ns::Array<I>) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.collapse_items_throws(items) })
     }
 
@@ -158,11 +158,7 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
     pub unsafe fn collapse_items_mode_throws(&mut self, items: &ns::Array<I>, mode: ns::Integer);
 
     #[inline]
-    pub fn collapse_items_mode<'ear>(
-        &mut self,
-        items: &ns::Array<I>,
-        mode: ns::Integer,
-    ) -> ns::ExResult<'ear> {
+    pub fn collapse_items_mode(&mut self, items: &ns::Array<I>, mode: ns::Integer) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.collapse_items_mode_throws(items, mode) })
     }
 

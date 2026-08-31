@@ -209,11 +209,11 @@ impl AttrString {
         effective_range: Option<&ns::Range>,
     ) -> arc::R<ns::Dictionary<AttrStringKey, ns::Id>>;
 
-    pub fn attrs_at<'ear>(
+    pub fn attrs_at(
         &self,
         index: usize,
         effective_range: Option<&ns::Range>,
-    ) -> ns::ExResult<'ear, arc::R<ns::Dictionary<AttrStringKey, ns::Id>>> {
+    ) -> ns::ExResult<arc::R<ns::Dictionary<AttrStringKey, ns::Id>>> {
         ns::try_catch(|| unsafe { self.attrs_at_throws(index, effective_range) })
     }
 
@@ -287,12 +287,12 @@ impl AttrStringMut {
         range: ns::Range,
     );
 
-    pub fn add_attr<'ear>(
+    pub fn add_attr(
         &mut self,
         name: &ns::AttrStringKey,
         val: &ns::Id,
         range: ns::Range,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.add_attr_throws(name, val, range) })
     }
 
@@ -303,22 +303,18 @@ impl AttrStringMut {
         range: ns::Range,
     );
 
-    pub fn add_attrs<'ear>(
+    pub fn add_attrs(
         &mut self,
         attrs: &ns::Dictionary<ns::AttrStringKey, ns::Id>,
         range: ns::Range,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.add_attrs_throws(attrs, range) })
     }
 
     #[objc::msg_send(removeAttribute:range:)]
     pub unsafe fn remove_attr_throws(&mut self, name: &ns::AttrStringKey, range: ns::Range);
 
-    pub fn remove_attr<'ear>(
-        &mut self,
-        name: &ns::AttrStringKey,
-        range: ns::Range,
-    ) -> ns::ExResult<'ear> {
+    pub fn remove_attr(&mut self, name: &ns::AttrStringKey, range: ns::Range) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.remove_attr_throws(name, range) })
     }
 
@@ -335,11 +331,11 @@ impl AttrStringMut {
         attr_str: &ns::AttrString,
     );
 
-    pub fn replace_with_attr_string<'ear>(
+    pub fn replace_with_attr_string(
         &mut self,
         range: ns::Range,
         attr_str: &ns::AttrString,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.replace_with_attr_string_throws(range, attr_str) })
     }
 }

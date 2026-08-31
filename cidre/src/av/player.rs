@@ -90,7 +90,7 @@ impl Player {
         unsafe { Self::alloc().init_with_player_item_throws(item) }
     }
 
-    pub fn with_player_item<'ear>(item: Option<&PlayerItem>) -> ns::ExResult<'ear, arc::R<Self>> {
+    pub fn with_player_item(item: Option<&PlayerItem>) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe { Self::with_player_item_throws(item) })
     }
 
@@ -174,10 +174,7 @@ impl Player {
     #[objc::msg_send(replaceCurrentItemWithPlayerItem:)]
     pub unsafe fn replace_current_item_throws(&mut self, item: Option<&av::PlayerItem>);
 
-    pub fn replace_current_item<'ear>(
-        &mut self,
-        item: Option<&av::PlayerItem>,
-    ) -> ns::ExResult<'ear> {
+    pub fn replace_current_item(&mut self, item: Option<&av::PlayerItem>) -> ns::ExResult {
         unsafe { ns::try_catch(|| self.replace_current_item_throws(item)) }
     }
 
@@ -187,7 +184,7 @@ impl Player {
     #[objc::msg_send(setActionAtItemEnd:)]
     pub unsafe fn set_action_at_item_end_throws(&mut self, val: ActionAtItemEnd);
 
-    pub fn set_action_at_item_end<'ear>(&mut self, val: ActionAtItemEnd) -> ns::ExResult<'ear> {
+    pub fn set_action_at_item_end(&mut self, val: ActionAtItemEnd) -> ns::ExResult {
         unsafe { ns::try_catch(|| self.set_action_at_item_end_throws(val)) }
     }
 }
@@ -254,12 +251,12 @@ impl Player {
         at_host_clock_time: cm::Time,
     );
 
-    pub fn set_rate_time<'ear>(
+    pub fn set_rate_time(
         &mut self,
         rate: f32,
         time: cm::Time,
         at_host_clock_time: cm::Time,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         unsafe { ns::try_catch(|| self.set_rate_time_throws(rate, time, at_host_clock_time)) }
     }
 
@@ -326,7 +323,7 @@ impl arc::A<QueuePlayer> {
 }
 
 impl QueuePlayer {
-    pub fn with_items<'ear>(items: &ns::Array<av::PlayerItem>) -> ns::ExResult<'ear, arc::R<Self>> {
+    pub fn with_items(items: &ns::Array<av::PlayerItem>) -> ns::ExResult<arc::R<Self>> {
         unsafe { ns::try_catch(|| Self::alloc().init_with_items_throws(items)) }
     }
 

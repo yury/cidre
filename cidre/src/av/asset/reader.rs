@@ -44,7 +44,7 @@ impl Reader {
     pub unsafe fn add_output_throws(&mut self, output: &av::AssetReaderOutput);
 
     #[inline]
-    pub fn add_output<'ear>(&mut self, output: &av::AssetReaderOutput) -> ns::ExResult<'ear> {
+    pub fn add_output(&mut self, output: &av::AssetReaderOutput) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.add_output_throws(output) })
     }
 
@@ -57,7 +57,7 @@ impl Reader {
     #[objc::msg_send(startReading)]
     pub unsafe fn start_reading_throws(&mut self) -> bool;
 
-    pub fn start_reading<'ear>(&mut self) -> ns::ExResult<'ear, bool> {
+    pub fn start_reading(&mut self) -> ns::ExResult<bool> {
         ns::try_catch(|| unsafe { self.start_reading_throws() })
     }
 
@@ -92,7 +92,7 @@ impl Reader {
     pub unsafe fn set_time_range_throws(&mut self, value: cm::TimeRange);
 
     #[cfg(feature = "cm")]
-    pub fn set_time_range<'ear>(&mut self, value: cm::TimeRange) -> ns::ExResult<'ear> {
+    pub fn set_time_range(&mut self, value: cm::TimeRange) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.set_time_range_throws(value) })
     }
 

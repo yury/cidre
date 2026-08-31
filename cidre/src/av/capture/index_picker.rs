@@ -17,12 +17,12 @@ impl arc::A<IndexPicker> {
         n: isize,
     ) -> arc::R<IndexPicker>;
 
-    pub fn init_with_indexes_n<'ear>(
+    pub fn init_with_indexes_n(
         self,
         localized_title: &ns::String,
         symbol_name: &ns::String,
         n: isize,
-    ) -> ns::ExResult<'ear, arc::R<IndexPicker>> {
+    ) -> ns::ExResult<arc::R<IndexPicker>> {
         ns::try_catch(|| unsafe {
             self.init_with_indexes_n_throws(localized_title, symbol_name, n)
         })
@@ -36,12 +36,12 @@ impl arc::A<IndexPicker> {
         titles: &ns::Array<ns::String>,
     ) -> arc::R<IndexPicker>;
 
-    pub fn init_with_titles<'ear>(
+    pub fn init_with_titles(
         self,
         localized_title: &ns::String,
         symbol_name: &ns::String,
         titles: &ns::Array<ns::String>,
-    ) -> ns::ExResult<'ear, arc::R<IndexPicker>> {
+    ) -> ns::ExResult<arc::R<IndexPicker>> {
         ns::try_catch(|| unsafe {
             self.init_with_indexes_titles_throws(localized_title, symbol_name, titles)
         })
@@ -53,20 +53,20 @@ impl IndexPicker {
     crate::define_cls!(AV_CAPTURE_INDEX_PICKER);
 
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
-    pub fn with_indexes_n<'ear>(
+    pub fn with_indexes_n(
         localized_title: &ns::String,
         symbol_name: &ns::String,
         n: isize,
-    ) -> ns::ExResult<'ear, arc::R<IndexPicker>> {
+    ) -> ns::ExResult<arc::R<IndexPicker>> {
         Self::alloc().init_with_indexes_n(localized_title, symbol_name, n)
     }
 
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
-    pub fn with_titles<'ear>(
+    pub fn with_titles(
         localized_title: &ns::String,
         symbol_name: &ns::String,
         titles: &ns::Array<ns::String>,
-    ) -> ns::ExResult<'ear, arc::R<IndexPicker>> {
+    ) -> ns::ExResult<arc::R<IndexPicker>> {
         Self::alloc().init_with_titles(localized_title, symbol_name, titles)
     }
 
@@ -79,7 +79,7 @@ impl IndexPicker {
     pub unsafe fn set_selected_index_throws(&mut self, val: isize);
 
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
-    pub fn set_selected_index<'ear>(&mut self, val: isize) -> ns::ExResult<'ear> {
+    pub fn set_selected_index(&mut self, val: isize) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.set_selected_index_throws(val) })
     }
 

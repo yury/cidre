@@ -18,11 +18,11 @@ impl arc::A<NearbyServiceAdvertiser> {
 impl NearbyServiceAdvertiser {
     define_cls!(MC_NEARBY_SERVICE_ADVERTISER);
 
-    pub fn with_peer<'ear>(
+    pub fn with_peer(
         my_peer: &mc::PeerId,
         discorvery_info: Option<&ns::Dictionary<ns::String, ns::String>>,
         service_type: &ns::String,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe {
             Self::alloc().init_with_peer_throws(my_peer, discorvery_info, service_type)
         })

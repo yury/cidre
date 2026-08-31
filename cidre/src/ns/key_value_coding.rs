@@ -4,31 +4,21 @@ impl ns::Id {
     #[objc::msg_send(valueForKey:)]
     pub unsafe fn value_for_key_throws(&self, key: &ns::String) -> Option<arc::R<Self>>;
 
-    pub fn value_for_key<'ear>(
-        &self,
-        key: &ns::String,
-    ) -> ns::ExResult<'ear, Option<arc::R<Self>>> {
+    pub fn value_for_key(&self, key: &ns::String) -> ns::ExResult<Option<arc::R<Self>>> {
         ns::try_catch(|| unsafe { self.value_for_key_throws(key) })
     }
 
     #[objc::msg_send(setValue:forKey:)]
     pub unsafe fn set_value_for_key_throws(&mut self, val: Option<&Self>, key: &ns::String);
 
-    pub fn set_value_for_key<'ear>(
-        &mut self,
-        val: Option<&Self>,
-        key: &ns::String,
-    ) -> ns::ExResult<'ear> {
+    pub fn set_value_for_key(&mut self, val: Option<&Self>, key: &ns::String) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.set_value_for_key_throws(val, key) })
     }
 
     #[objc::msg_send(valueForKeyPath:)]
     pub unsafe fn value_for_key_path_throws(&self, key_path: &ns::String) -> Option<arc::R<Self>>;
 
-    pub fn value_for_key_path<'ear>(
-        &self,
-        key_path: &ns::String,
-    ) -> ns::ExResult<'ear, Option<arc::R<Self>>> {
+    pub fn value_for_key_path(&self, key_path: &ns::String) -> ns::ExResult<Option<arc::R<Self>>> {
         ns::try_catch(|| unsafe { self.value_for_key_path_throws(key_path) })
     }
 
@@ -39,11 +29,11 @@ impl ns::Id {
         key_path: &ns::String,
     );
 
-    pub fn set_value_for_key_path<'ear>(
+    pub fn set_value_for_key_path(
         &mut self,
         val: Option<&Self>,
         key_path: &ns::String,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.set_value_for_key_path_throws(val, key_path) })
     }
 }

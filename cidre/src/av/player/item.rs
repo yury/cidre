@@ -133,11 +133,11 @@ impl Item {
     );
 
     #[cfg(feature = "blocks")]
-    pub fn seek_to_time_ch<'ear>(
+    pub fn seek_to_time_ch(
         &mut self,
         val: cm::Time,
         block: Option<&mut blocks::SendBlock<fn(finished: bool)>>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         unsafe { ns::try_catch(|| self.seek_to_time_ch_throws(val, block)) }
     }
 
@@ -152,13 +152,13 @@ impl Item {
     );
 
     #[cfg(feature = "blocks")]
-    pub fn seek_to_time_with_tolerance_ch<'ear>(
+    pub fn seek_to_time_with_tolerance_ch(
         &mut self,
         val: cm::Time,
         tolerance_befor: cm::Time,
         tolerance_after: cm::Time,
         block: Option<&mut blocks::SendBlock<fn(finished: bool)>>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         unsafe {
             ns::try_catch(|| {
                 self.seek_to_time_with_tolerance_ch_throws(

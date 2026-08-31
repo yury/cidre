@@ -102,12 +102,12 @@ where
         (self.closure)(key_path, object, change)
     }
 
-    pub fn with_obj<'ar, O: objc::Obj>(
+    pub fn with_obj<O>(
         obj: &mut O,
         key_path: &ns::String,
         options: KvoOpts,
         closure: F,
-    ) -> Result<Box<Self>, &'ar ns::Exception>
+    ) -> Result<Box<Self>, arc::R<ns::Exception>>
     where
         O: objc::Obj + KvObserverRegistration,
     {
@@ -164,34 +164,30 @@ pub trait KvObserverRegistration {
     #[objc::msg_send(removeObserver:forKeyPath:)]
     unsafe fn remove_observer_throws(&mut self, observer: &ns::Id, key_path: &ns::String);
 
-    fn add_observer<'ear>(
+    fn add_observer(
         &mut self,
         observer: &ns::Id,
         for_key_path: &ns::String,
         options: KvoOpts,
         context: *mut c_void,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe {
             self.add_observer_throws(observer, for_key_path, options, context)
         })
     }
 
-    fn remove_observer_ctx<'ear>(
+    fn remove_observer_ctx(
         &mut self,
         observer: &ns::Id,
         for_key_path: &ns::String,
         context: *mut c_void,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe {
             self.remove_observer_ctx_throws(observer, for_key_path, context)
         })
     }
 
-    fn remove_observer<'ear>(
-        &mut self,
-        observer: &ns::Id,
-        for_key_path: &ns::String,
-    ) -> ns::ExResult<'ear> {
+    fn remove_observer(&mut self, observer: &ns::Id, for_key_path: &ns::String) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.remove_observer_throws(observer, for_key_path) })
     }
 }

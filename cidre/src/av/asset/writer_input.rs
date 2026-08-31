@@ -36,10 +36,10 @@ impl WriterInput {
         unsafe { Self::alloc().init_media_type_output_settings_throws(media_type, output_settings) }
     }
 
-    pub fn with_media_type_and_output_settings<'ear>(
+    pub fn with_media_type_and_output_settings(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
-    ) -> ns::ExResult<'ear, arc::R<WriterInput>> {
+    ) -> ns::ExResult<arc::R<WriterInput>> {
         ns::try_catch(|| unsafe {
             Self::alloc().init_media_type_output_settings_throws(media_type, output_settings)
         })
@@ -61,11 +61,11 @@ impl WriterInput {
     }
 
     #[cfg(feature = "cm")]
-    pub fn with_media_type_output_settings_source_format_hint<'ear>(
+    pub fn with_media_type_output_settings_source_format_hint(
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
         source_format_hint: Option<&cm::FormatDesc>,
-    ) -> ns::ExResult<'ear, arc::R<WriterInput>> {
+    ) -> ns::ExResult<arc::R<WriterInput>> {
         ns::try_catch(|| unsafe {
             Self::with_media_type_output_settings_source_format_hint_throws(
                 media_type,
@@ -93,9 +93,7 @@ impl WriterInput {
         unsafe { Self::with_media_type_output_settings_throws(media_type, None) }
     }
 
-    pub fn with_media_type<'ear>(
-        media_type: &MediaType,
-    ) -> ns::ExResult<'ear, arc::R<WriterInput>> {
+    pub fn with_media_type(media_type: &MediaType) -> ns::ExResult<arc::R<WriterInput>> {
         ns::try_catch(|| unsafe { Self::with_media_type_throws(media_type) })
     }
 
@@ -136,7 +134,7 @@ impl WriterInput {
     pub unsafe fn append_sample_buf_throws(&mut self, buffer: &cm::SampleBuf) -> bool;
 
     #[cfg(feature = "cm")]
-    pub fn append_sample_buf<'ear>(&mut self, buffer: &cm::SampleBuf) -> ns::ExResult<'ear, bool> {
+    pub fn append_sample_buf(&mut self, buffer: &cm::SampleBuf) -> ns::ExResult<bool> {
         ns::try_catch(|| unsafe { self.append_sample_buf_throws(buffer) })
     }
 
@@ -149,11 +147,11 @@ impl WriterInput {
     );
 
     #[cfg(all(feature = "blocks", feature = "dispatch"))]
-    pub fn request_media_data_when_ready_on_queue<'ear>(
+    pub fn request_media_data_when_ready_on_queue(
         &self,
         queue: &dispatch::Queue,
         block: &mut blocks::CompletionBlock,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe {
             self.request_media_data_when_ready_on_queue_throws(queue, block)
         })
@@ -177,10 +175,10 @@ impl arc::A<WriterInputPixelBufAdaptor> {
 impl WriterInputPixelBufAdaptor {
     define_cls!(AV_ASSET_WRITER_INPUT_PIXEL_BUFFER_ADAPTOR);
 
-    pub fn with_input_writer<'ear>(
+    pub fn with_input_writer(
         input: &WriterInput,
         src_pixel_buf_attrs: Option<ns::Dictionary<ns::String, ns::Id>>,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe {
             Self::alloc().init_with_asset_writer_input_throws(input, src_pixel_buf_attrs)
         })
@@ -208,11 +206,11 @@ impl WriterInputPixelBufAdaptor {
     ) -> bool;
 
     #[cfg(feature = "cm")]
-    pub fn append_pixel_buf_with_pts<'ear>(
+    pub fn append_pixel_buf_with_pts(
         &mut self,
         buf: &cv::PixelBuf,
         pts: cm::Time,
-    ) -> ns::ExResult<'ear, bool> {
+    ) -> ns::ExResult<bool> {
         ns::try_catch(|| unsafe { self.append_pixel_buf_with_pts_throws(buf, pts) })
     }
 }

@@ -144,7 +144,7 @@ impl AudioUnitBusArray {
     #[objc::msg_send(objectAtIndexedSubscript:)]
     pub unsafe fn get_throws(&self, index: usize) -> arc::R<AudioUnitBus>;
 
-    pub fn get<'ear>(&self, index: usize) -> ns::ExResult<'ear, arc::R<AudioUnitBus>> {
+    pub fn get(&self, index: usize) -> ns::ExResult<arc::R<AudioUnitBus>> {
         ns::try_catch(|| unsafe { self.get_throws(index) })
     }
 

@@ -119,15 +119,12 @@ impl String {
     pub unsafe fn substring_with_range_throws(&self, range: ns::Range) -> arc::R<Self>;
 
     #[inline]
-    pub fn substring_with_range<'ear>(&self, range: ns::Range) -> ns::ExResult<'ear, arc::R<Self>> {
+    pub fn substring_with_range(&self, range: ns::Range) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe { self.substring_with_range_throws(range) })
     }
 
     #[inline]
-    pub fn substring<'ear>(
-        &self,
-        range: std::ops::Range<usize>,
-    ) -> ns::ExResult<'ear, arc::R<ns::String>> {
+    pub fn substring(&self, range: std::ops::Range<usize>) -> ns::ExResult<arc::R<ns::String>> {
         self.substring_with_range(range.into())
     }
 
@@ -206,29 +203,29 @@ impl StringMut {
         with_string: &ns::String,
     );
 
-    pub fn replace_characters_in<'ear>(
+    pub fn replace_characters_in(
         &mut self,
         range: ns::Range,
         with_string: &ns::String,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.replace_characters_in_throws(range, with_string) })
     }
 
     #[objc::msg_send(insertString:atIndex:)]
     pub unsafe fn insert_string_at_throws(&mut self, string: &ns::String, at_index: ns::UInteger);
 
-    pub fn insert_string_at<'ear>(
+    pub fn insert_string_at(
         &mut self,
         string: &ns::String,
         at_index: ns::UInteger,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.insert_string_at_throws(string, at_index) })
     }
 
     #[objc::msg_send(deleteCharactersInRange:)]
     pub fn delete_characters_in_throws(&mut self, range: ns::Range);
 
-    pub fn delete_characters_in<'ear>(&mut self, range: ns::Range) -> ns::ExResult<'ear> {
+    pub fn delete_characters_in(&mut self, range: ns::Range) -> ns::ExResult {
         ns::try_catch(|| self.delete_characters_in_throws(range))
     }
 

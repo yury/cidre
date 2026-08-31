@@ -37,7 +37,7 @@ impl Color {
     #[objc::msg_send(whiteComponent)]
     pub unsafe fn white_component_throws(&self) -> cg::Float;
 
-    pub fn white_component<'ar>(&self) -> Result<cg::Float, &'ar ns::Exception> {
+    pub fn white_component(&self) -> ns::ExResult<cg::Float> {
         ns::try_catch(|| unsafe { self.white_component_throws() })
     }
 
@@ -53,15 +53,15 @@ impl Color {
     #[objc::msg_send(blueComponent)]
     pub unsafe fn blue_component_throws(&self) -> cg::Float;
 
-    pub fn red_component<'ar>(&self) -> Result<cg::Float, &'ar ns::Exception> {
+    pub fn red_component(&self) -> ns::ExResult<cg::Float> {
         ns::try_catch(|| unsafe { self.red_component_throws() })
     }
 
-    pub fn green_component<'ar>(&self) -> Result<cg::Float, &'ar ns::Exception> {
+    pub fn green_component(&self) -> ns::ExResult<cg::Float> {
         ns::try_catch(|| unsafe { self.green_component_throws() })
     }
 
-    pub fn blue_component<'ar>(&self) -> Result<cg::Float, &'ar ns::Exception> {
+    pub fn blue_component(&self) -> ns::ExResult<cg::Float> {
         ns::try_catch(|| unsafe { self.blue_component_throws() })
     }
 
@@ -74,22 +74,22 @@ impl Color {
     #[objc::msg_send(brightnessComponent)]
     pub unsafe fn brightness_component_throws(&self) -> cg::Float;
 
-    pub fn hue_component<'ar>(&self) -> Result<cg::Float, &'ar ns::Exception> {
+    pub fn hue_component(&self) -> ns::ExResult<cg::Float> {
         ns::try_catch(|| unsafe { self.hue_component_throws() })
     }
 
-    pub fn saturation_component<'ar>(&self) -> Result<cg::Float, &'ar ns::Exception> {
+    pub fn saturation_component(&self) -> ns::ExResult<cg::Float> {
         ns::try_catch(|| unsafe { self.saturation_component_throws() })
     }
 
-    pub fn brightness_component<'ar>(&self) -> Result<cg::Float, &'ar ns::Exception> {
+    pub fn brightness_component(&self) -> ns::ExResult<cg::Float> {
         ns::try_catch(|| unsafe { self.brightness_component_throws() })
     }
 
     #[objc::msg_send(colorSpace)]
     pub unsafe fn color_space_throws(&self) -> arc::R<ns::ColorSpace>;
 
-    pub fn color_space<'ear>(&self) -> ns::ExResult<'ear, arc::R<ns::ColorSpace>> {
+    pub fn color_space(&self) -> ns::ExResult<arc::R<ns::ColorSpace>> {
         ns::try_catch(|| unsafe { self.color_space_throws() })
     }
 

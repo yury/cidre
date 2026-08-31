@@ -111,12 +111,12 @@ impl InputParamsMut {
         time_range: cm::TimeRange,
     );
 
-    pub fn set_volume_ramp<'ear>(
+    pub fn set_volume_ramp(
         &mut self,
         start_volume: f32,
         end_volume: f32,
         time_range: cm::TimeRange,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         unsafe {
             ns::try_catch(|| self.set_volume_ramp_throws(start_volume, end_volume, time_range))
         }
@@ -125,7 +125,7 @@ impl InputParamsMut {
     #[objc::msg_send(setVolume:atTime:)]
     pub unsafe fn set_volume_at_time_throws(&mut self, volume: f32, time: cm::Time);
 
-    pub fn set_volume_at_time<'ear>(&mut self, volume: f32, time: cm::Time) -> ns::ExResult<'ear> {
+    pub fn set_volume_at_time(&mut self, volume: f32, time: cm::Time) -> ns::ExResult {
         unsafe { ns::try_catch(|| self.set_volume_at_time_throws(volume, time)) }
     }
 }

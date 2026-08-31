@@ -35,10 +35,10 @@ impl Looper {
         template_item: &av::PlayerItem,
     ) -> arc::R<Self>;
 
-    pub fn with_player<'ear>(
+    pub fn with_player(
         player: &av::QueuePlayer,
         template_item: &av::PlayerItem,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         unsafe { ns::try_catch(|| Self::with_player_throws(player, template_item)) }
     }
 
@@ -49,11 +49,11 @@ impl Looper {
         loop_range: cm::TimeRange,
     ) -> arc::R<Self>;
 
-    pub fn with_player_time_range<'ear>(
+    pub fn with_player_time_range(
         player: &av::QueuePlayer,
         template_item: &av::PlayerItem,
         loop_range: cm::TimeRange,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         unsafe {
             ns::try_catch(|| Self::with_player_time_range_throws(player, template_item, loop_range))
         }

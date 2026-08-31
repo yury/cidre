@@ -891,13 +891,13 @@ pub fn throw(obj: &Id) -> ! {
 
 #[link(name = "ns", kind = "static")]
 unsafe extern "C-unwind" {
-    fn cidre_try_catch<'ar>(
+    fn cidre_try_catch(
         during: extern "C" fn(ctx: *mut c_void),
         ctx: *mut c_void,
-    ) -> Option<&'ar Id>;
+    ) -> Option<arc::Rar<Id>>;
 }
 
-pub fn try_catch<'ar, F, R>(f: F) -> Result<R, &'ar Id>
+pub fn try_catch<F, R>(f: F) -> Result<R, arc::R<Id>>
 where
     F: FnOnce() -> R,
 {
@@ -910,9 +910,9 @@ where
     let ctx = &mut wrapper as *mut _ as *mut c_void;
 
     unsafe {
-        match cidre_try_catch(std::mem::transmute(f), ctx) {
+        match arc::rar_retain_option(cidre_try_catch(std::mem::transmute(f), ctx)) {
             None => Ok(result.unwrap_unchecked()),
-            Some(e) => Err(e),
+            Some(exception) => Err(exception),
         }
     }
 }

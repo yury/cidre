@@ -82,13 +82,13 @@ impl Node {
 
     #[cfg(feature = "blocks")]
     #[inline]
-    pub fn install_tap_on_bus<'ear>(
+    pub fn install_tap_on_bus(
         &mut self,
         bus: av::AudioNodeBus,
         buffer_size: av::AudioFrameCount,
         format: Option<&av::AudioFormat>,
         tap_block: impl FnMut(&av::AudioPcmBuf, &av::AudioTime) + 'static,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         let mut tap_block = AudioNodeTapBlock::<blocks::Esc>::new2(tap_block);
         ns::try_catch(|| unsafe {
             self.install_tap_on_bus_block_throws(bus, buffer_size, format, &mut tap_block)
@@ -98,7 +98,7 @@ impl Node {
     #[objc::msg_send(removeTapOnBus:)]
     pub unsafe fn remove_tap_on_bus_throws(&mut self, bus: av::AudioNodeBus);
 
-    pub fn remove_tap_on_bus<'ear>(&mut self, bus: av::AudioNodeBus) -> ns::ExResult<'ear> {
+    pub fn remove_tap_on_bus(&mut self, bus: av::AudioNodeBus) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.remove_tap_on_bus_throws(bus) })
     }
 }

@@ -43,7 +43,7 @@ impl MetalLayer {
     #[objc::msg_send(nextDrawable)]
     pub unsafe fn next_drawable_throws(&self) -> Option<arc::R<AnyMetalDrawable>>;
 
-    pub fn next_drawable<'ear>(&self) -> ns::ExResult<'ear, Option<arc::R<AnyMetalDrawable>>> {
+    pub fn next_drawable(&self) -> ns::ExResult<Option<arc::R<AnyMetalDrawable>>> {
         ns::try_catch(|| unsafe { self.next_drawable_throws() })
     }
 

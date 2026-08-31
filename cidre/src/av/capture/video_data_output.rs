@@ -65,10 +65,7 @@ impl VideoDataOutput {
     #[objc::msg_send(setDeliversPreviewSizedOutputBuffers:)]
     pub unsafe fn set_delivers_preview_sized_output_bufs_throws(&mut self, value: bool);
 
-    pub fn set_delivers_preview_sized_output_bufs<'ear>(
-        &mut self,
-        value: bool,
-    ) -> ns::ExResult<'ear> {
+    pub fn set_delivers_preview_sized_output_bufs(&mut self, value: bool) -> ns::ExResult {
         unsafe { ns::try_catch(|| self.set_delivers_preview_sized_output_bufs_throws(value)) }
     }
 
@@ -142,10 +139,10 @@ impl VideoDataOutput {
         val: Option<&ns::Dictionary<ns::String, ns::Id>>,
     );
 
-    pub fn set_video_settings<'ear>(
+    pub fn set_video_settings(
         &mut self,
         val: Option<&ns::Dictionary<ns::String, ns::Id>>,
-    ) -> ns::ExResult<'ear> {
+    ) -> ns::ExResult {
         unsafe { ns::try_catch(|| self.set_video_settings_throws(val)) }
     }
 

@@ -102,11 +102,11 @@ impl Heap {
     ) -> Option<arc::R<mtl::Buf>>;
 
     /// Create a new buffer backed by heap memory.
-    pub fn new_buf<'ear>(
+    pub fn new_buf(
         &self,
         length: usize,
         options: mtl::ResOpts,
-    ) -> ns::ExResult<'ear, Option<arc::R<mtl::Buf>>> {
+    ) -> ns::ExResult<Option<arc::R<mtl::Buf>>> {
         ns::try_catch(|| unsafe { self.new_buf_throws(length, options) })
     }
 

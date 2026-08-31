@@ -121,13 +121,13 @@ impl Session {
         })
     }
 
-    pub fn set_category_mode_policy_opts<'ear>(
+    pub fn set_category_mode_policy_opts(
         &mut self,
         val: &Category,
         mode: &Mode,
         route_sharing_policy: RouteSharingPolicy,
         options: CategoryOpts,
-    ) -> Result<(), ns::ExErr<'ear>> {
+    ) -> Result<(), ns::ExErr> {
         ns::try_catch_err(|| unsafe {
             self.set_category_mode_policy_opts_throws(val, mode, route_sharing_policy, options)
         })

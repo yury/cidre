@@ -145,7 +145,7 @@ impl<T: objc::Obj> Array<T> {
     pub unsafe fn get_throws(&self, index: usize) -> arc::R<T>;
 
     /// Returns the object at `index`, capturing ObjC exceptions as `ExResult`.
-    pub fn get<'ear>(&self, index: usize) -> ns::ExResult<'ear, arc::R<T>> {
+    pub fn get(&self, index: usize) -> ns::ExResult<arc::R<T>> {
         unsafe { ns::try_catch(|| self.get_throws(index)) }
     }
 
@@ -261,7 +261,7 @@ impl<T: objc::Obj> ArrayMut<T> {
 
     /// Removes the element at `index`, capturing ObjC exceptions as `ExResult`.
     #[inline]
-    pub fn remove<'ear>(&mut self, index: usize) -> ns::ExResult<'ear> {
+    pub fn remove(&mut self, index: usize) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.remove_throws(index) })
     }
 
@@ -274,7 +274,7 @@ impl<T: objc::Obj> ArrayMut<T> {
 
     /// Inserts `element` at `index`, capturing ObjC exceptions as `ExResult`.
     #[inline]
-    pub fn insert<'ear>(&mut self, index: usize, element: &T) -> ns::ExResult<'ear> {
+    pub fn insert(&mut self, index: usize, element: &T) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.insert_obj_throws(element, index) })
     }
 

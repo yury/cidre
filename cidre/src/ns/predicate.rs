@@ -16,10 +16,10 @@ impl Predicate {
         args: Option<&ns::Array<ns::Id>>,
     ) -> arc::R<Self>;
 
-    pub fn with_format<'ear>(
+    pub fn with_format(
         format: &ns::String,
         args: Option<&ns::Array<ns::Id>>,
-    ) -> ns::ExResult<'ear, arc::R<Self>> {
+    ) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe { Self::with_format_throws(format, args) })
     }
 
@@ -28,9 +28,7 @@ impl Predicate {
     pub unsafe fn from_metadata_query_throws(query: &ns::String) -> Option<arc::R<Self>>;
 
     #[cfg(target_os = "macos")]
-    pub fn from_metadata_query<'ear>(
-        query: &ns::String,
-    ) -> ns::ExResult<'ear, Option<arc::R<Self>>> {
+    pub fn from_metadata_query(query: &ns::String) -> ns::ExResult<Option<arc::R<Self>>> {
         ns::try_catch(|| unsafe { Self::from_metadata_query_throws(query) })
     }
 
@@ -51,7 +49,7 @@ impl Predicate {
     #[objc::msg_send(predicateFormat)]
     pub unsafe fn format_throws(&self) -> arc::R<ns::String>;
 
-    pub fn format<'ear>(&self) -> ns::ExResult<'ear, arc::R<ns::String>> {
+    pub fn format(&self) -> ns::ExResult<arc::R<ns::String>> {
         ns::try_catch(|| unsafe { self.format_throws() })
     }
 

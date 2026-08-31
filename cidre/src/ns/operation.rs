@@ -157,10 +157,7 @@ impl OpQueue {
     pub unsafe fn set_underlying_queue_throws(&mut self, val: Option<&dispatch::Queue>);
 
     #[cfg(feature = "dispatch")]
-    pub fn set_underlying_queue<'ear>(
-        &mut self,
-        val: Option<&dispatch::Queue>,
-    ) -> ns::ExResult<'ear> {
+    pub fn set_underlying_queue(&mut self, val: Option<&dispatch::Queue>) -> ns::ExResult {
         ns::try_catch(|| unsafe { self.set_underlying_queue_throws(val) })
     }
 

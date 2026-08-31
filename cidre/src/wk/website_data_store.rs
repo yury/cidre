@@ -31,7 +31,7 @@ impl WebsiteDataStore {
     pub unsafe fn with_id_throws(id: &ns::Uuid) -> arc::R<Self>;
 
     #[objc::available(macos = 14.0, ios = 17.0)]
-    pub fn with_id<'ear>(id: &ns::Uuid) -> ns::ExResult<'ear, arc::R<Self>> {
+    pub fn with_id(id: &ns::Uuid) -> ns::ExResult<arc::R<Self>> {
         ns::try_catch(|| unsafe { Self::with_id_throws(id) })
     }
 }
