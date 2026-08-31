@@ -1,3 +1,5 @@
+use std::hash::{Hash, Hasher};
+
 use crate::{arc, cf, define_opts};
 
 pub mod range;
@@ -38,7 +40,7 @@ impl TimeFlags {
 
 #[doc(alias = "CMTime")]
 #[repr(C)]
-#[derive(Hash, Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct Time {
     pub value: TimeValue,
     pub scale: TimeScale,
@@ -319,6 +321,21 @@ impl Time {
     pub fn min(l: Time, r: Time) -> Time {
         unsafe { CMTimeMinimum(l, r) }
     }
+
+    #[inline]
+    const fn comparison_rank(&self) -> u8 {
+        if self.is_invalid() {
+            4
+        } else if self.is_pos_infinity() {
+            3
+        } else if self.is_indefinite() {
+            2
+        } else if self.is_neg_infinity() {
+            0
+        } else {
+            1
+        }
+    }
 }
 
 impl PartialEq for Time {
@@ -334,30 +351,79 @@ impl PartialEq for Time {
     /// ```
     #[inline]
     fn eq(&self, other: &Self) -> bool {
-        unsafe { CMTimeCompare(*self, *other) == 0 }
+        self.cmp(other).is_eq()
     }
 }
 
 impl Eq for Time {}
 
+impl Hash for Time {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        let rank = self.comparison_rank();
+        rank.hash(state);
+        if rank != 1 {
+            return;
+        }
+
+        self.epoch.hash(state);
+        let valid_scale = self.scale > 0;
+        valid_scale.hash(state);
+        if !valid_scale {
+            self.value.hash(state);
+            self.scale.hash(state);
+            return;
+        }
+
+        let value = self.value.unsigned_abs();
+        let scale = self.scale as u64;
+        let divisor = gcd(value, scale);
+        let negative = self.value.is_negative();
+        let normalized_scale = if value == 0 { 1 } else { scale / divisor };
+
+        negative.hash(state);
+        (value / divisor).hash(state);
+        normalized_scale.hash(state);
+    }
+}
+
+#[inline]
+fn gcd(mut lhs: u64, mut rhs: u64) -> u64 {
+    while rhs != 0 {
+        (lhs, rhs) = (rhs, lhs % rhs);
+    }
+    lhs.max(1)
+}
+
 impl Ord for Time {
     #[inline]
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        unsafe { std::mem::transmute(CMTimeCompare(*self, *other) as i8) }
-    }
+        let rank = self.comparison_rank();
+        let other_rank = other.comparison_rank();
+        let ordering = rank.cmp(&other_rank);
+        if !ordering.is_eq() || rank != 1 {
+            return ordering;
+        }
 
-    fn max(self, other: Self) -> Self
-    where
-        Self: Sized,
-    {
-        Self::max(self, other)
-    }
+        let ordering = self.epoch.cmp(&other.epoch);
+        if !ordering.is_eq() {
+            return ordering;
+        }
 
-    fn min(self, other: Self) -> Self
-    where
-        Self: Sized,
-    {
-        Self::min(self, other)
+        // CoreMedia comparison is not transitive when a numeric time has a
+        // non-positive scale. Keep those safely constructible values in a
+        // separate bucket so Rust's `Ord` and `Eq` contracts still hold.
+        let valid_scale = self.scale > 0;
+        let other_valid_scale = other.scale > 0;
+        let ordering = valid_scale.cmp(&other_valid_scale);
+        if !ordering.is_eq() {
+            return ordering;
+        }
+
+        if valid_scale {
+            unsafe { CMTimeCompare(*self, *other) }.cmp(&0)
+        } else {
+            (self.value, self.scale).cmp(&(other.value, other.scale))
+        }
     }
 }
 
@@ -391,7 +457,18 @@ impl Default for Time {
 
 #[cfg(test)]
 mod tests {
+    use std::{
+        collections::hash_map::DefaultHasher,
+        hash::{Hash, Hasher},
+    };
+
     use crate::cm;
+
+    fn hash(time: cm::Time) -> u64 {
+        let mut hasher = DefaultHasher::new();
+        time.hash(&mut hasher);
+        hasher.finish()
+    }
 
     #[test]
     fn basics() {
@@ -417,6 +494,83 @@ mod tests {
 
         assert_eq!(zero, zero.min(zero_epoch_1));
         assert_eq!(zero_epoch_1, zero_epoch_1.min(zero_epoch_1));
+    }
+
+    #[test]
+    fn equal_values_have_equal_hashes() {
+        let half = cm::Time::new(1, 2);
+        let scaled_half = cm::Time::new(50, 100);
+        assert_eq!(half, scaled_half);
+        assert_eq!(hash(half), hash(scaled_half));
+
+        let rounded_half = cm::Time {
+            flags: half.flags | cm::TimeFlags::HAS_BEEN_ROUNDED,
+            ..half
+        };
+        assert_eq!(half, rounded_half);
+        assert_eq!(hash(half), hash(rounded_half));
+
+        let mut invalid = cm::Time::invalid();
+        invalid.value = i64::MAX;
+        invalid.scale = i32::MAX;
+        invalid.epoch = i64::MAX;
+        assert_eq!(cm::Time::invalid(), invalid);
+        assert_eq!(hash(cm::Time::invalid()), hash(invalid));
+
+        let mut infinity = cm::Time::infinity();
+        infinity.value = i64::MIN;
+        infinity.scale = i32::MIN;
+        infinity.epoch = i64::MIN;
+        assert_eq!(cm::Time::infinity(), infinity);
+        assert_eq!(hash(cm::Time::infinity()), hash(infinity));
+    }
+
+    #[test]
+    fn hash_matches_comparison_for_all_flag_combinations() {
+        let fields = [
+            (0, 1, 0),
+            (0, 600, 0),
+            (1, 2, 0),
+            (50, 100, 0),
+            (-1, 2, 0),
+            (i64::MIN, 2, 0),
+            (i64::MIN / 2, 1, 0),
+            (1, 1, 1),
+            (i64::MAX, i32::MAX, i64::MAX),
+            (0, 0, 0),
+            (1, 0, 0),
+            (-1, 0, 0),
+            (1, -2, 0),
+            (-1, -2, 0),
+            (i64::MIN, i32::MIN, 0),
+        ];
+        let mut times = Vec::with_capacity(32 * fields.len());
+
+        for flags in 0..32 {
+            for &(value, scale, epoch) in &fields {
+                times.push(cm::Time {
+                    value,
+                    scale,
+                    flags: cm::TimeFlags(flags),
+                    epoch,
+                });
+            }
+        }
+
+        for lhs in &times {
+            for rhs in &times {
+                if lhs == rhs {
+                    assert_eq!(hash(*lhs), hash(*rhs), "{lhs:?} != {rhs:?}");
+                }
+
+                let lhs_is_supported = lhs.comparison_rank() != 1 || lhs.scale > 0;
+                let rhs_is_supported = rhs.comparison_rank() != 1 || rhs.scale > 0;
+                if lhs_is_supported && rhs_is_supported {
+                    let core_media_ordering = unsafe { super::CMTimeCompare(*lhs, *rhs) }.cmp(&0);
+                    assert_eq!(lhs.cmp(rhs), core_media_ordering);
+                }
+            }
+        }
     }
 }
 
