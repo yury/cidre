@@ -10,7 +10,7 @@ impl ml::Model {
 
     #[cfg(not(target_os = "watchos"))]
     #[objc::available(macos = 10.13, ios = 11.0, tvos = 11.0)]
-    pub fn compile_model_at_url<'ear>(model_url: &ns::Url) -> ns::Result<'ear, arc::R<ns::Url>> {
+    pub fn compile_model_at_url(model_url: &ns::Url) -> ns::Result<arc::R<ns::Url>> {
         ns::if_none(|err| unsafe { Self::compile_model_at_url_err(model_url, err) })
     }
 }

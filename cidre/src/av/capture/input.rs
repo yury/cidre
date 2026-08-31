@@ -55,15 +55,8 @@ impl arc::A<DeviceInput> {
 impl DeviceInput {
     define_cls!(AV_CAPTURE_DEVICE_INPUT);
 
-    pub fn with_device<'ear>(device: &av::CaptureDevice) -> Result<arc::R<Self>, &'ear ns::Error> {
-        let mut error = None;
-        unsafe {
-            let res = Self::alloc().init_with_device_err(device, &mut error);
-            match error {
-                Some(e) => Err(e),
-                None => Ok(res.unwrap_unchecked()),
-            }
-        }
+    pub fn with_device(device: &av::CaptureDevice) -> ns::Result<arc::R<Self>> {
+        ns::if_none(|error| Self::alloc().init_with_device_err(device, error))
     }
 
     #[objc::msg_send(device)]

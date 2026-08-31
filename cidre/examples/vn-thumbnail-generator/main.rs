@@ -34,11 +34,11 @@ struct Frame {
     observation: arc::R<vn::FeaturePrintObservation>,
 }
 
-fn calc_top_frames<'ear>(
+fn calc_top_frames(
     aesthetic_map: &HashMap<cm::Time, f32>,
     feature_print_map: &HashMap<cm::Time, arc::R<vn::FeaturePrintObservation>>,
     n: num::NonZeroU8,
-) -> ns::Result<'ear, Vec<Frame>> {
+) -> ns::Result<Vec<Frame>> {
     // The number of frames to store.
     let top_frames_n: usize = n.get() as _;
 
@@ -98,10 +98,7 @@ fn calc_top_frames<'ear>(
     Ok(frames)
 }
 
-async fn gen_thumbs<'ear>(
-    mut frames: Vec<Frame>,
-    asset: &av::UrlAsset,
-) -> ns::Result<'ear, (), arc::R<ns::Error>> {
+async fn gen_thumbs(mut frames: Vec<Frame>, asset: &av::UrlAsset) -> ns::Result {
     // The image generator that generates images from the video.
     let mut image_gen = av::AssetImageGenerator::with_asset(asset);
 
@@ -128,7 +125,7 @@ async fn gen_thumbs<'ear>(
 }
 
 #[tokio::main]
-pub async fn main() -> ns::Result<'static, (), arc::R<ns::Error>> {
+pub async fn main() -> ns::Result {
     let args = Args::parse();
     let url = ns::Url::with_fs_path_str(&args.path, false);
     // The instance of the `VideoProcessor` with the local path to the video file.

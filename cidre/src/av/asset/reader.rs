@@ -36,7 +36,7 @@ impl arc::A<Reader> {
 impl Reader {
     define_cls!(AV_ASSET_READER);
 
-    pub fn with_asset<'ear>(asset: &av::Asset) -> ns::Result<'ear, arc::R<Reader>> {
+    pub fn with_asset(asset: &av::Asset) -> ns::Result<arc::R<Reader>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_assert_err(asset, err) })
     }
 

@@ -92,7 +92,7 @@ impl NotificationContent {
     #[inline]
     pub fn with_updating_with_provider<'ear, P: NotificationContentProviding>(
         provider: &P,
-    ) -> Result<arc::R<Self>, &'ear ns::Error> {
+    ) -> Result<arc::R<Self>, arc::R<ns::Error>> {
         ns::if_none(|err| unsafe { Self::with_updating_with_provider_err(provider, err) })
     }
 }

@@ -96,10 +96,10 @@ impl ImageGenerator {
     );
 
     #[cfg(all(feature = "async", feature = "cm"))]
-    pub async fn cg_image_for_time<'ear>(
+    pub async fn cg_image_for_time(
         &self,
         request_time: cm::Time,
-    ) -> ns::Result<'ear, (arc::R<cg::Image>, cm::Time), arc::R<ns::Error>> {
+    ) -> ns::Result<(arc::R<cg::Image>, cm::Time)> {
         let shared = blocks::Shared::new();
         let comp = blocks::Completion(shared.clone());
         let mut block = blocks::EscBlock::new3(

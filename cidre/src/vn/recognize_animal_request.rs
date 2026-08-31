@@ -27,18 +27,8 @@ impl RecognizeAnimalsRequest {
     #[objc::msg_send(results)]
     pub fn results(&self) -> Option<arc::R<ns::Array<vn::RecognizedObjectObservation>>>;
 
-    pub fn supported_ids(&self) -> Result<arc::R<ns::Array<AnimalId>>, &ns::Error> {
-        unsafe {
-            let mut err = None;
-            let res = self.supported_ids_err(&mut err);
-            if res.is_some() {
-                println!("some");
-                Ok(res.unwrap_unchecked())
-            } else {
-                println!("none");
-                Err(err.unwrap())
-            }
-        }
+    pub fn supported_ids(&self) -> ns::Result<arc::R<ns::Array<AnimalId>>> {
+        ns::if_none(|err| unsafe { self.supported_ids_err(err) })
     }
 
     /// # Safety

@@ -21,7 +21,7 @@ impl Model {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Self>>;
 
-    pub fn with_url<'ear>(url: &ns::Url) -> ns::Result<'ear, arc::R<Self>> {
+    pub fn with_url(url: &ns::Url) -> ns::Result<arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::with_url_err(url, err) })
     }
 
@@ -32,7 +32,7 @@ impl Model {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Self>>;
 
-    pub fn with_cfg<'ear>(url: &ns::Url, cfg: &ml::ModelCfg) -> ns::Result<'ear, arc::R<Self>> {
+    pub fn with_cfg(url: &ns::Url, cfg: &ml::ModelCfg) -> ns::Result<arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::with_cfg_err(url, cfg, err) })
     }
 
@@ -46,7 +46,7 @@ impl Model {
     pub fn prediction_from_features<'ear, F: ml::FeatureProvider>(
         &self,
         input: &F,
-    ) -> ns::Result<'ear, arc::R<ml::AnyFeatureProvider>> {
+    ) -> ns::Result<arc::R<ml::AnyFeatureProvider>> {
         ns::if_none(|err| unsafe { self.prediction_from_features_err(input, err) })
     }
 
@@ -62,7 +62,7 @@ impl Model {
         &self,
         input: &F,
         options: &ml::PredictionOpts,
-    ) -> ns::Result<'ear, arc::R<ml::AnyFeatureProvider>> {
+    ) -> ns::Result<arc::R<ml::AnyFeatureProvider>> {
         ns::if_none(|err| unsafe { self.prediction_from_features_opts_err(input, options, err) })
     }
 
@@ -76,7 +76,7 @@ impl Model {
     pub unsafe fn predictions_from_batch<'ear, P: ml::BatchProvider>(
         &self,
         input_batch: &P,
-    ) -> ns::Result<'ear, arc::R<ml::AnyBatchProvider>> {
+    ) -> ns::Result<arc::R<ml::AnyBatchProvider>> {
         ns::if_none(|err| unsafe { self.predictions_from_batch_err(input_batch, err) })
     }
 
@@ -93,7 +93,7 @@ impl Model {
         &self,
         input_batch: &P,
         options: &ml::PredictionOpts,
-    ) -> ns::Result<'ear, arc::R<ml::AnyBatchProvider>> {
+    ) -> ns::Result<arc::R<ml::AnyBatchProvider>> {
         ns::if_none(|err| unsafe {
             self.predictions_from_batch_opts_err(input_batch, options, err)
         })

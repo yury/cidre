@@ -5,15 +5,21 @@ use crate::{arc, define_cls, define_obj_type, ns, objc, os};
 #[cfg(feature = "cf")]
 use crate::cf;
 
-impl<'ear> From<&'ear ns::Error> for ns::ExErr<'ear> {
-    fn from(value: &'ear ns::Error) -> Self {
+impl From<&ns::Error> for ns::ExErr {
+    fn from(value: &ns::Error) -> Self {
+        Self::Err(arc::Retain::retained(value))
+    }
+}
+
+impl From<arc::R<ns::Error>> for ns::ExErr {
+    fn from(value: arc::R<ns::Error>) -> Self {
         Self::Err(value)
     }
 }
 
-pub fn if_false<'ear, F>(f: F) -> ns::Result<'ear>
+pub fn if_false<F>(f: F) -> ns::Result
 where
-    F: FnOnce(*mut Option<&'ear ns::Error>) -> bool,
+    F: FnOnce(*mut Option<&ns::Error>) -> bool,
 {
     let mut err = None;
     if f(&mut err) {
@@ -23,32 +29,40 @@ where
         // success signal; the NSError pointer is detail, not the condition.
         // Avoid unwrap_unchecked: a framework may report failure without
         // populating the out-param, and that must not become UB.
-        Err(err.expect("Objective-C API returned false without NSError"))
+        Err(arc::Retain::retained(
+            err.expect("Objective-C API returned false without NSError"),
+        ))
     }
 }
 
-pub fn if_false_maybe<'ear, F>(f: F) -> Result<(), Option<&'ear ns::Error>>
+pub fn if_false_maybe<F>(f: F) -> Result<(), Option<arc::R<ns::Error>>>
 where
-    F: FnOnce(*mut Option<&'ear ns::Error>) -> bool,
+    F: FnOnce(*mut Option<&ns::Error>) -> bool,
 {
     let mut err = None;
-    if f(&mut err) { Ok(()) } else { Err(err) }
+    if f(&mut err) {
+        Ok(())
+    } else {
+        Err(err.map(arc::Retain::retained))
+    }
 }
 
-pub fn if_none<'ear, F, R>(f: F) -> Result<R, &'ear ns::Error>
+pub fn if_none<F, R>(f: F) -> Result<R, arc::R<ns::Error>>
 where
-    F: FnOnce(*mut Option<&'ear ns::Error>) -> Option<R>,
+    F: FnOnce(*mut Option<&ns::Error>) -> Option<R>,
 {
     let mut err = None;
     // See if_false: nil is the failure signal, but the NSError out-param can
     // still be absent on framework edge cases.
-    f(&mut err).ok_or_else(|| err.expect("Objective-C API returned nil without NSError"))
+    f(&mut err).ok_or_else(|| {
+        arc::Retain::retained(err.expect("Objective-C API returned nil without NSError"))
+    })
 }
 
-pub fn if_err<'ear>(f: impl FnOnce(*mut Option<&'ear ns::Error>)) -> ns::Result<'ear> {
+pub fn if_err(f: impl FnOnce(*mut Option<&ns::Error>)) -> ns::Result {
     let mut err = None;
     f(&mut err);
-    err.map_or(Ok(()), Err)
+    err.map_or(Ok(()), |err| Err(arc::Retain::retained(err)))
 }
 
 define_obj_type!(

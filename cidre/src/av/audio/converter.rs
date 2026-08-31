@@ -1,5 +1,3 @@
-use std::mem::transmute;
-
 use crate::{
     arc,
     av::{self, audio},
@@ -7,7 +5,7 @@ use crate::{
 };
 
 #[cfg(feature = "blocks")]
-use crate::{blocks, cf};
+use crate::blocks;
 
 #[cfg(feature = "blocks")]
 #[doc(alias = "AVAudioConverterInputBlock")]
@@ -128,22 +126,14 @@ impl Converter {
     ) -> bool;
 
     #[inline]
-    pub fn convert_to_buf_from_buf<'ear>(
+    pub fn convert_to_buf_from_buf(
         &self,
         output_buffer: &mut av::AudioPcmBuf,
         from_buffer: &av::AudioPcmBuf,
-    ) -> ns::Result<'ear> {
-        unsafe {
-            let mut error = None;
-            let res = self.convert_to_buf_from_buf_err(output_buffer, from_buffer, &mut error);
-            if error.is_some() {
-                debug_assert!(!res);
-                Err(transmute(error))
-            } else {
-                debug_assert!(res);
-                Ok(())
-            }
-        }
+    ) -> ns::Result {
+        ns::if_false(|error| unsafe {
+            self.convert_to_buf_from_buf_err(output_buffer, from_buffer, error)
+        })
     }
 
     #[cfg(feature = "blocks")]
@@ -151,7 +141,7 @@ impl Converter {
     pub unsafe fn convert_to_buf_err_with_input_from_block(
         &self,
         output_buffer: &mut av::AudioBuf,
-        error: *mut Option<&cf::Error>,
+        error: *mut Option<&ns::Error>,
         block: &mut av::AudioConverterInputBlock<blocks::Esc>,
     ) -> OutputStatus;
 
@@ -162,21 +152,20 @@ impl Converter {
     #[doc(alias = "convertToBuffer:error:withInputFromBlock:")]
     #[inline]
     #[cfg(feature = "blocks")]
-    pub fn convert_to_buf_with_input_from_block<'ar>(
+    pub fn convert_to_buf_with_input_from_block(
         &self,
         output_buffer: &mut av::AudioBuf,
         block: &mut av::AudioConverterInputBlock<blocks::Esc>,
-    ) -> Result<OutputStatus, arc::R<cf::Error>> {
-        unsafe {
-            let mut error = None;
-            let res =
-                self.convert_to_buf_err_with_input_from_block(output_buffer, &mut error, block);
-            if error.is_some() {
-                debug_assert_eq!(res, OutputStatus::Error);
-                Err(transmute(error))
-            } else {
-                Ok(res)
-            }
+    ) -> ns::Result<OutputStatus> {
+        let mut error = None;
+        let status = unsafe {
+            self.convert_to_buf_err_with_input_from_block(output_buffer, &mut error, block)
+        };
+        if let Some(error) = error {
+            debug_assert_eq!(status, OutputStatus::Error);
+            Err(arc::Retain::retained(error))
+        } else {
+            Ok(status)
         }
     }
 }

@@ -40,25 +40,25 @@ impl arc::A<Player> {
 impl Player {
     define_cls!(AV_AUDIO_PLAYER);
 
-    pub fn with_url<'ear>(url: &ns::Url) -> Result<arc::R<Self>, &'ear ns::Error> {
+    pub fn with_url(url: &ns::Url) -> Result<arc::R<Self>, arc::R<ns::Error>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_url_err(url, err) })
     }
 
-    pub fn with_data<'ear>(data: &ns::Data) -> Result<arc::R<Self>, &'ear ns::Error> {
+    pub fn with_data(data: &ns::Data) -> Result<arc::R<Self>, arc::R<ns::Error>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_data_err(data, err) })
     }
 
-    pub fn with_url_hint<'ear>(
+    pub fn with_url_hint(
         url: &ns::Url,
         hint: Option<&ns::String>,
-    ) -> Result<arc::R<Self>, &'ear ns::Error> {
+    ) -> Result<arc::R<Self>, arc::R<ns::Error>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_url_hint_err(url, hint, err) })
     }
 
-    pub fn with_data_hint<'ear>(
+    pub fn with_data_hint(
         data: &ns::Data,
         hint: Option<&ns::String>,
-    ) -> Result<arc::R<Self>, &'ear ns::Error> {
+    ) -> Result<arc::R<Self>, arc::R<ns::Error>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_data_hint_err(data, hint, err) })
     }
 

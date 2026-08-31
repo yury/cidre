@@ -415,11 +415,11 @@ impl Lib {
     ) -> Option<arc::R<Fn>>;
 
     #[inline]
-    pub fn new_fn_with_consts<'ear>(
+    pub fn new_fn_with_consts(
         &self,
         name: &ns::String,
         constant_values: &mtl::FnConstValues,
-    ) -> Result<arc::R<Fn>, &'ear ns::Error> {
+    ) -> Result<arc::R<Fn>, arc::R<ns::Error>> {
         ns::if_none(|err| unsafe { Self::new_fn_with_consts_err(self, name, constant_values, err) })
     }
 
@@ -431,11 +431,11 @@ impl Lib {
         error: *mut Option<&'ar ns::Error>,
     ) -> Option<arc::R<Fn>>;
 
-    pub fn new_fn_with_desc<'ar>(
+    pub fn new_fn_with_desc(
         &self,
         name: &ns::String,
         descriptor: &mtl::FnDesc,
-    ) -> Result<arc::R<Fn>, &'ar ns::Error> {
+    ) -> Result<arc::R<Fn>, arc::R<ns::Error>> {
         ns::if_none(|err| unsafe { Self::new_fn_with_desc_err(self, name, descriptor, err) })
     }
 

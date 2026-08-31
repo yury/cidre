@@ -91,10 +91,10 @@ impl Url {
     ) -> Option<arc::R<ns::Dictionary<ns::UrlResKey, ns::Id>>>;
 
     #[inline]
-    pub fn res_values_for_keys<'ear>(
+    pub fn res_values_for_keys(
         &self,
         keys: &ns::Array<ns::UrlResKey>,
-    ) -> Result<arc::R<ns::Dictionary<ns::UrlResKey, ns::Id>>, &'ear ns::Error> {
+    ) -> Result<arc::R<ns::Dictionary<ns::UrlResKey, ns::Id>>, arc::R<ns::Error>> {
         ns::if_none(|err| unsafe { self.res_values_for_keys_err(keys, err) })
     }
 

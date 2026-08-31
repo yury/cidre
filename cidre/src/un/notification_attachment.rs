@@ -24,11 +24,11 @@ impl NotificationAttach {
         err: *mut Option<&ns::Error>,
     ) -> Option<arc::R<Self>>;
 
-    pub fn with_url<'ear>(
+    pub fn with_url(
         id: &ns::String,
         url: &ns::Url,
         options: Option<&ns::Dictionary<NotificationAttachOpts, ns::Id>>,
-    ) -> ns::Result<'ear, arc::R<Self>> {
+    ) -> ns::Result<arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::with_url_err(id, url, options, err) })
     }
 }

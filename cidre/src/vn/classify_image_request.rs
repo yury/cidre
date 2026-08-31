@@ -24,16 +24,8 @@ impl ClassifyImageRequest {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ns::Array<ns::String>>>;
 
-    pub fn supported_ids<'ear>(&self) -> Result<arc::R<ns::Array<ns::String>>, &'ear ns::Error> {
-        unsafe {
-            let mut error = None;
-            let res = self.supported_ids_and_return_err(&mut error);
-            if res.is_some() {
-                Ok(res.unwrap_unchecked())
-            } else {
-                Err(error.unwrap())
-            }
-        }
+    pub fn supported_ids(&self) -> ns::Result<arc::R<ns::Array<ns::String>>> {
+        ns::if_none(|error| unsafe { self.supported_ids_and_return_err(error) })
     }
 }
 

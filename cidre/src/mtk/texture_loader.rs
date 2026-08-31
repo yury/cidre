@@ -184,11 +184,11 @@ impl TextureLoader {
     ) -> Option<arc::R<mtl::Texture>>;
 
     /// Synchronously create a Metal texture and load image data from the file at URL
-    pub fn new_texture_with_url<'ear>(
+    pub fn new_texture_with_url(
         &self,
         url: &ns::Url,
         options: Option<&Opts>,
-    ) -> ns::Result<'ear, arc::R<mtl::Texture>> {
+    ) -> ns::Result<arc::R<mtl::Texture>> {
         ns::if_none(|err| unsafe { self.new_texture_with_url_err(url, options, err) })
     }
 
@@ -200,14 +200,14 @@ impl TextureLoader {
         error: *mut Option<&'ear ns::Error>,
     ) -> arc::R<ns::Array<OptionTexture>>;
 
-    pub fn new_textures_with_urls<'ear>(
+    pub fn new_textures_with_urls(
         &self,
         urls: &ns::Array<ns::Url>,
         options: Option<&Opts>,
-    ) -> (arc::R<ns::Array<OptionTexture>>, Option<&'ear ns::Error>) {
+    ) -> (arc::R<ns::Array<OptionTexture>>, Option<arc::R<ns::Error>>) {
         let mut err = None;
         let textures = unsafe { self.new_textures_with_urls_err(urls, options, &mut err) };
-        (textures, err)
+        (textures, err.map(arc::Retain::retained))
     }
 
     #[objc::msg_send(newTextureWithData:options:error:)]
@@ -218,11 +218,11 @@ impl TextureLoader {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<mtl::Texture>>;
 
-    pub fn new_texture_with_data<'ear>(
+    pub fn new_texture_with_data(
         &self,
         data: &ns::Data,
         options: Option<&Opts>,
-    ) -> ns::Result<'ear, arc::R<mtl::Texture>> {
+    ) -> ns::Result<arc::R<mtl::Texture>> {
         ns::if_none(|err| unsafe { self.new_texture_with_data_err(data, options, err) })
     }
 
@@ -236,11 +236,11 @@ impl TextureLoader {
     ) -> Option<arc::R<mtl::Texture>>;
 
     #[cfg(feature = "cg")]
-    pub fn new_texture_with_cg_image<'ear>(
+    pub fn new_texture_with_cg_image(
         &self,
         image: &cg::Image,
         options: Option<&Opts>,
-    ) -> ns::Result<'ear, arc::R<mtl::Texture>> {
+    ) -> ns::Result<arc::R<mtl::Texture>> {
         ns::if_none(|err| unsafe { self.new_texture_with_cg_image_err(image, options, err) })
     }
 
@@ -256,13 +256,13 @@ impl TextureLoader {
     ) -> Option<arc::R<mtl::Texture>>;
 
     #[cfg(feature = "cg")]
-    pub fn new_texture_with_name<'ear>(
+    pub fn new_texture_with_name(
         &self,
         name: &ns::String,
         scale_factor: cg::Float,
         bundle: Option<&ns::Bundle>,
         options: Option<&Opts>,
-    ) -> ns::Result<'ear, arc::R<mtl::Texture>> {
+    ) -> ns::Result<arc::R<mtl::Texture>> {
         ns::if_none(|err| unsafe {
             self.new_texture_with_name_err(name, scale_factor, bundle, options, err)
         })

@@ -1011,7 +1011,7 @@ impl Stream {
         output: &D,
         output_type: OutputType,
         queue: Option<&dispatch::Queue>,
-    ) -> ns::Result<'ear> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe {
             self.add_stream_output_type_sample_handler_queue_err(output, output_type, queue, err)
         })
@@ -1030,7 +1030,7 @@ impl Stream {
         &self,
         output: &D,
         output_type: OutputType,
-    ) -> ns::Result<'ear> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe { self.remove_stream_output_err(output, output_type, err) })
     }
 
@@ -1147,7 +1147,7 @@ impl Stream {
         visionos = 27.0,
         tvos = 27.0
     )]
-    pub fn add_recording_output<'ear>(&mut self, val: &sc::RecordingOutput) -> ns::Result<'ear> {
+    pub fn add_recording_output(&mut self, val: &sc::RecordingOutput) -> ns::Result {
         ns::if_false(|err| unsafe { self.add_recording_output_err(val, err) })
     }
 
@@ -1173,7 +1173,7 @@ impl Stream {
         visionos = 27.0,
         tvos = 27.0
     )]
-    pub fn remove_recording_output<'ear>(&mut self, val: &sc::RecordingOutput) -> ns::Result<'ear> {
+    pub fn remove_recording_output(&mut self, val: &sc::RecordingOutput) -> ns::Result {
         ns::if_false(|err| unsafe { self.remove_recording_output_err(val, err) })
     }
 
@@ -1199,10 +1199,7 @@ impl Stream {
         visionos = 27.0,
         tvos = 27.0
     )]
-    pub fn add_clip_buffering_output<'ear>(
-        &mut self,
-        val: &sc::ClipBufferingOutput,
-    ) -> ns::Result<'ear> {
+    pub fn add_clip_buffering_output(&mut self, val: &sc::ClipBufferingOutput) -> ns::Result {
         ns::if_false(|err| unsafe { self.add_clip_buffering_output_err(val, err) })
     }
 
@@ -1228,10 +1225,7 @@ impl Stream {
         visionos = 27.0,
         tvos = 27.0
     )]
-    pub fn remove_clip_buffering_output<'ear>(
-        &mut self,
-        val: &sc::ClipBufferingOutput,
-    ) -> ns::Result<'ear> {
+    pub fn remove_clip_buffering_output(&mut self, val: &sc::ClipBufferingOutput) -> ns::Result {
         ns::if_false(|err| unsafe { self.remove_clip_buffering_output_err(val, err) })
     }
 
@@ -1245,10 +1239,7 @@ impl Stream {
     ) -> bool;
 
     #[api::available(ios = 27.0)]
-    pub fn add_video_effect_output<'ear>(
-        &mut self,
-        val: &sc::VideoEffectOutput,
-    ) -> ns::Result<'ear> {
+    pub fn add_video_effect_output(&mut self, val: &sc::VideoEffectOutput) -> ns::Result {
         ns::if_false(|err| unsafe { self.add_video_effect_output_err(val, err) })
     }
 
@@ -1262,10 +1253,7 @@ impl Stream {
     ) -> bool;
 
     #[api::available(ios = 27.0)]
-    pub fn remove_video_effect_output<'ear>(
-        &mut self,
-        val: &sc::VideoEffectOutput,
-    ) -> ns::Result<'ear> {
+    pub fn remove_video_effect_output(&mut self, val: &sc::VideoEffectOutput) -> ns::Result {
         ns::if_false(|err| unsafe { self.remove_video_effect_output_err(val, err) })
     }
 }

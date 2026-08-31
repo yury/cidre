@@ -18,7 +18,7 @@ impl ml::Model {
         &self,
         input_features: &F,
         state: &ml::State,
-    ) -> ns::Result<'ear, arc::R<ml::AnyFeatureProvider>> {
+    ) -> ns::Result<arc::R<ml::AnyFeatureProvider>> {
         ns::if_none(|err| unsafe {
             self.prediction_from_features_using_state_err(input_features, state, err)
         })
@@ -39,7 +39,7 @@ impl ml::Model {
         input_features: &F,
         state: &ml::State,
         options: &ml::PredictionOpts,
-    ) -> ns::Result<'ear, arc::R<ml::AnyFeatureProvider>> {
+    ) -> ns::Result<arc::R<ml::AnyFeatureProvider>> {
         ns::if_none(|err| unsafe {
             self.prediction_from_features_using_state_opts_err(input_features, state, options, err)
         })

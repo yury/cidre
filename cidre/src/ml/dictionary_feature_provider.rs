@@ -33,9 +33,9 @@ impl DictionaryFeatureProvider {
         self.object_for_keyed_subscript(feature_name)
     }
 
-    pub fn with_dictionary<'ear>(
+    pub fn with_dictionary(
         dictionary: &ns::Dictionary<ns::String, ns::Id>,
-    ) -> ns::Result<'ear, arc::R<Self>> {
+    ) -> ns::Result<arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_dictionary_err(dictionary, err) })
     }
 }

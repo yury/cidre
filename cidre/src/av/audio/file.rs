@@ -44,15 +44,15 @@ impl arc::A<File> {
 impl File {
     define_cls!(AV_AUDIO_FILE);
 
-    pub fn open_read<'ear>(file_url: &ns::Url) -> ns::Result<'ear, arc::R<Self>> {
+    pub fn open_read(file_url: &ns::Url) -> ns::Result<arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::alloc().init_for_reading_err(file_url, err) })
     }
 
-    pub fn open_read_common_format<'ear>(
+    pub fn open_read_common_format(
         file_url: &ns::Url,
         common_format: av::audio::CommonFormat,
         interleaved: bool,
-    ) -> ns::Result<'ear, arc::R<Self>> {
+    ) -> ns::Result<arc::R<Self>> {
         ns::if_none(|err| unsafe {
             Self::alloc().init_for_reading_common_format_err(
                 file_url,
@@ -63,19 +63,19 @@ impl File {
         })
     }
 
-    pub fn open_write<'ear>(
+    pub fn open_write(
         file_url: &ns::Url,
         settings: &ns::Dictionary<ns::String, ns::Id>,
-    ) -> ns::Result<'ear, arc::R<Self>> {
+    ) -> ns::Result<arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::alloc().init_for_writing_err(file_url, settings, err) })
     }
 
-    pub fn open_write_common_format<'ear>(
+    pub fn open_write_common_format(
         file_url: &ns::Url,
         settings: &ns::Dictionary<ns::String, ns::Id>,
         common_format: av::audio::CommonFormat,
         interleaved: bool,
-    ) -> ns::Result<'ear, arc::R<Self>> {
+    ) -> ns::Result<arc::R<Self>> {
         ns::if_none(|err| unsafe {
             Self::alloc().init_for_writing_common_format_err(
                 file_url,
@@ -97,7 +97,7 @@ impl File {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn read<'ear>(&mut self, buffer: &mut av::audio::PcmBuf) -> ns::Result<'ear> {
+    pub fn read(&mut self, buffer: &mut av::audio::PcmBuf) -> ns::Result {
         ns::if_false(|err| unsafe { self.read_err(buffer, err) })
     }
 
@@ -109,11 +109,11 @@ impl File {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn read_n<'ear>(
+    pub fn read_n(
         &mut self,
         buffer: &mut av::audio::PcmBuf,
         frame_count: av::AudioFrameCount,
-    ) -> ns::Result<'ear> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe { self.read_n_err(buffer, frame_count, err) })
     }
 
@@ -124,7 +124,7 @@ impl File {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn write<'ear>(&mut self, buffer: &av::audio::PcmBuf) -> ns::Result<'ear> {
+    pub fn write(&mut self, buffer: &av::audio::PcmBuf) -> ns::Result {
         ns::if_false(|err| unsafe { self.write_err(buffer, err) })
     }
 

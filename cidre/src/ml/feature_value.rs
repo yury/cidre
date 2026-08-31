@@ -60,9 +60,7 @@ impl FeatureValue {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Self>>;
 
-    pub fn with_dictionary<'ear>(
-        val: &ns::Dictionary<ns::Id, ns::Number>,
-    ) -> ns::Result<'ear, arc::R<Self>> {
+    pub fn with_dictionary(val: &ns::Dictionary<ns::Id, ns::Number>) -> ns::Result<arc::R<Self>> {
         ns::if_none(|err| Self::with_dictionary_err(val, err))
     }
 

@@ -121,12 +121,12 @@ impl FileManager {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ns::Array<ns::Url>>>;
 
-    pub fn contents_of_dir_at_url<'ear>(
+    pub fn contents_of_dir_at_url(
         &self,
         url: &ns::Url,
         including_props_for_keys: Option<&ns::Array<ns::UrlResKey>>,
         options: DirEnumOpts,
-    ) -> Result<arc::R<ns::Array<ns::Url>>, &'ear ns::Error> {
+    ) -> Result<arc::R<ns::Array<ns::Url>>, arc::R<ns::Error>> {
         ns::if_none(|err| unsafe {
             self.contents_of_dir_at_url_err(url, including_props_for_keys, options, err)
         })
@@ -142,13 +142,13 @@ impl FileManager {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ns::Url>>;
 
-    pub fn url_for_dir<'ear>(
+    pub fn url_for_dir(
         &self,
         directory: ns::SearchPathDirectory,
         in_domain: ns::SearchPathDomainMask,
         appropriate_for_url: Option<&ns::Url>,
         create: bool,
-    ) -> Result<arc::R<ns::Url>, Option<&'ear ns::Error>> {
+    ) -> Result<arc::R<ns::Url>, Option<arc::R<ns::Error>>> {
         let mut error = None;
         if let Some(res) = unsafe {
             self.url_for_dir_err(
@@ -161,7 +161,7 @@ impl FileManager {
         } {
             Ok(res)
         } else {
-            Err(error)
+            Err(error.map(arc::Retain::retained))
         }
     }
 
@@ -174,12 +174,12 @@ impl FileManager {
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn create_dir_at_url<'ear>(
+    pub fn create_dir_at_url(
         &self,
         url: &ns::Url,
         create_intermediates: bool,
         attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
-    ) -> ns::Result<'ear> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe {
             self.create_dir_at_url_err(url, create_intermediates, attributes, err)
         })
@@ -195,12 +195,12 @@ impl FileManager {
     ) -> bool;
 
     #[inline]
-    pub fn create_dir_at_path<'ear>(
+    pub fn create_dir_at_path(
         &self,
         path: &ns::String,
         create_intermediates: bool,
         attributes: Option<&ns::Dictionary<ns::FileAttrKey, ns::Id>>,
-    ) -> ns::Result<'ear> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe {
             self.create_dir_at_path_err(path, create_intermediates, attributes, err)
         })
@@ -214,7 +214,7 @@ impl FileManager {
     ) -> bool;
 
     #[inline]
-    pub fn remove_item_at_path<'ear>(&self, path: &ns::String) -> ns::Result<'ear> {
+    pub fn remove_item_at_path(&self, path: &ns::String) -> ns::Result {
         ns::if_false(|err| unsafe { self.remove_item_at_path_err(path, err) })
     }
 
@@ -252,12 +252,12 @@ impl FileManager {
     ) -> bool;
 
     #[inline]
-    pub fn set_ubiquitous_item<'ear>(
+    pub fn set_ubiquitous_item(
         &mut self,
         value: bool,
         item_at_url: &ns::Url,
         dest_url: &ns::Url,
-    ) -> ns::Result<'ear> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe {
             self.set_ubiquitous_item_err(value, item_at_url, dest_url, err)
         })
@@ -273,10 +273,7 @@ impl FileManager {
         error: *mut Option<&'ar ns::Error>,
     ) -> bool;
 
-    pub fn start_downloading_ubquitous_item<'ear>(
-        &mut self,
-        item_at_url: &ns::Url,
-    ) -> ns::Result<'ear> {
+    pub fn start_downloading_ubquitous_item(&mut self, item_at_url: &ns::Url) -> ns::Result {
         ns::if_false(|err| self.start_downloading_ubquitous_item_err(item_at_url, err))
     }
 
@@ -288,7 +285,7 @@ impl FileManager {
     ) -> bool;
 
     #[inline]
-    pub fn evict_ubiquitous_item<'ear>(&mut self, item_at_url: &ns::Url) -> ns::Result<'ear> {
+    pub fn evict_ubiquitous_item(&mut self, item_at_url: &ns::Url) -> ns::Result {
         ns::if_false(|err| self.evict_ubiquitous_item_err(item_at_url, err))
     }
 

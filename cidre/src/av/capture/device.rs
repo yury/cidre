@@ -171,21 +171,12 @@ impl Device {
     pub fn is_auto_video_frame_rate_enabled(&self) -> bool;
 
     pub fn config_lock(&mut self) -> Result<ConfigLockGuard<'_>, arc::R<ns::Error>> {
-        let mut error = None;
-        unsafe {
-            let result = self.lock_for_config(&mut error);
-            if let Some(error) = error.take() {
-                return Err(error);
-            }
-
-            debug_assert!(result);
-
-            Ok(ConfigLockGuard { device: self })
-        }
+        ns::if_false(|error| unsafe { self.lock_for_config(error) })?;
+        Ok(ConfigLockGuard { device: self })
     }
 
     #[objc::msg_send(lockForConfiguration:)]
-    pub unsafe fn lock_for_config(&mut self, error: *mut Option<arc::R<ns::Error>>) -> bool;
+    pub unsafe fn lock_for_config<'ear>(&mut self, error: *mut Option<&'ear ns::Error>) -> bool;
 
     #[objc::msg_send(unlockForConfiguration)]
     pub unsafe fn unlock_for_config(&mut self);
@@ -315,7 +306,7 @@ impl<'a> ConfigLockGuard<'a> {
         }
     }
 
-    pub fn set_torch_mode_on_with_level<'ear>(&mut self, torch_level: f32) -> ns::Result<'ear> {
+    pub fn set_torch_mode_on_with_level(&mut self, torch_level: f32) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_torch_mode_on_with_level_err(torch_level, err) })
     }
 }

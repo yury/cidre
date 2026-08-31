@@ -36,7 +36,7 @@ impl Embedding {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Self>>;
 
-    pub fn with_url<'ear>(url: &ns::Url) -> Result<arc::R<Self>, &'ear ns::Error> {
+    pub fn with_url(url: &ns::Url) -> Result<arc::R<Self>, arc::R<ns::Error>> {
         ns::if_none(|err| Self::with_url_err(url, err))
     }
 

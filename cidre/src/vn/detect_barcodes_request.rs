@@ -25,9 +25,9 @@ impl DetectBarcodesRequest {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ns::Array<vn::BarcodeSymbology>>>;
 
-    pub fn supported_symbologies<'ar>(
+    pub fn supported_symbologies(
         &self,
-    ) -> Result<arc::R<ns::Array<vn::BarcodeSymbology>>, &'ar ns::Error> {
+    ) -> Result<arc::R<ns::Array<vn::BarcodeSymbology>>, arc::R<ns::Error>> {
         ns::if_none(|err| unsafe { self.supported_symbologies_and_return_err(err) })
     }
 }

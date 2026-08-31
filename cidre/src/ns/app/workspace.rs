@@ -36,12 +36,12 @@ impl Workspace {
 
     /// Sets the desktop image for the given screen.
     #[objc::available(macos = 10.6)]
-    pub fn set_desktop_image_url<'ear>(
+    pub fn set_desktop_image_url(
         &self,
         url: &ns::Url,
         screen: &ns::Screen,
         opts: &ns::Dictionary<DesktopImageOptionKey, ns::Id>,
-    ) -> ns::Result<'ear> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe { self.set_desktop_image_url_err(url, screen, opts, err) })
     }
 

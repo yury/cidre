@@ -88,7 +88,7 @@ impl MultiArray {
     pub fn with_shape<'ear, S: AsRef<ns::Array<ns::Number>>>(
         shape: S,
         d_type: MultiArrayDType,
-    ) -> ns::Result<'ear, arc::R<Self>> {
+    ) -> ns::Result<arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_shape_err(shape.as_ref(), d_type, err) })
     }
 
@@ -114,7 +114,7 @@ impl MultiArray {
         d_type: MultiArrayDType,
         strides: S,
         deallocator: Option<&mut blocks::EscBlock<fn(ptr: *mut std::ffi::c_void)>>,
-    ) -> ns::Result<'ear, arc::R<Self>> {
+    ) -> ns::Result<arc::R<Self>> {
         ns::if_none(|err| unsafe {
             Self::alloc().init_with_ptr(
                 data_ptr,

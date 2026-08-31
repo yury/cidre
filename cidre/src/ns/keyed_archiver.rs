@@ -16,10 +16,10 @@ impl KeyedArchiver {
     ) -> Option<arc::R<ns::Data>>;
 
     #[inline]
-    pub fn archived_data_with_root_obj<'ear>(
+    pub fn archived_data_with_root_obj(
         obj: &ns::Id,
         secure_coding: bool,
-    ) -> Result<arc::R<ns::Data>, &'ear ns::Error> {
+    ) -> Result<arc::R<ns::Data>, arc::R<ns::Error>> {
         ns::if_none(|err| unsafe { Self::archived_data_with_root_obj_err(obj, secure_coding, err) })
     }
 }

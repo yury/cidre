@@ -33,14 +33,14 @@ impl Context {
     ) -> bool;
 
     #[inline]
-    pub fn write_png_to_url<'ear>(
+    pub fn write_png_to_url(
         &self,
         image: &ci::Image,
         url: &ns::Url,
         format: ci::Format,
         color_space: &cg::ColorSpace,
         options: &ns::Dictionary<ns::String, ns::Id>,
-    ) -> ns::Result<'ear> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe {
             self.write_png_to_url_format_colorspace_opts_err(
                 image,

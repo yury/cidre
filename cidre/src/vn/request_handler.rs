@@ -101,10 +101,10 @@ impl ImageRequestHandler {
     ) -> bool;
 
     #[inline]
-    pub fn perform<'ear>(
+    pub fn perform(
         &self,
         requests: &ns::Array<vn::Request>,
-    ) -> Result<(), Option<&'ear ns::Error>> {
+    ) -> Result<(), Option<arc::R<ns::Error>>> {
         unsafe { ns::if_false_maybe(|err| self.perform_request_err(requests, err)) }
     }
 }
@@ -133,11 +133,11 @@ impl SequenceRequestHandler {
     ) -> bool;
 
     #[inline]
-    pub fn perform_on_cv_pixel_buf<'ear>(
+    pub fn perform_on_cv_pixel_buf(
         &self,
         requests: &ns::Array<vn::Request>,
         pixel_buf: &cv::PixelBuf,
-    ) -> ns::Result<'ear> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe {
             self.perform_requests_on_cv_pixel_buf_err(requests, pixel_buf, err)
         })
@@ -152,11 +152,11 @@ impl SequenceRequestHandler {
     ) -> bool;
 
     #[inline]
-    pub fn perform_on_cm_sample_buf<'ear>(
+    pub fn perform_on_cm_sample_buf(
         &self,
         requests: &ns::Array<vn::Request>,
         sample_buf: &cm::SampleBuf,
-    ) -> ns::Result<'ear> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe {
             self.perform_requests_on_cm_sample_buf_err(requests, sample_buf, err)
         })

@@ -109,19 +109,19 @@ impl VideoProcessor {
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn add_request<'ear>(
+    pub fn add_request(
         &mut self,
         request: &vn::Request,
         processing_opts: &RequestProcessingOpts,
-    ) -> ns::Result<'ear> {
+    ) -> ns::Result {
         ns::if_false(|err| self.add_request_err(request, processing_opts, err))
     }
 
-    pub fn add_request_with_cadence<'ear>(
+    pub fn add_request_with_cadence(
         &mut self,
         request: &vn::Request,
         cadence: &Cadence,
-    ) -> ns::Result<'ear> {
+    ) -> ns::Result {
         let mut opts = RequestProcessingOpts::new();
         opts.set_cadence(Some(cadence));
         self.add_request(request, &opts)
@@ -134,7 +134,7 @@ impl VideoProcessor {
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn remove_request<'ear>(&mut self, request: &vn::Request) -> ns::Result<'ear> {
+    pub fn remove_request(&mut self, request: &vn::Request) -> ns::Result {
         ns::if_false(|err| self.remove_request_err(request, err))
     }
 
@@ -145,11 +145,11 @@ impl VideoProcessor {
         error: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn analyze_time_range<'ear>(&mut self, time_range: cm::TimeRange) -> ns::Result<'ear> {
+    pub fn analyze_time_range(&mut self, time_range: cm::TimeRange) -> ns::Result {
         ns::if_false(|err| self.analyze_time_range_err(time_range, err))
     }
 
-    pub fn analyze<'ear>(&mut self) -> ns::Result<'ear> {
+    pub fn analyze(&mut self) -> ns::Result {
         self.analyze_time_range(cm::TimeRange {
             start: cm::Time::zero(),
             duration: cm::Time::indefinit(),

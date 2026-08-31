@@ -106,10 +106,10 @@ impl Regex {
     define_cls!(NS_REGULAR_EXPRESSION);
 
     #[inline]
-    pub fn with_pattern<'ear>(
+    pub fn with_pattern(
         pattern: &ns::String,
         opts: Opts,
-    ) -> Result<arc::R<Self>, &'ear ns::Error> {
+    ) -> Result<arc::R<Self>, arc::R<ns::Error>> {
         ns::if_none(|err| Self::alloc().init_with_pattern_opts_err(pattern, opts, err))
     }
 }

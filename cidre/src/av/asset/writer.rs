@@ -105,10 +105,10 @@ impl Writer {
     /// let writer = av::AssetWriter::with_url_and_file_type(&url, av::FileType::mp4()).unwrap();
     /// assert_eq!(writer.inputs().len(), 0);
     /// ```
-    pub fn with_url_and_file_type<'ear>(
+    pub fn with_url_and_file_type(
         url: &ns::Url,
         file_type: &av::FileType,
-    ) -> ns::Result<'ear, arc::R<Self>> {
+    ) -> ns::Result<arc::R<Self>> {
         ns::if_none(|err| Self::alloc().init_with_url_file_type_err(url, file_type, err))
     }
 

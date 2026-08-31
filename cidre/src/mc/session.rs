@@ -110,12 +110,12 @@ impl Session {
     ) -> bool;
 
     /// Send a data message to a list of destination peers.
-    pub fn send_data<'ear>(
+    pub fn send_data(
         &mut self,
         data: &ns::Data,
         to_peers: &ns::Array<mc::PeerId>,
         mode: mc::SessionSendDataMode,
-    ) -> ns::Result<'ear> {
+    ) -> ns::Result {
         ns::if_false(|err| unsafe { self.send_data_err(data, to_peers, mode, err) })
     }
 
@@ -151,11 +151,11 @@ impl Session {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ns::OutputStream>>;
 
-    pub fn start_stream<'ear>(
+    pub fn start_stream(
         &mut self,
         stream_name: &ns::String,
         to_peer: &mc::PeerId,
-    ) -> ns::Result<'ear, arc::R<ns::OutputStream>> {
+    ) -> ns::Result<arc::R<ns::OutputStream>> {
         ns::if_none(|err| unsafe { self.start_stream_err(stream_name, to_peer, err) })
     }
 

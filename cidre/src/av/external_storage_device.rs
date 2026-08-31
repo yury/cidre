@@ -55,10 +55,10 @@ impl Device {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ns::Array<ns::Url>>>;
 
-    pub fn next_available_urls<'ear>(
+    pub fn next_available_urls(
         &self,
         extensions: &ns::Array<ns::String>,
-    ) -> ns::Result<'ear, arc::R<ns::Array<ns::Url>>> {
+    ) -> ns::Result<arc::R<ns::Array<ns::Url>>> {
         ns::if_none(|err| self.next_available_urls_err(extensions, err))
     }
 }

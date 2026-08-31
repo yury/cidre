@@ -168,10 +168,7 @@ impl Device {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Lib>>;
 
-    pub fn new_default_lib_with_bundle<'ear>(
-        &self,
-        bundle: &ns::Bundle,
-    ) -> ns::Result<'ear, arc::R<Lib>> {
+    pub fn new_default_lib_with_bundle(&self, bundle: &ns::Bundle) -> ns::Result<arc::R<Lib>> {
         ns::if_none(|err| unsafe { self.new_default_lib_with_bundle_err(bundle, err) })
     }
 
@@ -184,11 +181,11 @@ impl Device {
     ) -> Option<arc::R<Lib>>;
 
     #[inline]
-    pub fn new_lib_with_src_blocking<'ear>(
+    pub fn new_lib_with_src_blocking(
         &self,
         src: &ns::String,
         opts: Option<&mtl::CompileOpts>,
-    ) -> ns::Result<'ear, arc::R<Lib>> {
+    ) -> ns::Result<arc::R<Lib>> {
         ns::if_none(|err| unsafe { Self::new_lib_with_src_err(self, src, opts, err) })
     }
 
@@ -218,10 +215,10 @@ impl Device {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<mtl::Lib>>;
 
-    pub fn new_lib_with_stitched_desc_blocking<'ear>(
+    pub fn new_lib_with_stitched_desc_blocking(
         &self,
         desc: mtl::FnStitchedLibDesc,
-    ) -> ns::Result<'ear, arc::R<mtl::Lib>> {
+    ) -> ns::Result<arc::R<mtl::Lib>> {
         ns::if_none(|err| unsafe { self.new_lib_with_stitched_desc_err(desc, err) })
     }
 
@@ -257,18 +254,18 @@ impl Device {
     ) -> Option<arc::R<mtl::RenderPipelineState>>;
 
     #[inline]
-    pub fn new_render_ps<'ear>(
+    pub fn new_render_ps(
         &self,
         desc: &mtl::RenderPipelineDesc,
-    ) -> ns::Result<'ear, arc::R<mtl::RenderPipelineState>> {
+    ) -> ns::Result<arc::R<mtl::RenderPipelineState>> {
         ns::if_none(|err| unsafe { Self::new_render_ps_err(self, desc, err) })
     }
 
     #[inline]
-    pub fn new_compute_ps_with_fn<'ear>(
+    pub fn new_compute_ps_with_fn(
         &self,
         function: &mtl::Fn,
-    ) -> ns::Result<'ear, arc::R<mtl::ComputePipelineState>> {
+    ) -> ns::Result<arc::R<mtl::ComputePipelineState>> {
         ns::if_none(|err| unsafe { self.new_compute_ps_with_fn_err(function, err) })
     }
 
@@ -282,11 +279,11 @@ impl Device {
     ) -> Option<arc::R<mtl::ComputePipelineState>>;
 
     #[inline]
-    pub fn new_compute_ps<'ear>(
+    pub fn new_compute_ps(
         &self,
         desc: &mtl::ComputePipelineDesc,
         opts: mtl::PipelineOpt,
-    ) -> ns::Result<'ear, arc::R<mtl::ComputePipelineState>> {
+    ) -> ns::Result<arc::R<mtl::ComputePipelineState>> {
         ns::if_none(|err| unsafe { self.new_compute_ps_err(desc, opts, std::ptr::null_mut(), err) })
     }
 
@@ -299,11 +296,11 @@ impl Device {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<mtl::RenderPipelineState>>;
 
-    pub fn new_tile_render_ps<'ear>(
+    pub fn new_tile_render_ps(
         &self,
         desc: &mtl::TileRenderPipelineDesc,
         opts: mtl::PipelineOpt,
-    ) -> ns::Result<'ear, arc::R<mtl::RenderPipelineState>> {
+    ) -> ns::Result<arc::R<mtl::RenderPipelineState>> {
         ns::if_none(|err| unsafe {
             self.new_tile_render_ps_err(desc, opts, std::ptr::null_mut(), err)
         })
@@ -469,10 +466,10 @@ impl Device {
         tvos = 18.0,
         visionos = 2.0
     )]
-    pub fn new_residency_set<'ear>(
+    pub fn new_residency_set(
         &self,
         desc: &mtl::ResidencySetDesc,
-    ) -> ns::Result<'ear, arc::R<mtl::ResidencySet>> {
+    ) -> ns::Result<arc::R<mtl::ResidencySet>> {
         ns::if_none(|err| unsafe { self.new_residency_set_err(desc, err) })
     }
 
@@ -501,10 +498,7 @@ impl Device {
         tvos = 26.0,
         visionos = 26.0
     )]
-    pub fn new_tensor<'ear>(
-        &self,
-        desc: &mtl::TensorDesc,
-    ) -> ns::Result<'ear, arc::R<mtl::Tensor>> {
+    pub fn new_tensor(&self, desc: &mtl::TensorDesc) -> ns::Result<arc::R<mtl::Tensor>> {
         ns::if_none(|err| unsafe { self.new_tensor_err(desc, err) })
     }
 
@@ -549,10 +543,10 @@ impl Device {
         tvos = 26.0,
         visionos = 26.0
     )]
-    pub fn new_cmd_allocator_desc<'ear>(
+    pub fn new_cmd_allocator_desc(
         &self,
         desc: &mtl4::CmdAllocator,
-    ) -> ns::Result<'ear, arc::R<mtl4::CmdAllocator>> {
+    ) -> ns::Result<arc::R<mtl4::CmdAllocator>> {
         ns::if_none(|err| unsafe { self.new_cmd_allocator_desc_err(desc, err) })
     }
 
@@ -588,10 +582,10 @@ impl Device {
         visionos = 26.0
     )]
     #[allow(unused_unsafe)]
-    pub fn new_mtl4_cmd_queue_desc<'ear>(
+    pub fn new_mtl4_cmd_queue_desc(
         &self,
         desc: &mtl4::CmdQueueDesc,
-    ) -> ns::Result<'ear, arc::R<mtl4::CmdQueue>> {
+    ) -> ns::Result<arc::R<mtl4::CmdQueue>> {
         ns::if_none(|err| unsafe { self.new_mtl4_cmd_queue_desc_err(desc, err) })
     }
 
@@ -626,10 +620,7 @@ impl Device {
         tvos = 26.0,
         visionos = 26.0
     )]
-    pub fn new_arg_table<'ear>(
-        &self,
-        desc: &mtl4::ArgTableDesc,
-    ) -> ns::Result<'ear, arc::R<mtl4::ArgTable>> {
+    pub fn new_arg_table(&self, desc: &mtl4::ArgTableDesc) -> ns::Result<arc::R<mtl4::ArgTable>> {
         ns::if_none(|err| unsafe { self.new_arg_table_err(desc, err) })
     }
 
@@ -654,10 +645,7 @@ impl Device {
         tvos = 26.0,
         visionos = 26.0
     )]
-    pub fn new_compiler<'ear>(
-        &self,
-        desc: &mtl4::CompilerDesc,
-    ) -> ns::Result<'ear, arc::R<mtl4::Compiler>> {
+    pub fn new_compiler(&self, desc: &mtl4::CompilerDesc) -> ns::Result<arc::R<mtl4::Compiler>> {
         ns::if_none(|err| unsafe { self.new_compiler_err(desc, err) })
     }
 

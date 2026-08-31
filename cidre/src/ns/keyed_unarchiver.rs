@@ -19,7 +19,7 @@ impl KeyedUnarchiver {
     pub fn unarchived_obj_of_cls<'a, 'ear, T: objc::Obj>(
         cls: &'a objc::Class<T>,
         data: &'a ns::Data,
-    ) -> Result<arc::R<T>, &'ear ns::Error> {
+    ) -> Result<arc::R<T>, arc::R<ns::Error>> {
         ns::if_none(|err| unsafe { Self::unarchived_obj_of_cls_err(cls, data, err) })
     }
 }

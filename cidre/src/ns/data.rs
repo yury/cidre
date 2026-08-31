@@ -111,7 +111,7 @@ impl Data {
     pub fn with_contents_of_file<'ear, P: AsRef<ns::String>>(
         path: P,
         options: ReadOpts,
-    ) -> Result<arc::R<Self>, &'ear ns::Error> {
+    ) -> Result<arc::R<Self>, arc::R<ns::Error>> {
         ns::if_none(|err| {
             Self::alloc().init_with_contents_of_file_opts_err(path.as_ref(), options, err)
         })
@@ -121,7 +121,7 @@ impl Data {
     pub fn with_contents_of_url<'ear, U: AsRef<ns::Url>>(
         url: U,
         options: ReadOpts,
-    ) -> Result<arc::R<Self>, &'ear ns::Error> {
+    ) -> Result<arc::R<Self>, arc::R<ns::Error>> {
         ns::if_none(|err| {
             Self::alloc().init_with_contents_of_url_opts_err(url.as_ref(), options, err)
         })

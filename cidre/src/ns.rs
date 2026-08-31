@@ -1,7 +1,7 @@
 use crate::arc;
 use crate::objc;
 
-pub type Result<'ear, R = (), E = &'ear Error> = std::result::Result<R, E>;
+pub type Result<R = (), E = arc::R<Error>> = std::result::Result<R, E>;
 
 pub type ExResult<'ear, R = ()> = std::result::Result<R, &'ear Exception>;
 
@@ -355,9 +355,9 @@ pub mod xpc;
 ///
 /// See av::AudioSession API
 #[derive(Debug)]
-pub enum ExErr<'ar> {
-    Ex(&'ar Exception),
-    Err(&'ar Error),
+pub enum ExErr {
+    Ex(arc::R<Exception>),
+    Err(arc::R<Error>),
 }
 
 #[cfg(any(

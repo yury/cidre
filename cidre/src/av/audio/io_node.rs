@@ -60,13 +60,8 @@ impl IoNode {
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_vp_enabled<'ear>(&mut self, val: bool) -> ns::Result<'ear> {
-        let mut err = None;
-        if unsafe { self.set_vp_enabled_err(val, &mut err) } {
-            Ok(())
-        } else {
-            Err(unsafe { err.unwrap_unchecked() })
-        }
+    pub fn set_vp_enabled(&mut self, val: bool) -> ns::Result {
+        ns::if_false(|err| unsafe { self.set_vp_enabled_err(val, err) })
     }
 }
 

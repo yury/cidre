@@ -26,10 +26,10 @@ impl RecognizedText {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<vn::RectangleObservation>>;
 
-    pub fn bounding_box_for_range<'ear>(
+    pub fn bounding_box_for_range(
         &self,
         range: ns::Range,
-    ) -> ns::Result<'ear, arc::R<vn::RectangleObservation>> {
+    ) -> ns::Result<arc::R<vn::RectangleObservation>> {
         ns::if_none(|err| unsafe { self.bounding_box_for_range_err(range, err) })
     }
 }
@@ -230,10 +230,10 @@ impl InstanceMaskObservation {
     ///
     /// The pixel format of kCVPixelFormatType_OneComponent32Float
     #[inline]
-    pub fn generate_mask_for_instances<'ear>(
+    pub fn generate_mask_for_instances(
         &self,
         instances: &ns::IndexSet,
-    ) -> ns::Result<'ear, arc::Retained<cv::PixelBuf>> {
+    ) -> ns::Result<arc::Retained<cv::PixelBuf>> {
         ns::if_none(|err| unsafe { self.generate_mask_for_instances_err(instances, err) })
     }
 
@@ -248,12 +248,12 @@ impl InstanceMaskObservation {
 
     /// High res image with everything but the selected instances removed to transparent black.
     #[inline]
-    pub fn generate_masked_image_for_instances_cropped<'ear>(
+    pub fn generate_masked_image_for_instances_cropped(
         &self,
         instances: &ns::IndexSet,
         request_handler: &vn::ImageRequestHandler,
         crop_result: bool,
-    ) -> ns::Result<'ear, arc::Retained<cv::PixelBuf>> {
+    ) -> ns::Result<arc::Retained<cv::PixelBuf>> {
         ns::if_none(|err| unsafe {
             self.generate_masked_image_for_instances_cropped_err(
                 instances,
@@ -274,11 +274,11 @@ impl InstanceMaskObservation {
 
     /// High res mask with the selected instances preserved while everything else is removed to transparent black.
     #[inline]
-    pub fn generate_scaled_mask_for_instances<'ear>(
+    pub fn generate_scaled_mask_for_instances(
         &self,
         instances: &ns::IndexSet,
         request_handler: &vn::ImageRequestHandler,
-    ) -> ns::Result<'ear, arc::Retained<cv::PixelBuf>> {
+    ) -> ns::Result<arc::Retained<cv::PixelBuf>> {
         ns::if_none(|err| unsafe {
             self.generate_scaled_mask_for_instances_err(instances, request_handler, err)
         })
@@ -349,16 +349,10 @@ impl FeaturePrintObservation {
     /// Shorter distances indicate greater similarity between feature prints.
     #[doc(alias = "computeDistance:toFeaturePrintObservation:error:")]
     #[inline]
-    pub fn distance_to<'ear>(&self, to: &FeaturePrintObservation) -> ns::Result<'ear, f32> {
+    pub fn distance_to(&self, to: &FeaturePrintObservation) -> ns::Result<f32> {
         let mut distance = 0f32;
-        let mut error = None;
-        unsafe {
-            if self.distance_err(&mut distance, to, &mut error) {
-                Ok(distance)
-            } else {
-                Err(error.unwrap_unchecked())
-            }
-        }
+        ns::if_false(|error| unsafe { self.distance_err(&mut distance, to, error) })?;
+        Ok(distance)
     }
 }
 

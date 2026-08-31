@@ -29,18 +29,15 @@ impl arc::A<AudioUnit> {
 impl AudioUnit {
     define_cls!(AU_AUDIO_UNIT);
 
-    pub fn with_comp_desc_opts<'ear>(
+    pub fn with_comp_desc_opts(
         self,
         desc: audio::ComponentDesc,
         opts: audio::ComponentInstantiationOpts,
-    ) -> ns::Result<'ear, arc::R<AudioUnit>> {
+    ) -> ns::Result<arc::R<AudioUnit>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_comp_desc_opts_err(desc, opts, err) })
     }
 
-    pub fn with_comp_desc<'ear>(
-        self,
-        desc: audio::ComponentDesc,
-    ) -> ns::Result<'ear, arc::R<AudioUnit>> {
+    pub fn with_comp_desc(self, desc: audio::ComponentDesc) -> ns::Result<arc::R<AudioUnit>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_comp_desc_err(desc, err) })
     }
 
@@ -100,7 +97,7 @@ impl AudioUnit {
     #[objc::msg_send(allocateRenderResourcesAndReturnError:)]
     pub unsafe fn allocate_render_resources_err<'ear>(&mut self, err: *mut Option<&'ear ns::Error>);
 
-    pub fn allocate_render_resources<'ear>(&mut self) -> ns::Result<'ear> {
+    pub fn allocate_render_resources(&mut self) -> ns::Result {
         ns::if_err(|err| unsafe { self.allocate_render_resources_err(err) })
     }
 
@@ -154,7 +151,7 @@ impl AudioUnitBusArray {
     #[objc::msg_send(setBusCount:error:)]
     pub unsafe fn set_bus_count_err<'ear>(&mut self, val: usize, err: *mut Option<&'ear ns::Error>);
 
-    pub fn set_bus_count<'ear>(&mut self, val: usize) -> ns::Result<'ear> {
+    pub fn set_bus_count(&mut self, val: usize) -> ns::Result {
         ns::if_err(|err| unsafe { self.set_bus_count_err(val, err) })
     }
 
@@ -189,7 +186,7 @@ impl AudioUnitBus {
     /// Audio units can generally be expected to support AVAudioFormat's standard format
     /// (deinterleaved 32-bit float), at any sample rate. Channel counts can be more complex;
     /// see AUAudioUnit.channelCapabilities.
-    pub fn set_format<'ear>(&mut self, val: &av::AudioFormat) -> ns::Result<'ear> {
+    pub fn set_format(&mut self, val: &av::AudioFormat) -> ns::Result {
         ns::if_err(|err| unsafe { self.set_format_err(val, err) })
     }
 
