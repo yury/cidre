@@ -123,14 +123,32 @@ impl Drop for ExtAudioFileRef {
 
 impl ExtAudioFile {
     pub fn open(url: &cf::Url) -> os::Result<ExtAudioFileRef> {
-        unsafe {
-            let mut res = None;
-            ExtAudioFileOpenURL(url, &mut res).result()?;
-            Ok(res.unwrap_unchecked())
-        }
+        unsafe { os::result_unchecked(|res| ExtAudioFileOpenURL(url, res)) }
     }
 
     pub fn create(
+        url: &cf::Url,
+        file_type: audio::FileTypeId,
+        stream_desc: &AudioStreamBasicDesc,
+        channel_layout: Option<&AudioChannelLayout<1>>,
+        flags: audio::FileFlags,
+    ) -> os::Result<ExtAudioFileRef> {
+        let channel_layout = channel_layout.map_or(std::ptr::null(), std::ptr::from_ref);
+        unsafe { Self::create_in(url, file_type, stream_desc, channel_layout, flags) }
+    }
+
+    pub fn create_with_channel_layout<const N: usize>(
+        url: &cf::Url,
+        file_type: audio::FileTypeId,
+        stream_desc: &AudioStreamBasicDesc,
+        channel_layout: &AudioChannelLayout<N>,
+        flags: audio::FileFlags,
+    ) -> os::Result<ExtAudioFileRef> {
+        let channel_layout = std::ptr::from_ref(channel_layout).cast::<AudioChannelLayout<1>>();
+        unsafe { Self::create_in(url, file_type, stream_desc, channel_layout, flags) }
+    }
+
+    unsafe fn create_in(
         url: &cf::Url,
         file_type: audio::FileTypeId,
         stream_desc: &AudioStreamBasicDesc,
@@ -138,10 +156,9 @@ impl ExtAudioFile {
         flags: audio::FileFlags,
     ) -> os::Result<ExtAudioFileRef> {
         unsafe {
-            let mut res = None;
-            ExtAudioFileCreateWithURL(url, file_type, stream_desc, channel_layout, flags, &mut res)
-                .result()?;
-            Ok(res.unwrap_unchecked())
+            os::result_unchecked(|res| {
+                ExtAudioFileCreateWithURL(url, file_type, stream_desc, channel_layout, flags, res)
+            })
         }
     }
 
@@ -181,18 +198,18 @@ impl ExtAudioFile {
         unsafe { ExtAudioFileTell(self, frames_offset).result() }
     }
 
-    pub fn prop_info(
-        &self,
-        prop_id: ExtAudioFilePropId,
-        out_size: *mut u32,
-        writable: *mut bool,
-    ) -> os::Result {
-        unsafe { ExtAudioFileGetPropertyInfo(self, prop_id, out_size, writable).result() }
+    pub fn prop_info(&self, prop_id: ExtAudioFilePropId) -> os::Result<(u32, bool)> {
+        let mut size = 0;
+        let mut writable = false;
+        unsafe {
+            ExtAudioFileGetPropertyInfo(self, prop_id, &mut size, &mut writable).result()?;
+        }
+        Ok((size, writable))
     }
 }
 
 unsafe extern "C" {
-    fn ExtAudioFileOpenURL(url: &cf::Url, audio_file: *mut Option<ExtAudioFileRef>) -> os::Status;
+    fn ExtAudioFileOpenURL(url: &cf::Url, audio_file: &mut Option<ExtAudioFileRef>) -> os::Status;
 
     fn ExtAudioFileCreateWithURL(
         url: &cf::Url,
@@ -200,7 +217,7 @@ unsafe extern "C" {
         stream_desc: &AudioStreamBasicDesc,
         channel_layout: *const AudioChannelLayout<1>,
         flags: audio::FileFlags,
-        audio_file: *mut Option<ExtAudioFileRef>,
+        audio_file: &mut Option<ExtAudioFileRef>,
     ) -> os::Status;
 
     fn ExtAudioFileDispose(audio_file: &mut ExtAudioFile) -> os::Status;
@@ -230,8 +247,53 @@ unsafe extern "C" {
     fn ExtAudioFileGetPropertyInfo(
         audio_file: &ExtAudioFile,
         prop_id: ExtAudioFilePropId,
-        out_size: *mut u32,
-        writable: *mut bool,
+        out_size: &mut u32,
+        writable: &mut bool,
     ) -> os::Status;
 
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{at, at::audio, cf};
+
+    #[test]
+    fn create_with_layout_and_query_property() {
+        let path =
+            std::env::temp_dir().join(format!("cidre-ext-audio-file-{}.caf", std::process::id()));
+        let url = cf::Url::with_path(&path, false).unwrap();
+        let format = audio::StreamBasicDesc {
+            sample_rate: 44_100.0,
+            format: audio::Format::LINEAR_PCM,
+            format_flags: audio::FormatFlags::NATIVE_FLOAT_PACKED,
+            bytes_per_packet: 8,
+            frames_per_packet: 1,
+            bytes_per_frame: 8,
+            channels_per_frame: 2,
+            bits_per_channel: 32,
+            ..Default::default()
+        };
+        let layout = audio::ChannelLayout::<0> {
+            channel_layout_tag: audio::ChannelLayoutTag::STEREO,
+            channel_bitmap: Default::default(),
+            number_channel_descriptions: 0,
+            channel_descriptions: [],
+        };
+
+        let file = at::ExtAudioFile::create_with_channel_layout(
+            &url,
+            audio::FileTypeId::CAF,
+            &format,
+            &layout,
+            audio::FileFlags::ERASE_FILE,
+        )
+        .unwrap();
+        let (size, _) = file
+            .prop_info(at::ExtAudioFilePropId::FILE_DATA_FORMAT)
+            .unwrap();
+        assert_eq!(size as usize, std::mem::size_of_val(&format));
+
+        drop(file);
+        std::fs::remove_file(path).unwrap();
+    }
 }
