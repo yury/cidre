@@ -130,7 +130,7 @@ mod tests {
 
     #[test]
     fn error_autorelease() {
-        ar_pool(|| {
+        ar_pool(|_| {
             let err = ns::Regex::with_pattern(ns::str!(c"\\"), Default::default())
                 .expect_err("should be err");
             assert_eq!(err.code(), 2048);

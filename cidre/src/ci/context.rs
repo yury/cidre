@@ -64,7 +64,7 @@ mod tests {
 
     #[test]
     fn error_autorelease() {
-        ar_pool(|| {
+        ar_pool(|_| {
             let black = ci::Image::black();
             let ctx = ci::Context::with_opts(None).unwrap();
             let url = ns::Url::with_string(ns::str!(c"url")).unwrap();

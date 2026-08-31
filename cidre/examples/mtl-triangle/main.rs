@@ -59,7 +59,7 @@ fragment float4 pass_color(
 "###;
 
 fn main() {
-    ar_pool(|| {
+    ar_pool(|_| {
         let device = mtl::Device::sys_default().unwrap();
 
         let source = ns::String::with_str(LIB_SRC);

@@ -151,7 +151,7 @@ mod macos {
     }
 
     fn video_settings() -> arc::R<ns::DictionaryMut<ns::String, ns::Id>> {
-        objc::ar_pool(|| {
+        objc::ar_pool(|_| {
             let assist = av::OutputSettingsAssistant::with_preset(
                 av::OutputSettingsPreset::hevc_1920x1080(),
             )

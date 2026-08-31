@@ -11,7 +11,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     }
     c.bench_function("block_enum_ranges_no_escape", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 let mut ranges = Vec::with_capacity(n);
                 data.as_ns().enum_ranges(|_ptr, range, _done| {
                     ranges.push(range);
@@ -23,7 +23,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("block_enum_ranges_block_alloc", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 let mut ranges = Vec::with_capacity(n);
                 {
                     let mut closure = |_ptr, range, _done| {
@@ -39,7 +39,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("block_data_apply_noescape", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 let mut ranges = Vec::with_capacity(n);
                 data.apply(|_region, offset, _ptr, _size| {
                     ranges.push(offset);
@@ -53,7 +53,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("block_enum_ranges_block_empty", |b| {
         let mut block = blocks::NoEscBlock::new3(|_ptr, _range, _done| {});
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 data.as_ns().enumerate_byte_ranges_using_block(&mut block);
             })
         })

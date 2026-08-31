@@ -47,7 +47,7 @@ mod test {
 
     #[test]
     fn basics() {
-        ar_pool(|| {
+        ar_pool(|_| {
             let mut request = vn::ClassifyImageRequest::new();
 
             assert_eq!(vn::ClassifyImageRequest::REVISION_2, request.revision());

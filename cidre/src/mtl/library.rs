@@ -530,7 +530,7 @@ mod tests {
 
     #[test]
     fn error_basics() {
-        ar_pool(|| {
+        ar_pool(|_| {
             let device = mtl::Device::sys_default().unwrap();
 
             let src = ns::str!(c"vid function_a() {}");

@@ -20,7 +20,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("cf_iso_date_formatter_with_date", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 for _i in 0..n {
                     cf_iso_formatter.string_from_date(&date);
                 }
@@ -30,7 +30,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("ns_iso_date_formatter_with_date", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 for _i in 0..n {
                     ns_iso_formatter.string_from_date(date.as_ns());
                 }
@@ -40,7 +40,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("cf_date_formatter_with_date", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 for _i in 0..n {
                     cf_formatter.string_from_date(&date);
                 }
@@ -50,7 +50,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("ns_date_formatter_with_date", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 for _i in 0..n {
                     ns_formatter.string_from_date(date.as_ns());
                 }
@@ -60,7 +60,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("cf_iso_date_formatter_with_new_date", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 for i in 0..n {
                     let date = cf::Date::new_at(i as _);
                     cf_iso_formatter.string_from_date(&date);
@@ -71,7 +71,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("ns_iso_date_formatter_with_new_date", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 for i in 0..n {
                     let date = ns::Date::with_time_interval_since_1970(i as _);
                     ns_iso_formatter.string_from_date(&date);
@@ -82,7 +82,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("cf_date_formatter_with_new_date", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 for i in 0..n {
                     let date = cf::Date::new_at(i as _);
                     cf_formatter.string_from_date(&date);
@@ -93,7 +93,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("cf_date_formatter_with_new_system_time", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 for _i in 0..n {
                     let time = std::time::SystemTime::now();
                     cf_formatter.string_from_system_time(&time).unwrap();
@@ -104,7 +104,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("ns_date_formatter_with_new_date", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 for i in 0..n {
                     let date = ns::Date::with_time_interval_since_1970(i as _);
                     ns_formatter.string_from_date(&date);
@@ -115,7 +115,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("cf_date_formatter_with_abs_time", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 for i in 0..n {
                     cf_formatter.string_from_abs_time(i as _);
                 }
@@ -125,7 +125,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("ns_iso_date_formatter_with_new_date_ar", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 for i in 0..n {
                     let date = ns::Date::with_time_interval_since_1970(i as _);
                     ns_iso_formatter.string_from_date_ar(&date);
@@ -136,7 +136,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
     c.bench_function("cf_iso_date_formatter_with_abs_time", |b| {
         b.iter(|| {
-            ar_pool(|| {
+            ar_pool(|_| {
                 for i in 0..n {
                     cf_iso_formatter.string_from_abs_time(i as _);
                 }

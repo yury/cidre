@@ -348,7 +348,7 @@ mod tests {
     fn basics() {
         let _default: arc::R<ns::String> = Default::default();
 
-        ar_pool(|| {
+        ar_pool(|_| {
             let m = ns::StringMut::new();
             assert!(m.is_empty());
             let s = ns::str!(c"10.5");
