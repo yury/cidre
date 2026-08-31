@@ -42,22 +42,18 @@ impl AttrString {
             ))
         }
     }
-
-    /// The text without its attributes, as a Rust string.
-    pub fn to_string(&self) -> std::string::String {
-        self.to_swift_string().to_string()
-    }
 }
 
-#[allow(clippy::inherent_to_string_shadow_display)]
 impl std::fmt::Display for AttrString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&self.to_string())
+        std::fmt::Display::fmt(&self.to_swift_string(), f)
     }
 }
 
 impl std::fmt::Debug for AttrString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "AttrString({:?})", self.to_string())
+        f.debug_tuple("AttrString")
+            .field(&self.to_swift_string())
+            .finish()
     }
 }
