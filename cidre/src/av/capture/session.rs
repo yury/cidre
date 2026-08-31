@@ -33,13 +33,23 @@ pub enum VideoOrienation {
 #[cfg(not(any(target_os = "macos", target_os = "watchos")))]
 #[doc(alias = "AVCaptureSessionInterruptionReason")]
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
+#[non_exhaustive]
 #[repr(isize)]
 pub enum InterruptionReason {
+    #[doc(alias = "AVCaptureSessionInterruptionReasonVideoDeviceNotAvailableInBackground")]
     VideoDeviceNotAvailableInBackground = 1,
+    #[doc(alias = "AVCaptureSessionInterruptionReasonAudioDeviceInUseByAnotherClient")]
     AudioDeviceInUseByAnotherClient = 2,
+    #[doc(alias = "AVCaptureSessionInterruptionReasonVideoDeviceInUseByAnotherClient")]
     VideoDeviceInUseByAnotherClient = 3,
+    #[doc(
+        alias = "AVCaptureSessionInterruptionReasonVideoDeviceNotAvailableWithMultipleForegroundApps"
+    )]
     VideoDeviceNotAvailableWithMultipleForegroundApps = 4,
+    #[doc(alias = "AVCaptureSessionInterruptionReasonVideoDeviceNotAvailableDueToSystemPressure")]
     VideoDeviceNotAvailableDueToSystemPressure = 5,
+    #[doc(alias = "AVCaptureSessionInterruptionReasonSensitiveContentMitigationActivated")]
+    SensitiveContentMitigationActivated = 6,
 }
 
 #[cfg(not(any(target_os = "macos", target_os = "watchos")))]
@@ -287,6 +297,17 @@ impl Session {
     #[objc::msg_send(setConfiguresApplicationAudioSessionToMixWithOthers:)]
     #[objc::available(ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
     pub fn set_configures_application_audio_session_to_mix_with_others(&mut self, val: bool);
+
+    #[objc::msg_send(configuresApplicationAudioSessionForBluetoothHighQualityRecording)]
+    #[objc::available(ios = 26.0)]
+    pub fn configures_app_audio_session_for_bluetooth_high_quality_recording(&self) -> bool;
+
+    #[objc::msg_send(setConfiguresApplicationAudioSessionForBluetoothHighQualityRecording:)]
+    #[objc::available(ios = 26.0)]
+    pub fn set_configures_app_audio_session_for_bluetooth_high_quality_recording(
+        &mut self,
+        val: bool,
+    );
 
     #[objc::msg_send(automaticallyConfiguresCaptureDeviceForWideColor)]
     #[objc::available(ios = 10.0, maccatalyst = 14.0, tvos = 17.0)]
