@@ -2419,7 +2419,7 @@ define_obj_type!(
 impl arc::A<RotationCoordinator> {
     #[objc::msg_send(initWithDevice:previewLayer:)]
     pub fn init_with_device_preview_layer(
-        &self,
+        self,
         device: &Device,
         preview_layer: Option<&ca::Layer>,
     ) -> arc::R<RotationCoordinator>;

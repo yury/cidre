@@ -220,7 +220,7 @@ impl<T: objc::Obj> arc::A<ArrayMut<T>> {
     pub fn init_with_capacity(self, capacity: usize) -> arc::R<ArrayMut<T>>;
 
     #[objc::msg_send(initWithObjects:count:)]
-    pub unsafe fn init_with_objs(&self, ptr: *const &T, count: usize) -> arc::R<ArrayMut<T>>;
+    pub unsafe fn init_with_objs(self, ptr: *const &T, count: usize) -> arc::R<ArrayMut<T>>;
 }
 
 impl<T: objc::Obj> ArrayMut<T> {
@@ -594,6 +594,15 @@ mod tests {
         }
 
         assert_eq!(1, k);
+    }
+
+    #[test]
+    fn mutable_from_slice() {
+        let one = ns::Number::with_i32(5);
+        let arr = ns::ArrayMut::from_slice(&[one.as_ref()]);
+
+        assert_eq!(1, arr.len());
+        assert_eq!(5, arr.first().unwrap().as_i32());
     }
 
     #[test]
