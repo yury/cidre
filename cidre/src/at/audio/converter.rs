@@ -492,6 +492,14 @@ pub type ComplexInputDataProcRealtimeSafe<const N: usize = 1, D = c_void> =
         in_user_data: *mut D,
     ) -> os::Status;
 
+#[inline]
+fn assert_packet_desc_capacity(packet_count: u32, descriptions: &[audio::StreamPacketDesc]) {
+    assert!(
+        descriptions.len() >= packet_count as usize,
+        "packet description buffer is too small"
+    );
+}
+
 impl ConverterRef {
     /// # Safety
     /// use `with_formats`
@@ -518,7 +526,7 @@ impl ConverterRef {
         src_format: &audio::StreamBasicDesc,
         dst_format: &audio::StreamBasicDesc,
         options: Opts,
-        out_audio_converter: *mut Option<Self>,
+        out_audio_converter: &mut Option<Self>,
     ) -> os::Status {
         unsafe {
             AudioConverterNewWithOptions(src_format, dst_format, options, out_audio_converter)
@@ -532,7 +540,7 @@ impl ConverterRef {
         options: Opts,
     ) -> os::Result<Self> {
         unsafe {
-            os::result_unchecked(|val| Self::new_with_options(src_fmt, dst_fmt, options, val))
+            os::result_unchecked(|val| Self::new_with_options(src_fmt, dst_fmt, options, &mut *val))
         }
     }
 }
@@ -844,8 +852,9 @@ impl Converter {
         user_data: &mut D,
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufList<NO>,
-        out_packet_description: &mut Vec<audio::StreamPacketDesc>,
+        out_packet_description: &mut [audio::StreamPacketDesc],
     ) -> os::Result {
+        assert_packet_desc_capacity(*io_output_data_packet_size, out_packet_description);
         unsafe {
             self.fill_complex_buffer(
                 proc,
@@ -865,8 +874,9 @@ impl Converter {
         user_data: &mut D,
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufList<NO>,
-        out_packet_description: &mut Vec<audio::StreamPacketDesc>,
+        out_packet_description: &mut [audio::StreamPacketDesc],
     ) -> os::Result {
+        assert_packet_desc_capacity(*io_output_data_packet_size, out_packet_description);
         unsafe {
             self.fill_complex_buffer_realtime_safe(
                 proc,
@@ -883,7 +893,7 @@ impl Converter {
     pub fn fill_complex_buf<const NI: usize, const NO: usize, D>(
         &self,
         proc: ComplexInputDataProc<NI, D>,
-        user_data: *mut D,
+        user_data: &mut D,
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufList<NO>,
     ) -> os::Result {
@@ -903,7 +913,7 @@ impl Converter {
     pub fn fill_complex_buf_realtime_safe<const NI: usize, const NO: usize, D>(
         &self,
         proc: ComplexInputDataProcRealtimeSafe<NI, D>,
-        user_data: *mut D,
+        user_data: &mut D,
         io_output_data_packet_size: &mut u32,
         out_output_data: &mut audio::BufList<NO>,
     ) -> os::Result {
@@ -956,7 +966,7 @@ unsafe extern "C-unwind" {
         in_source_format: &audio::StreamBasicDesc,
         in_destination_format: &audio::StreamBasicDesc,
         in_options: Opts,
-        out_audio_converer: *mut Option<ConverterRef>,
+        out_audio_converer: &mut Option<ConverterRef>,
     ) -> os::Status;
 
     fn AudioConverterReset(converter: &Converter) -> os::Status;
@@ -1021,6 +1031,12 @@ unsafe extern "C-unwind" {
 #[cfg(test)]
 mod tests {
     use crate::at;
+
+    #[test]
+    #[should_panic(expected = "packet description buffer is too small")]
+    fn rejects_undersized_packet_description_buffer() {
+        super::assert_packet_desc_capacity(2, &[Default::default()]);
+    }
 
     #[cfg(not(feature = "macos_15_0"))]
     use crate::api;
