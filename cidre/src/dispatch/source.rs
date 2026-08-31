@@ -232,14 +232,32 @@ impl Src {
         unsafe { dispatch_source_merge_data(self, value) }
     }
 
+    /// # Safety
+    ///
+    /// The source context must be null or point to a valid `T` whenever the
+    /// handler can run, including calls already in flight.
     #[inline]
-    pub fn set_event_handler_f<T>(&mut self, handler: Option<dispatch::Fn<T>>) {
-        unsafe { dispatch_source_set_event_handler_f(self, transmute(handler)) }
+    pub unsafe fn set_event_handler_f<T>(&mut self, handler: Option<dispatch::Fn<T>>) {
+        unsafe {
+            dispatch_source_set_event_handler_f(
+                self,
+                transmute::<Option<dispatch::Fn<T>>, Option<dispatch::Fn<c_void>>>(handler),
+            )
+        }
     }
 
+    /// # Safety
+    ///
+    /// The source context must be null or point to a valid `T` whenever the
+    /// handler can run, including calls already in flight.
     #[inline]
-    pub fn set_cancel_handler_f<T>(&mut self, handler: Option<dispatch::Fn<T>>) {
-        unsafe { dispatch_source_set_cancel_handler_f(self, transmute(handler)) }
+    pub unsafe fn set_cancel_handler_f<T>(&mut self, handler: Option<dispatch::Fn<T>>) {
+        unsafe {
+            dispatch_source_set_cancel_handler_f(
+                self,
+                transmute::<Option<dispatch::Fn<T>>, Option<dispatch::Fn<c_void>>>(handler),
+            )
+        }
     }
 
     ///
@@ -288,13 +306,10 @@ unsafe extern "C-unwind" {
     fn dispatch_source_get_mask(source: &Src) -> c_ulong;
     fn dispatch_source_get_data(source: &Src) -> c_ulong;
     fn dispatch_source_merge_data(source: &Src, value: c_ulong) -> c_ulong;
-    fn dispatch_source_set_event_handler_f(
-        source: &mut Src,
-        handler: Option<&dispatch::Fn<c_void>>,
-    );
+    fn dispatch_source_set_event_handler_f(source: &mut Src, handler: Option<dispatch::Fn<c_void>>);
     fn dispatch_source_set_cancel_handler_f(
         source: &mut Src,
-        handler: Option<&dispatch::Fn<c_void>>,
+        handler: Option<dispatch::Fn<c_void>>,
     );
 
     fn dispatch_source_set_timer(
