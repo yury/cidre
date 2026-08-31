@@ -11,8 +11,8 @@ use crate::ns;
 #[doc(alias = "CVPixelBuffer")]
 pub type PixelBuf = cv::ImageBuf;
 
-pub type ReleaseCallback =
-    extern "C" fn(release_ref_con: *mut c_void, base_address: *const *const c_void);
+#[doc(alias = "CVPixelBufferReleaseBytesCallback")]
+pub type ReleaseCallback = extern "C" fn(release_ref_con: *mut c_void, base_address: *const c_void);
 
 impl PixelBuf {
     #[doc(alias = "CVPixelBufferGetTypeID")]
@@ -134,7 +134,7 @@ impl PixelBuf {
         height: usize,
         base_address: *mut c_void,
         bytes_per_row: usize,
-        release_callback: ReleaseCallback,
+        release_callback: Option<ReleaseCallback>,
         release_ref_con: *mut c_void,
         pixel_format_type: cv::PixelFormat,
         pixel_buf_attrs: Option<&cf::Dictionary>,
@@ -184,7 +184,7 @@ impl PixelBuf {
         pixel_format_type: cv::PixelFormat,
         base_address: *mut c_void,
         bytes_per_row: usize,
-        release_callback: ReleaseCallback,
+        release_callback: Option<ReleaseCallback>,
         release_ref_con: *mut c_void,
         pixel_buf_attrs: Option<&cf::Dictionary>,
         pixel_buf_out: *mut Option<arc::R<PixelBuf>>,
@@ -695,7 +695,7 @@ unsafe extern "C-unwind" {
         pixel_format_type: PixelFormat,
         base_address: *mut c_void,
         bytes_per_row: usize,
-        release_callback: ReleaseCallback,
+        release_callback: Option<ReleaseCallback>,
         release_ref_con: *mut c_void,
         pixel_buf_attrs: Option<&cf::Dictionary>,
         pixel_buf_out: *mut Option<arc::R<PixelBuf>>,
@@ -811,7 +811,19 @@ pub mod keys {
 
 #[cfg(test)]
 mod tests {
+    use std::ffi::c_void;
+
     use crate::{cv::PixelFormat, objc::Obj};
+
+    use super::ReleaseCallback;
+
+    extern "C" fn release_bytes(_ctx: *mut c_void, _base_address: *const c_void) {}
+
+    #[test]
+    fn release_callback_abi() {
+        let callback: Option<ReleaseCallback> = Some(release_bytes);
+        assert!(callback.is_some());
+    }
 
     #[test]
     fn basics() {
