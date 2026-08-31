@@ -178,7 +178,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        let presets = objc::ar_pool(|| av::OutputSettingsAssistant::available_presets());
+        let presets = objc::ar_pool(|_| av::OutputSettingsAssistant::available_presets());
 
         eprintln!(
             "available presets {presets:?} {}",

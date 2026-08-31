@@ -152,13 +152,20 @@ pub unsafe fn return_opt_rar<T: objc::Obj>(val: Option<&T>) -> Option<Rar<T>> {
 
 #[cfg(feature = "objc")]
 impl<T: Retain> Retained<T> {
+    /// Transfers ownership to the current autorelease pool.
+    ///
+    /// The returned borrow cannot outlive `pool`.
+    ///
+    /// # Safety
+    ///
+    /// `pool` must represent the current innermost autorelease pool.
     #[must_use]
-    pub fn autoreleased<'ar>(self) -> &'ar mut T
+    pub unsafe fn autoreleased(self, pool: &objc::AutoreleasePoolPage) -> &T
     where
         T: objc::Obj,
     {
         unsafe {
-            let res = objc::Id::autorelease(std::mem::transmute(self));
+            let res = objc::Id::autorelease(std::mem::transmute(self), pool);
             std::mem::transmute(res)
         }
     }
@@ -582,11 +589,27 @@ mod tests {
     }
 
     #[test]
+    fn autoreleased_object_drops_with_pool() {
+        init_cls();
+        let dropped = Arc::new(AtomicBool::new(false));
+        let dropped_in = Arc::clone(&dropped);
+
+        objc::ar_pool(|pool| {
+            let object = WeakTestObj::with(D(dropped_in));
+            // SAFETY: `pool` is the current innermost autorelease pool.
+            let _borrowed = unsafe { object.autoreleased(pool) };
+            assert!(!dropped.load(Ordering::SeqCst));
+        });
+
+        assert!(dropped.load(Ordering::SeqCst));
+    }
+
+    #[test]
     fn weak_clears_after_drop() {
         init_cls();
         let dropped = Arc::new(AtomicBool::new(false));
         let dropped_in = Arc::clone(&dropped);
-        let w = objc::ar_pool(|| {
+        let w = objc::ar_pool(|_| {
             let o = WeakTestObj::with(D(dropped_in));
             let w = arc::Weak::from_retained(&o);
             assert!(w.upgrade().is_some());
@@ -632,7 +655,7 @@ mod tests {
         init_cls();
         let dropped = Arc::new(AtomicBool::new(false));
         let dropped_in = Arc::clone(&dropped);
-        let w = objc::ar_pool(|| {
+        let w = objc::ar_pool(|_| {
             let o = WeakTestObj::with(D(dropped_in));
             let w = arc::Weak::from_retained(&o);
             let w2 = w.clone();

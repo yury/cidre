@@ -377,8 +377,11 @@ pub struct Id(Type);
 unsafe impl Send for Id {}
 
 impl Id {
+    /// # Safety
+    ///
+    /// `id` must carry an ownership retain that may be transferred to `pool`.
     #[inline]
-    pub unsafe fn autorelease<'ar>(id: &mut Id) -> &'ar mut Id {
+    pub unsafe fn autorelease<'pool>(id: &mut Id, _pool: &'pool AutoreleasePoolPage) -> &'pool Id {
         unsafe { objc_autorelease(id) }
     }
 
@@ -426,13 +429,36 @@ pub mod autorelease_pool;
 pub mod ns;
 pub use autorelease_pool::AutoreleasePoolPage;
 
+/// Runs `f` inside a new Objective-C autorelease pool.
+///
+/// The higher-ranked pool borrow prevents an autoreleased reference from
+/// escaping through the return value. The `Clone` bound also prevents a +0
+/// [`arc::Rar`] value from escaping, since that ownership wrapper deliberately
+/// does not implement `Clone`.
+///
+/// ```compile_fail
+/// use cidre::{ns, objc};
+///
+/// let escaped = objc::ar_pool(|pool| {
+///     // SAFETY: `pool` is the current innermost autorelease pool.
+///     unsafe { ns::String::with_str("temporary").autoreleased(pool) }
+/// });
+/// # let _ = escaped;
+/// ```
+///
+/// ```compile_fail
+/// use cidre::{ns, objc};
+///
+/// let escaped = objc::ar_pool(|_| ns::Number::with_i64_ar(42));
+/// # let _ = escaped;
+/// ```
 pub fn ar_pool<R, F>(f: F) -> R
 where
-    F: FnOnce() -> R,
-    R: Clone, // Autoreleased doesn't implement Clone
+    F: for<'pool> FnOnce(&'pool AutoreleasePoolPage) -> R,
+    R: Clone,
 {
-    let _page = AutoreleasePoolPage::push();
-    f()
+    let page = AutoreleasePoolPage::push();
+    f(&page)
 }
 
 pub unsafe fn sel_reg_name(str: *const i8) -> &'static Sel {
@@ -993,7 +1019,7 @@ mod tests {
 
     #[test]
     fn autorelease() {
-        let ptr = ar_pool(|| {
+        let ptr = ar_pool(|_| {
             let q = autorelease_example_ar().retained();
             assert_eq!(2, q.as_type_ref().retain_count());
             unsafe { q.as_type_ref().as_type_ptr() }

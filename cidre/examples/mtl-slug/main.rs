@@ -987,7 +987,7 @@ float4 glyph_fragment(VertexOut in [[stage_in]],
     }
 
     pub fn main() {
-        let result = ar_pool(run);
+        let result = ar_pool(|_| run());
         if let Err(err) = result {
             eprintln!("error: {err}");
             std::process::exit(1);

@@ -440,7 +440,7 @@ mod tests {
 
     #[test]
     fn tagged_pointers() {
-        ar_pool(|| {
+        ar_pool(|_| {
             // let b = ns::Number::tagged_bool(true);
             let i8 = ns::Number::tagged_i8(i8::MAX - 1);
             let u8 = ns::Number::tagged_u8(u8::MAX - 1);
@@ -472,8 +472,8 @@ mod tests {
 
     #[test]
     fn rar() {
-        ar_pool(|| {
-            let s = ar_pool(|| ns::Number::with_i32(10).string());
+        ar_pool(|_| {
+            let s = ar_pool(|_| ns::Number::with_i32(10).string());
             println!("{:?}", s);
         });
         //        let foo = autoreleasepool(|| ns::Number::with_i64_ar(10));

@@ -60,7 +60,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        ar_pool(|| {
+        ar_pool(|_| {
             let sound = un::NotificationSound::default();
             sound.as_type_ref().show();
             let sound = un::NotificationSound::default();
