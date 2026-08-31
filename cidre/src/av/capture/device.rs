@@ -2479,6 +2479,7 @@ unsafe extern "C" {
 
 #[doc(alias = "AVCaptureVideoStabilizationMode")]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[non_exhaustive]
 #[repr(isize)]
 pub enum VideoStabilizationMode {
     /// Indicates that video should not be stabilized.
@@ -2523,6 +2524,13 @@ pub enum VideoStabilizationMode {
     /// It’s recommended to use identical or similar minimum and maximum frame durations in conjunction with this mode.
     #[doc(alias = "AVCaptureVideoStabilizationModeCinematicExtendedEnhanced")]
     CinematicExtendedEnhanced = 5,
+
+    /// Indicates that video should be stabilized using the low latency stabilization algorithm.
+    ///
+    /// Low Latency stabilization has a reduced field of view. Enabling low latency stabilization introduces
+    /// no additional latency into the video capture pipeline.
+    #[doc(alias = "AVCaptureVideoStabilizationModeLowLatency")]
+    LowLatency = 6,
 
     /// Indicates that the most appropriate video stabilization mode for the device and
     /// format should be chosen.
