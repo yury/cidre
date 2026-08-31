@@ -27,8 +27,12 @@ impl Url {
     }
 
     #[doc(alias = "CFURLCreateWithBytes")]
+    /// # Safety
+    ///
+    /// If `length` is nonzero, `url_bytes` must point to at least `length`
+    /// initialized, readable bytes. `length` must not be negative.
     #[inline]
-    pub fn with_bytes_in(
+    pub unsafe fn with_bytes_in(
         url_bytes: *const u8,
         length: cf::Index,
         encoding: cf::StringEncoding,
@@ -79,13 +83,16 @@ impl Url {
     /// ```
     #[inline]
     pub fn from_str(str: &str) -> Option<arc::R<Url>> {
-        Self::with_bytes_in(
-            str.as_ptr(),
-            str.len() as _,
-            cf::StringEncoding::UTF8,
-            None,
-            None,
-        )
+        // SAFETY: `str` is initialized and valid for its reported length.
+        unsafe {
+            Self::with_bytes_in(
+                str.as_ptr(),
+                str.len() as _,
+                cf::StringEncoding::UTF8,
+                None,
+                None,
+            )
+        }
     }
 
     /// ```

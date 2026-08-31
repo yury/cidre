@@ -30,8 +30,15 @@ impl Value {
     }
 
     #[doc(alias = "AXValueCreate")]
+    /// # Safety
+    ///
+    /// `value_ptr` must point to an initialized, properly aligned value whose
+    /// concrete type and size match `the_type`.
     #[inline]
-    pub fn create(the_type: ValueType, value_ptr: *const std::ffi::c_void) -> Option<arc::R<Self>> {
+    pub unsafe fn create(
+        the_type: ValueType,
+        value_ptr: *const std::ffi::c_void,
+    ) -> Option<arc::R<Self>> {
         unsafe { AXValueCreate(the_type, value_ptr) }
     }
 

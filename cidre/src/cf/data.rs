@@ -22,8 +22,12 @@ impl Data {
         unsafe { CFDataGetTypeID() }
     }
 
+    /// # Safety
+    ///
+    /// If `length` is nonzero, `bytes` must point to at least `length`
+    /// initialized, readable bytes. `length` must not be negative.
     #[inline]
-    pub fn new_in(
+    pub unsafe fn new_in(
         bytes: *const u8,
         length: cf::Index,
         allocator: Option<&cf::Allocator>,
@@ -31,14 +35,19 @@ impl Data {
         unsafe { CFDataCreate(allocator, bytes, length) }
     }
 
+    /// # Safety
+    ///
+    /// If `length` is nonzero, `bytes` must point to at least `length`
+    /// initialized, readable bytes. `length` must not be negative.
     #[inline]
-    pub fn new(bytes: *const u8, length: cf::Index) -> Option<arc::R<cf::Data>> {
-        Self::new_in(bytes, length, None)
+    pub unsafe fn new(bytes: *const u8, length: cf::Index) -> Option<arc::R<cf::Data>> {
+        unsafe { Self::new_in(bytes, length, None) }
     }
 
     #[inline]
     pub fn from_slice(slice: &[u8]) -> Option<arc::R<Self>> {
-        Self::new(slice.as_ptr(), slice.len() as _)
+        // SAFETY: the slice is initialized and valid for its reported length.
+        unsafe { Self::new(slice.as_ptr(), slice.len() as _) }
     }
 
     #[doc(alias = "length")]
@@ -156,6 +165,7 @@ impl DataMut {
 /// ```
 impl From<&[u8]> for arc::R<Data> {
     fn from(bytes: &[u8]) -> Self {
+        // SAFETY: the slice is initialized and valid for its reported length.
         unsafe { Data::new(bytes.as_ptr(), bytes.len() as _).unwrap_unchecked() }
     }
 }
@@ -184,4 +194,16 @@ unsafe extern "C-unwind" {
 
     fn CFDataGetMutableBytePtr(data: &mut cf::DataMut) -> *mut u8;
     fn CFDataSetLength(data: &mut cf::DataMut, length: cf::Index);
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::cf;
+
+    #[test]
+    fn copies_slice() {
+        let bytes = [1, 2, 3, 4];
+        let data = cf::Data::from_slice(&bytes).unwrap();
+        assert_eq!(data.as_slice(), bytes);
+    }
 }
