@@ -79,8 +79,8 @@ impl<T> arc::Release for SetOf<T>
 where
     T: arc::Release + arc::Retain,
 {
-    unsafe fn release(&mut self) {
-        unsafe { self.0.release() }
+    unsafe fn release(ptr: std::ptr::NonNull<Self>) {
+        unsafe { <Set as arc::Release>::release(ptr.cast()) }
     }
 }
 

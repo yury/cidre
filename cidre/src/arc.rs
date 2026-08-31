@@ -1,28 +1,53 @@
 #[cfg(feature = "objc")]
 use crate::objc;
 
+use std::ptr::NonNull;
+
 #[cfg(feature = "objc")]
 use std::{
     marker::PhantomData,
     ops::{Deref, DerefMut},
-    ptr::NonNull,
 };
 
 pub trait Release {
-    unsafe fn release(&mut self);
+    /// Releases one ownership reference represented by `ptr`.
+    ///
+    /// # Safety
+    ///
+    /// `ptr` must carry one live ownership reference that has not already been
+    /// released. The pointee must not be accessed through this ownership
+    /// reference after the call.
+    unsafe fn release(ptr: NonNull<Self>);
 }
 
 pub trait Retain: Sized + Release {
     fn retained(&self) -> Retained<Self>;
 }
 
-#[derive(Debug)]
 #[repr(transparent)]
-pub struct Allocated<T: Release + 'static>(&'static mut T);
+pub struct Allocated<T: Release + 'static>(NonNull<T>);
 
-#[derive(Debug)]
 #[repr(transparent)]
-pub struct Retained<T: Release + 'static>(&'static mut T);
+pub struct Retained<T: Release + 'static>(NonNull<T>);
+
+impl<T: Release + std::fmt::Debug> std::fmt::Debug for Allocated<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Allocated")
+            .field(unsafe { self.0.as_ref() })
+            .finish()
+    }
+}
+
+impl<T: Release + std::fmt::Debug> std::fmt::Debug for Retained<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Retained").field(self.as_ref()).finish()
+    }
+}
+
+unsafe impl<T: Release + Send> Send for Allocated<T> {}
+unsafe impl<T: Release + Sync> Sync for Allocated<T> {}
+unsafe impl<T: Release + Send> Send for Retained<T> {}
+unsafe impl<T: Release + Sync> Sync for Retained<T> {}
 
 impl<T: Release + 'static> Retained<T> {
     /// Takes ownership of a non-null retained object pointer.
@@ -33,13 +58,12 @@ impl<T: Release + 'static> Retained<T> {
     /// value may consume with [`Release::release`].
     #[inline]
     pub unsafe fn from_raw(ptr: *mut T) -> Self {
-        assert!(!ptr.is_null(), "retained object must not be null");
-        Self(unsafe { &mut *ptr })
+        Self(NonNull::new(ptr).expect("retained object must not be null"))
     }
 
     #[inline]
     pub fn as_ptr(&self) -> *mut T {
-        self.0 as *const T as *mut T
+        self.0.as_ptr()
     }
 
     #[inline]
@@ -54,46 +78,46 @@ impl<T: Release + std::error::Error> std::error::Error for Retained<T> {}
 
 impl<T: Release + std::fmt::Display> std::fmt::Display for Retained<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        self.0.fmt(f)
+        self.as_ref().fmt(f)
     }
 }
 
 impl<T: Retain + PartialEq> PartialEq for Retained<T> {
     fn eq(&self, other: &Self) -> bool {
-        self.0 == other.0
+        self.as_ref() == other.as_ref()
     }
 }
 
 impl<T: Retain + PartialEq> PartialEq<T> for Retained<T> {
     fn eq(&self, other: &T) -> bool {
-        self.0 == other
+        self.as_ref() == other
     }
 }
 
 impl<T: Retain + PartialOrd> PartialOrd for Retained<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.0.partial_cmp(&other.0)
+        self.as_ref().partial_cmp(other.as_ref())
     }
 }
 
-impl<T: Retain> AsRef<T> for Retained<T> {
+impl<T: Release> AsRef<T> for Retained<T> {
     #[inline]
     fn as_ref(&self) -> &T {
-        self.0
+        unsafe { self.0.as_ref() }
     }
 }
 
-impl<T: Retain> AsMut<T> for Retained<T> {
+impl<T: Release> AsMut<T> for Retained<T> {
     #[inline]
     fn as_mut(&mut self) -> &mut T {
-        self.0
+        unsafe { self.0.as_mut() }
     }
 }
 
 impl<T: Retain> Retained<T> {
     #[inline]
     pub fn retained(&self) -> Self {
-        self.0.retained()
+        self.as_ref().retained()
     }
 }
 #[cfg(feature = "objc")]
@@ -164,14 +188,14 @@ impl<T: Retain> Retained<T> {
 impl<T: Release> Drop for Allocated<T> {
     #[inline]
     fn drop(&mut self) {
-        unsafe { self.0.release() }
+        unsafe { T::release(self.0) }
     }
 }
 
 impl<T: Release> Drop for Retained<T> {
     #[inline]
     fn drop(&mut self) {
-        unsafe { self.0.release() }
+        unsafe { T::release(self.0) }
     }
 }
 
@@ -180,14 +204,14 @@ impl<T: Release> std::ops::Deref for Retained<T> {
 
     #[inline]
     fn deref(&self) -> &Self::Target {
-        self.0
+        unsafe { self.0.as_ref() }
     }
 }
 
 impl<T: Release> std::ops::DerefMut for Retained<T> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
-        self.0
+        unsafe { self.0.as_mut() }
     }
 }
 
@@ -509,6 +533,41 @@ mod tests {
         INIT.call_once(|| {
             let _ = WeakTestObj::cls();
         });
+    }
+
+    #[test]
+    fn owner_pointer_layout() {
+        assert_eq!(
+            std::mem::size_of::<arc::A<WeakTestObj>>(),
+            std::mem::size_of::<*mut WeakTestObj>()
+        );
+        assert_eq!(
+            std::mem::size_of::<Option<arc::A<WeakTestObj>>>(),
+            std::mem::size_of::<*mut WeakTestObj>()
+        );
+        assert_eq!(
+            std::mem::size_of::<arc::R<WeakTestObj>>(),
+            std::mem::size_of::<*mut WeakTestObj>()
+        );
+        assert_eq!(
+            std::mem::size_of::<Option<arc::R<WeakTestObj>>>(),
+            std::mem::size_of::<*mut WeakTestObj>()
+        );
+    }
+
+    #[test]
+    fn retained_raw_round_trip() {
+        init_cls();
+        let dropped = Arc::new(AtomicBool::new(false));
+        let retained = WeakTestObj::with(D(Arc::clone(&dropped)));
+        let ptr = retained.into_raw();
+
+        let retained = unsafe { arc::R::from_raw(ptr) };
+        assert_eq!(ptr, retained.as_ptr());
+        assert!(!dropped.load(Ordering::SeqCst));
+
+        drop(retained);
+        assert!(dropped.load(Ordering::SeqCst));
     }
 
     #[test]

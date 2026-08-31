@@ -253,8 +253,8 @@ impl<T: Obj> Obj for Class<T> {}
 
 impl<T: Obj> arc::Release for T {
     #[inline]
-    unsafe fn release(&mut self) {
-        unsafe { <T as Obj>::release(self) }
+    unsafe fn release(ptr: NonNull<Self>) {
+        unsafe { <T as Obj>::release(ptr) }
     }
 }
 
@@ -291,7 +291,7 @@ pub trait Obj: Sized + arc::Retain {
     }
 
     #[inline]
-    unsafe fn release(id: &mut Self) {
+    unsafe fn release(id: NonNull<Self>) {
         unsafe {
             #[cfg(all(
                 target_arch = "aarch64",
@@ -301,7 +301,7 @@ pub trait Obj: Sized + arc::Retain {
             {
                 asm!(
                     "bl _objc_release_{x}",
-                    x = in(reg) id,
+                    x = in(reg) id.as_ptr(),
                     out("x16") _,
                     out("x17") _,
                     out("x30") _,
@@ -317,7 +317,7 @@ pub trait Obj: Sized + arc::Retain {
                 feature = "classic-objc-retain-release"
             ))]
             {
-                objc_release(std::mem::transmute(id));
+                objc_release(id.cast().as_ptr());
             }
         }
     }
@@ -484,7 +484,7 @@ unsafe extern "C-unwind" {
         target_pointer_width = "32",
         feature = "classic-objc-retain-release"
     ))]
-    fn objc_release(obj: &mut Id);
+    fn objc_release(obj: *mut Id);
 
     // fn objc_msgSend();
 

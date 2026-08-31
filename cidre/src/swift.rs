@@ -209,9 +209,9 @@ macro_rules! define_swift_class {
 
         impl $crate::arc::Release for $ty {
             #[inline]
-            unsafe fn release(&mut self) {
+            unsafe fn release(ptr: std::ptr::NonNull<Self>) {
                 unsafe {
-                    $crate::swift::abi::object_release((self as *mut Self).cast());
+                    $crate::swift::abi::object_release(ptr.as_ptr().cast());
                 }
             }
         }
