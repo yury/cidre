@@ -80,7 +80,7 @@ impl AudioUnit {
     pub fn component(&self) -> &audio::Component;
 
     #[objc::msg_send(component)]
-    pub fn component_mut(&self) -> &mut audio::Component;
+    pub fn component_mut(&mut self) -> &mut audio::Component;
 
     #[objc::msg_send(componentName)]
     pub fn component_name(&self) -> Option<arc::R<ns::String>>;
