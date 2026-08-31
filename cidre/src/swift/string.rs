@@ -129,8 +129,7 @@ impl String {
         unsafe { abi::string_hash_value(self.raw) }
     }
 
-    /// Copies this value's UTF-8 representation into a Rust string.
-    pub fn to_string(&self) -> std::string::String {
+    fn with_utf8<R>(&self, body: impl FnOnce(&str) -> R) -> R {
         struct Utf8CString(*mut ());
 
         impl Drop for Utf8CString {
@@ -146,12 +145,14 @@ impl String {
 
         // `utf8CString` includes a trailing nul.
         let len = count.saturating_sub(1) as usize;
-        let mut bytes = Vec::with_capacity(len);
+        // Swift strings contain valid Unicode scalar values, so their UTF-8
+        // view is valid UTF-8 by construction.
         match unsafe { contiguous_int8_elements(array.0, count) } {
-            Some(elements) => {
-                bytes.extend_from_slice(unsafe { core::slice::from_raw_parts(elements, len) })
-            }
+            Some(elements) => body(unsafe {
+                core::str::from_utf8_unchecked(core::slice::from_raw_parts(elements, len))
+            }),
             None => {
+                let mut bytes = Vec::with_capacity(len);
                 for index in 0..len {
                     let mut byte = 0i8;
                     unsafe {
@@ -164,12 +165,9 @@ impl String {
                     }
                     bytes.push(byte as u8);
                 }
+                body(unsafe { core::str::from_utf8_unchecked(&bytes) })
             }
         }
-
-        // Swift strings always contain valid Unicode scalar values, so their
-        // UTF-8 view is valid UTF-8 by construction.
-        unsafe { std::string::String::from_utf8_unchecked(bytes) }
     }
 }
 
@@ -212,7 +210,7 @@ const fn small_ascii_raw(bytes: &[u8]) -> Result<RawString, SmallStringError> {
 ///
 /// Copying the buffer in one go replaces a generic subscript call per byte,
 /// which matters because every transcription result is converted through
-/// [`String::to_string`]. The header offsets are an internal standard
+/// [`String::with_utf8`]. The header offsets are an internal standard
 /// library detail, so the stored count is checked against the count the array
 /// itself reported; a mismatch means the layout moved and the caller falls back
 /// to the subscript path.
@@ -284,13 +282,13 @@ impl std::hash::Hash for String {
 
 impl fmt::Display for String {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(&self.to_string())
+        self.with_utf8(|str| f.write_str(str))
     }
 }
 
 impl fmt::Debug for String {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Debug::fmt(&self.to_string(), f)
+        self.with_utf8(|str| fmt::Debug::fmt(str, f))
     }
 }
 
@@ -386,10 +384,11 @@ mod tests {
         let str = String::from(value);
 
         assert_eq!(value, str.to_string());
+        assert_eq!(format!("{value:?}"), format!("{str:?}"));
         assert_eq!(value.chars().count(), str.count());
     }
 
-    /// Guards the native storage offsets that let `to_string` copy the
+    /// Guards the native storage offsets that let formatting copy the
     /// UTF-8 buffer in one go instead of one subscript call per byte.
     #[test]
     fn utf8_buffer_reads_native_contiguous_array_storage() {
