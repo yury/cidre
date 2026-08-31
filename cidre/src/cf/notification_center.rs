@@ -50,14 +50,14 @@ impl NotificationCenter {
     /// ```
     #[doc(alias = "CFNotificationCenterGetLocalCenter")]
     #[inline]
-    pub fn local<'a>() -> &'a mut NotificationCenter {
+    pub fn local() -> &'static NotificationCenter {
         unsafe { CFNotificationCenterGetLocalCenter() }
     }
 
     #[doc(alias = "CFNotificationCenterAddObserver")]
     #[inline]
     pub fn add_observer(
-        &mut self,
+        &self,
         observer: *const c_void,
         callback: NotificationCallback,
         name: &NotificationName,
@@ -79,7 +79,7 @@ impl NotificationCenter {
     #[doc(alias = "CFNotificationCenterRemoveObserver")]
     #[inline]
     pub fn remove_observer(
-        &mut self,
+        &self,
         observer: *const c_void,
         name: &NotificationName,
         object: *const c_void,
@@ -89,14 +89,14 @@ impl NotificationCenter {
 
     #[doc(alias = "CFNotificationCenterRemoveEveryObserver")]
     #[inline]
-    pub fn remove_every_observer(&mut self, observer: *const c_void) {
+    pub fn remove_every_observer(&self, observer: *const c_void) {
         unsafe { CFNotificationCenterRemoveEveryObserver(self, observer) }
     }
 
     #[doc(alias = "CFNotificationCenterPostNotification")]
     #[inline]
     pub fn post(
-        &mut self,
+        &self,
         name: &NotificationName,
         object: *const c_void,
         user_info: Option<&cf::Dictionary>,
@@ -124,9 +124,9 @@ pub enum NotificationSuspensionBehavior {
 
 unsafe extern "C-unwind" {
     fn CFNotificationCenterGetTypeID() -> cf::TypeId;
-    fn CFNotificationCenterGetLocalCenter<'a>() -> &'a mut NotificationCenter;
+    fn CFNotificationCenterGetLocalCenter() -> &'static NotificationCenter;
     fn CFNotificationCenterAddObserver(
-        center: &mut NotificationCenter,
+        center: &NotificationCenter,
         observer: *const c_void,
         callback: NotificationCallback,
         name: &NotificationName,
@@ -134,21 +134,34 @@ unsafe extern "C-unwind" {
         suspension_behavior: NotificationSuspensionBehavior,
     );
     fn CFNotificationCenterRemoveObserver(
-        center: &mut NotificationCenter,
+        center: &NotificationCenter,
         observer: *const c_void,
         name: &NotificationName,
         object: *const c_void,
     );
     fn CFNotificationCenterRemoveEveryObserver(
-        center: &mut NotificationCenter,
+        center: &NotificationCenter,
         observer: *const c_void,
     );
 
     fn CFNotificationCenterPostNotification(
-        center: &mut NotificationCenter,
+        center: &NotificationCenter,
         name: &NotificationName,
         object: *const c_void,
         user_info: Option<&cf::Dictionary>,
         deliver_immediately: bool,
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::cf;
+
+    #[test]
+    fn local_is_stable_shared_singleton() {
+        assert!(std::ptr::eq(
+            cf::NotificationCenter::local(),
+            cf::NotificationCenter::local()
+        ));
+    }
 }
