@@ -78,15 +78,15 @@ extern "C-unwind" fn data_proc(
         ctx.buffer.resize(buf_len, 0u8);
     }
 
-    let packet_descriptions_ptr = if ctx.uses_packet_descriptions {
+    let packet_descriptions = if ctx.uses_packet_descriptions {
         if ctx.packet_descriptions.len() != *io_number_data_packets as usize {
             ctx.packet_descriptions
                 .resize(*io_number_data_packets as _, Default::default());
         }
         unsafe { *out_data_packet_descriptions = ctx.packet_descriptions.as_mut_ptr() };
-        ctx.packet_descriptions.as_mut_ptr()
+        Some(ctx.packet_descriptions.as_mut_slice())
     } else {
-        std::ptr::null_mut()
+        None
     };
 
     io_data.number_buffers = 1;
@@ -96,13 +96,13 @@ extern "C-unwind" fn data_proc(
 
     match ctx.file.read_packets(
         true,
-        &mut io_data.buffers[0].data_bytes_size,
-        packet_descriptions_ptr,
+        packet_descriptions,
         ctx.packet,
         io_number_data_packets,
-        io_data.buffers[0].data,
+        &mut ctx.buffer,
     ) {
-        Ok(_) => {
+        Ok(num_bytes) => {
+            io_data.buffers[0].data_bytes_size = num_bytes as _;
             ctx.packet += *io_number_data_packets as isize;
             os::Status::NO_ERR
         }
@@ -204,11 +204,10 @@ fn encode(args: &EncodeArgs) {
                 dst_file
                     .write_packets(
                         true,
-                        list.buffers[0].data_bytes_size,
-                        packet_descriptions.as_ptr(),
+                        Some(&packet_descriptions),
                         starting_packet,
                         &mut num_packets,
-                        packet_buffer.as_ptr(),
+                        &packet_buffer[..list.buffers[0].data_bytes_size as usize],
                     )
                     .unwrap();
             }
@@ -335,11 +334,10 @@ fn decode(args: &DecodeArgs) {
             dst_file
                 .write_packets(
                     true,
-                    list.buffers[0].data_bytes_size,
-                    std::ptr::null(),
+                    None,
                     starting_packet,
                     &mut num_packets,
-                    list.buffers[0].data,
+                    &packet_buffer[..list.buffers[0].data_bytes_size as usize],
                 )
                 .unwrap();
 

@@ -242,12 +242,20 @@ impl FileId {
     pub fn write_packets(
         &mut self,
         use_cache: bool,
-        num_bytes: u32,
-        packet_descriptions: *const audio::StreamPacketDesc,
+        packet_descriptions: Option<&[audio::StreamPacketDesc]>,
         starting_packet: isize,
-        num_packets: *mut u32,
-        buffer: *const u8,
+        num_packets: &mut u32,
+        buffer: &[u8],
     ) -> os::Result {
+        if let Some(descriptions) = packet_descriptions {
+            assert!(
+                descriptions.len() >= *num_packets as usize,
+                "packet description buffer is too small"
+            );
+        }
+        let num_bytes = u32::try_from(buffer.len()).expect("audio packet buffer exceeds u32::MAX");
+        let packet_descriptions =
+            packet_descriptions.map_or(std::ptr::null(), |descriptions| descriptions.as_ptr());
         unsafe {
             AudioFileWritePackets(
                 self.0,
@@ -256,35 +264,47 @@ impl FileId {
                 packet_descriptions,
                 starting_packet,
                 num_packets,
-                buffer,
+                buffer.as_ptr(),
             )
             .result()
         }
     }
 
-    #[doc(alias = "AudioFileWritePackets")]
+    #[doc(alias = "AudioFileReadPacketData")]
     #[inline]
     pub fn read_packets(
         &mut self,
         use_cache: bool,
-        num_bytes: &mut u32,
-        packet_descriptions: *mut audio::StreamPacketDesc,
+        packet_descriptions: Option<&mut [audio::StreamPacketDesc]>,
         starting_packet: isize,
-        num_packets: *mut u32,
-        buffer: *mut u8,
-    ) -> os::Result {
+        num_packets: &mut u32,
+        buffer: &mut [u8],
+    ) -> os::Result<usize> {
+        if let Some(descriptions) = &packet_descriptions {
+            assert!(
+                descriptions.len() >= *num_packets as usize,
+                "packet description buffer is too small"
+            );
+        }
+        let mut num_bytes =
+            u32::try_from(buffer.len()).expect("audio packet buffer exceeds u32::MAX");
+        let packet_descriptions = packet_descriptions
+            .map_or(std::ptr::null_mut(), |descriptions| {
+                descriptions.as_mut_ptr()
+            });
         unsafe {
             AudioFileReadPacketData(
                 self.0,
                 use_cache,
-                num_bytes,
+                &mut num_bytes,
                 packet_descriptions,
                 starting_packet,
                 num_packets,
-                buffer,
+                buffer.as_mut_ptr(),
             )
-            .result()
+            .result()?;
         }
+        Ok(num_bytes as usize)
     }
 
     #[doc(alias = "AudioFileGetPropertyInfo")]
@@ -688,17 +708,17 @@ unsafe extern "C" {
         num_bytes: u32,
         packet_descriptions: *const audio::StreamPacketDesc,
         starting_packet: isize,
-        num_packets: *mut u32,
+        num_packets: &mut u32,
         buffer: *const u8,
     ) -> os::Status;
 
     fn AudioFileReadPacketData(
         file: *mut OpaqueFileId,
         use_cache: bool,
-        num_bytes: *mut u32,
+        num_bytes: &mut u32,
         packet_descriptions: *mut audio::StreamPacketDesc,
         starting_packet: isize,
-        num_packets: *mut u32,
+        num_packets: &mut u32,
         buffer: *mut u8,
     ) -> os::Status;
 }
