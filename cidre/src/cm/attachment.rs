@@ -32,7 +32,7 @@ impl Bearer {
     /// CVBufferGetAttachment.
     #[doc(alias = "CMGetAttachment")]
     #[inline]
-    pub fn attach<'a>(&'a self, key: &cf::String, mode: *mut Mode) -> Option<&'a cf::Type> {
+    pub fn attach(&self, key: &cf::String, mode: Option<&mut Mode>) -> Option<&cf::Type> {
         unsafe { CMGetAttachment(self, key, mode) }
     }
 
@@ -81,7 +81,7 @@ unsafe extern "C-unwind" {
     fn CMGetAttachment<'a>(
         target: &'a Bearer,
         key: &cf::String,
-        mode: *mut Mode,
+        mode: Option<&mut Mode>,
     ) -> Option<&'a cf::Type>;
 
     fn CMRemoveAttachment(target: &Bearer, key: &cf::String);
@@ -92,4 +92,22 @@ unsafe extern "C-unwind" {
         target: &Bearer,
         attachment_mode: Mode,
     ) -> Option<arc::R<cf::DictionaryOf<cf::String, cf::Type>>>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{cf, cm};
+
+    #[test]
+    fn reports_attachment_mode() {
+        let mut buf = cm::SampleBuf::new(None, true, None).unwrap();
+        let key = cf::str!(c"cidre-test-attachment");
+        let value = cf::Number::from_i32(42);
+        buf.set_attach(key, value.as_type_ref(), cm::AttachMode::Propagate);
+
+        let mut mode = cm::AttachMode::NotPropagate;
+        let attached = buf.attach(key, Some(&mut mode)).unwrap();
+        assert_eq!(attached, value.as_type_ref());
+        assert_eq!(mode, cm::AttachMode::Propagate);
+    }
 }

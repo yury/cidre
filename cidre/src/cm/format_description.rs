@@ -282,7 +282,7 @@ impl FormatDesc {
         media_type: MediaType,
         media_sub_type: FourCharCode,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-        format_description_out: *mut Option<arc::R<FormatDesc>>,
+        format_description_out: &mut Option<arc::R<FormatDesc>>,
         allocator: Option<&cf::Allocator>,
     ) -> os::Result {
         unsafe {
@@ -313,7 +313,7 @@ impl FormatDesc {
     ) -> os::Result<arc::R<Self>> {
         unsafe {
             os::result_unchecked(|val| {
-                Self::create_in(media_type, media_sub_type, extensions, val, None)
+                Self::create_in(media_type, media_sub_type, extensions, &mut *val, None)
             })
         }
     }
@@ -335,7 +335,7 @@ impl VideoFormatDesc {
     ) -> os::Result<arc::R<Self>> {
         unsafe {
             os::result_unchecked(|res| {
-                Self::create_video_in(codec, width, height, extensions, res, None)
+                Self::create_video_in(codec, width, height, extensions, &mut *res, None)
             })
         }
     }
@@ -346,7 +346,7 @@ impl VideoFormatDesc {
         width: i32,
         height: i32,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-        format_description_out: *mut Option<arc::R<VideoFormatDesc>>,
+        format_description_out: &mut Option<arc::R<VideoFormatDesc>>,
         allocator: Option<&Allocator>,
     ) -> os::Result {
         unsafe {
@@ -608,7 +608,9 @@ pub type AudioFormatDesc = FormatDesc;
 impl AudioFormatDesc {
     pub fn with_asbd(asbd: &cat::audio::StreamBasicDesc) -> os::Result<arc::R<Self>> {
         unsafe {
-            os::result_unchecked(|res| Self::audio_in(asbd, 0, None, 0, None, None, res, None))
+            os::result_unchecked(|res| {
+                Self::audio_in(asbd, 0, None, 0, None, None, &mut *res, None)
+            })
         }
     }
 
@@ -619,7 +621,7 @@ impl AudioFormatDesc {
         magic_cookie_size: usize,
         magic_cookie: Option<&c_void>,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-        format_description_out: *mut Option<arc::R<Self>>,
+        format_description_out: &mut Option<arc::R<Self>>,
         allocator: Option<&cf::Allocator>,
     ) -> os::Result {
         unsafe {
@@ -1043,7 +1045,7 @@ unsafe extern "C-unwind" {
         width: i32,
         height: i32,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-        format_description_out: *mut Option<arc::R<VideoFormatDesc>>,
+        format_description_out: &mut Option<arc::R<VideoFormatDesc>>,
     ) -> os::Status;
 
     fn CMVideoFormatDescriptionGetDimensions(video_desc: &VideoFormatDesc) -> VideoDimensions;
@@ -1080,7 +1082,7 @@ unsafe extern "C-unwind" {
         magic_cookie_size: usize,
         magic_cookie: Option<&c_void>,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-        format_description_out: *mut Option<arc::R<AudioFormatDesc>>,
+        format_description_out: &mut Option<arc::R<AudioFormatDesc>>,
     ) -> os::Status;
 
     #[cfg(feature = "cat")]
@@ -1093,7 +1095,7 @@ unsafe extern "C-unwind" {
         media_type: MediaType,
         media_sub_type: FourCharCode,
         extensions: Option<&cf::DictionaryOf<FormatDescExtKey, cf::Type>>,
-        format_description_out: *mut Option<arc::R<FormatDesc>>,
+        format_description_out: &mut Option<arc::R<FormatDesc>>,
     ) -> os::Status;
 
     #[cfg(feature = "cv")]
@@ -1146,12 +1148,26 @@ unsafe extern "C-unwind" {
 
 #[cfg(test)]
 mod tests {
-    use crate::cm;
+    use crate::{cm, mac_types::FourCharCode};
 
     #[test]
     fn basics() {
         let keys = cm::VideoFormatDesc::common_image_buf_ext_keys();
         eprintln!("{keys:?}");
         assert!(!keys.is_empty());
+    }
+
+    #[test]
+    fn create_writes_reference_output() {
+        let mut desc = None;
+        cm::FormatDesc::create_in(
+            cm::MediaType::VIDEO,
+            FourCharCode::from_be_bytes(*b"avc1"),
+            None,
+            &mut desc,
+            None,
+        )
+        .unwrap();
+        assert!(desc.is_some());
     }
 }
