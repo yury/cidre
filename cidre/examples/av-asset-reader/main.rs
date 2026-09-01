@@ -60,7 +60,7 @@ async fn main() {
             continue;
         }
         let _pts = buf.pts();
-        ar_pool(|_| {
+        ar_pool(|| {
             handler.perform_on_cv_pixel_buf(&requests, &image).unwrap();
             // if let Some(results) = classify.results() {
             //     if !results.is_empty() {

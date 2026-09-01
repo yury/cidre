@@ -192,7 +192,7 @@ mod tests {
 
     #[test]
     fn basics() {
-        ar_pool(|_| {
+        ar_pool(|| {
             let _ = av::AudioPlayer::with_data(&ns::Data::new()).expect_err("What?");
             let _ =
                 av::AudioPlayer::with_url(&ns::Url::with_str("foo").unwrap()).expect_err("What?");
