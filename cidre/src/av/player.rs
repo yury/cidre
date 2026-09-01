@@ -16,6 +16,8 @@ pub use item_output::ItemOutputPullDelegate;
 pub use item_output::ItemOutputPullDelegateImpl;
 pub use item_output::ItemVideoOutput;
 
+pub mod item_sample_buffer_output;
+
 mod looper;
 pub use looper::Looper as PlayerLooper;
 pub use looper::LooperItemOrdering as PlayerLooperItemOrdering;

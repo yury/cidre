@@ -65,6 +65,9 @@ Class AV_PLAYER;
 Class AV_QUEUE_PLAYER;
 Class AV_PLAYER_ITEM;
 Class AV_PLAYER_ITEM_VIDEO_OUTPUT;
+Class AV_PLAYER_ITEM_SAMPLE_BUFFER_OUTPUT = nil;
+Class AV_PLAYER_ITEM_SAMPLE_BUFFER_OUTPUT_CONFIGURATION = nil;
+Class AV_PLAYER_ITEM_SAMPLE_BUFFER_OUTPUT_AUDIO_CONFIGURATION = nil;
 Class AV_PLAYER_LOOPER;
 
 Class AV_SAMPLE_BUFFER_DISPLAY_LAYER;
@@ -181,6 +184,10 @@ static void av_initializer(void)
         AV_PLAYER_LOOPER = [AVPlayerLooper class];
         AV_PLAYER_ITEM = [AVPlayerItem class];
         AV_PLAYER_ITEM_VIDEO_OUTPUT = [AVPlayerItemVideoOutput class];
+        
+        AV_PLAYER_ITEM_SAMPLE_BUFFER_OUTPUT = NSClassFromString(@"AVPlayerItemSampleBufferOutput");
+        AV_PLAYER_ITEM_SAMPLE_BUFFER_OUTPUT_CONFIGURATION = NSClassFromString(@"AVPlayerItemSampleBufferOutputConfiguration");
+        AV_PLAYER_ITEM_SAMPLE_BUFFER_OUTPUT_AUDIO_CONFIGURATION = NSClassFromString(@"AVPlayerItemSampleBufferOutputAudioConfiguration");
         
 #if TARGET_OS_WATCH
 #else
