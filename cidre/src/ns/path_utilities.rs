@@ -239,7 +239,7 @@ mod tests {
                 uname2.as_type_ref().as_type_ptr()
             );
         }
-        objc::ar_pool(|_| {
+        objc::ar_pool(|| {
             let _user_name = ns::user_name();
         });
 

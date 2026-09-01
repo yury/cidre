@@ -251,7 +251,7 @@ mod tests {
 
         assert!(adapter.pixel_buf_pool().is_none());
 
-        objc::ar_pool(|_| {
+        objc::ar_pool(|| {
             let _ = av::asset::WriterInputPixelBufAdaptor::with_input_writer(&input, None)
                 .expect_err("should throw exception");
         })
