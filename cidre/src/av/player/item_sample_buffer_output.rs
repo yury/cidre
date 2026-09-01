@@ -50,6 +50,9 @@ define_obj_type!(
     #[api::available(macos = 27.0, ios = 27.0, tvos = 27.0, watchos = 27.0, visionos = 27.0)]
 );
 
+unsafe impl Send for ItemSampleBufOutput {}
+unsafe impl Sync for ItemSampleBufOutput {}
+
 impl arc::A<ItemSampleBufOutput> {
     #[objc::msg_send(initWithConfiguration:)]
     pub fn init_with_cfg(self, cfg: Option<&ItemSampleBufOutputCfg>)
