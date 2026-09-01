@@ -620,8 +620,10 @@ impl TryFrom<&BlockBuf> for Vec<u8> {
             return Ok(vec![]);
         } else {
             let mut vec = Vec::with_capacity(len);
+            let dst = vec.spare_capacity_mut().as_mut_ptr().cast();
+            (unsafe { value.copy_bytes(0, len, dst) })?;
+            // SAFETY: `copy_bytes` initialized all `len` bytes on success.
             unsafe { vec.set_len(len) };
-            (unsafe { value.copy_bytes(0, len, vec.as_mut_ptr()) })?;
             Ok(vec)
         }
     }
@@ -645,14 +647,17 @@ mod tests {
 
     #[test]
     fn basics() {
-        let buf = cm::BlockBuf::with_mem_block(100).unwrap();
+        let mut buf = cm::BlockBuf::with_mem_block(100).unwrap();
+        let expected: Vec<_> = (0..100).collect();
+        buf.as_mut_slice().unwrap().copy_from_slice(&expected);
+
         let contiguous_buf = buf.try_contiguous_buf().unwrap();
         assert_eq!(contiguous_buf.len(), 100);
 
         from_owner(contiguous_buf);
 
         let vec: Vec<u8> = buf.as_ref().try_into().unwrap();
-        assert_eq!(vec.len(), 100);
+        assert_eq!(vec, expected);
 
         let mut arr = [0u8; 100];
         buf.copy_to(0, &mut arr).unwrap();

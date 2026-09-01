@@ -313,7 +313,7 @@ impl String {
             );
 
             let mut buf = Vec::with_capacity(bytes_required as _);
-            buf.set_len(bytes_required as _);
+            let buf_ptr = buf.spare_capacity_mut().as_mut_ptr().cast();
             let mut used_buf_len: Index = 0;
             CFStringGetBytes(
                 self,
@@ -321,13 +321,14 @@ impl String {
                 Encoding::UTF8,
                 0,
                 false,
-                buf.as_mut_ptr(),
-                buf.len() as _,
+                buf_ptr,
+                buf.capacity() as _,
                 &mut used_buf_len,
             );
 
             debug_assert_eq!(bytes_required, used_buf_len);
 
+            buf.set_len(used_buf_len as _);
             std::string::String::from_utf8_unchecked(buf)
         }
     }
@@ -611,6 +612,9 @@ mod tests {
         let ns_str = s.as_ns();
         assert_eq!(&ns_str.to_string(), "hello");
         assert_eq!(ns_str, "hello");
+
+        let unicode = cf::String::from_str("héllö 🦀");
+        assert_eq!(unicode.to_string(), "héllö 🦀");
     }
 
     #[test]
