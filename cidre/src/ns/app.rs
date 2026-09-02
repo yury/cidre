@@ -126,6 +126,9 @@ pub use layout_constraint::LayoutPriority;
 mod menu;
 pub use menu::Menu;
 
+mod menu_item;
+pub use menu_item::MenuItem;
+
 mod pasteboard;
 pub use pasteboard::Pasteboard;
 pub use pasteboard::PasteboardAccessBehavior;

@@ -175,6 +175,24 @@ impl Device {
         ns::if_none(|err| unsafe { self.new_default_lib_with_bundle_err(bundle, err) })
     }
 
+    /// Creates a library from a precompiled `.metallib` held in memory.
+    #[cfg(feature = "dispatch")]
+    #[objc::msg_send(newLibraryWithData:error:)]
+    pub unsafe fn new_lib_with_data_err<'ear>(
+        &self,
+        data: &crate::dispatch::Data,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<Lib>>;
+
+    #[cfg(feature = "dispatch")]
+    #[inline]
+    pub fn new_lib_with_data<'ear>(
+        &self,
+        data: &crate::dispatch::Data,
+    ) -> ns::Result<'ear, arc::R<Lib>> {
+        ns::if_none(|err| unsafe { self.new_lib_with_data_err(data, err) })
+    }
+
     #[objc::msg_send(newLibraryWithSource:options:error:)]
     pub unsafe fn new_lib_with_src_err<'ear>(
         &self,

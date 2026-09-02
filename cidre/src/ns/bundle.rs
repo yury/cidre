@@ -35,6 +35,16 @@ impl Bundle {
     #[objc::msg_send(unload)]
     pub fn unload(&self) -> bool;
 
+    /// `NSLocalizedString`: looks `key` up in `table` (`Localizable` when `None`) and returns
+    /// `value` (or the key itself when `value` is `None`/empty) if it is missing.
+    #[objc::msg_send(localizedStringForKey:value:table:)]
+    pub fn localized_string(
+        &self,
+        key: &ns::String,
+        value: Option<&ns::String>,
+        table: Option<&ns::String>,
+    ) -> arc::R<ns::String>;
+
     #[objc::msg_send(bundleURL)]
     pub fn bundle_url(&self) -> arc::R<ns::Url>;
 

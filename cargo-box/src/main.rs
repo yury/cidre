@@ -357,11 +357,13 @@ mod cargo {
             if let Some(ws) = res.workspace {
                 let mut vec = Vec::with_capacity(ws.members.len());
                 for member in ws.members.iter() {
-                    path = path.join(format!("{member}/Cargo.toml"));
-                    let mut man = Manifest::from_path(&path).unwrap();
-                    path.pop();
-                    man.complete_from_path(&path).unwrap();
-                    path.pop();
+                    // Members may be nested (`apps/yoml`), so resolve each from the root
+                    // instead of popping components off a shared path.
+                    let member_dir = path.join(member);
+                    let manifest_path = member_dir.join("Cargo.toml");
+                    let mut man = Manifest::from_path(&manifest_path)
+                        .unwrap_or_else(|e| panic!("{}: {e}", manifest_path.display()));
+                    man.complete_from_path(&member_dir).unwrap();
                     vec.push(man);
                 }
                 Some((path, vec, Some(ws)))
