@@ -37,6 +37,36 @@ impl ViewController {
 
     #[objc::msg_send(setPreferredTransition:)]
     pub fn set_preferred_transition(&mut self, val: Option<&ui::ViewControllerTransition>);
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(presentViewController:animated:completion:)]
+    pub fn present_vc_ch(
+        &mut self,
+        vc: &ui::ViewController,
+        animated: bool,
+        completion: Option<&mut crate::blocks::EscBlock<fn()>>,
+    );
+
+    #[cfg(feature = "blocks")]
+    pub fn present_vc(&mut self, vc: &ui::ViewController, animated: bool) {
+        self.present_vc_ch(vc, animated, None);
+    }
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(dismissViewControllerAnimated:completion:)]
+    pub fn dismiss_vc_ch(
+        &mut self,
+        animated: bool,
+        completion: Option<&mut crate::blocks::EscBlock<fn()>>,
+    );
+
+    #[cfg(feature = "blocks")]
+    pub fn dismiss_vc(&mut self, animated: bool) {
+        self.dismiss_vc_ch(animated, None);
+    }
+
+    #[objc::msg_send(presentedViewController)]
+    pub fn presented_vc(&self) -> Option<arc::R<ui::ViewController>>;
 }
 
 unsafe extern "C" {

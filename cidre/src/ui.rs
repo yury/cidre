@@ -53,6 +53,15 @@ mod button;
 pub use button::Button;
 pub use button::ButtonType;
 
+mod text_field;
+pub use text_field::TextField;
+
+mod alert_controller;
+pub use alert_controller::AlertAction;
+pub use alert_controller::AlertActionStyle;
+pub use alert_controller::AlertController;
+pub use alert_controller::AlertControllerStyle;
+
 mod navigation_bar;
 pub use navigation_bar::NavBar;
 
