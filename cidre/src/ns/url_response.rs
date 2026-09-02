@@ -47,6 +47,14 @@ impl UrlResponse {
     pub fn url(&self) -> Option<arc::R<ns::Url>>;
 }
 
+impl HttpUrlResponse {
+    #[objc::msg_send(statusCode)]
+    pub fn status_code(&self) -> ns::Integer;
+
+    #[objc::msg_send(allHeaderFields)]
+    pub fn all_header_fields(&self) -> arc::R<ns::Dictionary<ns::String, ns::Id>>;
+}
+
 unsafe extern "C" {
     static NS_URL_RESPONSE: &'static objc::Class<UrlResponse>;
 }

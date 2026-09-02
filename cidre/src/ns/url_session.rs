@@ -3,6 +3,14 @@ use crate::{
     objc::{self, Class},
 };
 
+#[cfg(feature = "blocks")]
+use crate::blocks;
+
+/// The completion handler of a data task: the body, the response, the error.
+#[cfg(feature = "blocks")]
+pub type DataTaskCh =
+    blocks::EscBlock<fn(Option<&ns::Data>, Option<&ns::UrlResponse>, Option<&ns::Error>)>;
+
 define_obj_type!(
     #[doc(alias = "NSURLSessionConfiguration")]
     pub Cfg(ns::Id)
@@ -66,6 +74,28 @@ impl Session {
 
     #[objc::msg_send(dataTaskWithRequest:)]
     pub fn data_task_with_request(&self, request: &ns::UrlRequest) -> arc::R<DataTask>;
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(dataTaskWithURL:completionHandler:)]
+    pub fn data_task_with_url_ch(&self, url: &ns::Url, ch: &mut DataTaskCh) -> arc::R<DataTask>;
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(dataTaskWithRequest:completionHandler:)]
+    pub fn data_task_with_request_ch(
+        &self,
+        request: &ns::UrlRequest,
+        ch: &mut DataTaskCh,
+    ) -> arc::R<DataTask>;
+
+    #[cfg(feature = "blocks")]
+    pub fn data_task_with_request_block(
+        &self,
+        request: &ns::UrlRequest,
+        block: impl FnMut(Option<&ns::Data>, Option<&ns::UrlResponse>, Option<&ns::Error>) + 'static,
+    ) -> arc::R<DataTask> {
+        let mut block = DataTaskCh::new3(block);
+        self.data_task_with_request_ch(request, &mut block)
+    }
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
