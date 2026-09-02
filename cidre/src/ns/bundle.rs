@@ -38,7 +38,7 @@ impl Bundle {
     /// `NSLocalizedString`: looks `key` up in `table` (`Localizable` when `None`) and returns
     /// `value` (or the key itself when `value` is `None`/empty) if it is missing.
     #[objc::msg_send(localizedStringForKey:value:table:)]
-    pub fn localized_string(
+    pub fn loc_string(
         &self,
         key: &ns::String,
         value: Option<&ns::String>,
@@ -66,6 +66,9 @@ mod tests {
     #[test]
     fn basics() {
         let bundle = ns::Bundle::main();
+
+        let loc_string = bundle.loc_string(ns::str!(c"no-key"), None, None);
+        assert_eq!(ns::str!(c"no-key"), &loc_string);
 
         assert!(bundle.bundle_id().is_none());
         assert!(!bundle.bundle_path().is_empty());
