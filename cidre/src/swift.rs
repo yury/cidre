@@ -40,6 +40,14 @@ pub mod music_understanding;
 ))]
 pub mod speech;
 
+/// StoreKit.framework (StoreKit 2).
+#[cfg(all(
+    not(target_os = "watchos"),
+    feature = "sk",
+    any(feature = "macos_15_0", feature = "ios_18_0")
+))]
+pub mod store_kit;
+
 pub use array::{Array, ArrayIter};
 pub use dictionary::Dictionary;
 pub use set::Set;

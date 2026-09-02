@@ -62,6 +62,7 @@ full = [
   "sn",
   "foundation",
   "speech",
+  "sk",
   "music_understanding",
   "ui",
   "ut",
@@ -131,6 +132,7 @@ io_pm = []
 sn = ["av", "blocks", "cm", "dispatch", "ns"]
 foundation = ["swift"]
 speech = ["swift", "ns", "foundation"]
+sk = ["swift", "ns", "foundation"]
 music_understanding = ["swift", "ns", "av", "cm"]
 sec = ["cf", "dispatch", "ns"]
 vn = ["blocks", "cm", "cv", "ns"]
@@ -411,6 +413,10 @@ required-features = ["core_motion", "blocks"]
 [[example]]
 name = "swift-speech"
 required-features = ["speech", "av", "async", "cm", "dispatch", "macos_27_0"]
+
+[[example]]
+name = "sk-products"
+required-features = ["sk", "async", "macos_15_0"]
 
 [package.metadata.playground]
 features = ["full"]
