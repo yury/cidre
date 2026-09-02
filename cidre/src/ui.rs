@@ -30,12 +30,19 @@ pub use geometry::Offset;
 
 mod gesture_recognizer;
 pub use gesture_recognizer::GestureRecognizer;
+pub use gesture_recognizer::GestureRecognizerState;
 
 mod pan_gesture_recognizer;
 pub use pan_gesture_recognizer::PanGestureRecognizer;
 
 mod tap_gesture_recognizer;
 pub use tap_gesture_recognizer::TapGestureRecognizer;
+
+mod pinch_gesture_recognizer;
+pub use pinch_gesture_recognizer::PinchGestureRecognizer;
+
+mod label;
+pub use label::Label;
 
 mod navigation_bar;
 pub use navigation_bar::NavBar;
@@ -178,6 +185,9 @@ pub use collection_view_layout::CollectionViewLayout;
 pub use collection_view_layout::CollectionViewLayoutAttrs;
 pub use collection_view_layout::CollectionViewScrollDir;
 pub use collection_view_layout::element_kind as collection_view_element_kind;
+
+mod collection_view_flow_layout;
+pub use collection_view_flow_layout::CollectionViewFlowLayout;
 
 mod collection_view_transition_layout;
 pub use collection_view_transition_layout::CollectionViewTransitionLayout;

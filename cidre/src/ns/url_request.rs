@@ -215,7 +215,11 @@ impl UrlRequestMut {
     );
 
     #[objc::msg_send(setValue:forHTTPHeaderField:)]
-    pub fn set_value_for_http_header_field(&mut self, value: Option<&ns::String>, field: &ns::String);
+    pub fn set_value_for_http_header_field(
+        &mut self,
+        value: Option<&ns::String>,
+        field: &ns::String,
+    );
 
     #[objc::msg_send(addValue:forHTTPHeaderField:)]
     pub fn add_value_for_http_header_field(&mut self, value: &ns::String, field: &ns::String);

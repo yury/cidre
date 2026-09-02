@@ -128,11 +128,8 @@ mod tests {
 
     #[test]
     fn basics() {
-        let mut item = ns::MenuItem::with_title_action_key_equivalent(
-            ns::str!(c"Quit"),
-            None,
-            ns::str!(c"q"),
-        );
+        let mut item =
+            ns::MenuItem::with_title_action_key_equivalent(ns::str!(c"Quit"), None, ns::str!(c"q"));
         assert_eq!(item.title().as_ref(), "Quit");
         assert!(item.is_enabled());
         assert!(!item.is_separator_item());

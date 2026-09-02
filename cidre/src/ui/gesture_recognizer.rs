@@ -1,4 +1,4 @@
-use crate::{arc, cg, define_obj_type, ns, objc, ui};
+use crate::{arc, cg, define_cls, define_obj_type, ns, objc, ui};
 
 #[doc(alias = "UIGestureRecognizerState")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -21,7 +21,28 @@ define_obj_type!(
     pub GestureRecognizer(ns::Id)
 );
 
+impl arc::A<GestureRecognizer> {
+    #[objc::msg_send(initWithTarget:action:)]
+    pub fn init_with_target_action(
+        self,
+        target: Option<&ns::Id>,
+        action: Option<&objc::Sel>,
+    ) -> arc::R<GestureRecognizer>;
+}
+
 impl GestureRecognizer {
+    define_cls!(UI_GESTURE_RECOGNIZER);
+
+    pub fn with_target_action(target: Option<&ns::Id>, action: Option<&objc::Sel>) -> arc::R<Self> {
+        Self::alloc().init_with_target_action(target, action)
+    }
+
+    #[objc::msg_send(addTarget:action:)]
+    pub fn add_target_action(&mut self, target: &ns::Id, action: &objc::Sel);
+
+    #[objc::msg_send(removeTarget:action:)]
+    pub fn remove_target_action(&mut self, target: Option<&ns::Id>, action: Option<&objc::Sel>);
+
     #[objc::msg_send(state)]
     pub fn state(&self) -> GestureRecognizerState;
 
@@ -148,3 +169,7 @@ define_obj_type!(
 );
 
 impl GestureRecognizerDelegate for AnyGestureRecognizerDelegate {}
+
+unsafe extern "C" {
+    static UI_GESTURE_RECOGNIZER: &'static objc::Class<GestureRecognizer>;
+}

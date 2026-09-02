@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, objc, ui};
+use crate::{arc, define_cls, define_obj_type, objc, ui};
 
 define_obj_type!(
     #[doc(alias = "UICollectionViewCell")]
@@ -15,6 +15,8 @@ pub enum CollectionViewCellDragState {
 }
 
 impl CollectionViewCell {
+    define_cls!(UI_COLLECTION_VIEW_CELL);
+
     #[objc::msg_send(contentView)]
     pub fn content_view(&self) -> arc::R<ui::View>;
 
@@ -44,4 +46,8 @@ impl CollectionViewCell {
 
     #[objc::msg_send(dragStateDidChange:)]
     pub fn drag_state_did_change(&self, drag_state: CollectionViewCellDragState);
+}
+
+unsafe extern "C" {
+    static UI_COLLECTION_VIEW_CELL: &'static objc::Class<CollectionViewCell>;
 }

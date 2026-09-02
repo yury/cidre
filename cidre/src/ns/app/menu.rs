@@ -88,11 +88,8 @@ mod tests {
         menu.set_title(ns::str!(c""));
         assert!(menu.title().is_empty());
 
-        let quit = menu.add_item_with_title_action_key_equivalent(
-            ns::str!(c"Quit"),
-            None,
-            ns::str!(c"q"),
-        );
+        let quit =
+            menu.add_item_with_title_action_key_equivalent(ns::str!(c"Quit"), None, ns::str!(c"q"));
         assert_eq!(menu.number_of_items(), 1);
         assert_eq!(quit.title().as_ref(), "Quit");
         assert_eq!(quit.key_equivalent().as_ref(), "q");
@@ -104,7 +101,8 @@ mod tests {
         assert_eq!(menu.number_of_items(), 2);
 
         let mut sub = ns::Menu::with_title(ns::str!(c"Sub"));
-        let item = ns::MenuItem::with_title_action_key_equivalent(ns::str!(c"Sub"), None, ns::str!(c""));
+        let item =
+            ns::MenuItem::with_title_action_key_equivalent(ns::str!(c"Sub"), None, ns::str!(c""));
         sub.add_item(&item);
         assert_eq!(sub.item_array().len(), 1);
         menu.remove_all_items();

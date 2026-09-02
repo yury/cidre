@@ -1,4 +1,6 @@
-use crate::{arc, cf, define_cf_type, define_opts, mach, mach::KernReturn, os, sys::_types::MachPort};
+use crate::{
+    arc, cf, define_cf_type, define_opts, mach, mach::KernReturn, os, sys::_types::MachPort,
+};
 
 #[cfg(feature = "xpc")]
 use crate::xpc;

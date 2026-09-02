@@ -164,6 +164,15 @@ impl View {
     #[objc::msg_send(addSubview:)]
     pub fn add_subview(&self, view: &ui::View);
 
+    #[objc::msg_send(addGestureRecognizer:)]
+    pub fn add_gesture_recognizer(&mut self, val: &ui::GestureRecognizer);
+
+    #[objc::msg_send(removeGestureRecognizer:)]
+    pub fn remove_gesture_recognizer(&mut self, val: &ui::GestureRecognizer);
+
+    #[objc::msg_send(gestureRecognizers)]
+    pub fn gesture_recognizers(&self) -> Option<arc::R<ns::Array<ui::GestureRecognizer>>>;
+
     #[objc::msg_send(insertSubview:belowSubview:)]
     pub fn insert_subview_below(&self, view: &ui::View, sibling_view: &ui::View);
 
@@ -196,6 +205,12 @@ impl View {
 
     #[objc::msg_send(isDescendantOfView:)]
     pub fn is_descendant_of_view(&self, view: &ui::View) -> bool;
+
+    #[objc::msg_send(tag)]
+    pub fn tag(&self) -> ns::Integer;
+
+    #[objc::msg_send(setTag:)]
+    pub fn set_tag(&mut self, val: ns::Integer);
 
     #[objc::msg_send(viewWithTag:)]
     pub fn view_with_tag(&self, tag: ns::Integer) -> Option<arc::R<ui::View>>;
@@ -320,4 +335,15 @@ impl AnyCoordinateSpace {
 
 unsafe extern "C" {
     static UI_VIEW: &'static objc::Class<View>;
+}
+
+impl arc::A<View> {
+    #[objc::msg_send(initWithFrame:)]
+    pub fn init_with_frame(self, frame: cg::Rect) -> arc::R<View>;
+}
+
+impl View {
+    pub fn with_frame(frame: cg::Rect) -> arc::R<Self> {
+        Self::alloc().init_with_frame(frame)
+    }
 }
