@@ -17,6 +17,8 @@ Class UI_COLLECTION_VIEW;
 Class UI_COLLECTION_VIEW_CELL;
 Class UI_COLLECTION_VIEW_FLOW_LAYOUT;
 Class UI_LABEL;
+Class UI_CONTROL;
+Class UI_BUTTON;
 Class UI_GESTURE_RECOGNIZER;
 Class UI_PAN_GESTURE_RECOGNIZER;
 Class UI_PINCH_GESTURE_RECOGNIZER;
@@ -73,6 +75,8 @@ static void ui_initializer(void)
         UI_COLLECTION_VIEW_CELL = NSClassFromString(@"UICollectionViewCell");
         UI_COLLECTION_VIEW_FLOW_LAYOUT = NSClassFromString(@"UICollectionViewFlowLayout");
         UI_LABEL = NSClassFromString(@"UILabel");
+        UI_CONTROL = NSClassFromString(@"UIControl");
+        UI_BUTTON = NSClassFromString(@"UIButton");
         UI_GESTURE_RECOGNIZER = NSClassFromString(@"UIGestureRecognizer");
         UI_PAN_GESTURE_RECOGNIZER = NSClassFromString(@"UIPanGestureRecognizer");
         UI_PINCH_GESTURE_RECOGNIZER = NSClassFromString(@"UIPinchGestureRecognizer");

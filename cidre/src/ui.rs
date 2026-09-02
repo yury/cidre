@@ -44,6 +44,15 @@ pub use pinch_gesture_recognizer::PinchGestureRecognizer;
 mod label;
 pub use label::Label;
 
+mod control;
+pub use control::Control;
+pub use control::ControlEvents;
+pub use control::ControlState;
+
+mod button;
+pub use button::Button;
+pub use button::ButtonType;
+
 mod navigation_bar;
 pub use navigation_bar::NavBar;
 
