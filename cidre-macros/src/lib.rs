@@ -439,6 +439,35 @@ fn add_methods_fn(fns: &[(String, bool)]) -> String {
 /// `#[objc::overrides(layout)] fn layout(&mut self) { .. }` registers the method for the
 /// selector `layout` and generates `fn super_layout(&mut self)`, which calls the
 /// superclass implementation. Consumed by `add_methods`; on its own it is an error.
+///
+/// A method without a receiver overrides a class method, as with `msg_send`:
+/// `#[objc::overrides(layerClass)] fn layer_class() -> &'static objc::Class<ca::MetalLayer> { .. }`
+/// is added to the metaclass and gets `fn super_layer_class()`. The super call is sent
+/// from the class that declares the override, also when a further subclass inherits it.
+///
+/// A method taking `self` by value overrides an initializer, so the body also runs when
+/// Objective-C creates the instance (`+new`, nibs, cells registered with a collection
+/// view):
+///
+/// ```ignore
+/// #[objc::add_methods]
+/// impl Cell {
+///     #[objc::overrides(initWithFrame:)]
+///     fn init_with_frame(self, frame: cg::Rect) -> arc::R<Self> {
+///         let mut cell = self.super_init_with_frame(frame);
+///         cell.inner_mut().label = Some(ui::Label::with_frame(cell.bounds()));
+///         cell
+///     }
+/// }
+/// ```
+///
+/// `self` is the `arc::A<Cell>` being initialized; the method and its `super_*` twin are
+/// emitted on `arc::A<Cell>` through the generated `CellInit` trait, and the super call
+/// consumes the allocation and returns the object at +1 like every `init`. The return type
+/// may also be `Option<arc::R<Self>>`. The payload of an instance created by Objective-C
+/// is what `+allocWithZone:` wrote, so the type's `Inner` must implement `Default`; a
+/// class with another payload declares its initializers with `#[objc::init]` instead and
+/// is created from Rust with `alloc_with(inner)`.
 #[proc_macro_attribute]
 pub fn overrides(_args: TokenStream, _item: TokenStream) -> TokenStream {
     panic!("#[objc::overrides(..)] must be used inside an #[objc::add_methods] impl block")
@@ -461,6 +490,8 @@ pub fn overrides(_args: TokenStream, _item: TokenStream) -> TokenStream {
 /// Inside an `#[objc::add_methods] impl Type { .. }` block, where `impl arc::A<Type>`
 /// is not possible for crates other than cidre, the declaration is instead moved to a
 /// generated `trait TypeInit` implemented for `arc::A<Type>`, and `Self` may be used.
+/// The declaration only sends the selector; to override an initializer of a
+/// runtime-registered class, write it with a body under `#[objc::overrides(sel)]`.
 #[proc_macro_attribute]
 pub fn init(sel: TokenStream, func: TokenStream) -> TokenStream {
     let sel = sel.to_string().replace([' ', '\n'], "");
@@ -786,6 +817,10 @@ struct InitDecl {
     generics: String,
     /// arguments and return type with `Self` replaced by the implemented type
     sig: String,
+    /// body of an initializer override, with `Self` replaced by the implemented type
+    body: Option<String>,
+    /// `super_*` twin of an initializer override, emitted next to it
+    super_fn: String,
 }
 
 fn add_own_methods(header: Vec<TokenTree>, body: Group) -> TokenStream {
@@ -828,6 +863,31 @@ fn add_own_methods(header: Vec<TokenTree>, body: Group) -> TokenStream {
                 out.extend(std::iter::once(tt));
                 out.extend(decl.tokens.iter().cloned());
             }
+            // `self` by value: an initializer override, emitted on `arc::A<Type>`
+            Some(Attr::Overrides(sel)) if takes_self_by_value(&decl) => {
+                let Some(body) = &decl.body else {
+                    panic!("#[objc::overrides] `{}` needs a body", decl.name)
+                };
+                let (vis, quals, attrs) = split_fn_prefix(&pending[..pos]);
+                let (vis2, quals2, attrs_after) = split_fn_prefix(&pending[pos..]);
+                pending.clear();
+                let sig = regex_self(&format!("{}{}", decl.args, decl.ret), &ty);
+                let (tramp, reg, super_fn) = gen_init_override(&sel, &decl, &ty);
+                extra.push_str(&tramp);
+                registrations.push_str(&reg);
+                inits.push(InitDecl {
+                    vis: if vis.is_empty() { vis2 } else { vis },
+                    attrs,
+                    attrs_after,
+                    quals: if quals.is_empty() { quals2 } else { quals },
+                    sel,
+                    name: decl.name.clone(),
+                    generics: decl.generics.clone(),
+                    sig,
+                    body: Some(regex_self(&body.to_string(), &ty)),
+                    super_fn,
+                });
+            }
             Some(Attr::Overrides(sel)) => {
                 out.extend(pending.drain(..));
                 out.extend(std::iter::once(tt));
@@ -839,7 +899,8 @@ fn add_own_methods(header: Vec<TokenTree>, body: Group) -> TokenStream {
             Some(Attr::Init(sel)) => {
                 assert!(
                     decl.body.is_none(),
-                    "#[objc::init] declares a selector and has no body"
+                    "#[objc::init] declares a selector and has no body; override an initializer with `#[objc::overrides({sel})] fn {}(self, ..) -> arc::R<Self> {{ .. }}`",
+                    decl.name
                 );
                 let (vis, quals, attrs) = split_fn_prefix(&pending[..pos]);
                 let (vis2, quals2, attrs_after) = split_fn_prefix(&pending[pos..]);
@@ -854,6 +915,8 @@ fn add_own_methods(header: Vec<TokenTree>, body: Group) -> TokenStream {
                     name: decl.name.clone(),
                     generics: decl.generics.clone(),
                     sig,
+                    body: None,
+                    super_fn: String::new(),
                 });
             }
             Some(_) => unreachable!(),
@@ -903,14 +966,28 @@ fn add_own_methods(header: Vec<TokenTree>, body: Group) -> TokenStream {
             name,
             generics,
             sig,
+            body,
+            super_fn,
             ..
         } = i;
+        // trait declarations take no patterns: `mut self` / `mut x: T` -> `self` / `x: T`
+        let decl_sig = sig.replace("mut self", "self").replace(", mut ", ", ");
         decls.push_str(&format!(
-            "\n    {attrs}\n    {attrs_after}\n    {quals} fn {name}{generics}{sig};\n"
+            "\n    {attrs}\n    {attrs_after}\n    {quals} fn {name}{generics}{decl_sig};\n"
         ));
-        impls.push_str(&format!(
-            "\n    {attrs}\n    #[objc::msg_send({sel})]\n    {attrs_after}\n    {quals} fn {name}{generics}{sig};\n"
-        ));
+        match body {
+            None => impls.push_str(&format!(
+                "\n    {attrs}\n    #[objc::msg_send({sel})]\n    {attrs_after}\n    {quals} fn {name}{generics}{sig};\n"
+            )),
+            Some(body) => {
+                decls.push_str(&format!(
+                    "\n    /// Calls the superclass implementation of `{sel}`\n    fn super_{name}{decl_sig};\n"
+                ));
+                impls.push_str(&format!(
+                    "\n    {attrs}\n    {attrs_after}\n    {quals} fn {name}{generics}{sig} {body}\n    {super_fn}\n"
+                ));
+            }
+        }
     }
     let names = generic_param_names(&impl_generics);
     let code = format!(
@@ -1005,25 +1082,21 @@ fn gen_override(sel: &str, decl: &FnDecl) -> (String, String) {
         .first()
         .map(|p| p.replace(' ', ""))
         .unwrap_or_default();
-    let receiver = match receiver.as_str() {
-        "&self" => "&self",
-        "&mutself" => "&mut self",
-        _ => panic!("#[objc::overrides] methods take `&self` or `&mut self`"),
+    // no receiver: a class method, added to the metaclass
+    let (is_cls, receiver) = match receiver.as_str() {
+        "&self" => (false, "&self"),
+        "&mutself" => (false, "&mut self"),
+        // routed to `gen_init_override` by `add_own_methods`
+        "self" | "mutself" => unreachable!("initializer override `{}`", decl.name),
+        _ => (true, "_cls: *const objc::Class<objc::Id>"),
     };
-    let rest = &params[1..];
-    let names: Vec<String> = rest
-        .iter()
-        .map(|p| {
-            let name = p.split_once(':').expect("typed parameter").0.trim();
-            name.trim_start_matches("mut ").trim().to_string()
-        })
-        .collect();
+    let rest = if is_cls { &params[..] } else { &params[1..] };
+    let names = param_names(rest);
     let rest_args = if rest.is_empty() {
         String::new()
     } else {
         format!(", {}", rest.join(", "))
     };
-    let names = names.join(", ");
     let name = &decl.name;
     let args = decl.args.to_string();
     let ret = decl
@@ -1040,18 +1113,23 @@ fn gen_override(sel: &str, decl: &FnDecl) -> (String, String) {
         "selector `{sel}` and arguments of `{name}` don't match"
     );
 
+    let call = if is_cls {
+        format!("Self::{name}({names})")
+    } else {
+        format!("self.{name}({names})")
+    };
     // an object returned at +0 must be autoreleased on the way out
     let autorelease = ret.contains("arc :: R <") && !returns_retained(sel);
     let (tramp_ret, call) = if autorelease {
         let tramp_ret = ret.replacen("arc :: R <", "arc :: Rar <", 1);
         let call = if ret.contains("Option <") {
-            format!("self.{name}({names}).map(|r| unsafe {{ r.return_ar() }})")
+            format!("{call}.map(|r| unsafe {{ r.return_ar() }})")
         } else {
-            format!("unsafe {{ self.{name}({names}).return_ar() }}")
+            format!("unsafe {{ {call}.return_ar() }}")
         };
         (tramp_ret, call)
     } else {
-        (ret.clone(), format!("self.{name}({names})"))
+        (ret.clone(), call)
     };
 
     let tramp = format!(
@@ -1066,6 +1144,94 @@ fn gen_override(sel: &str, decl: &FnDecl) -> (String, String) {
     fn super_{name}{args} {ret};
         "
     );
+    let target = if is_cls { "cls.meta_cls()" } else { "cls" };
+    let reg = format!(
+        "
+            objc::class_addMethod(
+                {target},
+                objc::sel_reg_name(c\"{sel}\".as_ptr()),
+                std::mem::transmute(Self::cidre_imp_{name} as *const u8),
+                std::ptr::null(),
+            );
+        "
+    );
+    (tramp, reg)
+}
+
+/// `["a: A", "mut b: B"]` -> `"a, b"`
+fn param_names(params: &[String]) -> String {
+    params
+        .iter()
+        .map(|p| {
+            let name = p.split_once(':').expect("typed parameter").0.trim();
+            name.trim_start_matches("mut ").trim().to_string()
+        })
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+
+/// Whether the first parameter is `self` or `mut self`.
+fn takes_self_by_value(decl: &FnDecl) -> bool {
+    split_top_level_args(decl.args.stream())
+        .first()
+        .is_some_and(|p| matches!(p.replace(' ', "").as_str(), "self" | "mutself"))
+}
+
+/// Returns the `extern "C"` trampoline of an initializer override, its registration
+/// statement, and the `super_*` twin to emit in the `{Type}Init` trait implementation
+/// for `arc::A<Type>`, where `self` is the allocated object.
+fn gen_init_override(sel: &str, decl: &FnDecl, ty: &str) -> (String, String, String) {
+    let name = &decl.name;
+    assert!(
+        decl.generics.is_empty(),
+        "#[objc::overrides] methods can't be generic"
+    );
+    assert!(
+        in_method_family(sel, "init"),
+        "#[objc::overrides] `{name}` takes `self` by value, which only initializers (the init family) do; got `{sel}`"
+    );
+    let params = split_top_level_args(decl.args.stream());
+    let rest: Vec<String> = params[1..].iter().map(|p| regex_self(p, ty)).collect();
+    let names = param_names(&rest);
+    let rest_args = if rest.is_empty() {
+        String::new()
+    } else {
+        format!(", {}", rest.join(", "))
+    };
+    let ret = decl
+        .ret
+        .split("where")
+        .next()
+        .unwrap_or("")
+        .trim()
+        .to_string();
+    let ret = regex_self(&ret, ty);
+    assert!(
+        ret.contains("arc :: R <") || ret.contains("arc :: Retained <"),
+        "#[objc::overrides] `{name}` must return `arc::R<Self>` or `Option<arc::R<Self>>`, got `{ret}`"
+    );
+    assert_eq!(
+        sel.matches(':').count(),
+        rest.len(),
+        "selector `{sel}` and arguments of `{name}` don't match"
+    );
+
+    // The init family returns +1: the trampoline hands the result back as is. An
+    // instance initialized from Objective-C has the payload `+allocWithZone:` wrote,
+    // so `Inner: Default` is required; `cls()` of the subclass form carries `Inner`.
+    let tramp = format!(
+        "
+    #[doc(hidden)]
+    extern \"C\" fn cidre_imp_{name}(this: arc::A<Self>, _cmd: *const std::ffi::c_void{rest_args}) {ret} {{
+        fn initializer_override_needs_default_inner<T: objc::Obj, I: Default>(
+            _: fn() -> &'static objc::ClassInstIvar<T, I>,
+        ) {{
+        }}
+        initializer_override_needs_default_inner(Self::cls);
+        this.{name}({names})
+    }}
+        "
+    );
     let reg = format!(
         "
             objc::class_addMethod(
@@ -1076,7 +1242,45 @@ fn gen_override(sel: &str, decl: &FnDecl) -> (String, String) {
             );
         "
     );
-    (tramp, reg)
+    let types: Vec<&str> = rest
+        .iter()
+        .map(|p| p.split_once(':').expect("typed parameter").1.trim())
+        .collect();
+    let sig_args = if types.is_empty() {
+        String::new()
+    } else {
+        format!(", {}", types.join(", "))
+    };
+    let call = if names.is_empty() {
+        "sig(&sup, sel)".to_string()
+    } else {
+        format!("sig(&sup, sel, {names})")
+    };
+    // `self` moves into the message: the allocated object is consumed, as by `[super init]`
+    let super_fn = format!(
+        "
+    fn super_{name}(self{rest_args}) {ret} {{
+        extern \"C\" {{
+            #[link_name = \"objc_msgSendSuper\"]
+            fn msg_send_super();
+        }}
+        extern \"C-unwind\" {{
+            fn sel_registerName(name: *const i8) -> *const std::ffi::c_void;
+        }}
+        unsafe {{
+            let sel = sel_registerName(c\"{sel}\".as_ptr());
+            let sup = objc::Super {{
+                receiver: std::mem::transmute::<Self, *mut objc::Id>(self),
+                super_class: <{ty}>::super_cls() as *const _ as *const objc::Class<objc::Id>,
+            }};
+            let sig: extern \"C\" fn(*const objc::Super, *const std::ffi::c_void{sig_args}) {ret} =
+                std::mem::transmute(msg_send_super as *const std::ffi::c_void);
+            {call}
+        }}
+    }}
+        "
+    );
+    (tramp, reg, super_fn)
 }
 
 #[proc_macro_attribute]
@@ -1100,9 +1304,9 @@ pub fn msg_send_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
 /// Sends `sel` to the superclass implementation, like `[super sel]` in Objective-C.
 ///
 /// The receiver type must provide `Self::super_cls()` (generated by `define_obj_type!`
-/// for runtime-registered classes, or available through `objc::Subclass` in trait
-/// default methods). Unlike `msg_send`, the selector is registered at call time because
-/// the linker provides no `objc_msgSendSuper` selector stubs.
+/// for runtime-registered classes). A method without a receiver sends to the metaclass
+/// with `Self::cls_ptr()` as the receiver. Unlike `msg_send`, the selector is registered
+/// at call time because the linker provides no `objc_msgSendSuper` selector stubs.
 #[proc_macro_attribute]
 pub fn msg_send_super(sel: TokenStream, func: TokenStream) -> TokenStream {
     let x86_64 = false;

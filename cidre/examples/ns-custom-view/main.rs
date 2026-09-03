@@ -1,8 +1,14 @@
 //! A custom `NSView` subclass defined from Rust.
 //!
 //! `View` overrides `layout` (re-positions a label and shows the current size),
-//! `viewDidMoveToWindow` and `isFlipped`, calling the `NSView` implementations
-//! through the generated `super_*` methods, and declares `initWithFrame:`.
+//! `viewDidMoveToWindow`, `isFlipped` and the class method
+//! `requiresConstraintBasedLayout`, calling the `NSView` implementations through the
+//! generated `super_*` methods.
+//!
+//! The payload is not `Default`, so the view is created from Rust with `alloc_with`
+//! and the inherited `initWithFrame:`. A class instantiated by AppKit itself would carry
+//! a `Default` payload and override `initWithFrame:` with
+//! `#[objc::overrides(initWithFrame:)] fn init_with_frame(self, ..)`.
 #[cfg(target_os = "macos")]
 mod macos {
     use cidre::{arc, cg, define_obj_type, ns, ns::AppDelegate, objc};
@@ -16,16 +22,13 @@ mod macos {
 
     #[objc::add_methods]
     impl View {
-        /// `initWithFrame:`, callable on `arc::A<View>` through the generated `ViewInit`
-        #[objc::init(initWithFrame:)]
-        fn init_with_frame(self, frame: ns::Rect) -> arc::R<Self>;
-
         fn with_frame(frame: ns::Rect) -> arc::R<Self> {
             let label = ns::TextField::label(ns::str!(c""));
             let inner = ViewInner { label, layouts: 0 };
-            let mut view = Self::alloc_with(inner).init_with_frame(frame);
-            let label = view.inner().label.retained();
-            view.add_subview(&label);
+            // `-[NSView initWithFrame:]` on the allocation
+            let mut view = Self::alloc_with(inner).init_with(|v| v.init_with_frame(frame));
+            // the view (as `ns::View`) and its payload, borrowed together
+            view.tap_mut(|v, inner| v.add_subview(&inner.label));
             view
         }
 
@@ -44,6 +47,15 @@ mod macos {
             let size = cg::Size::new(bounds.size.width, 24.0);
             let origin = cg::Point::new(0.0, (bounds.size.height - size.height) * 0.5);
             inner.label.set_frame(cg::Rect { origin, size });
+        }
+
+        /// A class method override: no receiver, added to the metaclass
+        #[objc::overrides(requiresConstraintBasedLayout)]
+        fn requires_constraint_based_layout() -> bool {
+            static ONCE: std::sync::Once = std::sync::Once::new();
+            let sup = Self::super_requires_constraint_based_layout();
+            ONCE.call_once(|| println!("+requiresConstraintBasedLayout: NSView says {sup}"));
+            sup
         }
 
         #[objc::overrides(viewDidMoveToWindow)]

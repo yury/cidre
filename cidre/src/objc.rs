@@ -439,6 +439,23 @@ impl<T: Obj> arc::A<T> {
     /// `[obj init]` without checking that `T` supports plain `init`.
     #[objc::msg_send(init)]
     pub unsafe fn init_unchecked(self) -> arc::R<T>;
+
+    /// Initializes the allocation with an initializer inherited from the superclass `B`,
+    /// so a runtime-registered subclass need not redeclare it:
+    /// `View::alloc_with(inner).init_with(|v| v.init_with_frame(frame))`.
+    ///
+    /// The allocation is an instance of `T`, and an initializer returns its receiver
+    /// (or another instance of the receiver's class), so the result is a `T` again.
+    #[inline]
+    pub fn init_with<B: Obj + 'static>(self, init: impl FnOnce(arc::A<B>) -> arc::R<B>) -> arc::R<T>
+    where
+        T: std::ops::Deref<Target = B>,
+    {
+        unsafe {
+            let base: arc::A<B> = std::mem::transmute(self);
+            std::mem::transmute(init(base))
+        }
+    }
 }
 
 impl<T: Obj> Class<T> {
@@ -881,9 +898,13 @@ macro_rules! define_weak_cls {
 ///   (e.g. `ns::View`), where `Base::cls()` must exist. The payload is a real instance
 ///   variable. Methods are overridden and initializers declared in an
 ///   `#[objc::add_methods] impl Name { .. }` block with `#[objc::overrides(sel)]` and
-///   `#[objc::init(sel)]`; every override gets a `super_*` twin. Instances are created
-///   with `Name::alloc_with(inner)` followed by an initializer, or `Name::with(inner)`
-///   for plain `init`. If `Inner: Default`, objects created from Objective-C (nibs,
+///   `#[objc::init(sel)]`; every override gets a `super_*` twin. An override without a
+///   receiver is a class method (`+layerClass`); one taking `self` by value overrides an
+///   initializer, which requires `Inner: Default`. Instances are created with
+///   `Name::alloc_with(inner)` followed by an initializer (an inherited one through
+///   `arc::A::init_with`), or `Name::with(inner)` for plain `init`. `inner()`/`inner_mut()`
+///   reach the payload, `tap_mut` borrows it together with the object. If `Inner: Default`,
+///   objects created from Objective-C (nibs,
 ///   `[[Name alloc] init]`) get `Inner::default()`; otherwise `inner()` panics on them.
 ///
 /// A class from the `NSObject` form can itself be used as `Base` only when its
@@ -942,6 +963,22 @@ macro_rules! define_obj_type {
                     (*slot).get_mut()
                 }
             }
+
+            /// Borrows the object and its payload at once, e.g. to add a subview kept
+            /// in the payload: `view.tap_mut(|v, inner| v.add_subview(&inner.label))`.
+            ///
+            /// The object is passed as its superclass, which has no `inner_mut`, so the
+            /// payload cannot be borrowed a second time inside `f`.
+            #[allow(dead_code)]
+            #[inline]
+            pub fn tap_mut<R>(&mut self, f: impl FnOnce(&mut $BaseType, &mut $InnerType) -> R) -> R {
+                let inner: *mut $InnerType = self.inner_mut();
+                let base: &mut $BaseType = self;
+                // SAFETY: the payload lives in an instance variable past the bytes
+                // `$BaseType` covers, and `base` cannot reach it again.
+                f(base, unsafe { &mut *inner })
+            }
+
 
             #[allow(dead_code)]
             pub fn register_cls() -> &'static $crate::objc::ClassInstIvar<Self, $InnerType> {
@@ -1703,6 +1740,138 @@ mod tests2 {
         fn tag(&self) -> usize {
             self.inner().tag
         }
+
+        // class method: NSObject's `+version` returns 0
+        #[objc::overrides(version)]
+        fn version() -> isize {
+            Self::super_version() + 40
+        }
+    }
+
+    impl SubId {
+        #[objc::msg_send(version)]
+        fn cls_version() -> isize;
+    }
+
+    #[test]
+    fn subclass_init_with_base_initializer() {
+        let dropped = Arc::new(AtomicBool::new(false));
+        {
+            let inner = SubInner {
+                tag: 2,
+                dropped: Arc::clone(&dropped),
+            };
+            // `-[NSObject init]` on the allocation, without redeclaring it on `SubId`
+            let obj = SubId::alloc_with(inner).init_with(|o| unsafe { o.init_unchecked() });
+            assert_eq!(obj.tag(), 2);
+            assert!(obj.is_kind_of_class(SubId::cls()));
+        }
+        assert!(dropped.load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn subclass_tap_mut() {
+        let dropped = Arc::new(AtomicBool::new(false));
+        let mut obj = SubId::alloc_with(SubInner {
+            tag: 1,
+            dropped: Arc::clone(&dropped),
+        })
+        .init();
+        // the object as `ns::Id` and the payload, borrowed together; `hash` is not
+        // used here because its override would read the payload again
+        let is_sub = obj.tap_mut(|base, inner| {
+            inner.tag = 4;
+            base.is_kind_of_class(SubId::cls())
+        });
+        assert!(is_sub);
+        assert_eq!(obj.tag(), 4);
+    }
+
+    #[test]
+    fn subclass_class_method_override() {
+        assert_eq!(SubId::cls_version(), 40);
+        assert_eq!(SubId::super_version(), 0);
+        // inherited by the subclass, the super call still starts at SubId
+        assert_eq!(SubSubId::cls_version(), 40);
+    }
+
+    // --- initializer overrides ---
+
+    #[derive(Default)]
+    struct SubInitInner {
+        tag: usize,
+    }
+
+    define_obj_type!(SubInitId(ns::Id), SubInitInner, CIDRE_TEST_SUB_INIT_ID);
+
+    #[objc::add_methods]
+    impl SubInitId {
+        // `self` by value: an initializer override, needs `SubInitInner: Default`
+        #[objc::overrides(init)]
+        fn init(self) -> arc::R<Self> {
+            let mut obj = self.super_init();
+            obj.inner_mut().tag = 9;
+            obj
+        }
+
+        #[objc::overrides(initWithTag:)]
+        fn init_with_tag(mut self, tag: usize) -> arc::R<Self> {
+            self.as_ptr(); // `mut self` is accepted
+            // `[super init]`: the `init` override above is bypassed
+            let mut obj = self.super_init();
+            obj.inner_mut().tag = tag;
+            obj
+        }
+
+        #[objc::overrides(initWithOptionalTag:)]
+        fn init_with_opt_tag(self, tag: usize) -> Option<arc::R<Self>> {
+            if tag == 0 {
+                // releasing the allocated object, as `[self release]; return nil;` would
+                drop(self);
+                None
+            } else {
+                Some(self.init_with_tag(tag))
+            }
+        }
+    }
+
+    // Objective-C side of the initializers, through the registered trampolines
+    impl arc::A<SubInitId> {
+        #[objc::msg_send(initWithTag:)]
+        fn init_with_tag_objc(self, tag: usize) -> arc::R<SubInitId>;
+
+        #[objc::msg_send(initWithOptionalTag:)]
+        fn init_with_opt_tag_objc(self, tag: usize) -> Option<arc::R<SubInitId>>;
+    }
+
+    impl SubSubId {
+        #[objc::msg_send(version)]
+        fn cls_version() -> isize;
+    }
+
+    #[test]
+    fn subclass_init_override() {
+        // Rust path: the body runs directly
+        let obj = SubInitId::cls().alloc().init();
+        assert_eq!(obj.inner().tag, 9);
+        assert!(obj.is_kind_of_class(SubInitId::cls()));
+
+        // Objective-C path: `+new` sends `init` to the registered override
+        let obj = SubInitId::cls().new();
+        assert_eq!(obj.inner().tag, 9);
+
+        let obj = SubInitId::cls().alloc().init_with_tag_objc(5);
+        assert_eq!(obj.inner().tag, 5);
+        let obj = SubInitId::cls().alloc().init_with_tag(6);
+        assert_eq!(obj.inner().tag, 6);
+
+        assert!(SubInitId::cls().alloc().init_with_opt_tag_objc(0).is_none());
+        let obj = SubInitId::cls().alloc().init_with_opt_tag_objc(3).unwrap();
+        assert_eq!(obj.inner().tag, 3);
+
+        // the payload written by `+allocWithZone:` is replaced by `alloc_with`
+        let obj = SubInitId::alloc_with(SubInitInner { tag: 1 }).init_with_tag(2);
+        assert_eq!(obj.inner().tag, 2);
     }
 
     // second level: SubSubId -> SubId -> NSObject, with its own payload
