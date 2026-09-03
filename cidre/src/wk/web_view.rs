@@ -32,12 +32,10 @@ define_obj_type!(pub WebView(crate::ui::View), WK_WEB_VIEW);
 #[cfg(target_os = "macos")]
 define_obj_type!(pub WebView(ns::View), WK_WEB_VIEW);
 
-impl arc::A<WebView> {
-    #[objc::msg_send(initWithFrame:configuration:)]
-    pub fn init_with_frame_cfg(self, frame: cg::Rect, cfg: &wk::WebViewCfg) -> arc::R<WebView>;
-}
-
 impl WebView {
+    #[objc::init(initWithFrame:configuration:)]
+    pub fn init_with_frame_cfg(self, frame: cg::Rect, cfg: &wk::WebViewCfg) -> arc::R<WebView>;
+
     /// A copy of the configuration with which the web view was initialized
     #[objc::msg_send(configuration)]
     pub fn cfg(&self) -> arc::R<wk::WebViewCfg>;

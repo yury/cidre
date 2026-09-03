@@ -27,32 +27,37 @@ define_obj_type!(
     pub Format(ns::Id)
 );
 
-impl arc::A<Format> {
-    #[objc::msg_send(initWithStreamDescription:)]
+/// av::AudioFormat wraps a Core Audio AudioStreamBasicDescription struct, with convenience
+/// initializers and accessors for common formats, including Core Audio's standard deinterleaved
+/// 32-bit floating point.
+///
+/// Instances of this class are immutable.
+impl Format {
+    #[objc::init(initWithStreamDescription:)]
     pub fn init_with_stream_desc(self, asbd: &StreamBasicDesc) -> Option<arc::R<Format>>;
 
-    #[objc::msg_send(initWithStreamDescription:channelLayout:)]
+    #[objc::init(initWithStreamDescription:channelLayout:)]
     pub fn init_with_stream_desc_channel_layout(
         self,
         asbd: &StreamBasicDesc,
         layout: Option<&ChannelLayout>,
     ) -> Option<arc::R<Format>>;
 
-    #[objc::msg_send(initStandardFormatWithSampleRate:channels:)]
+    #[objc::init(initStandardFormatWithSampleRate:channels:)]
     pub fn init_standard_with_sample_rate_channels(
         self,
         sample_rate: f64,
         channels: ChannelCount,
     ) -> Option<arc::R<Format>>;
 
-    #[objc::msg_send(initStandardFormatWithSampleRate:channelLayout:)]
+    #[objc::init(initStandardFormatWithSampleRate:channelLayout:)]
     pub fn init_standard_with_sample_rate_channel_layout(
         self,
         sample_rate: f64,
         layout: &ChannelLayout,
     ) -> arc::R<Format>;
 
-    #[objc::msg_send(initWithCommonFormat:sampleRate:channels:interleaved:)]
+    #[objc::init(initWithCommonFormat:sampleRate:channels:interleaved:)]
     pub fn init_with_common_format_sample_rate_channels_interleaved(
         self,
         format: CommonFormat,
@@ -61,7 +66,7 @@ impl arc::A<Format> {
         interleaved: bool,
     ) -> Option<arc::R<Format>>;
 
-    #[objc::msg_send(initWithCommonFormat:sampleRate:interleaved:channelLayout:)]
+    #[objc::init(initWithCommonFormat:sampleRate:interleaved:channelLayout:)]
     pub fn init_with_common_format_sample_rate_interleaved_channel_layout(
         self,
         format: CommonFormat,
@@ -70,19 +75,12 @@ impl arc::A<Format> {
         channel_layout: &ChannelLayout,
     ) -> arc::R<Format>;
 
-    #[objc::msg_send(initWithSettings:)]
+    #[objc::init(initWithSettings:)]
     pub fn init_with_settings(
         self,
         settings: &ns::Dictionary<ns::String, ns::Id>,
     ) -> Option<arc::R<Format>>;
-}
 
-/// av::AudioFormat wraps a Core Audio AudioStreamBasicDescription struct, with convenience
-/// initializers and accessors for common formats, including Core Audio's standard deinterleaved
-/// 32-bit floating point.
-///
-/// Instances of this class are immutable.
-impl Format {
     define_cls!(AV_AUDIO_FORMAT);
 
     /// If the format specifies more than 2 channels, this method fails (returns None).

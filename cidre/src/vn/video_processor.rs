@@ -18,12 +18,10 @@ define_obj_type!(
     pub TimeIntervalCadence(Cadence)
 );
 
-impl arc::A<FrameRateCadence> {
-    #[objc::msg_send(initWithFrameRate:)]
-    pub fn init_with_frame_rate(self, frame_rate: isize) -> arc::R<FrameRateCadence>;
-}
-
 impl FrameRateCadence {
+    #[objc::init(initWithFrameRate:)]
+    pub fn init_with_frame_rate(self, frame_rate: isize) -> arc::R<FrameRateCadence>;
+
     crate::define_cls!(VN_VIDEO_PROCESSOR_FRAME_RATE_CADENCE);
 
     pub fn new(frame_rate: isize) -> arc::R<Self> {
@@ -35,15 +33,13 @@ impl FrameRateCadence {
     pub fn frame_rate(&self) -> isize;
 }
 
-impl arc::A<TimeIntervalCadence> {
-    #[objc::msg_send(initWithTimeInterval:)]
+impl TimeIntervalCadence {
+    #[objc::init(initWithTimeInterval:)]
     pub fn init_with_time_interval(
         self,
         time_interval: cf::TimeInterval,
     ) -> arc::R<TimeIntervalCadence>;
-}
 
-impl TimeIntervalCadence {
     crate::define_cls!(VN_VIDEO_PROCESSOR_TIME_INTERVAL_CADENCE);
 
     pub fn new(time_interval: cf::TimeInterval) -> arc::R<Self> {
@@ -74,8 +70,8 @@ define_obj_type!(
     pub VideoProcessor(ns::Id)
 );
 
-impl arc::A<VideoProcessor> {
-    #[objc::msg_send(initWithURL:)]
+impl VideoProcessor {
+    #[objc::init(initWithURL:)]
     #[objc::available(
         macos = 11.0,
         maccatalyst = 14.0,
@@ -84,9 +80,7 @@ impl arc::A<VideoProcessor> {
         visionos = 1.0
     )]
     pub fn init_with_url(self, url: &ns::Url) -> arc::R<VideoProcessor>;
-}
 
-impl VideoProcessor {
     crate::define_cls!(VN_VIDEO_PROCESSOR);
 
     /// Creates a video processor to perform Vision requests against the specified video asset.

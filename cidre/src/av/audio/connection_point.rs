@@ -2,16 +2,14 @@ use crate::{arc, av::audio, define_cls, define_obj_type, ns, objc};
 
 define_obj_type!(pub ConnectionPoint(ns::Id));
 
-impl arc::A<ConnectionPoint> {
-    #[objc::msg_send(initWithNode:bus:)]
+impl ConnectionPoint {
+    #[objc::init(initWithNode:bus:)]
     pub fn init_with_node_bus(
         self,
         node: &audio::Node,
         bus: audio::NodeBus,
     ) -> arc::R<ConnectionPoint>;
-}
 
-impl ConnectionPoint {
     define_cls!(AV_AUDIO_CONNECTION_POINT);
 
     pub fn with_node_bus(node: &audio::Node, bus: audio::NodeBus) -> arc::R<Self> {

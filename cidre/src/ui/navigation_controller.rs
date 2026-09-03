@@ -6,12 +6,10 @@ define_obj_type!(
     UI_NAVIGATION_CONTROLLER
 );
 
-impl arc::A<NavController> {
-    #[objc::msg_send(initWithRootViewController:)]
-    pub fn init_with_root_vc(self, root_vc: &ui::ViewController) -> arc::R<NavController>;
-}
-
 impl NavController {
+    #[objc::init(initWithRootViewController:)]
+    pub fn init_with_root_vc(self, root_vc: &ui::ViewController) -> arc::R<NavController>;
+
     pub fn with_root_vc(root_vc: &ui::ViewController) -> arc::R<Self> {
         Self::alloc().init_with_root_vc(root_vc)
     }

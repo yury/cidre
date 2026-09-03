@@ -743,19 +743,17 @@ define_obj_type!(
     pub CollectionView(ui::View)
 );
 
-impl arc::A<CollectionView> {
-    #[objc::msg_send(initWithFrame:collectionViewLayout:)]
+impl CollectionView {
+    #[objc::init(initWithFrame:collectionViewLayout:)]
     pub fn init_with_frame_collection_view_layout(
         self,
         frame: cg::Rect,
         layout: &ui::CollectionViewLayout,
     ) -> arc::R<CollectionView>;
 
-    #[objc::msg_send(initWithCoder:)]
+    #[objc::init(initWithCoder:)]
     pub fn init_with_coder(self, coder: &ns::Coder) -> Option<arc::R<CollectionView>>;
-}
 
-impl CollectionView {
     define_cls!(UI_COLLECTION_VIEW);
 
     #[objc::msg_send(collectionViewLayout)]
@@ -1159,32 +1157,28 @@ impl CollectionView {
     pub fn set_allows_multiple_selection_during_editing(&mut self, val: bool);
 }
 
-impl arc::A<CollectionViewDropProposal> {
-    #[objc::msg_send(initWithDropOperation:intent:)]
+impl CollectionViewDropProposal {
+    #[objc::init(initWithDropOperation:intent:)]
     pub fn init_with_drop_operation_intent(
         self,
         operation: ui::DropOperation,
         intent: CollectionViewDropIntent,
     ) -> arc::R<CollectionViewDropProposal>;
-}
 
-impl CollectionViewDropProposal {
     define_cls!(UI_COLLECTION_VIEW_DROP_PROPOSAL);
 
     #[objc::msg_send(intent)]
     pub fn intent(&self) -> CollectionViewDropIntent;
 }
 
-impl arc::A<CollectionViewPlaceholder> {
-    #[objc::msg_send(initWithInsertionIndexPath:reuseIdentifier:)]
+impl CollectionViewPlaceholder {
+    #[objc::init(initWithInsertionIndexPath:reuseIdentifier:)]
     pub fn init_with_insertion_index_path_reuse_id(
         self,
         insertion_index_path: &ns::IndexPath,
         reuse_id: &ns::String,
     ) -> arc::R<CollectionViewPlaceholder>;
-}
 
-impl CollectionViewPlaceholder {
     define_cls!(UI_COLLECTION_VIEW_PLACEHOLDER);
 
     #[cfg(feature = "blocks")]
@@ -1204,16 +1198,14 @@ impl CollectionViewPlaceholder {
     }
 }
 
-impl arc::A<CollectionViewDropPlaceholder> {
-    #[objc::msg_send(initWithInsertionIndexPath:reuseIdentifier:)]
+impl CollectionViewDropPlaceholder {
+    #[objc::init(initWithInsertionIndexPath:reuseIdentifier:)]
     pub fn init_with_insertion_index_path_reuse_id(
         self,
         insertion_index_path: &ns::IndexPath,
         reuse_id: &ns::String,
     ) -> arc::R<CollectionViewDropPlaceholder>;
-}
 
-impl CollectionViewDropPlaceholder {
     define_cls!(UI_COLLECTION_VIEW_DROP_PLACEHOLDER);
 
     #[cfg(feature = "blocks")]

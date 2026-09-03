@@ -9,12 +9,10 @@ define_obj_type!(
     NS_OUTLINE_VIEW
 );
 
-impl arc::A<OutlineView> {
-    #[objc::msg_send(initWithFrame:)]
-    pub fn init_with_frame(self, frame: ns::Rect) -> arc::R<OutlineView>;
-}
-
 impl OutlineView {
+    #[objc::init(initWithFrame:)]
+    pub fn init_with_frame(self, frame: ns::Rect) -> arc::R<OutlineView>;
+
     pub fn with_frame(frame: ns::Rect) -> arc::R<Self> {
         Self::alloc().init_with_frame(frame)
     }

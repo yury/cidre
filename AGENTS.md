@@ -12,6 +12,8 @@
 - Wire exports in the module root with `mod <file>;` and `pub use ...;` so public API surfaces from the module root.
 - If a bound Objective-C class uses a static class symbol, add it to the corresponding `cidre/pomace/<framework>/<framework>.h` initializer.
 - Mirror SDK availability in Rust using `#[objc::available(...)]` and keep `#[doc(alias = "...")]` for Apple symbol names.
+- Declare initializers inside the type's own `impl Type` block as `#[objc::init(initWith..:)] pub fn init_with(self, ..) -> arc::R<Type>;` (write the concrete type, not `Self`); the macro emits the method on `arc::A<Type>`. Hand-written `impl arc::A<Type>` blocks remain only for helpers with bodies (e.g. `ns::try_catch` wrappers).
+- cidre does not declare per-class override traits. Application code subclasses with `define_obj_type!(Name(Base), Inner, CLS)` and, in an `#[objc::add_methods] impl Name` block, overrides methods with `#[objc::overrides(sel)]` (each gets a generated `super_*`) and declares initializers with `#[objc::init(sel)]` (see `cidre/examples/ns-custom-view`). Keep the `NSObject`-only form `define_obj_type!(Name + Trait, Inner, CLS)` for delegates.
 
 ## Build, Test, and Development Commands
 - `cargo build` builds the workspace for the host target.

@@ -9,15 +9,6 @@ define_obj_type!(
 );
 
 impl arc::A<Slider> {
-    #[objc::msg_send(initWithLocalizedTitle:symbolName:minValue:maxValue:)]
-    pub unsafe fn init_with_range_throws(
-        self,
-        localized_title: &ns::String,
-        symbol_name: &ns::String,
-        min_val: f32,
-        max_val: f32,
-    ) -> arc::R<Slider>;
-
     pub fn init_with_range<'ear>(
         self,
         localized_title: &ns::String,
@@ -29,16 +20,6 @@ impl arc::A<Slider> {
             self.init_with_range_throws(localized_title, symbol_name, min_val, max_val)
         })
     }
-
-    #[objc::msg_send(initWithLocalizedTitle:symbolName:minValue:maxValue:step:)]
-    pub unsafe fn init_with_range_step_throws(
-        self,
-        localized_title: &ns::String,
-        symbol_name: &ns::String,
-        min_val: f32,
-        max_val: f32,
-        step: f32,
-    ) -> arc::R<Slider>;
 
     pub fn init_with_range_step<'ear>(
         self,
@@ -53,14 +34,6 @@ impl arc::A<Slider> {
         })
     }
 
-    #[objc::msg_send(initWithLocalizedTitle:symbolName:values:)]
-    pub unsafe fn init_with_vals_throws(
-        self,
-        localized_title: &ns::String,
-        symbol_name: &ns::String,
-        vals: &ns::Array<ns::Number>,
-    ) -> arc::R<Slider>;
-
     pub fn init_with_vals<'ear>(
         self,
         localized_title: &ns::String,
@@ -72,6 +45,33 @@ impl arc::A<Slider> {
 }
 
 impl Slider {
+    #[objc::init(initWithLocalizedTitle:symbolName:minValue:maxValue:)]
+    pub unsafe fn init_with_range_throws(
+        self,
+        localized_title: &ns::String,
+        symbol_name: &ns::String,
+        min_val: f32,
+        max_val: f32,
+    ) -> arc::R<Slider>;
+
+    #[objc::init(initWithLocalizedTitle:symbolName:minValue:maxValue:step:)]
+    pub unsafe fn init_with_range_step_throws(
+        self,
+        localized_title: &ns::String,
+        symbol_name: &ns::String,
+        min_val: f32,
+        max_val: f32,
+        step: f32,
+    ) -> arc::R<Slider>;
+
+    #[objc::init(initWithLocalizedTitle:symbolName:values:)]
+    pub unsafe fn init_with_vals_throws(
+        self,
+        localized_title: &ns::String,
+        symbol_name: &ns::String,
+        vals: &ns::Array<ns::Number>,
+    ) -> arc::R<Slider>;
+
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
     crate::define_cls!(AV_CAPTURE_SLIDER);
 

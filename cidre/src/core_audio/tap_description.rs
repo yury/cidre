@@ -28,32 +28,32 @@ define_obj_type!(
     #[api::available(macos = 12.0)]
 );
 
-impl arc::A<TapDesc> {
-    #[objc::msg_send(initStereoMixdownOfProcesses:)]
+impl TapDesc {
+    #[objc::init(initStereoMixdownOfProcesses:)]
     pub fn init_stereo_mixdown_of_processes(
         self,
         processes_obj_ids_to_include: &ns::Array<ns::Number>,
     ) -> arc::R<TapDesc>;
 
-    #[objc::msg_send(initStereoGlobalTapButExcludeProcesses:)]
+    #[objc::init(initStereoGlobalTapButExcludeProcesses:)]
     pub fn init_stereo_global_tap_but_exclude_processes(
         self,
         processes_obj_ids_to_exclude: &ns::Array<ns::Number>,
     ) -> arc::R<TapDesc>;
 
-    #[objc::msg_send(initMonoMixdownOfProcesses:)]
+    #[objc::init(initMonoMixdownOfProcesses:)]
     pub fn init_mono_mixdown_of_processes(
         self,
         processes_obj_ids_to_include: &ns::Array<ns::Number>,
     ) -> arc::R<TapDesc>;
 
-    #[objc::msg_send(initMonoGlobalTapButExcludeProcesses:)]
+    #[objc::init(initMonoGlobalTapButExcludeProcesses:)]
     pub fn init_mono_global_tap_but_exclude_processes(
         self,
         processes_obj_ids_to_exclude: &ns::Array<ns::Number>,
     ) -> arc::R<TapDesc>;
 
-    #[objc::msg_send(initWithProcesses:andDeviceUID:withStream:)]
+    #[objc::init(initWithProcesses:andDeviceUID:withStream:)]
     pub fn init_with_processes_and_device(
         self,
         processes_obj_ids_to_include: &ns::Array<ns::Number>,
@@ -61,16 +61,14 @@ impl arc::A<TapDesc> {
         stream: isize,
     ) -> arc::R<TapDesc>;
 
-    #[objc::msg_send(initExcludingProcesses:andDeviceUID:withStream:)]
+    #[objc::init(initExcludingProcesses:andDeviceUID:withStream:)]
     pub fn init_excluding_processes_and_device(
         self,
         processes_obj_ids_to_exclude: &ns::Array<ns::Number>,
         device_uid: &ns::String,
         stream: isize,
     ) -> arc::R<TapDesc>;
-}
 
-impl TapDesc {
     /// Mix all given process audio streams down to stereo.
     ///
     /// Mono sources will be duplicated in both right and left channels.

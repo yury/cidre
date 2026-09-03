@@ -67,20 +67,18 @@ define_obj_type!(
     pub Session(ns::Id)
 );
 
-impl arc::A<Session> {
-    #[objc::msg_send(initWithPeer:)]
+impl Session {
+    #[objc::init(initWithPeer:)]
     pub unsafe fn init_with_peer_throws(self, peer: &mc::PeerId) -> arc::R<Session>;
 
-    #[objc::msg_send(initWithPeer:securityIdentity:encryptionPreference:)]
+    #[objc::init(initWithPeer:securityIdentity:encryptionPreference:)]
     pub unsafe fn init_with_encryption_throws(
         self,
         peer: &mc::PeerId,
         sec_identity: Option<&ns::Array<ns::Id>>,
         encryption_preference: mc::EncryptionPreference,
     ) -> arc::R<Session>;
-}
 
-impl Session {
     define_cls!(MC_SESSION);
 
     /// Create a session with an MCPeerID for the local peer.

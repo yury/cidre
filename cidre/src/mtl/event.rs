@@ -24,17 +24,15 @@ define_obj_type!(
     pub SharedEventListener(ns::Id)
 );
 
-impl arc::A<SharedEventListener> {
-    #[cfg(feature = "dispatch")]
-    #[objc::msg_send(initWithDispatchQueue:)]
-    pub fn init_with_dispatch_queue(self, queue: &dispatch::Queue) -> arc::R<SharedEventListener>;
-}
-
 /// A block of code invoked after a shareable event’s signal value equals or exceeds a given value.
 pub type SharedEventNotificationBlock =
     blocks::EscBlock<fn(event: &mut mtl::SharedEvent, value: u64)>;
 
 impl SharedEventListener {
+    #[cfg(feature = "dispatch")]
+    #[objc::init(initWithDispatchQueue:)]
+    pub fn init_with_dispatch_queue(self, queue: &dispatch::Queue) -> arc::R<SharedEventListener>;
+
     define_cls!(MTL_SHARED_EVENT_LISTENER);
 
     /// Creates a new shareable event listener with a specific dispatch queue.

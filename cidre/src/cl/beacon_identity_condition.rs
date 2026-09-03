@@ -10,27 +10,25 @@ define_obj_type!(
     pub BeaconIdentityCondition(cl::Condition)
 );
 
-impl arc::A<BeaconIdentityCondition> {
-    #[objc::msg_send(initWithUUID:)]
+impl BeaconIdentityCondition {
+    #[objc::init(initWithUUID:)]
     pub fn init_with_uuid(self, uuid: &ns::Uuid) -> arc::R<BeaconIdentityCondition>;
 
-    #[objc::msg_send(initWithUUID:major:)]
+    #[objc::init(initWithUUID:major:)]
     pub fn init_with_uuid_major(
         self,
         uuid: &ns::Uuid,
         major: BeaconMajorValue,
     ) -> arc::R<BeaconIdentityCondition>;
 
-    #[objc::msg_send(initWithUUID:major:minor:)]
+    #[objc::init(initWithUUID:major:minor:)]
     pub fn init_with_uuid_major_minor(
         self,
         uuid: &ns::Uuid,
         major: BeaconMajorValue,
         minor: BeaconMinorValue,
     ) -> arc::R<BeaconIdentityCondition>;
-}
 
-impl BeaconIdentityCondition {
     #[objc::available(macos = 14.0, ios = 17.0)]
     crate::define_cls!(CL_BEACON_IDENTITY_CONDITION);
 

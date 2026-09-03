@@ -4,16 +4,14 @@ define_obj_type!(
     pub AdvertiserAssistant(ns::Id)
 );
 
-impl arc::A<AdvertiserAssistant> {
-    #[objc::msg_send(initwithpeer:servicetype:)]
+impl AdvertiserAssistant {
+    #[objc::init(initWithPeer:serviceType:)]
     pub unsafe fn init_service_type_throws(
         self,
         peer: &mc::PeerId,
         service_type: &ns::String,
     ) -> arc::R<AdvertiserAssistant>;
-}
 
-impl AdvertiserAssistant {
     define_cls!(MC_ADVERTISER_ASSISTANT);
 
     pub fn with_service_type<'ear>(

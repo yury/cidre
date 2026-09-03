@@ -5,12 +5,10 @@ define_obj_type!(
     pub PeerId(ns::Id)
 );
 
-impl arc::A<PeerId> {
-    #[objc::msg_send(initWithDisplayName:)]
-    pub unsafe fn init_with_display_name_throws(self, display_name: &ns::String) -> arc::R<PeerId>;
-}
-
 impl PeerId {
+    #[objc::init(initWithDisplayName:)]
+    pub unsafe fn init_with_display_name_throws(self, display_name: &ns::String) -> arc::R<PeerId>;
+
     define_cls!(MC_PEER_ID);
 
     #[inline]

@@ -9,12 +9,10 @@ define_obj_type!(
 unsafe impl Send for ColorSpace {}
 unsafe impl Sync for ColorSpace {}
 
-impl arc::A<ColorSpace> {
-    #[objc::msg_send(initWithCGColorSpace:)]
-    pub fn init_with_cg_color_space(self, val: &cg::ColorSpace) -> Option<arc::R<ColorSpace>>;
-}
-
 impl ColorSpace {
+    #[objc::init(initWithCGColorSpace:)]
+    pub fn init_with_cg_color_space(self, val: &cg::ColorSpace) -> Option<arc::R<ColorSpace>>;
+
     pub fn with_cg_color_space(val: &cg::ColorSpace) -> Option<arc::R<Self>> {
         Self::alloc().init_with_cg_color_space(val)
     }

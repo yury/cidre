@@ -35,12 +35,10 @@ define_obj_type!(
     NS_VIEW
 );
 
-impl arc::A<View> {
-    #[objc::msg_send(initWithFrame:)]
-    pub fn init_with_frame(self, frame: ns::Rect) -> arc::R<View>;
-}
-
 impl View {
+    #[objc::init(initWithFrame:)]
+    pub fn init_with_frame(self, frame: ns::Rect) -> arc::R<View>;
+
     pub fn with_frame(frame: ns::Rect) -> arc::R<Self> {
         Self::alloc().init_with_frame(frame)
     }

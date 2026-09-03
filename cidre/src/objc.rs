@@ -48,6 +48,13 @@ impl<T: Obj> Class<T> {
     pub fn instance_method(&self, sel: &Sel) -> Option<&Method> {
         unsafe { class_getInstanceMethod(std::mem::transmute(self), sel) }
     }
+
+    /// The metaclass, where class methods live.
+    #[doc(alias = "object_getClass")]
+    #[inline]
+    pub fn meta_cls(&self) -> &Class<Id> {
+        unsafe { object_getClass(Some(std::mem::transmute(self))).unwrap_unchecked() }
+    }
 }
 
 impl Ivar {
@@ -234,6 +241,206 @@ impl<T: Obj, I: Sized + Default> ClassInstExtra<T, I> {
     }
 }
 
+/// Class registered at runtime with an explicit superclass.
+///
+/// The Rust payload `I` is stored in a real instance variable (see [`InnerSlot`]),
+/// so it is valid for any superclass and any allocation path.
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct ClassInstIvar<T: Obj, I: Sized>(Class<T>, PhantomData<I>);
+
+impl<T: Obj, I: Sized> std::ops::Deref for ClassInstIvar<T, I> {
+    type Target = Class<T>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<T: Obj, I: Sized + Default> ClassInstIvar<T, I> {
+    /// `[[Cls alloc] init]`. The payload is set by the generated `+allocWithZone:`.
+    pub fn new(&self) -> arc::R<T> {
+        unsafe { self.0.new() }
+    }
+}
+
+/// Name of the instance variable holding the Rust payload of a runtime-registered subclass.
+#[doc(hidden)]
+pub const INNER_IVAR_NAME: &std::ffi::CStr = c"cidre_inner";
+
+/// Storage for the Rust payload of a runtime-registered subclass.
+///
+/// Lives inside an instance variable declared with [`class_addIvar`]. The ivar is
+/// declared with pointer alignment plus padding, and the slot is aligned at runtime,
+/// so payloads with alignment greater than the allocator's are supported.
+#[doc(hidden)]
+#[repr(C)]
+pub struct InnerSlot<I> {
+    init: bool,
+    value: std::mem::MaybeUninit<I>,
+}
+
+impl<I> InnerSlot<I> {
+    /// Size of the ivar: the slot plus room to align it at runtime.
+    pub const IVAR_SIZE: usize = std::mem::size_of::<Self>()
+        + std::mem::align_of::<Self>().saturating_sub(std::mem::size_of::<usize>());
+
+    /// Aligned slot inside the object `obj` whose payload ivar starts at `ivar_offset`.
+    #[inline]
+    pub unsafe fn from_obj(obj: *mut u8, ivar_offset: usize) -> *mut Self {
+        let ptr = unsafe { obj.add(ivar_offset) };
+        let align = std::mem::align_of::<Self>();
+        if align <= std::mem::size_of::<usize>() {
+            return ptr.cast();
+        }
+        let offset = ptr.align_offset(align);
+        unsafe { ptr.add(offset).cast() }
+    }
+
+    #[inline]
+    pub fn is_init(&self) -> bool {
+        self.init
+    }
+
+    #[track_caller]
+    #[inline]
+    pub fn get(&self) -> &I {
+        assert!(
+            self.init,
+            "inner is not initialized: create the object with `with`/`alloc_with`, or make the inner type `Default`"
+        );
+        unsafe { self.value.assume_init_ref() }
+    }
+
+    #[track_caller]
+    #[inline]
+    pub fn get_mut(&mut self) -> &mut I {
+        assert!(
+            self.init,
+            "inner is not initialized: create the object with `with`/`alloc_with`, or make the inner type `Default`"
+        );
+        unsafe { self.value.assume_init_mut() }
+    }
+
+    /// Stores `value`, dropping the previous one if any.
+    #[inline]
+    pub fn set(&mut self, value: I) {
+        if self.init {
+            unsafe { self.value.assume_init_drop() };
+        }
+        self.value.write(value);
+        self.init = true;
+    }
+
+    /// Stores `I::default()` unless the slot is already initialized.
+    #[inline]
+    pub fn init_default(&mut self)
+    where
+        I: Default,
+    {
+        if !self.init {
+            self.value.write(I::default());
+            self.init = true;
+        }
+    }
+
+    /// Drops the payload if it was initialized.
+    #[inline]
+    pub unsafe fn drop_in_place(&mut self) {
+        if self.init {
+            self.init = false;
+            unsafe { self.value.assume_init_drop() };
+        }
+    }
+}
+
+/// Fallback for runtime-registered classes without an `#[objc::add_methods] impl Type`
+/// block. That block generates an inherent `cls_add_own_methods`, which shadows this one.
+#[doc(hidden)]
+pub trait OwnMethods: Obj {
+    fn cls_add_own_methods(_cls: &Class<Id>) {}
+}
+
+impl<T: Obj> OwnMethods for T {}
+
+/// Same specialization hack as `init_with_default!`: emits a `+allocWithZone:` IMP
+/// that stores `InnerType::default()` into the payload ivar when `InnerType: Default`,
+/// otherwise `None`.
+#[doc(hidden)]
+#[macro_export]
+macro_rules! default_inner_alloc {
+    ($NewType:ty, $InnerType:ty) => {{
+        trait A {
+            fn alloc_fn(&self) -> Option<extern "C" fn()>;
+        }
+
+        struct B<T: ?Sized>(core::marker::PhantomData<T>);
+
+        impl<T: ?Sized> core::ops::Deref for B<T> {
+            type Target = ();
+            fn deref(&self) -> &Self::Target {
+                &()
+            }
+        }
+
+        impl<T: ?Sized> A for B<T>
+        where
+            T: Default,
+        {
+            fn alloc_fn(&self) -> Option<extern "C" fn()> {
+                extern "C" fn impl_alloc_with_zone<T: Default>(
+                    cls: *const std::ffi::c_void,
+                    sel: *const std::ffi::c_void,
+                    zone: *const std::ffi::c_void,
+                ) -> *mut $NewType {
+                    unsafe extern "C" {
+                        #[link_name = "objc_msgSendSuper"]
+                        fn msg_send_super();
+                    }
+                    unsafe {
+                        let sup = $crate::objc::Super {
+                            receiver: cls as *mut $crate::objc::Id,
+                            super_class: <$NewType>::super_cls().meta_cls(),
+                        };
+                        let sig: extern "C" fn(
+                            *const $crate::objc::Super,
+                            *const std::ffi::c_void,
+                            *const std::ffi::c_void,
+                        ) -> *mut $NewType =
+                            std::mem::transmute(msg_send_super as *const std::ffi::c_void);
+                        let obj = sig(&sup, sel, zone);
+                        if !obj.is_null() {
+                            let slot = $crate::objc::InnerSlot::<T>::from_obj(
+                                obj.cast(),
+                                <$NewType>::inner_offset(),
+                            );
+                            (*slot).init_default();
+                        }
+                        obj
+                    }
+                }
+
+                let ptr = unsafe { std::mem::transmute(impl_alloc_with_zone::<T> as *const u8) };
+                Some(ptr)
+            }
+        }
+
+        impl A for () {
+            fn alloc_fn(&self) -> Option<extern "C" fn()> {
+                None
+            }
+        }
+
+        B::<$InnerType>(core::marker::PhantomData).alloc_fn()
+    }};
+}
+
+impl<T: Obj> arc::A<T> {
+    /// `[obj init]` without checking that `T` supports plain `init`.
+    #[objc::msg_send(init)]
+    pub unsafe fn init_unchecked(self) -> arc::R<T>;
+}
+
 impl<T: Obj> Class<T> {
     #[inline]
     pub fn as_type_ref(&self) -> &Type {
@@ -377,6 +584,12 @@ pub struct Id(Type);
 unsafe impl Send for Id {}
 
 impl Id {
+    /// `NSObject` class
+    #[inline]
+    pub fn cls() -> &'static Class<Id> {
+        unsafe { NS_OBJECT }
+    }
+
     #[inline]
     pub unsafe fn autorelease<'ar>(id: &mut Id) -> &'ar mut Id {
         unsafe { objc_autorelease(id) }
@@ -475,6 +688,20 @@ pub struct Super {
     pub super_class: *const Class<Id>,
 }
 
+/// `objc_msgSendSuper` for a selector that takes no arguments and returns nothing.
+#[doc(hidden)]
+#[inline]
+pub unsafe fn msg_send_super_void(sup: &Super, sel: &Sel) {
+    unsafe extern "C" {
+        #[link_name = "objc_msgSendSuper"]
+        fn msg_send_super();
+    }
+    unsafe {
+        let sig: extern "C" fn(&Super, &Sel) = std::mem::transmute(msg_send_super as *const c_void);
+        sig(sup, sel)
+    }
+}
+
 #[link(name = "objc", kind = "dylib")]
 unsafe extern "C-unwind" {
     #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
@@ -541,12 +768,19 @@ unsafe extern "C-unwind" {
         name: *const u8,
         extra_bytes: usize,
     ) -> Option<&'static Class<Id>>;
+    /// `alignment` is log2 of the variable's alignment. Only valid before `objc_registerClassPair`.
+    pub fn class_addIvar(
+        cls: &Class<Id>,
+        name: *const i8,
+        size: usize,
+        alignment: u8,
+        types: *const i8,
+    ) -> bool;
     pub fn object_getClass(obj: Option<&Id>) -> Option<&Class<Id>>;
     pub fn objc_registerClassPair(cls: &Class<Id>);
     pub fn objc_getClass(name: *const u8) -> Option<&'static Class<Id>>;
     pub fn class_respondsToSelector(cls: &Class<Id>, sel: &Sel) -> bool;
     pub fn objc_getProtocol(name: *const i8) -> Option<&'static Protocol>;
-    pub fn objc_msgSendSuper(s: &Super, sel: &Sel);
     pub static NS_OBJECT: &'static crate::objc::Class<Id>;
     fn objc_exception_throw(exception: &Id) -> !;
 }
@@ -637,8 +871,246 @@ macro_rules! define_weak_cls {
     };
 }
 
+/// Defines an Objective-C object wrapper, or registers a new class at runtime.
+///
+/// Runtime-registered classes come in two flavours:
+///
+/// - `define_obj_type!(Name + Trait.., Inner, CLS)` — a direct `NSObject` subclass,
+///   optimized for delegates: the payload lives in the object's extra bytes.
+/// - `define_obj_type!(Name(Base) + Trait.., Inner, CLS)` — a subclass of `Base`
+///   (e.g. `ns::View`), where `Base::cls()` must exist. The payload is a real instance
+///   variable. Methods are overridden and initializers declared in an
+///   `#[objc::add_methods] impl Name { .. }` block with `#[objc::overrides(sel)]` and
+///   `#[objc::init(sel)]`; every override gets a `super_*` twin. Instances are created
+///   with `Name::alloc_with(inner)` followed by an initializer, or `Name::with(inner)`
+///   for plain `init`. If `Inner: Default`, objects created from Objective-C (nibs,
+///   `[[Name alloc] init]`) get `Inner::default()`; otherwise `inner()` panics on them.
+///
+/// A class from the `NSObject` form can itself be used as `Base` only when its
+/// payload is `()`: its extra-bytes payload is not part of the instance size.
+///
+/// Overridden methods are added without type encodings, so `NSInvocation`-based
+/// dispatch to them (e.g. `performSelector:withObject:afterDelay:`) is not supported.
 #[macro_export]
 macro_rules! define_obj_type {
+    (
+        $(#[$outer:meta])*
+        $vis:vis
+        $NewType:ident($BaseType:path) $(+ $TraitImpl:path)*, $InnerType:path, $CLS:ident) => {
+        $crate::define_obj_type!(
+            $(#[$outer])*
+            $vis
+            $NewType($BaseType)
+        );
+
+
+        impl $NewType {
+            #[allow(dead_code)]
+            #[inline]
+            pub fn super_cls() -> &'static $crate::objc::Class<$BaseType> {
+                <$BaseType>::cls()
+            }
+
+            #[doc(hidden)]
+            pub fn inner_offset() -> usize {
+                static OFFSET: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
+                *OFFSET.get_or_init(|| {
+                    let cls: &$crate::objc::Class<Self> = Self::cls();
+                    let ivar = cls
+                        .instance_var($crate::objc::INNER_IVAR_NAME)
+                        .expect(concat!("class ", stringify!($CLS), " has no cidre inner ivar"));
+                    ivar.offset() as usize
+                })
+            }
+
+            #[allow(dead_code)]
+            #[inline]
+            pub fn inner(&self) -> &$InnerType {
+                unsafe {
+                    let ptr = self as *const Self as *mut u8;
+                    let slot = $crate::objc::InnerSlot::<$InnerType>::from_obj(ptr, Self::inner_offset());
+                    (*slot).get()
+                }
+            }
+
+            #[allow(dead_code)]
+            #[inline]
+            pub fn inner_mut(&mut self) -> &mut $InnerType {
+                unsafe {
+                    let ptr = self as *mut Self as *mut u8;
+                    let slot = $crate::objc::InnerSlot::<$InnerType>::from_obj(ptr, Self::inner_offset());
+                    (*slot).get_mut()
+                }
+            }
+
+            #[allow(dead_code)]
+            pub fn register_cls() -> &'static $crate::objc::ClassInstIvar<Self, $InnerType> {
+                let name = concat!(stringify!($CLS), "\0");
+                let super_cls: &'static $crate::objc::Class<$crate::objc::Id> =
+                    unsafe { std::mem::transmute(Self::super_cls()) };
+                let cls = unsafe { $crate::objc::objc_allocateClassPair(super_cls, name.as_ptr(), 0) };
+                let cls = cls.expect(concat!("can't allocate class pair ", stringify!($CLS)));
+                let added = unsafe {
+                    $crate::objc::class_addIvar(
+                        cls,
+                        $crate::objc::INNER_IVAR_NAME.as_ptr(),
+                        $crate::objc::InnerSlot::<$InnerType>::IVAR_SIZE,
+                        std::mem::size_of::<usize>().trailing_zeros() as u8,
+                        c"?".as_ptr(),
+                    )
+                };
+                assert!(added, concat!("can't add inner ivar to ", stringify!($CLS)));
+                $(<Self as $TraitImpl>::cls_add_methods(cls);)*
+                $(<Self as $TraitImpl>::cls_add_protocol(cls);)*
+                {
+                    #[allow(unused_imports)]
+                    use $crate::objc::OwnMethods as _;
+                    Self::cls_add_own_methods(cls);
+                }
+
+                if let Some(imp) = $crate::default_inner_alloc!($NewType, $InnerType) {
+                    unsafe {
+                        let sel = $crate::objc::sel_reg_name(c"allocWithZone:".as_ptr() as _);
+                        $crate::objc::class_addMethod(cls.meta_cls(), sel, imp, std::ptr::null());
+                    }
+                }
+
+                if std::mem::needs_drop::<$InnerType>() {
+                    extern "C" fn impl_dealloc(s: &mut $NewType, sel: &$crate::objc::Sel) {
+                        unsafe {
+                            let slot = $crate::objc::InnerSlot::<$InnerType>::from_obj(
+                                s as *mut $NewType as *mut u8,
+                                <$NewType>::inner_offset(),
+                            );
+                            (*slot).drop_in_place();
+                            let sup = $crate::objc::Super {
+                                receiver: s as *mut $NewType as *mut $crate::objc::Id,
+                                super_class: <$NewType>::super_cls() as *const _ as *const $crate::objc::Class<$crate::objc::Id>,
+                            };
+                            $crate::objc::msg_send_super_void(&sup, sel);
+                        }
+                    }
+                    unsafe {
+                        let sel = $crate::objc::sel_reg_name(c"dealloc".as_ptr() as _);
+                        let imp: extern "C" fn() = std::mem::transmute(impl_dealloc as *const u8);
+                        $crate::objc::class_addMethod(cls, sel, imp, std::ptr::null());
+                    }
+                }
+                unsafe { $crate::objc::objc_registerClassPair(cls) };
+                unsafe { std::mem::transmute(cls) }
+            }
+
+            #[allow(dead_code)]
+            #[inline]
+            pub fn cls() -> &'static $crate::objc::ClassInstIvar<Self, $InnerType> {
+                static CLS: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
+                let ptr = *CLS.get_or_init(|| {
+                    let name = concat!(stringify!($CLS), "\0");
+                    match unsafe { $crate::objc::objc_getClass(name.as_ptr()) } {
+                        Some(c) => c as *const _ as usize,
+                        None => Self::register_cls() as *const _ as usize,
+                    }
+                });
+                unsafe { &*(ptr as *const $crate::objc::ClassInstIvar<Self, $InnerType>) }
+            }
+
+            #[allow(dead_code)]
+            #[inline]
+            pub fn cls_ptr() -> *const std::ffi::c_void {
+                Self::cls() as *const $crate::objc::ClassInstIvar<Self, $InnerType> as *const std::ffi::c_void
+            }
+
+            /// Allocates an instance and stores `inner`; call an initializer next.
+            #[allow(dead_code)]
+            pub fn alloc_with(inner: $InnerType) -> $crate::arc::A<Self> {
+                let obj = Self::cls().alloc();
+                unsafe {
+                    let slot = $crate::objc::InnerSlot::<$InnerType>::from_obj(
+                        obj.as_ptr() as *mut u8,
+                        Self::inner_offset(),
+                    );
+                    (*slot).set(inner);
+                }
+                obj
+            }
+
+            /// `[[Self alloc] init]` with `inner` as the payload. Other initializers are
+            /// declared with `#[objc::init(initWith..:)]` in an `#[objc::add_methods]` block.
+            #[allow(dead_code)]
+            pub fn with(inner: $InnerType) -> $crate::arc::R<Self> {
+                unsafe { Self::alloc_with(inner).init_unchecked() }
+            }
+        }
+    };
+    (
+        $(#[$outer:meta])*
+        $vis:vis
+        $NewType:ident($BaseType:path) $(+ $TraitImpl:path)*, (), $CLS:ident) => {
+        $crate::define_obj_type!(
+            $(#[$outer])*
+            $vis
+            $NewType($BaseType)
+        );
+
+
+        impl $NewType {
+            #[allow(dead_code)]
+            #[inline]
+            pub fn super_cls() -> &'static $crate::objc::Class<$BaseType> {
+                <$BaseType>::cls()
+            }
+
+            #[allow(dead_code)]
+            pub fn register_cls() -> &'static $crate::objc::ClassInstIvar<Self, ()> {
+                let name = concat!(stringify!($CLS), "\0");
+                let super_cls: &'static $crate::objc::Class<$crate::objc::Id> =
+                    unsafe { std::mem::transmute(Self::super_cls()) };
+                let cls = unsafe { $crate::objc::objc_allocateClassPair(super_cls, name.as_ptr(), 0) };
+                let cls = cls.expect(concat!("can't allocate class pair ", stringify!($CLS)));
+                $(<Self as $TraitImpl>::cls_add_methods(cls);)*
+                $(<Self as $TraitImpl>::cls_add_protocol(cls);)*
+                {
+                    #[allow(unused_imports)]
+                    use $crate::objc::OwnMethods as _;
+                    Self::cls_add_own_methods(cls);
+                }
+
+                unsafe { $crate::objc::objc_registerClassPair(cls) };
+                unsafe { std::mem::transmute(cls) }
+            }
+
+            #[allow(dead_code)]
+            #[inline]
+            pub fn cls() -> &'static $crate::objc::ClassInstIvar<Self, ()> {
+                static CLS: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
+                let ptr = *CLS.get_or_init(|| {
+                    let name = concat!(stringify!($CLS), "\0");
+                    match unsafe { $crate::objc::objc_getClass(name.as_ptr()) } {
+                        Some(c) => c as *const _ as usize,
+                        None => Self::register_cls() as *const _ as usize,
+                    }
+                });
+                unsafe { &*(ptr as *const $crate::objc::ClassInstIvar<Self, ()>) }
+            }
+
+            #[allow(dead_code)]
+            #[inline]
+            pub fn cls_ptr() -> *const std::ffi::c_void {
+                Self::cls() as *const $crate::objc::ClassInstIvar<Self, ()> as *const std::ffi::c_void
+            }
+
+            #[allow(dead_code)]
+            #[inline]
+            pub fn alloc() -> $crate::arc::A<Self> {
+                Self::cls().alloc()
+            }
+
+            #[allow(dead_code)]
+            pub fn new() -> $crate::arc::R<Self> {
+                unsafe { Self::alloc().init_unchecked() }
+            }
+        }
+    };
     (
         $(#[$outer:meta])*
         $vis:vis
@@ -649,7 +1121,14 @@ macro_rules! define_obj_type {
             $NewType(objc::Id)
         );
 
+
         impl $NewType {
+            #[allow(dead_code)]
+            #[inline]
+            pub fn super_cls() -> &'static $crate::objc::Class<$crate::objc::Id> {
+                $crate::objc::Id::cls()
+            }
+
             #[allow(dead_code)]
             #[inline]
             pub fn inner(&self) -> &$InnerType {
@@ -675,6 +1154,11 @@ macro_rules! define_obj_type {
                 let cls = cls.unwrap();
                 $(<Self as $TraitImpl>::cls_add_methods(cls);)*
                 $(<Self as $TraitImpl>::cls_add_protocol(cls);)*
+                {
+                    #[allow(unused_imports)]
+                    use $crate::objc::OwnMethods as _;
+                    Self::cls_add_own_methods(cls);
+                }
 
                 if let Some(init_fn_ptr) = $crate::init_with_default!($NewType, $InnerType) {
                     unsafe {
@@ -711,7 +1195,7 @@ macro_rules! define_obj_type {
                                 receiver: std::mem::transmute(s),
                                 super_class: $crate::objc::NS_OBJECT
                             };
-                            $crate::objc::objc_msgSendSuper(&sup, sel);
+                            $crate::objc::msg_send_super_void(&sup, sel);
                         }
                     }
                     unsafe {
@@ -756,7 +1240,13 @@ macro_rules! define_obj_type {
             $NewType(objc::Id)
         );
 
+
         impl $NewType {
+            #[allow(dead_code)]
+            #[inline]
+            pub fn super_cls() -> &'static $crate::objc::Class<$crate::objc::Id> {
+                $crate::objc::Id::cls()
+            }
 
             #[allow(dead_code)]
             pub fn register_cls() -> &'static $crate::objc::ClassInstExtra<Self, ()> {
@@ -765,6 +1255,11 @@ macro_rules! define_obj_type {
                 let cls = cls.unwrap();
                 $(<Self as $TraitImpl>::cls_add_methods(cls);)*
                 $(<Self as $TraitImpl>::cls_add_protocol(cls);)*
+                {
+                    #[allow(unused_imports)]
+                    use $crate::objc::OwnMethods as _;
+                    Self::cls_add_own_methods(cls);
+                }
 
                 unsafe { $crate::objc::objc_registerClassPair(cls) };
                 unsafe { std::mem::transmute(cls) }
@@ -1004,7 +1499,9 @@ mod tests {
 }
 pub use cidre_macros::add_methods;
 pub use cidre_macros::api_available as available;
+pub use cidre_macros::init;
 pub use cidre_macros::optional;
+pub use cidre_macros::overrides;
 pub use cidre_macros::protocol;
 
 /// Docs
@@ -1012,6 +1509,10 @@ pub use cidre_macros::protocol;
 pub use cidre_macros::msg_send;
 #[cfg(target_arch = "aarch64")]
 pub use cidre_macros::msg_send_debug;
+#[cfg(target_arch = "aarch64")]
+pub use cidre_macros::msg_send_super;
+#[cfg(target_arch = "x86_64")]
+pub use cidre_macros::msg_send_super_x86_64 as msg_send_super;
 #[cfg(target_arch = "x86_64")]
 pub use cidre_macros::msg_send_x86_64 as msg_send;
 
@@ -1165,5 +1666,157 @@ mod tests2 {
         }
 
         foo();
+    }
+
+    // --- subclassing with an explicit base class ---
+
+    struct SubInner {
+        tag: usize,
+        dropped: Arc<AtomicBool>,
+    }
+
+    impl Drop for SubInner {
+        fn drop(&mut self) {
+            self.dropped.store(true, Ordering::SeqCst);
+        }
+    }
+
+    define_obj_type!(SubId(ns::Id), SubInner, CIDRE_TEST_SUB_ID);
+
+    #[objc::add_methods]
+    impl SubId {
+        #[objc::init(init)]
+        fn init(self) -> arc::R<Self>;
+
+        #[objc::overrides(hash)]
+        fn hash(&self) -> usize {
+            self.super_hash().wrapping_add(self.inner().tag)
+        }
+
+        #[objc::overrides(description)]
+        fn desc(&self) -> arc::R<ns::String> {
+            let sup = self.super_desc();
+            ns::String::with_str(&format!("sub:{}", sup))
+        }
+
+        // not registered: a plain method next to overrides
+        fn tag(&self) -> usize {
+            self.inner().tag
+        }
+    }
+
+    // second level: SubSubId -> SubId -> NSObject, with its own payload
+    define_obj_type!(SubSubId(SubId), u32, CIDRE_TEST_SUB_SUB_ID);
+
+    #[objc::add_methods]
+    impl SubSubId {
+        #[objc::init(init)]
+        pub fn init(self) -> arc::R<Self>;
+
+        #[objc::overrides(hash)]
+        fn hash(&self) -> usize {
+            self.super_hash().wrapping_add(*self.inner() as usize)
+        }
+    }
+
+    #[test]
+    fn subclass_overrides_and_super() {
+        let dropped = Arc::new(AtomicBool::new(false));
+        {
+            let obj = SubId::alloc_with(SubInner {
+                tag: 7,
+                dropped: Arc::clone(&dropped),
+            })
+            .init();
+            let base_hash = &*obj as *const SubId as usize; // NSObject hash is the address
+            assert_eq!(ns::Id::hash(&obj), base_hash.wrapping_add(7));
+            assert_eq!(obj.tag(), 7);
+            let desc = <ns::Id as Obj>::desc(&obj).to_string();
+            assert!(desc.starts_with("sub:<CIDRE_TEST_SUB_ID: "), "{desc}");
+            assert!(obj.is_kind_of_class(ns::Id::cls()));
+            assert!(obj.is_kind_of_class(SubId::cls()));
+            assert!(!dropped.load(Ordering::SeqCst));
+        }
+        assert!(dropped.load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn subclass_of_subclass() {
+        let dropped = Arc::new(AtomicBool::new(false));
+        {
+            // SubSubId payload is Default, so `new()` works
+            let mut obj = SubSubId::cls().new();
+            *obj.inner_mut() = 100;
+            // inner of the base class is not initialized: base override must not touch it
+            let base: &SubId = &obj;
+            let base_hash = base as *const SubId as usize;
+            let slot_uninit = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                let _ = base.inner();
+            }))
+            .is_err();
+            assert!(slot_uninit);
+
+            let obj = SubSubId::alloc_with(5).init();
+            let sub: &SubId = &obj;
+            unsafe {
+                let slot = objc::InnerSlot::<SubInner>::from_obj(
+                    sub as *const SubId as *mut u8,
+                    SubId::inner_offset(),
+                );
+                (*slot).set(SubInner {
+                    tag: 1,
+                    dropped: Arc::clone(&dropped),
+                });
+            }
+            let addr = &*obj as *const SubSubId as usize;
+            // SubSubId: super(SubId: super(NSObject) + 1) + 5
+            assert_eq!(ns::Id::hash(&obj), addr.wrapping_add(6));
+            assert_ne!(base_hash, addr);
+            assert!(obj.is_kind_of_class(SubId::cls()));
+            assert!(
+                <ns::Id as Obj>::desc(&obj)
+                    .to_string()
+                    .starts_with("sub:<CIDRE_TEST_SUB_SUB_ID: ")
+            );
+        }
+        assert!(dropped.load(Ordering::SeqCst));
+    }
+
+    define_obj_type!(
+        SubAligned128(ns::Id),
+        Aligned128,
+        CIDRE_TEST_SUB_ALIGNED_128
+    );
+    define_obj_type!(
+        SubDefaultAligned128(ns::Id),
+        DefaultAligned128,
+        CIDRE_TEST_SUB_DEFAULT_ALIGNED_128
+    );
+
+    #[test]
+    fn subclass_aligned_128_inner() {
+        let dropped = Arc::new(AtomicBool::new(false));
+        {
+            let mut obj = SubAligned128::with(Aligned128 {
+                value: 42,
+                dropped: Arc::clone(&dropped),
+            });
+            assert_eq!(obj.inner() as *const Aligned128 as usize % 128, 0);
+            assert_eq!(obj.inner().value, 42);
+            obj.inner_mut().value = 84;
+            assert_eq!(obj.inner().value, 84);
+        }
+        assert!(dropped.load(Ordering::SeqCst));
+    }
+
+    #[test]
+    fn subclass_aligned_128_inner_with_objc_new() {
+        let obj = SubDefaultAligned128::cls().new();
+        assert_eq!(obj.inner() as *const DefaultAligned128 as usize % 128, 0);
+        assert_eq!(obj.inner().value, 0);
+
+        // `alloc_with` replaces the default payload
+        let obj = SubDefaultAligned128::with(DefaultAligned128 { value: 3 });
+        assert_eq!(obj.inner().value, 3);
     }
 }

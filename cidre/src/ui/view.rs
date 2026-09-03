@@ -337,12 +337,10 @@ unsafe extern "C" {
     static UI_VIEW: &'static objc::Class<View>;
 }
 
-impl arc::A<View> {
-    #[objc::msg_send(initWithFrame:)]
-    pub fn init_with_frame(self, frame: cg::Rect) -> arc::R<View>;
-}
-
 impl View {
+    #[objc::init(initWithFrame:)]
+    pub fn init_with_frame(self, frame: cg::Rect) -> arc::R<View>;
+
     pub fn with_frame(frame: cg::Rect) -> arc::R<Self> {
         Self::alloc().init_with_frame(frame)
     }

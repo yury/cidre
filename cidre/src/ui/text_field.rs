@@ -6,12 +6,10 @@ define_obj_type!(
     UI_TEXT_FIELD
 );
 
-impl arc::A<TextField> {
-    #[objc::msg_send(initWithFrame:)]
-    pub fn init_with_frame(self, frame: cg::Rect) -> arc::R<TextField>;
-}
-
 impl TextField {
+    #[objc::init(initWithFrame:)]
+    pub fn init_with_frame(self, frame: cg::Rect) -> arc::R<TextField>;
+
     pub fn with_frame(frame: cg::Rect) -> arc::R<Self> {
         Self::alloc().init_with_frame(frame)
     }

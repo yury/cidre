@@ -9,16 +9,14 @@ define_obj_type!(
     pub SceneCfg(ns::Id)
 );
 
-impl arc::A<SceneCfg> {
-    #[objc::msg_send(initWithName:sessionRole:)]
+impl SceneCfg {
+    #[objc::init(initWithName:sessionRole:)]
     pub fn init_with_name_role(
         self,
         name: Option<&ns::String>,
         session_role: &ui::SceneSessionRole,
     ) -> arc::R<SceneCfg>;
-}
 
-impl SceneCfg {
     define_cls!(UI_SCENE_CONFIGURATION);
 
     pub fn with_name_role(

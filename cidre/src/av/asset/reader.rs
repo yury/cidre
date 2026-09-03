@@ -24,16 +24,14 @@ define_obj_type!(
     pub Reader(ns::Id)
 );
 
-impl arc::A<Reader> {
-    #[objc::msg_send(initWithAsset:error:)]
+impl Reader {
+    #[objc::init(initWithAsset:error:)]
     pub unsafe fn init_with_assert_err<'ear>(
         self,
         asset: &av::Asset,
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Reader>>;
-}
 
-impl Reader {
     define_cls!(AV_ASSET_READER);
 
     pub fn with_asset<'ear>(asset: &av::Asset) -> ns::Result<'ear, arc::R<Reader>> {

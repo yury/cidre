@@ -9,12 +9,10 @@ define_obj_type!(
     NS_USER_DEFAULTS
 );
 
-impl arc::A<UserDefaults> {
-    #[objc::msg_send(initWithSuiteName:)]
-    pub fn init_with_suite_name(self, name: Option<&ns::String>) -> Option<arc::R<UserDefaults>>;
-}
-
 impl UserDefaults {
+    #[objc::init(initWithSuiteName:)]
+    pub fn init_with_suite_name(self, name: Option<&ns::String>) -> Option<arc::R<UserDefaults>>;
+
     #[objc::msg_send(standardUserDefaults)]
     pub fn standard() -> arc::R<Self>;
 

@@ -49,6 +49,13 @@ unsafe impl<T: Release + Sync> Sync for Allocated<T> {}
 unsafe impl<T: Release + Send> Send for Retained<T> {}
 unsafe impl<T: Release + Sync> Sync for Retained<T> {}
 
+impl<T: Release + 'static> Allocated<T> {
+    #[inline]
+    pub fn as_ptr(&self) -> *mut T {
+        self.0.as_ptr()
+    }
+}
+
 impl<T: Release + 'static> Retained<T> {
     /// Takes ownership of a non-null retained object pointer.
     ///

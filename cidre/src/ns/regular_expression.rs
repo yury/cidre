@@ -92,17 +92,15 @@ define_obj_type!(
     pub Regex(ns::Id)
 );
 
-impl arc::A<Regex> {
-    #[objc::msg_send(initWithPattern:options:error:)]
+impl Regex {
+    #[objc::init(initWithPattern:options:error:)]
     pub fn init_with_pattern_opts_err<'ear>(
         self,
         pattern: &ns::String,
         opts: Opts,
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Regex>>;
-}
 
-impl Regex {
     define_cls!(NS_REGULAR_EXPRESSION);
 
     #[inline]

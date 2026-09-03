@@ -5,12 +5,10 @@ define_obj_type!(
     pub Color(ns::Id)
 );
 
-impl arc::A<Color> {
-    #[objc::msg_send(initWithRed:green:blue:)]
-    pub fn init_with_rgb(self, r: f32, g: f32, b: f32) -> arc::R<Color>;
-}
-
 impl Color {
+    #[objc::init(initWithRed:green:blue:)]
+    pub fn init_with_rgb(self, r: f32, g: f32, b: f32) -> arc::R<Color>;
+
     define_cls!(GC_COLOR);
 
     pub fn with_rgb(r: f32, g: f32, b: f32) -> arc::R<Self> {

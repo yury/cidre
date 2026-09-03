@@ -32,8 +32,9 @@ impl Name {
     }
 }
 
-impl arc::A<MediaTimingFn> {
-    #[objc::msg_send(initWithControlPoints::::)]
+define_obj_type!(pub MediaTimingFn(ns::Id));
+impl MediaTimingFn {
+    #[objc::init(initWithControlPoints::::)]
     pub fn init_with_ctrl_points(
         self,
         c1x: f32,
@@ -41,10 +42,7 @@ impl arc::A<MediaTimingFn> {
         c2x: f32,
         c2y: f32,
     ) -> arc::R<MediaTimingFn>;
-}
 
-define_obj_type!(pub MediaTimingFn(ns::Id));
-impl MediaTimingFn {
     define_cls!(CA_MEDIA_TIMING_FUNCTION);
 
     #[objc::msg_send(functionWithName:)]

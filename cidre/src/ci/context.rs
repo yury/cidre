@@ -7,15 +7,13 @@ define_obj_type!(
     CI_CONTEXT
 );
 
-impl arc::A<Context> {
-    #[objc::msg_send(initWithOptions:)]
+impl Context {
+    #[objc::init(initWithOptions:)]
     pub fn init_with_opts(
         self,
         options: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> Option<arc::R<Context>>;
-}
 
-impl Context {
     #[inline]
     pub fn with_opts(options: Option<&ns::Dictionary<ns::String, ns::Id>>) -> Option<arc::R<Self>> {
         Self::alloc().init_with_opts(options)

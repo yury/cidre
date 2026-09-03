@@ -26,12 +26,10 @@ define_obj_type!(
     NS_TOOLBAR
 );
 
-impl arc::A<Toolbar> {
-    #[objc::msg_send(initWithIdentifier:)]
-    pub fn init_with_id(self, id: &ns::ToolbarId) -> arc::R<Toolbar>;
-}
-
 impl Toolbar {
+    #[objc::init(initWithIdentifier:)]
+    pub fn init_with_id(self, id: &ns::ToolbarId) -> arc::R<Toolbar>;
+
     pub fn with_id(id: &ns::ToolbarId) -> arc::R<Self> {
         Self::alloc().init_with_id(id)
     }

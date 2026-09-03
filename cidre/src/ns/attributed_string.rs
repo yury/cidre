@@ -179,15 +179,13 @@ define_obj_type!(
     NS_ATTRIBUTED_STRING
 );
 
-impl arc::A<AttrString> {
-    #[objc::msg_send(initWithString:)]
+impl AttrString {
+    #[objc::init(initWithString:)]
     pub fn init_with_string(self, str: &ns::String) -> arc::R<AttrString>;
 
-    #[objc::msg_send(initWithAttributedString:)]
+    #[objc::init(initWithAttributedString:)]
     pub fn init_with_attr_string(self, str: &ns::AttrString) -> arc::R<AttrString>;
-}
 
-impl AttrString {
     /// For performance reasons, this property returns the current backing store of
     /// the attributed string object. If you want to maintain a snapshot of this as
     /// you manipulate the returned string, you should make a copy of the appropriate substring.
@@ -251,15 +249,13 @@ define_obj_type!(
     NS_MUTABLE_ATTRIBUTED_STRING
 );
 
-impl arc::A<AttrStringMut> {
-    #[objc::msg_send(initWithString:)]
+impl AttrStringMut {
+    #[objc::init(initWithString:)]
     pub fn init_with_string(self, str: &ns::String) -> arc::R<AttrStringMut>;
 
-    #[objc::msg_send(initWithAttributedString:)]
+    #[objc::init(initWithAttributedString:)]
     pub fn init_with_attr_string(self, str: &ns::AttrString) -> arc::R<AttrStringMut>;
-}
 
-impl AttrStringMut {
     #[inline]
     pub fn with_str(str: &str) -> arc::R<Self> {
         let str = ns::String::with_str(str);

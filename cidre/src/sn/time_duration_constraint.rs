@@ -16,18 +16,16 @@ define_obj_type!(
     pub Constraint(ns::Id)
 );
 
-impl arc::A<Constraint> {
-    #[objc::msg_send(initWithDurationRange:)]
+impl Constraint {
+    #[objc::init(initWithDurationRange:)]
     pub fn init_with_duration_range(self, duration_range: cm::TimeRange) -> arc::R<Constraint>;
 
-    #[objc::msg_send(initWithEnumeratedDurations:)]
+    #[objc::init(initWithEnumeratedDurations:)]
     pub fn init_with_enumerated_durations(
         self,
         durations: &ns::Array<ns::Value>,
     ) -> arc::R<Constraint>;
-}
 
-impl Constraint {
     define_cls!(SN_TIME_DURATION_CONSTRAINT);
 
     pub fn with_duration_range(duration_range: cm::TimeRange) -> arc::R<Self> {

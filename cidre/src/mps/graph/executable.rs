@@ -44,8 +44,8 @@ define_obj_type!(
     MPS_GRAPH_EXECUTABLE
 );
 
-impl arc::A<Executable> {
-    #[objc::msg_send(initWithMPSGraphPackageAtURL:compilationDescriptor:)]
+impl Executable {
+    #[objc::init(initWithMPSGraphPackageAtURL:compilationDescriptor:)]
     #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0)]
     pub fn init_with_mps_graph_package_at_url(
         self,
@@ -53,16 +53,14 @@ impl arc::A<Executable> {
         compilation_descriptor: Option<&graph::CompilationDesc>,
     ) -> arc::R<Executable>;
 
-    #[objc::msg_send(initWithCoreMLPackageAtURL:compilationDescriptor:)]
+    #[objc::init(initWithCoreMLPackageAtURL:compilationDescriptor:)]
     #[api::available(macos = 15.0, ios = 18.0, tvos = 18.0)]
     pub fn init_with_core_ml_package_at_url(
         self,
         core_ml_package_url: &ns::Url,
         compilation_descriptor: Option<&graph::CompilationDesc>,
     ) -> arc::R<Executable>;
-}
 
-impl Executable {
     #[objc::msg_send(options)]
     pub fn opts(&self) -> graph::Opts;
 

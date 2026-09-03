@@ -5,12 +5,10 @@ define_obj_type!(
     pub Bundle(ns::Id)
 );
 
-impl arc::A<Bundle> {
-    #[objc::msg_send(initWithPath:)]
-    pub fn init_with_path(self, path: &ns::String) -> Option<arc::R<Bundle>>;
-}
-
 impl Bundle {
+    #[objc::init(initWithPath:)]
+    pub fn init_with_path(self, path: &ns::String) -> Option<arc::R<Bundle>>;
+
     define_cls!(NS_BUNDLE);
 
     #[objc::msg_send(mainBundle)]

@@ -14,21 +14,19 @@ pub trait ThreadTarget: objc::Obj {
     fn main(&mut self, arg: Option<&mut ns::Id>);
 }
 
-impl arc::A<Thread> {
+impl Thread {
     #[cfg(feature = "blocks")]
-    #[objc::msg_send(initWithBlock:)]
+    #[objc::init(initWithBlock:)]
     pub fn init_with_block(self, block: &mut blocks::SendBlock<fn()>) -> arc::R<Thread>;
 
-    #[objc::msg_send(initWithTarget:selector:object:)]
+    #[objc::init(initWithTarget:selector:object:)]
     pub fn init_with_target_selector(
         self,
         target: &ns::Id,
         selector: &objc::Sel,
         arg: Option<&mut ns::Id>,
     ) -> arc::R<Thread>;
-}
 
-impl Thread {
     #[objc::msg_send(currentThread)]
     pub fn current() -> arc::R<Self>;
 

@@ -46,8 +46,9 @@ impl MultiArray {
     pub fn pixel_buf(&self) -> Option<&cv::PixelBuf>;
 }
 
-impl arc::A<MultiArray> {
-    #[objc::msg_send(initWithShape:dataType:error:)]
+/// Creation
+impl MultiArray {
+    #[objc::init(initWithShape:dataType:error:)]
     pub unsafe fn init_with_shape_err<'ear>(
         self,
         shape: &ns::Array<ns::Number>,
@@ -56,7 +57,7 @@ impl arc::A<MultiArray> {
     ) -> Option<arc::R<MultiArray>>;
 
     #[inline(never)]
-    #[objc::msg_send(initWithShape:dataType:strides:)]
+    #[objc::init(initWithShape:dataType:strides:)]
     pub fn init_with_shape_strides(
         self,
         shape: &ns::Array<ns::Number>,
@@ -64,7 +65,7 @@ impl arc::A<MultiArray> {
         strides: &ns::Array<ns::Number>,
     ) -> arc::R<MultiArray>;
 
-    #[objc::msg_send(initWithDataPointer:shape:dataType:strides:deallocator:error:)]
+    #[objc::init(initWithDataPointer:shape:dataType:strides:deallocator:error:)]
     pub unsafe fn init_with_ptr<'ear>(
         self,
         data_ptr: *mut std::ffi::c_void,
@@ -75,16 +76,13 @@ impl arc::A<MultiArray> {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<MultiArray>>;
 
-    #[objc::msg_send(initWithPixelBuffer:shape:)]
+    #[objc::init(initWithPixelBuffer:shape:)]
     pub unsafe fn init_with_pixel_buf_throws(
         self,
         pixel_buf: &cv::PixelBuf,
         shape: &ns::Array<ns::Number>,
     ) -> arc::R<MultiArray>;
-}
 
-/// Creation
-impl MultiArray {
     pub fn with_shape<'ear, S: AsRef<ns::Array<ns::Number>>>(
         shape: S,
         d_type: MultiArrayDType,

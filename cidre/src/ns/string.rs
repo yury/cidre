@@ -28,8 +28,8 @@ define_obj_type!(
     pub StringMut(String), NS_MUTABLE_STRING
 );
 
-impl arc::A<String> {
-    #[objc::msg_send(initWithBytes:length:encoding:)]
+impl String {
+    #[objc::init(initWithBytes:length:encoding:)]
     pub fn init_with_bytes_length_encoding(
         self,
         bytes: *const u8,
@@ -42,7 +42,7 @@ impl arc::A<String> {
     /// `bytes` must point to `length` readable bytes that remain valid and
     /// unchanged until the returned string is dropped. If `free_when_done` is
     /// true, the allocation must be compatible with `free(3)`.
-    #[objc::msg_send(initWithBytesNoCopy:length:encoding:freeWhenDone:)]
+    #[objc::init(initWithBytesNoCopy:length:encoding:freeWhenDone:)]
     pub unsafe fn init_with_bytes_no_copy_length_encoding_free_when_done(
         self,
         bytes: *const u8,
@@ -50,9 +50,7 @@ impl arc::A<String> {
         encoding: ns::StringEncoding,
         free_when_done: bool,
     ) -> Option<arc::R<String>>;
-}
 
-impl String {
     #[inline]
     pub fn with_str(str: &str) -> arc::R<Self> {
         unsafe {
@@ -200,12 +198,10 @@ impl Default for arc::R<String> {
 //     }
 // }
 
-impl arc::A<StringMut> {
-    #[objc::msg_send(initWithCapacity:)]
-    pub fn with_capacity(self, capacity: usize) -> arc::R<StringMut>;
-}
-
 impl StringMut {
+    #[objc::init(initWithCapacity:)]
+    pub fn with_capacity(self, capacity: usize) -> arc::R<StringMut>;
+
     pub fn with_capacity(capacity: usize) -> arc::R<Self> {
         Self::alloc().with_capacity(capacity)
     }

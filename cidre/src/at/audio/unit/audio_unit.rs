@@ -9,8 +9,8 @@ define_obj_type!(
     pub AudioUnit(ns::Id)
 );
 
-impl arc::A<AudioUnit> {
-    #[objc::msg_send(initWithComponentDescription:options:error:)]
+impl AudioUnit {
+    #[objc::init(initWithComponentDescription:options:error:)]
     pub unsafe fn init_with_comp_desc_opts_err<'ear>(
         self,
         desc: audio::ComponentDesc,
@@ -18,15 +18,13 @@ impl arc::A<AudioUnit> {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<AudioUnit>>;
 
-    #[objc::msg_send(initWithComponentDescription:error:)]
+    #[objc::init(initWithComponentDescription:error:)]
     pub unsafe fn init_with_comp_desc_err<'ear>(
         self,
         desc: audio::ComponentDesc,
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<AudioUnit>>;
-}
 
-impl AudioUnit {
     define_cls!(AU_AUDIO_UNIT);
 
     pub fn with_comp_desc_opts<'ear>(

@@ -68,16 +68,14 @@ define_obj_type!(
     pub FragmentedAssetMinder(ns::Id)
 );
 
-impl arc::A<UrlAsset> {
-    #[objc::msg_send(initWithURL:options:)]
+impl UrlAsset {
+    #[objc::init(initWithURL:options:)]
     pub fn init_with_url_opts(
         self,
         url: &ns::Url,
         options: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> Option<arc::R<UrlAsset>>;
-}
 
-impl UrlAsset {
     define_cls!(AV_URL_ASSET);
 
     #[inline]

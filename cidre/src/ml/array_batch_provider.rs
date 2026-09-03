@@ -7,22 +7,20 @@ define_obj_type!(
 
 impl ml::BatchProvider for ArrayBatchProvider {}
 
-impl arc::A<ArrayBatchProvider> {
-    #[objc::msg_send(initWithFeatureProviderArray:)]
+impl ArrayBatchProvider {
+    #[objc::init(initWithFeatureProviderArray:)]
     pub fn init_with_feature_provider_array<P: ml::FeatureProvider>(
         self,
         arr: &ns::Array<P>,
     ) -> arc::R<ArrayBatchProvider>;
 
-    #[objc::msg_send(initWithDictionary:error:)]
+    #[objc::init(initWithDictionary:error:)]
     pub unsafe fn init_with_dictionary<'ear>(
         self,
         dictionary: &ns::Dictionary<ns::String, ns::Id>,
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ArrayBatchProvider>>;
-}
 
-impl ArrayBatchProvider {
     define_cls!(ML_ARRAY_BATCH_PROVIDER);
 
     #[objc::msg_send(array)]

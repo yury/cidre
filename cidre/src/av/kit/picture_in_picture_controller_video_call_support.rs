@@ -7,18 +7,16 @@ define_obj_type!(
     #[api::available(ios = 15.0, visionos = 1.0)]
 );
 
-impl arc::A<av::PipControllerContentSrc> {
-    #[objc::msg_send(initWithActiveVideoCallSourceView:contentViewController:)]
+/// VideoCallSupport
+impl av::PipControllerContentSrc {
+    #[objc::init(initWithActiveVideoCallSourceView:contentViewController:)]
     #[api::available(ios = 15.0, visionos = 1.0)]
     pub fn init_with_active_video_call_src_view(
         self,
         src_view: &ui::View,
         content_vc: &av::PipViewCallController,
     ) -> arc::R<av::PipControllerContentSrc>;
-}
 
-/// VideoCallSupport
-impl av::PipControllerContentSrc {
     #[api::available(ios = 15.0, visionos = 1.0)]
     pub fn with_active_video_call_src_view(
         src_view: &ui::View,

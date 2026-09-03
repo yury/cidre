@@ -6,12 +6,10 @@ define_obj_type!(
     NS_MENU
 );
 
-impl arc::A<Menu> {
-    #[objc::msg_send(initWithTitle:)]
-    pub fn init_with_title(self, title: &ns::String) -> arc::R<Menu>;
-}
-
 impl Menu {
+    #[objc::init(initWithTitle:)]
+    pub fn init_with_title(self, title: &ns::String) -> arc::R<Menu>;
+
     pub fn with_title(title: &ns::String) -> arc::R<Self> {
         Self::alloc().init_with_title(title)
     }

@@ -15,8 +15,8 @@ define_obj_type!(
     pub Url(ns::Id)
 );
 
-impl arc::A<Url> {
-    #[objc::msg_send(initFileURLWithPath:isDirectory:relativeToURL:)]
+impl Url {
+    #[objc::init(initFileURLWithPath:isDirectory:relativeToURL:)]
     pub fn init_with_path_is_dir_relative_to_url(
         self,
         path: &ns::String,
@@ -24,15 +24,13 @@ impl arc::A<Url> {
         relative_to: Option<&ns::Url>,
     ) -> arc::R<Url>;
 
-    #[objc::msg_send(initWithString:relativeToURL:)]
+    #[objc::init(initWithString:relativeToURL:)]
     pub fn init_with_string_relative_to(
         self,
         string: &ns::String,
         relative_to: Option<&ns::Url>,
     ) -> Option<arc::R<ns::Url>>;
-}
 
-impl Url {
     define_cls!(NS_URL);
 
     #[inline]

@@ -74,8 +74,8 @@ impl<S: objc::Obj, I: objc::Obj> objc::Obj
 {
 }
 
-impl<S: objc::Obj, I: objc::Obj> arc::A<CollectionViewDiffableDataSrcReorderingHandlers<S, I>> {
-    #[objc::msg_send(init)]
+impl<S: objc::Obj, I: objc::Obj> CollectionViewDiffableDataSrcReorderingHandlers<S, I> {
+    #[objc::init(init)]
     pub fn init(self) -> arc::R<CollectionViewDiffableDataSrcReorderingHandlers<S, I>>;
 }
 
@@ -157,12 +157,10 @@ pub struct CollectionViewDiffableDataSrcSectionSnapshotHandlers<I>(ns::Id, Phant
 
 impl<I: objc::Obj> objc::Obj for CollectionViewDiffableDataSrcSectionSnapshotHandlers<I> {}
 
-impl<I: objc::Obj> arc::A<CollectionViewDiffableDataSrcSectionSnapshotHandlers<I>> {
-    #[objc::msg_send(init)]
-    pub fn init(self) -> arc::R<CollectionViewDiffableDataSrcSectionSnapshotHandlers<I>>;
-}
-
 impl<I: objc::Obj + 'static> CollectionViewDiffableDataSrcSectionSnapshotHandlers<I> {
+    #[objc::init(init)]
+    pub fn init(self) -> arc::R<CollectionViewDiffableDataSrcSectionSnapshotHandlers<I>>;
+
     define_cls!(UI_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT_HANDLERS);
 
     #[inline]
@@ -287,17 +285,15 @@ pub struct CollectionViewDiffableDataSrc<S, I>(ns::Id, PhantomData<S>, PhantomDa
 
 impl<S: objc::Obj, I: objc::Obj> objc::Obj for CollectionViewDiffableDataSrc<S, I> {}
 
-impl<S: objc::Obj, I: objc::Obj> arc::A<CollectionViewDiffableDataSrc<S, I>> {
+impl<S: objc::Obj, I: objc::Obj> CollectionViewDiffableDataSrc<S, I> {
     #[cfg(feature = "blocks")]
-    #[objc::msg_send(initWithCollectionView:cellProvider:)]
+    #[objc::init(initWithCollectionView:cellProvider:)]
     pub fn init_with_collection_view_cell_provider(
         self,
         collection_view: &ui::CollectionView,
         cell_provider: &mut CollectionViewDiffableDataSrcCellProvider<I>,
     ) -> arc::R<CollectionViewDiffableDataSrc<S, I>>;
-}
 
-impl<S: objc::Obj, I: objc::Obj> CollectionViewDiffableDataSrc<S, I> {
     define_cls!(UI_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE);
 
     #[cfg(feature = "blocks")]

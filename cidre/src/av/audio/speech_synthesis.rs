@@ -117,18 +117,16 @@ define_obj_type!(
     AV_SPEECH_UTTERANCE
 );
 
-impl arc::A<Utterance> {
-    #[objc::msg_send(initWithString:)]
+impl Utterance {
+    #[objc::init(initWithString:)]
     pub fn init_with_string(self, val: &ns::String) -> arc::R<Utterance>;
 
-    #[objc::msg_send(initWithAttributedString:)]
+    #[objc::init(initWithAttributedString:)]
     pub fn init_with_attr_string(self, val: &ns::AttrString) -> arc::R<Utterance>;
 
-    #[objc::msg_send(initWithSSMLRepresentation:)]
+    #[objc::init(initWithSSMLRepresentation:)]
     pub fn init_with_ssml(self, val: &ns::String) -> arc::R<Utterance>;
-}
 
-impl Utterance {
     pub fn min_speech_rate() -> f32 {
         unsafe { AVSpeechUtteranceMinimumSpeechRate }
     }

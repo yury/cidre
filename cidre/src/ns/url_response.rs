@@ -3,8 +3,8 @@ use crate::{arc, define_cls, define_obj_type, ns, objc};
 define_obj_type!(pub UrlResponse(ns::Id));
 define_obj_type!(pub HttpUrlResponse(UrlResponse));
 
-impl arc::A<UrlResponse> {
-    #[objc::msg_send(initWithURL:MIMEType:expectedContentLength:textEncodingName:)]
+impl UrlResponse {
+    #[objc::init(initWithURL:MIMEType:expectedContentLength:textEncodingName:)]
     fn init_with_url_mimt_type(
         self,
         url: &ns::Url,
@@ -12,9 +12,7 @@ impl arc::A<UrlResponse> {
         expected_content_length: ns::Integer,
         text_encoding_name: Option<&ns::String>,
     ) -> arc::R<UrlResponse>;
-}
 
-impl UrlResponse {
     define_cls!(NS_URL_RESPONSE);
     /// ```
     /// use cidre::ns;

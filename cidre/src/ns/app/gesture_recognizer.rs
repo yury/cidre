@@ -15,15 +15,6 @@ impl GestureRecognizerState {
     pub const RECOGNIZED: Self = Self::Ended;
 }
 
-impl arc::A<GestureRecognizer> {
-    #[objc::msg_send(initWithTarget:action:)]
-    pub fn init_with_target(
-        self,
-        target: Option<&ns::Id>,
-        action: Option<&objc::Sel>,
-    ) -> arc::R<GestureRecognizer>;
-}
-
 define_obj_type!(
     #[doc(alias = "NSGestureRecognizer")]
     pub GestureRecognizer(ns::Id),
@@ -31,6 +22,13 @@ define_obj_type!(
 );
 
 impl GestureRecognizer {
+    #[objc::init(initWithTarget:action:)]
+    pub fn init_with_target(
+        self,
+        target: Option<&ns::Id>,
+        action: Option<&objc::Sel>,
+    ) -> arc::R<GestureRecognizer>;
+
     pub fn with_target(target: Option<&ns::Id>, action: Option<&objc::Sel>) -> arc::R<Self> {
         Self::alloc().init_with_target(target, action)
     }

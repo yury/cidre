@@ -37,16 +37,14 @@ define_obj_type!(
 unsafe impl Send for Location {}
 unsafe impl Sync for Location {}
 
-impl arc::A<Location> {
-    #[objc::msg_send(initWithLatitude:longitude:)]
+impl Location {
+    #[objc::init(initWithLatitude:longitude:)]
     pub fn init_with_lat_lon(
         self,
         lat: cl::LocationDegrees,
         lon: cl::LocationDegrees,
     ) -> arc::R<Location>;
-}
 
-impl Location {
     #[inline]
     pub fn with_lat_lon(lat: cl::LocationDegrees, lon: cl::LocationDegrees) -> arc::R<Self> {
         Self::alloc().init_with_lat_lon(lat, lon)

@@ -7,16 +7,14 @@ define_obj_type!(
 
 impl ml::FeatureProvider for DictionaryFeatureProvider {}
 
-impl arc::A<DictionaryFeatureProvider> {
-    #[objc::msg_send(initWithDictionary:error:)]
+impl DictionaryFeatureProvider {
+    #[objc::init(initWithDictionary:error:)]
     pub unsafe fn init_with_dictionary_err<'ear>(
         self,
         dictionary: &ns::Dictionary<ns::String, ns::Id>,
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<DictionaryFeatureProvider>>;
-}
 
-impl DictionaryFeatureProvider {
     define_cls!(ML_DICTIONARY_FEATURE_PROVIDER);
 
     #[objc::msg_send(dictionary)]

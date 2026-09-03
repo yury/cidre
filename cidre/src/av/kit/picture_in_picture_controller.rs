@@ -5,22 +5,20 @@ define_obj_type!(
     pub PipController(ns::Id)
 );
 
-impl arc::A<PipController> {
-    #[objc::msg_send(initWithContentSource:)]
+impl PipController {
+    #[objc::init(initWithContentSource:)]
     #[api::available(macos = 12.0, ios = 15.0, tvos = 15.0, visionos = 1.0)]
     pub fn init_with_content_src(
         self,
         content_src: &av::PipControllerContentSrc,
     ) -> arc::R<PipController>;
 
-    #[objc::msg_send(initWithPlayerLayer:)]
+    #[objc::init(initWithPlayerLayer:)]
     pub fn init_with_player_layer(
         self,
         player_layer: &av::PlayerLayer,
     ) -> Option<arc::R<PipController>>;
-}
 
-impl PipController {
     #[api::available(macos = 10.15, ios = 9.0, tvos = 15.0, visionos = 1.0)]
     crate::define_cls!(AV_PICTURE_IN_PICTURE_CONTROLLER);
 
@@ -96,16 +94,14 @@ define_obj_type!(
     pub PipControllerContentSrc(ns::Id)
 );
 
-impl arc::A<PipControllerContentSrc> {
-    #[objc::msg_send(initWithPlayerLayer:)]
+impl PipControllerContentSrc {
+    #[objc::init(initWithPlayerLayer:)]
     #[api::available(macos = 10.15, ios = 9.0, tvos = 14.0, visionos = 1.0)]
     pub fn init_with_player_layer(
         self,
         player_layer: &av::PlayerLayer,
     ) -> arc::R<PipControllerContentSrc>;
-}
 
-impl PipControllerContentSrc {
     #[api::available(macos = 10.15, ios = 9.0, tvos = 14.0, visionos = 1.0)]
     crate::define_cls!(AV_PICTURE_IN_PICTURE_CONTROLLER_CONTENT_SRC);
 

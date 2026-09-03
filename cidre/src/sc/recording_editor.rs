@@ -59,9 +59,9 @@ define_obj_type!(
     pub RecordingEditor(ns::Id)
 );
 
-impl arc::A<RecordingEditor> {
+impl RecordingEditor {
     /// Initializes an editor for a recording file URL.
-    #[objc::msg_send(initWithURL:)]
+    #[objc::init(initWithURL:)]
     #[api::available(
         macos = 27.0,
         maccatalyst = 27.0,
@@ -70,9 +70,7 @@ impl arc::A<RecordingEditor> {
         tvos = 27.0
     )]
     pub fn init_with_url(self, url: &ns::Url) -> arc::Retained<RecordingEditor>;
-}
 
-impl RecordingEditor {
     #[api::available(
         macos = 27.0,
         maccatalyst = 27.0,

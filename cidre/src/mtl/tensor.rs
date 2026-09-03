@@ -38,13 +38,6 @@ define_obj_type!(
     #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
 );
 
-impl arc::A<TensorExtents> {
-    #[objc::msg_send(initWithRank:values:)]
-    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
-    pub fn init_with_rank(self, rank: usize, values: *const usize)
-    -> Option<arc::R<TensorExtents>>;
-}
-
 #[cfg(any(
     feature = "macos_26_0",
     feature = "ios_26_0",
@@ -52,6 +45,11 @@ impl arc::A<TensorExtents> {
     feature = "visionos_26_0"
 ))]
 impl TensorExtents {
+    #[objc::init(initWithRank:values:)]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn init_with_rank(self, rank: usize, values: *const usize)
+    -> Option<arc::R<TensorExtents>>;
+
     #[allow(unused_unsafe)]
     pub fn with_dims(dims: &[usize]) -> Option<arc::R<Self>> {
         if dims.is_empty() {

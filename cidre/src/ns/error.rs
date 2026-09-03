@@ -69,17 +69,15 @@ impl std::fmt::Display for Error {
     }
 }
 
-impl arc::A<Error> {
-    #[objc::msg_send(initWithDomain:code:userInfo:)]
+impl Error {
+    #[objc::init(initWithDomain:code:userInfo:)]
     pub fn init_with_domain(
         self,
         domain: &ns::ErrorDomain,
         code: ns::Integer,
         user_info: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<Error>;
-}
 
-impl Error {
     define_cls!(NS_ERROR);
 
     #[objc::msg_send(code)]

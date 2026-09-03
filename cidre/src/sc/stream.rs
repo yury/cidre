@@ -677,15 +677,15 @@ define_obj_type!(
     pub ContentFilter(ns::Id)
 );
 
-impl arc::A<ContentFilter> {
-    #[objc::msg_send(initWithDesktopIndependentWindow:)]
+impl ContentFilter {
+    #[objc::init(initWithDesktopIndependentWindow:)]
     #[api::available(macos = 12.3, maccatalyst = 18.2)]
     pub fn init_with_desktop_independent_window(
         self,
         window: &sc::Window,
     ) -> arc::Retained<ContentFilter>;
 
-    #[objc::msg_send(initWithDisplay:excludingWindows:)]
+    #[objc::init(initWithDisplay:excludingWindows:)]
     #[api::available(macos = 12.3, maccatalyst = 18.2)]
     pub fn init_with_display_excluding_windows(
         self,
@@ -698,7 +698,7 @@ impl arc::A<ContentFilter> {
     /// Use this initializer to capture specific windows from a display. Unlike
     /// `init_with_desktop_independent_window`, this method works reliably for all
     /// window types including regular application windows.
-    #[objc::msg_send(initWithDisplay:includingWindows:)]
+    #[objc::init(initWithDisplay:includingWindows:)]
     #[api::available(macos = 12.3, maccatalyst = 18.2)]
     pub fn init_with_display_including_windows(
         self,
@@ -708,7 +708,7 @@ impl arc::A<ContentFilter> {
 
     /// Creates a content filter that includes content from the specified applications,
     /// optionally excluding specific windows.
-    #[objc::msg_send(initWithDisplay:includingApplications:exceptingWindows:)]
+    #[objc::init(initWithDisplay:includingApplications:exceptingWindows:)]
     #[api::available(macos = 12.3, maccatalyst = 18.2)]
     pub fn init_with_display_including_apps_excepting_windows(
         self,
@@ -719,7 +719,7 @@ impl arc::A<ContentFilter> {
 
     /// Creates a content filter that excludes content from the specified applications,
     /// optionally excepting specific windows that should still be included.
-    #[objc::msg_send(initWithDisplay:excludingApplications:exceptingWindows:)]
+    #[objc::init(initWithDisplay:excludingApplications:exceptingWindows:)]
     #[api::available(macos = 12.3, maccatalyst = 18.2)]
     pub fn init_with_display_excluding_apps_excepting_windows(
         self,
@@ -727,9 +727,7 @@ impl arc::A<ContentFilter> {
         apps: &ns::Array<sc::RunningApp>,
         excepting_windows: &ns::Array<sc::Window>,
     ) -> arc::Retained<ContentFilter>;
-}
 
-impl ContentFilter {
     define_cls!(SC_CONTENT_FILTER);
 
     /// Creates a content filter that captures just the independent window passed in.
@@ -942,18 +940,16 @@ define_obj_type!(pub AnyDelegate(ns::Id));
 
 impl Delegate for AnyDelegate {}
 
-impl arc::A<Stream> {
+impl Stream {
     /// Initializes a stream with a content filter, configuration, and optional delegate.
-    #[objc::msg_send(initWithFilter:configuration:delegate:)]
+    #[objc::init(initWithFilter:configuration:delegate:)]
     pub fn init_with_filter_configuration_delegate<D: Delegate>(
         self,
         filter: &ContentFilter,
         configuration: &Cfg,
         delegate: Option<&D>,
     ) -> arc::Retained<Stream>;
-}
 
-impl Stream {
     define_cls!(SC_STREAM);
 
     /// Creates a stream with a delegate.

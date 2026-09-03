@@ -37,8 +37,10 @@ define_obj_type!(
 unsafe impl Send for PcmBuf {}
 unsafe impl Sync for PcmBuf {}
 
-impl arc::A<PcmBuf> {
-    #[objc::msg_send(initWithPCMFormat:frameCapacity:)]
+/// Provides a number of methods useful for manipulating buffers of
+/// audio in PCM format.
+impl PcmBuf {
+    #[objc::init(initWithPCMFormat:frameCapacity:)]
     pub fn init_with_pcm_format_frame_capacity(
         self,
         format: &Format,
@@ -51,18 +53,14 @@ impl arc::A<PcmBuf> {
     /// until the returned PCM buffer is dropped. If provided, `deallocator`
     /// must release that storage exactly once.
     #[cfg(feature = "blocks")]
-    #[objc::msg_send(initWithPCMFormat:bufferListNoCopy:deallocator:)]
+    #[objc::init(initWithPCMFormat:bufferListNoCopy:deallocator:)]
     pub unsafe fn init_with_pcm_format_buf_list_no_copy<const N: usize>(
         self,
         format: &Format,
         buf_list: &AudioBufList<N>,
         deallocator: Option<&mut blocks::EscBlock<fn(buf_list: *const AudioBufList<N>)>>,
     ) -> Option<arc::R<PcmBuf>>;
-}
 
-/// Provides a number of methods useful for manipulating buffers of
-/// audio in PCM format.
-impl PcmBuf {
     define_cls!(AV_AUDIO_PCM_BUFFER);
 
     pub fn with_format(format: &Format, frame_capacity: FrameCount) -> Option<arc::R<Self>> {
@@ -203,25 +201,23 @@ define_obj_type!(
     pub CompressedBuf(ns::Id)
 );
 
-impl arc::A<CompressedBuf> {
-    #[objc::msg_send(initWithFormat:packetCapacity:)]
+/// Use with compressed audio formats.
+impl CompressedBuf {
+    #[objc::init(initWithFormat:packetCapacity:)]
     pub fn init_with_format_and_packet_capacity(
         self,
         format: &Format,
         packet_capacity: PacketCount,
     ) -> arc::R<CompressedBuf>;
 
-    #[objc::msg_send(initWithFormat:packetCapacity:maximumPacketSize:)]
+    #[objc::init(initWithFormat:packetCapacity:maximumPacketSize:)]
     pub fn init_with_format_packet_capacity_and_maximum_packet_size(
         self,
         format: &Format,
         packet_capacity: PacketCount,
         maximum_packet_size: isize,
     ) -> arc::R<CompressedBuf>;
-}
 
-/// Use with compressed audio formats.
-impl CompressedBuf {
     define_cls!(AV_AUDIO_COMPRESSED_BUFFER);
 
     /// Creates a buffer that contains constant bytes per packet of audio data in a compressed state.

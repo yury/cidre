@@ -445,23 +445,21 @@ define_obj_type!(
     pub Connection(ns::Id)
 );
 
-impl arc::A<Connection> {
-    #[objc::msg_send(initWithInputPorts:output:)]
+impl Connection {
+    #[objc::init(initWithInputPorts:output:)]
     pub fn init_with_ports(
         self,
         input: &ns::Array<av::CaptureInputPort>,
         output: &av::CaptureOutput,
     ) -> arc::R<Connection>;
 
-    #[objc::msg_send(initWithInputPort:videoPreviewLayer:)]
+    #[objc::init(initWithInputPort:videoPreviewLayer:)]
     pub fn init_with_port_preview_layer(
         self,
         input: &av::CaptureInputPort,
         layer: &av::CaptureVideoPreviewLayer,
     ) -> arc::R<Connection>;
-}
 
-impl Connection {
     define_cls!(AV_CAPTURE_CONNECTION);
 
     pub fn with_ports(

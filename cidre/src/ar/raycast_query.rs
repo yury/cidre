@@ -30,9 +30,9 @@ define_obj_type!(
     pub RaycastQuery(ns::Id)
 );
 
-impl arc::A<RaycastQuery> {
+impl RaycastQuery {
     /// Creates a query from ray origin/direction, allowed target, and alignment.
-    #[objc::msg_send(initWithOrigin:direction:allowingTarget:alignment:)]
+    #[objc::init(initWithOrigin:direction:allowingTarget:alignment:)]
     pub fn init_with_origin_direction_allowing_target_alignment(
         self,
         origin: simd::f32x3,
@@ -40,9 +40,7 @@ impl arc::A<RaycastQuery> {
         target: Target,
         alignment: TargetAlignment,
     ) -> arc::R<RaycastQuery>;
-}
 
-impl RaycastQuery {
     define_cls!(AR_RAYCAST_QUERY);
 
     /// Creates a query from ray origin/direction, allowed target, and alignment.

@@ -18,17 +18,15 @@ define_obj_type!(
     pub UrlCache(ns::Id)
 );
 
-impl arc::A<UrlCache> {
-    #[objc::msg_send(initWithMemoryCapacity:diskCapacity:directoryURL:)]
+impl UrlCache {
+    #[objc::init(initWithMemoryCapacity:diskCapacity:directoryURL:)]
     pub fn init_with_capacity(
         self,
         mem_capacity: usize,
         disk_capacity: usize,
         directory_url: Option<&ns::Url>,
     ) -> arc::R<UrlCache>;
-}
 
-impl UrlCache {
     define_cls!(NS_URL_CACHE);
     /// ```
     /// use cidre::ns;

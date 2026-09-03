@@ -5,17 +5,15 @@ define_obj_type!(
     pub NearbyServiceAdvertiser(ns::Id)
 );
 
-impl arc::A<NearbyServiceAdvertiser> {
-    #[objc::msg_send(initWithPeer:discoveryInfo:serviceType:)]
+impl NearbyServiceAdvertiser {
+    #[objc::init(initWithPeer:discoveryInfo:serviceType:)]
     pub unsafe fn init_with_peer_throws(
         self,
         my_peer: &mc::PeerId,
         discorvery_info: Option<&ns::Dictionary<ns::String, ns::String>>,
         service_type: &ns::String,
     ) -> arc::R<NearbyServiceAdvertiser>;
-}
 
-impl NearbyServiceAdvertiser {
     define_cls!(MC_NEARBY_SERVICE_ADVERTISER);
 
     pub fn with_peer<'ear>(

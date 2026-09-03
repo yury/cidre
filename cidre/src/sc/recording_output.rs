@@ -85,17 +85,15 @@ define_obj_type!(
     pub RecordingOutput(ns::Id)
 );
 
-impl arc::A<RecordingOutput> {
+impl RecordingOutput {
     /// Initializes a recording output with a configuration and delegate.
-    #[objc::msg_send(initWithConfiguration:delegate:)]
+    #[objc::init(initWithConfiguration:delegate:)]
     pub fn init_with_cfg_delegate<D: Delegate>(
         self,
         cfg: &RecordingOutputCfg,
         delegate: &D,
     ) -> arc::Retained<RecordingOutput>;
-}
 
-impl RecordingOutput {
     #[api::available(
         macos = 15.0,
         maccatalyst = 18.2,

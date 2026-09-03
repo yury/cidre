@@ -10,6 +10,8 @@ mod swift_mangle;
 enum Attr {
     Optional,
     MsgSend(String),
+    Overrides(String),
+    Init(String),
     ApiAvailable(Versions),
     DocAvailable,
 }
@@ -62,6 +64,17 @@ impl Attr {
                             };
                             let sel = a.stream().to_string().replace([' ', '\n'], "");
                             Some(Attr::MsgSend(sel))
+                        }
+                        "overrides" | "init" => {
+                            let Some(TokenTree::Group(a)) = iter.next() else {
+                                return None;
+                            };
+                            let sel = a.stream().to_string().replace([' ', '\n'], "");
+                            if v == "init" {
+                                Some(Attr::Init(sel))
+                            } else {
+                                Some(Attr::Overrides(sel))
+                            }
                         }
                         "available" => {
                             let Some(TokenTree::Group(a)) = iter.next() else {
@@ -421,66 +434,694 @@ fn add_methods_fn(fns: &[(String, bool)]) -> String {
     res.push_str("\n}");
     res
 }
+/// Marker for a method override inside an `#[objc::add_methods] impl Type { .. }` block.
+///
+/// `#[objc::overrides(layout)] fn layout(&mut self) { .. }` registers the method for the
+/// selector `layout` and generates `fn super_layout(&mut self)`, which calls the
+/// superclass implementation. Consumed by `add_methods`; on its own it is an error.
+#[proc_macro_attribute]
+pub fn overrides(_args: TokenStream, _item: TokenStream) -> TokenStream {
+    panic!("#[objc::overrides(..)] must be used inside an #[objc::add_methods] impl block")
+}
+
+/// Declares an Objective-C initializer inside the type's own `impl` block.
+///
+/// ```ignore
+/// impl TextField {
+///     #[objc::init(initWithFrame:)]
+///     pub fn init_with_frame(self, frame: cg::Rect) -> arc::R<TextField>;
+/// }
+/// ```
+///
+/// The method is emitted on `arc::A<TextField>` (the type is taken from the return
+/// type, so write it out rather than `Self`), and is called as
+/// `TextField::alloc().init_with_frame(frame)`. Generic parameters of the type are
+/// assumed to be `objc::Obj`. The selector must belong to the `init` family.
+///
+/// Inside an `#[objc::add_methods] impl Type { .. }` block, where `impl arc::A<Type>`
+/// is not possible for crates other than cidre, the declaration is instead moved to a
+/// generated `trait TypeInit` implemented for `arc::A<Type>`, and `Self` may be used.
+#[proc_macro_attribute]
+pub fn init(sel: TokenStream, func: TokenStream) -> TokenStream {
+    let sel = sel.to_string().replace([' ', '\n'], "");
+    assert!(
+        in_method_family(&sel, "init"),
+        "#[objc::init] expects a selector of the init family, got `{sel}`"
+    );
+    let mut iter = func.into_iter();
+    let mut pending = vec![];
+    for tt in iter.by_ref() {
+        if matches!(&tt, TokenTree::Ident(i) if i.to_string() == "fn") {
+            break;
+        }
+        pending.push(tt);
+    }
+    let decl = parse_fn_decl(&mut iter);
+    assert!(
+        decl.body.is_none(),
+        "#[objc::init] declares a selector and has no body"
+    );
+    let (vis, quals, attrs) = split_fn_prefix(&pending);
+    let ty = init_target_type(&decl.ret).unwrap_or_else(|| {
+        panic!(
+            "#[objc::init] needs the initialized type in the return type, e.g. `-> arc::R<TextField>`, got `{}`",
+            decl.ret
+        )
+    });
+    let generics = impl_generics_for(&ty);
+    let FnDecl {
+        name,
+        generics: fn_generics,
+        args,
+        ret,
+        ..
+    } = &decl;
+    let code = format!(
+        "
+    #[doc(hidden)]
+    #[allow(non_upper_case_globals, non_local_definitions)]
+    const cidre_init_{name}: () = {{
+        impl{generics} arc::A<{ty}> {{
+            #[objc::msg_send({sel})]
+            {attrs}
+            {vis} {quals} fn {name}{fn_generics}{args} {ret};
+        }}
+    }};
+        "
+    );
+    code.parse()
+        .unwrap_or_else(|e| panic!("objc::init generated invalid code: {e}\n{code}"))
+}
+
+/// `-> arc :: R < Dictionary < K , V > >` -> `Dictionary < K , V >`; also `Retained` and
+/// `Option < .. >` wrappers.
+fn init_target_type(ret: &str) -> Option<String> {
+    let ret = ret.trim().trim_start_matches("->").trim();
+    let inner = |s: &str, wrapper: &str| -> Option<String> {
+        let start = s.find(wrapper)? + wrapper.len();
+        let rest = &s[start..];
+        let mut depth = 0;
+        for (i, c) in rest.char_indices() {
+            match c {
+                '<' => depth += 1,
+                '>' if depth == 0 => return Some(rest[..i].trim().to_string()),
+                '>' => depth -= 1,
+                _ => {}
+            }
+        }
+        None
+    };
+    let ty = inner(ret, "R <").or_else(|| inner(ret, "Retained <"))?;
+    if ty == "Self" {
+        return None;
+    }
+    Some(ty)
+}
+
+/// `Dictionary < K , V >` -> `<K: objc::Obj, V: objc::Obj>`; bare single identifiers
+/// among the type arguments are taken as type parameters.
+fn impl_generics_for(ty: &str) -> String {
+    let Some(start) = ty.find('<') else {
+        return String::new();
+    };
+    let Some(end) = ty.rfind('>') else {
+        return String::new();
+    };
+    let stream: TokenStream = ty[start + 1..end].parse().unwrap_or_default();
+    let params: Vec<String> = split_top_level_args(stream)
+        .iter()
+        .map(|a| a.trim().to_string())
+        .filter(|a| !a.is_empty() && a.chars().all(|c| c.is_alphanumeric() || c == '_'))
+        .map(|a| format!("{a}: objc::Obj"))
+        .collect();
+    if params.is_empty() {
+        String::new()
+    } else {
+        format!("<{}>", params.join(", "))
+    }
+}
+
+/// Registers Objective-C methods for a runtime-defined class.
+///
+/// On `impl ProtocolImpl for Type` it registers every `fn impl_*` under the selector
+/// the protocol trait declares. On an inherent `impl Type` it handles
+/// `#[objc::overrides(sel)]` and `#[objc::init(sel)]` functions.
 #[proc_macro_attribute]
 pub fn add_methods(_args: TokenStream, tr_impl: TokenStream) -> TokenStream {
-    let mut tokens = vec![];
-
-    let iter = tr_impl.into_iter();
-    let mut fns = vec![];
-
-    for tt in iter {
+    let mut header = vec![];
+    let mut body = None;
+    for tt in tr_impl {
         match tt {
-            TokenTree::Group(g) => {
-                let mut body = g.stream().into_iter();
-                while let Some(tt) = body.next() {
-                    match tt {
-                        TokenTree::Ident(i) if i.to_string().eq("fn") => {
-                            let Some(TokenTree::Ident(f)) = body.next() else {
-                                panic!("expected function name");
-                            };
-                            let f = f.to_string().replacen("impl_", "", 1);
-                            if let Some(f) = f.strip_suffix("_ar") {
-                                fns.push((f.to_string(), true));
-                            } else {
-                                fns.push((f, false));
-                            }
-                        }
-                        _ => continue,
-                    }
-                }
-                let imp: TokenStream = add_methods_fn(&fns).parse().unwrap();
-                let mut stream = g.stream();
-                stream.extend(imp);
-                let g = Group::new(g.delimiter(), stream);
-                tokens.push(TokenTree::Group(g));
+            TokenTree::Group(g) if g.delimiter() == Delimiter::Brace && body.is_none() => {
+                body = Some(g)
             }
-            _ => tokens.push(tt),
+            _ => header.push(tt),
         }
     }
+    let body = body.expect("objc::add_methods expects an impl block");
+    let is_trait_impl = header
+        .iter()
+        .any(|t| matches!(t, TokenTree::Ident(i) if i.to_string() == "for"));
+    if is_trait_impl {
+        add_trait_impl_methods(header, body)
+    } else {
+        add_own_methods(header, body)
+    }
+}
 
-    // println!("fns {fns:?}");
-
+fn add_trait_impl_methods(header: Vec<TokenTree>, body: Group) -> TokenStream {
+    let mut fns = vec![];
+    let mut iter = body.stream().into_iter();
+    while let Some(tt) = iter.next() {
+        match tt {
+            TokenTree::Ident(i) if i.to_string().eq("fn") => {
+                let Some(TokenTree::Ident(f)) = iter.next() else {
+                    panic!("expected function name");
+                };
+                let f = f.to_string().replacen("impl_", "", 1);
+                if let Some(f) = f.strip_suffix("_ar") {
+                    fns.push((f.to_string(), true));
+                } else {
+                    fns.push((f, false));
+                }
+            }
+            _ => continue,
+        }
+    }
+    let imp: TokenStream = add_methods_fn(&fns).parse().unwrap();
+    let mut stream = body.stream();
+    stream.extend(imp);
+    let mut tokens = header;
+    tokens.push(TokenTree::Group(Group::new(body.delimiter(), stream)));
     TokenStream::from_iter(tokens)
 }
+
+struct FnDecl {
+    name: String,
+    generics: String,
+    args: Group,
+    /// return type and where clause, without the trailing `;`
+    ret: String,
+    body: Option<Group>,
+    /// everything after `fn`, verbatim
+    tokens: Vec<TokenTree>,
+}
+
+fn parse_fn_decl(iter: &mut impl Iterator<Item = TokenTree>) -> FnDecl {
+    let mut tokens = vec![];
+    let Some(TokenTree::Ident(name)) = iter.next() else {
+        panic!("expected function name");
+    };
+    tokens.push(TokenTree::Ident(name.clone()));
+    let mut generics = vec![];
+    let args = loop {
+        let Some(tt) = iter.next() else {
+            panic!("expected function arguments");
+        };
+        tokens.push(tt.clone());
+        match tt {
+            TokenTree::Group(g) if g.delimiter() == Delimiter::Parenthesis => break g,
+            _ => generics.push(tt),
+        }
+    };
+    let mut ret = vec![];
+    let mut body = None;
+    loop {
+        let Some(tt) = iter.next() else {
+            panic!("expected `;` or function body");
+        };
+        tokens.push(tt.clone());
+        match tt {
+            TokenTree::Punct(ref p) if p.as_char() == ';' => break,
+            TokenTree::Group(g) if g.delimiter() == Delimiter::Brace => {
+                body = Some(g);
+                break;
+            }
+            _ => ret.push(tt),
+        }
+    }
+    FnDecl {
+        name: name.to_string(),
+        generics: TokenStream::from_iter(generics).to_string(),
+        args,
+        ret: TokenStream::from_iter(ret).to_string(),
+        body,
+        tokens,
+    }
+}
+
+/// Takes `#[objc::overrides(..)]` / `#[objc::init(..)]` out of `pending`, returning it
+/// with the position it had, so other attributes keep their order around it.
+fn take_method_attr(pending: &mut Vec<TokenTree>) -> Option<(Attr, usize)> {
+    let mut i = 0;
+    while i + 1 < pending.len() {
+        if let (TokenTree::Punct(p), TokenTree::Group(g)) = (&pending[i], &pending[i + 1]) {
+            if p.as_char() == '#' && g.delimiter() == Delimiter::Bracket {
+                let path = g.stream().to_string().replace(' ', "");
+                let ours = path.starts_with("objc::overrides") || path.starts_with("objc::init");
+                if ours {
+                    if let attr @ Some(Attr::Overrides(_) | Attr::Init(_)) =
+                        Attr::from_stream(g.stream())
+                    {
+                        pending.drain(i..i + 2);
+                        return attr.map(|a| (a, i));
+                    }
+                }
+            }
+        }
+        i += 1;
+    }
+    None
+}
+
+struct ImplHeader {
+    /// attributes before `impl`
+    attrs: Vec<TokenTree>,
+    /// `<S: Obj, I: Obj>` or empty
+    generics: String,
+    /// the implemented type, e.g. `View` or `Dict < K , V >`
+    ty: String,
+    /// `where ..` or empty
+    where_clause: String,
+}
+
+fn parse_impl_header(header: &[TokenTree]) -> ImplHeader {
+    let mut iter = header.iter().cloned().peekable();
+    let mut attrs = vec![];
+    for tt in iter.by_ref() {
+        if matches!(&tt, TokenTree::Ident(i) if i.to_string() == "impl") {
+            break;
+        }
+        attrs.push(tt);
+    }
+    let mut generics = vec![];
+    if matches!(iter.peek(), Some(TokenTree::Punct(p)) if p.as_char() == '<') {
+        let mut depth = 0;
+        for tt in iter.by_ref() {
+            match &tt {
+                TokenTree::Punct(p) if p.as_char() == '<' => depth += 1,
+                TokenTree::Punct(p) if p.as_char() == '>' => depth -= 1,
+                _ => {}
+            }
+            generics.push(tt);
+            if depth == 0 {
+                break;
+            }
+        }
+    }
+    let mut ty = vec![];
+    let mut where_clause = vec![];
+    let mut in_where = false;
+    for tt in iter {
+        if matches!(&tt, TokenTree::Ident(i) if i.to_string() == "where") {
+            in_where = true;
+        }
+        if in_where {
+            where_clause.push(tt);
+        } else {
+            ty.push(tt);
+        }
+    }
+    ImplHeader {
+        attrs,
+        generics: TokenStream::from_iter(generics).to_string(),
+        ty: TokenStream::from_iter(ty).to_string(),
+        where_clause: TokenStream::from_iter(where_clause).to_string(),
+    }
+}
+
+/// `<S: Obj, I: Obj, 'a>` -> `<S, I, 'a>`
+fn generic_param_names(generics: &str) -> String {
+    let inner = generics.trim();
+    let inner = inner.strip_prefix('<').unwrap_or(inner);
+    let inner = inner.strip_suffix('>').unwrap_or(inner);
+    let stream: TokenStream = inner.parse().unwrap_or_default();
+    let names: Vec<String> = split_top_level_args(stream)
+        .iter()
+        .map(|p| {
+            p.split_once(':')
+                .map(|(n, _)| n)
+                .unwrap_or(p)
+                .trim()
+                .to_string()
+        })
+        .filter(|n| !n.is_empty())
+        .collect();
+    if names.is_empty() {
+        String::new()
+    } else {
+        format!("<{}>", names.join(", "))
+    }
+}
+
+struct InitDecl {
+    vis: String,
+    /// attributes written before `#[objc::init]`
+    attrs: String,
+    /// attributes written after `#[objc::init]`
+    attrs_after: String,
+    quals: String,
+    sel: String,
+    name: String,
+    generics: String,
+    /// arguments and return type with `Self` replaced by the implemented type
+    sig: String,
+}
+
+fn add_own_methods(header: Vec<TokenTree>, body: Group) -> TokenStream {
+    let ImplHeader {
+        attrs: impl_attrs,
+        generics: impl_generics,
+        ty,
+        where_clause,
+    } = parse_impl_header(&header);
+    // `foo::Bar<T>` -> `Bar`
+    let ty_ident = ty
+        .split('<')
+        .next()
+        .unwrap()
+        .split("::")
+        .last()
+        .unwrap()
+        .trim()
+        .to_string();
+
+    let mut out = TokenStream::new();
+    let mut pending: Vec<TokenTree> = vec![];
+    let mut extra = String::new();
+    let mut registrations = String::new();
+    let mut inits: Vec<InitDecl> = vec![];
+
+    let mut iter = body.stream().into_iter();
+    while let Some(tt) = iter.next() {
+        let is_fn = matches!(&tt, TokenTree::Ident(i) if i.to_string() == "fn");
+        if !is_fn {
+            pending.push(tt);
+            continue;
+        }
+        let attr = take_method_attr(&mut pending);
+        let decl = parse_fn_decl(&mut iter);
+        let pos = attr.as_ref().map(|(_, i)| *i).unwrap_or(0);
+        match attr.map(|(a, _)| a) {
+            None => {
+                out.extend(pending.drain(..));
+                out.extend(std::iter::once(tt));
+                out.extend(decl.tokens.iter().cloned());
+            }
+            Some(Attr::Overrides(sel)) => {
+                out.extend(pending.drain(..));
+                out.extend(std::iter::once(tt));
+                out.extend(decl.tokens.iter().cloned());
+                let (tramp, reg) = gen_override(&sel, &decl);
+                extra.push_str(&tramp);
+                registrations.push_str(&reg);
+            }
+            Some(Attr::Init(sel)) => {
+                assert!(
+                    decl.body.is_none(),
+                    "#[objc::init] declares a selector and has no body"
+                );
+                let (vis, quals, attrs) = split_fn_prefix(&pending[..pos]);
+                let (vis2, quals2, attrs_after) = split_fn_prefix(&pending[pos..]);
+                pending.clear();
+                let sig = regex_self(&format!("{}{}", decl.args, decl.ret), &ty);
+                inits.push(InitDecl {
+                    vis: if vis.is_empty() { vis2 } else { vis },
+                    attrs,
+                    attrs_after,
+                    quals: if quals.is_empty() { quals2 } else { quals },
+                    sel,
+                    name: decl.name.clone(),
+                    generics: decl.generics.clone(),
+                    sig,
+                });
+            }
+            Some(_) => unreachable!(),
+        }
+    }
+    out.extend(pending);
+
+    if !registrations.is_empty() {
+        extra.push_str(&format!(
+            "
+    #[doc(hidden)]
+    pub fn cls_add_own_methods(cls: &objc::Class<objc::Id>) {{
+        unsafe {{
+            {registrations}
+        }}
+    }}
+            "
+        ));
+    }
+    out.extend(extra.parse::<TokenStream>().unwrap());
+
+    let mut tokens = header;
+    tokens.push(TokenTree::Group(Group::new(body.delimiter(), out)));
+    let mut result = TokenStream::from_iter(tokens);
+
+    if inits.is_empty() {
+        return result;
+    }
+
+    let impl_attrs = TokenStream::from_iter(impl_attrs).to_string();
+    // `impl arc::A<T>` is only possible inside cidre; a local trait implemented for
+    // `arc::A<T>` is what the orphan rule permits everywhere else.
+    let trait_name = format!("{ty_ident}Init");
+    let trait_vis = inits
+        .iter()
+        .map(|i| i.vis.as_str())
+        .find(|v| !v.is_empty())
+        .unwrap_or("");
+    let mut decls = String::new();
+    let mut impls = String::new();
+    for i in &inits {
+        let InitDecl {
+            attrs,
+            attrs_after,
+            quals,
+            sel,
+            name,
+            generics,
+            sig,
+            ..
+        } = i;
+        decls.push_str(&format!(
+            "\n    {attrs}\n    {attrs_after}\n    {quals} fn {name}{generics}{sig};\n"
+        ));
+        impls.push_str(&format!(
+            "\n    {attrs}\n    #[objc::msg_send({sel})]\n    {attrs_after}\n    {quals} fn {name}{generics}{sig};\n"
+        ));
+    }
+    let names = generic_param_names(&impl_generics);
+    let code = format!(
+        "
+/// Initializers of `{ty}`, callable on `arc::A<{ty}>`
+#[allow(non_camel_case_types)]
+{impl_attrs}
+{trait_vis} trait {trait_name}{impl_generics} {where_clause} {{
+    {decls}
+}}
+
+{impl_attrs}
+impl{impl_generics} {trait_name}{names} for arc::A<{ty}> {where_clause} {{
+    {impls}
+}}
+        "
+    );
+    result.extend(
+        code.parse::<TokenStream>()
+            .unwrap_or_else(|e| panic!("objc::add_methods generated invalid code: {e}\n{code}")),
+    );
+    result
+}
+
+/// Splits the tokens before `fn` into (`pub(..)`, qualifiers like `unsafe`, attributes).
+fn split_fn_prefix(pending: &[TokenTree]) -> (String, String, String) {
+    let mut vis = vec![];
+    let mut quals = vec![];
+    let mut attrs = vec![];
+    let mut iter = pending.iter().cloned().peekable();
+    while let Some(tt) = iter.next() {
+        match &tt {
+            TokenTree::Ident(i) if i.to_string() == "pub" => {
+                vis.push(tt.clone());
+                if let Some(TokenTree::Group(g)) = iter.peek() {
+                    if g.delimiter() == Delimiter::Parenthesis {
+                        vis.push(iter.next().unwrap());
+                    }
+                }
+            }
+            TokenTree::Ident(i)
+                if matches!(i.to_string().as_str(), "unsafe" | "const" | "async") =>
+            {
+                quals.push(tt.clone());
+            }
+            TokenTree::Ident(i) if i.to_string() == "extern" => {
+                quals.push(tt.clone());
+                if let Some(TokenTree::Literal(_)) = iter.peek() {
+                    quals.push(iter.next().unwrap());
+                }
+            }
+            _ => attrs.push(tt),
+        }
+    }
+    (
+        TokenStream::from_iter(vis).to_string(),
+        TokenStream::from_iter(quals).to_string(),
+        TokenStream::from_iter(attrs).to_string(),
+    )
+}
+
+/// Replaces the `Self` type with `ty` in a signature string.
+fn regex_self(sig: &str, ty: &str) -> String {
+    let mut res = String::with_capacity(sig.len());
+    let bytes = sig.as_bytes();
+    let mut i = 0;
+    while i < bytes.len() {
+        let is_word = |b: u8| b.is_ascii_alphanumeric() || b == b'_';
+        if sig[i..].starts_with("Self")
+            && (i == 0 || !is_word(bytes[i - 1]))
+            && (i + 4 >= bytes.len() || !is_word(bytes[i + 4]))
+        {
+            res.push_str(ty);
+            i += 4;
+        } else {
+            res.push(sig.as_bytes()[i] as char);
+            i += 1;
+        }
+    }
+    res
+}
+
+/// Returns the `extern "C"` trampoline plus `super_*` for an override, and its
+/// registration statement.
+fn gen_override(sel: &str, decl: &FnDecl) -> (String, String) {
+    assert!(
+        decl.generics.is_empty(),
+        "#[objc::overrides] methods can't be generic"
+    );
+    let params = split_top_level_args(decl.args.stream());
+    let receiver = params
+        .first()
+        .map(|p| p.replace(' ', ""))
+        .unwrap_or_default();
+    let receiver = match receiver.as_str() {
+        "&self" => "&self",
+        "&mutself" => "&mut self",
+        _ => panic!("#[objc::overrides] methods take `&self` or `&mut self`"),
+    };
+    let rest = &params[1..];
+    let names: Vec<String> = rest
+        .iter()
+        .map(|p| {
+            let name = p.split_once(':').expect("typed parameter").0.trim();
+            name.trim_start_matches("mut ").trim().to_string()
+        })
+        .collect();
+    let rest_args = if rest.is_empty() {
+        String::new()
+    } else {
+        format!(", {}", rest.join(", "))
+    };
+    let names = names.join(", ");
+    let name = &decl.name;
+    let args = decl.args.to_string();
+    let ret = decl
+        .ret
+        .split("where")
+        .next()
+        .unwrap_or("")
+        .trim()
+        .to_string();
+    let sel_args_count = sel.matches(':').count();
+    assert_eq!(
+        sel_args_count,
+        rest.len(),
+        "selector `{sel}` and arguments of `{name}` don't match"
+    );
+
+    // an object returned at +0 must be autoreleased on the way out
+    let autorelease = ret.contains("arc :: R <") && !returns_retained(sel);
+    let (tramp_ret, call) = if autorelease {
+        let tramp_ret = ret.replacen("arc :: R <", "arc :: Rar <", 1);
+        let call = if ret.contains("Option <") {
+            format!("self.{name}({names}).map(|r| unsafe {{ r.return_ar() }})")
+        } else {
+            format!("unsafe {{ self.{name}({names}).return_ar() }}")
+        };
+        (tramp_ret, call)
+    } else {
+        (ret.clone(), format!("self.{name}({names})"))
+    };
+
+    let tramp = format!(
+        "
+    #[doc(hidden)]
+    extern \"C\" fn cidre_imp_{name}({receiver}, _cmd: *const std::ffi::c_void{rest_args}) {tramp_ret} {{
+        {call}
+    }}
+
+    /// Calls the superclass implementation of `{sel}`
+    #[objc::msg_send_super({sel})]
+    fn super_{name}{args} {ret};
+        "
+    );
+    let reg = format!(
+        "
+            objc::class_addMethod(
+                cls,
+                objc::sel_reg_name(c\"{sel}\".as_ptr()),
+                std::mem::transmute(Self::cidre_imp_{name} as *const u8),
+                std::ptr::null(),
+            );
+        "
+    );
+    (tramp, reg)
+}
+
 #[proc_macro_attribute]
 pub fn msg_send_debug(sel: TokenStream, func: TokenStream) -> TokenStream {
     let x86_64 = false;
-    gen_msg_send(sel, func, x86_64, true)
+    gen_msg_send(sel, func, x86_64, true, false)
 }
 
 #[proc_macro_attribute]
 pub fn msg_send(sel: TokenStream, func: TokenStream) -> TokenStream {
     let x86_64 = false;
-    gen_msg_send(sel, func, x86_64, false)
+    gen_msg_send(sel, func, x86_64, false, false)
 }
 
 #[proc_macro_attribute]
 pub fn msg_send_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
     let x86_64 = true;
-    gen_msg_send(sel, func, x86_64, false)
+    gen_msg_send(sel, func, x86_64, false, false)
 }
 
-fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) -> TokenStream {
+/// Sends `sel` to the superclass implementation, like `[super sel]` in Objective-C.
+///
+/// The receiver type must provide `Self::super_cls()` (generated by `define_obj_type!`
+/// for runtime-registered classes, or available through `objc::Subclass` in trait
+/// default methods). Unlike `msg_send`, the selector is registered at call time because
+/// the linker provides no `objc_msgSendSuper` selector stubs.
+#[proc_macro_attribute]
+pub fn msg_send_super(sel: TokenStream, func: TokenStream) -> TokenStream {
+    let x86_64 = false;
+    gen_msg_send(sel, func, x86_64, false, true)
+}
+
+#[proc_macro_attribute]
+pub fn msg_send_super_x86_64(sel: TokenStream, func: TokenStream) -> TokenStream {
+    let x86_64 = true;
+    gen_msg_send(sel, func, x86_64, false, true)
+}
+
+fn gen_msg_send(
+    sel: TokenStream,
+    func: TokenStream,
+    x86_64: bool,
+    debug: bool,
+    super_call: bool,
+) -> TokenStream {
     let sel = sel.to_string().replace([' ', '\n'], "");
     let sel_args_count = sel.matches(':').count();
 
@@ -523,6 +1164,9 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
                             continue;
                         }
                         Some(Attr::MsgSend(_)) => panic!("only one msg_send is allowed"),
+                        Some(Attr::Overrides(_) | Attr::Init(_)) => {
+                            panic!("objc::overrides/objc::init can't be combined with msg_send")
+                        }
                         None => {}
                     }
                 }
@@ -662,7 +1306,93 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
     if gen_rar_version {
         impl_fn_name.push_str("_ar");
     }
-    if x86_64 {
+    if super_call {
+        assert!(
+            !versions.any(),
+            "#[objc::available] is not supported on msg_send_super"
+        );
+        // (& mut self, a: A) -> (sup: *const objc::Super, sel: *const c_void, a: A)
+        let super_args = "(sup: *const objc::Super, sel: *const std::ffi::c_void";
+        let fn_args = args
+            .to_string()
+            .replace("& mut self", "&mut self")
+            .replace("& self", "&self");
+        let fn_args = if class {
+            fn_args.replacen('(', &format!("{super_args}, "), 1)
+        } else if fn_args.contains("&mut self") {
+            fn_args.replacen("(&mut self", super_args, 1)
+        } else {
+            fn_args.replacen("(&self", super_args, 1)
+        };
+        let fn_args = fn_args.replacen(", )", ")", 1);
+        let (receiver, super_class) = if class {
+            (
+                "Self::cls_ptr() as *mut objc::Id",
+                "Self::super_cls().meta_cls() as *const objc::Class<objc::Id>",
+            )
+        } else {
+            (
+                "self as *const Self as *mut objc::Id",
+                "Self::super_cls() as *const _ as *const objc::Class<objc::Id>",
+            )
+        };
+        let call_args = if vars.is_empty() {
+            "sig(&sup, sel)".to_string()
+        } else {
+            format!("sig(&sup, sel, {vars})")
+        };
+        let (externs, fn_ptr) = if x86_64 {
+            (
+                "
+        extern \"C\" {
+            #[link_name = \"objc_msgSendSuper\"]
+            fn msg_send_super();
+            #[link_name = \"objc_msgSendSuper_stret\"]
+            fn msg_send_super_stret();
+        }",
+                format!(
+                    "if std::mem::size_of::<{x86_64_return_type}>() <= 16 {{
+                msg_send_super as *const std::ffi::c_void
+            }} else {{
+                msg_send_super_stret as *const std::ffi::c_void
+            }}"
+                ),
+            )
+        } else {
+            (
+                "
+        extern \"C\" {
+            #[link_name = \"objc_msgSendSuper\"]
+            fn msg_send_super();
+        }",
+                "msg_send_super as *const std::ffi::c_void".to_string(),
+            )
+        };
+        flow.push_str(&format!(
+            "
+    {doc_alias}
+    #[inline]
+    {pre} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
+        {externs}
+        extern \"C-unwind\" {{
+            fn sel_registerName(name: *const i8) -> *const std::ffi::c_void;
+        }}
+
+        unsafe {{
+            let sel = sel_registerName(c\"{sel}\".as_ptr());
+            let sup = objc::Super {{
+                receiver: {receiver},
+                super_class: {super_class},
+            }};
+            let fn_ptr = {fn_ptr};
+            let sig: extern \"C\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
+
+            {call_args}
+        }}
+    }}
+            "
+        ));
+    } else if x86_64 {
         flow.push_str(&format!(
             "
     {available}
@@ -870,6 +1600,29 @@ fn gen_msg_send(sel: TokenStream, func: TokenStream, x86_64: bool, debug: bool) 
     }
 
     flow.parse().unwrap()
+}
+
+/// Splits `(a: A, b: Option<B, C>)` into `["a: A", "b: Option<B, C>"]`.
+fn split_top_level_args(stream: TokenStream) -> Vec<String> {
+    let mut res = Vec::new();
+    let mut current = TokenStream::new();
+    let mut nesting = 0;
+    for tt in stream {
+        match tt {
+            TokenTree::Punct(ref p) if p.as_char() == '<' => nesting += 1,
+            TokenTree::Punct(ref p) if p.as_char() == '>' => nesting -= 1,
+            TokenTree::Punct(ref p) if p.as_char() == ',' && nesting == 0 => {
+                res.push(std::mem::take(&mut current).to_string());
+                continue;
+            }
+            _ => {}
+        }
+        current.extend(std::iter::once(tt));
+    }
+    if !current.is_empty() {
+        res.push(current.to_string());
+    }
+    res
 }
 
 fn fn_args_from_stream(stream: TokenStream) -> (bool, Vec<String>) {

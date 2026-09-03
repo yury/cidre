@@ -207,4 +207,35 @@ mod tests {
         let main_op_queue = ns::OpQueue::main();
         println!("tid {main_op_queue:?}");
     }
+
+    use crate::{define_obj_type, objc, objc::Obj};
+    use std::sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+    };
+
+    define_obj_type!(TestOp(ns::Op), Arc<AtomicBool>, CIDRE_TEST_OP);
+
+    #[objc::add_methods]
+    impl TestOp {
+        #[objc::overrides(main)]
+        fn main(&mut self) {
+            self.super_main();
+            self.inner().store(true, Ordering::SeqCst);
+        }
+    }
+
+    #[test]
+    fn subclass() {
+        let flag = Arc::new(AtomicBool::new(false));
+        let mut op = TestOp::with(Arc::clone(&flag));
+        assert!(op.is_kind_of_class(ns::Op::cls()));
+        assert!(!op.is_finished());
+        op.start();
+        assert!(flag.load(Ordering::SeqCst));
+        assert!(op.is_finished());
+        assert_eq!(Arc::strong_count(&flag), 2);
+        drop(op);
+        assert_eq!(Arc::strong_count(&flag), 1);
+    }
 }

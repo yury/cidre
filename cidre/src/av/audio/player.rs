@@ -5,22 +5,22 @@ define_obj_type!(
     pub Player(ns::Id)
 );
 
-impl arc::A<Player> {
-    #[objc::msg_send(initWithContentsOfURL:error:)]
+impl Player {
+    #[objc::init(initWithContentsOfURL:error:)]
     pub unsafe fn init_with_url_err<'ear>(
         self,
         url: &ns::Url,
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Player>>;
 
-    #[objc::msg_send(initWithData:error:)]
+    #[objc::init(initWithData:error:)]
     pub unsafe fn init_with_data_err<'ear>(
         self,
         data: &ns::Data,
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Player>>;
 
-    #[objc::msg_send(initWithContentsOfURL:fileTypeHint:error:)]
+    #[objc::init(initWithContentsOfURL:fileTypeHint:error:)]
     pub unsafe fn init_with_url_hint_err<'ear>(
         self,
         url: &ns::Url,
@@ -28,16 +28,14 @@ impl arc::A<Player> {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Player>>;
 
-    #[objc::msg_send(initWithData:fileTypeHint:error:)]
+    #[objc::init(initWithData:fileTypeHint:error:)]
     pub unsafe fn init_with_data_hint_err<'ear>(
         self,
         data: &ns::Data,
         hint: Option<&ns::String>,
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Player>>;
-}
 
-impl Player {
     define_cls!(AV_AUDIO_PLAYER);
 
     pub fn with_url<'ear>(url: &ns::Url) -> Result<arc::R<Self>, &'ear ns::Error> {

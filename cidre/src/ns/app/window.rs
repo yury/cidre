@@ -130,8 +130,8 @@ define_obj_type!(
    NS_WINDOW
 );
 
-impl arc::A<Window> {
-    #[objc::msg_send(initWithContentRect:styleMask:backing:defer:)]
+impl Window {
+    #[objc::init(initWithContentRect:styleMask:backing:defer:)]
     pub fn init_with_content_rect_style_mask_backing_defer(
         self,
         content_rect: ns::Rect,
@@ -139,9 +139,7 @@ impl arc::A<Window> {
         backing: ns::BackingStoreType,
         defer: bool,
     ) -> arc::R<Window>;
-}
 
-impl Window {
     pub fn with_content_rect_style_mask_backing_defer(
         content_rect: ns::Rect,
         style: ns::WindowStyleMask,

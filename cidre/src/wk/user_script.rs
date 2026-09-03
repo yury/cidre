@@ -11,17 +11,15 @@ define_obj_type!(
     pub UserScript(ns::Id)
 );
 
-impl arc::A<UserScript> {
-    #[objc::msg_send(initWithSource:injectionTime:forMainFrameOnly:)]
+impl UserScript {
+    #[objc::init(initWithSource:injectionTime:forMainFrameOnly:)]
     pub fn init_with_src_injection_time_for_main_frame_only(
         self,
         src: &ns::String,
         injection_time: wk::UserScriptInjectionTime,
         for_main_frame_only: bool,
     ) -> arc::R<UserScript>;
-}
 
-impl UserScript {
     define_cls!(WK_USER_SCRIPT);
 
     pub fn with_src(

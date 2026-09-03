@@ -5,16 +5,14 @@ define_obj_type!(
     pub ClassifySoundRequest(sn::Request)
 );
 
-impl arc::A<ClassifySoundRequest> {
-    #[objc::msg_send(initWithClassifierIdentifier:error:)]
+impl ClassifySoundRequest {
+    #[objc::init(initWithClassifierIdentifier:error:)]
     pub unsafe fn init_with_classifier_id_err<'ear>(
         self,
         id: &sn::Id,
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ClassifySoundRequest>>;
-}
 
-impl ClassifySoundRequest {
     define_cls!(SN_CLASSIFY_SOUND_REQUEST);
 
     pub fn with_classifier_id<'ear>(id: &sn::Id) -> ns::Result<'ear, arc::R<Self>> {

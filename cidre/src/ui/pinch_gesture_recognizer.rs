@@ -6,16 +6,14 @@ define_obj_type!(
     UI_PINCH_GESTURE_RECOGNIZER
 );
 
-impl arc::A<PinchGestureRecognizer> {
-    #[objc::msg_send(initWithTarget:action:)]
+impl PinchGestureRecognizer {
+    #[objc::init(initWithTarget:action:)]
     pub fn init_with_target_action(
         self,
         target: Option<&ns::Id>,
         action: Option<&objc::Sel>,
     ) -> arc::R<PinchGestureRecognizer>;
-}
 
-impl PinchGestureRecognizer {
     pub fn with_target_action(target: Option<&ns::Id>, action: Option<&objc::Sel>) -> arc::R<Self> {
         Self::alloc().init_with_target_action(target, action)
     }

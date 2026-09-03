@@ -22,12 +22,10 @@ define_obj_type!(
     MTL_FUNCTION_STITCHING_INPUT_NODE
 );
 
-impl arc::A<FnStitchingInputNode> {
-    #[objc::msg_send(initWithArgumentIndex:)]
-    pub fn init_with_arg_index(self, index: usize) -> arc::R<FnStitchingInputNode>;
-}
-
 impl FnStitchingInputNode {
+    #[objc::init(initWithArgumentIndex:)]
+    pub fn init_with_arg_index(self, index: usize) -> arc::R<FnStitchingInputNode>;
+
     pub fn with_arg_index(index: usize) -> arc::R<Self> {
         Self::alloc().init_with_arg_index(index)
     }
@@ -44,17 +42,15 @@ define_obj_type!(
     pub FnStitchingFnNode(FnStitchingNode)
 );
 
-impl arc::A<FnStitchingFnNode> {
-    #[objc::msg_send(initWithName:arguments:controlDependencies:)]
+impl FnStitchingFnNode {
+    #[objc::init(initWithName:arguments:controlDependencies:)]
     pub fn init_with_name(
         self,
         name: &ns::String,
         args: &ns::Array<FnStitchingNode>,
         control_deps: &ns::Array<FnStitchingFnNode>,
     ) -> arc::R<FnStitchingFnNode>;
-}
 
-impl FnStitchingFnNode {
     define_cls!(MTL_FUNCTION_STITCHING_FUNCTION_NODE);
 
     pub fn with_name(
@@ -89,8 +85,8 @@ define_obj_type!(
     pub FnStitchingGraph(ns::Id)
 );
 
-impl arc::A<FnStitchingGraph> {
-    #[objc::msg_send(initWithFunctionName:nodes:outputNode:attributes:)]
+impl FnStitchingGraph {
+    #[objc::init(initWithFunctionName:nodes:outputNode:attributes:)]
     pub fn init_with_fn_name(
         self,
         fn_name: &ns::String,
@@ -98,9 +94,7 @@ impl arc::A<FnStitchingGraph> {
         output_node: Option<&FnStitchingFnNode>,
         attribtues: &ns::Array<FnStitchingAttr>,
     ) -> arc::R<FnStitchingGraph>;
-}
 
-impl FnStitchingGraph {
     define_cls!(MTL_FUNCTION_STITCHING_GRAPH);
 
     pub fn with_fn_name(

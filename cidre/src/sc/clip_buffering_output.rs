@@ -42,9 +42,9 @@ define_obj_type!(
     pub ClipBufferingOutput(ns::Id)
 );
 
-impl arc::A<ClipBufferingOutput> {
+impl ClipBufferingOutput {
     /// Initializes a clip buffering output with an optional delegate.
-    #[objc::msg_send(initWithDelegate:)]
+    #[objc::init(initWithDelegate:)]
     #[api::available(
         macos = 27.0,
         maccatalyst = 27.0,
@@ -56,9 +56,7 @@ impl arc::A<ClipBufferingOutput> {
         self,
         delegate: Option<&D>,
     ) -> arc::Retained<ClipBufferingOutput>;
-}
 
-impl ClipBufferingOutput {
     #[api::available(
         macos = 27.0,
         maccatalyst = 27.0,

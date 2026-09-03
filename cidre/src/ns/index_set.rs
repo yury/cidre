@@ -2,28 +2,6 @@
 use crate::blocks;
 use crate::{arc, define_obj_type, ns, objc};
 
-impl arc::A<IndexSet> {
-    #[objc::msg_send(initWithIndex:)]
-    pub fn init_with_index(self, val: usize) -> arc::R<IndexSet>;
-
-    #[objc::msg_send(initWithIndexSet:)]
-    pub fn init_with_index_set(self, val: &ns::IndexSet) -> arc::R<IndexSet>;
-
-    #[objc::msg_send(initWithIndexesInRange:)]
-    pub fn init_with_range(self, val: ns::Range) -> arc::R<IndexSet>;
-}
-
-impl arc::A<IndexSetMut> {
-    #[objc::msg_send(initWithIndex:)]
-    pub fn init_with_index(self, val: usize) -> arc::R<IndexSetMut>;
-
-    #[objc::msg_send(initWithIndexSet:)]
-    pub fn init_with_index_set(self, val: &ns::IndexSet) -> arc::R<IndexSetMut>;
-
-    #[objc::msg_send(initWithIndexesInRange:)]
-    pub fn init_with_range(self, val: ns::Range) -> arc::R<IndexSetMut>;
-}
-
 define_obj_type!(
     #[doc(alias = "NSIndexSet")]
     pub IndexSet(ns::Id),
@@ -37,6 +15,15 @@ define_obj_type!(
 );
 
 impl IndexSet {
+    #[objc::init(initWithIndex:)]
+    pub fn init_with_index(self, val: usize) -> arc::R<IndexSet>;
+
+    #[objc::init(initWithIndexSet:)]
+    pub fn init_with_index_set(self, val: &ns::IndexSet) -> arc::R<IndexSet>;
+
+    #[objc::init(initWithIndexesInRange:)]
+    pub fn init_with_range(self, val: ns::Range) -> arc::R<IndexSet>;
+
     #[objc::msg_send(count)]
     pub fn len(&self) -> usize;
 
@@ -162,6 +149,15 @@ impl IndexSet {
 }
 
 impl IndexSetMut {
+    #[objc::init(initWithIndex:)]
+    pub fn init_with_index(self, val: usize) -> arc::R<IndexSetMut>;
+
+    #[objc::init(initWithIndexSet:)]
+    pub fn init_with_index_set(self, val: &ns::IndexSet) -> arc::R<IndexSetMut>;
+
+    #[objc::init(initWithIndexesInRange:)]
+    pub fn init_with_range(self, val: ns::Range) -> arc::R<IndexSetMut>;
+
     #[inline]
     pub fn with_index(val: usize) -> arc::R<Self> {
         Self::alloc().init_with_index(val)

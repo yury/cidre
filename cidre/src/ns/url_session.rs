@@ -269,15 +269,13 @@ define_obj_type!(
     pub WebSocketMessage(ns::Id)
 );
 
-impl arc::A<WebSocketMessage> {
-    #[objc::msg_send(initWithData:)]
+impl WebSocketMessage {
+    #[objc::init(initWithData:)]
     pub fn init_with_data(self, data: &ns::Data) -> arc::R<WebSocketMessage>;
 
-    #[objc::msg_send(initWithString:)]
+    #[objc::init(initWithString:)]
     pub fn init_with_string(self, string: &ns::String) -> arc::R<WebSocketMessage>;
-}
 
-impl WebSocketMessage {
     define_cls!(NS_URL_SESSION_WEB_SOCKET_MESSAGE);
 
     #[inline]

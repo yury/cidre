@@ -89,16 +89,14 @@ impl ReaderOutput {
     }
 }
 
-impl arc::A<ReaderTrackOutput> {
-    #[objc::msg_send(initWithTrack:outputSettings:)]
+impl ReaderTrackOutput {
+    #[objc::init(initWithTrack:outputSettings:)]
     pub fn init_with_track_throws(
         self,
         track: &av::asset::Track,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<ReaderTrackOutput>;
-}
 
-impl ReaderTrackOutput {
     define_cls!(AV_ASSET_READER_TRACK_OUTPUT);
 
     /// Returns an instance of AVAssetReaderTrackOutput for reading from the specified track and

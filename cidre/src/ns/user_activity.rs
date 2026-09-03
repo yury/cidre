@@ -31,12 +31,10 @@ define_obj_type!(
     pub UserActivity(ns::Id)
 );
 
-impl arc::A<UserActivity> {
-    #[objc::msg_send(initWithActivityType:)]
-    pub fn init_with_activity_type(self, activity_type: &ns::String) -> arc::R<UserActivity>;
-}
-
 impl UserActivity {
+    #[objc::init(initWithActivityType:)]
+    pub fn init_with_activity_type(self, activity_type: &ns::String) -> arc::R<UserActivity>;
+
     define_cls!(NS_USER_ACTIVITY);
 
     pub fn with_activity_type(activity_type: &ns::String) -> arc::R<Self> {

@@ -46,15 +46,13 @@ impl<T: Obj> AsRef<Set<T>> for SetMut<T> {
     }
 }
 
-impl<T: Obj> arc::A<Set<T>> {
-    #[objc::msg_send(init)]
+impl<T: Obj> Set<T> {
+    #[objc::init(init)]
     pub fn init(self) -> arc::R<Set<T>>;
 
-    #[objc::msg_send(initWithObjects:count:)]
+    #[objc::init(initWithObjects:count:)]
     pub fn init_with_objs_count(self, ptr: *const c_void, count: usize) -> arc::R<Set<T>>;
-}
 
-impl<T: Obj> Set<T> {
     define_cls!(NS_SET);
 
     #[inline]
@@ -144,15 +142,13 @@ impl<T: Obj> Set<T> {
     }
 }
 
-impl<T: Obj> arc::A<SetMut<T>> {
-    #[objc::msg_send(init)]
+impl<T: Obj> SetMut<T> {
+    #[objc::init(init)]
     pub fn init(self) -> arc::R<SetMut<T>>;
 
-    #[objc::msg_send(initWithCapacity:)]
+    #[objc::init(initWithCapacity:)]
     pub fn init_with_capacity(self, capacity: usize) -> arc::R<SetMut<T>>;
-}
 
-impl<T: Obj> SetMut<T> {
     define_cls!(NS_MUTABLE_SET);
 
     #[inline]

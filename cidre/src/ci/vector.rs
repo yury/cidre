@@ -5,15 +5,13 @@ define_obj_type!(
     pub Vec(ns::Id)
 );
 
-impl arc::A<ci::Vec> {
-    #[objc::msg_send(initWithValues:count:)]
+impl ci::Vec {
+    #[objc::init(initWithValues:count:)]
     pub fn init_with_vals(self, values: *const cg::Float, count: usize) -> arc::R<ci::Vec>;
 
-    #[objc::msg_send(initWithString:)]
+    #[objc::init(initWithString:)]
     pub fn init_ns_string(self, val: &ns::String) -> arc::R<ci::Vec>;
-}
 
-impl ci::Vec {
     define_cls!(CI_VECTOR);
 
     #[inline]

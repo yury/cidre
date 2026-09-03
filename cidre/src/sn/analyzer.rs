@@ -9,12 +9,10 @@ define_obj_type!(
 unsafe impl Send for AudioStreamAnalyzer {}
 unsafe impl Sync for AudioStreamAnalyzer {}
 
-impl arc::A<AudioStreamAnalyzer> {
-    #[objc::msg_send(initWithFormat:)]
-    pub fn init_with_format(self, format: &av::AudioFormat) -> arc::R<AudioStreamAnalyzer>;
-}
-
 impl AudioStreamAnalyzer {
+    #[objc::init(initWithFormat:)]
+    pub fn init_with_format(self, format: &av::AudioFormat) -> arc::R<AudioStreamAnalyzer>;
+
     /// Only PCM formats are supported.
     pub fn with_format(format: &av::AudioFormat) -> arc::R<Self> {
         Self::alloc().init_with_format(format)
@@ -55,18 +53,16 @@ define_obj_type!(
     SN_AUDIO_FILE_ANALYZER
 );
 
-impl arc::A<AudioFileAnalyzer> {
-    #[objc::msg_send(initWithURL:error:)]
+pub type FileCompletionHandler = blocks::Block<fn(bool), blocks::Send>;
+
+impl AudioFileAnalyzer {
+    #[objc::init(initWithURL:error:)]
     pub unsafe fn init_with_url_err<'ear>(
         self,
         url: &ns::Url,
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<AudioFileAnalyzer>>;
-}
 
-pub type FileCompletionHandler = blocks::Block<fn(bool), blocks::Send>;
-
-impl AudioFileAnalyzer {
     pub fn with_url<'ear>(url: &ns::Url) -> ns::Result<'ear, arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_url_err(url, err) })
     }

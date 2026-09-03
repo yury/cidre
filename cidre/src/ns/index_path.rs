@@ -10,15 +10,13 @@ impl ns::Copying for IndexPath {}
 unsafe impl Send for IndexPath {}
 unsafe impl Sync for IndexPath {}
 
-impl arc::A<IndexPath> {
-    #[objc::msg_send(initWithIndex:)]
+impl IndexPath {
+    #[objc::init(initWithIndex:)]
     pub fn init_with_index(self, index: usize) -> arc::R<IndexPath>;
 
-    #[objc::msg_send(initWithIndexes:length:)]
+    #[objc::init(initWithIndexes:length:)]
     pub fn init_with_indexes(self, indexes: *const usize, lenght: usize) -> arc::R<IndexPath>;
-}
 
-impl IndexPath {
     pub fn with_index(index: usize) -> arc::R<Self> {
         Self::alloc().init_with_index(index)
     }

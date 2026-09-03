@@ -12,9 +12,9 @@ define_obj_type!(
     pub Image(ns::Id)
 );
 
-impl arc::A<Image> {
+impl Image {
     #[cfg(feature = "mtl")]
-    #[objc::msg_send(initWithMTLTexture:options:)]
+    #[objc::init(initWithMTLTexture:options:)]
     pub fn init_with_mlt_texture_options(
         self,
         texture: &mtl::Texture,
@@ -22,7 +22,7 @@ impl arc::A<Image> {
     ) -> Option<arc::Retained<Image>>;
 
     #[cfg(feature = "cv")]
-    #[objc::msg_send(initWithCVImageBuffer:options:)]
+    #[objc::init(initWithCVImageBuffer:options:)]
     pub fn init_with_cv_image_buf_options(
         self,
         image_buf: &cv::ImageBuf,
@@ -30,15 +30,13 @@ impl arc::A<Image> {
     ) -> Option<arc::Retained<Image>>;
 
     #[cfg(feature = "cv")]
-    #[objc::msg_send(initWithCVPixelBuffer:options:)]
+    #[objc::init(initWithCVPixelBuffer:options:)]
     pub fn init_with_cv_pixel_buf_options(
         self,
         pixel_buf: &cv::PixelBuf,
         options: Option<&cf::DictionaryOf<ImageOpt, cf::Type>>,
     ) -> Option<arc::Retained<Image>>;
-}
 
-impl Image {
     define_cls!(CI_IMAGE);
 
     #[cfg(feature = "mtl")]

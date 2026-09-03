@@ -10,15 +10,13 @@ define_obj_type!(
     pub Date(ns::Id), NS_DATE
 );
 
-impl arc::A<Date> {
-    #[objc::msg_send(initWithTimeIntervalSinceNow:)]
+impl Date {
+    #[objc::init(initWithTimeIntervalSinceNow:)]
     pub fn init_with_time_interval_since_now(self, secs: ns::TimeInterval) -> arc::R<Date>;
 
-    #[objc::msg_send(initWithTimeIntervalSince1970:)]
+    #[objc::init(initWithTimeIntervalSince1970:)]
     pub fn init_with_time_interval_since_1970(self, secs: ns::TimeInterval) -> arc::R<Date>;
-}
 
-impl Date {
     #[inline]
     pub fn with_time_interval_since_now(secs: ns::TimeInterval) -> arc::R<Self> {
         Self::alloc().init_with_time_interval_since_now(secs)

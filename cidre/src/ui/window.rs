@@ -6,12 +6,10 @@ define_obj_type!(
     UI_WINDOW
 );
 
-impl arc::A<Window> {
-    #[objc::msg_send(initWithWindowScene:)]
-    pub fn init_with_window_scene(self, scene: &ui::WindowScene) -> arc::R<Window>;
-}
-
 impl Window {
+    #[objc::init(initWithWindowScene:)]
+    pub fn init_with_window_scene(self, scene: &ui::WindowScene) -> arc::R<Window>;
+
     pub fn with_window_scene(scene: &ui::WindowScene) -> arc::R<Self> {
         Self::alloc().init_with_window_scene(scene)
     }

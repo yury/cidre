@@ -8,8 +8,8 @@ use crate::{blocks, dispatch};
 
 define_obj_type!(pub WriterInput(ns::Id));
 
-impl arc::A<WriterInput> {
-    #[objc::msg_send(initWithMediaType:outputSettings:)]
+impl WriterInput {
+    #[objc::init(initWithMediaType:outputSettings:)]
     pub unsafe fn init_media_type_output_settings_throws(
         self,
         media_type: &MediaType,
@@ -17,16 +17,14 @@ impl arc::A<WriterInput> {
     ) -> arc::R<WriterInput>;
 
     #[cfg(feature = "cm")]
-    #[objc::msg_send(initWithMediaType:outputSettings:sourceFormatHint:)]
+    #[objc::init(initWithMediaType:outputSettings:sourceFormatHint:)]
     pub unsafe fn with_media_type_output_settings_source_format_hint_throws(
         self,
         media_type: &MediaType,
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
         source_format_hint: Option<&cm::FormatDesc>,
     ) -> arc::R<WriterInput>;
-}
 
-impl WriterInput {
     define_cls!(AV_ASSET_WRITER_INPUT);
 
     pub unsafe fn with_media_type_output_settings_throws(
@@ -165,16 +163,14 @@ define_obj_type!(
     pub WriterInputPixelBufAdaptor(ns::Id)
 );
 
-impl arc::A<WriterInputPixelBufAdaptor> {
-    #[objc::msg_send(initWithAssetWriterInput:sourcePixelBufferAttributes:)]
+impl WriterInputPixelBufAdaptor {
+    #[objc::init(initWithAssetWriterInput:sourcePixelBufferAttributes:)]
     pub unsafe fn init_with_asset_writer_input_throws(
         self,
         input: &WriterInput,
         src_pixel_buf_attrs: Option<ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<WriterInputPixelBufAdaptor>;
-}
 
-impl WriterInputPixelBufAdaptor {
     define_cls!(AV_ASSET_WRITER_INPUT_PIXEL_BUFFER_ADAPTOR);
 
     pub fn with_input_writer<'ear>(

@@ -2,38 +2,6 @@ use crate::{arc, cg, cm, cv, define_cls, define_obj_type, ns, objc, vn};
 
 define_obj_type!(pub ImageRequestHandler(ns::Id));
 
-impl arc::A<ImageRequestHandler> {
-    #[objc::msg_send(initWithURL:options:)]
-    pub fn init_with_url_options(
-        self,
-        url: &ns::Url,
-        options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
-    ) -> arc::R<ImageRequestHandler>;
-
-    #[objc::msg_send(initWithURL:orientation:options:)]
-    pub fn init_with_url_orientation_options(
-        self,
-        url: &ns::Url,
-        orientation: cg::ImagePropOrientation,
-        options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
-    ) -> arc::R<ImageRequestHandler>;
-
-    #[objc::msg_send(initWithCVPixelBuffer:options:)]
-    pub fn init_with_cv_pixel_buf_options(
-        self,
-        pb: &cv::PixelBuf,
-        options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
-    ) -> Option<arc::R<ImageRequestHandler>>;
-
-    #[objc::msg_send(initWithCVPixelBuffer:orientation:options:)]
-    pub fn init_with_cv_pixel_buf_orientaion_options(
-        self,
-        pb: &cv::PixelBuf,
-        orientation: cg::ImagePropOrientation,
-        options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
-    ) -> Option<arc::R<ImageRequestHandler>>;
-}
-
 /// Performs requests on a single image.
 ///
 /// The VNImageRequestHandler is created with an image that is used
@@ -45,6 +13,36 @@ impl arc::A<ImageRequestHandler> {
 /// The vn::ImageRequestHandler can choose to also cache intermediate representation
 /// of the image or other request-specific information for the purposes of runtime performance.
 impl ImageRequestHandler {
+    #[objc::init(initWithURL:options:)]
+    pub fn init_with_url_options(
+        self,
+        url: &ns::Url,
+        options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
+    ) -> arc::R<ImageRequestHandler>;
+
+    #[objc::init(initWithURL:orientation:options:)]
+    pub fn init_with_url_orientation_options(
+        self,
+        url: &ns::Url,
+        orientation: cg::ImagePropOrientation,
+        options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
+    ) -> arc::R<ImageRequestHandler>;
+
+    #[objc::init(initWithCVPixelBuffer:options:)]
+    pub fn init_with_cv_pixel_buf_options(
+        self,
+        pb: &cv::PixelBuf,
+        options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
+    ) -> Option<arc::R<ImageRequestHandler>>;
+
+    #[objc::init(initWithCVPixelBuffer:orientation:options:)]
+    pub fn init_with_cv_pixel_buf_orientaion_options(
+        self,
+        pb: &cv::PixelBuf,
+        orientation: cg::ImagePropOrientation,
+        options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
+    ) -> Option<arc::R<ImageRequestHandler>>;
+
     define_cls!(VN_IMAGE_REQUEST_HANDLER);
     /// Creates a vn::ImageRequestHandler to be used for performing requests against an image
     /// specified by it's URL

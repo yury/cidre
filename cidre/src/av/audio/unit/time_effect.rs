@@ -2,14 +2,6 @@ use crate::{arc, at, av::audio, define_cls, define_obj_type, objc};
 
 define_obj_type!(pub TimeEffect(audio::Unit));
 
-impl arc::A<TimeEffect> {
-    #[objc::msg_send(initWithAudioComponentDescription:)]
-    pub fn init_with_audio_component_desc(
-        self,
-        description: at::audio::ComponentDesc,
-    ) -> arc::R<TimeEffect>;
-}
-
 /// Unit that processes audio in non real-time
 ///
 /// An TimeEffect represents an audio unit of type `aufc`.
@@ -18,6 +10,12 @@ impl arc::A<TimeEffect> {
 ///
 /// AVAudioUnitTimeEffect
 impl TimeEffect {
+    #[objc::init(initWithAudioComponentDescription:)]
+    pub fn init_with_audio_component_desc(
+        self,
+        description: at::audio::ComponentDesc,
+    ) -> arc::R<TimeEffect>;
+
     define_cls!(AV_AUDIO_UNIT_TIME_EFFECT);
 
     #[objc::msg_send(bypass)]

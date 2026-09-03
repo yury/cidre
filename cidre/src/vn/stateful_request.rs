@@ -5,16 +5,14 @@ define_obj_type!(
     pub StatefulRequest(vn::ImageBasedRequest)
 );
 
-impl arc::A<StatefulRequest> {
-    #[objc::msg_send(initWithFrameAnalysisSpacing:completionHandler:)]
+impl StatefulRequest {
+    #[objc::init(initWithFrameAnalysisSpacing:completionHandler:)]
     pub fn init_with_frame_analysis_spacing_ch(
         self,
         frame_analysis_spacing: cm::Time,
         ch: Option<&mut vn::RequestCh>,
     ) -> arc::R<StatefulRequest>;
-}
 
-impl StatefulRequest {
     define_cls!(VN_STATEFUL_REQUEST);
 
     pub fn with_frame_analysis_spacing_ch(

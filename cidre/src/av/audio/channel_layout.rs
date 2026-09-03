@@ -5,18 +5,16 @@ define_obj_type!(
     pub ChannelLayout(ns::Id)
 );
 
-impl arc::A<ChannelLayout> {
-    #[objc::msg_send(initWithLayout:)]
+impl ChannelLayout {
+    #[objc::init(initWithLayout:)]
     pub fn init_with_layout<const N: usize>(
         self,
         layout: &cat::AudioChannelLayout<N>,
     ) -> arc::R<ChannelLayout>;
 
-    #[objc::msg_send(initWithLayoutTag:)]
+    #[objc::init(initWithLayoutTag:)]
     pub fn init_with_layout_tag(self, tag: cat::AudioChannelLayoutTag) -> arc::R<ChannelLayout>;
-}
 
-impl ChannelLayout {
     define_cls!(AV_AUDIO_CHANNEL_LAYOUT);
 
     pub fn with_layout<const N: usize>(layout: &cat::AudioChannelLayout<N>) -> arc::R<Self> {

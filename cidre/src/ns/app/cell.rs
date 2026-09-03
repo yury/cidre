@@ -30,14 +30,6 @@ pub enum CellType {
     Image = 2,
 }
 
-impl arc::A<Cell> {
-    #[objc::msg_send(initTextCell:)]
-    pub fn init_text_cell(self, string: &ns::String) -> arc::R<Cell>;
-
-    #[objc::msg_send(initImageCell:)]
-    pub fn init_image_cell(self, image: Option<&ns::Image>) -> arc::R<Cell>;
-}
-
 define_obj_type!(
     #[doc(alias = "NSCell")]
     pub Cell(ns::Id),
@@ -45,6 +37,12 @@ define_obj_type!(
 );
 
 impl Cell {
+    #[objc::init(initTextCell:)]
+    pub fn init_text_cell(self, string: &ns::String) -> arc::R<Cell>;
+
+    #[objc::init(initImageCell:)]
+    pub fn init_image_cell(self, image: Option<&ns::Image>) -> arc::R<Cell>;
+
     #[inline]
     pub fn with_text(text: &ns::String) -> arc::R<Self> {
         Self::alloc().init_text_cell(text)

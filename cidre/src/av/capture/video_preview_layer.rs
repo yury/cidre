@@ -5,18 +5,16 @@ define_obj_type!(
     pub VideoPreviewLayer(ca::Layer)
 );
 
-impl arc::A<VideoPreviewLayer> {
-    #[objc::msg_send(initWithSession:)]
+impl VideoPreviewLayer {
+    #[objc::init(initWithSession:)]
     pub fn init_with_session(self, session: &av::CaptureSession) -> arc::R<VideoPreviewLayer>;
 
-    #[objc::msg_send(initWithSessionWithNoConnection:)]
+    #[objc::init(initWithSessionWithNoConnection:)]
     pub fn init_with_session_no_connection(
         self,
         session: &av::CaptureSession,
     ) -> arc::R<VideoPreviewLayer>;
-}
 
-impl VideoPreviewLayer {
     define_cls!(AV_CAPTURE_VIDEO_PREVIEW_LAYER);
 
     pub fn with_session(session: &av::CaptureSession) -> arc::R<Self> {

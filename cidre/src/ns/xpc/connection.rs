@@ -34,13 +34,13 @@ define_obj_type!(
 
 impl ProxyCreating for Connection {}
 
-impl arc::A<Connection> {
+impl Connection {
     #[cfg(target_os = "macos")]
-    #[objc::msg_send(initWithServiceName:)]
+    #[objc::init(initWithServiceName:)]
     pub fn init_with_service_name(self, name: &ns::String) -> arc::R<Connection>;
 
     #[cfg(target_os = "macos")]
-    #[objc::msg_send(initWithServiceName:options:)]
+    #[objc::init(initWithServiceName:options:)]
     pub fn init_with_mach_service(
         self,
         name: &ns::String,
@@ -48,11 +48,9 @@ impl arc::A<Connection> {
     ) -> arc::R<Connection>;
 
     #[cfg(target_os = "macos")]
-    #[objc::msg_send(initWithListenerEndpoint:)]
+    #[objc::init(initWithListenerEndpoint:)]
     pub fn init_with_listener_endpoint(self, endpoint: &ListenerEndpoint) -> arc::R<Connection>;
-}
 
-impl Connection {
     define_cls!(NS_XPC_CONNECTION);
 
     #[cfg(target_os = "macos")]
@@ -169,12 +167,10 @@ define_obj_type!(
     pub Listener(ns::Id)
 );
 
-impl arc::A<Listener> {
-    #[objc::msg_send(initWithMachServiceName:)]
-    pub fn init_with_mach_service_name(self, name: &ns::String) -> arc::R<Listener>;
-}
-
 impl Listener {
+    #[objc::init(initWithMachServiceName:)]
+    pub fn init_with_mach_service_name(self, name: &ns::String) -> arc::R<Listener>;
+
     define_cls!(NS_XPC_LISTENER);
 
     #[objc::msg_send(serviceListener)]

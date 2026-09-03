@@ -42,17 +42,15 @@ impl Input {
     pub fn ports(&self) -> arc::R<ns::Array<Port>>;
 }
 
-impl arc::A<DeviceInput> {
-    #[objc::msg_send(initWithDevice:error:)]
+#[cfg(not(target_os = "watchos"))]
+impl DeviceInput {
+    #[objc::init(initWithDevice:error:)]
     pub fn init_with_device_err<'ear>(
         self,
         device: &av::CaptureDevice,
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<DeviceInput>>;
-}
 
-#[cfg(not(target_os = "watchos"))]
-impl DeviceInput {
     define_cls!(AV_CAPTURE_DEVICE_INPUT);
 
     pub fn with_device<'ear>(device: &av::CaptureDevice) -> Result<arc::R<Self>, &'ear ns::Error> {

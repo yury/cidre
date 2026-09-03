@@ -73,15 +73,13 @@ define_obj_type!(
     pub Player(ns::Id)
 );
 
-impl arc::A<Player> {
-    #[objc::msg_send(initWithURL:)]
+impl Player {
+    #[objc::init(initWithURL:)]
     pub fn init_with_url(self, url: &ns::Url) -> arc::R<Player>;
 
-    #[objc::msg_send(initWithPlayerItem:)]
+    #[objc::init(initWithPlayerItem:)]
     pub unsafe fn init_with_player_item_throws(self, item: Option<&PlayerItem>) -> arc::R<Player>;
-}
 
-impl Player {
     define_cls!(AV_PLAYER);
 
     pub fn with_url(url: &ns::Url) -> arc::R<Self> {
@@ -319,15 +317,13 @@ define_obj_type!(
     AV_QUEUE_PLAYER
 );
 
-impl arc::A<QueuePlayer> {
-    #[objc::msg_send(initWithItems:)]
+impl QueuePlayer {
+    #[objc::init(initWithItems:)]
     pub unsafe fn init_with_items_throws(
         self,
         items: &ns::Array<av::PlayerItem>,
     ) -> arc::R<QueuePlayer>;
-}
 
-impl QueuePlayer {
     pub fn with_items<'ear>(items: &ns::Array<av::PlayerItem>) -> ns::ExResult<'ear, arc::R<Self>> {
         unsafe { ns::try_catch(|| Self::alloc().init_with_items_throws(items)) }
     }

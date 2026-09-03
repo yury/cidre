@@ -9,14 +9,6 @@ define_obj_type!(
 );
 
 impl arc::A<IndexPicker> {
-    #[objc::msg_send(initWithLocalizedTitle:symbolName:numberOfIndexes:)]
-    pub unsafe fn init_with_indexes_n_throws(
-        self,
-        localized_title: &ns::String,
-        symbol_name: &ns::String,
-        n: isize,
-    ) -> arc::R<IndexPicker>;
-
     pub fn init_with_indexes_n<'ear>(
         self,
         localized_title: &ns::String,
@@ -27,14 +19,6 @@ impl arc::A<IndexPicker> {
             self.init_with_indexes_n_throws(localized_title, symbol_name, n)
         })
     }
-
-    #[objc::msg_send(initWithLocalizedTitle:symbolName:localizedIndexTitles:)]
-    pub unsafe fn init_with_indexes_titles_throws(
-        self,
-        localized_title: &ns::String,
-        symbol_name: &ns::String,
-        titles: &ns::Array<ns::String>,
-    ) -> arc::R<IndexPicker>;
 
     pub fn init_with_titles<'ear>(
         self,
@@ -49,6 +33,22 @@ impl arc::A<IndexPicker> {
 }
 
 impl IndexPicker {
+    #[objc::init(initWithLocalizedTitle:symbolName:numberOfIndexes:)]
+    pub unsafe fn init_with_indexes_n_throws(
+        self,
+        localized_title: &ns::String,
+        symbol_name: &ns::String,
+        n: isize,
+    ) -> arc::R<IndexPicker>;
+
+    #[objc::init(initWithLocalizedTitle:symbolName:localizedIndexTitles:)]
+    pub unsafe fn init_with_indexes_titles_throws(
+        self,
+        localized_title: &ns::String,
+        symbol_name: &ns::String,
+        titles: &ns::Array<ns::String>,
+    ) -> arc::R<IndexPicker>;
+
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
     crate::define_cls!(AV_CAPTURE_INDEX_PICKER);
 

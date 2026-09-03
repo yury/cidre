@@ -6,17 +6,15 @@ define_obj_type!(
     NS_MENU_ITEM
 );
 
-impl arc::A<MenuItem> {
-    #[objc::msg_send(initWithTitle:action:keyEquivalent:)]
+impl MenuItem {
+    #[objc::init(initWithTitle:action:keyEquivalent:)]
     pub fn init_with_title_action_key_equivalent(
         self,
         title: &ns::String,
         action: Option<&objc::Sel>,
         key_equivalent: &ns::String,
     ) -> arc::R<MenuItem>;
-}
 
-impl MenuItem {
     /// `action` with no target is sent up the responder chain (e.g. `terminate:`, `hide:`,
     /// `performMiniaturize:`, `performClose:`).
     pub fn with_title_action_key_equivalent(

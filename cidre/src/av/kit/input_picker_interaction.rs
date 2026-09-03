@@ -55,16 +55,13 @@ define_obj_type!(
 impl crate::ui::Interaction for InputPickerInteraction {}
 
 #[cfg(target_os = "ios")]
-impl arc::A<InputPickerInteraction> {
-    #[objc::msg_send(initWithAudioSession:)]
+impl InputPickerInteraction {
+    #[objc::init(initWithAudioSession:)]
     pub fn init_with_audio_session(
         self,
         val: Option<&av::AudioSession>,
     ) -> arc::R<InputPickerInteraction>;
-}
 
-#[cfg(target_os = "ios")]
-impl InputPickerInteraction {
     #[objc::msg_send(delegate)]
     pub fn delegate(&self) -> Option<arc::R<AnyInputPickerInteractionDelegate>>;
 

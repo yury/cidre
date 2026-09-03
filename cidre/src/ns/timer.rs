@@ -8,9 +8,9 @@ define_obj_type!(
     pub Timer(ns::Id)
 );
 
-impl arc::A<Timer> {
+impl Timer {
     #[cfg(feature = "blocks")]
-    #[objc::msg_send(initWithFireDate:interval:repeats:block:)]
+    #[objc::init(initWithFireDate:interval:repeats:block:)]
     pub fn init_with_fire_date_block(
         self,
         date: &ns::Date,
@@ -19,7 +19,7 @@ impl arc::A<Timer> {
         block: &mut blocks::SyncBlock<fn(timer: &mut ns::Timer)>,
     ) -> arc::R<Timer>;
 
-    #[objc::msg_send(initWithFireDate:interval:target:selector:userInfo:repeats:)]
+    #[objc::init(initWithFireDate:interval:target:selector:userInfo:repeats:)]
     pub fn init_with_fire_date_sel(
         self,
         date: &ns::Date,
@@ -29,9 +29,7 @@ impl arc::A<Timer> {
         user_info: Option<&ns::Id>,
         repeats: bool,
     ) -> arc::R<Timer>;
-}
 
-impl Timer {
     define_cls!(NS_TIMER);
 
     #[cfg(feature = "blocks")]

@@ -5,16 +5,14 @@ define_obj_type!(
     pub NearbyServiceBrowser(ns::Id)
 );
 
-impl arc::A<NearbyServiceBrowser> {
-    #[objc::msg_send(initWithPeer:serviceType:)]
+impl NearbyServiceBrowser {
+    #[objc::init(initWithPeer:serviceType:)]
     pub unsafe fn init_with_peer_and_service_type_throws(
         self,
         peer: &mc::PeerId,
         service_type: &ns::String,
     ) -> arc::R<NearbyServiceBrowser>;
-}
 
-impl NearbyServiceBrowser {
     define_cls!(MC_NEARBY_SERVICE_BROWSER);
 
     pub fn with_peer<'ear>(

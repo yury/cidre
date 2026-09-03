@@ -15,13 +15,11 @@ define_obj_type!(
     UI_TAB_BAR_CONTROLLER
 );
 
-impl arc::A<TabBarController> {
-    #[objc::msg_send(initWithTabs:)]
+impl TabBarController {
+    #[objc::init(initWithTabs:)]
     #[objc::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
     pub fn init_with_tabs(self, tabs: &ns::Array<ui::Tab>) -> arc::R<TabBarController>;
-}
 
-impl TabBarController {
     #[objc::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
     pub fn with_tabs(tabs: &ns::Array<ui::Tab>) -> arc::R<Self> {
         Self::alloc().init_with_tabs(tabs)

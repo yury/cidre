@@ -10,20 +10,18 @@ impl<K: Obj, V: Obj> Obj for Dictionary<K, V> {}
 
 unsafe impl<K: Obj, V: Obj> Send for Dictionary<K, V> {}
 
-impl<K: Obj, V: Obj> arc::A<Dictionary<K, V>> {
-    #[objc::msg_send(init)]
+impl<K: Obj, V: Obj> Dictionary<K, V> {
+    #[objc::init(init)]
     pub fn init(self) -> arc::R<Dictionary<K, V>>;
 
-    #[objc::msg_send(initWithObjects:forKeys:count:)]
+    #[objc::init(initWithObjects:forKeys:count:)]
     pub unsafe fn init_with_objs_for_keys_count_throws(
         self,
         objects: *const V,
         keys: *const K,
         count: usize,
     ) -> arc::R<Dictionary<K, V>>;
-}
 
-impl<K: Obj, V: Obj> Dictionary<K, V> {
     define_cls!(NS_DICTIONARY);
 
     #[inline]
@@ -92,15 +90,13 @@ impl<K: Obj, V: Obj> std::ops::Deref for DictionaryMut<K, V> {
     }
 }
 
-impl<K: Obj, V: Obj> arc::A<DictionaryMut<K, V>> {
-    #[objc::msg_send(init)]
+impl<K: Obj, V: Obj> DictionaryMut<K, V> {
+    #[objc::init(init)]
     pub fn init(self) -> arc::R<DictionaryMut<K, V>>;
 
-    #[objc::msg_send(initWithCapacity:)]
+    #[objc::init(initWithCapacity:)]
     pub fn init_with_capacity(self, capacity: usize) -> arc::R<DictionaryMut<K, V>>;
-}
 
-impl<K: Obj, V: Obj> DictionaryMut<K, V> {
     define_cls!(NS_MUTABLE_DICTIONARY);
 
     #[inline]

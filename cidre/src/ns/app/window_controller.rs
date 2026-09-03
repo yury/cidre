@@ -1,16 +1,14 @@
 use crate::{arc, define_obj_type, ns, objc};
 
-impl arc::A<WindowController> {
-    #[objc::msg_send(initWithWindow:)]
-    pub fn init_with_window(self, window: Option<&ns::Window>) -> arc::R<WindowController>;
-}
-
 define_obj_type!(
     pub WindowController(ns::Responder),
     NS_WINDOW_CONTROLLER
 );
 
 impl WindowController {
+    #[objc::init(initWithWindow:)]
+    pub fn init_with_window(self, window: Option<&ns::Window>) -> arc::R<WindowController>;
+
     pub fn with_window(window: Option<&ns::Window>) -> arc::R<Self> {
         Self::alloc().init_with_window(window)
     }

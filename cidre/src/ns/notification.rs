@@ -28,8 +28,8 @@ define_obj_type!(
     pub Notification(ns::Id)
 );
 
-impl arc::A<Notification> {
-    #[objc::msg_send(initWithName:object:userInfo:)]
+impl Notification {
+    #[objc::init(initWithName:object:userInfo:)]
     pub fn init_with_name(
         self,
         name: &ns::NotificationName,
@@ -37,11 +37,9 @@ impl arc::A<Notification> {
         user_info: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> arc::R<Notification>;
 
-    #[objc::msg_send(initWithCoder:)]
+    #[objc::init(initWithCoder:)]
     pub fn init_with_coder(self, coder: &ns::Coder) -> arc::R<Notification>;
-}
 
-impl Notification {
     define_cls!(NS_NOTIFICATION);
 
     #[objc::msg_send(name)]

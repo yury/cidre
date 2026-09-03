@@ -7,12 +7,10 @@ define_obj_type!(
 
 unsafe impl Send for Uuid {}
 
-impl arc::A<Uuid> {
-    #[objc::msg_send(initWithUUIDString:)]
-    fn init_with_uuid_string(self, str: &ns::String) -> Option<arc::R<Uuid>>;
-}
-
 impl Uuid {
+    #[objc::init(initWithUUIDString:)]
+    fn init_with_uuid_string(self, str: &ns::String) -> Option<arc::R<Uuid>>;
+
     #[objc::msg_send(UUIDString)]
     pub fn string(&self) -> arc::R<ns::String>;
 

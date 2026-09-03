@@ -5,15 +5,15 @@ define_obj_type!(
     pub File(ns::Id)
 );
 
-impl arc::A<File> {
-    #[objc::msg_send(initForReading:error:)]
+impl File {
+    #[objc::init(initForReading:error:)]
     pub unsafe fn init_for_reading_err<'ear>(
         self,
         file_url: &ns::Url,
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<File>>;
 
-    #[objc::msg_send(initForReading:commonFormat:interleaved:error:)]
+    #[objc::init(initForReading:commonFormat:interleaved:error:)]
     pub unsafe fn init_for_reading_common_format_err<'ear>(
         self,
         file_url: &ns::Url,
@@ -22,7 +22,7 @@ impl arc::A<File> {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<File>>;
 
-    #[objc::msg_send(initForWriting:settings:error:)]
+    #[objc::init(initForWriting:settings:error:)]
     pub unsafe fn init_for_writing_err<'ear>(
         self,
         file_url: &ns::Url,
@@ -30,7 +30,7 @@ impl arc::A<File> {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<File>>;
 
-    #[objc::msg_send(initForWriting:settings:commonFormat:interleaved:error:)]
+    #[objc::init(initForWriting:settings:commonFormat:interleaved:error:)]
     pub unsafe fn init_for_writing_common_format_err<'ear>(
         self,
         file_url: &ns::Url,
@@ -39,9 +39,7 @@ impl arc::A<File> {
         interleaved: bool,
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<File>>;
-}
 
-impl File {
     define_cls!(AV_AUDIO_FILE);
 
     pub fn open_read<'ear>(file_url: &ns::Url) -> ns::Result<'ear, arc::R<Self>> {

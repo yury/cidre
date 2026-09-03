@@ -7,29 +7,6 @@ define_obj_type!(
     pub Time(ns::Id)
 );
 
-impl arc::A<Time> {
-    #[objc::msg_send(initWithAudioTimeStamp:sampleRate:)]
-    pub fn init_with_audio_ts_sample_rate(
-        self,
-        ts: &cat::AudioTimeStamp,
-        sample_rate: f64,
-    ) -> arc::R<Time>;
-
-    #[objc::msg_send(initWithHostTime:)]
-    pub fn init_with_host_time(self, host_time: u64) -> arc::R<Time>;
-
-    #[objc::msg_send(initWithHostTime:sampleTime:atRate:)]
-    pub fn init_with_host_time_sample_rate_at_rate(
-        self,
-        host_time: u64,
-        sample_time: FramePos,
-        at_rate: f64,
-    ) -> arc::R<Time>;
-
-    #[objc::msg_send(initWithSampleTime:atRate:)]
-    pub fn init_with_sample_time_at_rate(self, time: FramePos, at_rate: f64) -> arc::R<Time>;
-}
-
 /// Represent a moment in time.
 ///
 /// AVAudioTime is used in AVAudioEngine to represent time. Instances are immutable.
@@ -48,6 +25,27 @@ impl arc::A<Time> {
 /// frequency) so client code wanting to do what should be straightforward time computations can at
 /// least not be cluttered by ugly multiplications and divisions by the host clock frequency.
 impl Time {
+    #[objc::init(initWithAudioTimeStamp:sampleRate:)]
+    pub fn init_with_audio_ts_sample_rate(
+        self,
+        ts: &cat::AudioTimeStamp,
+        sample_rate: f64,
+    ) -> arc::R<Time>;
+
+    #[objc::init(initWithHostTime:)]
+    pub fn init_with_host_time(self, host_time: u64) -> arc::R<Time>;
+
+    #[objc::init(initWithHostTime:sampleTime:atRate:)]
+    pub fn init_with_host_time_sample_rate_at_rate(
+        self,
+        host_time: u64,
+        sample_time: FramePos,
+        at_rate: f64,
+    ) -> arc::R<Time>;
+
+    #[objc::init(initWithSampleTime:atRate:)]
+    pub fn init_with_sample_time_at_rate(self, time: FramePos, at_rate: f64) -> arc::R<Time>;
+
     define_cls!(AV_AUDIO_TIME);
 
     pub fn with_ts(ts: &cat::AudioTimeStamp, sample_rate: f64) -> arc::R<Time> {

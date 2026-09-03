@@ -52,20 +52,18 @@ pub enum NetworkServiceType {
     CallSignaling = 11,
 }
 
-impl arc::A<UrlRequest> {
-    #[objc::msg_send(initWithURL:)]
+impl UrlRequest {
+    #[objc::init(initWithURL:)]
     pub fn init_with_url(self, url: &ns::Url) -> arc::R<UrlRequest>;
 
-    #[objc::msg_send(initWithURL:cachePolicy:timeoutInterval:)]
+    #[objc::init(initWithURL:cachePolicy:timeoutInterval:)]
     pub fn init_with_url_cache_policy_timeout(
         self,
         url: &ns::Url,
         cache_policy: CachePolicy,
         timeout: ns::TimeInterval,
     ) -> arc::R<UrlRequest>;
-}
 
-impl UrlRequest {
     define_cls!(NS_URL_REQUEST);
 
     #[inline]
@@ -145,20 +143,18 @@ pub enum Attribution {
     User = 1,
 }
 
-impl arc::A<UrlRequestMut> {
-    #[objc::msg_send(initWithURL:)]
+impl UrlRequestMut {
+    #[objc::init(initWithURL:)]
     pub fn init_with_url(self, url: &ns::Url) -> arc::R<UrlRequestMut>;
 
-    #[objc::msg_send(initWithURL:cachePolicy:timeoutInterval:)]
+    #[objc::init(initWithURL:cachePolicy:timeoutInterval:)]
     pub fn init_with_url_cache_policy_timeout(
         self,
         url: &ns::Url,
         cache_policy: CachePolicy,
         timeout: ns::TimeInterval,
     ) -> arc::R<UrlRequestMut>;
-}
 
-impl UrlRequestMut {
     define_cls!(NS_MUTABLE_URL_REQUEST);
 
     #[inline]

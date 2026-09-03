@@ -30,15 +30,13 @@ unsafe impl<T> Send for OrderedCollectionDiff<T> where T: objc::Obj + Send {}
 
 impl<T: objc::Obj> objc::Obj for OrderedCollectionDiff<T> {}
 
-impl<T: objc::Obj> arc::A<OrderedCollectionDiff<T>> {
-    #[objc::msg_send(initWithChanges:)]
+impl<T: objc::Obj> OrderedCollectionDiff<T> {
+    #[objc::init(initWithChanges:)]
     pub fn init_with_changes(
         self,
         changes: &ns::Array<ns::OrderedCollectionChange<T>>,
     ) -> arc::R<OrderedCollectionDiff<T>>;
-}
 
-impl<T: objc::Obj> OrderedCollectionDiff<T> {
     define_cls!(NS_ORDERED_COLLECTION_DIFFERENCE);
 
     #[inline]

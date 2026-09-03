@@ -8,12 +8,10 @@ define_obj_type!(
 unsafe impl Send for Locale {}
 unsafe impl Sync for Locale {}
 
-impl arc::A<Locale> {
-    #[objc::msg_send(initWithLocaleIdentifier:)]
-    pub fn init_with_locale_id(self, id: &ns::String) -> arc::R<Locale>;
-}
-
 impl Locale {
+    #[objc::init(initWithLocaleIdentifier:)]
+    pub fn init_with_locale_id(self, id: &ns::String) -> arc::R<Locale>;
+
     define_cls!(NS_LOCALE);
 
     #[objc::msg_send(availableLocaleIdentifiers)]

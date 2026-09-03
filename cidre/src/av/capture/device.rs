@@ -2416,16 +2416,14 @@ define_obj_type!(
     pub RotationCoordinator(ns::Id)
 );
 
-impl arc::A<RotationCoordinator> {
-    #[objc::msg_send(initWithDevice:previewLayer:)]
+impl RotationCoordinator {
+    #[objc::init(initWithDevice:previewLayer:)]
     pub fn init_with_device_preview_layer(
         self,
         device: &Device,
         preview_layer: Option<&ca::Layer>,
     ) -> arc::R<RotationCoordinator>;
-}
 
-impl RotationCoordinator {
     #[api::available(macos = 14.0, ios = 17.0, maccatalyst = 17.0, tvos = 17.0)]
     crate::define_cls!(AV_CAPTURE_DEVICE_ROTATION_COORDINATOR);
 

@@ -23,23 +23,21 @@ define_obj_type!(
 
 impl mc::NearbyServiceBrowserDelegate for BrowserViewController {}
 
-impl arc::A<BrowserViewController> {
-    #[objc::msg_send(initWithServiceType:session:)]
+impl BrowserViewController {
+    #[objc::init(initWithServiceType:session:)]
     pub unsafe fn init_with_service_type_throws(
         self,
         service_type: &ns::String,
         session: &mc::Session,
     ) -> arc::R<BrowserViewController>;
 
-    #[objc::msg_send(initWithBrowser:session:)]
+    #[objc::init(initWithBrowser:session:)]
     pub unsafe fn init_with_browser_throws(
         self,
         browser: &mc::NearbyServiceBrowser,
         session: &mc::Session,
     ) -> arc::R<BrowserViewController>;
-}
 
-impl BrowserViewController {
     define_cls!(MC_BROWSER_VIEW_CONTROLLER);
 
     pub fn with_service_type<'ear>(

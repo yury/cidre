@@ -21,16 +21,14 @@ define_obj_type!(
     pub GestureRecognizer(ns::Id)
 );
 
-impl arc::A<GestureRecognizer> {
-    #[objc::msg_send(initWithTarget:action:)]
+impl GestureRecognizer {
+    #[objc::init(initWithTarget:action:)]
     pub fn init_with_target_action(
         self,
         target: Option<&ns::Id>,
         action: Option<&objc::Sel>,
     ) -> arc::R<GestureRecognizer>;
-}
 
-impl GestureRecognizer {
     define_cls!(UI_GESTURE_RECOGNIZER);
 
     pub fn with_target_action(target: Option<&ns::Id>, action: Option<&objc::Sel>) -> arc::R<Self> {

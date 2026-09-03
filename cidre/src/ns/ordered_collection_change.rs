@@ -9,25 +9,6 @@ pub struct OrderedCollectionChange<T: objc::Obj>(ns::Id, PhantomData<T>);
 
 unsafe impl<T> Send for OrderedCollectionChange<T> where T: objc::Obj + Send {}
 
-impl<T: objc::Obj> arc::A<OrderedCollectionChange<T>> {
-    #[objc::msg_send(initWithObject:type:index:)]
-    pub fn init_with_object_type_index(
-        self,
-        object: Option<&T>,
-        type_: CollectionChangeType,
-        index: ns::UInteger,
-    ) -> arc::R<OrderedCollectionChange<T>>;
-
-    #[objc::msg_send(initWithObject:type:index:associatedIndex:)]
-    pub fn init_with_object_type_index_associated(
-        self,
-        object: Option<&T>,
-        type_: CollectionChangeType,
-        index: ns::UInteger,
-        associated_index: ns::UInteger,
-    ) -> arc::R<OrderedCollectionChange<T>>;
-}
-
 impl<T: objc::Obj> objc::Obj for OrderedCollectionChange<T> {}
 
 impl<T: objc::Obj> Deref for OrderedCollectionChange<T> {
@@ -39,6 +20,23 @@ impl<T: objc::Obj> Deref for OrderedCollectionChange<T> {
 }
 
 impl<T: objc::Obj> OrderedCollectionChange<T> {
+    #[objc::init(initWithObject:type:index:)]
+    pub fn init_with_object_type_index(
+        self,
+        object: Option<&T>,
+        type_: CollectionChangeType,
+        index: ns::UInteger,
+    ) -> arc::R<OrderedCollectionChange<T>>;
+
+    #[objc::init(initWithObject:type:index:associatedIndex:)]
+    pub fn init_with_object_type_index_associated(
+        self,
+        object: Option<&T>,
+        type_: CollectionChangeType,
+        index: ns::UInteger,
+        associated_index: ns::UInteger,
+    ) -> arc::R<OrderedCollectionChange<T>>;
+
     define_cls!(NS_ORDERED_COLLECTION_CHANGE);
 
     #[inline]

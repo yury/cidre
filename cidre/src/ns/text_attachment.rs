@@ -29,23 +29,14 @@ define_obj_type!(
     ),
     all(target_os = "macos", feature = "app")
 ))]
-impl arc::A<TextAttachment> {
-    #[objc::msg_send(initWithData:ofType:)]
+impl TextAttachment {
+    #[objc::init(initWithData:ofType:)]
     pub fn init_with_data(
         self,
         data: Option<&ns::Data>,
         type_: Option<&ns::String>,
     ) -> arc::R<TextAttachment>;
-}
 
-#[cfg(any(
-    all(
-        any(target_os = "ios", target_os = "tvos", target_os = "watchos"),
-        feature = "ui"
-    ),
-    all(target_os = "macos", feature = "app")
-))]
-impl TextAttachment {
     #[inline]
     pub fn with_data(data: Option<&ns::Data>, type_: Option<&ns::String>) -> arc::R<Self> {
         Self::alloc().init_with_data(data, type_)

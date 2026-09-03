@@ -45,17 +45,15 @@ define_obj_type!(
     pub AnyPipSampleBufPlayerDelegate(ns::Id)
 );
 
-impl arc::A<av::PipControllerContentSrc> {
-    #[objc::msg_send(initWithSampleBufferDisplayLayer:playbackDelegate:)]
+/// AVSampleBufferDisplayLayerSupport
+impl av::PipControllerContentSrc {
+    #[objc::init(initWithSampleBufferDisplayLayer:playbackDelegate:)]
     pub fn init_with_sample_buf_display_layer<D: PipSampleBufPlayerDelegate>(
         self,
         sbuf_display_layer: &av::SampleBufDisplayLayer,
         playback_delegate: &D,
     ) -> arc::R<av::PipControllerContentSrc>;
-}
 
-/// AVSampleBufferDisplayLayerSupport
-impl av::PipControllerContentSrc {
     pub fn with_sample_buf_display_layer<D: PipSampleBufPlayerDelegate>(
         sbuf_display_layer: &av::SampleBufDisplayLayer,
         playback_delegate: &D,

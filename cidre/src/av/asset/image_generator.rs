@@ -32,12 +32,10 @@ define_obj_type!(
     pub ImageGenerator(ns::Id)
 );
 
-impl arc::A<ImageGenerator> {
-    #[objc::msg_send(initWithAsset:)]
-    pub fn init_with_asset(self, asset: &av::Asset) -> arc::R<ImageGenerator>;
-}
-
 impl ImageGenerator {
+    #[objc::init(initWithAsset:)]
+    pub fn init_with_asset(self, asset: &av::Asset) -> arc::R<ImageGenerator>;
+
     crate::define_cls!(AV_ASSET_IMAGE_GENERATOR);
 
     pub fn with_asset(asset: &av::Asset) -> arc::R<Self> {

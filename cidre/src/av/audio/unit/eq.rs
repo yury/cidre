@@ -80,13 +80,11 @@ impl FilterParameters {
 
 define_obj_type!(pub UnitEq(audio::UnitEffect));
 
-impl arc::A<UnitEq> {
-    #[objc::msg_send(initWithNumberOfBands:)]
-    pub fn init_with_number_of_bands(self, number_of_bands: usize) -> arc::R<UnitEq>;
-}
-
 /// UnitEffect that implements a Multi-Band Equalizer.
 impl UnitEq {
+    #[objc::init(initWithNumberOfBands:)]
+    pub fn init_with_number_of_bands(self, number_of_bands: usize) -> arc::R<UnitEq>;
+
     define_cls!(AV_AUDIO_UNIT_EQ);
 
     pub fn with_bands(number_of_bands: usize) -> arc::R<Self> {

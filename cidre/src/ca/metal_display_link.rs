@@ -39,12 +39,10 @@ define_obj_type!(
     #[api::available(macos = 14.0, maccatalyst = 17.0, ios = 17.0, tvos = 17.0, visionos = 1.0)]
 );
 
-impl arc::A<MetalDisplayLink> {
-    #[objc::msg_send(initWithMetalLayer:)]
-    pub fn init_with_metal_layer(self, layer: &ca::MetalLayer) -> arc::R<MetalDisplayLink>;
-}
-
 impl MetalDisplayLink {
+    #[objc::init(initWithMetalLayer:)]
+    pub fn init_with_metal_layer(self, layer: &ca::MetalLayer) -> arc::R<MetalDisplayLink>;
+
     pub fn with_layer(layer: &ca::MetalLayer) -> arc::R<Self> {
         Self::alloc().init_with_metal_layer(layer)
     }

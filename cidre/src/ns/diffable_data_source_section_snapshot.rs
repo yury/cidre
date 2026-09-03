@@ -12,14 +12,12 @@ pub struct DiffableDataSrcSectionSnapshot<I>(ns::Id, PhantomData<I>);
 
 unsafe impl<I> Send for DiffableDataSrcSectionSnapshot<I> where I: objc::Obj {}
 
-impl<I: objc::Obj> arc::A<DiffableDataSrcSectionSnapshot<I>> {
-    #[objc::msg_send(init)]
-    pub fn init(self) -> arc::R<DiffableDataSrcSectionSnapshot<I>>;
-}
-
 impl<I: objc::Obj> objc::Obj for DiffableDataSrcSectionSnapshot<I> {}
 
 impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
+    #[objc::init(init)]
+    pub fn init(self) -> arc::R<DiffableDataSrcSectionSnapshot<I>>;
+
     define_cls!(NS_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT);
 
     #[inline]

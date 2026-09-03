@@ -25,17 +25,15 @@ pub struct CollectionViewDiffableDataSrc<S, I>(ns::Id, PhantomData<S>, PhantomDa
 
 impl<S: objc::Obj, I: objc::Obj> objc::Obj for CollectionViewDiffableDataSrc<S, I> {}
 
-impl<S: objc::Obj, I: objc::Obj> arc::A<CollectionViewDiffableDataSrc<S, I>> {
+impl<S: objc::Obj, I: objc::Obj> CollectionViewDiffableDataSrc<S, I> {
     #[cfg(feature = "blocks")]
-    #[objc::msg_send(initWithCollectionView:itemProvider:)]
+    #[objc::init(initWithCollectionView:itemProvider:)]
     pub fn init_with_collection_view_item_provider(
         self,
         collection_view: &ns::CollectionView,
         item_provider: &mut CollectionViewDiffableDataSrcItemProvider<I>,
     ) -> arc::R<CollectionViewDiffableDataSrc<S, I>>;
-}
 
-impl<S: objc::Obj, I: objc::Obj> CollectionViewDiffableDataSrc<S, I> {
     define_cls!(NS_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE);
 
     #[cfg(feature = "blocks")]

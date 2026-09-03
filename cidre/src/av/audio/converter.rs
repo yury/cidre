@@ -66,16 +66,14 @@ define_obj_type!(
     pub Converter(ns::Id)
 );
 
-impl arc::A<Converter> {
-    #[objc::msg_send(initFromFormat:toFormat:)]
+impl Converter {
+    #[objc::init(initFromFormat:toFormat:)]
     pub fn init_from_format_to_format(
         self,
         from: &av::AudioFormat,
         to: &av::AudioFormat,
     ) -> Option<arc::R<Converter>>;
-}
 
-impl Converter {
     define_cls!(AV_AUDIO_CONVERTER);
 
     pub fn with_formats(from: &av::AudioFormat, to: &av::AudioFormat) -> Option<arc::R<Self>> {

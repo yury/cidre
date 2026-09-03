@@ -6,12 +6,10 @@ define_obj_type!(
     UI_LABEL
 );
 
-impl arc::A<Label> {
-    #[objc::msg_send(initWithFrame:)]
-    pub fn init_with_frame(self, frame: cg::Rect) -> arc::R<Label>;
-}
-
 impl Label {
+    #[objc::init(initWithFrame:)]
+    pub fn init_with_frame(self, frame: cg::Rect) -> arc::R<Label>;
+
     pub fn with_frame(frame: cg::Rect) -> arc::R<Self> {
         Self::alloc().init_with_frame(frame)
     }

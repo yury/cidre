@@ -85,8 +85,8 @@ define_obj_type!(
     pub DataMut(Data), NS_MUTABLE_DATA
 );
 
-impl arc::A<Data> {
-    #[objc::msg_send(initWithContentsOfFile:options:error:)]
+impl Data {
+    #[objc::init(initWithContentsOfFile:options:error:)]
     pub fn init_with_contents_of_file_opts_err<'ear>(
         self,
         path: &ns::String,
@@ -94,7 +94,7 @@ impl arc::A<Data> {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Data>>;
 
-    #[objc::msg_send(initWithContentsOfURL:options:error:)]
+    #[objc::init(initWithContentsOfURL:options:error:)]
     pub fn init_with_contents_of_url_opts_err<'ear>(
         self,
         url: &ns::Url,
@@ -102,11 +102,9 @@ impl arc::A<Data> {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Data>>;
 
-    #[objc::msg_send(initWithBytes:length:)]
+    #[objc::init(initWithBytes:length:)]
     pub fn init_with_bytes(self, bytes: *const u8, length: usize) -> arc::R<Data>;
-}
 
-impl Data {
     #[inline]
     pub fn with_contents_of_file<'ear, P: AsRef<ns::String>>(
         path: P,

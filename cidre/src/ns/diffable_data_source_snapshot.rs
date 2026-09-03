@@ -17,14 +17,12 @@ where
 {
 }
 
-impl<S: objc::Obj, I: objc::Obj> arc::A<DiffableDataSrcSnapshot<S, I>> {
-    #[objc::msg_send(init)]
-    pub fn init(self) -> arc::R<DiffableDataSrcSnapshot<S, I>>;
-}
-
 impl<S: objc::Obj, I: objc::Obj> objc::Obj for DiffableDataSrcSnapshot<S, I> {}
 
 impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
+    #[objc::init(init)]
+    pub fn init(self) -> arc::R<DiffableDataSrcSnapshot<S, I>>;
+
     define_cls!(NS_DIFFABLE_DATA_SOURCE_SNAPSHOT);
 
     #[inline]

@@ -54,20 +54,18 @@ impl<T: objc::Obj> std::ops::DerefMut for ArrayMut<T> {
     }
 }
 
-impl<T: objc::Obj> arc::A<Array<T>> {
+impl<T: objc::Obj> Array<T> {
     /// Initializes an empty array.
-    #[objc::msg_send(init)]
+    #[objc::init(init)]
     pub fn init(self) -> arc::R<Array<T>>;
 
     /// Initializes from a raw pointer to Objective-C object references.
     ///
     /// # Safety
     /// `ptr` must point to `count` valid references for the duration of the call.
-    #[objc::msg_send(initWithObjects:count:)]
+    #[objc::init(initWithObjects:count:)]
     pub unsafe fn init_with_objs(self, ptr: *const &T, count: usize) -> arc::R<Array<T>>;
-}
 
-impl<T: objc::Obj> Array<T> {
     define_cls!(NS_ARRAY);
 
     /// Creates an empty array via `alloc` + `init`.
@@ -215,15 +213,13 @@ impl<T: objc::Obj> std::ops::IndexMut<usize> for Array<T> {
     }
 }
 
-impl<T: objc::Obj> arc::A<ArrayMut<T>> {
-    #[objc::msg_send(initWithCapacity:)]
+impl<T: objc::Obj> ArrayMut<T> {
+    #[objc::init(initWithCapacity:)]
     pub fn init_with_capacity(self, capacity: usize) -> arc::R<ArrayMut<T>>;
 
-    #[objc::msg_send(initWithObjects:count:)]
+    #[objc::init(initWithObjects:count:)]
     pub unsafe fn init_with_objs(self, ptr: *const &T, count: usize) -> arc::R<ArrayMut<T>>;
-}
 
-impl<T: objc::Obj> ArrayMut<T> {
     define_cls!(NS_MUTABLE_ARRAY);
 
     /// Creates a mutable array with preallocated capacity.

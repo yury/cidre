@@ -11,26 +11,12 @@ define_obj_type!(
 );
 
 impl arc::A<SysExposureBiasSlider> {
-    #[objc::msg_send(initWithDevice:)]
-    pub unsafe fn init_with_device_throws(
-        self,
-        device: &av::CaptureDevice,
-    ) -> arc::R<SysExposureBiasSlider>;
-
     pub fn init_with_device<'ear>(
         self,
         device: &av::CaptureDevice,
     ) -> ns::ExResult<'ear, arc::R<SysExposureBiasSlider>> {
         ns::try_catch(|| unsafe { self.init_with_device_throws(device) })
     }
-
-    #[cfg(feature = "blocks")]
-    #[objc::msg_send(initWithDevice:action:)]
-    pub unsafe fn init_with_device_action_throws(
-        self,
-        device: &av::CaptureDevice,
-        action: &mut blocks::EscBlock<fn(video_zoom_factor: cg::Float)>,
-    ) -> arc::R<SysExposureBiasSlider>;
 
     #[cfg(feature = "blocks")]
     pub fn init_with_device_action<'ear>(
@@ -43,6 +29,20 @@ impl arc::A<SysExposureBiasSlider> {
 }
 
 impl SysExposureBiasSlider {
+    #[objc::init(initWithDevice:)]
+    pub unsafe fn init_with_device_throws(
+        self,
+        device: &av::CaptureDevice,
+    ) -> arc::R<SysExposureBiasSlider>;
+
+    #[cfg(feature = "blocks")]
+    #[objc::init(initWithDevice:action:)]
+    pub unsafe fn init_with_device_action_throws(
+        self,
+        device: &av::CaptureDevice,
+        action: &mut blocks::EscBlock<fn(video_zoom_factor: cg::Float)>,
+    ) -> arc::R<SysExposureBiasSlider>;
+
     #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
     crate::define_cls!(AV_CAPTURE_SYSTEM_EXPOSURE_BIAS_SLIDER);
 

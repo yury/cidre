@@ -8,8 +8,8 @@ define_obj_type!(
     MPS_GRAPH_TENSOR_DATA
 );
 
-impl arc::A<TensorData> {
-    #[objc::msg_send(initWithDevice:data:shape:dataType:)]
+impl TensorData {
+    #[objc::init(initWithDevice:data:shape:dataType:)]
     pub fn init_with_device_data_shape_data_type(
         self,
         device: &graph::Device,
@@ -18,7 +18,7 @@ impl arc::A<TensorData> {
         data_type: mps::DType,
     ) -> arc::R<TensorData>;
 
-    #[objc::msg_send(initWithMTLBuffer:shape:dataType:)]
+    #[objc::init(initWithMTLBuffer:shape:dataType:)]
     pub fn init_with_mtl_buffer_shape_data_type(
         self,
         buffer: &mtl::Buf,
@@ -26,7 +26,7 @@ impl arc::A<TensorData> {
         data_type: mps::DType,
     ) -> arc::R<TensorData>;
 
-    #[objc::msg_send(initWithMTLBuffer:shape:dataType:rowBytes:)]
+    #[objc::init(initWithMTLBuffer:shape:dataType:rowBytes:)]
     #[api::available(macos = 12.3, ios = 15.4, tvos = 15.4)]
     pub fn init_with_mtl_buffer_shape_data_type_row_bytes(
         self,
@@ -36,11 +36,9 @@ impl arc::A<TensorData> {
         row_bytes: usize,
     ) -> arc::R<TensorData>;
 
-    #[objc::msg_send(initWithMPSNDArray:)]
+    #[objc::init(initWithMPSNDArray:)]
     pub fn init_with_mps_nd_array(self, ndarray: &mps::NdArray) -> arc::R<TensorData>;
-}
 
-impl TensorData {
     #[inline]
     pub fn with_data(
         device: &graph::Device,

@@ -5,12 +5,10 @@ define_obj_type!(
     pub PlaybackSpeed(ns::Id)
 );
 
-impl arc::A<PlaybackSpeed> {
-    #[objc::msg_send(initWithRate:localizedName:)]
-    pub fn init_with_rate(self, rate: f32, localized_name: &ns::String) -> arc::R<PlaybackSpeed>;
-}
-
 impl PlaybackSpeed {
+    #[objc::init(initWithRate:localizedName:)]
+    pub fn init_with_rate(self, rate: f32, localized_name: &ns::String) -> arc::R<PlaybackSpeed>;
+
     define_cls!(AV_PLAYBACK_SPEED);
 
     #[objc::msg_send(systemDefaultSpeeds)]

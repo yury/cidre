@@ -128,12 +128,10 @@ define_obj_type!(
     NS_TABLE_VIEW
 );
 
-impl arc::A<TableView> {
-    #[objc::msg_send(initWithFrame:)]
-    pub fn init_with_frame(self, frame: ns::Rect) -> arc::R<TableView>;
-}
-
 impl TableView {
+    #[objc::init(initWithFrame:)]
+    pub fn init_with_frame(self, frame: ns::Rect) -> arc::R<TableView>;
+
     pub fn with_frame(frame: ns::Rect) -> arc::R<Self> {
         Self::alloc().init_with_frame(frame)
     }

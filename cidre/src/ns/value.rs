@@ -23,49 +23,46 @@ define_obj_type!(
     pub Number(Value)
 );
 
-// initializers
-impl arc::A<Number> {
-    #[objc::msg_send(initWithChar:)]
+impl Number {
+    #[objc::init(initWithChar:)]
     fn init_with_char(self, value: i8) -> arc::R<Number>;
 
-    #[objc::msg_send(initWithUnsignedChar:)]
+    #[objc::init(initWithUnsignedChar:)]
     fn init_with_unsigned_char(self, value: u8) -> arc::R<Number>;
 
-    #[objc::msg_send(initWithShort:)]
+    #[objc::init(initWithShort:)]
     fn init_with_short(self, value: i16) -> arc::R<Number>;
 
-    #[objc::msg_send(initWithUnsignedShort:)]
+    #[objc::init(initWithUnsignedShort:)]
     fn init_with_unsinged_short(self, value: u16) -> arc::R<Number>;
 
-    #[objc::msg_send(initWithInt:)]
+    #[objc::init(initWithInt:)]
     fn init_with_int(self, value: i32) -> arc::R<Number>;
 
-    #[objc::msg_send(initWithUnsignedInt:)]
+    #[objc::init(initWithUnsignedInt:)]
     fn init_with_unsigned_int(self, value: u32) -> arc::R<Number>;
 
-    #[objc::msg_send(initWithLongLong:)]
+    #[objc::init(initWithLongLong:)]
     fn init_with_long_long(self, value: i64) -> arc::R<Number>;
 
-    #[objc::msg_send(initWithUnsignedLongLong:)]
+    #[objc::init(initWithUnsignedLongLong:)]
     fn init_with_unsigned_long_long(self, value: u64) -> arc::R<Number>;
 
-    #[objc::msg_send(initWithFloat:)]
+    #[objc::init(initWithFloat:)]
     fn init_with_float(self, value: f32) -> arc::R<Number>;
 
-    #[objc::msg_send(initWithDouble:)]
+    #[objc::init(initWithDouble:)]
     fn init_with_double(self, value: f64) -> arc::R<Number>;
 
-    #[objc::msg_send(initWithBool:)]
+    #[objc::init(initWithBool:)]
     fn init_with_bool(self, value: bool) -> arc::R<Number>;
 
-    #[objc::msg_send(initWithInteger:)]
+    #[objc::init(initWithInteger:)]
     fn init_with_integer(self, value: ns::Integer) -> arc::R<Number>;
 
-    #[objc::msg_send(initWithUnsignedInteger:)]
+    #[objc::init(initWithUnsignedInteger:)]
     fn init_with_unsigned_integer(self, value: ns::UInteger) -> arc::R<Number>;
-}
 
-impl Number {
     define_cls!(NS_NUMBER);
 
     #[inline]

@@ -26,8 +26,8 @@ define_obj_type!(
     pub Writer(ns::Id)
 );
 
-impl arc::A<Writer> {
-    #[objc::msg_send(initWithURL:fileType:error:)]
+impl Writer {
+    #[objc::init(initWithURL:fileType:error:)]
     pub fn init_with_url_file_type_err<'ear>(
         self,
         url: &ns::Url,
@@ -35,14 +35,12 @@ impl arc::A<Writer> {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Writer>>;
 
-    #[objc::msg_send(initWithContentType:)]
+    #[objc::init(initWithContentType:)]
     pub unsafe fn init_with_content_type_throws(
         self,
         output_content_type: &ut::Type,
     ) -> arc::R<Writer>;
-}
 
-impl Writer {
     define_cls!(AV_ASSET_WRITER);
 
     #[objc::msg_send(shouldOptimizeForNetworkUse)]

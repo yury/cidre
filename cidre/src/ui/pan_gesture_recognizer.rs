@@ -6,16 +6,14 @@ define_obj_type!(
     UI_PAN_GESTURE_RECOGNIZER
 );
 
-impl arc::A<PanGestureRecognizer> {
-    #[objc::msg_send(initWithTarget:action:)]
+impl PanGestureRecognizer {
+    #[objc::init(initWithTarget:action:)]
     pub fn init_with_target_action(
         self,
         target: Option<&ns::Id>,
         action: Option<&objc::Sel>,
     ) -> arc::R<PanGestureRecognizer>;
-}
 
-impl PanGestureRecognizer {
     pub fn with_target_action(target: Option<&ns::Id>, action: Option<&objc::Sel>) -> arc::R<Self> {
         Self::alloc().init_with_target_action(target, action)
     }

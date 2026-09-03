@@ -28,12 +28,10 @@ pub enum Type {
 
 define_obj_type!(pub Desc(ns::Id));
 
-impl arc::A<Desc> {
-    #[objc::msg_send(init)]
-    fn init(self) -> arc::R<Desc>;
-}
-
 impl Desc {
+    #[objc::init(init)]
+    fn init(self) -> arc::R<Desc>;
+
     define_cls!(MTL_HEAP_DESCRIPTOR);
     define_mtl!(
         storage_mode,

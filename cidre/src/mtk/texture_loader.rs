@@ -144,14 +144,12 @@ pub type TextureLoaderCb = blocks::ResultCh<mtl::Texture>;
 #[cfg(feature = "blocks")]
 pub type TextureLoaderArrayCb = blocks::ResultCh<ns::Array<mtl::Texture>>;
 
-impl arc::A<TextureLoader> {
-    #[objc::msg_send(initWithDevice:)]
-    pub fn init_with_device(self, device: &mtl::Device) -> arc::R<TextureLoader>;
-}
-
 pub type Opts = ns::Dictionary<TextureLoaderOpt, ns::Id>;
 
 impl TextureLoader {
+    #[objc::init(initWithDevice:)]
+    pub fn init_with_device(self, device: &mtl::Device) -> arc::R<TextureLoader>;
+
     define_cls!(MTK_TEXTURE_LOADER);
 
     #[objc::msg_send(device)]

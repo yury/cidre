@@ -11,17 +11,15 @@ define_obj_type!(
     #[api::available(ios = 27.0)]
 );
 
-impl arc::A<VideoEffectOutput> {
+impl VideoEffectOutput {
     /// Initializes a video effect output for the given camera capture device.
-    #[objc::msg_send(initWithCameraDevice:)]
+    #[objc::init(initWithCameraDevice:)]
     #[api::available(ios = 27.0)]
     pub fn init_with_camera_device(
         self,
         device: &av::CaptureDevice,
     ) -> arc::Retained<VideoEffectOutput>;
-}
 
-impl VideoEffectOutput {
     /// The camera capture device used by the video effect output.
     #[objc::msg_send(cameraDevice)]
     #[api::available(ios = 27.0)]
