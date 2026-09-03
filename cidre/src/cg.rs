@@ -88,6 +88,7 @@ pub use image::animate_image_data_with_block;
 pub use image::animation_err as image_animation_err;
 
 pub use image::AlphaInfo as ImageAlphaInfo;
+pub use image::BitmapInfo;
 pub use image::Image;
 
 pub mod image_properties;

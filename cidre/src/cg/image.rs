@@ -1,4 +1,4 @@
-use crate::{cf, cg, define_cf_type};
+use crate::{cf, cg, define_cf_type, define_opts};
 
 #[cfg(feature = "iio")]
 pub mod source;
@@ -47,6 +47,44 @@ pub enum AlphaInfo {
     /// For example, XRGB
     NoneSkipFirst,
     Only,
+}
+
+define_opts!(
+    /// Component and byte-order layout of a bitmap, as passed to
+    /// [`crate::cg::Context::new_bitmap`]. Combine a [`Self::with_alpha`] value with a byte-order
+    /// constant, e.g. `BitmapInfo::with_alpha(AlphaInfo::PremultipliedFirst) | BitmapInfo::BYTE_ORDER_32_LITTLE`
+    /// for premultiplied BGRA.
+    #[doc(alias = "CGBitmapInfo")]
+    pub BitmapInfo(u32)
+);
+
+impl BitmapInfo {
+    #[doc(alias = "kCGBitmapAlphaInfoMask")]
+    pub const ALPHA_INFO_MASK: Self = Self(0x1F);
+
+    #[doc(alias = "kCGBitmapFloatComponents")]
+    pub const FLOAT_COMPONENTS: Self = Self(1 << 8);
+    #[doc(alias = "kCGBitmapFloatInfoMask")]
+    pub const FLOAT_INFO_MASK: Self = Self(0xF00);
+
+    #[doc(alias = "kCGBitmapByteOrderMask")]
+    pub const BYTE_ORDER_MASK: Self = Self(0x7000);
+    #[doc(alias = "kCGBitmapByteOrderDefault")]
+    pub const BYTE_ORDER_DEFAULT: Self = Self(0 << 12);
+    #[doc(alias = "kCGBitmapByteOrder16Little")]
+    pub const BYTE_ORDER_16_LITTLE: Self = Self(1 << 12);
+    #[doc(alias = "kCGBitmapByteOrder32Little")]
+    pub const BYTE_ORDER_32_LITTLE: Self = Self(2 << 12);
+    #[doc(alias = "kCGBitmapByteOrder16Big")]
+    pub const BYTE_ORDER_16_BIG: Self = Self(3 << 12);
+    #[doc(alias = "kCGBitmapByteOrder32Big")]
+    pub const BYTE_ORDER_32_BIG: Self = Self(4 << 12);
+
+    /// The bits an [`AlphaInfo`] contributes to a `BitmapInfo`.
+    #[inline]
+    pub const fn with_alpha(alpha: AlphaInfo) -> Self {
+        Self(alpha as u32)
+    }
 }
 
 define_cf_type!(Image(cf::Type));

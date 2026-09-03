@@ -35,6 +35,14 @@ impl Line {
         unsafe { CTLineCreateWithAttributedString(attr_string) }
     }
 
+    /// Draws the line into `context` at its current text position, honoring the context's text
+    /// matrix. Set the position with [`crate::cg::Context::set_text_pos`] first.
+    #[doc(alias = "CTLineDraw")]
+    #[inline]
+    pub fn draw(&self, context: &mut cg::Context) {
+        unsafe { CTLineDraw(self, context) }
+    }
+
     #[inline]
     pub fn glyph_count(&self) -> usize {
         unsafe { CTLineGetGlyphCount(self) as _ }
@@ -100,6 +108,7 @@ impl Line {
 unsafe extern "C-unwind" {
     fn CTLineGetTypeID() -> cf::TypeId;
     fn CTLineCreateWithAttributedString(attr_string: &cf::AttrString) -> arc::R<Line>;
+    fn CTLineDraw(line: &Line, context: &mut cg::Context);
 
     fn CTLineGetGlyphCount(line: &Line) -> cf::Index;
     fn CTLineGetGlyphRuns(line: &Line) -> &cf::ArrayOf<ct::Run>;
@@ -162,5 +171,33 @@ mod tests {
         assert_eq!(offsets.len(), 8);
 
         line.show();
+    }
+
+    #[test]
+    fn draws_into_bitmap_context() {
+        let (w, h) = (64usize, 16usize);
+        let bpr = w * 4;
+        let mut buf = vec![0u8; bpr * h];
+
+        let space = cg::ColorSpace::device_rgb().unwrap();
+        let info = cg::BitmapInfo::with_alpha(cg::ImageAlphaInfo::PremultipliedFirst)
+            | cg::BitmapInfo::BYTE_ORDER_32_LITTLE;
+        let mut ctx =
+            cg::Context::new_bitmap(buf.as_mut_ptr() as *mut _, w, h, 8, bpr, &space, info)
+                .expect("bitmap context");
+
+        // A white fill proves the context writes into our buffer.
+        ctx.set_rgb_fill_color(1.0, 1.0, 1.0, 1.0);
+        ctx.fill_rect(cg::Rect::new(0.0, 0.0, w as cg::Float, h as cg::Float));
+        assert!(buf.iter().all(|&b| b == 255), "fill_rect did not paint");
+
+        // Black text over the white fill: some pixels must darken.
+        ctx.set_rgb_fill_color(0.0, 0.0, 0.0, 1.0);
+        let astr = cf::AttrString::new(cf::str!(c"Hi"));
+        let line = ct::Line::with_attr_string(&astr);
+        ctx.set_text_pos(2.0, 3.0);
+        line.draw(&mut ctx);
+
+        assert!(buf.iter().any(|&b| b < 255), "CTLineDraw painted nothing");
     }
 }
