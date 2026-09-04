@@ -110,10 +110,14 @@ pub use graphics::WindowOrderingMode;
 
 mod gesture_recognizer;
 pub use gesture_recognizer::AnyGestureRecognizerDelegate;
+pub use gesture_recognizer::ClickGestureRecognizer;
 pub use gesture_recognizer::GestureRecognizer;
 pub use gesture_recognizer::GestureRecognizerDelegate;
 pub use gesture_recognizer::GestureRecognizerDelegateImpl;
 pub use gesture_recognizer::GestureRecognizerState;
+pub use gesture_recognizer::MagnificationGestureRecognizer;
+pub use gesture_recognizer::PanGestureRecognizer;
+pub use gesture_recognizer::RotationGestureRecognizer;
 
 mod image;
 pub use image::Image;

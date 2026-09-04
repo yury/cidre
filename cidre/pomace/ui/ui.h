@@ -25,6 +25,7 @@ Class UI_ALERT_ACTION;
 Class UI_GESTURE_RECOGNIZER;
 Class UI_PAN_GESTURE_RECOGNIZER;
 Class UI_PINCH_GESTURE_RECOGNIZER;
+Class UI_ROTATION_GESTURE_RECOGNIZER;
 Class UI_TAP_GESTURE_RECOGNIZER;
 Class UI_WINDOW;
 Class UI_SCENE;
@@ -86,6 +87,7 @@ static void ui_initializer(void)
         UI_GESTURE_RECOGNIZER = NSClassFromString(@"UIGestureRecognizer");
         UI_PAN_GESTURE_RECOGNIZER = NSClassFromString(@"UIPanGestureRecognizer");
         UI_PINCH_GESTURE_RECOGNIZER = NSClassFromString(@"UIPinchGestureRecognizer");
+        UI_ROTATION_GESTURE_RECOGNIZER = NSClassFromString(@"UIRotationGestureRecognizer");
         UI_TAP_GESTURE_RECOGNIZER = NSClassFromString(@"UITapGestureRecognizer");
         UI_SCENE_CONFIGURATION = NSClassFromString(@"UISceneConfiguration");
         UI_SCREEN = [UIScreen class];

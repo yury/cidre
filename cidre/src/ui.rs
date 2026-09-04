@@ -29,7 +29,10 @@ pub use geometry::EdgeInsets;
 pub use geometry::Offset;
 
 mod gesture_recognizer;
+pub use gesture_recognizer::AnyGestureRecognizerDelegate;
 pub use gesture_recognizer::GestureRecognizer;
+pub use gesture_recognizer::GestureRecognizerDelegate;
+pub use gesture_recognizer::GestureRecognizerDelegateImpl;
 pub use gesture_recognizer::GestureRecognizerState;
 
 mod pan_gesture_recognizer;
@@ -40,6 +43,9 @@ pub use tap_gesture_recognizer::TapGestureRecognizer;
 
 mod pinch_gesture_recognizer;
 pub use pinch_gesture_recognizer::PinchGestureRecognizer;
+
+mod rotation_gesture_recognizer;
+pub use rotation_gesture_recognizer::RotationGestureRecognizer;
 
 mod label;
 pub use label::Label;

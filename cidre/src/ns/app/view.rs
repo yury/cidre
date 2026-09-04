@@ -73,6 +73,12 @@ impl View {
     #[objc::msg_send(addSubview:)]
     pub fn add_subview(&mut self, subview: &ns::View);
 
+    #[objc::msg_send(addGestureRecognizer:)]
+    pub fn add_gesture_recognizer(&mut self, gr: &ns::GestureRecognizer);
+
+    #[objc::msg_send(removeGestureRecognizer:)]
+    pub fn remove_gesture_recognizer(&mut self, gr: &ns::GestureRecognizer);
+
     #[objc::msg_send(removeFromSuperview)]
     pub fn remove_from_superview(&mut self);
 

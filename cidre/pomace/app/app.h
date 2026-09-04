@@ -39,6 +39,10 @@ Class NS_OUTLINE_VIEW;
 Class NS_FONT;
 Class NS_FONT_MANAGER;
 Class NS_GESTURE_RECOGNIZER;
+Class NS_CLICK_GESTURE_RECOGNIZER;
+Class NS_PAN_GESTURE_RECOGNIZER;
+Class NS_MAGNIFICATION_GESTURE_RECOGNIZER;
+Class NS_ROTATION_GESTURE_RECOGNIZER;
 Class NS_STATUS_BAR;
 Class NS_ANIMATION_CONTEXT;
 
@@ -86,6 +90,10 @@ static void app_initializer(void)
         NS_FONT = [NSFont class];
         NS_FONT_MANAGER = [NSFontManager class];
         NS_GESTURE_RECOGNIZER = [NSGestureRecognizer class];
+        NS_CLICK_GESTURE_RECOGNIZER = [NSClickGestureRecognizer class];
+        NS_PAN_GESTURE_RECOGNIZER = [NSPanGestureRecognizer class];
+        NS_MAGNIFICATION_GESTURE_RECOGNIZER = [NSMagnificationGestureRecognizer class];
+        NS_ROTATION_GESTURE_RECOGNIZER = [NSRotationGestureRecognizer class];
         NS_STATUS_BAR = [NSStatusBar class];
         NS_ANIMATION_CONTEXT = [NSAnimationContext class];
         

@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, cg, define_obj_type, ns, objc};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
@@ -105,6 +105,113 @@ impl GestureRecognizer {
     pub fn location_in_view(&self, view: Option<&ns::View>) -> ns::Point;
 }
 
+define_obj_type!(
+    #[doc(alias = "NSClickGestureRecognizer")]
+    pub ClickGestureRecognizer(GestureRecognizer),
+    NS_CLICK_GESTURE_RECOGNIZER
+);
+
+impl ClickGestureRecognizer {
+    #[objc::init(initWithTarget:action:)]
+    pub fn init_with_target_action(
+        self,
+        target: Option<&ns::Id>,
+        action: Option<&objc::Sel>,
+    ) -> arc::R<ClickGestureRecognizer>;
+
+    pub fn with_target_action(target: Option<&ns::Id>, action: Option<&objc::Sel>) -> arc::R<Self> {
+        Self::alloc().init_with_target_action(target, action)
+    }
+
+    #[objc::msg_send(numberOfClicksRequired)]
+    pub fn number_of_clicks_required(&self) -> ns::Integer;
+
+    #[objc::msg_send(setNumberOfClicksRequired:)]
+    pub fn set_number_of_clicks_required(&mut self, val: ns::Integer);
+}
+
+define_obj_type!(
+    #[doc(alias = "NSPanGestureRecognizer")]
+    pub PanGestureRecognizer(GestureRecognizer),
+    NS_PAN_GESTURE_RECOGNIZER
+);
+
+impl PanGestureRecognizer {
+    #[objc::init(initWithTarget:action:)]
+    pub fn init_with_target_action(
+        self,
+        target: Option<&ns::Id>,
+        action: Option<&objc::Sel>,
+    ) -> arc::R<PanGestureRecognizer>;
+
+    pub fn with_target_action(target: Option<&ns::Id>, action: Option<&objc::Sel>) -> arc::R<Self> {
+        Self::alloc().init_with_target_action(target, action)
+    }
+
+    /// Translation in the coordinate system of the specified view.
+    #[objc::msg_send(translationInView:)]
+    pub fn translation_in_view(&self, view: Option<&ns::View>) -> ns::Point;
+
+    #[objc::msg_send(setTranslation:inView:)]
+    pub fn set_translation_in_view(&mut self, translation: ns::Point, view: Option<&ns::View>);
+
+    /// Velocity of the pan in points/second in the coordinate system of the specified view.
+    #[objc::msg_send(velocityInView:)]
+    pub fn velocity_in_view(&self, view: Option<&ns::View>) -> ns::Point;
+}
+
+define_obj_type!(
+    #[doc(alias = "NSMagnificationGestureRecognizer")]
+    pub MagnificationGestureRecognizer(GestureRecognizer),
+    NS_MAGNIFICATION_GESTURE_RECOGNIZER
+);
+
+impl MagnificationGestureRecognizer {
+    #[objc::init(initWithTarget:action:)]
+    pub fn init_with_target_action(
+        self,
+        target: Option<&ns::Id>,
+        action: Option<&objc::Sel>,
+    ) -> arc::R<MagnificationGestureRecognizer>;
+
+    pub fn with_target_action(target: Option<&ns::Id>, action: Option<&objc::Sel>) -> arc::R<Self> {
+        Self::alloc().init_with_target_action(target, action)
+    }
+
+    /// Magnification since the gesture began (0.0 = no change; 0.5 = 50% larger).
+    #[objc::msg_send(magnification)]
+    pub fn magnification(&self) -> cg::Float;
+
+    #[objc::msg_send(setMagnification:)]
+    pub fn set_magnification(&mut self, val: cg::Float);
+}
+
+define_obj_type!(
+    #[doc(alias = "NSRotationGestureRecognizer")]
+    pub RotationGestureRecognizer(GestureRecognizer),
+    NS_ROTATION_GESTURE_RECOGNIZER
+);
+
+impl RotationGestureRecognizer {
+    #[objc::init(initWithTarget:action:)]
+    pub fn init_with_target_action(
+        self,
+        target: Option<&ns::Id>,
+        action: Option<&objc::Sel>,
+    ) -> arc::R<RotationGestureRecognizer>;
+
+    pub fn with_target_action(target: Option<&ns::Id>, action: Option<&objc::Sel>) -> arc::R<Self> {
+        Self::alloc().init_with_target_action(target, action)
+    }
+
+    /// Rotation in radians since the gesture began (counterclockwise-positive).
+    #[objc::msg_send(rotation)]
+    pub fn rotation(&self) -> cg::Float;
+
+    #[objc::msg_send(setRotation:)]
+    pub fn set_rotation(&mut self, val: cg::Float);
+}
+
 #[objc::protocol(NSGestureRecognizerDelegate)]
 pub trait GestureRecognizerDelegate: objc::Obj {
     #[objc::optional]
@@ -156,6 +263,11 @@ impl GestureRecognizerDelegate for AnyGestureRecognizerDelegate {}
 
 unsafe extern "C" {
     static NS_GESTURE_RECOGNIZER: &'static objc::Class<GestureRecognizer>;
+    static NS_CLICK_GESTURE_RECOGNIZER: &'static objc::Class<ClickGestureRecognizer>;
+    static NS_PAN_GESTURE_RECOGNIZER: &'static objc::Class<PanGestureRecognizer>;
+    static NS_MAGNIFICATION_GESTURE_RECOGNIZER:
+        &'static objc::Class<MagnificationGestureRecognizer>;
+    static NS_ROTATION_GESTURE_RECOGNIZER: &'static objc::Class<RotationGestureRecognizer>;
 }
 
 #[cfg(test)]
