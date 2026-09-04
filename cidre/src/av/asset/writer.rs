@@ -1,4 +1,6 @@
 use crate::{arc, av, define_cls, define_obj_type, ns, objc, ut};
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 #[cfg(feature = "cm")]
 use crate::cm;
@@ -83,6 +85,18 @@ impl Writer {
 
     #[objc::msg_send(finishWriting)]
     pub fn finish_writing(&mut self);
+
+    /// Marks all unfinished inputs as finished and completes the writing of the output file
+    /// asynchronously; `handler` runs once the status is `Completed` (or `Failed`).
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(finishWritingWithCompletionHandler:)]
+    pub fn finish_writing_with_ch_block(&mut self, handler: &mut blocks::CompletionBlock);
+
+    #[cfg(feature = "blocks")]
+    pub fn finish_writing_with_ch(&mut self, handler: impl FnMut() + 'static) {
+        let mut block = blocks::CompletionBlock::new0(handler);
+        self.finish_writing_with_ch_block(&mut block);
+    }
 
     #[objc::msg_send(cancelWriting)]
     pub fn cancel_writing(&mut self);
