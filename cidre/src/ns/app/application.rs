@@ -5,6 +5,25 @@ define_obj_type!(
     pub App(ns::Id)
 );
 
+/// The result of a modal session (`-[NSApplication runModalForWindow:]`, panels' `runModal`).
+#[doc(alias = "NSModalResponse")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(transparent)]
+pub struct ModalResponse(pub isize);
+
+impl ModalResponse {
+    #[doc(alias = "NSModalResponseStop")]
+    pub const STOP: Self = Self(-1000);
+    #[doc(alias = "NSModalResponseAbort")]
+    pub const ABORT: Self = Self(-1001);
+    #[doc(alias = "NSModalResponseContinue")]
+    pub const CONTINUE: Self = Self(-1002);
+    #[doc(alias = "NSModalResponseOK")]
+    pub const OK: Self = Self(1);
+    #[doc(alias = "NSModalResponseCancel")]
+    pub const CANCEL: Self = Self(0);
+}
+
 #[objc::protocol(NSApplicationDelegate)]
 pub trait Delegate {
     #[objc::optional]

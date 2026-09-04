@@ -21,6 +21,7 @@ Class UI_CONTROL;
 Class UI_BUTTON;
 Class UI_TEXT_FIELD;
 Class UI_ALERT_CONTROLLER;
+Class UI_DOCUMENT_PICKER_VIEW_CONTROLLER;
 Class UI_ALERT_ACTION;
 Class UI_GESTURE_RECOGNIZER;
 Class UI_PAN_GESTURE_RECOGNIZER;
@@ -83,6 +84,7 @@ static void ui_initializer(void)
         UI_BUTTON = NSClassFromString(@"UIButton");
         UI_TEXT_FIELD = NSClassFromString(@"UITextField");
         UI_ALERT_CONTROLLER = NSClassFromString(@"UIAlertController");
+        UI_DOCUMENT_PICKER_VIEW_CONTROLLER = NSClassFromString(@"UIDocumentPickerViewController");
         UI_ALERT_ACTION = NSClassFromString(@"UIAlertAction");
         UI_GESTURE_RECOGNIZER = NSClassFromString(@"UIGestureRecognizer");
         UI_PAN_GESTURE_RECOGNIZER = NSClassFromString(@"UIPanGestureRecognizer");

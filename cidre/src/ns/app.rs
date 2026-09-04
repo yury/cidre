@@ -8,6 +8,7 @@ mod application;
 pub use application::App;
 pub use application::Delegate as AppDelegate;
 pub use application::DelegateImpl as AppDelegateImpl;
+pub use application::ModalResponse;
 pub use application::notifications as app_notifications;
 
 mod button_cell;
@@ -132,6 +133,15 @@ pub use menu::Menu;
 
 mod menu_item;
 pub use menu_item::MenuItem;
+
+mod panel;
+pub use panel::Panel;
+
+mod save_panel;
+pub use save_panel::SavePanel;
+
+mod open_panel;
+pub use open_panel::OpenPanel;
 
 mod pasteboard;
 pub use pasteboard::Pasteboard;

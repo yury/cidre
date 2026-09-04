@@ -63,10 +63,16 @@ mod text_field;
 pub use text_field::TextField;
 
 mod alert_controller;
+
+mod document_picker_view_controller;
 pub use alert_controller::AlertAction;
 pub use alert_controller::AlertActionStyle;
 pub use alert_controller::AlertController;
 pub use alert_controller::AlertControllerStyle;
+pub use document_picker_view_controller::AnyDocumentPickerDelegate;
+pub use document_picker_view_controller::DocumentPickerDelegate;
+pub use document_picker_view_controller::DocumentPickerDelegateImpl;
+pub use document_picker_view_controller::DocumentPickerViewController;
 
 mod navigation_bar;
 pub use navigation_bar::NavBar;
