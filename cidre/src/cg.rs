@@ -1,5 +1,6 @@
 mod context;
 pub use context::Context;
+pub use context::InterpolationQuality;
 
 mod geometry;
 pub use geometry::Float;

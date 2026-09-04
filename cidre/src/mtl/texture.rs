@@ -1,3 +1,5 @@
+use std::ffi::c_void;
+
 use crate::{arc, cf, define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
 #[cfg(feature = "io_surface")]
@@ -317,6 +319,34 @@ impl Texture {
 
     #[objc::msg_send(arrayLength)]
     pub fn array_len(&self) -> usize;
+
+    /// Copies a block of pixels from `bytes` into a slice of the texture.
+    ///
+    /// # Safety
+    /// `bytes` must cover `region` at `bytes_per_row` / `bytes_per_image` for the pixel format.
+    #[objc::msg_send(replaceRegion:mipmapLevel:slice:withBytes:bytesPerRow:bytesPerImage:)]
+    pub unsafe fn replace_region_slice(
+        &mut self,
+        region: mtl::Region,
+        mipmap_level: usize,
+        slice: usize,
+        bytes: *const c_void,
+        bytes_per_row: usize,
+        bytes_per_image: usize,
+    );
+
+    /// Copies a block of pixels from `bytes` into the texture (mip level, slice 0).
+    ///
+    /// # Safety
+    /// `bytes` must cover `region` at `bytes_per_row` for the pixel format.
+    #[objc::msg_send(replaceRegion:mipmapLevel:withBytes:bytesPerRow:)]
+    pub unsafe fn replace_region(
+        &mut self,
+        region: mtl::Region,
+        mipmap_level: usize,
+        bytes: *const c_void,
+        bytes_per_row: usize,
+    );
 }
 
 impl From<arc::R<mtl::Texture>> for arc::R<mtl::Allocation> {

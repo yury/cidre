@@ -148,6 +148,37 @@ impl Context {
     pub fn set_text_matrix(&mut self, matrix: cg::AffineTransform) {
         unsafe { CGContextSetTextMatrix(self, matrix) }
     }
+
+    /// Draws `image` scaled into `rect`.
+    #[doc(alias = "CGContextDrawImage")]
+    #[inline]
+    pub fn draw_image(&mut self, rect: cg::Rect, image: &cg::Image) {
+        unsafe { CGContextDrawImage(self, rect, image) }
+    }
+
+    #[doc(alias = "CGContextSetInterpolationQuality")]
+    #[inline]
+    pub fn set_interpolation_quality(&mut self, val: cg::InterpolationQuality) {
+        unsafe { CGContextSetInterpolationQuality(self, val) }
+    }
+
+    /// A copy of the bitmap context's current contents as an image (bitmap contexts only).
+    #[doc(alias = "CGBitmapContextCreateImage")]
+    #[inline]
+    pub fn bitmap_image(&self) -> Option<arc::R<cg::Image>> {
+        unsafe { CGBitmapContextCreateImage(self) }
+    }
+}
+
+#[doc(alias = "CGInterpolationQuality")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(i32)]
+pub enum InterpolationQuality {
+    Default = 0,
+    None = 1,
+    Low = 2,
+    Medium = 4,
+    High = 3,
 }
 
 unsafe extern "C" {
@@ -183,4 +214,7 @@ unsafe extern "C" {
     fn CGContextFillRect(ctx: *mut Context, rect: cg::Rect);
     fn CGContextSetTextPosition(ctx: *mut Context, x: cg::Float, y: cg::Float);
     fn CGContextSetTextMatrix(ctx: *mut Context, matrix: cg::AffineTransform);
+    fn CGContextDrawImage(ctx: *mut Context, rect: cg::Rect, image: &cg::Image);
+    fn CGContextSetInterpolationQuality(ctx: *mut Context, val: InterpolationQuality);
+    fn CGBitmapContextCreateImage(ctx: *const Context) -> Option<arc::R<cg::Image>>;
 }
