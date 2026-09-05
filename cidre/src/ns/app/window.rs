@@ -131,6 +131,12 @@ define_obj_type!(
 );
 
 impl Window {
+    #[objc::msg_send(contentMinSize)]
+    pub fn content_min_size(&self) -> ns::Size;
+
+    #[objc::msg_send(setContentMinSize:)]
+    pub fn set_content_min_size(&mut self, val: ns::Size);
+
     #[objc::init(initWithContentRect:styleMask:backing:defer:)]
     pub fn init_with_content_rect_style_mask_backing_defer(
         self,

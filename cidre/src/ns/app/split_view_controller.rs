@@ -2,7 +2,7 @@ use crate::{arc, cg, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "NSSplitViewController")]
-    pub SplitViewController(ns::ViewController)
+    pub SplitViewController(ns::ViewController), NS_SPLIT_VIEW_CONTROLLER
 );
 
 impl SplitViewController {
@@ -81,4 +81,8 @@ impl SplitViewController {
     #[objc::msg_send(toggleInspector:)]
     #[objc::available(macos = 14.0)]
     pub fn toggle_inspector(&mut self, sender: Option<&ns::Id>);
+}
+
+unsafe extern "C" {
+    static NS_SPLIT_VIEW_CONTROLLER: &'static objc::Class<SplitViewController>;
 }

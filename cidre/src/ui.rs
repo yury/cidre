@@ -422,3 +422,30 @@ unsafe extern "C" {}
 
 #[link(name = "ui", kind = "static")]
 unsafe extern "C" {}
+
+mod button_configuration;
+pub use button_configuration::{
+    ButtonCfg, CornerStyle as ButtonCfgCornerStyle, Size as ButtonCfgSize,
+};
+mod split_view_controller;
+pub use split_view_controller::{
+    Column as SplitViewControllerColumn, DisplayMode as SplitViewControllerDisplayMode,
+    SplitViewController, Style as SplitViewControllerStyle,
+};
+mod bar_button_item;
+pub use bar_button_item::BarButtonItem;
+mod navigation_item;
+pub use navigation_item::NavItem;
+
+mod list_content_configuration;
+pub use list_content_configuration::ListContentCfg;
+mod collection_view_compositional_layout;
+pub use collection_view_compositional_layout::CollectionViewCompositionalLayout;
+mod collection_layout_list;
+pub use collection_layout_list::{
+    Appearance as CollectionLayoutListAppearance, CollectionLayoutListCfg,
+};
+
+mod scroll_view;
+pub use scroll_view::ContentInsetAdjustmentBehavior as ScrollViewContentInsetAdjustmentBehavior;
+pub use scroll_view::ScrollView;

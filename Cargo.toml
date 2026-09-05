@@ -10,7 +10,8 @@ exclude = [
   "cargo-box"
 ]
 
-# [profile.dev]
+[profile.dev]
+debug = "line-tables-only"
 # opt-level = 1
 
 # [profile.dev.package."*"]

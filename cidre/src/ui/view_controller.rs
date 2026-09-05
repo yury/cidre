@@ -6,6 +6,12 @@ define_obj_type!(
 );
 
 impl ViewController {
+    #[objc::msg_send(setView:)]
+    pub fn set_view(&mut self, val: Option<&ui::View>);
+
+    #[objc::msg_send(navigationItem)]
+    pub fn nav_item(&self) -> arc::R<ui::NavItem>;
+
     #[objc::msg_send(view)]
     pub fn view(&self) -> arc::R<ui::View>;
 

@@ -289,6 +289,18 @@ pub use workspace::DesktopImageOptionKey as WorkspaceDesktopImageOptionKey;
 pub use workspace::Workspace;
 pub use workspace::WorkspaceOpenCfg;
 
+mod scroll_view;
+pub use scroll_view::ScrollView;
+mod table_column;
+pub use table_column::TableColumn;
+mod visual_effect_view;
+pub use visual_effect_view::{
+    BlendingMode as VisualEffectBlendingMode, Material as VisualEffectMaterial,
+    State as VisualEffectState, VisualEffectView,
+};
+mod secure_text_field;
+pub use secure_text_field::SecureTextField;
+
 #[link(name = "AppKit", kind = "framework")]
 unsafe extern "C" {}
 

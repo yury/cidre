@@ -52,6 +52,13 @@ Class NS_ANIMATION_CONTEXT;
 Class NS_DIFFABLE_DATA_SOURCE_SNAPSHOT;
 Class NS_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE;
 
+Class NS_SCROLL_VIEW;
+Class NS_TABLE_COLUMN;
+Class NS_VISUAL_EFFECT_VIEW;
+Class NS_SECURE_TEXT_FIELD;
+Class NS_SPLIT_VIEW_CONTROLLER;
+Class NS_SPLIT_VIEW;
+
 __attribute__((constructor))
 static void app_initializer(void)
 {
@@ -59,6 +66,13 @@ static void app_initializer(void)
     static int initialized = 0;
     if (!initialized) {
         initialized = 1;
+        NS_SCROLL_VIEW = NSClassFromString(@"NSScrollView");
+        NS_TABLE_COLUMN = NSClassFromString(@"NSTableColumn");
+        NS_VISUAL_EFFECT_VIEW = NSClassFromString(@"NSVisualEffectView");
+        NS_SECURE_TEXT_FIELD = NSClassFromString(@"NSSecureTextField");
+        NS_SPLIT_VIEW_CONTROLLER = NSClassFromString(@"NSSplitViewController");
+        NS_SPLIT_VIEW = NSClassFromString(@"NSSplitView");
+
         
         NS_APPLICATION = [NSApplication class];
         NS_CELL = [NSCell class];

@@ -20,6 +20,14 @@ define_obj_type!(
 );
 
 impl Button {
+    #[objc::msg_send(configuration)]
+    #[objc::available(ios = 15.0)]
+    pub fn cfg(&self) -> Option<arc::R<ui::ButtonCfg>>;
+
+    #[objc::msg_send(setConfiguration:)]
+    #[objc::available(ios = 15.0)]
+    pub fn set_cfg(&mut self, val: Option<&ui::ButtonCfg>);
+
     #[objc::msg_send(buttonWithType:)]
     pub fn with_type(val: ButtonType) -> arc::R<Self>;
 

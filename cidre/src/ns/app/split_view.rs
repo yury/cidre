@@ -10,7 +10,7 @@ pub enum SplitViewDividerStyle {
 
 define_obj_type!(
     #[doc(alias = "NSSplitView")]
-    pub SplitView(ns::View)
+    pub SplitView(ns::View), NS_SPLIT_VIEW
 );
 
 impl SplitView {
@@ -109,3 +109,7 @@ pub trait SplitViewDelegate: objc::Obj {
 define_obj_type!(pub AnySplitViewDelegate(ns::Id));
 
 impl SplitViewDelegate for AnySplitViewDelegate {}
+
+unsafe extern "C" {
+    static NS_SPLIT_VIEW: &'static objc::Class<SplitView>;
+}

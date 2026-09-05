@@ -7,6 +7,10 @@ define_obj_type!(
 );
 
 impl Image {
+    #[objc::msg_send(systemImageNamed:)]
+    #[objc::available(ios = 13.0)]
+    pub fn with_sys_name(name: &ns::String) -> Option<arc::R<Self>>;
+
     #[objc::init(initWithContentsOfFile:)]
     fn init_with_contents_of_file(self, path: &ns::String) -> Option<arc::R<Image>>;
 

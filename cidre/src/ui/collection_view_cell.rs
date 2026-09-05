@@ -16,6 +16,10 @@ pub enum CollectionViewCellDragState {
 
 impl CollectionViewCell {
     define_cls!(UI_COLLECTION_VIEW_CELL);
+    /// The object must conform to UIContentConfiguration (for example ListContentCfg).
+    #[objc::msg_send(setContentConfiguration:)]
+    #[objc::available(ios = 14.0)]
+    pub fn set_content_cfg(&mut self, val: Option<&crate::ns::Id>);
 
     #[objc::msg_send(contentView)]
     pub fn content_view(&self) -> arc::R<ui::View>;

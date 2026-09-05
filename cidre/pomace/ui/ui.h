@@ -13,6 +13,7 @@ Class UI_DEVICE;
 Class UI_APPLICATION;
 Class UI_PASTEBOARD;
 Class UI_VIEW;
+Class UI_SCROLL_VIEW;
 Class UI_COLLECTION_VIEW;
 Class UI_COLLECTION_VIEW_CELL;
 Class UI_COLLECTION_VIEW_FLOW_LAYOUT;
@@ -66,16 +67,36 @@ Class UI_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT_HANDLERS;
 Class NS_DIFFABLE_DATA_SOURCE_SNAPSHOT;
 Class NS_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT;
 
+Class UI_BUTTON_CONFIGURATION;
+Class UI_SPLIT_VIEW_CONTROLLER;
+Class UI_BAR_BUTTON_ITEM;
+Class UI_NAVIGATION_ITEM;
+
+Class UI_LIST_CONTENT_CONFIGURATION;
+
+Class UI_COLLECTION_VIEW_COMPOSITIONAL_LAYOUT;
+
+Class UI_COLLECTION_LAYOUT_LIST_CONFIGURATION;
+
 __attribute__((constructor))
 static void ui_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
         initialized = 1;
+        UI_COLLECTION_LAYOUT_LIST_CONFIGURATION = NSClassFromString(@"UICollectionLayoutListConfiguration");
+        UI_COLLECTION_VIEW_COMPOSITIONAL_LAYOUT = NSClassFromString(@"UICollectionViewCompositionalLayout");
+        UI_LIST_CONTENT_CONFIGURATION = NSClassFromString(@"UIListContentConfiguration");
+        UI_BUTTON_CONFIGURATION = NSClassFromString(@"UIButtonConfiguration");
+        UI_SPLIT_VIEW_CONTROLLER = NSClassFromString(@"UISplitViewController");
+        UI_BAR_BUTTON_ITEM = NSClassFromString(@"UIBarButtonItem");
+        UI_NAVIGATION_ITEM = NSClassFromString(@"UINavigationItem");
+
         
         UI_DEVICE = NSClassFromString(@"UIDevice");
         UI_SCENE = NSClassFromString(@"UIScene");
         UI_VIEW = NSClassFromString(@"UIView");
+        UI_SCROLL_VIEW = NSClassFromString(@"UIScrollView");
         UI_COLLECTION_VIEW = NSClassFromString(@"UICollectionView");
         UI_COLLECTION_VIEW_CELL = NSClassFromString(@"UICollectionViewCell");
         UI_COLLECTION_VIEW_FLOW_LAYOUT = NSClassFromString(@"UICollectionViewFlowLayout");
