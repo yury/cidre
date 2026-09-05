@@ -1,6 +1,6 @@
-use crate::{arc, av, define_cls, define_obj_type, ns, objc, ut};
 #[cfg(feature = "blocks")]
 use crate::blocks;
+use crate::{arc, av, define_cls, define_obj_type, ns, objc, ut};
 
 #[cfg(feature = "cm")]
 use crate::cm;
