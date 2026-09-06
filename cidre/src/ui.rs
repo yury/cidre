@@ -147,6 +147,10 @@ pub use diffable_data_source::{
 
 mod context_menu_configuration;
 pub use context_menu_configuration::ContextMenuConfiguration;
+#[cfg(feature = "blocks")]
+pub use context_menu_configuration::ActionProvider as ContextMenuActionProvider;
+#[cfg(feature = "blocks")]
+pub use context_menu_configuration::ContentPreviewProvider as ContextMenuContentPreviewProvider;
 
 mod context_menu_interaction;
 pub use context_menu_interaction::AnyContextMenuInteractionAnimating;
@@ -311,6 +315,9 @@ pub use tab_bar_controller::TabBarControllerMode;
 
 mod tab_bar_controller_sidebar;
 pub use tab_bar_controller_sidebar::TabBarControllerSidebar;
+pub use tab_bar_controller_sidebar::Placement as TabBarControllerSidebarPlacement;
+pub use tab_bar_controller_sidebar::Delegate as TabBarControllerSidebarDelegate;
+pub use tab_bar_controller_sidebar::DelegateImpl as TabBarControllerSidebarDelegateImpl;
 
 mod color;
 pub use color::Color;

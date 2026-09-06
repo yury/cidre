@@ -16,6 +16,10 @@ define_obj_type!(
 );
 
 impl TabBarController {
+    #[objc::msg_send(contentLayoutGuide)]
+    #[objc::available(ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn content_layout_guide(&self) -> arc::R<ui::LayoutGuide>;
+
     #[objc::init(initWithTabs:)]
     #[objc::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
     pub fn init_with_tabs(self, tabs: &ns::Array<ui::Tab>) -> arc::R<TabBarController>;
@@ -136,6 +140,15 @@ impl TabBarController {
 
 #[objc::protocol(UITabBarControllerDelegate)]
 pub trait TabBarControllerDelegate: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(tabBarController:didSelectTab:previousTab:)]
+    fn tab_bar_controller_did_select_tab(
+        &mut self,
+        controller: &mut TabBarController,
+        selected: &ui::Tab,
+        previous: Option<&ui::Tab>,
+    );
+
     #[objc::optional]
     #[objc::msg_send(tabBarController:shouldSelectTab:)]
     fn tab_bar_controller_should_select_tab(

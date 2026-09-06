@@ -6,6 +6,21 @@ define_obj_type!(
 );
 
 impl ViewController {
+    #[objc::msg_send(parentViewController)]
+    pub fn parent_vc(&self) -> Option<arc::R<ViewController>>;
+
+    #[objc::msg_send(addChildViewController:)]
+    pub fn add_child_vc(&mut self, child: &ViewController);
+
+    #[objc::msg_send(removeFromParentViewController)]
+    pub fn remove_from_parent_vc(&mut self);
+
+    #[objc::msg_send(willMoveToParentViewController:)]
+    pub fn will_move_to_parent_vc(&mut self, parent: Option<&ViewController>);
+
+    #[objc::msg_send(didMoveToParentViewController:)]
+    pub fn did_move_to_parent_vc(&mut self, parent: Option<&ViewController>);
+
     #[objc::msg_send(sheetPresentationController)]
     #[objc::available(ios = 15.0)]
     pub fn sheet_presentation_controller(&self) -> Option<arc::R<ui::SheetPresentationController>>;

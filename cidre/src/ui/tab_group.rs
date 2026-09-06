@@ -20,6 +20,10 @@ define_obj_type!(
 impl TabGroup {
     define_cls!(UI_TAB_GROUP);
 
+    #[objc::msg_send(setSidebarActions:)]
+    #[objc::available(ios = 18.0, visionos = 2.0)]
+    pub fn set_sidebar_actions(&mut self, val: &ns::Array<ui::Action>);
+
     #[cfg(feature = "blocks")]
     #[objc::init(initWithTitle:image:identifier:children:viewControllerProvider:)]
     #[objc::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]

@@ -43,6 +43,7 @@ Class UI_VIEW_CONTROLLER_TRANSITION;
 Class UI_TAB_BAR_CONTROLLER;
 Class UI_TAB;
 Class UI_TAB_GROUP;
+Class UI_CONTEXT_MENU_CONFIGURATION;
 Class UI_SHEET_PRESENTATION_CONTROLLER_DETENT;
 Class UI_IMAGE;
 Class UI_TRAIT_COLLECTION;
@@ -130,6 +131,7 @@ static void ui_initializer(void)
         UI_TAB_BAR_CONTROLLER = NSClassFromString(@"UITabBarController");
         UI_TAB = NSClassFromString(@"UITab");
         UI_TAB_GROUP = NSClassFromString(@"UITabGroup");
+        UI_CONTEXT_MENU_CONFIGURATION = NSClassFromString(@"UIContextMenuConfiguration");
         UI_SHEET_PRESENTATION_CONTROLLER_DETENT = NSClassFromString(@"UISheetPresentationControllerDetent");
         UI_APPLICATION = NSClassFromString(@"UIApplication");
         UI_PASTEBOARD = NSClassFromString(@"UIPasteboard");
