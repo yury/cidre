@@ -293,6 +293,11 @@ pub use toolbar::Toolbar;
 
 mod tab;
 pub use tab::Tab;
+pub use tab::TabPlacement;
+
+mod tab_group;
+pub use tab_group::TabGroup;
+pub use tab_group::SidebarAppearance as TabGroupSidebarAppearance;
 
 mod tab_bar;
 pub use tab_bar::TabBar;
@@ -429,8 +434,16 @@ pub use button_configuration::{
 };
 mod split_view_controller;
 pub use split_view_controller::{
+    BackgroundStyle as SplitViewControllerBackgroundStyle,
     Column as SplitViewControllerColumn, DisplayMode as SplitViewControllerDisplayMode,
     SplitViewController, Style as SplitViewControllerStyle,
+};
+mod presentation_controller;
+pub use presentation_controller::PresentationController;
+mod sheet_presentation_controller;
+pub use sheet_presentation_controller::{
+    Detent as SheetPresentationControllerDetent, Placement as SheetPresentationControllerPlacement,
+    SheetPresentationController,
 };
 mod bar_button_item;
 pub use bar_button_item::BarButtonItem;
@@ -458,3 +471,6 @@ pub use action::Action;
 
 mod menu;
 pub use menu::Menu;
+
+pub use split_view_controller::Delegate as SplitViewControllerDelegate;
+pub use split_view_controller::DelegateImpl as SplitViewControllerDelegateImpl;

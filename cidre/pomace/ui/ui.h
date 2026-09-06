@@ -42,6 +42,8 @@ Class UI_NAVIGATION_CONTROLLER;
 Class UI_VIEW_CONTROLLER_TRANSITION;
 Class UI_TAB_BAR_CONTROLLER;
 Class UI_TAB;
+Class UI_TAB_GROUP;
+Class UI_SHEET_PRESENTATION_CONTROLLER_DETENT;
 Class UI_IMAGE;
 Class UI_TRAIT_COLLECTION;
 Class NS_TEXT_ATTACHMENT;
@@ -127,6 +129,8 @@ static void ui_initializer(void)
         UI_VIEW_CONTROLLER_TRANSITION = NSClassFromString(@"UIViewControllerTransition");
         UI_TAB_BAR_CONTROLLER = NSClassFromString(@"UITabBarController");
         UI_TAB = NSClassFromString(@"UITab");
+        UI_TAB_GROUP = NSClassFromString(@"UITabGroup");
+        UI_SHEET_PRESENTATION_CONTROLLER_DETENT = NSClassFromString(@"UISheetPresentationControllerDetent");
         UI_APPLICATION = NSClassFromString(@"UIApplication");
         UI_PASTEBOARD = NSClassFromString(@"UIPasteboard");
         UI_WINDOW = NSClassFromString(@"UIWindow");

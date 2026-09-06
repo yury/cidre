@@ -7,6 +7,12 @@ define_obj_type!(
 );
 
 impl SplitViewController {
+    #[objc::msg_send(setDelegate:)]
+    pub fn set_delegate<D: Delegate>(&mut self, val: Option<&D>);
+
+    #[objc::msg_send(setPresentsWithGesture:)]
+    pub fn set_presents_with_gesture(&mut self, val: bool);
+
     #[objc::init(initWithStyle:)]
     #[objc::available(ios = 14.0)]
     pub fn init_with_style(self, style: Style) -> arc::R<SplitViewController>;
@@ -19,6 +25,29 @@ impl SplitViewController {
     #[objc::msg_send(setViewController:forColumn:)]
     #[objc::available(ios = 14.0)]
     pub fn set_vc_for_column(&mut self, vc: Option<&ui::ViewController>, column: Column);
+
+    #[objc::msg_send(isCollapsed)]
+    pub fn is_collapsed(&self) -> bool;
+
+    #[objc::msg_send(isShowingColumn:)]
+    #[objc::available(ios = 26.0)]
+    pub fn is_showing_column(&self, column: Column) -> bool;
+
+    #[objc::msg_send(setPrimaryBackgroundStyle:)]
+    #[objc::available(ios = 13.0)]
+    pub fn set_primary_background_style(&mut self, val: BackgroundStyle);
+
+    #[objc::msg_send(setPreferredInspectorColumnWidth:)]
+    #[objc::available(ios = 26.0)]
+    pub fn set_preferred_inspector_column_width(&mut self, val: cg::Float);
+
+    #[objc::msg_send(setMinimumInspectorColumnWidth:)]
+    #[objc::available(ios = 26.0)]
+    pub fn set_min_inspector_column_width(&mut self, val: cg::Float);
+
+    #[objc::msg_send(setMaximumInspectorColumnWidth:)]
+    #[objc::available(ios = 26.0)]
+    pub fn set_max_inspector_column_width(&mut self, val: cg::Float);
 
     #[objc::msg_send(setPreferredDisplayMode:)]
     pub fn set_preferred_display_mode(&mut self, val: DisplayMode);
@@ -62,6 +91,15 @@ pub enum Column {
     Supplementary,
     Secondary,
     Compact,
+    Inspector,
+}
+
+#[doc(alias = "UISplitViewControllerBackgroundStyle")]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[repr(isize)]
+pub enum BackgroundStyle {
+    None,
+    Sidebar,
 }
 
 #[doc(alias = "UISplitViewControllerDisplayMode")]
@@ -75,4 +113,15 @@ pub enum DisplayMode {
     TwoBesideSecondary,
     TwoOverSecondary,
     TwoDisplaceSecondary,
+}
+
+#[objc::protocol(UISplitViewControllerDelegate)]
+pub trait Delegate: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(splitViewController:topColumnForCollapsingToProposedTopColumn:)]
+    fn top_column_for_collapsing(
+        &mut self,
+        controller: &mut SplitViewController,
+        proposed: Column,
+    ) -> Column;
 }

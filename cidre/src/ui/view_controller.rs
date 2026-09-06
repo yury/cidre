@@ -6,6 +6,10 @@ define_obj_type!(
 );
 
 impl ViewController {
+    #[objc::msg_send(sheetPresentationController)]
+    #[objc::available(ios = 15.0)]
+    pub fn sheet_presentation_controller(&self) -> Option<arc::R<ui::SheetPresentationController>>;
+
     #[objc::msg_send(setView:)]
     pub fn set_view(&mut self, val: Option<&ui::View>);
 

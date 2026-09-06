@@ -135,7 +135,15 @@ impl TabBarController {
 }
 
 #[objc::protocol(UITabBarControllerDelegate)]
-pub trait TabBarControllerDelegate: objc::Obj {}
+pub trait TabBarControllerDelegate: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(tabBarController:shouldSelectTab:)]
+    fn tab_bar_controller_should_select_tab(
+        &mut self,
+        controller: &mut TabBarController,
+        tab: &ui::Tab,
+    ) -> bool;
+}
 
 define_obj_type!(
     pub AnyTabBarControllerDelegate(ns::Id)
