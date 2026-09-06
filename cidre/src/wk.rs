@@ -1,6 +1,9 @@
 pub mod navigation;
 pub use navigation::Navigation;
 
+mod navigation_action;
+pub use navigation_action::NavigationAction;
+
 pub mod web_view;
 pub use web_view::FullscreenState;
 pub use web_view::MediaCaptureState;
@@ -30,6 +33,7 @@ pub use user_script::UserScriptInjectionTime;
 pub mod navigation_delegate;
 pub use navigation_delegate::NavigationDelegate;
 pub use navigation_delegate::NavigationDelegateImpl;
+pub use navigation_delegate::NavigationActionPolicy;
 
 mod website_data_store;
 pub use website_data_store::WebsiteDataStore;

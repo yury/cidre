@@ -47,6 +47,10 @@ define_obj_type!(
 );
 
 impl Control {
+    #[objc::msg_send(setShowsMenuAsPrimaryAction:)]
+    #[objc::available(ios = 14.0)]
+    pub fn set_shows_menu_as_primary_action(&mut self, value: bool);
+
     #[objc::msg_send(isEnabled)]
     pub fn is_enabled(&self) -> bool;
 

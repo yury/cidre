@@ -7,6 +7,14 @@ define_obj_type!(
 );
 
 impl Menu {
+    #[objc::msg_send(popUpMenuPositioningItem:atLocation:inView:)]
+    pub fn pop_up(
+        &mut self,
+        item: Option<&ns::MenuItem>,
+        location: crate::cg::Point,
+        view: Option<&ns::View>,
+    ) -> bool;
+
     #[objc::init(initWithTitle:)]
     pub fn init_with_title(self, title: &ns::String) -> arc::R<Menu>;
 

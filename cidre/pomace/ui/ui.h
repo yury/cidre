@@ -20,6 +20,8 @@ Class UI_COLLECTION_VIEW_FLOW_LAYOUT;
 Class UI_LABEL;
 Class UI_CONTROL;
 Class UI_BUTTON;
+Class UI_ACTION;
+Class UI_MENU;
 Class UI_TEXT_FIELD;
 Class UI_ALERT_CONTROLLER;
 Class UI_DOCUMENT_PICKER_VIEW_CONTROLLER;
@@ -102,6 +104,8 @@ static void ui_initializer(void)
         UI_COLLECTION_VIEW_FLOW_LAYOUT = NSClassFromString(@"UICollectionViewFlowLayout");
         UI_LABEL = NSClassFromString(@"UILabel");
         UI_CONTROL = NSClassFromString(@"UIControl");
+        UI_ACTION = NSClassFromString(@"UIAction");
+        UI_MENU = NSClassFromString(@"UIMenu");
         UI_BUTTON = NSClassFromString(@"UIButton");
         UI_TEXT_FIELD = NSClassFromString(@"UITextField");
         UI_ALERT_CONTROLLER = NSClassFromString(@"UIAlertController");

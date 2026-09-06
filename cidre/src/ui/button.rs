@@ -20,6 +20,15 @@ define_obj_type!(
 );
 
 impl Button {
+    #[objc::msg_send(buttonWithType:primaryAction:)]
+    #[objc::available(ios = 14.0)]
+    pub fn with_type_primary_action(kind: ButtonType, action: Option<&ui::Action>) -> arc::R<Self>;
+
+
+    #[objc::msg_send(setMenu:)]
+    #[objc::available(ios = 14.0)]
+    pub fn set_menu(&mut self, menu: Option<&ui::Menu>);
+
     #[objc::msg_send(configuration)]
     #[objc::available(ios = 15.0)]
     pub fn cfg(&self) -> Option<arc::R<ui::ButtonCfg>>;

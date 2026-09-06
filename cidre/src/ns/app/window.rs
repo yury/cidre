@@ -300,6 +300,12 @@ impl Window {
     #[objc::msg_send(close)]
     pub fn close(&self);
 
+    #[objc::msg_send(isReleasedWhenClosed)]
+    pub fn is_released_when_closed(&self) -> bool;
+
+    #[objc::msg_send(setReleasedWhenClosed:)]
+    pub fn set_released_when_closed(&mut self, val: bool);
+
     #[objc::msg_send(hidesOnDeactivate)]
     pub fn hides_on_decative(&self) -> bool;
 
