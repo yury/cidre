@@ -31,9 +31,9 @@ pub use user_script::UserScript;
 pub use user_script::UserScriptInjectionTime;
 
 pub mod navigation_delegate;
+pub use navigation_delegate::NavigationActionPolicy;
 pub use navigation_delegate::NavigationDelegate;
 pub use navigation_delegate::NavigationDelegateImpl;
-pub use navigation_delegate::NavigationActionPolicy;
 
 mod website_data_store;
 pub use website_data_store::WebsiteDataStore;
