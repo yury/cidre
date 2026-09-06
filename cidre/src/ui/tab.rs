@@ -1,4 +1,7 @@
-use crate::{arc, define_obj_type, ns, objc, ui};
+use crate::{arc, define_cls, define_obj_type, ns, objc, ui};
+
+#[cfg(feature = "blocks")]
+use crate::blocks;
 
 // UITabPlacement
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
@@ -35,6 +38,19 @@ define_obj_type!(
 );
 
 impl Tab {
+    define_cls!(UI_TAB);
+
+    #[cfg(feature = "blocks")]
+    #[objc::init(initWithTitle:image:identifier:viewControllerProvider:)]
+    #[objc::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
+    pub fn init_with_title_image_id_vc_provider(
+        self,
+        title: &ns::String,
+        image: Option<&ui::Image>,
+        id: &ns::String,
+        provider: Option<&mut blocks::EscBlock<fn(&Tab) -> arc::Rar<ui::ViewController>>>,
+    ) -> arc::R<Tab>;
+
     #[objc::msg_send(identifier)]
     pub fn id(&self) -> arc::R<ns::String>;
 
@@ -102,4 +118,8 @@ impl Tab {
 
     #[objc::msg_send(setUserInfo:)]
     pub fn set_user_info(&mut self, val: Option<&ns::Id>);
+}
+
+unsafe extern "C" {
+    static UI_TAB: &'static objc::Class<Tab>;
 }
