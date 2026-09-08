@@ -39,6 +39,9 @@ impl StyleMask {
 
     /// Specifies a heads up display panel. Only applicable for \c NSPanel (or a subclass thereof).
     pub const HUD_WINDOW: Self = Self(1 << 13);
+
+    /// undocumented macos 27 window style
+    pub const GLASS: Self = Self(1 << 36);
 }
 
 define_opts!(
