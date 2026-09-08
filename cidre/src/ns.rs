@@ -339,6 +339,9 @@ mod app;
 #[cfg(all(feature = "app", target_os = "macos"))]
 pub use app::*;
 
+mod invocation;
+pub use invocation::Invocation;
+
 #[cfg(target_os = "macos")]
 mod geometry;
 
