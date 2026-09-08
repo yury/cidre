@@ -23,6 +23,12 @@ impl ContextOpt {
     pub fn cache_intermediates() -> &'static Self {
         unsafe { kCIContextCacheIntermediates }
     }
+
+    #[doc(alias = "kCIContextPriorityRequestLow")]
+    #[inline]
+    pub fn priority_request_low() -> &'static Self {
+        unsafe { kCIContextPriorityRequestLow }
+    }
 }
 
 define_obj_type!(
@@ -98,6 +104,7 @@ unsafe extern "C" {
     static kCIContextAllowLowPower: &'static ContextOpt;
     static kCIContextHighQualityDownsample: &'static ContextOpt;
     static kCIContextCacheIntermediates: &'static ContextOpt;
+    static kCIContextPriorityRequestLow: &'static ContextOpt;
 }
 
 #[cfg(test)]
