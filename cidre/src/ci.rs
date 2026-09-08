@@ -1,5 +1,6 @@
 mod context;
 pub use context::Context;
+pub use context::ContextOpt;
 
 mod image;
 pub use image::Format;
