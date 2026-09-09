@@ -15,7 +15,7 @@ pub trait AppDelegate {
         app: &App,
         session: &ui::SceneSession,
         options: &ui::SceneConnectionOpts,
-    ) -> arc::Rar<ui::SceneCfg>;
+    ) -> arc::R<ui::SceneCfg>;
 
     #[objc::optional]
     #[objc::msg_send(applicationDidEnterBackground:)]

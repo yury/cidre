@@ -68,7 +68,7 @@ impl WindowScene {
 pub trait WindowSceneDelegate: ui::SceneDelegate {
     #[objc::optional]
     #[objc::msg_send(window)]
-    fn window(&self) -> Option<arc::Rar<ui::Window>>;
+    fn window(&self) -> Option<arc::R<ui::Window>>;
 
     #[objc::optional]
     #[objc::msg_send(setWindow:)]

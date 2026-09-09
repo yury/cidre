@@ -38,6 +38,8 @@ Class NS_TOOLBAR_ITEM;
 Class NS_BUTTON;
 Class NS_TEXT_FIELD;
 Class NS_TABLE_VIEW;
+Class NS_TABLE_CELL_VIEW;
+Class NS_IMAGE_VIEW;
 Class NS_OUTLINE_VIEW;
 Class NS_FONT;
 Class NS_FONT_MANAGER;
@@ -106,6 +108,8 @@ static void app_initializer(void)
         NS_BUTTON = [NSButton class];
         NS_TEXT_FIELD = [NSTextField class];
         NS_TABLE_VIEW = [NSTableView class];
+        NS_TABLE_CELL_VIEW = [NSTableCellView class];
+        NS_IMAGE_VIEW = [NSImageView class];
         NS_OUTLINE_VIEW = [NSOutlineView class];
         NS_FONT = [NSFont class];
         NS_FONT_MANAGER = [NSFontManager class];

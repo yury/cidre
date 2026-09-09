@@ -5,10 +5,24 @@ define_obj_type!(
     pub ToolbarId(ns::String)
 );
 
+impl ToolbarId {
+    /// Any string is a valid toolbar identifier.
+    pub fn with_string(val: &ns::String) -> &Self {
+        unsafe { std::mem::transmute(val) }
+    }
+}
+
 define_obj_type!(
     #[doc(alias = "NSToolbarItemIdentifier")]
     pub ToolbarItemId(ns::String)
 );
+
+impl ToolbarItemId {
+    /// Any string is a valid toolbar item identifier.
+    pub fn with_string(val: &ns::String) -> &Self {
+        unsafe { std::mem::transmute(val) }
+    }
+}
 
 #[doc(alias = "NSToolbarDisplayMode")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone, Hash)]
@@ -135,40 +149,40 @@ impl Toolbar {
 pub trait ToolbarDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:)]
-    fn toolbar_item_for_id_will_be_inserted_ar(
+    fn toolbar_item_for_id_will_be_inserted(
         &mut self,
         toolbar: &mut ns::Toolbar,
         id: &ns::ToolbarItemId,
         flag: bool,
-    ) -> Option<arc::Rar<ns::ToolbarItem>>;
+    ) -> Option<arc::R<ns::ToolbarItem>>;
 
     #[objc::optional]
     #[objc::msg_send(toolbarDefaultItemIdentifiers:)]
-    fn toolbar_default_item_ids_ar(
+    fn toolbar_default_item_ids(
         &mut self,
         toolbar: &mut ns::Toolbar,
-    ) -> arc::Rar<ns::Array<ns::ToolbarItemId>>;
+    ) -> arc::R<ns::Array<ns::ToolbarItemId>>;
 
     #[objc::optional]
     #[objc::msg_send(toolbarAllowedItemIdentifiers:)]
-    fn toolbar_allowed_item_ids_ar(
+    fn toolbar_allowed_item_ids(
         &mut self,
         toolbar: &mut ns::Toolbar,
-    ) -> arc::Rar<ns::Array<ns::ToolbarItemId>>;
+    ) -> arc::R<ns::Array<ns::ToolbarItemId>>;
 
     #[objc::optional]
     #[objc::msg_send(toolbarSelectableItemIdentifiers:)]
-    fn toolbar_selectable_item_ids_ar(
+    fn toolbar_selectable_item_ids(
         &mut self,
         toolbar: &mut ns::Toolbar,
-    ) -> arc::Rar<ns::Array<ns::ToolbarItemId>>;
+    ) -> arc::R<ns::Array<ns::ToolbarItemId>>;
 
     #[objc::optional]
     #[objc::msg_send(toolbarImmovableItemIdentifiers:)]
-    fn toolbar_immovable_item_ids_ar(
+    fn toolbar_immovable_item_ids(
         &mut self,
         toolbar: &mut ns::Toolbar,
-    ) -> arc::Rar<ns::Array<ns::ToolbarItemId>>;
+    ) -> arc::R<ns::Array<ns::ToolbarItemId>>;
 
     #[objc::optional]
     #[objc::msg_send(toolbar:itemIdentifier:canBeInsertedAtIndex:)]

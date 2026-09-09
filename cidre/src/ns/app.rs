@@ -19,6 +19,7 @@ mod button;
 pub use button::Button;
 
 mod cell;
+pub use cell::BackgroundStyle;
 pub use cell::Cell;
 pub use cell::CellImagePos;
 pub use cell::CellType;
@@ -124,8 +125,11 @@ pub use gesture_recognizer::PanGestureRecognizer;
 pub use gesture_recognizer::RotationGestureRecognizer;
 
 mod image;
+
+mod image_view;
 pub use image::Image;
 pub use image::ImageSymbolCfg;
+pub use image_view::ImageView;
 
 mod layout_constraint;
 pub use layout_constraint::LayoutAttr;
@@ -295,6 +299,9 @@ pub use workspace::WorkspaceOpenCfg;
 mod scroll_view;
 pub use scroll_view::ScrollView;
 mod table_column;
+
+mod table_cell_view;
+pub use table_cell_view::TableCellView;
 pub use table_column::TableColumn;
 mod visual_effect_view;
 pub use visual_effect_view::{

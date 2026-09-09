@@ -104,6 +104,18 @@ pub enum ImageScaling {
     ProportionallyUpOrDown = 3,
 }
 
+#[doc(alias = "NSBackgroundStyle")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum BackgroundStyle {
+    /// The background reflects the predominant color scheme of the view's appearance.
+    Normal = 0,
+    /// The background is indicating emphasis (e.g. selection state).
+    Emphasized = 1,
+    Raised = 2,
+    Lowered = 3,
+}
+
 #[doc(alias = "NSControlStateValue")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(transparent)]
