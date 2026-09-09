@@ -1,4 +1,4 @@
-use crate::{arc, cg, define_cls, define_obj_type, ns, objc, ui};
+use crate::{api, arc, cg, define_obj_type, ns, objc, ui};
 
 define_obj_type!(
     #[doc(alias = "UICornerConfiguration")]
@@ -6,7 +6,8 @@ define_obj_type!(
 );
 
 impl CornerCfg {
-    define_cls!(UI_CORNER_CONFIGURATION);
+    #[api::available(ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    crate::define_cls!(UI_CORNER_CONFIGURATION);
 
     /// The same radius on every corner.
     #[objc::msg_send(configurationWithRadius:)]

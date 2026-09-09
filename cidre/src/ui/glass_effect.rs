@@ -1,4 +1,4 @@
-use crate::{arc, define_cls, define_obj_type, objc, ui};
+use crate::{api, arc, define_obj_type, objc, ui};
 
 #[doc(alias = "UIGlassEffectStyle")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -16,27 +16,28 @@ define_obj_type!(
 );
 
 impl GlassEffect {
-    define_cls!(UI_GLASS_EFFECT);
+    #[api::available(ios = 26.0, tvos = 26.0)]
+    crate::define_cls!(UI_GLASS_EFFECT);
 
     #[objc::msg_send(effectWithStyle:)]
-    #[objc::available(ios = 26.0)]
+    #[objc::available(ios = 26.0, tvos = 26.0)]
     pub fn with_style(style: GlassEffectStyle) -> arc::R<Self>;
 
     /// Whether the glass reacts to touches. Default is false.
     #[objc::msg_send(isInteractive)]
-    #[objc::available(ios = 26.0)]
+    #[objc::available(ios = 26.0, tvos = 26.0)]
     pub fn is_interactive(&self) -> bool;
 
     #[objc::msg_send(setInteractive:)]
-    #[objc::available(ios = 26.0)]
+    #[objc::available(ios = 26.0, tvos = 26.0)]
     pub fn set_interactive(&mut self, val: bool);
 
     #[objc::msg_send(tintColor)]
-    #[objc::available(ios = 26.0)]
+    #[objc::available(ios = 26.0, tvos = 26.0)]
     pub fn tint_color(&self) -> Option<arc::R<ui::Color>>;
 
     #[objc::msg_send(setTintColor:)]
-    #[objc::available(ios = 26.0)]
+    #[objc::available(ios = 26.0, tvos = 26.0)]
     pub fn set_tint_color(&mut self, val: Option<&ui::Color>);
 }
 

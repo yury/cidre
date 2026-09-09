@@ -12,17 +12,17 @@ impl Image {
     pub fn with_sys_name(name: &ns::String) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(systemImageNamed:withConfiguration:)]
-    #[objc::available(ios = 13.0)]
+    #[objc::available(ios = 13.0, tvos = 13.0)]
     pub fn with_sys_name_cfg(name: &ns::String, cfg: Option<&ui::ImageCfg>)
     -> Option<arc::R<Self>>;
 
     /// A new image with the given configuration applied.
     #[objc::msg_send(imageWithConfiguration:)]
-    #[objc::available(ios = 13.0)]
+    #[objc::available(ios = 13.0, tvos = 13.0)]
     pub fn with_cfg(&self, cfg: &ui::ImageCfg) -> arc::R<Self>;
 
     #[objc::msg_send(configuration)]
-    #[objc::available(ios = 13.0)]
+    #[objc::available(ios = 13.0, tvos = 13.0)]
     pub fn cfg(&self) -> Option<arc::R<ui::ImageCfg>>;
 
     #[objc::init(initWithContentsOfFile:)]

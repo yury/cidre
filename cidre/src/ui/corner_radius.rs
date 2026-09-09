@@ -1,4 +1,4 @@
-use crate::{arc, cg, define_cls, define_obj_type, ns, objc};
+use crate::{api, arc, cg, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "UICornerRadius")]
@@ -6,7 +6,8 @@ define_obj_type!(
 );
 
 impl CornerRadius {
-    define_cls!(UI_CORNER_RADIUS);
+    #[api::available(ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    crate::define_cls!(UI_CORNER_RADIUS);
 
     /// A fixed radius.
     #[objc::msg_send(fixedRadius:)]

@@ -1,4 +1,4 @@
-use crate::{arc, define_cls, define_obj_type, ns, objc, ui};
+use crate::{api, arc, define_obj_type, ns, objc, ui};
 
 define_obj_type!(
     #[doc(alias = "UITabAccessory")]
@@ -6,10 +6,10 @@ define_obj_type!(
 );
 
 impl TabAccessory {
-    define_cls!(UI_TAB_ACCESSORY);
+    #[api::available(ios = 26.0)]
+    crate::define_cls!(UI_TAB_ACCESSORY);
 
     #[objc::init(initWithContentView:)]
-    #[objc::available(ios = 26.0)]
     pub fn init_with_content_view(self, content_view: &ui::View) -> arc::R<TabAccessory>;
 
     #[objc::available(ios = 26.0)]

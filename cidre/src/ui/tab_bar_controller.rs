@@ -192,9 +192,10 @@ impl TabBarController {
 
     #[cfg(feature = "blocks")]
     #[objc::available(ios = 27.0, tvos = 27.0, visionos = 27.0)]
+    #[allow(unused_unsafe)]
     pub fn perform_batch_updates(&mut self, mut updates: impl FnMut()) {
         let mut block = unsafe { blocks::NoEscBlock::stack0(&mut updates) };
-        self.perform_batch_updates_block(&mut block);
+        unsafe { self.perform_batch_updates_block(&mut block) }
     }
 }
 

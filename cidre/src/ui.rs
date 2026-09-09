@@ -321,8 +321,11 @@ pub use tab_group::TabGroup;
 mod tab_bar;
 pub use tab_bar::TabBar;
 
+#[cfg(target_os = "ios")]
 mod tab_accessory;
+#[cfg(target_os = "ios")]
 pub use tab_accessory::TabAccessory;
+#[cfg(target_os = "ios")]
 pub use tab_accessory::TabAccessoryEnv;
 
 mod tab_bar_controller;
