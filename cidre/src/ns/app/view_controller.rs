@@ -1,4 +1,6 @@
-use crate::{arc, define_obj_type, ns, objc};
+#[cfg(feature = "blocks")]
+use crate::blocks;
+use crate::{arc, define_obj_type, define_opts, ns, objc};
 
 define_obj_type!(
     pub ViewController(ns::Responder), NS_VIEW_CONTROLLER
@@ -57,6 +59,26 @@ pub trait ViewControllerPresentationAnimator: objc::Obj {
     );
 }
 
+define_opts!(
+    #[doc(alias = "NSViewControllerTransitionOptions")]
+    pub ViewControllerTransitionOpts(usize)
+);
+
+impl ViewControllerTransitionOpts {
+    pub const NONE: Self = Self(0x0);
+    /// Fades the new view in and the old view out.
+    pub const CROSSFADE: Self = Self(0x1);
+    /// Slides the old view up while the new view comes from the bottom.
+    pub const SLIDE_UP: Self = Self(0x10);
+    pub const SLIDE_DOWN: Self = Self(0x20);
+    pub const SLIDE_FORWARD: Self = Self(0x140);
+    pub const SLIDE_BACKWARD: Self = Self(0x180);
+    pub const SLIDE_LEFT: Self = Self(0x40);
+    pub const SLIDE_RIGHT: Self = Self(0x80);
+    /// Lets the user interact with the views while the transition runs.
+    pub const ALLOW_USER_INTERACTION: Self = Self(0x1000);
+}
+
 /// NSViewControllerPresentation
 impl ViewController {
     /// Presents `vc` with `animator`, which is kept until `vc` is dismissed.
@@ -87,6 +109,31 @@ impl ViewController {
     #[objc::msg_send(presentViewControllerAsModalWindow:)]
     #[objc::available(macos = 10.10)]
     pub fn present_vc_as_modal_window(&mut self, vc: &ns::ViewController);
+
+    /// Replaces `from`'s view with `to`'s among the receiver's children, animated
+    /// per `opts`. Both must already be children of the receiver.
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(transitionFromViewController:toViewController:options:completionHandler:)]
+    #[objc::available(macos = 10.10)]
+    pub fn transition_from_vc_to_vc_ch(
+        &mut self,
+        from: &ns::ViewController,
+        to: &ns::ViewController,
+        opts: ViewControllerTransitionOpts,
+        completion: Option<&mut blocks::EscBlock<fn()>>,
+    );
+
+    #[cfg(feature = "blocks")]
+    #[objc::available(macos = 10.10)]
+    #[allow(unused_unsafe)]
+    pub fn transition_from_vc_to_vc(
+        &mut self,
+        from: &ns::ViewController,
+        to: &ns::ViewController,
+        opts: ViewControllerTransitionOpts,
+    ) {
+        unsafe { self.transition_from_vc_to_vc_ch(from, to, opts, None) }
+    }
 
     #[objc::msg_send(presentedViewControllers)]
     #[objc::available(macos = 10.10)]

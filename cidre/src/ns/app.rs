@@ -252,6 +252,7 @@ mod view_controller;
 pub use view_controller::ViewController;
 pub use view_controller::ViewControllerPresentationAnimator;
 pub use view_controller::ViewControllerPresentationAnimatorImpl;
+pub use view_controller::ViewControllerTransitionOpts;
 
 mod view;
 pub use view::AutoresizingMaskOpts;
@@ -305,6 +306,10 @@ mod table_column;
 mod table_cell_view;
 pub use table_cell_view::TableCellView;
 pub use table_column::TableColumn;
+pub use table_column::TableColumnResizingOpts;
+mod background_extension_view;
+pub use background_extension_view::BackgroundExtensionView;
+
 mod visual_effect_view;
 pub use visual_effect_view::{
     BlendingMode as VisualEffectBlendingMode, Material as VisualEffectMaterial,

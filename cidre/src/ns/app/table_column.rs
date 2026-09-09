@@ -1,4 +1,17 @@
-use crate::{arc, cg, define_obj_type, ns, objc};
+use crate::{arc, cg, define_obj_type, define_opts, ns, objc};
+
+define_opts!(
+    #[doc(alias = "NSTableColumnResizingOptions")]
+    pub TableColumnResizingOpts(usize)
+);
+
+impl TableColumnResizingOpts {
+    pub const NO_RESIZING: Self = Self(0);
+    /// The column resizes with the table, per the table's column autoresizing style.
+    pub const AUTORESIZING: Self = Self(1 << 0);
+    /// The user can resize the column.
+    pub const USER_RESIZING: Self = Self(1 << 1);
+}
 
 define_obj_type!(
     #[doc(alias = "NSTableColumn")]
@@ -22,6 +35,18 @@ impl TableColumn {
 
     #[objc::msg_send(setMinWidth:)]
     pub fn set_min_width(&mut self, val: cg::Float);
+
+    #[objc::msg_send(maxWidth)]
+    pub fn max_width(&self) -> cg::Float;
+
+    #[objc::msg_send(setMaxWidth:)]
+    pub fn set_max_width(&mut self, val: cg::Float);
+
+    #[objc::msg_send(resizingMask)]
+    pub fn resizing_mask(&self) -> TableColumnResizingOpts;
+
+    #[objc::msg_send(setResizingMask:)]
+    pub fn set_resizing_mask(&mut self, val: TableColumnResizingOpts);
 
     #[objc::msg_send(setEditable:)]
     pub fn set_editable(&mut self, val: bool);

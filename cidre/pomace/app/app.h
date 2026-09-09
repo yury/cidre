@@ -57,6 +57,7 @@ Class NS_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE;
 Class NS_SCROLL_VIEW;
 Class NS_TABLE_COLUMN;
 Class NS_VISUAL_EFFECT_VIEW;
+Class NS_BACKGROUND_EXTENSION_VIEW;
 Class NS_SECURE_TEXT_FIELD;
 Class NS_SPLIT_VIEW_CONTROLLER;
 Class NS_SPLIT_VIEW;
@@ -71,6 +72,7 @@ static void app_initializer(void)
         NS_SCROLL_VIEW = NSClassFromString(@"NSScrollView");
         NS_TABLE_COLUMN = NSClassFromString(@"NSTableColumn");
         NS_VISUAL_EFFECT_VIEW = NSClassFromString(@"NSVisualEffectView");
+        NS_BACKGROUND_EXTENSION_VIEW = NSClassFromString(@"NSBackgroundExtensionView");
         NS_SECURE_TEXT_FIELD = NSClassFromString(@"NSSecureTextField");
         NS_SPLIT_VIEW_CONTROLLER = NSClassFromString(@"NSSplitViewController");
         NS_SPLIT_VIEW = NSClassFromString(@"NSSplitView");

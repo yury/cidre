@@ -127,6 +127,16 @@ impl SplitViewItem {
 
     #[objc::msg_send(setTitlebarSeparatorStyle:)]
     pub fn set_titlebar_separator_style(&mut self, val: ns::TitlebarSeparatorStyle);
+
+    /// When true, sidebars and inspectors may be overlaid on top of this item's view
+    /// controller, whose safe area insets then account for them. Default is false.
+    #[objc::msg_send(automaticallyAdjustsSafeAreaInsets)]
+    #[objc::available(macos = 26.0)]
+    pub fn automatically_adjusts_safe_area_insets(&self) -> bool;
+
+    #[objc::msg_send(setAutomaticallyAdjustsSafeAreaInsets:)]
+    #[objc::available(macos = 26.0)]
+    pub fn set_automatically_adjusts_safe_area_insets(&mut self, val: bool);
 }
 
 impl ns::AnimatablePropContainer for SplitViewItem {}

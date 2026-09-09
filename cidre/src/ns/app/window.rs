@@ -142,6 +142,15 @@ impl Window {
 
     /// The part of the content area not covered by the title bar and toolbar,
     /// in window coordinates.
+    /// The responder that receives key events first.
+    #[objc::msg_send(firstResponder)]
+    pub fn first_responder(&self) -> Option<arc::R<ns::Responder>>;
+
+    /// Makes `responder` the first responder; `None` makes the window itself first
+    /// responder. Returns whether the change was accepted.
+    #[objc::msg_send(makeFirstResponder:)]
+    pub fn make_first_responder(&mut self, responder: Option<&ns::Responder>) -> bool;
+
     #[objc::msg_send(contentLayoutRect)]
     #[objc::available(macos = 10.10)]
     pub fn content_layout_rect(&self) -> ns::Rect;
