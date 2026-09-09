@@ -7,6 +7,9 @@ mod blur_effect;
 pub use blur_effect::BlurEffect;
 pub use blur_effect::BlurEffectStyle;
 
+mod background_extension_view;
+pub use background_extension_view::BackgroundExtensionView;
+
 mod device;
 pub use device::BatteryState as DeviceBatteryState;
 pub use device::Device;

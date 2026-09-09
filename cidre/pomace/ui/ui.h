@@ -71,6 +71,7 @@ Class UI_WINDOW_SCENE_ACTIVATION_REQUEST_OPTIONS;
 Class UI_SCENE_SESSION_ACTIVATION_REQUEST;
 
 Class UI_BLUR_EFFECT;
+Class UI_BACKGROUND_EXTENSION_VIEW;
 Class UI_ZOOM_TRANSITION_OPTIONS;
 
 Class UI_COLLECTION_VIEW_DROP_PROPOSAL;
@@ -174,6 +175,7 @@ static void ui_initializer(void)
         UI_SCENE_SESSION_ACTIVATION_REQUEST = NSClassFromString(@"UISceneSessionActivationRequest");
         
         UI_BLUR_EFFECT = NSClassFromString(@"UIBlurEffect");
+        UI_BACKGROUND_EXTENSION_VIEW = NSClassFromString(@"UIBackgroundExtensionView");
         UI_ZOOM_TRANSITION_OPTIONS = NSClassFromString(@"UIZoomTransitionOptions");
 
         UI_COLLECTION_VIEW_DROP_PROPOSAL = NSClassFromString(@"UICollectionViewDropProposal");
