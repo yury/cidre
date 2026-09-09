@@ -299,6 +299,21 @@ pub fn protocol(args: TokenStream, ts: TokenStream) -> TokenStream {
                         Cow::Owned(TokenStream::from_iter(generics.clone().into_iter()).to_string())
                     };
 
+                    // The `_ar` / `arc::Rar` pair is derived from an `arc::R` return, never
+                    // written by hand: `add_methods` strips `_ar` from `impl_*` names to find
+                    // the selector, so a hand-written suffix would never be found.
+                    assert!(
+                        !fn_name.ends_with("_ar"),
+                        "objc::protocol: `{fn_name}` must not end with `_ar`; declare it \
+                         without the suffix and return `arc::R<T>` - the implementer then \
+                         provides `impl_{fn_name}` returning `arc::Rar<T>`",
+                    );
+                    assert!(
+                        !ret.contains("Rar <"),
+                        "objc::protocol: `{fn_name}` must return `arc::R<T>`, not `arc::Rar<T>` \
+                         - the implementer's `impl_{fn_name}_ar` returns `arc::Rar<T>`",
+                    );
+
                     let gen_rar_version = ret.contains("arc :: R <") && !returns_retained(&sel);
 
                     let impl_fn = if skip {
