@@ -140,6 +140,12 @@ impl Window {
     #[objc::msg_send(setContentMinSize:)]
     pub fn set_content_min_size(&mut self, val: ns::Size);
 
+    /// The part of the content area not covered by the title bar and toolbar,
+    /// in window coordinates.
+    #[objc::msg_send(contentLayoutRect)]
+    #[objc::available(macos = 10.10)]
+    pub fn content_layout_rect(&self) -> ns::Rect;
+
     #[objc::init(initWithContentRect:styleMask:backing:defer:)]
     pub fn init_with_content_rect_style_mask_backing_defer(
         self,

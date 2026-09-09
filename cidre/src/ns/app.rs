@@ -250,6 +250,8 @@ pub use touch::TouchTypeMask;
 
 mod view_controller;
 pub use view_controller::ViewController;
+pub use view_controller::ViewControllerPresentationAnimator;
+pub use view_controller::ViewControllerPresentationAnimatorImpl;
 
 mod view;
 pub use view::AutoresizingMaskOpts;

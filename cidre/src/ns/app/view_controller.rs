@@ -37,8 +37,37 @@ impl ViewController {
     pub fn is_view_loaded(&self) -> bool;
 }
 
+/// Presents and dismisses a view controller's view in a custom way.
+#[objc::protocol(NSViewControllerPresentationAnimator)]
+pub trait ViewControllerPresentationAnimator: objc::Obj {
+    /// Called when `vc` is going to be presented by `from_vc`; the animator shows its view.
+    #[objc::msg_send(animatePresentationOfViewController:fromViewController:)]
+    fn animate_presentation_of_vc(
+        &mut self,
+        vc: &mut ns::ViewController,
+        from_vc: &mut ns::ViewController,
+    );
+
+    /// Called to dismiss a previously shown `vc`; the animator removes its view.
+    #[objc::msg_send(animateDismissalOfViewController:fromViewController:)]
+    fn animate_dismissal_of_vc(
+        &mut self,
+        vc: &mut ns::ViewController,
+        from_vc: &mut ns::ViewController,
+    );
+}
+
 /// NSViewControllerPresentation
 impl ViewController {
+    /// Presents `vc` with `animator`, which is kept until `vc` is dismissed.
+    #[objc::msg_send(presentViewController:animator:)]
+    #[objc::available(macos = 10.10)]
+    pub fn present_vc_animator<A: ViewControllerPresentationAnimator>(
+        &mut self,
+        vc: &ns::ViewController,
+        animator: &A,
+    );
+
     /// Dismisses the receiver. Does nothing if the receiver is not currently presented.
     #[objc::msg_send(dismissController:)]
     #[objc::available(macos = 10.10)]
