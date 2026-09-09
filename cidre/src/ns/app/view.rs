@@ -150,6 +150,27 @@ impl View {
     #[objc::msg_send(setBoundsSize:)]
     pub fn set_bounds_size(&mut self, size: cg::Size);
 
+    /// The rotation of the frame rectangle in degrees, around its origin. Default is 0.
+    #[objc::msg_send(frameRotation)]
+    pub fn frame_rotation(&self) -> cg::Float;
+
+    #[objc::msg_send(setFrameRotation:)]
+    pub fn set_frame_rotation(&mut self, val: cg::Float);
+
+    /// The rotation of the frame rectangle in degrees, around its center.
+    #[objc::msg_send(frameCenterRotation)]
+    pub fn frame_center_rotation(&self) -> cg::Float;
+
+    #[objc::msg_send(setFrameCenterRotation:)]
+    pub fn set_frame_center_rotation(&mut self, val: cg::Float);
+
+    /// The rotation of the bounds rectangle in degrees. Default is 0.
+    #[objc::msg_send(boundsRotation)]
+    pub fn bounds_rotation(&self) -> cg::Float;
+
+    #[objc::msg_send(setBoundsRotation:)]
+    pub fn set_bounds_rotation(&mut self, val: cg::Float);
+
     #[objc::msg_send(convertRectToBacking:)]
     pub fn convert_rect_to_backing(&self, rect: ns::Rect) -> ns::Rect;
 
@@ -170,6 +191,10 @@ impl View {
 
     #[objc::msg_send(isOpaque)]
     pub fn is_opaque(&self) -> bool;
+
+    /// Whether the view's coordinate system has its origin at the top left.
+    #[objc::msg_send(isFlipped)]
+    pub fn is_flipped(&self) -> bool;
 
     #[objc::msg_send(convertPoint:fromView:)]
     pub fn convert_point_from_view(
