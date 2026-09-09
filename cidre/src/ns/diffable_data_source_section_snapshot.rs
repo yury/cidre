@@ -6,6 +6,8 @@ use crate::{
     objc,
 };
 
+/// A hierarchical snapshot of the items in one section: items may have
+/// children, and parents can be expanded or collapsed.
 #[doc(alias = "NSDiffableDataSourceSectionSnapshot")]
 #[repr(transparent)]
 pub struct DiffableDataSrcSectionSnapshot<I>(ns::Id, PhantomData<I>);
@@ -25,45 +27,70 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
         Self::cls().alloc().init()
     }
 
-    #[objc::msg_send(numberOfItems)]
-    pub fn items_n(&self) -> ns::Integer;
-
-    #[objc::msg_send(itemIdentifiers)]
+    /// All items, in depth-first order.
+    #[objc::msg_send(items)]
     pub fn items(&self) -> arc::R<ns::Array<I>>;
 
+    /// The items without a parent.
     #[objc::msg_send(rootItems)]
     pub fn root_items(&self) -> arc::R<ns::Array<I>>;
 
-    #[objc::msg_send(indexOfItemIdentifier:)]
-    pub fn index_of_item_id(&self, item_id: &I) -> ns::Integer;
+    /// The items whose ancestors are all expanded.
+    #[objc::msg_send(visibleItems)]
+    pub fn visible_items(&self) -> arc::R<ns::Array<I>>;
 
-    #[objc::msg_send(childrenOfItemIdentifier:)]
-    pub fn children_of_item_id(&self, item_id: &I) -> arc::R<ns::Array<I>>;
+    #[objc::msg_send(expandedItems)]
+    pub fn expanded_items(&self) -> arc::R<ns::Array<I>>;
 
-    #[objc::msg_send(parentForItemIdentifier:)]
-    pub fn parent_of_item_id(&self, item_id: &I) -> Option<arc::R<I>>;
+    /// `ns::NOT_FOUND` if the item is not in the snapshot.
+    #[objc::msg_send(indexOfItem:)]
+    pub fn index_of_item(&self, item: &I) -> ns::Integer;
 
-    #[objc::msg_send(appendItemsWithIdentifiers:)]
+    /// The depth of the item; `ns::NOT_FOUND` if it is not in the snapshot.
+    #[objc::msg_send(levelOfItem:)]
+    pub fn level_of_item(&self, item: &I) -> ns::Integer;
+
+    #[objc::msg_send(containsItem:)]
+    pub fn contains_item(&self, item: &I) -> bool;
+
+    /// `None` for a root item.
+    #[objc::msg_send(parentOfChildItem:)]
+    pub fn parent_of_child_item(&self, item: &I) -> Option<arc::R<I>>;
+
+    /// A snapshot of `parent`'s descendants, without `parent` itself.
+    #[objc::msg_send(snapshotOfParentItem:)]
+    pub fn snapshot_of_parent_item(&self, parent: &I) -> arc::R<Self>;
+
+    #[objc::msg_send(snapshotOfParentItem:includingParentItem:)]
+    pub fn snapshot_of_parent_item_including_parent(
+        &self,
+        parent: &I,
+        including_parent: bool,
+    ) -> arc::R<Self>;
+
+    #[objc::msg_send(appendItems:)]
     pub unsafe fn append_items_throws(&mut self, items: &ns::Array<I>);
 
+    /// Appends `items` at the root level.
     #[inline]
     pub fn append_items<'ear>(&mut self, items: &ns::Array<I>) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.append_items_throws(items) })
     }
 
-    #[objc::msg_send(appendItemsWithIdentifiers:intoItemWithIdentifier:)]
-    pub unsafe fn append_items_into_throws(&mut self, items: &ns::Array<I>, parent: &I);
+    #[objc::msg_send(appendItems:intoParentItem:)]
+    pub unsafe fn append_items_into_throws(&mut self, items: &ns::Array<I>, parent: Option<&I>);
 
+    /// Appends `items` as the last children of `parent`.
     #[inline]
     pub fn append_items_into<'ear>(
         &mut self,
         items: &ns::Array<I>,
         parent: impl AsRef<I>,
     ) -> ns::ExResult<'ear> {
-        ns::try_catch(|| unsafe { self.append_items_into_throws(items, parent.as_ref()) })
+        ns::try_catch(|| unsafe { self.append_items_into_throws(items, Some(parent.as_ref())) })
     }
 
-    #[objc::msg_send(insertItemsWithIdentifiers:beforeItemWithIdentifier:)]
+    #[objc::msg_send(insertItems:beforeItem:)]
     pub unsafe fn insert_items_before_item_throws(&mut self, items: &ns::Array<I>, item: &I);
 
     #[inline]
@@ -75,7 +102,7 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
         ns::try_catch(|| unsafe { self.insert_items_before_item_throws(items, item.as_ref()) })
     }
 
-    #[objc::msg_send(insertItemsWithIdentifiers:afterItemWithIdentifier:)]
+    #[objc::msg_send(insertItems:afterItem:)]
     pub unsafe fn insert_items_after_item_throws(&mut self, items: &ns::Array<I>, item: &I);
 
     #[inline]
@@ -87,7 +114,48 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
         ns::try_catch(|| unsafe { self.insert_items_after_item_throws(items, item.as_ref()) })
     }
 
-    #[objc::msg_send(deleteItemsWithIdentifiers:)]
+    #[objc::msg_send(insertSnapshot:beforeItem:)]
+    pub unsafe fn insert_snapshot_before_item_throws(&mut self, snapshot: &Self, item: &I);
+
+    #[inline]
+    pub fn insert_snapshot_before_item<'ear>(
+        &mut self,
+        snapshot: &Self,
+        item: impl AsRef<I>,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.insert_snapshot_before_item_throws(snapshot, item.as_ref())
+        })
+    }
+
+    #[objc::msg_send(insertSnapshot:afterItem:)]
+    pub unsafe fn insert_snapshot_after_item_throws(&mut self, snapshot: &Self, item: &I);
+
+    #[inline]
+    pub fn insert_snapshot_after_item<'ear>(
+        &mut self,
+        snapshot: &Self,
+        item: impl AsRef<I>,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe { self.insert_snapshot_after_item_throws(snapshot, item.as_ref()) })
+    }
+
+    #[objc::msg_send(replaceChildrenOfParentItem:withSnapshot:)]
+    pub unsafe fn replace_children_of_parent_item_throws(&mut self, parent: &I, snapshot: &Self);
+
+    #[inline]
+    pub fn replace_children_of_parent_item<'ear>(
+        &mut self,
+        parent: impl AsRef<I>,
+        snapshot: &Self,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.replace_children_of_parent_item_throws(parent.as_ref(), snapshot)
+        })
+    }
+
+    /// Deletes `items` and their children.
+    #[objc::msg_send(deleteItems:)]
     pub unsafe fn delete_items_throws(&mut self, items: &ns::Array<I>);
 
     #[inline]
@@ -98,45 +166,8 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
     #[objc::msg_send(deleteAllItems)]
     pub fn delete_all_items(&mut self);
 
-    #[objc::msg_send(moveItemWithIdentifier:beforeItemWithIdentifier:)]
-    pub unsafe fn move_item_before_item_throws(&mut self, item: &I, before: &I);
-
-    #[inline]
-    pub fn move_item_before_item<'ear>(
-        &mut self,
-        item: impl AsRef<I>,
-        before: impl AsRef<I>,
-    ) -> ns::ExResult<'ear> {
-        ns::try_catch(|| unsafe {
-            self.move_item_before_item_throws(item.as_ref(), before.as_ref())
-        })
-    }
-
-    #[objc::msg_send(moveItemWithIdentifier:afterItemWithIdentifier:)]
-    pub unsafe fn move_item_after_item_throws(&mut self, item: &I, after: &I);
-
-    #[inline]
-    pub fn move_item_after_item<'ear>(
-        &mut self,
-        item: impl AsRef<I>,
-        after: impl AsRef<I>,
-    ) -> ns::ExResult<'ear> {
-        ns::try_catch(|| unsafe { self.move_item_after_item_throws(item.as_ref(), after.as_ref()) })
-    }
-
-    #[objc::msg_send(reloadItemsWithIdentifiers:)]
-    pub unsafe fn reload_items_throws(&mut self, items: &ns::Array<I>);
-
-    #[inline]
-    pub fn reload_items<'ear>(&mut self, items: &ns::Array<I>) -> ns::ExResult<'ear> {
-        ns::try_catch(|| unsafe { self.reload_items_throws(items) })
-    }
-
-    #[objc::msg_send(reconfigureItemsWithIdentifiers:)]
-    #[objc::available(ios = 15.0, tvos = 15.0, macos = 12.0, watchos = 8.0, visionos = 1.0)]
-    pub unsafe fn reconfigure_items_throws(&mut self, items: &ns::Array<I>);
-
-    #[objc::msg_send(expandItemsWithIdentifiers:)]
+    /// Logs if an item is not found.
+    #[objc::msg_send(expandItems:)]
     pub unsafe fn expand_items_throws(&mut self, items: &ns::Array<I>);
 
     #[inline]
@@ -144,7 +175,8 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
         ns::try_catch(|| unsafe { self.expand_items_throws(items) })
     }
 
-    #[objc::msg_send(collapseItemsWithIdentifiers:)]
+    /// Logs if an item is not found.
+    #[objc::msg_send(collapseItems:)]
     pub unsafe fn collapse_items_throws(&mut self, items: &ns::Array<I>);
 
     #[inline]
@@ -152,23 +184,27 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
         ns::try_catch(|| unsafe { self.collapse_items_throws(items) })
     }
 
-    #[objc::msg_send(collapseItemsWithIdentifiers:mode:)]
-    pub unsafe fn collapse_items_mode_throws(&mut self, items: &ns::Array<I>, mode: ns::Integer);
+    #[objc::msg_send(isExpanded:)]
+    pub fn is_expanded(&self, item: &I) -> bool;
 
-    #[inline]
-    pub fn collapse_items_mode<'ear>(
-        &mut self,
-        items: &ns::Array<I>,
-        mode: ns::Integer,
-    ) -> ns::ExResult<'ear> {
-        ns::try_catch(|| unsafe { self.collapse_items_mode_throws(items, mode) })
-    }
-
-    #[objc::msg_send(isItemExpanded:)]
-    pub fn is_item_expanded(&self, item: &I) -> bool;
+    #[objc::msg_send(isVisible:)]
+    pub fn is_visible(&self, item: &I) -> bool;
 
     #[objc::msg_send(visualDescription)]
     pub fn visual_description(&self) -> arc::R<ns::String>;
+}
+
+impl<I: objc::Obj + 'static> DiffableDataSrcSectionSnapshot<I> {
+    #[inline]
+    pub fn items_n(&self) -> usize {
+        self.items().len()
+    }
+
+    /// The direct children of `parent`.
+    #[inline]
+    pub fn children_of_item(&self, parent: &I) -> arc::R<ns::Array<I>> {
+        self.snapshot_of_parent_item(parent).root_items()
+    }
 }
 
 impl<I: objc::Obj> Clone for DiffableDataSrcSectionSnapshot<I> {

@@ -215,8 +215,18 @@ mod collection_view_cell;
 pub use collection_view_cell::CollectionViewCell;
 pub use collection_view_cell::CollectionViewCellDragState;
 
+mod collection_view_list_cell;
+pub use collection_view_list_cell::CollectionViewListCell;
+
+mod cell_accessory;
+pub use cell_accessory::CellAccessory;
+pub use cell_accessory::CellAccessoryOutlineDisclosure;
+pub use cell_accessory::CellAccessoryOutlineDisclosureStyle;
+
 mod collection_view_item_registration;
 pub use collection_view_item_registration::CollectionViewCellRegistration;
+#[cfg(feature = "blocks")]
+pub use collection_view_item_registration::CollectionViewCellRegistrationCfgHandler;
 pub use collection_view_item_registration::CollectionViewSupplementaryRegistration;
 
 mod collection_view_layout;
@@ -289,6 +299,7 @@ mod window_scene_prominent_placement;
 pub use window_scene_prominent_placement::WindowSceneProminentPlacement;
 
 mod view_controller;
+pub use view_controller::ModalPresentationStyle;
 pub use view_controller::ViewController;
 
 pub mod index_path;

@@ -120,6 +120,10 @@ impl View {
     #[objc::msg_send(setNeedsLayout:)]
     pub fn set_needs_layout(&mut self, val: bool);
 
+    /// Lays out the view and its descendants now, if any needs layout.
+    #[objc::msg_send(layoutSubtreeIfNeeded)]
+    pub fn layout_subtree_if_needed(&mut self);
+
     #[objc::msg_send(alphaValue)]
     pub fn alpha_value(&self) -> cg::Float;
 

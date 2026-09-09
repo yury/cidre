@@ -1,5 +1,22 @@
 use crate::{arc, cg, define_obj_type, ns, objc, ui};
 
+#[doc(alias = "UIModalPresentationStyle")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum ModalPresentationStyle {
+    FullScreen = 0,
+    PageSheet = 1,
+    FormSheet = 2,
+    CurrentContext = 3,
+    Custom = 4,
+    OverFullScreen = 5,
+    OverCurrentContext = 6,
+    Popover = 7,
+    BlurOverFullScreen = 8,
+    None = -1,
+    Automatic = -2,
+}
+
 define_obj_type!(
     #[doc(alias = "UIViewController")]
     pub ViewController(ui::Responder), UI_VIEW_CONTROLLER
@@ -92,6 +109,22 @@ impl ViewController {
 
     #[objc::msg_send(presentedViewController)]
     pub fn presented_vc(&self) -> Option<arc::R<ui::ViewController>>;
+
+    #[objc::msg_send(presentingViewController)]
+    pub fn presenting_vc(&self) -> Option<arc::R<ui::ViewController>>;
+
+    /// How the view controller is presented. Default is `ModalPresentationStyle::Automatic`.
+    #[objc::msg_send(modalPresentationStyle)]
+    pub fn modal_presentation_style(&self) -> ModalPresentationStyle;
+
+    #[objc::msg_send(setModalPresentationStyle:)]
+    pub fn set_modal_presentation_style(&mut self, val: ModalPresentationStyle);
+
+    #[objc::msg_send(viewDidLoad)]
+    pub fn view_did_load(&mut self);
+
+    #[objc::msg_send(viewDidLayoutSubviews)]
+    pub fn view_did_layout_subviews(&mut self);
 }
 
 unsafe extern "C" {
