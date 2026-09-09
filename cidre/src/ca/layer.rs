@@ -163,6 +163,42 @@ impl Layer {
     #[objc::msg_send(setFrame:)]
     pub fn set_frame(&mut self, val: cg::Rect);
 
+    /// Converts `point` from the receiver's coordinate space to that of `layer`
+    /// (the receiver's superlayer when `None`).
+    #[objc::msg_send(convertPoint:toLayer:)]
+    pub fn convert_point_to_layer(&self, point: cg::Point, layer: Option<&Self>) -> cg::Point;
+
+    #[objc::msg_send(convertPoint:fromLayer:)]
+    pub fn convert_point_from_layer(&self, point: cg::Point, layer: Option<&Self>) -> cg::Point;
+
+    #[objc::msg_send(convertRect:toLayer:)]
+    pub fn convert_rect_to_layer(&self, rect: cg::Rect, layer: Option<&Self>) -> cg::Rect;
+
+    #[objc::msg_send(convertRect:fromLayer:)]
+    pub fn convert_rect_from_layer(&self, rect: cg::Rect, layer: Option<&Self>) -> cg::Rect;
+
+    /// The background color of the layer. Default is `None`. Animatable.
+    #[objc::msg_send(backgroundColor)]
+    pub fn background_color(&self) -> Option<&cg::Color>;
+
+    #[objc::msg_send(setBackgroundColor:)]
+    pub fn set_background_color(&mut self, val: Option<&cg::Color>);
+
+    /// When positive, the background of the layer will be drawn with rounded corners.
+    /// Default is 0. Animatable.
+    #[objc::msg_send(cornerRadius)]
+    pub fn corner_radius(&self) -> cg::Float;
+
+    #[objc::msg_send(setCornerRadius:)]
+    pub fn set_corner_radius(&mut self, val: cg::Float);
+
+    /// When true, sublayers are clipped to the layer's bounds. Default is false.
+    #[objc::msg_send(masksToBounds)]
+    pub fn masks_to_bounds(&self) -> bool;
+
+    #[objc::msg_send(setMasksToBounds:)]
+    pub fn set_masks_to_bounds(&mut self, val: bool);
+
     #[objc::msg_send(isHidden)]
     pub fn is_hidden(&self) -> bool;
 

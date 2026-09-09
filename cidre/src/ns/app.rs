@@ -99,6 +99,9 @@ pub use event::PointingDeviceType;
 mod font;
 pub use font::Font;
 
+mod font_descriptor;
+pub use font_descriptor::FontTextStyle;
+
 mod font_manager;
 pub use font_manager::FontManager;
 pub use font_manager::FontTraitMask;

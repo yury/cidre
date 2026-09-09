@@ -1,3 +1,5 @@
+#[cfg(feature = "blocks")]
+use crate::blocks;
 use crate::{arc, define_obj_type, ns, objc, ui};
 
 #[doc(alias = "UITabBarControllerMode")]
@@ -7,6 +9,20 @@ pub enum TabBarControllerMode {
     Automatic = 0,
     TabBar = 1,
     TabSideBar = 2,
+}
+
+#[doc(alias = "UITabBarMinimizeBehavior")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(isize)]
+pub enum TabBarMinimizeBehavior {
+    /// Resolves to the platform's default.
+    Automatic = 0,
+    /// The tab bar never minimizes.
+    Never = 1,
+    /// The tab bar minimizes when scrolling down and expands when scrolling up.
+    OnScrollDown = 2,
+    /// The tab bar minimizes when scrolling up and expands when scrolling down.
+    OnScrollUp = 3,
 }
 
 define_obj_type!(
@@ -136,10 +152,70 @@ impl TabBarController {
 
     #[objc::msg_send(tabBar)]
     pub fn tab_bar(&self) -> arc::R<ui::TabBar>;
+
+    /// Default is `TabBarMinimizeBehavior::Automatic`.
+    #[objc::msg_send(tabBarMinimizeBehavior)]
+    #[objc::available(ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn tab_bar_minimize_behavior(&self) -> TabBarMinimizeBehavior;
+
+    #[objc::msg_send(setTabBarMinimizeBehavior:)]
+    #[objc::available(ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn set_tab_bar_minimize_behavior(&mut self, val: TabBarMinimizeBehavior);
+
+    /// An accessory view shown above the tab bar, or inline with it when it is minimized.
+    #[objc::msg_send(bottomAccessory)]
+    #[objc::available(ios = 26.0)]
+    pub fn bottom_accessory(&self) -> Option<arc::R<ui::TabAccessory>>;
+
+    #[objc::msg_send(setBottomAccessory:)]
+    #[objc::available(ios = 26.0)]
+    pub fn set_bottom_accessory(&mut self, val: Option<&ui::TabAccessory>);
+
+    #[objc::msg_send(setBottomAccessory:animated:)]
+    #[objc::available(ios = 26.0)]
+    pub fn set_bottom_accessory_animated(&mut self, val: Option<&ui::TabAccessory>, animated: bool);
+
+    /// The identifier of the tab given a prominent placement in the tab bar.
+    #[objc::msg_send(prominentTabIdentifier)]
+    #[objc::available(ios = 27.0, visionos = 27.0)]
+    pub fn prominent_tab_id(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(setProminentTabIdentifier:)]
+    #[objc::available(ios = 27.0, visionos = 27.0)]
+    pub fn set_prominent_tab_id(&mut self, val: Option<&ns::String>);
+
+    /// Batches changes made in `updates` into a single animated transaction.
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(performBatchUpdates:)]
+    #[objc::available(ios = 27.0, tvos = 27.0, visionos = 27.0)]
+    pub fn perform_batch_updates_block(&mut self, updates: &mut blocks::NoEscBlock<fn()>);
+
+    #[cfg(feature = "blocks")]
+    #[objc::available(ios = 27.0, tvos = 27.0, visionos = 27.0)]
+    pub fn perform_batch_updates(&mut self, mut updates: impl FnMut()) {
+        let mut block = unsafe { blocks::NoEscBlock::stack0(&mut updates) };
+        self.perform_batch_updates_block(&mut block);
+    }
 }
 
 #[objc::protocol(UITabBarControllerDelegate)]
 pub trait TabBarControllerDelegate: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(tabBarController:shouldSelectViewController:)]
+    fn tab_bar_controller_should_select_vc(
+        &mut self,
+        controller: &mut TabBarController,
+        vc: &ui::ViewController,
+    ) -> bool;
+
+    #[objc::optional]
+    #[objc::msg_send(tabBarController:didSelectViewController:)]
+    fn tab_bar_controller_did_select_vc(
+        &mut self,
+        controller: &mut TabBarController,
+        vc: &ui::ViewController,
+    );
+
     #[objc::optional]
     #[objc::msg_send(tabBarController:didSelectTab:previousTab:)]
     fn tab_bar_controller_did_select_tab(

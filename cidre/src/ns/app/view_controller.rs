@@ -37,6 +37,37 @@ impl ViewController {
     pub fn is_view_loaded(&self) -> bool;
 }
 
+/// NSViewControllerPresentation
+impl ViewController {
+    /// Dismisses the receiver. Does nothing if the receiver is not currently presented.
+    #[objc::msg_send(dismissController:)]
+    #[objc::available(macos = 10.10)]
+    pub fn dismiss_controller(&mut self, sender: Option<&ns::Id>);
+
+    /// Dismisses `vc`, previously presented by the receiver.
+    #[objc::msg_send(dismissViewController:)]
+    #[objc::available(macos = 10.10)]
+    pub fn dismiss_vc(&mut self, vc: &ns::ViewController);
+
+    /// Presents `vc` as a sheet.
+    #[objc::msg_send(presentViewControllerAsSheet:)]
+    #[objc::available(macos = 10.10)]
+    pub fn present_vc_as_sheet(&mut self, vc: &ns::ViewController);
+
+    /// Presents `vc` as a modal window (also known as an alert).
+    #[objc::msg_send(presentViewControllerAsModalWindow:)]
+    #[objc::available(macos = 10.10)]
+    pub fn present_vc_as_modal_window(&mut self, vc: &ns::ViewController);
+
+    #[objc::msg_send(presentedViewControllers)]
+    #[objc::available(macos = 10.10)]
+    pub fn presented_vcs(&self) -> Option<arc::R<ns::Array<ns::ViewController>>>;
+
+    #[objc::msg_send(presentingViewController)]
+    #[objc::available(macos = 10.10)]
+    pub fn presenting_vc(&self) -> Option<arc::R<ns::ViewController>>;
+}
+
 /// NSViewControllerContainer
 impl ViewController {
     #[objc::msg_send(parentViewController)]

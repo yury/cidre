@@ -1,6 +1,54 @@
+#[cfg(feature = "blocks")]
+use crate::blocks;
 #[cfg(feature = "ca")]
 use crate::ca;
 use crate::{arc, cg, define_obj_type, define_opts, ns, objc, ui};
+
+define_opts!(
+    #[doc(alias = "UIViewAnimationOptions")]
+    pub ViewAnimationOpts(usize)
+);
+
+impl ViewAnimationOpts {
+    /// Animate contents (applies to transitions only).
+    pub const LAYOUT_SUBVIEWS: Self = Self(1 << 0);
+    /// Turn on user interaction while animating.
+    pub const ALLOW_USER_INTERACTION: Self = Self(1 << 1);
+    /// Start all views from current value, not initial value.
+    pub const BEGIN_FROM_CURRENT_STATE: Self = Self(1 << 2);
+    /// Repeat animation indefinitely.
+    pub const REPEAT: Self = Self(1 << 3);
+    /// If repeat, run animation back and forth.
+    pub const AUTOREVERSE: Self = Self(1 << 4);
+    /// Ignore nested duration.
+    pub const OVERRIDE_INHERITED_DURATION: Self = Self(1 << 5);
+    /// Ignore nested curve.
+    pub const OVERRIDE_INHERITED_CURVE: Self = Self(1 << 6);
+    /// Animate contents (applies to transitions only).
+    pub const ALLOW_ANIMATED_CONTENT: Self = Self(1 << 7);
+    /// Flip to/from hidden state instead of adding/removing.
+    pub const SHOW_HIDE_TRANSITION_VIEWS: Self = Self(1 << 8);
+    /// Do not inherit any options or animation type.
+    pub const OVERRIDE_INHERITED_OPTIONS: Self = Self(1 << 9);
+
+    pub const CURVE_EASE_IN_OUT: Self = Self(0 << 16);
+    pub const CURVE_EASE_IN: Self = Self(1 << 16);
+    pub const CURVE_EASE_OUT: Self = Self(2 << 16);
+    pub const CURVE_LINEAR: Self = Self(3 << 16);
+
+    pub const TRANSITION_NONE: Self = Self(0 << 20);
+    pub const TRANSITION_FLIP_FROM_LEFT: Self = Self(1 << 20);
+    pub const TRANSITION_FLIP_FROM_RIGHT: Self = Self(2 << 20);
+    pub const TRANSITION_CURL_UP: Self = Self(3 << 20);
+    pub const TRANSITION_CURL_DOWN: Self = Self(4 << 20);
+    pub const TRANSITION_CROSS_DISSOLVE: Self = Self(5 << 20);
+    pub const TRANSITION_FLIP_FROM_TOP: Self = Self(6 << 20);
+    pub const TRANSITION_FLIP_FROM_BOTTOM: Self = Self(7 << 20);
+
+    pub const PREFERRED_FRAMES_PER_SECOND_DEFAULT: Self = Self(0 << 24);
+    pub const PREFERRED_FRAMES_PER_SECOND_60: Self = Self(3 << 24);
+    pub const PREFERRED_FRAMES_PER_SECOND_30: Self = Self(7 << 24);
+}
 
 define_opts!(
     #[doc(alias = "UIViewAutoresizing")]
@@ -250,6 +298,80 @@ impl View {
     #[objc::msg_send(safeAreaInsetsDidChange)]
     pub fn safe_area_insets_did_change(&self);
 }
+
+/// UIViewAnimationWithBlocks
+#[cfg(feature = "blocks")]
+impl View {
+    #[objc::msg_send(animateWithDuration:delay:options:animations:completion:)]
+    pub fn animate_with_duration_delay_opts_ch(
+        duration: ns::TimeInterval,
+        delay: ns::TimeInterval,
+        opts: ViewAnimationOpts,
+        animations: &mut blocks::EscBlock<fn()>,
+        completion: Option<&mut blocks::EscBlock<fn(bool)>>,
+    );
+
+    #[objc::msg_send(animateWithDuration:animations:completion:)]
+    pub fn animate_with_duration_ch(
+        duration: ns::TimeInterval,
+        animations: &mut blocks::EscBlock<fn()>,
+        completion: Option<&mut blocks::EscBlock<fn(bool)>>,
+    );
+
+    #[objc::msg_send(animateWithDuration:animations:)]
+    pub fn animate_with_duration_block(
+        duration: ns::TimeInterval,
+        animations: &mut blocks::EscBlock<fn()>,
+    );
+
+    /// Animates the changes made in `animations` over `duration` seconds.
+    pub fn animate(duration: ns::TimeInterval, animations: impl FnMut() + 'static) {
+        let mut animations = blocks::EscBlock::new0(animations);
+        Self::animate_with_duration_block(duration, &mut animations);
+    }
+
+    /// Performs `animations` using a timing curve described by the motion of a spring.
+    ///
+    /// `damping_ratio`: 1 for no oscillation, closer to 0 for more oscillation.
+    /// `velocity`: initial spring velocity, relative to the total animation distance per second.
+    #[objc::msg_send(animateWithDuration:delay:usingSpringWithDamping:initialSpringVelocity:options:animations:completion:)]
+    #[objc::available(ios = 7.0, tvos = 9.0)]
+    pub fn animate_spring_ch(
+        duration: ns::TimeInterval,
+        delay: ns::TimeInterval,
+        damping_ratio: cg::Float,
+        velocity: cg::Float,
+        opts: ViewAnimationOpts,
+        animations: &mut blocks::EscBlock<fn()>,
+        completion: Option<&mut blocks::EscBlock<fn(bool)>>,
+    );
+
+    /// See [`Self::animate_spring_ch`]. The completion receives whether the animation finished.
+    #[objc::available(ios = 7.0, tvos = 9.0)]
+    pub fn animate_spring(
+        duration: ns::TimeInterval,
+        delay: ns::TimeInterval,
+        damping_ratio: cg::Float,
+        velocity: cg::Float,
+        opts: ViewAnimationOpts,
+        animations: impl FnMut() + 'static,
+        completion: Option<impl FnMut(bool) + 'static>,
+    ) {
+        let mut animations = blocks::EscBlock::new0(animations);
+        let mut completion = completion.map(blocks::EscBlock::new1);
+        Self::animate_spring_ch(
+            duration,
+            delay,
+            damping_ratio,
+            velocity,
+            opts,
+            &mut animations,
+            completion.as_deref_mut(),
+        );
+    }
+}
+
+impl ns::KvObserverRegistration for View {}
 
 #[objc::protocol(UICoordinateSpace)]
 pub trait CoordinateSpace: objc::Obj {

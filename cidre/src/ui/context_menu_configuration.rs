@@ -5,10 +5,10 @@ use crate::blocks;
 
 define_obj_type!(
     #[doc(alias = "UIContextMenuConfiguration")]
-    pub ContextMenuConfiguration(ns::Id)
+    pub ContextMenuCfg(ns::Id)
 );
 
-impl ContextMenuConfiguration {
+impl ContextMenuCfg {
     define_cls!(UI_CONTEXT_MENU_CONFIGURATION);
 
     #[cfg(feature = "blocks")]
@@ -22,7 +22,7 @@ impl ContextMenuConfiguration {
 }
 
 unsafe extern "C" {
-    static UI_CONTEXT_MENU_CONFIGURATION: &'static objc::Class<ContextMenuConfiguration>;
+    static UI_CONTEXT_MENU_CONFIGURATION: &'static objc::Class<ContextMenuCfg>;
 }
 
 #[cfg(feature = "blocks")]

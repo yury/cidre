@@ -70,6 +70,20 @@ impl Font {
 
     // #[objc::msg_send(systemFontOfSize:weight:)]
     // pub fn sys_font_weight(size: cg::Float, weight: ns::Fon) -> arc::R<Self>;
+
+    /// The system font for `style`, sized for the current content size category.
+    #[objc::msg_send(preferredFontForTextStyle:options:)]
+    #[objc::available(macos = 11.0)]
+    pub fn preferred_font_for_text_style_opts(
+        style: &ns::FontTextStyle,
+        opts: &ns::Dictionary<ns::String, ns::Id>,
+    ) -> arc::R<Self>;
+
+    /// See [`Self::preferred_font_for_text_style_opts`], with no options.
+    #[objc::available(macos = 11.0)]
+    pub fn preferred_font_for_text_style(style: &ns::FontTextStyle) -> arc::R<Self> {
+        Self::preferred_font_for_text_style_opts(style, &ns::Dictionary::new())
+    }
 }
 
 #[cfg(all(target_os = "macos", feature = "ct"))]

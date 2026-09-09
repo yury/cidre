@@ -424,14 +424,14 @@ pub trait CollectionViewDelegate: objc::Obj {
         collection_view: &mut ui::CollectionView,
         index_paths: &ns::Array<ns::IndexPath>,
         point: cg::Point,
-    ) -> Option<arc::R<ui::ContextMenuConfiguration>>;
+    ) -> Option<arc::R<ui::ContextMenuCfg>>;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:contextMenuConfiguration:highlightPreviewForItemAtIndexPath:)]
     fn collection_view_context_menu_configuration_highlight_preview_for_item_at_index_path(
         &mut self,
         collection_view: &mut ui::CollectionView,
-        configuration: &mut ui::ContextMenuConfiguration,
+        configuration: &mut ui::ContextMenuCfg,
         index_path: &ns::IndexPath,
     ) -> Option<arc::R<ui::TargetedPreview>>;
 
@@ -440,7 +440,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     fn collection_view_context_menu_configuration_dismissal_preview_for_item_at_index_path(
         &mut self,
         collection_view: &mut ui::CollectionView,
-        configuration: &mut ui::ContextMenuConfiguration,
+        configuration: &mut ui::ContextMenuCfg,
         index_path: &ns::IndexPath,
     ) -> Option<arc::R<ui::TargetedPreview>>;
 
@@ -449,7 +449,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     fn collection_view_will_perform_preview_action_for_menu_with_configuration_animator(
         &mut self,
         collection_view: &mut ui::CollectionView,
-        configuration: &mut ui::ContextMenuConfiguration,
+        configuration: &mut ui::ContextMenuCfg,
         animator: &ui::AnyContextMenuInteractionCommitAnimating,
     );
 
@@ -458,7 +458,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     fn collection_view_will_display_context_menu_with_configuration_animator(
         &mut self,
         collection_view: &mut ui::CollectionView,
-        configuration: &mut ui::ContextMenuConfiguration,
+        configuration: &mut ui::ContextMenuCfg,
         animator: Option<&ui::AnyContextMenuInteractionAnimating>,
     );
 
@@ -467,7 +467,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     fn collection_view_will_end_context_menu_interaction_with_configuration_animator(
         &mut self,
         collection_view: &mut ui::CollectionView,
-        configuration: &mut ui::ContextMenuConfiguration,
+        configuration: &mut ui::ContextMenuCfg,
         animator: Option<&ui::AnyContextMenuInteractionAnimating>,
     );
 
@@ -487,14 +487,14 @@ pub trait CollectionViewDelegate: objc::Obj {
         collection_view: &mut ui::CollectionView,
         index_path: &ns::IndexPath,
         point: cg::Point,
-    ) -> Option<arc::R<ui::ContextMenuConfiguration>>;
+    ) -> Option<arc::R<ui::ContextMenuCfg>>;
 
     #[objc::optional]
     #[objc::msg_send(collectionView:previewForHighlightingContextMenuWithConfiguration:)]
     fn collection_view_preview_for_highlighting_context_menu_with_configuration(
         &mut self,
         collection_view: &mut ui::CollectionView,
-        configuration: &mut ui::ContextMenuConfiguration,
+        configuration: &mut ui::ContextMenuCfg,
     ) -> Option<arc::R<ui::TargetedPreview>>;
 
     #[objc::optional]
@@ -502,7 +502,7 @@ pub trait CollectionViewDelegate: objc::Obj {
     fn collection_view_preview_for_dismissing_context_menu_with_configuration(
         &mut self,
         collection_view: &mut ui::CollectionView,
-        configuration: &mut ui::ContextMenuConfiguration,
+        configuration: &mut ui::ContextMenuCfg,
     ) -> Option<arc::R<ui::TargetedPreview>>;
 }
 

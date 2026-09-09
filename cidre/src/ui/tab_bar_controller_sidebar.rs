@@ -49,5 +49,5 @@ pub trait Delegate: objc::Obj {
         controller: &mut ui::TabBarController,
         sidebar: &mut TabBarControllerSidebar,
         tab: &ui::Tab,
-    ) -> Option<arc::R<ui::ContextMenuConfiguration>>;
+    ) -> Option<arc::R<ui::ContextMenuCfg>>;
 }

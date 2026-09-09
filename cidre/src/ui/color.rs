@@ -1,3 +1,5 @@
+#[cfg(feature = "blocks")]
+use crate::blocks;
 use crate::{arc, cg, define_obj_type, ns, objc};
 
 #[doc(alias = "UIColorProminence")]
@@ -102,6 +104,29 @@ impl Color {
     #[cfg(feature = "cg")]
     #[objc::msg_send(CGColor)]
     pub fn cg_color(&self) -> Option<&crate::cg::Color>;
+
+    /// A color that resolves through `provider` for the trait collection it is drawn in.
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(colorWithDynamicProvider:)]
+    #[objc::available(ios = 13.0, tvos = 13.0)]
+    pub fn with_dynamic_provider_block(
+        provider: &mut blocks::EscBlock<fn(&crate::ui::TraitCollection) -> arc::Rar<Self>>,
+    ) -> arc::R<Self>;
+
+    /// See [`Self::with_dynamic_provider_block`].
+    #[cfg(feature = "blocks")]
+    #[objc::available(ios = 13.0, tvos = 13.0)]
+    pub fn with_dynamic_provider(
+        mut provider: impl FnMut(&crate::ui::TraitCollection) -> arc::R<Self> + 'static,
+    ) -> arc::R<Self> {
+        let mut block = blocks::EscBlock::new1(
+            move |traits: &crate::ui::TraitCollection| -> arc::Rar<Self> {
+                let color = provider(traits);
+                crate::return_ar!(color)
+            },
+        );
+        Self::with_dynamic_provider_block(&mut block)
+    }
 
     #[objc::msg_send(colorNamed:)]
     pub fn color_named(name: &ns::String) -> Option<arc::R<Self>>;

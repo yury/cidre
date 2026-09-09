@@ -44,6 +44,10 @@ pub use tap_gesture_recognizer::TapGestureRecognizer;
 mod pinch_gesture_recognizer;
 pub use pinch_gesture_recognizer::PinchGestureRecognizer;
 
+mod swipe_gesture_recognizer;
+pub use swipe_gesture_recognizer::SwipeGestureRecognizer;
+pub use swipe_gesture_recognizer::SwipeGestureRecognizerDirection;
+
 mod rotation_gesture_recognizer;
 pub use rotation_gesture_recognizer::RotationGestureRecognizer;
 
@@ -146,11 +150,11 @@ pub use diffable_data_source::{
 };
 
 mod context_menu_configuration;
-pub use context_menu_configuration::ContextMenuConfiguration;
 #[cfg(feature = "blocks")]
 pub use context_menu_configuration::ActionProvider as ContextMenuActionProvider;
 #[cfg(feature = "blocks")]
 pub use context_menu_configuration::ContentPreviewProvider as ContextMenuContentPreviewProvider;
+pub use context_menu_configuration::ContextMenuCfg;
 
 mod context_menu_interaction;
 pub use context_menu_interaction::AnyContextMenuInteractionAnimating;
@@ -197,6 +201,7 @@ mod view;
 pub use view::AnyCoordinateSpace;
 pub use view::CoordinateSpace;
 pub use view::View;
+pub use view::ViewAnimationOpts;
 pub use view::ViewAutoresizing;
 
 mod spring_loaded_interaction_context;
@@ -261,6 +266,16 @@ pub use collection_view::CollectionViewSelfSizingInvalidation;
 mod visual_effect;
 pub use visual_effect::VisualEffect;
 
+mod glass_effect;
+pub use glass_effect::GlassEffect;
+pub use glass_effect::GlassEffectStyle;
+
+mod corner_radius;
+pub use corner_radius::CornerRadius;
+
+mod corner_configuration;
+pub use corner_configuration::CornerCfg;
+
 mod window;
 pub use window::Window;
 
@@ -300,11 +315,15 @@ pub use tab::Tab;
 pub use tab::TabPlacement;
 
 mod tab_group;
-pub use tab_group::TabGroup;
 pub use tab_group::SidebarAppearance as TabGroupSidebarAppearance;
+pub use tab_group::TabGroup;
 
 mod tab_bar;
 pub use tab_bar::TabBar;
+
+mod tab_accessory;
+pub use tab_accessory::TabAccessory;
+pub use tab_accessory::TabAccessoryEnv;
 
 mod tab_bar_controller;
 pub use tab_bar_controller::AnyTabBarControllerDelegate;
@@ -312,12 +331,13 @@ pub use tab_bar_controller::TabBarController;
 pub use tab_bar_controller::TabBarControllerDelegate;
 pub use tab_bar_controller::TabBarControllerDelegateImpl;
 pub use tab_bar_controller::TabBarControllerMode;
+pub use tab_bar_controller::TabBarMinimizeBehavior;
 
 mod tab_bar_controller_sidebar;
-pub use tab_bar_controller_sidebar::TabBarControllerSidebar;
-pub use tab_bar_controller_sidebar::Placement as TabBarControllerSidebarPlacement;
 pub use tab_bar_controller_sidebar::Delegate as TabBarControllerSidebarDelegate;
 pub use tab_bar_controller_sidebar::DelegateImpl as TabBarControllerSidebarDelegateImpl;
+pub use tab_bar_controller_sidebar::Placement as TabBarControllerSidebarPlacement;
+pub use tab_bar_controller_sidebar::TabBarControllerSidebar;
 
 mod color;
 pub use color::Color;
@@ -325,6 +345,14 @@ pub use color::ColorProminence;
 
 mod image;
 pub use image::Image;
+
+mod image_configuration;
+pub use image_configuration::ImageCfg;
+
+mod image_symbol_configuration;
+pub use image_symbol_configuration::ImageSymbolCfg;
+pub use image_symbol_configuration::ImageSymbolScale;
+pub use image_symbol_configuration::ImageSymbolWeight;
 
 mod interaction;
 pub use interaction::AnyInteraction;
@@ -441,9 +469,9 @@ pub use button_configuration::{
 };
 mod split_view_controller;
 pub use split_view_controller::{
-    BackgroundStyle as SplitViewControllerBackgroundStyle,
-    Column as SplitViewControllerColumn, DisplayMode as SplitViewControllerDisplayMode,
-    SplitViewController, Style as SplitViewControllerStyle,
+    BackgroundStyle as SplitViewControllerBackgroundStyle, Column as SplitViewControllerColumn,
+    DisplayMode as SplitViewControllerDisplayMode, SplitViewController,
+    Style as SplitViewControllerStyle,
 };
 mod presentation_controller;
 pub use presentation_controller::PresentationController;
@@ -478,6 +506,7 @@ pub use action::Action;
 
 mod menu;
 pub use menu::Menu;
+pub use menu::MenuOpts;
 
 pub use split_view_controller::Delegate as SplitViewControllerDelegate;
 pub use split_view_controller::DelegateImpl as SplitViewControllerDelegateImpl;
