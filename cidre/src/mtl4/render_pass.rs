@@ -25,7 +25,7 @@ impl RenderPassDesc {
     #[objc::msg_send(renderTargetArrayLength)]
     pub fn render_target_array_len(&self) -> usize;
 
-    #[objc::msg_send(renderTargeHeight)]
+    #[objc::msg_send(renderTargetHeight)]
     pub fn render_target_height(&self) -> usize;
 
     #[objc::msg_send(renderTargetWidth)]

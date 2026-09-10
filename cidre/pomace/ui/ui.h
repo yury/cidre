@@ -59,6 +59,7 @@ Class UI_IMAGE;
 Class UI_TRAIT_COLLECTION;
 Class NS_TEXT_ATTACHMENT;
 Class UI_LAYOUT_GUIDE;
+Class NS_LAYOUT_CONSTRAINT;
 Class UI_FONT;
 Class UI_FONT_DESCRIPTOR;
 Class UI_UPDATE_LINK;
@@ -163,6 +164,7 @@ static void ui_initializer(void)
         NS_TEXT_ATTACHMENT = [NSTextAttachment class];
         
         UI_LAYOUT_GUIDE = [UILayoutGuide class];
+        NS_LAYOUT_CONSTRAINT = [NSLayoutConstraint class];
         UI_FONT = [UIFont class];
         UI_FONT_DESCRIPTOR = [UIFontDescriptor class];
         UI_UPDATE_LINK = NSClassFromString(@"UIUpdateLink");

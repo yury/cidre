@@ -910,11 +910,6 @@ pub trait Delegate: objc::Obj {
     #[objc::msg_send(stream:didStopWithError:)]
     fn stream_did_stop_with_err(&mut self, stream: &Stream, error: &ns::Error);
 
-    /// Called when the user stops stream sharing from system UI.
-    #[objc::optional]
-    #[objc::msg_send(userDidStopStream:)]
-    fn user_did_stop_stream(&mut self, stream: &Stream);
-
     /// Called when a video effect output starts.
     #[objc::optional]
     #[objc::msg_send(outputVideoEffectDidStartForStream:)]

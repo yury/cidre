@@ -133,7 +133,7 @@ impl Session {
         })
     }
 
-    #[objc::msg_send(policy)]
+    #[objc::msg_send(category)]
     pub fn category(&self) -> &Category;
 
     #[objc::msg_send(categoryOptions)]
@@ -466,7 +466,7 @@ impl Session {
     }
 
     #[objc::msg_send(prefersNoInterruptionsFromSystemAlerts)]
-    pub fn prefers_no_interruptions_from_sys_alerts();
+    pub fn prefers_no_interruptions_from_sys_alerts(&self) -> bool;
 
     /// Use this method to opt in or opt out of interruption on route disconnect policy.
     ///

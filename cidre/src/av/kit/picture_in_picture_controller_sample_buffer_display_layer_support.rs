@@ -37,8 +37,11 @@ pub trait PipSampleBufPlayerDelegate: objc::Obj {
     );
 
     #[objc::optional]
-    #[objc::msg_send(pictureInPictureControllerShouldProhibitBackgroundAudioPlayback)]
-    fn pip_controller_should_prohibit_bg_audio_playback(&mut self) -> bool;
+    #[objc::msg_send(pictureInPictureControllerShouldProhibitBackgroundAudioPlayback:)]
+    fn pip_controller_should_prohibit_bg_audio_playback(
+        &mut self,
+        pip_controller: &mut av::PipController,
+    ) -> bool;
 }
 
 define_obj_type!(

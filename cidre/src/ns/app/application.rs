@@ -27,8 +27,8 @@ impl ModalResponse {
 #[objc::protocol(NSApplicationDelegate)]
 pub trait Delegate {
     #[objc::optional]
-    #[objc::msg_send(applicationSupportsSecureRestorableState)]
-    fn app_supports_secure_restorable_state(&mut self) -> bool;
+    #[objc::msg_send(applicationSupportsSecureRestorableState:)]
+    fn app_supports_secure_restorable_state(&mut self, app: &ns::App) -> bool;
 
     // Notifications
 

@@ -55,7 +55,7 @@ impl SampleBufAttachDesc {
     #[objc::msg_send(endOfEncoderSampleIndex)]
     pub fn end_of_encoder_sample_index(&self) -> usize;
 
-    #[objc::msg_send(endOfEncoderSampleIndex:)]
+    #[objc::msg_send(setEndOfEncoderSampleIndex:)]
     pub fn set_end_of_encoder_sample_index(&mut self, val: usize);
 }
 

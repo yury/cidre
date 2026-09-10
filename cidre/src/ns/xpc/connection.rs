@@ -95,9 +95,6 @@ impl Connection {
     #[objc::msg_send(remoteObjectProxy)]
     pub fn remote_object_proxy(&self) -> Option<arc::R<ns::Id>>;
 
-    #[objc::msg_send(setRemoteObjectProxy:)]
-    pub fn set_remote_object_proxy(&mut self, val: Option<&ns::Id>);
-
     #[objc::msg_send(remoteObjectProxyWithErrorHandler:)]
     pub fn remote_object_proxy_with_err_handler(
         &self,
@@ -135,8 +132,8 @@ impl Connection {
     pub fn invalidate(&mut self);
 
     #[cfg(target_os = "macos")]
-    #[objc::msg_send(setConnectionCodeSigningRequirement:)]
-    pub fn set_connection_code_signing_requirement(&mut self, val: &ns::String);
+    #[objc::msg_send(setCodeSigningRequirement:)]
+    pub fn set_code_signing_requirement(&mut self, val: &ns::String);
 }
 
 define_obj_type!(

@@ -73,8 +73,8 @@ impl Renderer {
     /// pixels that will be rendered by the current frame. Initially this
     /// will include all differences between the current frame and the
     /// previously rendered frame.
-    #[objc::msg_send(updateBounds:)]
-    pub fn update_bounds(&mut self, bounds: cg::Rect);
+    #[objc::msg_send(updateBounds)]
+    pub fn update_bounds(&self) -> cg::Rect;
 
     /// Add a rectangle to the update region of the current frame.
     #[objc::msg_send(addUpdateRect:)]

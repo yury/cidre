@@ -10,7 +10,7 @@ impl TensorParameter {
     #[objc::msg_send(isUpdatable)]
     pub fn is_updatable(&self) -> bool;
 
-    #[objc::msg_send(setUpdatable:)]
+    #[objc::msg_send(setIsUpdatable:)]
     pub fn set_updatable(&mut self, val: bool);
 
     #[objc::msg_send(parameterWithTensor:)]

@@ -37,9 +37,6 @@ impl FontManager {
     #[objc::msg_send(isMultiple)]
     pub fn is_multiple(&self) -> bool;
 
-    #[objc::msg_send(setMultiple:)]
-    pub fn set_multiple(&mut self, val: bool);
-
     #[objc::msg_send(selectedFont)]
     pub fn selected_font(&self) -> Option<arc::R<ns::Font>>;
 

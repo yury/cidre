@@ -85,15 +85,17 @@ impl NotificationContent {
 
     #[objc::msg_send(contentByUpdatingWithProvider:error:)]
     pub unsafe fn with_updating_with_provider_err<'ear, P: NotificationContentProviding>(
+        &self,
         provider: &P,
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Self>>;
 
     #[inline]
     pub fn with_updating_with_provider<'ear, P: NotificationContentProviding>(
+        &self,
         provider: &P,
     ) -> Result<arc::R<Self>, &'ear ns::Error> {
-        ns::if_none(|err| unsafe { Self::with_updating_with_provider_err(provider, err) })
+        ns::if_none(|err| unsafe { self.with_updating_with_provider_err(provider, err) })
     }
 }
 

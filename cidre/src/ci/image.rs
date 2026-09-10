@@ -90,8 +90,8 @@ impl Image {
     #[objc::msg_send(cyanImage)]
     pub fn cyan() -> &'static Self;
 
-    #[objc::msg_send(mangentaImage)]
-    pub fn mangenta() -> &'static Self;
+    #[objc::msg_send(magentaImage)]
+    pub fn magenta() -> &'static Self;
 
     #[objc::msg_send(yellowImage)]
     pub fn yellow() -> &'static Self;

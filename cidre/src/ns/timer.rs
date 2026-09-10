@@ -114,9 +114,6 @@ impl Timer {
 
     #[objc::msg_send(userInfo)]
     pub fn user_info(&self) -> Option<arc::R<ns::Id>>;
-
-    #[objc::msg_send(setUserInfo:)]
-    pub fn set_user_info(&mut self, val: Option<&ns::Id>);
 }
 
 #[cfg(feature = "cf")]

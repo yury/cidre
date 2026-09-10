@@ -5,20 +5,24 @@ define_obj_type!(
 );
 
 impl AdvertiserAssistant {
-    #[objc::init(initWithPeer:serviceType:)]
+    #[objc::init(initWithServiceType:discoveryInfo:session:)]
     pub unsafe fn init_service_type_throws(
         self,
-        peer: &mc::PeerId,
         service_type: &ns::String,
+        discovery_info: Option<&ns::Dictionary<ns::String, ns::String>>,
+        session: &mc::Session,
     ) -> arc::R<AdvertiserAssistant>;
 
     define_cls!(MC_ADVERTISER_ASSISTANT);
 
     pub fn with_service_type<'ear>(
-        peer: &mc::PeerId,
         service_type: &ns::String,
+        discovery_info: Option<&ns::Dictionary<ns::String, ns::String>>,
+        session: &mc::Session,
     ) -> ns::ExResult<'ear, arc::R<Self>> {
-        ns::try_catch(|| unsafe { Self::alloc().init_service_type_throws(peer, service_type) })
+        ns::try_catch(|| unsafe {
+            Self::alloc().init_service_type_throws(service_type, discovery_info, session)
+        })
     }
 
     #[objc::msg_send(start)]

@@ -1657,9 +1657,6 @@ impl Device {
     #[objc::msg_send(isLowLightBoostEnabled)]
     pub fn is_low_light_boost_enabled(&self) -> bool;
 
-    #[objc::msg_send(setLowLightBoostEnabled:)]
-    unsafe fn set_low_light_boost_enabled_throws(&mut self, val: bool);
-
     #[objc::msg_send(automaticallyEnablesLowLightBoostWhenAvailable)]
     pub fn automatically_enables_low_light_boost_when_available(&self) -> bool;
 
@@ -1670,14 +1667,6 @@ impl Device {
 /// AVCaptureDeviceLowLightBoost
 #[cfg(any(target_os = "tvos", target_os = "ios"))]
 impl<'a> ConfigLockGuard<'a> {
-    pub unsafe fn set_low_light_boost_enabled_throws(&mut self, val: bool) {
-        unsafe { self.device.set_low_light_boost_enabled_throws(val) }
-    }
-
-    pub fn set_low_light_boost_enabled<'ear>(&mut self, val: bool) -> ns::ExResult<'ear> {
-        ns::try_catch(|| unsafe { self.set_low_light_boost_enabled_throws(val) })
-    }
-
     pub unsafe fn set_automatically_enables_low_light_boost_when_available_throws(
         &mut self,
         val: bool,

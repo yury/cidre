@@ -22,13 +22,10 @@ impl Font {
 
     /// Returns an array of font family names for all installed fonts
     #[objc::msg_send(familyNames)]
-    pub fn family_names(&self) -> arc::R<ns::Array<ns::String>>;
+    pub fn family_names() -> arc::R<ns::Array<ns::String>>;
 
     #[objc::msg_send(fontNamesForFamilyName:)]
-    pub fn font_names_for_family_name(
-        &self,
-        family_name: &ns::String,
-    ) -> arc::R<ns::Array<ns::String>>;
+    pub fn font_names_for_family_name(family_name: &ns::String) -> arc::R<ns::Array<ns::String>>;
 
     #[objc::msg_send(systemFontOfSize:)]
     pub fn sys_font_of_size(size: cg::Float) -> arc::R<Self>;
@@ -92,7 +89,7 @@ impl Font {
     pub fn with_size(&self, size: cg::Float) -> arc::R<Self>;
 
     #[objc::msg_send(fontWithDescriptor:size:)]
-    pub fn with_desc_size(&self, descriptor: &ui::FontDesc, size: cg::Float) -> arc::R<Self>;
+    pub fn with_desc_size(descriptor: &ui::FontDesc, size: cg::Float) -> arc::R<Self>;
 
     #[objc::msg_send(fontDescriptor)]
     pub fn descriptor(&self) -> arc::R<ui::FontDesc>;

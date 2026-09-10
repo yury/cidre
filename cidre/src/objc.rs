@@ -654,6 +654,8 @@ pub struct Sel(NonNull<c_void>);
 
 pub mod autorelease_pool;
 pub mod ns;
+#[cfg(test)]
+mod selector_audit;
 pub use autorelease_pool::AutoreleasePoolPage;
 
 pub fn ar_pool<R, F>(f: F) -> R

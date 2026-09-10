@@ -32,7 +32,7 @@ impl VideoRenderer {
 
     /// Instructs the video renderer to discard pending enqueued sample buffers and call the provided block when complete.
     #[cfg(feature = "blocks")]
-    #[objc::msg_send(removeDisplayedImage:completionHandler:)]
+    #[objc::msg_send(flushWithRemovalOfDisplayedImage:completionHandler:)]
     pub fn flush_ch_block(
         &mut self,
         remove_displayed_image: bool,
@@ -41,13 +41,13 @@ impl VideoRenderer {
 
     /// Instructs the video renderer to discard pending enqueued sample buffers and call the provided closure when complete.
     #[cfg(feature = "blocks")]
-    #[doc(alias = "removeDisplayedImage:completionHandler:")]
+    #[doc(alias = "flushWithRemovalOfDisplayedImage:completionHandler:")]
     pub fn flush_ch(&mut self, remove_displayed_image: bool, ch: impl FnMut() + 'static) {
         let mut block = blocks::CompletionBlock::new0(ch);
         self.flush_ch_block(remove_displayed_image, Some(&mut block));
     }
 
-    #[doc(alias = "removeDisplayedImage:completionHandler:")]
+    #[doc(alias = "flushWithRemovalOfDisplayedImage:completionHandler:")]
     #[cfg(feature = "async")]
     pub async fn flush(&mut self, remove_displayed_image: bool) {
         let (f, mut block) = blocks::comp0();
@@ -74,7 +74,7 @@ impl VideoRenderer {
     /// Promises, for the purpose of enabling power optimizations,
     /// that future sample buffers will have PTS values no less than a specified lower-bound PTS.
     #[cfg(feature = "cm")]
-    #[objc::msg_send(minimumUpcomingPresentationTime:)]
+    #[objc::msg_send(expectMinimumUpcomingSampleBufferPresentationTime:)]
     #[objc::available(
         macos = 14.4,
         maccatalyst = 17.4,

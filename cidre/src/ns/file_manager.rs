@@ -561,10 +561,10 @@ impl<K: objc::Obj, V: objc::Obj> ns::Dictionary<K, V> {
     #[objc::msg_send(fileSize)]
     pub fn file_size(&self) -> usize;
 
-    #[objc::msg_send(file_type)]
+    #[objc::msg_send(fileType)]
     pub fn file_type(&self) -> Option<arc::R<ns::String>>;
 
-    #[objc::msg_send(file_type)]
+    #[objc::msg_send(filePosixPermissions)]
     pub fn file_posix_permissions(&self) -> ns::UInteger;
 
     #[objc::msg_send(fileOwnerAccountName)]

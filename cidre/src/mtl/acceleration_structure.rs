@@ -67,7 +67,7 @@ impl Desc {
 }
 
 define_obj_type!(
-    #[doc(alias = "MTLAccelerationStructureDescriptor")]
+    #[doc(alias = "MTLAccelerationStructureGeometryDescriptor")]
     pub GeometryDesc(Desc),
     MTL_ACCELERATION_STRUCTURE_GEOMETRY_DESCRIPTOR
 );

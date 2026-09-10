@@ -24,7 +24,6 @@ impl Button {
     #[objc::available(ios = 14.0)]
     pub fn with_type_primary_action(kind: ButtonType, action: Option<&ui::Action>) -> arc::R<Self>;
 
-
     #[objc::msg_send(setMenu:)]
     #[objc::available(ios = 14.0)]
     pub fn set_menu(&mut self, menu: Option<&ui::Menu>);

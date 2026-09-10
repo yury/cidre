@@ -629,13 +629,66 @@ mod device_ctl {
             .spawn()
             .unwrap();
         child.wait().unwrap();
-        let buf = fs::read_to_string(&json_output_path).unwrap();
+        // devicectl writes nothing when it dies early.
+        let buf = fs::read_to_string(&json_output_path).unwrap_or_default();
         let _ = fs::remove_file(json_output_path);
         buf
     }
 
+    /// The human-readable reason in a devicectl error reply, if any: devicectl
+    /// nests it in `error.userInfo`, where values are typed as `{"string": ..}`.
+    pub(crate) fn error_message(value: &serde_json::Value) -> Option<String> {
+        const KEYS: [&str; 3] = [
+            "NSLocalizedFailureReason",
+            "NSLocalizedDescription",
+            "localizedDescription",
+        ];
+        fn as_message(value: &serde_json::Value) -> Option<String> {
+            match value {
+                serde_json::Value::String(s) => Some(s.clone()),
+                serde_json::Value::Object(map) => map.get("string").and_then(as_message),
+                _ => None,
+            }
+        }
+        match value {
+            serde_json::Value::Object(map) => {
+                for key in KEYS {
+                    if let Some(message) = map.get(key).and_then(as_message) {
+                        return Some(message);
+                    }
+                }
+                map.values().find_map(error_message)
+            }
+            serde_json::Value::Array(items) => items.iter().find_map(error_message),
+            _ => None,
+        }
+    }
+
+    /// Prints why `what` failed, from the devicectl reply, and exits.
+    fn fail(what: &str, buf: &str) -> ! {
+        let reason = serde_json::from_str::<serde_json::Value>(buf)
+            .ok()
+            .and_then(|v| error_message(&v));
+        match reason {
+            Some(reason) => eprintln!("cargo box: {what} failed: {reason}"),
+            None if buf.trim().is_empty() => {
+                eprintln!("cargo box: {what} failed: devicectl gave no reply")
+            }
+            None => eprintln!("cargo box: {what} failed:\n{}", buf.trim()),
+        }
+        process::exit(1)
+    }
+
+    /// Whether a devicectl reply reports success.
+    pub(crate) fn succeeded(buf: &str) -> bool {
+        serde_json::from_str::<serde_json::Value>(buf)
+            .ok()
+            .and_then(|v| v.get("result").map(|_| ()))
+            .is_some()
+    }
+
     pub(crate) fn install_app(device_id: &str, bundle: &Path) {
-        run_cmd(&[
+        let buf = run_cmd(&[
             "device",
             "install",
             "app",
@@ -643,6 +696,9 @@ mod device_ctl {
             device_id,
             bundle.to_str().unwrap(),
         ]);
+        if !succeeded(&buf) {
+            fail("install", &buf);
+        }
     }
 
     pub(crate) fn run_app(device_id: &str, id: &str, args: &[String]) {
@@ -660,7 +716,10 @@ mod device_ctl {
             args_vec.push(s);
         }
         let buf = run_cmd(&args_vec);
-        let run = serde_json::from_str::<json::AppRun>(&buf).unwrap();
+        let Ok(run) = serde_json::from_str::<json::AppRun>(&buf) else {
+            // A locked device, a lost console, or a launch error.
+            fail("launch", &buf);
+        };
         let code = match (run.result.termination.signal, run.result.termination.code) {
             (Some(signal), None) => signal,
             (None, Some(code)) => code,
@@ -671,7 +730,9 @@ mod device_ctl {
 
     pub(crate) fn list_devices() {
         let buf = run_cmd(&["list", "devices"]);
-        let list = serde_json::from_str::<json::DeviceList>(&buf).unwrap();
+        let Ok(list) = serde_json::from_str::<json::DeviceList>(&buf) else {
+            fail("listing devices", &buf);
+        };
         println!("{:#?}", list.result.devices);
     }
 
@@ -751,5 +812,32 @@ mod device_ctl {
         pub(crate) struct ConnectionProps<'a> {
             pub(crate) pairing_state: &'a str,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn devicectl_error_message() {
+        let reply = r#"{
+          "error": {
+            "code": 7,
+            "domain": "FBSOpenApplicationErrorDomain",
+            "userInfo": {
+              "BSErrorCodeDescription": {"string": "Locked"},
+              "NSLocalizedFailureReason": {"string": "Unable to launch because the device was not, or could not be, unlocked."}
+            }
+          },
+          "outcome": "failed"
+        }"#;
+        let value = serde_json::from_str(reply).unwrap();
+        assert_eq!(
+            super::device_ctl::error_message(&value).as_deref(),
+            Some("Unable to launch because the device was not, or could not be, unlocked.")
+        );
+        assert!(!super::device_ctl::succeeded(reply));
+        assert!(super::device_ctl::succeeded(
+            r#"{"result": {"terminationResult": {}}}"#
+        ));
     }
 }

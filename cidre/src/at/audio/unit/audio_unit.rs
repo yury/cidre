@@ -131,7 +131,7 @@ define_obj_type!(
 impl ns::FastEnum<AudioUnitBus> for AudioUnitBusArray {}
 
 impl AudioUnitBusArray {
-    #[objc::msg_send(lount)]
+    #[objc::msg_send(count)]
     pub fn count(&self) -> usize;
 
     #[inline]

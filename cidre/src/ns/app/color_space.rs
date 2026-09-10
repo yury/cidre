@@ -41,7 +41,7 @@ impl ColorSpace {
     pub fn extended_srgb() -> arc::R<Self>;
 
     #[objc::msg_send(extendedGenericGamma22GrayColorSpace)]
-    pub fn extended_generic_gamma22_gray(&self) -> arc::R<Self>;
+    pub fn extended_generic_gamma22_gray() -> arc::R<Self>;
 
     #[objc::msg_send(displayP3ColorSpace)]
     pub fn display_p3() -> arc::R<Self>;

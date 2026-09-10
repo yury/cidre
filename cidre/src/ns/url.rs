@@ -123,7 +123,7 @@ impl Url {
     #[objc::msg_send(query)]
     pub fn query(&self) -> Option<arc::R<ns::String>>;
 
-    #[objc::msg_send(relative_path)]
+    #[objc::msg_send(relativePath)]
     pub fn relative_path(&self) -> Option<arc::R<ns::String>>;
 }
 

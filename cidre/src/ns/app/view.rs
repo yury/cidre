@@ -241,6 +241,62 @@ impl View {
     pub fn display_if_needed(&mut self);
 }
 
+/// Auto Layout
+impl View {
+    /// Whether the view's autoresizing mask is turned into constraints. Default is
+    /// true; turn it off for views placed with constraints.
+    #[objc::msg_send(translatesAutoresizingMaskIntoConstraints)]
+    pub fn translates_autoresizing_mask_into_constraints(&self) -> bool;
+
+    #[objc::msg_send(setTranslatesAutoresizingMaskIntoConstraints:)]
+    pub fn set_translates_autoresizing_mask_into_constraints(&mut self, val: bool);
+
+    /// The area not covered by the title bar, toolbar, and overlaid sidebars.
+    #[objc::msg_send(safeAreaInsets)]
+    #[objc::available(macos = 11.0)]
+    pub fn safe_area_insets(&self) -> ns::EdgeInsets;
+
+    /// The frame minus the safe area insets.
+    #[objc::msg_send(safeAreaRect)]
+    #[objc::available(macos = 11.0)]
+    pub fn safe_area_rect(&self) -> ns::Rect;
+
+    #[objc::msg_send(safeAreaLayoutGuide)]
+    #[objc::available(macos = 11.0)]
+    pub fn safe_area_layout_guide(&self) -> arc::R<ns::LayoutGuide>;
+
+    #[objc::msg_send(layoutMarginsGuide)]
+    #[objc::available(macos = 10.11)]
+    pub fn layout_margins_guide(&self) -> arc::R<ns::LayoutGuide>;
+
+    #[objc::msg_send(addLayoutGuide:)]
+    #[objc::available(macos = 10.11)]
+    pub fn add_layout_guide(&mut self, guide: &ns::LayoutGuide);
+
+    #[objc::msg_send(removeLayoutGuide:)]
+    #[objc::available(macos = 10.11)]
+    pub fn remove_layout_guide(&mut self, guide: &ns::LayoutGuide);
+
+    #[objc::msg_send(layoutGuides)]
+    #[objc::available(macos = 10.11)]
+    pub fn layout_guides(&self) -> arc::R<ns::Array<ns::LayoutGuide>>;
+
+    #[objc::msg_send(constraints)]
+    pub fn constraints(&self) -> arc::R<ns::Array<ns::LayoutConstraint>>;
+
+    #[objc::msg_send(addConstraint:)]
+    pub fn add_constraint(&mut self, constraint: &ns::LayoutConstraint);
+
+    #[objc::msg_send(removeConstraint:)]
+    pub fn remove_constraint(&mut self, constraint: &ns::LayoutConstraint);
+
+    #[objc::msg_send(hasAmbiguousLayout)]
+    pub fn has_ambiguous_layout(&self) -> bool;
+}
+
+ns::impl_layout_anchors!(View);
+ns::impl_baseline_anchors!(View);
+
 impl ns::AnimatablePropContainer for View {}
 
 unsafe extern "C" {

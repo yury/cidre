@@ -18,7 +18,7 @@ impl WebsiteDataStore {
     pub fn is_persistent(&self) -> bool;
 
     #[objc::msg_send(allWebsiteDataTypes)]
-    pub fn all_website_data_types(&self) -> arc::R<ns::Set<ns::String>>;
+    pub fn all_website_data_types() -> arc::R<ns::Set<ns::String>>;
 
     // ...
 

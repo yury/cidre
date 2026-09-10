@@ -24,7 +24,7 @@ impl ns::Value {
     #[objc::available(macos = 10.7, ios = 4.0, tvos = 9.0, watchos = 1.0, visionos = 1.0)]
     pub fn with_cm_time_mapping(range: &cm::TimeMapping) -> arc::R<ns::Value>;
 
-    #[objc::msg_send(CMTimeMapping)]
+    #[objc::msg_send(CMTimeMappingValue)]
     #[objc::available(macos = 10.7, ios = 4.0, tvos = 9.0, watchos = 1.0, visionos = 1.0)]
     pub fn cm_time_mapping_value(&self) -> cm::TimeMapping;
 }

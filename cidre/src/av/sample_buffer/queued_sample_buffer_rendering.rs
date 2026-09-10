@@ -21,8 +21,8 @@ pub trait QueuedSampleBufRendering: objc::Obj {
     #[objc::msg_send(flush)]
     fn flush(&mut self);
 
-    #[objc::msg_send(readyForMoreMediaData)]
-    fn ready_for_more_media_data(&mut self);
+    #[objc::msg_send(isReadyForMoreMediaData)]
+    fn is_ready_for_more_media_data(&self) -> bool;
 
     #[objc::msg_send(requestMediaDataWhenReadyOnQueue:usingBlock:)]
     fn request_media_data_when_ready_on_queue_block(

@@ -19,11 +19,19 @@ impl MlPipelineDesc {
     pub fn set_buf_input_dims(&mut self, val: Option<&mtl::TensorExtents>, buffer_index: usize);
 
     #[objc::msg_send(setInputDimensions:withRange:)]
-    pub fn set_bufs_input_dims_with_range(val: &ns::Array<mtl::TensorExtents>, range: ns::Range);
+    pub fn set_bufs_input_dims_with_range(
+        &mut self,
+        val: &ns::Array<mtl::TensorExtents>,
+        range: ns::Range,
+    );
 
     // value shoulbe mtl::TensorExtent or ns::Null
     #[objc::msg_send(setInputDimensions:withRange:)]
-    pub fn set_optional_bufs_input_dims_with_range(val: &ns::Array<ns::Id>, range: ns::Range);
+    pub fn set_optional_bufs_input_dims_with_range(
+        &mut self,
+        val: &ns::Array<ns::Id>,
+        range: ns::Range,
+    );
 
     #[objc::msg_send(inputDimensionsAtBufferIndex:)]
     pub fn buf_input_dims(&self, buffer_index: usize) -> Option<arc::R<mtl::TensorExtents>>;

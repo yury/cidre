@@ -211,12 +211,6 @@ impl Window {
     #[objc::msg_send(titlebarAccessoryViewControllers)]
     pub fn titlebar_accessory_vcs(&self) -> arc::R<ns::Array<ns::TitlebarAccessoryViewController>>;
 
-    #[objc::msg_send(setTitlebarAccessoryViewControllers:)]
-    pub fn set_titlebar_accessory_vcs(
-        &mut self,
-        val: &ns::Array<ns::TitlebarAccessoryViewController>,
-    );
-
     #[objc::msg_send(addTitlebarAccessoryViewController:)]
     pub fn add_titlebar_accessory_vc(&mut self, val: &ns::TitlebarAccessoryViewController);
 

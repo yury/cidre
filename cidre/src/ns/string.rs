@@ -239,7 +239,7 @@ impl StringMut {
         ns::try_catch(|| self.delete_characters_in_throws(range))
     }
 
-    #[objc::msg_send(append:)]
+    #[objc::msg_send(appendString:)]
     pub fn append(&mut self, string: &ns::String);
 
     #[objc::msg_send(setString:)]

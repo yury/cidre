@@ -43,6 +43,7 @@ impl GenPersonSegmentationRequest {
         visionos = 2.0
     )]
     pub unsafe fn supported_output_pixel_formats_err<'ear>(
+        &self,
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ns::Array<ns::Number>>>;
 
@@ -53,9 +54,10 @@ impl GenPersonSegmentationRequest {
         tvos = 18.0,
         visionos = 2.0
     )]
-    pub fn supported_output_pixel_formats<'ear>() -> ns::Result<'ear, arc::R<ns::Array<ns::Number>>>
-    {
-        ns::if_none(|err| unsafe { Self::supported_output_pixel_formats_err(err) })
+    pub fn supported_output_pixel_formats<'ear>(
+        &self,
+    ) -> ns::Result<'ear, arc::R<ns::Array<ns::Number>>> {
+        ns::if_none(|err| unsafe { self.supported_output_pixel_formats_err(err) })
     }
 }
 

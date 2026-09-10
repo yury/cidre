@@ -132,8 +132,9 @@ pub use image::ImageSymbolCfg;
 pub use image_view::ImageView;
 
 mod layout_constraint;
-pub use layout_constraint::LayoutAttr;
-pub use layout_constraint::LayoutPriority;
+
+mod layout_guide;
+pub use layout_guide::LayoutGuide;
 
 mod menu;
 pub use menu::Menu;

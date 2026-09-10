@@ -371,6 +371,52 @@ impl View {
     }
 }
 
+/// Auto Layout
+impl View {
+    /// Whether the view's autoresizing mask is turned into constraints. Default is
+    /// true; turn it off for views placed with constraints.
+    #[objc::msg_send(translatesAutoresizingMaskIntoConstraints)]
+    pub fn translates_autoresizing_mask_into_constraints(&self) -> bool;
+
+    #[objc::msg_send(setTranslatesAutoresizingMaskIntoConstraints:)]
+    pub fn set_translates_autoresizing_mask_into_constraints(&mut self, val: bool);
+
+    #[objc::msg_send(safeAreaLayoutGuide)]
+    #[objc::available(ios = 11.0, tvos = 11.0)]
+    pub fn safe_area_layout_guide(&self) -> arc::R<ui::LayoutGuide>;
+
+    #[objc::msg_send(layoutMarginsGuide)]
+    #[objc::available(ios = 9.0, tvos = 9.0)]
+    pub fn layout_margins_guide(&self) -> arc::R<ui::LayoutGuide>;
+
+    #[objc::msg_send(addLayoutGuide:)]
+    #[objc::available(ios = 9.0, tvos = 9.0)]
+    pub fn add_layout_guide(&mut self, guide: &ui::LayoutGuide);
+
+    #[objc::msg_send(removeLayoutGuide:)]
+    #[objc::available(ios = 9.0, tvos = 9.0)]
+    pub fn remove_layout_guide(&mut self, guide: &ui::LayoutGuide);
+
+    #[objc::msg_send(layoutGuides)]
+    #[objc::available(ios = 9.0, tvos = 9.0)]
+    pub fn layout_guides(&self) -> arc::R<ns::Array<ui::LayoutGuide>>;
+
+    #[objc::msg_send(constraints)]
+    pub fn constraints(&self) -> arc::R<ns::Array<ns::LayoutConstraint>>;
+
+    #[objc::msg_send(addConstraint:)]
+    pub fn add_constraint(&mut self, constraint: &ns::LayoutConstraint);
+
+    #[objc::msg_send(removeConstraint:)]
+    pub fn remove_constraint(&mut self, constraint: &ns::LayoutConstraint);
+
+    #[objc::msg_send(hasAmbiguousLayout)]
+    pub fn has_ambiguous_layout(&self) -> bool;
+}
+
+ns::impl_layout_anchors!(View);
+ns::impl_baseline_anchors!(View);
+
 impl ns::KvObserverRegistration for View {}
 
 #[objc::protocol(UICoordinateSpace)]

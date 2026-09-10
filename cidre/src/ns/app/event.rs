@@ -561,7 +561,7 @@ impl Event {
     // pub fn cg_event(&self) -> Option<cg::Event>;
 
     #[objc::msg_send(isMouseCoalescingEnabled)]
-    pub fn is_mouse_coalescing_enabled(&self) -> bool;
+    pub fn is_mouse_coalescing_enabled() -> bool;
 
     #[objc::msg_send(magnification)]
     pub fn magnification(&self) -> cg::Float;
@@ -655,7 +655,7 @@ impl Event {
     pub fn pressure_behavior(&self) -> PressureBehavior;
 
     #[objc::msg_send(isSwipeTrackingFromScrollEventsEnabled)]
-    pub fn is_swipe_tracking_from_scroll_events_enabled(&self) -> bool;
+    pub fn is_swipe_tracking_from_scroll_events_enabled() -> bool;
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(trackSwipeEventWithOptions:dampenAmountThresholdMin:max:usingHandler:)]
@@ -670,14 +670,10 @@ impl Event {
     );
 
     #[objc::msg_send(startPeriodicEventsAfterDelay:withPeriod:)]
-    pub fn start_periodic_events_after_delay(
-        &self,
-        delay: ns::TimeInterval,
-        period: ns::TimeInterval,
-    );
+    pub fn start_periodic_events_after_delay(delay: ns::TimeInterval, period: ns::TimeInterval);
 
     #[objc::msg_send(stopPeriodicEvents)]
-    pub fn stop_periodic_events(&self);
+    pub fn stop_periodic_events();
 
     #[objc::msg_send(mouseLocation)]
     pub fn mouse_location() -> ns::Point;
@@ -689,13 +685,13 @@ impl Event {
     pub fn pressed_mouse_buttons() -> usize;
 
     #[objc::msg_send(doubleClickInterval)]
-    pub fn double_click_interval(&self) -> ns::TimeInterval;
+    pub fn double_click_interval() -> ns::TimeInterval;
 
     #[objc::msg_send(keyRepeatDelay)]
-    pub fn key_repeat_delay(&self) -> ns::TimeInterval;
+    pub fn key_repeat_delay() -> ns::TimeInterval;
 
     #[objc::msg_send(keyRepeatInterval)]
-    pub fn key_repeat_interval(&self) -> ns::TimeInterval;
+    pub fn key_repeat_interval() -> ns::TimeInterval;
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(addGlobalMonitorForEventsMatchingMask:handler:)]

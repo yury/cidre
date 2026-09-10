@@ -301,6 +301,88 @@ mod diffable_data_source_section_snapshot;
 ))]
 pub use diffable_data_source_section_snapshot::DiffableDataSrcSectionSnapshot;
 
+#[cfg(any(
+    all(feature = "app", target_os = "macos"),
+    all(
+        feature = "ui",
+        any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+    )
+))]
+mod layout_constraint;
+#[cfg(any(
+    all(feature = "app", target_os = "macos"),
+    all(
+        feature = "ui",
+        any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+    )
+))]
+pub use layout_constraint::LayoutAttr;
+#[cfg(any(
+    all(feature = "app", target_os = "macos"),
+    all(
+        feature = "ui",
+        any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+    )
+))]
+pub use layout_constraint::LayoutConstraint;
+#[cfg(any(
+    all(feature = "app", target_os = "macos"),
+    all(
+        feature = "ui",
+        any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+    )
+))]
+pub use layout_constraint::LayoutPriority;
+#[cfg(any(
+    all(feature = "app", target_os = "macos"),
+    all(
+        feature = "ui",
+        any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+    )
+))]
+pub use layout_constraint::LayoutRelation;
+
+#[cfg(any(
+    all(feature = "app", target_os = "macos"),
+    all(
+        feature = "ui",
+        any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+    )
+))]
+mod layout_anchor;
+#[cfg(any(
+    all(feature = "app", target_os = "macos"),
+    all(
+        feature = "ui",
+        any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+    )
+))]
+pub use layout_anchor::LayoutDimension;
+#[cfg(any(
+    all(feature = "app", target_os = "macos"),
+    all(
+        feature = "ui",
+        any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+    )
+))]
+pub use layout_anchor::LayoutXAxisAnchor;
+#[cfg(any(
+    all(feature = "app", target_os = "macos"),
+    all(
+        feature = "ui",
+        any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+    )
+))]
+pub use layout_anchor::LayoutYAxisAnchor;
+#[cfg(any(
+    all(feature = "app", target_os = "macos"),
+    all(
+        feature = "ui",
+        any(target_os = "ios", target_os = "tvos", target_os = "visionos")
+    )
+))]
+pub(crate) use layout_anchor::{impl_baseline_anchors, impl_layout_anchors};
+
 mod ordered_collection_change;
 pub use ordered_collection_change::CollectionChangeType;
 pub use ordered_collection_change::OrderedCollectionChange;
