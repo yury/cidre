@@ -967,18 +967,20 @@ macro_rules! define_obj_type {
             }
 
             /// Borrows the object and its payload at once, e.g. to add a subview kept
-            /// in the payload: `view.tap_mut(|v, inner| v.add_subview(&inner.label))`.
+            /// in the payload: `view.tap_mut(|v, inner| v.add_subview(&inner.label))`,
+            /// or to hand the object out as a delegate of a view it keeps:
+            /// `vc.tap_mut(|me, inner| inner.table.set_delegate(Some(me)))`.
             ///
-            /// The object is passed as its superclass, which has no `inner_mut`, so the
-            /// payload cannot be borrowed a second time inside `f`.
+            /// The payload is already borrowed as `inner`, so `f` must not reach it
+            /// again through the object (`inner()`, `inner_mut()`, or an override that
+            /// reads it).
             #[allow(dead_code)]
             #[inline]
-            pub fn tap_mut<R>(&mut self, f: impl FnOnce(&mut $BaseType, &mut $InnerType) -> R) -> R {
+            pub fn tap_mut<R>(&mut self, f: impl FnOnce(&mut Self, &mut $InnerType) -> R) -> R {
                 let inner: *mut $InnerType = self.inner_mut();
-                let base: &mut $BaseType = self;
-                // SAFETY: the payload lives in an instance variable past the bytes
-                // `$BaseType` covers, and `base` cannot reach it again.
-                f(base, unsafe { &mut *inner })
+                // SAFETY: the payload lives in an instance variable past the bytes the
+                // object's Rust view covers; `f` is documented not to borrow it again.
+                f(self, unsafe { &mut *inner })
             }
 
 
@@ -1779,11 +1781,11 @@ mod tests2 {
             dropped: Arc::clone(&dropped),
         })
         .init();
-        // the object as `ns::Id` and the payload, borrowed together; `hash` is not
-        // used here because its override would read the payload again
-        let is_sub = obj.tap_mut(|base, inner| {
+        // the object and the payload, borrowed together; `hash` is not used here
+        // because its override would read the payload again
+        let is_sub = obj.tap_mut(|me, inner| {
             inner.tag = 4;
-            base.is_kind_of_class(SubId::cls())
+            me.is_kind_of_class(SubId::cls())
         });
         assert!(is_sub);
         assert_eq!(obj.tag(), 4);
