@@ -182,8 +182,8 @@ impl View {
     #[objc::msg_send(setAutoresizingMask:)]
     pub fn set_autoresizing_mask(&mut self, val: ui::ViewAutoresizing);
 
-    #[objc::msg_send(sizeThatFits)]
-    pub fn size_that_fits(&self) -> cg::Size;
+    #[objc::msg_send(sizeThatFits:)]
+    pub fn size_that_fits(&self, size: cg::Size) -> cg::Size;
 
     #[objc::msg_send(sizeToFit)]
     pub fn size_to_fit(&mut self);

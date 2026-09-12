@@ -274,6 +274,14 @@ pub use toolbar_item::ToolbarItemValidation;
 pub use toolbar_item::ToolbarItemValidationImpl;
 pub use toolbar_item::ToolbarItemVisibilityPriority;
 
+pub mod menu_toolbar_item;
+pub use menu_toolbar_item::MenuToolbarItem;
+
+pub mod toolbar_item_group;
+pub use toolbar_item_group::ToolbarItemGroup;
+pub use toolbar_item_group::ToolbarItemGroupControlRepresentation;
+pub use toolbar_item_group::ToolbarItemGroupSelectionMode;
+
 mod status_bar;
 pub use status_bar::StatusBar;
 

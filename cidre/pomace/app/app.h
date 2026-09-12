@@ -35,6 +35,8 @@ Class NS_SPLIT_VIEW_ITEM;
 Class NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER;
 Class NS_TOOLBAR;
 Class NS_TOOLBAR_ITEM;
+Class NS_MENU_TOOLBAR_ITEM;
+Class NS_TOOLBAR_ITEM_GROUP;
 Class NS_BUTTON;
 Class NS_TEXT_FIELD;
 Class NS_TABLE_VIEW;
@@ -111,6 +113,8 @@ static void app_initializer(void)
         NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER = [NSTitlebarAccessoryViewController class];
         NS_TOOLBAR = [NSToolbar class];
         NS_TOOLBAR_ITEM = [NSToolbarItem class];
+        NS_MENU_TOOLBAR_ITEM = [NSMenuToolbarItem class];
+        NS_TOOLBAR_ITEM_GROUP = [NSToolbarItemGroup class];
         NS_BUTTON = [NSButton class];
         NS_TEXT_FIELD = [NSTextField class];
         NS_TABLE_VIEW = [NSTableView class];
