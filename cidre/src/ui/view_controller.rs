@@ -80,6 +80,20 @@ impl ViewController {
     #[objc::msg_send(setPreferredTransition:)]
     pub fn set_preferred_transition(&mut self, val: Option<&ui::ViewControllerTransition>);
 
+    #[objc::msg_send(traitCollection)]
+    pub fn trait_collection(&self) -> arc::R<ui::TraitCollection>;
+
+    #[objc::msg_send(isBeingPresented)]
+    pub fn is_being_presented(&self) -> bool;
+
+    #[objc::msg_send(isBeingDismissed)]
+    pub fn is_being_dismissed(&self) -> bool;
+
+    /// Asks the system to re-read `supportedInterfaceOrientations`.
+    #[objc::msg_send(setNeedsUpdateOfSupportedInterfaceOrientations)]
+    #[objc::available(ios = 16.0)]
+    pub fn set_needs_update_of_supported_interface_orientations(&mut self);
+
     #[cfg(feature = "blocks")]
     #[objc::msg_send(presentViewController:animated:completion:)]
     pub fn present_vc_ch(

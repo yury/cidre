@@ -164,3 +164,20 @@ define_obj_type!(
 unsafe extern "C" {
     static UI_NAVIGATION_CONTROLLER: &'static objc::Class<NavController>;
 }
+
+/// `UIViewController (UINavigationControllerItem)`: the items of the navigation
+/// controller's toolbar while this view controller is on top.
+impl ui::ViewController {
+    #[objc::msg_send(toolbarItems)]
+    pub fn toolbar_items(&self) -> Option<arc::R<ns::Array<ui::BarButtonItem>>>;
+
+    #[objc::msg_send(setToolbarItems:)]
+    pub fn set_toolbar_items(&mut self, val: Option<&ns::Array<ui::BarButtonItem>>);
+
+    #[objc::msg_send(setToolbarItems:animated:)]
+    pub fn set_toolbar_items_animated(
+        &mut self,
+        val: Option<&ns::Array<ui::BarButtonItem>>,
+        animated: bool,
+    );
+}

@@ -124,4 +124,14 @@ pub trait Delegate: objc::Obj {
         controller: &mut SplitViewController,
         proposed: Column,
     ) -> Column;
+
+    /// The interface collapsed into one column (compact width).
+    #[objc::optional]
+    #[objc::msg_send(splitViewControllerDidCollapse:)]
+    fn split_view_controller_did_collapse(&mut self, controller: &mut SplitViewController);
+
+    /// The interface expanded into its columns (regular width).
+    #[objc::optional]
+    #[objc::msg_send(splitViewControllerDidExpand:)]
+    fn split_view_controller_did_expand(&mut self, controller: &mut SplitViewController);
 }
