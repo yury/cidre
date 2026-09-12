@@ -25,6 +25,8 @@ Class UI_CONTROL;
 Class UI_BUTTON;
 Class UI_ACTION;
 Class UI_MENU;
+Class UI_COMMAND;
+Class UI_KEY_COMMAND;
 Class UI_TEXT_FIELD;
 Class UI_ALERT_CONTROLLER;
 Class UI_DOCUMENT_PICKER_VIEW_CONTROLLER;
@@ -125,6 +127,8 @@ static void ui_initializer(void)
         UI_CONTROL = NSClassFromString(@"UIControl");
         UI_ACTION = NSClassFromString(@"UIAction");
         UI_MENU = NSClassFromString(@"UIMenu");
+        UI_COMMAND = NSClassFromString(@"UICommand");
+        UI_KEY_COMMAND = NSClassFromString(@"UIKeyCommand");
         UI_BUTTON = NSClassFromString(@"UIButton");
         UI_TEXT_FIELD = NSClassFromString(@"UITextField");
         UI_ALERT_CONTROLLER = NSClassFromString(@"UIAlertController");
