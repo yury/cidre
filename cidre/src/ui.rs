@@ -494,8 +494,8 @@ mod presentation_controller;
 pub use presentation_controller::PresentationController;
 mod sheet_presentation_controller;
 pub use sheet_presentation_controller::{
-    Detent as SheetPresentationControllerDetent, Placement as SheetPresentationControllerPlacement,
-    SheetPresentationController,
+    Detent as SheetPresentationControllerDetent, DetentId as SheetPresentationControllerDetentId,
+    Placement as SheetPresentationControllerPlacement, SheetPresentationController,
 };
 mod bar_button_item;
 pub use bar_button_item::BarButtonItem;

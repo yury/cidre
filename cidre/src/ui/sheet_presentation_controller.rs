@@ -1,4 +1,4 @@
-use crate::{arc, define_cls, define_obj_type, ns, objc, ui};
+use crate::{api, arc, define_cls, define_obj_type, ns, objc, ui};
 
 #[doc(alias = "UISheetPresentationControllerPlacement")]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -8,6 +8,23 @@ pub enum Placement {
     Leading,
     Center,
     Trailing,
+}
+
+define_obj_type!(
+    #[doc(alias = "UISheetPresentationControllerDetentIdentifier")]
+    pub DetentId(ns::String)
+);
+
+impl DetentId {
+    #[api::available(ios = 15.0)]
+    pub fn medium() -> &'static Self {
+        unsafe { UISheetPresentationControllerDetentIdentifierMedium }
+    }
+
+    #[api::available(ios = 15.0)]
+    pub fn large() -> &'static Self {
+        unsafe { UISheetPresentationControllerDetentIdentifierLarge }
+    }
 }
 
 define_obj_type!(
@@ -25,6 +42,10 @@ impl Detent {
     #[objc::msg_send(largeDetent)]
     #[objc::available(ios = 15.0)]
     pub fn large() -> arc::R<Self>;
+
+    #[objc::msg_send(identifier)]
+    #[objc::available(ios = 16.0)]
+    pub fn id(&self) -> arc::R<DetentId>;
 }
 
 define_obj_type!(
@@ -56,6 +77,32 @@ impl SheetPresentationController {
     #[objc::msg_send(setDetents:)]
     #[objc::available(ios = 15.0)]
     pub fn set_detents(&mut self, val: &ns::Array<Detent>);
+
+    #[objc::msg_send(selectedDetentIdentifier)]
+    #[objc::available(ios = 15.0)]
+    pub fn selected_detent_id(&self) -> Option<arc::R<DetentId>>;
+
+    #[objc::msg_send(setSelectedDetentIdentifier:)]
+    #[objc::available(ios = 15.0)]
+    pub fn set_selected_detent_id(&mut self, val: Option<&DetentId>);
+
+    /// The largest detent at which the presenting view controller is not dimmed
+    /// and still takes touches, as the map does under the sheet in Maps.
+    #[objc::msg_send(largestUndimmedDetentIdentifier)]
+    #[objc::available(ios = 15.0)]
+    pub fn largest_undimmed_detent_id(&self) -> Option<arc::R<DetentId>>;
+
+    #[objc::msg_send(setLargestUndimmedDetentIdentifier:)]
+    #[objc::available(ios = 15.0)]
+    pub fn set_largest_undimmed_detent_id(&mut self, val: Option<&DetentId>);
+}
+
+#[api::weak]
+unsafe extern "C" {
+    #[api::available(ios = 15.0)]
+    static UISheetPresentationControllerDetentIdentifierMedium: &'static DetentId;
+    #[api::available(ios = 15.0)]
+    static UISheetPresentationControllerDetentIdentifierLarge: &'static DetentId;
 }
 
 unsafe extern "C" {
