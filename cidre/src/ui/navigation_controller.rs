@@ -168,6 +168,10 @@ unsafe extern "C" {
 /// `UIViewController (UINavigationControllerItem)`: the items of the navigation
 /// controller's toolbar while this view controller is on top.
 impl ui::ViewController {
+    /// The nearest navigation controller this view controller is in.
+    #[objc::msg_send(navigationController)]
+    pub fn nav_ctrl(&self) -> Option<arc::R<ui::NavController>>;
+
     #[objc::msg_send(toolbarItems)]
     pub fn toolbar_items(&self) -> Option<arc::R<ns::Array<ui::BarButtonItem>>>;
 

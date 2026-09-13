@@ -56,6 +56,10 @@ impl SplitViewController {
     #[objc::available(ios = 14.0)]
     pub fn set_preferred_primary_column_width(&mut self, val: cg::Float);
 
+    /// The primary column's width as a fraction of the whole, 0 to 1.
+    #[objc::msg_send(setPreferredPrimaryColumnWidthFraction:)]
+    pub fn set_preferred_primary_column_width_fraction(&mut self, val: cg::Float);
+
     #[objc::msg_send(setMinimumPrimaryColumnWidth:)]
     pub fn set_min_primary_column_width(&mut self, val: cg::Float);
 

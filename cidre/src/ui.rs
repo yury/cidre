@@ -499,6 +499,7 @@ pub use sheet_presentation_controller::{
 };
 mod bar_button_item;
 pub use bar_button_item::BarButtonItem;
+pub use bar_button_item::Style as BarButtonItemStyle;
 mod navigation_item;
 pub use navigation_item::NavItem;
 

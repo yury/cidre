@@ -1,5 +1,18 @@
 use crate::{arc, cg, define_obj_type, ns, objc, ui};
 
+#[doc(alias = "UIBarButtonItemStyle")]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[repr(isize)]
+#[non_exhaustive]
+pub enum Style {
+    Plain = 0,
+
+    /// A prominent button, such as one that completes a task: not grouped with
+    /// the other items of its bar, and styled for its prominence.
+    #[doc(alias = "UIBarButtonItemStyleProminent")]
+    Prominent = 2,
+}
+
 define_obj_type!(
     #[doc(alias = "UIBarButtonItem")]
     pub BarButtonItem(ns::Id),
@@ -9,6 +22,25 @@ define_obj_type!(
 impl BarButtonItem {
     #[objc::init(initWithCustomView:)]
     pub fn init_with_custom_view(self, view: &ui::View) -> arc::R<BarButtonItem>;
+
+    /// `action` with no target is sent up the responder chain.
+    #[objc::init(initWithImage:style:target:action:)]
+    pub fn init_with_image_style_target_action(
+        self,
+        image: Option<&ui::Image>,
+        style: Style,
+        target: Option<&ns::Id>,
+        action: Option<&objc::Sel>,
+    ) -> arc::R<BarButtonItem>;
+
+    pub fn with_image_style_target_action(
+        image: Option<&ui::Image>,
+        style: Style,
+        target: Option<&ns::Id>,
+        action: Option<&objc::Sel>,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_image_style_target_action(image, style, target, action)
+    }
 
     pub fn with_custom_view(view: &ui::View) -> arc::R<Self> {
         Self::alloc().init_with_custom_view(view)
