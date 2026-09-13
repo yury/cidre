@@ -519,8 +519,8 @@ mod menu_element;
 pub use menu_element::MenuElement;
 
 mod key_command;
-pub use key_command::Command;
-pub use key_command::KeyCommand;
+pub use key_command::Cmd;
+pub use key_command::KeyCmd;
 
 mod action;
 pub use action::Action;

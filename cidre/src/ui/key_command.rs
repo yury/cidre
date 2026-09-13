@@ -3,11 +3,11 @@ use crate::{arc, define_obj_type, ns, objc, ui};
 define_obj_type!(
     /// A menu element that runs a selector.
     #[doc(alias = "UICommand")]
-    pub Command(ui::MenuElement),
+    pub Cmd(ui::MenuElement),
     UI_COMMAND
 );
 
-impl Command {
+impl Cmd {
     #[objc::msg_send(title)]
     pub fn title(&self) -> arc::R<ns::String>;
 
@@ -21,11 +21,11 @@ impl Command {
 define_obj_type!(
     /// A key press that sends `action` up the responder chain.
     #[doc(alias = "UIKeyCommand")]
-    pub KeyCommand(Command),
+    pub KeyCmd(Cmd),
     UI_KEY_COMMAND
 );
 
-impl KeyCommand {
+impl KeyCmd {
     /// A key command for `input` with `mod_flags`, sending `action` to the first responder that handles it.
     #[objc::msg_send(keyCommandWithInput:modifierFlags:action:)]
     pub fn with_input_mod_flags_action(
@@ -51,6 +51,6 @@ impl KeyCommand {
 }
 
 unsafe extern "C" {
-    static UI_COMMAND: &'static objc::Class<Command>;
-    static UI_KEY_COMMAND: &'static objc::Class<KeyCommand>;
+    static UI_COMMAND: &'static objc::Class<Cmd>;
+    static UI_KEY_COMMAND: &'static objc::Class<KeyCmd>;
 }
