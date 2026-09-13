@@ -42,6 +42,7 @@ impl ViewControllerTransition {
     /// Zooms from the bar button item the provider hands back to the presented
     /// or pushed view controller's view.
     #[objc::available(ios = 26.0)]
+    #[allow(unused_unsafe)]
     pub fn zoom_from_bar_button_item(
         options: Option<&ui::ZoomTransitionOpts>,
         src_provider: impl FnMut(
@@ -50,7 +51,7 @@ impl ViewControllerTransition {
         + 'static,
     ) -> arc::R<Self> {
         let mut block = blocks::EscBlock::new1(src_provider);
-        Self::zoom_from_bar_button_item_block(options, &mut block)
+        unsafe { Self::zoom_from_bar_button_item_block(options, &mut block) }
     }
 
     /// View slides up from the bottom of the screen. Same as `UIModalTransitionStyle.coverVertical`.
