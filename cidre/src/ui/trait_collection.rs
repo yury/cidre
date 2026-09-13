@@ -6,6 +6,10 @@ define_obj_type!(
 );
 
 impl TraitCollection {
+    /// A collection specifying only the horizontal size class, for overrides.
+    #[objc::msg_send(traitCollectionWithHorizontalSizeClass:)]
+    pub fn with_horizontal_size_class(val: ui::SizeClass) -> arc::R<Self>;
+
     #[objc::msg_send(userInterfaceIdiom)]
     pub fn ui_idiom(&self) -> ui::Idiom;
 

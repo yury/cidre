@@ -83,6 +83,14 @@ impl ViewController {
     #[objc::msg_send(traitCollection)]
     pub fn trait_collection(&self) -> arc::R<ui::TraitCollection>;
 
+    /// Traits `child` sees instead of the inherited ones; `None` clears them.
+    #[objc::msg_send(setOverrideTraitCollection:forChildViewController:)]
+    pub fn set_override_trait_collection_for_child_vc(
+        &mut self,
+        traits: Option<&ui::TraitCollection>,
+        child: &ui::ViewController,
+    );
+
     #[objc::msg_send(isBeingPresented)]
     pub fn is_being_presented(&self) -> bool;
 
