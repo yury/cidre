@@ -7,6 +7,19 @@ define_obj_type!(
 );
 
 impl ScrollView {
+    #[objc::init(initWithFrame:)]
+    pub fn init_with_frame(self, frame: cg::Rect) -> arc::R<ScrollView>;
+
+    pub fn with_frame(frame: cg::Rect) -> arc::R<Self> {
+        Self::alloc().init_with_frame(frame)
+    }
+
+    #[objc::msg_send(setShowsHorizontalScrollIndicator:)]
+    pub fn set_shows_horizontal_scroll_indicator(&mut self, val: bool);
+
+    #[objc::msg_send(setShowsVerticalScrollIndicator:)]
+    pub fn set_shows_vertical_scroll_indicator(&mut self, val: bool);
+
     #[objc::msg_send(contentSize)]
     pub fn content_size(&self) -> cg::Size;
 

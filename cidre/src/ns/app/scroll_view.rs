@@ -22,6 +22,25 @@ impl ScrollView {
     #[objc::msg_send(setDrawsBackground:)]
     pub fn set_draws_bg(&mut self, val: bool);
 
+    #[objc::msg_send(contentInsets)]
+    pub fn content_insets(&self) -> ns::EdgeInsets;
+
+    #[objc::msg_send(setContentInsets:)]
+    pub fn set_content_insets(&mut self, val: ns::EdgeInsets);
+
+    #[objc::msg_send(scrollerInsets)]
+    pub fn scroller_insets(&self) -> ns::EdgeInsets;
+
+    #[objc::msg_send(setScrollerInsets:)]
+    pub fn set_scroller_insets(&mut self, val: ns::EdgeInsets);
+
+    /// Whether the insets follow the window's title bar and toolbar. `true` by default.
+    #[objc::msg_send(automaticallyAdjustsContentInsets)]
+    pub fn automatically_adjusts_content_insets(&self) -> bool;
+
+    #[objc::msg_send(setAutomaticallyAdjustsContentInsets:)]
+    pub fn set_automatically_adjusts_content_insets(&mut self, val: bool);
+
     #[objc::msg_send(contentSize)]
     pub fn content_size(&self) -> cg::Size;
 }

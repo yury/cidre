@@ -11,8 +11,19 @@ impl ListContentCfg {
     #[objc::available(ios = 14.0)]
     pub fn cell() -> arc::R<Self>;
 
+    #[objc::msg_send(subtitleCellConfiguration)]
+    #[objc::available(ios = 14.0)]
+    pub fn subtitle_cell() -> arc::R<Self>;
+
+    #[objc::msg_send(valueCellConfiguration)]
+    #[objc::available(ios = 14.0)]
+    pub fn value_cell() -> arc::R<Self>;
+
     #[objc::msg_send(setText:)]
     pub fn set_text(&mut self, val: Option<&ns::String>);
+
+    #[objc::msg_send(setSecondaryText:)]
+    pub fn set_secondary_text(&mut self, val: Option<&ns::String>);
 
     #[objc::msg_send(setImage:)]
     pub fn set_image(&mut self, val: Option<&ui::Image>);
