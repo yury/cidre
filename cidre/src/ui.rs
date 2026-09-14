@@ -518,6 +518,7 @@ pub use scroll_view::ScrollView;
 
 mod menu_element;
 pub use menu_element::MenuElement;
+pub use menu_element::MenuElementState;
 
 mod key_command;
 pub use key_command::Cmd;

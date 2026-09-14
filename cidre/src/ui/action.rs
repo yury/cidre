@@ -15,6 +15,14 @@ impl Action {
         id: Option<&ns::String>,
         handler: &mut blocks::EscBlock<fn(&Action)>,
     ) -> arc::R<Self>;
+
+    #[objc::msg_send(state)]
+    #[objc::available(ios = 13.0)]
+    pub fn state(&self) -> ui::MenuElementState;
+
+    #[objc::msg_send(setState:)]
+    #[objc::available(ios = 13.0)]
+    pub fn set_state(&mut self, val: ui::MenuElementState);
 }
 
 unsafe extern "C" {

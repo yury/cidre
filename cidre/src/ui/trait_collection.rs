@@ -31,6 +31,12 @@ impl TraitCollection {
     #[objc::msg_send(displayGamut)]
     pub fn display_gamut(&self) -> ui::DisplayGamut;
 
+    /// Whether the collection is from a view in a tab accessory, and how the
+    /// accessory is laid out.
+    #[objc::msg_send(tabAccessoryEnvironment)]
+    #[objc::available(ios = 26.0)]
+    pub fn tab_accessory_env(&self) -> ui::TabAccessoryEnv;
+
     // pub fn scene_capture_state(&self) -> ui::SceneCa
 }
 

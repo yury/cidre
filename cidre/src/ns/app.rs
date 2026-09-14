@@ -18,6 +18,9 @@ pub use button_cell::ButtonType;
 mod button;
 pub use button::Button;
 
+mod pop_up_button;
+pub use pop_up_button::PopUpButton;
+
 mod cell;
 pub use cell::BackgroundStyle;
 pub use cell::Cell;

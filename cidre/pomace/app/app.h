@@ -38,6 +38,7 @@ Class NS_TOOLBAR_ITEM;
 Class NS_MENU_TOOLBAR_ITEM;
 Class NS_TOOLBAR_ITEM_GROUP;
 Class NS_BUTTON;
+Class NS_POP_UP_BUTTON;
 Class NS_TEXT_FIELD;
 Class NS_TABLE_VIEW;
 Class NS_TABLE_CELL_VIEW;
@@ -116,6 +117,7 @@ static void app_initializer(void)
         NS_MENU_TOOLBAR_ITEM = [NSMenuToolbarItem class];
         NS_TOOLBAR_ITEM_GROUP = [NSToolbarItemGroup class];
         NS_BUTTON = [NSButton class];
+        NS_POP_UP_BUTTON = [NSPopUpButton class];
         NS_TEXT_FIELD = [NSTextField class];
         NS_TABLE_VIEW = [NSTableView class];
         NS_TABLE_CELL_VIEW = [NSTableCellView class];

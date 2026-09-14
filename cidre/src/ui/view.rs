@@ -185,6 +185,12 @@ impl View {
     #[objc::msg_send(sizeThatFits:)]
     pub fn size_that_fits(&self, size: cg::Size) -> cg::Size;
 
+    #[objc::msg_send(intrinsicContentSize)]
+    pub fn intrinsic_content_size(&self) -> cg::Size;
+
+    #[objc::msg_send(invalidateIntrinsicContentSize)]
+    pub fn invalidate_intrinsic_content_size(&mut self);
+
     #[objc::msg_send(sizeToFit)]
     pub fn size_to_fit(&mut self);
 }
