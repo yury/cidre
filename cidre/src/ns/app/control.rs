@@ -155,9 +155,9 @@ impl Control {
         self.set_ns_font(val.map(|f| f.as_ref()));
     }
 
-    // #[objc::msg_send(lineBreakMode)]
-    // pub fn line_break_mode(&self) -> ns::LineBreakMode;
+    #[objc::msg_send(lineBreakMode)]
+    pub fn line_break_mode(&self) -> ns::LineBreakMode;
 
-    // #[objc::msg_send(setLineBreakMode:)]
-    // pub fn set_line_break_mode(&mut self, val: ns::LineBreakMode);
+    #[objc::msg_send(setLineBreakMode:)]
+    pub fn set_line_break_mode(&mut self, val: ns::LineBreakMode);
 }

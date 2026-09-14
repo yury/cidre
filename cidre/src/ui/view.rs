@@ -200,6 +200,10 @@ impl View {
     #[objc::msg_send(window)]
     pub fn window(&self) -> Option<arc::R<ui::Window>>;
 
+    /// UITraitEnvironment
+    #[objc::msg_send(traitCollection)]
+    pub fn trait_collection(&self) -> arc::R<ui::TraitCollection>;
+
     #[objc::msg_send(removeFromSuperview)]
     pub fn remove_from_superview(&self);
 
