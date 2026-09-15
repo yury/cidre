@@ -1,5 +1,13 @@
 use crate::{arc, define_obj_type, ns, objc};
 
+/// Lets a menu item's target say whether the item is enabled, and set its
+/// state, title or image on the way.
+#[objc::protocol(NSMenuItemValidation)]
+pub trait MenuItemValidation: objc::Obj {
+    #[objc::msg_send(validateMenuItem:)]
+    fn validate_menu_item(&mut self, item: &mut ns::MenuItem) -> bool;
+}
+
 define_obj_type!(
     #[doc(alias = "NSMenu")]
     pub Menu(ns::Id),

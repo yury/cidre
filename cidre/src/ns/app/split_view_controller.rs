@@ -22,7 +22,7 @@ impl SplitViewController {
     pub fn insert_split_view_item_at(&mut self, val: &ns::SplitViewItem, index: isize);
 
     #[objc::msg_send(removeSplitViewItem:)]
-    pub fn remove_split_view_item(&mut self, val: &ns::SplitView);
+    pub fn remove_split_view_item(&mut self, val: &ns::SplitViewItem);
 
     #[objc::msg_send(splitViewItemForViewController:)]
     pub fn split_view_item_for_vc(

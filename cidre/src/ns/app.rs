@@ -141,6 +141,8 @@ pub use layout_guide::LayoutGuide;
 
 mod menu;
 pub use menu::Menu;
+pub use menu::MenuItemValidation;
+pub use menu::MenuItemValidationImpl;
 
 mod menu_item;
 pub use menu_item::MenuItem;
