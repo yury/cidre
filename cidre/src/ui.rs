@@ -487,8 +487,9 @@ pub use button_configuration::{
 mod split_view_controller;
 pub use split_view_controller::{
     BackgroundStyle as SplitViewControllerBackgroundStyle, Column as SplitViewControllerColumn,
-    DisplayMode as SplitViewControllerDisplayMode, SplitViewController,
-    Style as SplitViewControllerStyle,
+    DisplayMode as SplitViewControllerDisplayMode,
+    DisplayModeButtonVisibility as SplitViewControllerDisplayModeButtonVisibility,
+    SplitViewController, Style as SplitViewControllerStyle,
 };
 mod presentation_controller;
 pub use presentation_controller::PresentationController;

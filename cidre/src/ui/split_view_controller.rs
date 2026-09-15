@@ -13,6 +13,14 @@ impl SplitViewController {
     #[objc::msg_send(setPresentsWithGesture:)]
     pub fn set_presents_with_gesture(&mut self, val: bool);
 
+    #[objc::msg_send(displayModeButtonVisibility)]
+    #[objc::available(ios = 14.5)]
+    pub fn display_mode_button_visibility(&self) -> DisplayModeButtonVisibility;
+
+    #[objc::msg_send(setDisplayModeButtonVisibility:)]
+    #[objc::available(ios = 14.5)]
+    pub fn set_display_mode_button_visibility(&mut self, val: DisplayModeButtonVisibility);
+
     #[objc::init(initWithStyle:)]
     #[objc::available(ios = 14.0)]
     pub fn init_with_style(self, style: Style) -> arc::R<SplitViewController>;
@@ -121,6 +129,15 @@ pub enum Column {
 pub enum BackgroundStyle {
     None,
     Sidebar,
+}
+
+#[doc(alias = "UISplitViewControllerDisplayModeButtonVisibility")]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[repr(isize)]
+pub enum DisplayModeButtonVisibility {
+    Automatic,
+    Never,
+    Always,
 }
 
 #[doc(alias = "UISplitViewControllerDisplayMode")]
