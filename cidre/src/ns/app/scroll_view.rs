@@ -10,6 +10,17 @@ impl ScrollView {
     #[objc::msg_send(setDocumentView:)]
     pub fn set_document_view(&mut self, view: Option<&ns::View>);
 
+    /// The clip view, whose bounds are the scroll position.
+    #[objc::msg_send(contentView)]
+    pub fn content_view(&self) -> arc::R<ns::View>;
+
+    /// The part of the document on show, in the document's coordinates.
+    #[objc::msg_send(documentVisibleRect)]
+    pub fn document_visible_rect(&self) -> ns::Rect;
+
+    #[objc::msg_send(setHasHorizontalScroller:)]
+    pub fn set_has_horizontal_scroller(&mut self, val: bool);
+
     #[objc::msg_send(documentView)]
     pub fn document_view(&self) -> Option<arc::R<ns::View>>;
 

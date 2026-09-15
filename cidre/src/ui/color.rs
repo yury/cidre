@@ -105,6 +105,9 @@ impl Color {
     #[objc::msg_send(CGColor)]
     pub fn cg_color(&self) -> Option<&crate::cg::Color>;
 
+    #[objc::msg_send(colorWithAlphaComponent:)]
+    pub fn with_alpha_component(&self, alpha: cg::Float) -> arc::R<Self>;
+
     /// A color that resolves through `provider` for the trait collection it is drawn in.
     #[cfg(feature = "blocks")]
     #[objc::msg_send(colorWithDynamicProvider:)]

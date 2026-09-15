@@ -95,6 +95,14 @@ Class UI_NAVIGATION_ITEM;
 Class UI_LIST_CONTENT_CONFIGURATION;
 
 Class UI_COLLECTION_VIEW_COMPOSITIONAL_LAYOUT;
+Class UI_COLLECTION_VIEW_SUPPLEMENTARY_REGISTRATION;
+Class UI_COLLECTION_REUSABLE_VIEW;
+Class NS_COLLECTION_LAYOUT_DIMENSION;
+Class NS_COLLECTION_LAYOUT_SIZE;
+Class NS_COLLECTION_LAYOUT_ITEM;
+Class NS_COLLECTION_LAYOUT_GROUP;
+Class NS_COLLECTION_LAYOUT_BOUNDARY_SUPPLEMENTARY_ITEM;
+Class NS_COLLECTION_LAYOUT_SECTION;
 
 Class UI_COLLECTION_LAYOUT_LIST_CONFIGURATION;
 
@@ -106,6 +114,14 @@ static void ui_initializer(void)
         initialized = 1;
         UI_COLLECTION_LAYOUT_LIST_CONFIGURATION = NSClassFromString(@"UICollectionLayoutListConfiguration");
         UI_COLLECTION_VIEW_COMPOSITIONAL_LAYOUT = NSClassFromString(@"UICollectionViewCompositionalLayout");
+        UI_COLLECTION_VIEW_SUPPLEMENTARY_REGISTRATION = NSClassFromString(@"UICollectionViewSupplementaryRegistration");
+        UI_COLLECTION_REUSABLE_VIEW = NSClassFromString(@"UICollectionReusableView");
+        NS_COLLECTION_LAYOUT_DIMENSION = NSClassFromString(@"NSCollectionLayoutDimension");
+        NS_COLLECTION_LAYOUT_SIZE = NSClassFromString(@"NSCollectionLayoutSize");
+        NS_COLLECTION_LAYOUT_ITEM = NSClassFromString(@"NSCollectionLayoutItem");
+        NS_COLLECTION_LAYOUT_GROUP = NSClassFromString(@"NSCollectionLayoutGroup");
+        NS_COLLECTION_LAYOUT_BOUNDARY_SUPPLEMENTARY_ITEM = NSClassFromString(@"NSCollectionLayoutBoundarySupplementaryItem");
+        NS_COLLECTION_LAYOUT_SECTION = NSClassFromString(@"NSCollectionLayoutSection");
         UI_LIST_CONTENT_CONFIGURATION = NSClassFromString(@"UIListContentConfiguration");
         UI_BUTTON_CONFIGURATION = NSClassFromString(@"UIButtonConfiguration");
         UI_SPLIT_VIEW_CONTROLLER = NSClassFromString(@"UISplitViewController");

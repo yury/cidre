@@ -40,6 +40,18 @@ impl ControlState {
     pub const FOCUSED: Self = Self(1 << 3);
 }
 
+#[doc(alias = "UIControlContentHorizontalAlignment")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum ControlContentHorizontalAlignment {
+    Center = 0,
+    Left = 1,
+    Right = 2,
+    Fill = 3,
+    Leading = 4,
+    Trailing = 5,
+}
+
 define_obj_type!(
     #[doc(alias = "UIControl")]
     pub Control(ui::View),
@@ -47,6 +59,12 @@ define_obj_type!(
 );
 
 impl Control {
+    #[objc::msg_send(contentHorizontalAlignment)]
+    pub fn content_horizontal_alignment(&self) -> ControlContentHorizontalAlignment;
+
+    #[objc::msg_send(setContentHorizontalAlignment:)]
+    pub fn set_content_horizontal_alignment(&mut self, val: ControlContentHorizontalAlignment);
+
     #[objc::msg_send(setShowsMenuAsPrimaryAction:)]
     #[objc::available(ios = 14.0)]
     pub fn set_shows_menu_as_primary_action(&mut self, value: bool);

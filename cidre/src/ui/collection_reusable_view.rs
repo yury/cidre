@@ -2,7 +2,8 @@ use crate::{arc, define_obj_type, ns, objc, ui};
 
 define_obj_type!(
     #[doc(alias = "UICollectionReusableView")]
-    pub CollectionReusableView(ui::View)
+    pub CollectionReusableView(ui::View),
+    UI_COLLECTION_REUSABLE_VIEW
 );
 
 impl CollectionReusableView {
@@ -34,4 +35,8 @@ impl CollectionReusableView {
         &self,
         layout_attributes: &ui::CollectionViewLayoutAttrs,
     ) -> arc::R<ui::CollectionViewLayoutAttrs>;
+}
+
+unsafe extern "C" {
+    static UI_COLLECTION_REUSABLE_VIEW: &'static objc::Class<CollectionReusableView>;
 }

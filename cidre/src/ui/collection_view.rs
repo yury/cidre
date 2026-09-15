@@ -906,6 +906,20 @@ impl CollectionView {
     #[objc::msg_send(reloadData)]
     pub fn reload_data(&self);
 
+    /// `UIScrollView`: whether the content scrolls; sections scrolling the
+    /// other way still do.
+    #[objc::msg_send(isScrollEnabled)]
+    pub fn is_scroll_enabled(&self) -> bool;
+
+    #[objc::msg_send(setScrollEnabled:)]
+    pub fn set_scroll_enabled(&mut self, val: bool);
+
+    #[objc::msg_send(setContentInsetAdjustmentBehavior:)]
+    pub fn set_content_inset_adjustment_behavior(
+        &mut self,
+        val: ui::ScrollViewContentInsetAdjustmentBehavior,
+    );
+
     #[objc::msg_send(setCollectionViewLayout:animated:)]
     pub fn set_collection_view_layout_animated(
         &mut self,

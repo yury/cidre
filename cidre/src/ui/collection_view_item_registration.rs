@@ -38,12 +38,52 @@ impl CollectionViewCellRegistration {
     }
 }
 
+/// Configures a dequeued supplementary view for an element kind and index path.
+#[cfg(feature = "blocks")]
+pub type CollectionViewSupplementaryRegistrationCfgHandler = blocks::EscBlock<
+    fn(view: &mut ui::CollectionReusableView, element_kind: &ns::String, index_path: &ns::IndexPath),
+>;
+
 define_obj_type!(
     #[doc(alias = "UICollectionViewSupplementaryRegistration")]
     pub CollectionViewSupplementaryRegistration(ns::Id)
 );
 
+impl CollectionViewSupplementaryRegistration {
+    define_cls!(UI_COLLECTION_VIEW_SUPPLEMENTARY_REGISTRATION);
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(registrationWithSupplementaryClass:elementKind:configurationHandler:)]
+    #[objc::available(ios = 14.0, tvos = 14.0)]
+    pub fn with_supplementary_class_element_kind_cfg_handler_block(
+        supplementary_class: &objc::Class<ns::Id>,
+        element_kind: &ns::String,
+        handler: &mut CollectionViewSupplementaryRegistrationCfgHandler,
+    ) -> arc::R<Self>;
+
+    /// A registration for supplementary views of `class` for `element_kind`,
+    /// configured by `handler` when dequeued.
+    #[cfg(feature = "blocks")]
+    #[objc::available(ios = 14.0, tvos = 14.0)]
+    pub fn with_supplementary_class_element_kind_cfg_handler<C: objc::Obj>(
+        supplementary_class: &objc::Class<C>,
+        element_kind: &ns::String,
+        handler: impl FnMut(&mut ui::CollectionReusableView, &ns::String, &ns::IndexPath) + 'static,
+    ) -> arc::R<Self> {
+        let supplementary_class: &objc::Class<ns::Id> =
+            unsafe { std::mem::transmute(supplementary_class) };
+        let mut handler = CollectionViewSupplementaryRegistrationCfgHandler::new3(handler);
+        Self::with_supplementary_class_element_kind_cfg_handler_block(
+            supplementary_class,
+            element_kind,
+            &mut handler,
+        )
+    }
+}
+
 unsafe extern "C" {
     static UI_COLLECTION_VIEW_CELL_REGISTRATION:
         &'static objc::Class<CollectionViewCellRegistration>;
+    static UI_COLLECTION_VIEW_SUPPLEMENTARY_REGISTRATION:
+        &'static objc::Class<CollectionViewSupplementaryRegistration>;
 }

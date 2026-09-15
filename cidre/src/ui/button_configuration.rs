@@ -24,6 +24,10 @@ impl ButtonCfg {
     pub fn glass() -> arc::R<Self>;
 
     #[objc::available(ios = 15.0)]
+    #[objc::msg_send(grayButtonConfiguration)]
+    pub fn gray() -> arc::R<Self>;
+
+    #[objc::available(ios = 15.0)]
     #[objc::msg_send(setTitle:)]
     pub fn set_title(&mut self, val: Option<&ns::String>);
 
@@ -38,6 +42,18 @@ impl ButtonCfg {
     #[objc::available(ios = 15.0)]
     #[objc::msg_send(setImagePadding:)]
     pub fn set_image_padding(&mut self, val: cg::Float);
+
+    #[objc::available(ios = 15.0)]
+    #[objc::msg_send(setTitleLineBreakMode:)]
+    pub fn set_title_line_break_mode(&mut self, val: ui::LineBreakMode);
+
+    #[objc::available(ios = 15.0)]
+    #[objc::msg_send(contentInsets)]
+    pub fn content_insets(&self) -> ui::DirectionalEdgeInsets;
+
+    #[objc::available(ios = 15.0)]
+    #[objc::msg_send(setContentInsets:)]
+    pub fn set_content_insets(&mut self, val: ui::DirectionalEdgeInsets);
 
     #[objc::available(ios = 15.0)]
     #[objc::msg_send(setBaseForegroundColor:)]

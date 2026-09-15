@@ -86,6 +86,12 @@ impl View {
 
     #[objc::msg_send(setHidden:)]
     pub fn set_hidden(&self, val: bool);
+
+    #[objc::msg_send(isUserInteractionEnabled)]
+    pub fn is_user_interaction_enabled(&self) -> bool;
+
+    #[objc::msg_send(setUserInteractionEnabled:)]
+    pub fn set_user_interaction_enabled(&mut self, val: bool);
 }
 
 /// UIViewGeometry

@@ -19,6 +19,9 @@ pub use device::notifications as device_notifications;
 mod font;
 pub use font::Font;
 
+mod paragraph_style;
+pub use paragraph_style::LineBreakMode;
+
 mod font_descriptor;
 pub use font_descriptor::FontDesc;
 pub use font_descriptor::FontDescClass;
@@ -28,6 +31,7 @@ pub use font_descriptor::FontWidth;
 pub use font_descriptor::TextStyle;
 
 mod geometry;
+pub use geometry::DirectionalEdgeInsets;
 pub use geometry::EdgeInsets;
 pub use geometry::Offset;
 
@@ -59,6 +63,7 @@ pub use label::Label;
 
 mod control;
 pub use control::Control;
+pub use control::ControlContentHorizontalAlignment;
 pub use control::ControlEvents;
 pub use control::ControlState;
 
@@ -231,6 +236,8 @@ pub use collection_view_item_registration::CollectionViewCellRegistration;
 #[cfg(feature = "blocks")]
 pub use collection_view_item_registration::CollectionViewCellRegistrationCfgHandler;
 pub use collection_view_item_registration::CollectionViewSupplementaryRegistration;
+#[cfg(feature = "blocks")]
+pub use collection_view_item_registration::CollectionViewSupplementaryRegistrationCfgHandler;
 
 mod collection_view_layout;
 pub use collection_view_layout::CollectionViewLayout;
@@ -507,7 +514,15 @@ pub use navigation_item::NavItem;
 mod list_content_configuration;
 pub use list_content_configuration::ListContentCfg;
 mod collection_view_compositional_layout;
+pub use collection_view_compositional_layout::CollectionLayoutBoundarySupplementaryItem;
+pub use collection_view_compositional_layout::CollectionLayoutDimension;
+pub use collection_view_compositional_layout::CollectionLayoutGroup;
+pub use collection_view_compositional_layout::CollectionLayoutItem;
+pub use collection_view_compositional_layout::CollectionLayoutSection;
+pub use collection_view_compositional_layout::CollectionLayoutSectionOrthogonalScrollingBehavior;
+pub use collection_view_compositional_layout::CollectionLayoutSize;
 pub use collection_view_compositional_layout::CollectionViewCompositionalLayout;
+pub use collection_view_compositional_layout::RectAlignment;
 mod collection_layout_list;
 pub use collection_layout_list::{
     Appearance as CollectionLayoutListAppearance, CollectionLayoutListCfg,
@@ -515,6 +530,9 @@ pub use collection_layout_list::{
 
 mod scroll_view;
 pub use scroll_view::ContentInsetAdjustmentBehavior as ScrollViewContentInsetAdjustmentBehavior;
+pub use scroll_view::AnyScrollViewDelegate;
+pub use scroll_view::ScrollViewDelegate;
+pub use scroll_view::ScrollViewDelegateImpl;
 pub use scroll_view::ScrollView;
 
 mod menu_element;
