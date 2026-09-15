@@ -1,13 +1,9 @@
 use std::marker::PhantomData;
 
-use crate::{
-    api, arc, define_cls,
-    ns::{self, Copying},
-    objc,
-};
+use crate::{api, arc, define_cls, ns, objc};
 
 #[doc(alias = "NSDiffableDataSourceSnapshot")]
-#[repr(transparent)]
+#[repr(C)]
 pub struct DiffableDataSrcSnapshot<S, I>(ns::Id, PhantomData<S>, PhantomData<I>);
 
 unsafe impl<S, I> Send for DiffableDataSrcSnapshot<S, I>
@@ -258,12 +254,6 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     #[inline]
     pub fn reload_sections<'ear>(&mut self, sections: &ns::Array<S>) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.reload_sections_throws(sections) })
-    }
-}
-
-impl<S: objc::Obj, I: objc::Obj> Clone for DiffableDataSrcSnapshot<S, I> {
-    fn clone(&self) -> Self {
-        unsafe { std::mem::transmute(self.copy_with_zone(std::ptr::null_mut())) }
     }
 }
 

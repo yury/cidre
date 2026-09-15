@@ -1,12 +1,30 @@
-use std::{ffi::c_void, ptr::NonNull};
+use std::{
+    cell::UnsafeCell,
+    ffi::c_void,
+    marker::{PhantomData, PhantomPinned},
+    ptr::NonNull,
+};
 
 use super::TypeId;
 
 use crate::{arc, cf};
 
-// #[derive(Debug)]
-#[repr(transparent)]
-pub struct Type(NonNull<c_void>);
+/// Opaque Core Foundation object.
+///
+/// `&Type` *is* the object pointer, so this struct is deliberately zero-sized
+/// and 1-aligned: it must not claim any bytes (`dereferenceable`) or alignment
+/// for the pointee, otherwise references to tagged pointers would be UB.
+///
+/// The `UnsafeCell` field makes the type `!Freeze`, so `&Type` is not lowered
+/// as `readonly` and the runtime may mutate the object (refcounts, caches)
+/// behind a shared reference.
+///
+/// `!Send`, `!Sync` and `!Unpin` like the `NonNull` it replaced.
+#[repr(C)]
+pub struct Type {
+    _priv: [u8; 0],
+    _marker: UnsafeCell<PhantomData<(*const c_void, PhantomPinned)>>,
+}
 
 impl Type {
     #[inline]
@@ -69,7 +87,9 @@ macro_rules! define_cf_type {
     ) => {
         $(#[$outer])*
         #[derive(Debug)]
-        #[repr(transparent)]
+        // `repr(C)`, not `repr(transparent)`: the base is zero-sized, and the
+        // `improper_ctypes` lint rejects transparent wrappers over ZSTs.
+        #[repr(C)]
         pub struct $NewType($BaseType);
 
         impl std::ops::Deref for $NewType {
@@ -141,4 +161,17 @@ unsafe extern "C-unwind" {
     fn CFRetain(cf: &Type) -> arc::R<Type>;
     fn CFRelease(cf: *const Type);
     fn CFGetTypeID(cf: &Type) -> TypeId;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Type;
+
+    #[test]
+    fn opaque_layout() {
+        // `&Type` is the object pointer itself; the struct must claim no bytes
+        // and no alignment so tagged pointers are valid references.
+        assert_eq!(std::mem::size_of::<Type>(), 0);
+        assert_eq!(std::mem::align_of::<Type>(), 1);
+    }
 }

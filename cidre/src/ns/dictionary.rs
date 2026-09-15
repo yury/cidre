@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use crate::{arc, define_cls, ns, objc, objc::Obj};
 
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct Dictionary<K: Obj, V: Obj>(ns::Id, PhantomData<(K, V)>);
 
 impl<K: Obj, V: Obj> Obj for Dictionary<K, V> {}
@@ -69,7 +69,7 @@ impl<K: Obj, V: Obj> std::ops::Index<&K> for Dictionary<K, V> {
 }
 
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct DictionaryMut<K: Obj, V: Obj>(Dictionary<K, V>);
 
 impl<K: Obj, V: Obj> Obj for DictionaryMut<K, V> {}

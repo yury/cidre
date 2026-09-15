@@ -16,7 +16,7 @@ impl Output {
     #[objc::msg_send(connectionWithMediaType:)]
     pub fn connection_with_media_type(
         &self,
-        media_type: av::MediaType,
+        media_type: &av::MediaType,
     ) -> Option<arc::R<av::CaptureConnection>>;
 
     #[cfg(not(target_os = "visionos"))]

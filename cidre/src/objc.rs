@@ -4,24 +4,29 @@
     not(feature = "classic-objc-retain-release")
 ))]
 use std::arch::asm;
-use std::{borrow::Cow, ffi::c_void, marker::PhantomData, ptr::NonNull};
+use std::{
+    borrow::Cow,
+    ffi::c_void,
+    marker::{PhantomData, PhantomPinned},
+    ptr::NonNull,
+};
 
 use crate::{arc, cf::Type, objc};
 
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct Class<T: Obj>(Type, PhantomData<T>);
 
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct Protocol(Type);
 
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct Ivar(Type);
 
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct Method(Type);
 
 impl<T: Obj> Class<T> {
@@ -126,7 +131,7 @@ impl Method {
 }
 
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct ClassInstExtra<T: Obj, I: Sized>(Class<T>, PhantomData<I>);
 
 impl<T: Obj, I: Sized> std::ops::Deref for ClassInstExtra<T, I> {
@@ -246,7 +251,7 @@ impl<T: Obj, I: Sized + Default> ClassInstExtra<T, I> {
 /// The Rust payload `I` is stored in a real instance variable (see [`InnerSlot`]),
 /// so it is valid for any superclass and any allocation path.
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct ClassInstIvar<T: Obj, I: Sized>(Class<T>, PhantomData<I>);
 
 impl<T: Obj, I: Sized> std::ops::Deref for ClassInstIvar<T, I> {
@@ -595,7 +600,7 @@ pub trait Obj: Sized + arc::Retain {
 }
 
 /// Use it as NSObject or id
-#[repr(transparent)]
+#[repr(C)]
 pub struct Id(Type);
 
 unsafe impl Send for Id {}
@@ -648,9 +653,17 @@ impl std::fmt::Debug for Id {
     }
 }
 
+/// Opaque Objective-C selector.
+///
+/// `&Sel` *is* the `SEL`, which points into the runtime's packed selector
+/// string table. The struct is zero-sized and 1-aligned so a reference does
+/// not claim alignment or bytes the runtime does not guarantee.
 #[derive(Debug)]
-#[repr(transparent)]
-pub struct Sel(NonNull<c_void>);
+#[repr(C)]
+pub struct Sel {
+    _priv: [u8; 0],
+    _marker: PhantomData<(*const c_void, PhantomPinned)>,
+}
 
 pub mod autorelease_pool;
 pub mod ns;
@@ -1329,7 +1342,9 @@ macro_rules! define_obj_type {
     ) => {
         $(#[$outer])*
         #[derive(Debug, PartialEq)]
-        #[repr(transparent)]
+        // `repr(C)`, not `repr(transparent)`: the base is zero-sized, and the
+        // `improper_ctypes` lint rejects transparent wrappers over ZSTs.
+        #[repr(C)]
         $vis struct $NewType($BaseType);
 
         impl $crate::objc::Obj for $NewType {}

@@ -10,7 +10,7 @@ use crate::{
 use crate::cf;
 
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct Set<T: Obj>(ns::Id, PhantomData<T>);
 
 impl<T: Obj> Obj for Set<T> {}
@@ -19,7 +19,7 @@ impl<T: Obj> ns::Copying for Set<T> {}
 impl<T: Obj> ns::CopyingMut for Set<T> {}
 
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct SetMut<T: Obj>(ns::Set<T>);
 
 impl<T: Obj> Obj for SetMut<T> {}

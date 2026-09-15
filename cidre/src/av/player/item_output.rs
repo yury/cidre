@@ -41,13 +41,13 @@ impl ItemVideoOutput {
     #[objc::init(initWithPixelBufferAttributes:)]
     pub fn init_with_pixel_buf_attrs(
         self,
-        pixel_buf_attrs: Option<ns::Dictionary<ns::String, ns::Id>>,
+        pixel_buf_attrs: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<ItemVideoOutput>;
 
     #[objc::init(initWithOutputSettings:)]
     pub fn init_with_output_settings(
         self,
-        output_settings: Option<ns::Dictionary<ns::String, ns::Id>>,
+        output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<ItemVideoOutput>;
 
     define_cls!(AV_PLAYER_ITEM_VIDEO_OUTPUT);
@@ -57,13 +57,13 @@ impl ItemVideoOutput {
     }
 
     pub fn with_pixel_buf_attrs(
-        pixel_buf_attrs: Option<ns::Dictionary<ns::String, ns::Id>>,
+        pixel_buf_attrs: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<ItemVideoOutput> {
         Self::alloc().init_with_pixel_buf_attrs(pixel_buf_attrs)
     }
 
     pub fn with_output_settings(
-        output_settings: Option<ns::Dictionary<ns::String, ns::Id>>,
+        output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<ItemVideoOutput> {
         Self::alloc().init_with_output_settings(output_settings)
     }

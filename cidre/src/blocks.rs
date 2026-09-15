@@ -41,7 +41,7 @@ pub type ErrCh<E = ns::Error> = EscBlock<fn(error: Option<&E>)>;
 pub type ResultCh<T> = EscBlock<fn(Option<&T>, Option<&ns::Error>)>;
 
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct Block<Sig, Attr = NoEsc>(ns::Id, PhantomData<(Sig, Attr)>);
 
 #[derive(Debug)]

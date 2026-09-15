@@ -33,7 +33,7 @@ define_cf_type!(
 );
 
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct ArrayOf<T>(Array, PhantomData<T>);
 
 impl<T> ArrayOf<T> {
@@ -188,7 +188,7 @@ where
     }
 }
 
-#[repr(transparent)]
+#[repr(C)]
 pub struct ArrayOfMut<T>(ArrayMut, PhantomData<T>);
 
 impl<T: Retain> ArrayOfMut<T> {

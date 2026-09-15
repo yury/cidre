@@ -14,7 +14,7 @@ use crate::{arc, define_cls, ns, objc};
 /// common operations like iteration and bounds-checked access via `get`.
 #[doc(alias = "NSArray")]
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct Array<T: objc::Obj>(ns::Id, PhantomData<T>);
 
 unsafe impl<T: objc::Obj> Send for Array<T> where T: Send {}
@@ -27,7 +27,7 @@ impl<T: objc::Obj> objc::Obj for Array<T> where T: objc::Obj {}
 /// an immutable `Array<T>` when needed.
 #[doc(alias = "NSMutableArray")]
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct ArrayMut<T: objc::Obj>(ns::Array<T>);
 
 impl<T: objc::Obj> objc::Obj for ArrayMut<T> {}

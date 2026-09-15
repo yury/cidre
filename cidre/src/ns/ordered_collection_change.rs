@@ -4,7 +4,7 @@ use crate::{arc, define_cls, ns, objc};
 
 #[doc(alias = "NSOrderedCollectionChange")]
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct OrderedCollectionChange<T: objc::Obj>(ns::Id, PhantomData<T>);
 
 unsafe impl<T> Send for OrderedCollectionChange<T> where T: objc::Obj + Send {}

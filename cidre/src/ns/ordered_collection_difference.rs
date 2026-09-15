@@ -23,7 +23,7 @@ impl OrderedCollectionDiffCalcOpts {
 }
 
 #[doc(alias = "NSOrderedCollectionDifference")]
-#[repr(transparent)]
+#[repr(C)]
 pub struct OrderedCollectionDiff<T: objc::Obj>(ns::Id, PhantomData<T>);
 
 unsafe impl<T> Send for OrderedCollectionDiff<T> where T: objc::Obj + Send {}

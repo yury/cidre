@@ -62,9 +62,9 @@ impl Boolean {
     }
 }
 
-impl From<Boolean> for bool {
+impl From<&Boolean> for bool {
     #[inline]
-    fn from(cf: Boolean) -> Self {
+    fn from(cf: &Boolean) -> Self {
         cf.value()
     }
 }

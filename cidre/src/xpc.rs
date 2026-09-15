@@ -1159,8 +1159,10 @@ mod tests {
         // object, and the same tagged value comes back out of a dictionary.
         // Nothing may dereference it.
         let boxed = xpc::I64::with_value(1);
+        // Object types are zero-sized and 1-aligned on purpose, so probe
+        // against pointer alignment rather than `align_of::<xpc::I64>()`.
         let ptr = &*boxed as *const xpc::I64 as usize;
-        assert_ne!(ptr % align_of::<xpc::I64>(), 0, "expected a tagged pointer");
+        assert_ne!(ptr % align_of::<usize>(), 0, "expected a tagged pointer");
 
         let mut dict = xpc::Dictionary::new();
         dict.set_i64(c"a", 1);
@@ -1172,7 +1174,7 @@ mod tests {
         // Allocated types are ordinary pointers.
         let str = xpc::String::with_cstr(c"hello");
         assert_eq!(
-            &*str as *const xpc::String as usize % align_of::<xpc::String>(),
+            &*str as *const xpc::String as usize % align_of::<usize>(),
             0
         );
     }

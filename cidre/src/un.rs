@@ -67,7 +67,7 @@ impl ns::String {
     #[objc::msg_send(localizedUserNotificationStringForKey:arguments:)]
     pub fn localized_user_notification_string_for_key(
         key: &ns::String,
-        args: ns::Array<ns::Id>,
+        args: &ns::Array<ns::Id>,
     ) -> arc::R<ns::String>;
 }
 

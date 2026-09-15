@@ -19,7 +19,7 @@ impl TensorParameter {
     #[objc::msg_send(parameterWithTensor:optimizerData:)]
     pub fn with_tensor_optimizer_data(
         tensor: &mlc::Tensor,
-        optimizer_data: Option<ns::Array<mlc::TensorData>>,
+        optimizer_data: Option<&ns::Array<mlc::TensorData>>,
     ) -> arc::R<Self>;
 }
 

@@ -183,7 +183,7 @@ impl UserActivity {
 
     #[objc::msg_send(setPersistentIdentifier:)]
     #[objc::available(macos = 10.15, ios = 12.0, watchos = 5.0)]
-    pub fn set_persistent_id(&mut self, val: Option<UserActivityPersistentId>);
+    pub fn set_persistent_id(&mut self, val: Option<&UserActivityPersistentId>);
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(deleteSavedUserActivitiesWithPersistentIdentifiers:completionHandler:)]

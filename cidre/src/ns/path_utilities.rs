@@ -5,7 +5,7 @@ use crate::{
 
 impl ns::String {
     #[objc::msg_send(pathWithComponents:)]
-    pub fn path_with_components(components: ns::Array<ns::String>) -> arc::R<Self>;
+    pub fn path_with_components(components: &ns::Array<ns::String>) -> arc::R<Self>;
 
     #[objc::msg_send(pathComponents)]
     pub fn path_components(&self) -> arc::R<ns::Array<ns::String>>;

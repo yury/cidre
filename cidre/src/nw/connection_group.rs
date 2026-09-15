@@ -192,7 +192,7 @@ impl ConnectionGroup {
         &self,
         inbound_msg: &nw::ContentCtx,
         outbound_msg: &nw::ContentCtx,
-        content: Option<dispatch::Data>,
+        content: Option<&dispatch::Data>,
     ) {
         unsafe {
             nw_connection_group_reply(self, inbound_msg, outbound_msg, content);
@@ -307,7 +307,7 @@ unsafe extern "C" {
         group: &nw::ConnectionGroup,
         inbound_msg: &nw::ContentCtx,
         outbound_msg: &nw::ContentCtx,
-        content: Option<dispatch::Data>,
+        content: Option<&dispatch::Data>,
     );
     fn nw_connection_group_extract_connection(
         group: &mut nw::ConnectionGroup,

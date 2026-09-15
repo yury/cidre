@@ -20,7 +20,7 @@ pub type CollectionViewDiffableDataSrcSupplementaryViewProvider = blocks::EscBlo
 >;
 
 #[doc(alias = "NSDiffableDataSourceSectionTransaction")]
-#[repr(transparent)]
+#[repr(C)]
 pub struct DiffableDataSrcSectionTransaction<S, I>(ns::Id, PhantomData<S>, PhantomData<I>);
 
 impl<S: objc::Obj, I: objc::Obj> objc::Obj for DiffableDataSrcSectionTransaction<S, I> {}
@@ -40,7 +40,7 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSectionTransaction<S, I> {
 }
 
 #[doc(alias = "NSDiffableDataSourceTransaction")]
-#[repr(transparent)]
+#[repr(C)]
 pub struct DiffableDataSrcTransaction<S, I>(ns::Id, PhantomData<S>, PhantomData<I>);
 
 impl<S: objc::Obj, I: objc::Obj> objc::Obj for DiffableDataSrcTransaction<S, I> {}
@@ -62,7 +62,7 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcTransaction<S, I> {
 }
 
 #[doc(alias = "UICollectionViewDiffableDataSourceReorderingHandlers")]
-#[repr(transparent)]
+#[repr(C)]
 pub struct CollectionViewDiffableDataSrcReorderingHandlers<S, I>(
     ns::Id,
     PhantomData<S>,
@@ -152,7 +152,7 @@ impl<S: objc::Obj + 'static, I: objc::Obj + 'static>
 }
 
 #[doc(alias = "UICollectionViewDiffableDataSourceSectionSnapshotHandlers")]
-#[repr(transparent)]
+#[repr(C)]
 pub struct CollectionViewDiffableDataSrcSectionSnapshotHandlers<I>(ns::Id, PhantomData<I>);
 
 impl<I: objc::Obj> objc::Obj for CollectionViewDiffableDataSrcSectionSnapshotHandlers<I> {}
@@ -280,7 +280,7 @@ impl<I: objc::Obj + 'static> CollectionViewDiffableDataSrcSectionSnapshotHandler
 }
 
 #[doc(alias = "UICollectionViewDiffableDataSource")]
-#[repr(transparent)]
+#[repr(C)]
 pub struct CollectionViewDiffableDataSrc<S, I>(ns::Id, PhantomData<S>, PhantomData<I>);
 
 impl<S: objc::Obj, I: objc::Obj> objc::Obj for CollectionViewDiffableDataSrc<S, I> {}

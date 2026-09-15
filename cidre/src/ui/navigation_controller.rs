@@ -65,7 +65,7 @@ impl NavController {
 
     /// For use when presenting an action sheet.
     #[objc::msg_send(toolbar)]
-    pub fn toolbar(&self) -> ui::Toolbar;
+    pub fn toolbar(&self) -> arc::R<ui::Toolbar>;
 
     #[objc::msg_send(setToolbar:)]
     pub fn set_toolbar(&mut self, val: Option<&ui::Toolbar>);

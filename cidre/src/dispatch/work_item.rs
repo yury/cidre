@@ -1,4 +1,4 @@
-use std::{ffi::c_void, mem::transmute};
+use std::ffi::c_void;
 
 use crate::{arc, blocks, dispatch, objc};
 
@@ -9,7 +9,7 @@ use crate::{arc, blocks, dispatch, objc};
 /// dispatch queue or within a dispatch group. You can also use
 /// a work item as a dispatch::Source event, registration, or
 /// cancellation handler.
-#[repr(transparent)]
+#[repr(C)]
 pub struct WorkItem(dispatch::Block<blocks::Sync>);
 
 impl objc::Obj for WorkItem {
@@ -35,7 +35,7 @@ impl WorkItem {
         flags: dispatch::BlockFlags,
         qos_class: dispatch::QosClass,
         block: &dispatch::Block,
-    ) -> Self {
+    ) -> arc::R<Self> {
         Self::with_qos_priority(flags, qos_class, 0, block)
     }
 
@@ -45,15 +45,8 @@ impl WorkItem {
         qos_class: dispatch::QosClass,
         relative_priority: i32,
         block: &dispatch::Block,
-    ) -> Self {
-        unsafe {
-            transmute(dispatch_block_create_with_qos_class(
-                flags,
-                qos_class,
-                relative_priority,
-                block,
-            ))
-        }
+    ) -> arc::R<Self> {
+        unsafe { dispatch_block_create_with_qos_class(flags, qos_class, relative_priority, block) }
     }
 
     #[inline]
@@ -105,7 +98,7 @@ unsafe extern "C-unwind" {
         qos_class: dispatch::QosClass,
         relative_priority: i32,
         block: &dispatch::Block,
-    ) -> *mut c_void;
+    ) -> arc::R<WorkItem>;
     fn _Block_copy(block: *const c_void) -> *const c_void;
     fn _Block_release(block: *const c_void);
     fn dispatch_block_cancel(block: &WorkItem);

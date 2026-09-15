@@ -457,7 +457,7 @@ impl DictionaryMut {
 }
 
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct DictionaryOf<K, V>(Dictionary, marker::PhantomData<(K, V)>)
 where
     K: arc::Retain,
@@ -553,7 +553,7 @@ where
 }
 
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct DictionaryOfMut<K, V>(DictionaryMut, marker::PhantomData<(K, V)>);
 
 impl<K, V> std::ops::Deref for DictionaryOfMut<K, V>

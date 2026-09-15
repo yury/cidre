@@ -156,11 +156,11 @@ impl PlayerViewController {
     /// BCP47 language codes; None allows all languages
     #[objc::msg_send(allowedSubtitleOptionLanguages)]
     #[objc::available(tvos = 9.0)]
-    pub fn allowed_subtitle_option_langs(&self) -> Option<ns::Array<ns::String>>;
+    pub fn allowed_subtitle_option_langs(&self) -> Option<arc::R<ns::Array<ns::String>>>;
 
     #[objc::msg_send(setAllowedSubtitleOptionLanguages:)]
     #[objc::available(tvos = 9.0)]
-    pub fn set_allowed_subtitle_option_langs(&mut self, val: Option<ns::Array<ns::String>>);
+    pub fn set_allowed_subtitle_option_langs(&mut self, val: Option<&ns::Array<ns::String>>);
 
     #[objc::msg_send(requiresFullSubtitles)]
     #[objc::available(tvos = 9.0)]

@@ -232,13 +232,13 @@ impl Device {
     #[objc::msg_send(newLibraryWithStitchedDescriptor:error:)]
     pub unsafe fn new_lib_with_stitched_desc_err<'ear>(
         &self,
-        desc: mtl::FnStitchedLibDesc,
+        desc: &mtl::FnStitchedLibDesc,
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<mtl::Lib>>;
 
     pub fn new_lib_with_stitched_desc_blocking<'ear>(
         &self,
-        desc: mtl::FnStitchedLibDesc,
+        desc: &mtl::FnStitchedLibDesc,
     ) -> ns::Result<'ear, arc::R<mtl::Lib>> {
         ns::if_none(|err| unsafe { self.new_lib_with_stitched_desc_err(desc, err) })
     }
@@ -246,14 +246,14 @@ impl Device {
     #[objc::msg_send(newLibraryWithStitchedDescriptor:completionHandler:)]
     pub fn new_lib_with_stitched_desc_ch(
         &self,
-        desc: mtl::FnStitchedLibDesc,
+        desc: &mtl::FnStitchedLibDesc,
         ch: &mut blocks::ResultCh<mtl::Lib>,
     );
 
     #[cfg(feature = "async")]
     pub async fn new_lib_with_stitched_desc(
         &self,
-        desc: mtl::FnStitchedLibDesc,
+        desc: &mtl::FnStitchedLibDesc,
     ) -> Result<arc::R<mtl::Lib>, arc::R<ns::Error>> {
         let (future, mut block) = blocks::result();
         self.new_lib_with_stitched_desc_ch(desc, &mut block);

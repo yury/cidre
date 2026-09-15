@@ -27,7 +27,7 @@ impl FeatureValue {
     pub fn multi_array(&self) -> Option<arc::R<ml::MultiArray>>;
 
     #[objc::msg_send(dictionaryValue)]
-    pub fn dictionary(&self) -> Option<ns::Dictionary<ns::Id, ns::Number>>;
+    pub fn dictionary(&self) -> Option<arc::R<ns::Dictionary<ns::Id, ns::Number>>>;
 
     #[objc::msg_send(imageBufferValue)]
     pub fn image_buf(&self) -> Option<&cv::ImageBuf>;

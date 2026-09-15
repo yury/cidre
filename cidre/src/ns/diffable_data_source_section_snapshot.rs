@@ -1,15 +1,11 @@
 use std::marker::PhantomData;
 
-use crate::{
-    arc, define_cls,
-    ns::{self, Copying},
-    objc,
-};
+use crate::{arc, define_cls, ns, objc};
 
 /// A hierarchical snapshot of the items in one section: items may have
 /// children, and parents can be expanded or collapsed.
 #[doc(alias = "NSDiffableDataSourceSectionSnapshot")]
-#[repr(transparent)]
+#[repr(C)]
 pub struct DiffableDataSrcSectionSnapshot<I>(ns::Id, PhantomData<I>);
 
 unsafe impl<I> Send for DiffableDataSrcSectionSnapshot<I> where I: objc::Obj {}
@@ -204,12 +200,6 @@ impl<I: objc::Obj + 'static> DiffableDataSrcSectionSnapshot<I> {
     #[inline]
     pub fn children_of_item(&self, parent: &I) -> arc::R<ns::Array<I>> {
         self.snapshot_of_parent_item(parent).root_items()
-    }
-}
-
-impl<I: objc::Obj> Clone for DiffableDataSrcSectionSnapshot<I> {
-    fn clone(&self) -> Self {
-        unsafe { std::mem::transmute(self.copy_with_zone(std::ptr::null_mut())) }
     }
 }
 

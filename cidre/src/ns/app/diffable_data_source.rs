@@ -20,7 +20,7 @@ pub type CollectionViewDiffableDataSrcSupplementaryViewProvider = blocks::EscBlo
 >;
 
 #[doc(alias = "NSCollectionViewDiffableDataSource")]
-#[repr(transparent)]
+#[repr(C)]
 pub struct CollectionViewDiffableDataSrc<S, I>(ns::Id, PhantomData<S>, PhantomData<I>);
 
 impl<S: objc::Obj, I: objc::Obj> objc::Obj for CollectionViewDiffableDataSrc<S, I> {}

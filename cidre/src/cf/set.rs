@@ -39,7 +39,7 @@ impl Set {
 }
 
 #[derive(Debug)]
-#[repr(transparent)]
+#[repr(C)]
 pub struct SetOf<T: arc::Retain + arc::Release>(Set, PhantomData<T>);
 
 impl<T> SetOf<T>

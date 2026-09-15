@@ -49,7 +49,7 @@ impl Track {
     pub fn total_sample_data_length(&self) -> isize;
 
     #[objc::msg_send(hasMediaCharacteristic:)]
-    pub fn has_media_characterisitc(&self, val: av::MediaCharacteristic) -> bool;
+    pub fn has_media_characterisitc(&self, val: &av::MediaCharacteristic) -> bool;
 }
 
 /// AVAssetTrackPropertiesForTemporalInformation

@@ -180,7 +180,7 @@ impl Port {
 
     /// The media type of the data provided by the receiver.
     #[objc::msg_send(mediaType)]
-    pub fn media_type(&self) -> av::MediaType;
+    pub fn media_type(&self) -> arc::R<av::MediaType>;
 
     /// The format of the data provided by the receiver.
     #[cfg(feature = "cm")]
