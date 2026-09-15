@@ -352,7 +352,7 @@ fn main() {
     stencil_desc.set_stencil_attach_pixel_format(mtl::PixelFormat::Stencil8);
     let mut stencil_ca = stencil_desc.color_attaches().get(0);
     stencil_ca.set_pixel_format(mtl::PixelFormat::Rgba8UNorm);
-    stencil_ca.set_write_mask(mtl::ColorWriteMask::None);
+    stencil_ca.set_write_mask(mtl::ColorWriteMask::NONE);
 
     let mut fill_desc = mtl::RenderPipelineDesc::new().with_fns(&vertex_fn, &fill_fragment_fn);
     fill_desc.set_stencil_attach_pixel_format(mtl::PixelFormat::Stencil8);

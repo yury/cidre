@@ -78,6 +78,18 @@ impl Control {
     #[objc::msg_send(setStringValue:)]
     pub fn set_string_value(&mut self, val: &ns::String);
 
+    #[objc::msg_send(doubleValue)]
+    pub fn double_value(&self) -> f64;
+
+    #[objc::msg_send(setDoubleValue:)]
+    pub fn set_double_value(&mut self, val: f64);
+
+    #[objc::msg_send(floatValue)]
+    pub fn float_value(&self) -> f32;
+
+    #[objc::msg_send(setFloatValue:)]
+    pub fn set_float_value(&mut self, val: f32);
+
     #[objc::msg_send(attributedStringValue)]
     pub fn attr_string_value(&self) -> arc::R<ns::AttrString>;
 

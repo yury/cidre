@@ -59,6 +59,18 @@ Class UI_CONTEXT_MENU_CONFIGURATION;
 Class UI_SHEET_PRESENTATION_CONTROLLER_DETENT;
 Class UI_IMAGE;
 Class UI_TRAIT_COLLECTION;
+Class UI_TRAIT_HORIZONTAL_SIZE_CLASS;
+Class UI_TRAIT_VERTICAL_SIZE_CLASS;
+Class UI_TRAIT_USER_INTERFACE_STYLE;
+Class UI_TRAIT_LAYOUT_DIRECTION;
+Class UI_TRAIT_DISPLAY_SCALE;
+Class UI_TRAIT_TAB_ACCESSORY_ENVIRONMENT;
+Class UI_BACKGROUND_CONFIGURATION;
+Class UI_STACK_VIEW;
+Class UI_SWITCH;
+Class UI_SLIDER;
+Class UI_STEPPER;
+Class UI_TEXT_VIEW;
 Class NS_TEXT_ATTACHMENT;
 Class UI_LAYOUT_GUIDE;
 Class NS_LAYOUT_CONSTRAINT;
@@ -180,6 +192,18 @@ static void ui_initializer(void)
         UI_WINDOW = NSClassFromString(@"UIWindow");
         UI_IMAGE = [UIImage class];
         UI_TRAIT_COLLECTION = [UITraitCollection class];
+        UI_TRAIT_HORIZONTAL_SIZE_CLASS = NSClassFromString(@"UITraitHorizontalSizeClass");
+        UI_TRAIT_VERTICAL_SIZE_CLASS = NSClassFromString(@"UITraitVerticalSizeClass");
+        UI_TRAIT_USER_INTERFACE_STYLE = NSClassFromString(@"UITraitUserInterfaceStyle");
+        UI_TRAIT_LAYOUT_DIRECTION = NSClassFromString(@"UITraitLayoutDirection");
+        UI_TRAIT_DISPLAY_SCALE = NSClassFromString(@"UITraitDisplayScale");
+        UI_TRAIT_TAB_ACCESSORY_ENVIRONMENT = NSClassFromString(@"UITraitTabAccessoryEnvironment");
+        UI_BACKGROUND_CONFIGURATION = NSClassFromString(@"UIBackgroundConfiguration");
+        UI_STACK_VIEW = [UIStackView class];
+        UI_SWITCH = [UISwitch class];
+        UI_SLIDER = [UISlider class];
+        UI_STEPPER = [UIStepper class];
+        UI_TEXT_VIEW = [UITextView class];
         
         NS_TEXT_ATTACHMENT = [NSTextAttachment class];
         

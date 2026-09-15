@@ -41,7 +41,11 @@ impl CollectionViewCellRegistration {
 /// Configures a dequeued supplementary view for an element kind and index path.
 #[cfg(feature = "blocks")]
 pub type CollectionViewSupplementaryRegistrationCfgHandler = blocks::EscBlock<
-    fn(view: &mut ui::CollectionReusableView, element_kind: &ns::String, index_path: &ns::IndexPath),
+    fn(
+        view: &mut ui::CollectionReusableView,
+        element_kind: &ns::String,
+        index_path: &ns::IndexPath,
+    ),
 >;
 
 define_obj_type!(

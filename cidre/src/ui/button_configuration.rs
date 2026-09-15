@@ -48,6 +48,42 @@ impl ButtonCfg {
     pub fn set_title_line_break_mode(&mut self, val: ui::LineBreakMode);
 
     #[objc::available(ios = 15.0)]
+    #[objc::msg_send(setSubtitle:)]
+    pub fn set_subtitle(&mut self, val: Option<&ns::String>);
+
+    #[objc::available(ios = 15.0)]
+    #[objc::msg_send(subtitle)]
+    pub fn subtitle(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::available(ios = 15.0)]
+    #[objc::msg_send(setTitleAlignment:)]
+    pub fn set_title_alignment(&mut self, val: TitleAlignment);
+
+    #[objc::available(ios = 15.0)]
+    #[objc::msg_send(setImagePlacement:)]
+    pub fn set_image_placement(&mut self, val: ui::DirectionalRectEdge);
+
+    #[objc::available(ios = 15.0)]
+    #[objc::msg_send(setBaseBackgroundColor:)]
+    pub fn set_base_bg_color(&mut self, val: Option<&ui::Color>);
+
+    #[objc::available(ios = 15.0)]
+    #[objc::msg_send(setPreferredSymbolConfigurationForImage:)]
+    pub fn set_preferred_symbol_cfg_for_image(&mut self, val: Option<&ui::ImageSymbolCfg>);
+
+    #[objc::available(ios = 15.0)]
+    #[objc::msg_send(setShowsActivityIndicator:)]
+    pub fn set_shows_activity_indicator(&mut self, val: bool);
+
+    #[objc::available(ios = 15.0)]
+    #[objc::msg_send(setTitlePadding:)]
+    pub fn set_title_padding(&mut self, val: cg::Float);
+
+    #[objc::available(ios = 15.0)]
+    #[objc::msg_send(setBackground:)]
+    pub fn set_background(&mut self, val: &ui::BgCfg);
+
+    #[objc::available(ios = 15.0)]
     #[objc::msg_send(contentInsets)]
     pub fn content_insets(&self) -> ui::DirectionalEdgeInsets;
 
@@ -80,6 +116,16 @@ pub enum Size {
     Small,
     Mini,
     Large,
+}
+
+#[doc(alias = "UIButtonConfigurationTitleAlignment")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum TitleAlignment {
+    Automatic = 0,
+    Leading = 1,
+    Center = 2,
+    Trailing = 3,
 }
 
 #[doc(alias = "UIButtonConfigurationCornerStyle")]

@@ -91,12 +91,6 @@ impl View {
     #[objc::msg_send(viewDidChangeBackingProperties)]
     pub fn view_did_change_backing_properties(&mut self);
 
-    #[objc::msg_send(postsFrameChangedNotifications)]
-    pub fn posts_frame_changed_notifications(&self) -> bool;
-
-    #[objc::msg_send(setPostsFrameChangedNotifications:)]
-    pub fn set_posts_frame_changed_notifications(&mut self, val: bool);
-
     #[cfg(feature = "ca")]
     #[objc::msg_send(layer)]
     pub fn layer(&self) -> Option<arc::R<ca::Layer>>;
@@ -110,6 +104,20 @@ impl View {
 
     #[objc::msg_send(setWantsLayer:)]
     pub fn set_wants_layer(&mut self, val: bool);
+
+    /// Whether the view posts `notifications::bounds_did_change` when its
+    /// bounds change: a clip view's, as it scrolls, for instance.
+    #[objc::msg_send(postsBoundsChangedNotifications)]
+    pub fn posts_bounds_changed_notifications(&self) -> bool;
+
+    #[objc::msg_send(setPostsBoundsChangedNotifications:)]
+    pub fn set_posts_bounds_changed_notifications(&mut self, val: bool);
+
+    #[objc::msg_send(postsFrameChangedNotifications)]
+    pub fn posts_frame_changed_notifications(&self) -> bool;
+
+    #[objc::msg_send(setPostsFrameChangedNotifications:)]
+    pub fn set_posts_frame_changed_notifications(&mut self, val: bool);
 
     #[objc::msg_send(wantsUpdateLayer)]
     pub fn wants_update_layer(&self) -> bool;
@@ -321,5 +329,33 @@ mod tests {
         assert_eq!(view.frame(), frame);
         assert_eq!(view.needs_display(), false);
         assert_eq!(view.animator().frame(), frame)
+    }
+}
+
+pub mod notifications {
+    use crate::ns::NotificationName;
+
+    /// Posted by a view whose `posts_frame_changed_notifications` is on.
+    #[doc(alias = "NSViewFrameDidChangeNotification")]
+    pub fn frame_did_change() -> &'static NotificationName {
+        unsafe { NSViewFrameDidChangeNotification }
+    }
+
+    /// Posted by a view whose `posts_bounds_changed_notifications` is on.
+    #[doc(alias = "NSViewBoundsDidChangeNotification")]
+    pub fn bounds_did_change() -> &'static NotificationName {
+        unsafe { NSViewBoundsDidChangeNotification }
+    }
+
+    #[doc(alias = "NSViewDidUpdateTrackingAreasNotification")]
+    pub fn did_update_tracking_areas() -> &'static NotificationName {
+        unsafe { NSViewDidUpdateTrackingAreasNotification }
+    }
+
+    #[link(name = "AppKit", kind = "framework")]
+    unsafe extern "C" {
+        static NSViewFrameDidChangeNotification: &'static NotificationName;
+        static NSViewBoundsDidChangeNotification: &'static NotificationName;
+        static NSViewDidUpdateTrackingAreasNotification: &'static NotificationName;
     }
 }

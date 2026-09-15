@@ -1,4 +1,20 @@
-use crate::cg;
+use crate::{cg, define_opts};
+
+define_opts!(
+    /// The edges of a rectangle, leading and trailing following the layout
+    /// direction.
+    #[doc(alias = "NSDirectionalRectEdge")]
+    pub DirectionalRectEdge(usize)
+);
+
+impl DirectionalRectEdge {
+    pub const NONE: Self = Self(0);
+    pub const TOP: Self = Self(1 << 0);
+    pub const LEADING: Self = Self(1 << 1);
+    pub const BOTTOM: Self = Self(1 << 2);
+    pub const TRAILING: Self = Self(1 << 3);
+    pub const ALL: Self = Self(Self::TOP.0 | Self::LEADING.0 | Self::BOTTOM.0 | Self::TRAILING.0);
+}
 
 #[doc(alias = "UIEdgeInsets")]
 #[derive(Debug, PartialEq, Copy, Clone)]
@@ -21,7 +37,12 @@ pub struct DirectionalEdgeInsets {
 }
 
 impl DirectionalEdgeInsets {
-    pub const fn new(top: cg::Float, leading: cg::Float, bottom: cg::Float, trailing: cg::Float) -> Self {
+    pub const fn new(
+        top: cg::Float,
+        leading: cg::Float,
+        bottom: cg::Float,
+        trailing: cg::Float,
+    ) -> Self {
         Self {
             top,
             leading,

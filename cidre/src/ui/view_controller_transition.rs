@@ -35,7 +35,9 @@ impl ViewControllerTransition {
     pub fn zoom_from_bar_button_item_block(
         options: Option<&ui::ZoomTransitionOpts>,
         src_provider: &mut blocks::EscBlock<
-            fn(ctx: &mut ui::ZoomTransitionSrcViewProviderCtx) -> Option<arc::Rar<ui::BarButtonItem>>,
+            fn(
+                ctx: &mut ui::ZoomTransitionSrcViewProviderCtx,
+            ) -> Option<arc::Rar<ui::BarButtonItem>>,
         >,
     ) -> arc::R<Self>;
 

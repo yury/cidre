@@ -456,11 +456,13 @@ unsafe extern "C" {
 
 }
 
-#[doc(alias = "AVAudioSessionActivationOptions")]
-#[derive(Debug, Eq, PartialEq)]
-#[repr(usize)]
-pub enum ActivationOpts {
-    None = 0,
+define_opts!(
+    #[doc(alias = "AVAudioSessionActivationOptions")]
+    pub ActivationOpts(usize)
+);
+
+impl ActivationOpts {
+    pub const NONE: Self = Self(0);
 }
 
 /// For use with overrideOutputAudioPort:error:
@@ -715,16 +717,17 @@ pub enum InterruptionType {
     Ended = 0,
 }
 
-/// Values for AVAudioSessionInterruptionOptionKey in AVAudioSessionInterruptionNotification's
-/// userInfo dictionary.
-#[doc(alias = "AVAudioSessionInterruptionOptions")]
-#[derive(Default, Debug, Eq, PartialEq, Copy, Clone)]
-#[repr(usize)]
-pub enum InterruptionOpts {
-    #[default]
-    None = 0,
+define_opts!(
+    /// Values for AVAudioSessionInterruptionOptionKey in AVAudioSessionInterruptionNotification's
+    /// userInfo dictionary.
+    #[doc(alias = "AVAudioSessionInterruptionOptions")]
+    pub InterruptionOpts(usize)
+);
+
+impl InterruptionOpts {
+    pub const NONE: Self = Self(0);
     /// Indicates that you should resume playback now that the interruption has ended.
-    ShouldResume = 1,
+    pub const SHOULD_RESUME: Self = Self(1);
 }
 
 /// Values for AVAudioSessionInterruptionReasonKey in AVAudioSessionInterruptionNotification's userInfo dictionary.
@@ -750,16 +753,17 @@ pub enum InterruptionReason {
     BuiltInMicMuted = 2,
 }
 
-/// options for use when calling setActive:withOptions:error:
-#[doc(alias = "AVAudioSessionSetActiveOptions")]
-#[derive(Default, Debug, Eq, PartialEq, Copy, Clone)]
-#[repr(usize)]
-pub enum SetActiveOpts {
-    #[default]
-    None = 0,
+define_opts!(
+    /// options for use when calling setActive:withOptions:error:
+    #[doc(alias = "AVAudioSessionSetActiveOptions")]
+    pub SetActiveOpts(usize)
+);
+
+impl SetActiveOpts {
+    pub const NONE: Self = Self(0);
     /// Notify an interrupted app that the interruption has ended and it may resume playback. Only
     /// valid on session deactivation.
-    NotifyOthersOnDeactivation = 1,
+    pub const NOTIFY_OTHERS_ON_DEACTIVATION: Self = Self(1);
 }
 
 /// Values for AVAudioSessionSilenceSecondaryAudioHintTypeKey in

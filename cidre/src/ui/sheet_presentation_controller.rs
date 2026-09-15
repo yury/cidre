@@ -1,5 +1,27 @@
 use crate::{api, arc, define_cls, define_obj_type, ns, objc, ui};
 
+#[cfg(feature = "blocks")]
+use crate::blocks;
+
+define_obj_type!(
+    /// What a custom detent resolves its height against: the container's traits
+    /// and the height of the largest detent.
+    #[doc(alias = "UISheetPresentationControllerDetentResolutionContext")]
+    pub DetentResolutionCtx(ns::Id)
+);
+
+impl DetentResolutionCtx {
+    #[objc::msg_send(containerTraitCollection)]
+    pub fn container_trait_collection(&self) -> arc::R<ui::TraitCollection>;
+
+    #[objc::msg_send(maximumDetentValue)]
+    pub fn max_detent_value(&self) -> crate::cg::Float;
+}
+
+/// Resolves a custom detent's height; `nil` is the largest detent's.
+#[cfg(feature = "blocks")]
+pub type DetentResolver = blocks::EscBlock<fn(ctx: &DetentResolutionCtx) -> crate::cg::Float>;
+
 #[doc(alias = "UISheetPresentationControllerPlacement")]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 #[repr(isize)]
@@ -46,6 +68,30 @@ impl Detent {
     #[objc::msg_send(identifier)]
     #[objc::available(ios = 16.0)]
     pub fn id(&self) -> arc::R<DetentId>;
+
+    /// A detent `resolver` sizes, of `id`.
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(customDetentWithIdentifier:resolver:)]
+    #[objc::available(ios = 16.0)]
+    pub fn custom_with_id_resolver_block(
+        id: Option<&DetentId>,
+        resolver: &mut DetentResolver,
+    ) -> arc::R<Self>;
+
+    #[cfg(feature = "blocks")]
+    #[objc::available(ios = 16.0)]
+    pub fn custom_with_id(
+        id: Option<&DetentId>,
+        resolver: impl FnMut(&DetentResolutionCtx) -> crate::cg::Float + 'static,
+    ) -> arc::R<Self> {
+        let mut resolver = DetentResolver::new1(resolver);
+        Self::custom_with_id_resolver_block(id, &mut resolver)
+    }
+
+    /// The detent's height for `ctx`, or `nil` if it does not apply.
+    #[objc::msg_send(resolvedValueInContext:)]
+    #[objc::available(ios = 16.0)]
+    pub fn resolved_value_in_ctx(&self, ctx: &DetentResolutionCtx) -> crate::cg::Float;
 }
 
 define_obj_type!(

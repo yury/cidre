@@ -1,4 +1,4 @@
-use crate::{arc, av, cm, define_cls, define_obj_type, ns, objc};
+use crate::{arc, av, cm, define_cls, define_obj_type, define_opts, ns, objc};
 
 #[cfg(feature = "blocks")]
 use crate::{blocks, dispatch};
@@ -50,13 +50,15 @@ pub enum ActionAtItemEnd {
     None = 2,
 }
 
-#[doc(alias = "AVPlayerHDRMode")]
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[repr(isize)]
-pub enum HdrMode {
-    Hlg = 0x1,
-    Hdr10 = 0x2,
-    DolbyVision = 0x4,
+define_opts!(
+    #[doc(alias = "AVPlayerHDRMode")]
+    pub HdrMode(isize)
+);
+
+impl HdrMode {
+    pub const HLG: Self = Self(0x1);
+    pub const HDR10: Self = Self(0x2);
+    pub const DOLBY_VISION: Self = Self(0x4);
 }
 
 #[doc(alias = "AVPlayerAudiovisualBackgroundPlaybackPolicy")]

@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns, objc};
+use crate::{define_obj_type, define_opts, ns, objc};
 
 define_obj_type!(pub Level(ns::String));
 
@@ -29,13 +29,15 @@ impl Level {
     }
 }
 
-#[derive(Debug, Eq, PartialEq)]
-#[repr(usize)]
-pub enum Factors {
-    None = 0,
-    SystemTemperature = 1 << 0,
-    PeakPower = 1 << 1,
-    DepthModuleTemperature = 1 << 2,
+define_opts!(
+    pub Factors(usize)
+);
+
+impl Factors {
+    pub const NONE: Self = Self(0);
+    pub const SYSTEM_TEMPERATURE: Self = Self(1 << 0);
+    pub const PEAK_POWER: Self = Self(1 << 1);
+    pub const DEPTH_MODULE_TEMPERATURE: Self = Self(1 << 2);
 }
 
 define_obj_type!(pub State(ns::Id));

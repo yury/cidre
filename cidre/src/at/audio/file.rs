@@ -653,14 +653,17 @@ impl Flags {
     pub const DONT_PAGE_ALIGN_AUDIO_DATA: Self = Self(2);
 }
 
-#[repr(i8)]
-pub enum Permissions {
+define_opts!(
+    pub Permissions(i8)
+);
+
+impl Permissions {
     #[doc(alias = "kAudioFileReadPermission")]
-    Read = 0x01,
+    pub const READ: Self = Self(0x01);
     #[doc(alias = "kAudioFileWritePermission")]
-    Write = 0x2,
+    pub const WRITE: Self = Self(0x2);
     #[doc(alias = "kAudioFileReadWritePermission")]
-    ReadWrite = 0x3,
+    pub const READ_WRITE: Self = Self(0x3);
 }
 
 unsafe extern "C" {

@@ -1,4 +1,4 @@
-use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
+use crate::{arc, define_mtl, define_obj_type, define_opts, mtl, ns, objc};
 
 use super::{Fn, PixelFormat, argument::Arg};
 
@@ -40,17 +40,19 @@ pub enum BlendOp {
     Unspecified = 5,
 }
 
-#[doc(alias = "MTLColorWriteMask")]
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
-#[repr(usize)]
-pub enum ColorWriteMask {
-    None = 0,
-    Red = 0x1 << 3,
-    Green = 0x1 << 2,
-    Blue = 0x1 << 1,
-    Alpha = 0x1 << 0,
-    All = 0xf,
-    Unspecified = 0x10,
+define_opts!(
+    #[doc(alias = "MTLColorWriteMask")]
+    pub ColorWriteMask(usize)
+);
+
+impl ColorWriteMask {
+    pub const NONE: Self = Self(0);
+    pub const RED: Self = Self(0x1 << 3);
+    pub const GREEN: Self = Self(0x1 << 2);
+    pub const BLUE: Self = Self(0x1 << 1);
+    pub const ALPHA: Self = Self(0x1 << 0);
+    pub const ALL: Self = Self(0xf);
+    pub const UNSPECIFIED: Self = Self(0x10);
 }
 
 #[doc(alias = "MTLPrimitiveTopologyClass")]

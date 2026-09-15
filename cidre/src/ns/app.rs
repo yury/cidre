@@ -18,6 +18,20 @@ pub use button_cell::ButtonType;
 mod button;
 pub use button::Button;
 
+mod stack_view;
+pub use stack_view::StackView;
+pub use stack_view::StackViewDistribution;
+pub use stack_view::StackViewGravity;
+pub use stack_view::UiLayoutOrientation;
+
+mod switch;
+pub use switch::Switch;
+
+mod slider;
+pub use slider::Slider;
+pub use slider::SliderType;
+pub use slider::TickMarkPosition;
+
 mod pop_up_button;
 pub use pop_up_button::PopUpButton;
 
@@ -263,6 +277,7 @@ pub use view_controller::ViewControllerTransitionOpts;
 mod view;
 pub use view::AutoresizingMaskOpts;
 pub use view::View;
+pub use view::notifications as view_notifications;
 
 pub mod toolbar;
 pub use toolbar::Toolbar;

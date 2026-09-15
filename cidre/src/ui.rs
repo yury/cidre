@@ -22,6 +22,31 @@ pub use font::Font;
 mod paragraph_style;
 pub use paragraph_style::LineBreakMode;
 
+mod trait_change_registration;
+#[cfg(feature = "blocks")]
+pub use trait_change_registration::TraitChangeHandler;
+pub use trait_change_registration::TraitChangeRegistration;
+pub use trait_change_registration::traits;
+
+mod stack_view;
+pub use stack_view::LayoutConstraintAxis;
+pub use stack_view::StackView;
+pub use stack_view::StackViewAlignment;
+pub use stack_view::StackViewDistribution;
+
+mod switch;
+pub use switch::Switch;
+pub use switch::SwitchStyle;
+
+mod slider;
+pub use slider::Slider;
+
+mod stepper;
+pub use stepper::Stepper;
+
+mod text_view;
+pub use text_view::TextView;
+
 mod font_descriptor;
 pub use font_descriptor::FontDesc;
 pub use font_descriptor::FontDescClass;
@@ -32,6 +57,7 @@ pub use font_descriptor::TextStyle;
 
 mod geometry;
 pub use geometry::DirectionalEdgeInsets;
+pub use geometry::DirectionalRectEdge;
 pub use geometry::EdgeInsets;
 pub use geometry::Offset;
 
@@ -490,6 +516,7 @@ unsafe extern "C" {}
 mod button_configuration;
 pub use button_configuration::{
     ButtonCfg, CornerStyle as ButtonCfgCornerStyle, Size as ButtonCfgSize,
+    TitleAlignment as ButtonCfgTitleAlignment,
 };
 mod split_view_controller;
 pub use split_view_controller::{
@@ -501,6 +528,9 @@ pub use split_view_controller::{
 mod presentation_controller;
 pub use presentation_controller::PresentationController;
 mod sheet_presentation_controller;
+pub use sheet_presentation_controller::DetentResolutionCtx as SheetPresentationControllerDetentResolutionCtx;
+#[cfg(feature = "blocks")]
+pub use sheet_presentation_controller::DetentResolver as SheetPresentationControllerDetentResolver;
 pub use sheet_presentation_controller::{
     Detent as SheetPresentationControllerDetent, DetentId as SheetPresentationControllerDetentId,
     Placement as SheetPresentationControllerPlacement, SheetPresentationController,
@@ -512,14 +542,22 @@ mod navigation_item;
 pub use navigation_item::NavItem;
 
 mod list_content_configuration;
+pub use list_content_configuration::BgCfg;
 pub use list_content_configuration::ListContentCfg;
+pub use list_content_configuration::ListContentImageProps;
+pub use list_content_configuration::ListContentTextAlignment;
+pub use list_content_configuration::ListContentTextProps;
 mod collection_view_compositional_layout;
 pub use collection_view_compositional_layout::CollectionLayoutBoundarySupplementaryItem;
+pub use collection_view_compositional_layout::CollectionLayoutContainer;
 pub use collection_view_compositional_layout::CollectionLayoutDimension;
+pub use collection_view_compositional_layout::CollectionLayoutEnvironment;
 pub use collection_view_compositional_layout::CollectionLayoutGroup;
 pub use collection_view_compositional_layout::CollectionLayoutItem;
 pub use collection_view_compositional_layout::CollectionLayoutSection;
 pub use collection_view_compositional_layout::CollectionLayoutSectionOrthogonalScrollingBehavior;
+#[cfg(feature = "blocks")]
+pub use collection_view_compositional_layout::CollectionLayoutSectionProvider;
 pub use collection_view_compositional_layout::CollectionLayoutSize;
 pub use collection_view_compositional_layout::CollectionViewCompositionalLayout;
 pub use collection_view_compositional_layout::RectAlignment;
@@ -529,11 +567,11 @@ pub use collection_layout_list::{
 };
 
 mod scroll_view;
-pub use scroll_view::ContentInsetAdjustmentBehavior as ScrollViewContentInsetAdjustmentBehavior;
 pub use scroll_view::AnyScrollViewDelegate;
+pub use scroll_view::ContentInsetAdjustmentBehavior as ScrollViewContentInsetAdjustmentBehavior;
+pub use scroll_view::ScrollView;
 pub use scroll_view::ScrollViewDelegate;
 pub use scroll_view::ScrollViewDelegateImpl;
-pub use scroll_view::ScrollView;
 
 mod menu_element;
 pub use menu_element::MenuElement;

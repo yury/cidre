@@ -21,6 +21,14 @@ impl CollectionViewCell {
     #[objc::available(ios = 14.0)]
     pub fn set_content_cfg(&mut self, val: Option<&crate::ns::Id>);
 
+    #[objc::msg_send(backgroundConfiguration)]
+    #[objc::available(ios = 14.0)]
+    pub fn bg_cfg(&self) -> Option<arc::R<ui::BgCfg>>;
+
+    #[objc::msg_send(setBackgroundConfiguration:)]
+    #[objc::available(ios = 14.0)]
+    pub fn set_bg_cfg(&mut self, val: Option<&ui::BgCfg>);
+
     #[objc::msg_send(contentView)]
     pub fn content_view(&self) -> arc::R<ui::View>;
 

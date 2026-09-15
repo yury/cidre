@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, mtl, ns, objc};
+use crate::{arc, define_obj_type, define_opts, mtl, ns, objc};
 
 #[doc(alias = "MTLLoadAction")]
 #[derive(Debug, Default, PartialEq, Copy, Clone, Eq)]
@@ -64,13 +64,14 @@ pub enum StoreAction {
     CustomSampleDepthStore = 5,
 }
 
-#[doc(alias = "MTLStoreActionOptions")]
-#[derive(Debug, Default, Eq, PartialEq, Copy, Clone)]
-#[repr(usize)]
-pub enum StoreActionOpts {
-    #[default]
-    None = 0,
-    CustomSamplePositions = 1 << 0,
+define_opts!(
+    #[doc(alias = "MTLStoreActionOptions")]
+    pub StoreActionOpts(usize)
+);
+
+impl StoreActionOpts {
+    pub const NONE: Self = Self(0);
+    pub const CUSTOM_SAMPLE_POSITIONS: Self = Self(1 << 0);
 }
 
 #[doc(alias = "MTLVisibilityResultType")]

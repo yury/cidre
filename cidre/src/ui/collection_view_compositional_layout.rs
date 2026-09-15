@@ -1,5 +1,18 @@
 use crate::{arc, cg, define_obj_type, ns, objc, ui};
 
+#[cfg(feature = "blocks")]
+use crate::blocks;
+
+/// The layout of a section, given its index and the environment: the
+/// container's size and insets, and the traits.
+#[cfg(feature = "blocks")]
+pub type CollectionLayoutSectionProvider = blocks::EscBlock<
+    fn(
+        section_index: ns::Integer,
+        env: &ui::CollectionLayoutEnvironment,
+    ) -> Option<arc::Rar<ui::CollectionLayoutSection>>,
+>;
+
 define_obj_type!(
     #[doc(alias = "UICollectionViewCompositionalLayout")]
     pub CollectionViewCompositionalLayout(ui::CollectionViewLayout),
@@ -19,6 +32,62 @@ impl CollectionViewCompositionalLayout {
     pub fn with_section(section: &ui::CollectionLayoutSection) -> arc::R<Self> {
         Self::alloc().init_with_section(section)
     }
+
+    /// A layout asking `provider` for each section's layout.
+    #[cfg(feature = "blocks")]
+    #[objc::init(initWithSectionProvider:)]
+    #[objc::available(ios = 13.0, tvos = 13.0)]
+    pub fn init_with_section_provider(
+        self,
+        provider: &mut CollectionLayoutSectionProvider,
+    ) -> arc::R<CollectionViewCompositionalLayout>;
+
+    #[cfg(feature = "blocks")]
+    #[objc::available(ios = 13.0, tvos = 13.0)]
+    pub fn with_section_provider(
+        provider: impl FnMut(
+            ns::Integer,
+            &ui::CollectionLayoutEnvironment,
+        ) -> Option<arc::Rar<ui::CollectionLayoutSection>>
+        + 'static,
+    ) -> arc::R<Self> {
+        let mut provider = CollectionLayoutSectionProvider::new2(provider);
+        Self::alloc().init_with_section_provider(&mut provider)
+    }
+}
+
+define_obj_type!(
+    /// What a section is laid out in.
+    #[doc(alias = "NSCollectionLayoutContainer")]
+    pub CollectionLayoutContainer(ns::Id)
+);
+
+impl CollectionLayoutContainer {
+    #[objc::msg_send(contentSize)]
+    pub fn content_size(&self) -> cg::Size;
+
+    #[objc::msg_send(effectiveContentSize)]
+    pub fn effective_content_size(&self) -> cg::Size;
+
+    #[objc::msg_send(contentInsets)]
+    pub fn content_insets(&self) -> ui::DirectionalEdgeInsets;
+
+    #[objc::msg_send(effectiveContentInsets)]
+    pub fn effective_content_insets(&self) -> ui::DirectionalEdgeInsets;
+}
+
+define_obj_type!(
+    /// What a section provider lays out for.
+    #[doc(alias = "NSCollectionLayoutEnvironment")]
+    pub CollectionLayoutEnvironment(ns::Id)
+);
+
+impl CollectionLayoutEnvironment {
+    #[objc::msg_send(container)]
+    pub fn container(&self) -> arc::R<CollectionLayoutContainer>;
+
+    #[objc::msg_send(traitCollection)]
+    pub fn trait_collection(&self) -> arc::R<ui::TraitCollection>;
 }
 
 /// How a section's groups scroll against the layout's main axis.
@@ -167,7 +236,9 @@ impl CollectionLayoutSection {
     pub fn set_inter_group_spacing(&mut self, val: cg::Float);
 
     #[objc::msg_send(orthogonalScrollingBehavior)]
-    pub fn orthogonal_scrolling_behavior(&self) -> CollectionLayoutSectionOrthogonalScrollingBehavior;
+    pub fn orthogonal_scrolling_behavior(
+        &self,
+    ) -> CollectionLayoutSectionOrthogonalScrollingBehavior;
 
     #[objc::msg_send(setOrthogonalScrollingBehavior:)]
     pub fn set_orthogonal_scrolling_behavior(
