@@ -49,4 +49,6 @@ pub enum BezelStyle {
     AccessoryBar = 13,
     PushDisclosure = 14,
     Badge = 15,
+    /// A bezel style with a glass effect. macOS 26.
+    Glass = 16,
 }

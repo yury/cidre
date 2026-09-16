@@ -16,6 +16,10 @@ impl Action {
         handler: &mut blocks::EscBlock<fn(&Action)>,
     ) -> arc::R<Self>;
 
+    #[objc::msg_send(identifier)]
+    #[objc::available(ios = 13.0)]
+    pub fn id(&self) -> arc::R<ns::String>;
+
     #[objc::msg_send(state)]
     #[objc::available(ios = 13.0)]
     pub fn state(&self) -> ui::MenuElementState;

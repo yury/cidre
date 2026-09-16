@@ -26,6 +26,12 @@ impl ScrollView {
     #[objc::msg_send(setContentSize:)]
     pub fn set_content_size(&mut self, val: cg::Size);
 
+    #[objc::msg_send(contentInset)]
+    pub fn content_inset(&self) -> ui::EdgeInsets;
+
+    #[objc::msg_send(setContentInset:)]
+    pub fn set_content_inset(&mut self, val: ui::EdgeInsets);
+
     #[objc::msg_send(setContentInsetAdjustmentBehavior:)]
     #[objc::available(ios = 11.0)]
     pub fn set_content_inset_adjustment_behavior(&mut self, val: ContentInsetAdjustmentBehavior);

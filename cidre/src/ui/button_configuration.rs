@@ -23,6 +23,18 @@ impl ButtonCfg {
     #[objc::available(ios = 26.0)]
     pub fn glass() -> arc::R<Self>;
 
+    #[objc::msg_send(prominentGlassButtonConfiguration)]
+    #[objc::available(ios = 26.0)]
+    pub fn prominent_glass() -> arc::R<Self>;
+
+    #[objc::msg_send(clearGlassButtonConfiguration)]
+    #[objc::available(ios = 26.0)]
+    pub fn clear_glass() -> arc::R<Self>;
+
+    #[objc::msg_send(prominentClearGlassButtonConfiguration)]
+    #[objc::available(ios = 26.0)]
+    pub fn prominent_clear_glass() -> arc::R<Self>;
+
     #[objc::available(ios = 15.0)]
     #[objc::msg_send(grayButtonConfiguration)]
     pub fn gray() -> arc::R<Self>;
