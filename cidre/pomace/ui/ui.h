@@ -200,9 +200,12 @@ static void ui_initializer(void)
         UI_TRAIT_TAB_ACCESSORY_ENVIRONMENT = NSClassFromString(@"UITraitTabAccessoryEnvironment");
         UI_BACKGROUND_CONFIGURATION = NSClassFromString(@"UIBackgroundConfiguration");
         UI_STACK_VIEW = [UIStackView class];
+#if TARGET_OS_TV
+#else
         UI_SWITCH = [UISwitch class];
         UI_SLIDER = [UISlider class];
         UI_STEPPER = [UIStepper class];
+#endif
         UI_TEXT_VIEW = [UITextView class];
         
         NS_TEXT_ATTACHMENT = [NSTextAttachment class];

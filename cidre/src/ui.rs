@@ -34,14 +34,21 @@ pub use stack_view::StackView;
 pub use stack_view::StackViewAlignment;
 pub use stack_view::StackViewDistribution;
 
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 mod switch;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 pub use switch::Switch;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 pub use switch::SwitchStyle;
 
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 mod slider;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 pub use slider::Slider;
 
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 mod stepper;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 pub use stepper::Stepper;
 
 mod text_view;
