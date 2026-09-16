@@ -119,7 +119,7 @@ fn encode(args: &EncodeArgs) {
     };
     let src = cf::Url::with_path(args.src.as_path(), false).unwrap();
     let src_file =
-        audio::FileId::open(&src, audio::FilePermissions::READ, Default::default()).unwrap();
+        audio::FileId::open(&src, audio::FilePermissions::Read, Default::default()).unwrap();
 
     let src_asbd = src_file.data_format().unwrap();
 
@@ -253,7 +253,7 @@ fn decode(args: &DecodeArgs) {
     };
     let src = cf::Url::with_path(args.src.as_path(), false).unwrap();
     let src_file =
-        audio::FileId::open(&src, audio::FilePermissions::READ, Default::default()).unwrap();
+        audio::FileId::open(&src, audio::FilePermissions::Read, Default::default()).unwrap();
 
     let src_asbd = src_file.data_format().unwrap();
 
