@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# verification builds are never rebuilt in a loop; incremental state costs ~300 MB per target
+export CARGO_INCREMENTAL=0
+
 cargo b --target aarch64-apple-ios
 cargo b --target aarch64-apple-ios-sim
 cargo +nightly b -Zbuild-std --target aarch64-apple-tvos
