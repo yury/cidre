@@ -41,6 +41,12 @@ unsafe extern "C-unwind" {
     #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
     static AVCaptureDeviceTypeBuiltInUltraWideCamera: &'static Type;
 
+    #[api::available(ios = 27.1)]
+    static AVCaptureDeviceTypeBuiltInOuterUltraWideCamera: &'static Type;
+
+    #[api::available(ios = 27.1)]
+    static AVCaptureDeviceTypeBuiltInInnerUltraWideCamera: &'static Type;
+
     #[api::available(ios = 10.2, maccatalyst = 14.0, tvos = 17.0)]
     static AVCaptureDeviceTypeBuiltInDualCamera: &'static Type;
 
@@ -1792,6 +1798,22 @@ impl Type {
     #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn built_in_ultra_wide_camera() -> &'static Self {
         unsafe { AVCaptureDeviceTypeBuiltInUltraWideCamera }
+    }
+
+    /// A built-in outer ultra wide camera device. Note that devices of this type
+    /// may only be discovered using an `av::CaptureDeviceDiscoverySession`.
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInOuterUltraWideCamera")]
+    #[api::available(ios = 27.1)]
+    pub fn built_in_outer_ultra_wide_camera() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeBuiltInOuterUltraWideCamera }
+    }
+
+    /// A built-in inner ultra wide camera device. Note that devices of this type
+    /// may only be discovered using an `av::CaptureDeviceDiscoverySession`.
+    #[doc(alias = "AVCaptureDeviceTypeBuiltInInnerUltraWideCamera")]
+    #[api::available(ios = 27.1)]
+    pub fn built_in_inner_ultra_wide_camera() -> &'static Self {
+        unsafe { AVCaptureDeviceTypeBuiltInInnerUltraWideCamera }
     }
 
     #[doc(alias = "AVCaptureDeviceTypeBuiltInDualCamera")]
