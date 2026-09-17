@@ -1,4 +1,7 @@
-use crate::{api, arc, av, cm, define_obj_type, dispatch, ns, objc};
+use crate::{api, arc, av, cm, define_obj_type, ns, objc};
+
+#[cfg(feature = "dispatch")]
+use crate::dispatch;
 
 #[objc::protocol(AVPlayerItemSampleBufferOutputDelegate)]
 pub trait ItemSampleBufOutputDelegate: objc::Obj {
@@ -66,6 +69,7 @@ impl ItemSampleBufOutput {
     #[objc::msg_send(copyNextSampleBuffer)]
     pub fn next_buf(&self) -> Option<arc::R<cm::SampleBuf>>;
 
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(setDelegate:queue:)]
     pub fn set_delegate<D: ItemSampleBufOutputDelegate>(
         &mut self,
@@ -76,6 +80,7 @@ impl ItemSampleBufOutput {
     #[objc::msg_send(delegate)]
     pub fn delegate(&self) -> Option<arc::R<AnyItemSampleBufOutputDelegate>>;
 
+    #[cfg(feature = "dispatch")]
     #[objc::msg_send(delegateQueue)]
     pub fn delegate_queue(&self) -> Option<arc::R<dispatch::Queue>>;
 }
