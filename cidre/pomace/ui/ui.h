@@ -101,6 +101,13 @@ Class NS_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT;
 
 Class UI_BUTTON_CONFIGURATION;
 Class UI_SPLIT_VIEW_CONTROLLER;
+Class UI_ARRANGEMENT_VIEW_CONTROLLER;
+Class UI_SPLIT_ARRANGEMENT_DIMENSION;
+Class UI_SPLIT_ARRANGEMENT_DIMENSION_RANGE;
+Class UI_SPLIT_ARRANGEMENT_VIEW_PROPERTIES;
+Class UI_SPLIT_ARRANGEMENT;
+Class UI_OVERLAY_ARRANGEMENT_VIEW_PROPERTIES;
+Class UI_OVERLAY_ARRANGEMENT;
 Class UI_BAR_BUTTON_ITEM;
 Class UI_NAVIGATION_ITEM;
 
@@ -137,6 +144,13 @@ static void ui_initializer(void)
         UI_LIST_CONTENT_CONFIGURATION = NSClassFromString(@"UIListContentConfiguration");
         UI_BUTTON_CONFIGURATION = NSClassFromString(@"UIButtonConfiguration");
         UI_SPLIT_VIEW_CONTROLLER = NSClassFromString(@"UISplitViewController");
+        UI_ARRANGEMENT_VIEW_CONTROLLER = NSClassFromString(@"UIArrangementViewController");
+        UI_SPLIT_ARRANGEMENT_DIMENSION = NSClassFromString(@"UISplitArrangementDimension");
+        UI_SPLIT_ARRANGEMENT_DIMENSION_RANGE = NSClassFromString(@"UISplitArrangementDimensionRange");
+        UI_SPLIT_ARRANGEMENT_VIEW_PROPERTIES = NSClassFromString(@"UISplitArrangementViewProperties");
+        UI_SPLIT_ARRANGEMENT = NSClassFromString(@"UISplitArrangement");
+        UI_OVERLAY_ARRANGEMENT_VIEW_PROPERTIES = NSClassFromString(@"UIOverlayArrangementViewProperties");
+        UI_OVERLAY_ARRANGEMENT = NSClassFromString(@"UIOverlayArrangement");
         UI_BAR_BUTTON_ITEM = NSClassFromString(@"UIBarButtonItem");
         UI_NAVIGATION_ITEM = NSClassFromString(@"UINavigationItem");
 

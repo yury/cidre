@@ -16,6 +16,19 @@ impl DirectionalRectEdge {
     pub const ALL: Self = Self(Self::TOP.0 | Self::LEADING.0 | Self::BOTTOM.0 | Self::TRAILING.0);
 }
 
+define_opts!(
+    /// The axes of a layout.
+    #[doc(alias = "UIAxis")]
+    pub Axis(usize)
+);
+
+impl Axis {
+    pub const NEITHER: Self = Self(0);
+    pub const HORIZONTAL: Self = Self(1 << 0);
+    pub const VERTICAL: Self = Self(1 << 1);
+    pub const BOTH: Self = Self(Self::HORIZONTAL.0 | Self::VERTICAL.0);
+}
+
 #[doc(alias = "UIEdgeInsets")]
 #[derive(Debug, PartialEq, Copy, Clone)]
 #[repr(C)]

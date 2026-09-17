@@ -63,6 +63,7 @@ pub use font_descriptor::FontWidth;
 pub use font_descriptor::TextStyle;
 
 mod geometry;
+pub use geometry::Axis;
 pub use geometry::DirectionalEdgeInsets;
 pub use geometry::DirectionalRectEdge;
 pub use geometry::EdgeInsets;
@@ -525,6 +526,18 @@ pub use button_configuration::{
     ButtonCfg, CornerStyle as ButtonCfgCornerStyle, Size as ButtonCfgSize,
     TitleAlignment as ButtonCfgTitleAlignment,
 };
+mod arrangement_view_controller;
+pub use arrangement_view_controller::{
+    Arrangement, ArrangementViewController, ArrangementViewState,
+    ViewPlacement as ArrangementViewPlacement,
+};
+mod split_arrangement;
+pub use split_arrangement::{
+    SplitArrangement, SplitArrangementDimension, SplitArrangementDimensionRange,
+    SplitArrangementViewProps,
+};
+mod overlay_arrangement;
+pub use overlay_arrangement::{OverlayArrangement, OverlayArrangementViewProps};
 mod split_view_controller;
 pub use split_view_controller::{
     BackgroundStyle as SplitViewControllerBackgroundStyle, Column as SplitViewControllerColumn,
