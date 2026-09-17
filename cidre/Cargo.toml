@@ -326,11 +326,14 @@ cc = "1"
 
 [dependencies]
 
-tokio = { optional = true, version = "1", default-features = false, features = ["macros", "rt", "rt-multi-thread", "time", "net", "process", "io-util"] }
 parking_lot = { optional = true, version = "0.12" }
 # cidre-macros = { version = "0.12.0", path = "../cidre-macros" }
 cidre-macros = { version = "0.12.0" }
 half = { optional = true, version = "2.6" }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# only used by the macOS-only `am` module
+tokio = { optional = true, version = "1", default-features = false, features = ["macros", "rt", "rt-multi-thread", "time", "net", "process", "io-util"] }
 
 [dev-dependencies]
 criterion = "0.8"

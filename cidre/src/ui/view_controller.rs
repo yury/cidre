@@ -51,6 +51,9 @@ impl ViewController {
     #[objc::msg_send(view)]
     pub fn view(&self) -> arc::R<ui::View>;
 
+    #[objc::msg_send(isViewLoaded)]
+    pub fn is_view_loaded(&self) -> bool;
+
     /// Is used for any container laying out a child view controller.
     #[objc::msg_send(preferredContentSize)]
     pub fn preferred_content_size(&self) -> cg::Size;

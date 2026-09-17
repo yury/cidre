@@ -526,9 +526,13 @@ pub use button_configuration::{
     ButtonCfg, CornerStyle as ButtonCfgCornerStyle, Size as ButtonCfgSize,
     TitleAlignment as ButtonCfgTitleAlignment,
 };
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 mod scene_accessory;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 pub use scene_accessory::SceneAccessory;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 mod scene_accessory_registration;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 pub use scene_accessory_registration::SceneAccessoryRegistration;
 mod arrangement_view_controller;
 pub use arrangement_view_controller::{
@@ -599,6 +603,7 @@ pub use scroll_view::ScrollViewDelegateImpl;
 
 mod menu_element;
 pub use menu_element::MenuElement;
+pub use menu_element::MenuElementAttrs;
 pub use menu_element::MenuElementState;
 
 mod key_command;

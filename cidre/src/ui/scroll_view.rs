@@ -45,6 +45,45 @@ impl ScrollView {
     #[objc::msg_send(setContentOffset:animated:)]
     pub fn set_content_offset_animated(&mut self, val: cg::Point, animated: bool);
 
+    #[objc::msg_send(bounces)]
+    pub fn bounces(&self) -> bool;
+
+    #[objc::msg_send(setBounces:)]
+    pub fn set_bounces(&mut self, val: bool);
+
+    #[objc::msg_send(minimumZoomScale)]
+    pub fn min_zoom_scale(&self) -> cg::Float;
+
+    #[objc::msg_send(setMinimumZoomScale:)]
+    pub fn set_min_zoom_scale(&mut self, val: cg::Float);
+
+    #[objc::msg_send(maximumZoomScale)]
+    pub fn max_zoom_scale(&self) -> cg::Float;
+
+    #[objc::msg_send(setMaximumZoomScale:)]
+    pub fn set_max_zoom_scale(&mut self, val: cg::Float);
+
+    #[objc::msg_send(zoomScale)]
+    pub fn zoom_scale(&self) -> cg::Float;
+
+    #[objc::msg_send(setZoomScale:)]
+    pub fn set_zoom_scale(&mut self, val: cg::Float);
+
+    #[objc::msg_send(setZoomScale:animated:)]
+    pub fn set_zoom_scale_animated(&mut self, val: cg::Float, animated: bool);
+
+    #[objc::msg_send(zoomToRect:animated:)]
+    pub fn zoom_to_rect_animated(&mut self, rect: cg::Rect, animated: bool);
+
+    #[objc::msg_send(bouncesZoom)]
+    pub fn bounces_zoom(&self) -> bool;
+
+    #[objc::msg_send(setBouncesZoom:)]
+    pub fn set_bounces_zoom(&mut self, val: bool);
+
+    #[objc::msg_send(isZooming)]
+    pub fn is_zooming(&self) -> bool;
+
     #[objc::msg_send(delegate)]
     pub fn delegate(&self) -> Option<arc::R<AnyScrollViewDelegate>>;
 
@@ -73,6 +112,35 @@ pub trait ScrollViewDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(scrollViewDidEndDecelerating:)]
     fn scroll_view_did_end_decelerating(&mut self, scroll_view: &mut ui::ScrollView);
+
+    #[objc::optional]
+    #[objc::msg_send(scrollViewDidZoom:)]
+    fn scroll_view_did_zoom(&mut self, scroll_view: &mut ui::ScrollView);
+
+    /// The subview that scales when the user pinches; `None` for no zooming.
+    #[objc::optional]
+    #[objc::msg_send(viewForZoomingInScrollView:)]
+    fn view_for_zooming_in_scroll_view(
+        &mut self,
+        scroll_view: &mut ui::ScrollView,
+    ) -> Option<arc::R<ui::View>>;
+
+    #[objc::optional]
+    #[objc::msg_send(scrollViewWillBeginZooming:withView:)]
+    fn scroll_view_will_begin_zooming_with_view(
+        &mut self,
+        scroll_view: &mut ui::ScrollView,
+        view: Option<&ui::View>,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(scrollViewDidEndZooming:withView:atScale:)]
+    fn scroll_view_did_end_zooming_with_view_at_scale(
+        &mut self,
+        scroll_view: &mut ui::ScrollView,
+        view: Option<&ui::View>,
+        scale: cg::Float,
+    );
 }
 
 define_obj_type!(

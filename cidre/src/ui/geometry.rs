@@ -39,6 +39,17 @@ pub struct EdgeInsets {
     pub right: cg::Float,
 }
 
+impl EdgeInsets {
+    pub const fn new(top: cg::Float, left: cg::Float, bottom: cg::Float, right: cg::Float) -> Self {
+        Self {
+            top,
+            left,
+            bottom,
+            right,
+        }
+    }
+}
+
 #[doc(alias = "NSDirectionalEdgeInsets")]
 #[derive(Debug, PartialEq, Copy, Clone, Default)]
 #[repr(C)]

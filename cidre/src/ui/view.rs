@@ -159,6 +159,13 @@ impl View {
     // #[objc::msg_send(pointInside:withEvent:)]
     // pub fn point_inside_with_event(&self, val: cg::Point, event: Option<&ui::Event>);
 
+    #[objc::msg_send(hitTest:withEvent:)]
+    pub fn hit_test_with_event(
+        &self,
+        point: cg::Point,
+        event: Option<&ui::Event>,
+    ) -> Option<arc::R<ui::View>>;
+
     #[objc::msg_send(convertPoint:toView:)]
     pub fn convert_point_to_view(&self, val: cg::Point, to_view: Option<&ui::View>) -> cg::Point;
 
