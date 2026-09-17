@@ -46,6 +46,15 @@ pub use input_picker_interaction::InputPickerInteractionDelegate;
 #[cfg(target_os = "ios")]
 pub use input_picker_interaction::InputPickerInteractionDelegateImpl;
 
+#[cfg(target_os = "ios")]
+mod capture_device_direction_coordinator;
+#[cfg(target_os = "ios")]
+pub use capture_device_direction_coordinator::CaptureDeviceDescriptor;
+#[cfg(target_os = "ios")]
+pub use capture_device_direction_coordinator::CaptureDeviceDirectionCoordinator;
+#[cfg(target_os = "ios")]
+pub use capture_device_direction_coordinator::CaptureDeviceDirectionMap;
+
 #[link(name = "AVKit", kind = "framework")]
 unsafe extern "C" {}
 

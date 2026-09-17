@@ -526,6 +526,10 @@ pub use button_configuration::{
     ButtonCfg, CornerStyle as ButtonCfgCornerStyle, Size as ButtonCfgSize,
     TitleAlignment as ButtonCfgTitleAlignment,
 };
+mod scene_accessory;
+pub use scene_accessory::SceneAccessory;
+mod scene_accessory_registration;
+pub use scene_accessory_registration::SceneAccessoryRegistration;
 mod arrangement_view_controller;
 pub use arrangement_view_controller::{
     Arrangement, ArrangementViewController, ArrangementViewState,

@@ -5,7 +5,6 @@ use crate::{arc, av, objc};
 #[cfg(target_os = "ios")]
 #[objc::protocol(AVInputPickerInteractionDelegate)]
 pub trait InputPickerInteractionDelegate: objc::Obj {
-    #[api::available(ios = 26.0)]
     #[objc::optional]
     #[objc::msg_send(inputPickerInteractionWillBeginPresenting:)]
     fn input_picker_interaction_will_begin_presenting(
@@ -13,7 +12,6 @@ pub trait InputPickerInteractionDelegate: objc::Obj {
         interaction: &mut InputPickerInteraction,
     );
 
-    #[api::available(ios = 26.0)]
     #[objc::optional]
     #[objc::msg_send(inputPickerInteractionDidEndPresenting:)]
     fn input_picker_interaction_did_end_presenting(
@@ -21,7 +19,6 @@ pub trait InputPickerInteractionDelegate: objc::Obj {
         interaction: &mut InputPickerInteraction,
     );
 
-    #[api::available(ios = 26.0)]
     #[objc::optional]
     #[objc::msg_send(inputPickerInteractionWillBeginDismissing:)]
     fn input_picker_interaction_will_begin_dismissing(
@@ -29,7 +26,6 @@ pub trait InputPickerInteractionDelegate: objc::Obj {
         interaction: &mut InputPickerInteraction,
     );
 
-    #[api::available(ios = 26.0)]
     #[objc::optional]
     #[objc::msg_send(inputPickerInteractionDidEndDismissing:)]
     fn input_picker_interaction_did_end_dismissing(

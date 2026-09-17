@@ -152,3 +152,20 @@ impl ViewController {
 unsafe extern "C" {
     static UI_VIEW_CONTROLLER: &'static objc::Class<ViewController>;
 }
+
+/// Scene accessories
+impl ViewController {
+    /// Registers a scene accessory with this view controller; its scene
+    /// delegate gets the accessory's lifecycle events.
+    #[objc::msg_send(registerSceneAccessory:)]
+    #[objc::available(ios = 27.0)]
+    pub fn register_scene_accessory(
+        &mut self,
+        accessory: &ui::SceneAccessory,
+    ) -> arc::R<ui::SceneAccessoryRegistration>;
+
+    /// Dismisses the accessory's scene if it is being presented.
+    #[objc::msg_send(unregisterSceneAccessory:)]
+    #[objc::available(ios = 27.0)]
+    pub fn unregister_scene_accessory(&mut self, registration: &ui::SceneAccessoryRegistration);
+}

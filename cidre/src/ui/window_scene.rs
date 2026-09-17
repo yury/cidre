@@ -1,4 +1,4 @@
-use crate::{arc, cg, define_obj_type, ns, objc, ui};
+use crate::{api, arc, cg, define_obj_type, ns, objc, ui};
 
 #[cfg(feature = "ca")]
 #[allow(unused)]
@@ -118,8 +118,21 @@ impl ui::SceneSessionRole {
     pub fn external_display_non_interactive() -> &'static Self {
         unsafe { UIWindowSceneSessionRoleExternalDisplayNonInteractive }
     }
+
+    /// Scenes that present content during camera capture. The system
+    /// assigns this role to scenes created from a camera capture scene
+    /// accessory registration; it is not set by clients.
+    #[doc(alias = "UIWindowSceneSessionRoleCameraCaptureAccessory")]
+    #[api::available(ios = 27.1, tvos = 27.1, visionos = 27.1)]
+    pub fn camera_capture_accessory() -> &'static Self {
+        unsafe { UIWindowSceneSessionRoleCameraCaptureAccessory }
+    }
 }
+
+#[api::weak]
 unsafe extern "C" {
     static UIWindowSceneSessionRoleApplication: &'static ui::SceneSessionRole;
     static UIWindowSceneSessionRoleExternalDisplayNonInteractive: &'static ui::SceneSessionRole;
+    #[api::available(ios = 27.1, tvos = 27.1, visionos = 27.1)]
+    static UIWindowSceneSessionRoleCameraCaptureAccessory: &'static ui::SceneSessionRole;
 }

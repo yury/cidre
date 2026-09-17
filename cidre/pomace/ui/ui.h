@@ -101,6 +101,7 @@ Class NS_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT;
 
 Class UI_BUTTON_CONFIGURATION;
 Class UI_SPLIT_VIEW_CONTROLLER;
+Class UI_SCENE_ACCESSORY;
 Class UI_ARRANGEMENT_VIEW_CONTROLLER;
 Class UI_SPLIT_ARRANGEMENT_DIMENSION;
 Class UI_SPLIT_ARRANGEMENT_DIMENSION_RANGE;
@@ -144,6 +145,7 @@ static void ui_initializer(void)
         UI_LIST_CONTENT_CONFIGURATION = NSClassFromString(@"UIListContentConfiguration");
         UI_BUTTON_CONFIGURATION = NSClassFromString(@"UIButtonConfiguration");
         UI_SPLIT_VIEW_CONTROLLER = NSClassFromString(@"UISplitViewController");
+        UI_SCENE_ACCESSORY = NSClassFromString(@"UISceneAccessory");
         UI_ARRANGEMENT_VIEW_CONTROLLER = NSClassFromString(@"UIArrangementViewController");
         UI_SPLIT_ARRANGEMENT_DIMENSION = NSClassFromString(@"UISplitArrangementDimension");
         UI_SPLIT_ARRANGEMENT_DIMENSION_RANGE = NSClassFromString(@"UISplitArrangementDimensionRange");
