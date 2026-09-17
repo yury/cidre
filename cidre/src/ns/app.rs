@@ -329,6 +329,7 @@ pub use workspace::Workspace;
 pub use workspace::WorkspaceOpenCfg;
 
 mod scroll_view;
+pub use scroll_view::ScrollElasticity;
 pub use scroll_view::ScrollView;
 mod table_column;
 

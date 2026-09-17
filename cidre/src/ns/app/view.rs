@@ -159,6 +159,11 @@ impl View {
     #[objc::msg_send(setBoundsOrigin:)]
     pub fn set_bounds_origin(&mut self, origin: cg::Point);
 
+    /// Scrolls the nearest enclosing clip view so that `point`, in this
+    /// view's coordinates, is at the origin of the clip view's bounds.
+    #[objc::msg_send(scrollPoint:)]
+    pub fn scroll_point(&mut self, point: cg::Point);
+
     #[objc::msg_send(setBoundsSize:)]
     pub fn set_bounds_size(&mut self, size: cg::Size);
 

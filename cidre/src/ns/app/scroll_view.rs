@@ -1,5 +1,17 @@
 use crate::{arc, cg, define_obj_type, ns, objc};
 
+/// How far a scroll view lets its content be pulled past its edge.
+#[doc(alias = "NSScrollElasticity")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+#[non_exhaustive]
+pub enum ScrollElasticity {
+    /// Elastic along the axis when the content is scrollable along it.
+    Automatic = 0,
+    None = 1,
+    Allowed = 2,
+}
+
 define_obj_type!(
     #[doc(alias = "NSScrollView")]
     pub ScrollView(ns::View),
@@ -54,6 +66,18 @@ impl ScrollView {
 
     #[objc::msg_send(contentSize)]
     pub fn content_size(&self) -> cg::Size;
+
+    #[objc::msg_send(horizontalScrollElasticity)]
+    pub fn horizontal_scroll_elasticity(&self) -> ns::ScrollElasticity;
+
+    #[objc::msg_send(setHorizontalScrollElasticity:)]
+    pub fn set_horizontal_scroll_elasticity(&mut self, val: ns::ScrollElasticity);
+
+    #[objc::msg_send(verticalScrollElasticity)]
+    pub fn vertical_scroll_elasticity(&self) -> ns::ScrollElasticity;
+
+    #[objc::msg_send(setVerticalScrollElasticity:)]
+    pub fn set_vertical_scroll_elasticity(&mut self, val: ns::ScrollElasticity);
 }
 
 unsafe extern "C" {
