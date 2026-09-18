@@ -37,3 +37,14 @@ pub struct EdgeInsets {
     pub bottom: cg::Float,
     pub right: cg::Float,
 }
+
+impl EdgeInsets {
+    pub const fn new(top: cg::Float, left: cg::Float, bottom: cg::Float, right: cg::Float) -> Self {
+        Self {
+            top,
+            left,
+            bottom,
+            right,
+        }
+    }
+}

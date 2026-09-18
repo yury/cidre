@@ -44,6 +44,9 @@ impl Color {
     #[objc::msg_send(alphaComponent)]
     pub fn alpha_component(&self) -> cg::Float;
 
+    #[objc::msg_send(colorWithAlphaComponent:)]
+    pub fn with_alpha_component(&self, alpha: cg::Float) -> arc::R<Self>;
+
     #[objc::msg_send(redComponent)]
     pub unsafe fn red_component_throws(&self) -> cg::Float;
 

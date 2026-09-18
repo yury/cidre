@@ -172,4 +172,10 @@ impl Control {
 
     #[objc::msg_send(setLineBreakMode:)]
     pub fn set_line_break_mode(&mut self, val: ns::LineBreakMode);
+
+    #[objc::msg_send(alignment)]
+    pub fn alignment(&self) -> ns::TextAlignment;
+
+    #[objc::msg_send(setAlignment:)]
+    pub fn set_alignment(&mut self, val: ns::TextAlignment);
 }

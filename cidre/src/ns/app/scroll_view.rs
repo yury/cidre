@@ -45,6 +45,12 @@ impl ScrollView {
     #[objc::msg_send(setDrawsBackground:)]
     pub fn set_draws_bg(&mut self, val: bool);
 
+    #[objc::msg_send(backgroundColor)]
+    pub fn bg_color(&self) -> arc::R<ns::Color>;
+
+    #[objc::msg_send(setBackgroundColor:)]
+    pub fn set_bg_color(&mut self, val: &ns::Color);
+
     #[objc::msg_send(contentInsets)]
     pub fn content_insets(&self) -> ns::EdgeInsets;
 
@@ -75,6 +81,36 @@ impl ScrollView {
 
     #[objc::msg_send(verticalScrollElasticity)]
     pub fn vertical_scroll_elasticity(&self) -> ns::ScrollElasticity;
+
+    #[objc::msg_send(allowsMagnification)]
+    pub fn allows_magnification(&self) -> bool;
+
+    #[objc::msg_send(setAllowsMagnification:)]
+    pub fn set_allows_magnification(&mut self, val: bool);
+
+    #[objc::msg_send(magnification)]
+    pub fn magnification(&self) -> cg::Float;
+
+    #[objc::msg_send(setMagnification:)]
+    pub fn set_magnification(&mut self, val: cg::Float);
+
+    #[objc::msg_send(setMagnification:centeredAtPoint:)]
+    pub fn set_magnification_centered_at(&mut self, val: cg::Float, point: cg::Point);
+
+    #[objc::msg_send(magnifyToFitRect:)]
+    pub fn magnify_to_fit_rect(&mut self, rect: ns::Rect);
+
+    #[objc::msg_send(minMagnification)]
+    pub fn min_magnification(&self) -> cg::Float;
+
+    #[objc::msg_send(setMinMagnification:)]
+    pub fn set_min_magnification(&mut self, val: cg::Float);
+
+    #[objc::msg_send(maxMagnification)]
+    pub fn max_magnification(&self) -> cg::Float;
+
+    #[objc::msg_send(setMaxMagnification:)]
+    pub fn set_max_magnification(&mut self, val: cg::Float);
 
     #[objc::msg_send(setVerticalScrollElasticity:)]
     pub fn set_vertical_scroll_elasticity(&mut self, val: ns::ScrollElasticity);

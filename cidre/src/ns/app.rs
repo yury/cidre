@@ -238,6 +238,7 @@ pub use text_view::TextView;
 
 mod text;
 pub use text::Text;
+pub use text::TextAlignment;
 
 pub mod table_view;
 pub use table_view::AnyTableViewDataSrc;

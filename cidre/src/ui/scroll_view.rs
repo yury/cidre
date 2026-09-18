@@ -51,6 +51,18 @@ impl ScrollView {
     #[objc::msg_send(setBounces:)]
     pub fn set_bounces(&mut self, val: bool);
 
+    #[objc::msg_send(alwaysBounceVertical)]
+    pub fn always_bounce_vertical(&self) -> bool;
+
+    #[objc::msg_send(setAlwaysBounceVertical:)]
+    pub fn set_always_bounce_vertical(&mut self, val: bool);
+
+    #[objc::msg_send(alwaysBounceHorizontal)]
+    pub fn always_bounce_horizontal(&self) -> bool;
+
+    #[objc::msg_send(setAlwaysBounceHorizontal:)]
+    pub fn set_always_bounce_horizontal(&mut self, val: bool);
+
     #[objc::msg_send(minimumZoomScale)]
     pub fn min_zoom_scale(&self) -> cg::Float;
 
