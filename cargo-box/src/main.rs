@@ -83,6 +83,15 @@ mod runner {
         pub(crate) args: Vec<String>,
     }
 
+    /// Whether BOX_DEBUG asks to launch the app under lldb instead of
+    /// running it to completion. Unset, empty, `0` and `false` mean no.
+    fn box_debug() -> bool {
+        match env::var("BOX_DEBUG") {
+            Ok(v) => !matches!(v.trim(), "" | "0" | "false" | "no"),
+            Err(_) => false,
+        }
+    }
+
     pub(crate) fn run(args: Args) {
         assert!(args.args.len() > 2);
         let binary = &args.args[2];
@@ -273,7 +282,11 @@ mod runner {
             let device_id = std::env::var("DEVICE_ID").unwrap();
 
             device_ctl::install_app(&device_id, &target);
-            device_ctl::run_app(&device_id, &xcode_proj.bundle_id, &args.args[3..]);
+            if box_debug() {
+                device_ctl::debug_app(&device_id, &xcode_proj.bundle_id, &args.args[3..]);
+            } else {
+                device_ctl::run_app(&device_id, &xcode_proj.bundle_id, &args.args[3..]);
+            }
         }
     }
 }
@@ -837,6 +850,42 @@ mod device_ctl {
         process::exit(code);
     }
 
+    /// Launches the app suspended, then hands the terminal to lldb attached
+    /// to it. The app's stdout is not bridged in this mode: use lldb's
+    /// `continue` to run it and `process kill` or `quit` to stop.
+    pub(crate) fn debug_app(device_id: &str, id: &str, args: &[String]) {
+        let mut args_vec = vec![
+            "device",
+            "process",
+            "launch",
+            "--start-stopped",
+            "-d",
+            device_id,
+            "--terminate-existing",
+            id,
+        ];
+        for s in args {
+            args_vec.push(s);
+        }
+        let buf = run_cmd(&args_vec);
+        let Ok(launch) = serde_json::from_str::<json::AppLaunch>(&buf) else {
+            fail("launch", &buf);
+        };
+        let pid = launch.result.process.pid;
+        let device = launch.result.device_id;
+        eprintln!("cargo box: {id} launched suspended with pid {pid}, attaching lldb");
+        let status = process::Command::new("xcrun")
+            .arg("lldb")
+            .args(["-o", &format!("device select {device}")])
+            .args(["-o", &format!("device process attach -p {pid}")])
+            .stdin(process::Stdio::inherit())
+            .stdout(process::Stdio::inherit())
+            .stderr(process::Stdio::inherit())
+            .status()
+            .unwrap();
+        process::exit(status.code().unwrap_or(1));
+    }
+
     pub(crate) fn list_devices() {
         let buf = run_cmd(&["list", "devices"]);
         let Ok(list) = serde_json::from_str::<json::DeviceList>(&buf) else {
@@ -867,6 +916,24 @@ mod device_ctl {
             pub(crate) signal: Option<i32>,
             #[serde(rename = "exitCode")]
             pub(crate) code: Option<i32>,
+        }
+
+        #[derive(Deserialize, Debug)]
+        pub(crate) struct AppLaunch {
+            pub(crate) result: AppLaunchResult,
+        }
+
+        #[derive(Deserialize, Debug)]
+        pub(crate) struct AppLaunchResult {
+            #[serde(rename = "deviceIdentifier")]
+            pub(crate) device_id: String,
+            pub(crate) process: AppLaunchProcess,
+        }
+
+        #[derive(Deserialize, Debug)]
+        pub(crate) struct AppLaunchProcess {
+            #[serde(rename = "processIdentifier")]
+            pub(crate) pid: i32,
         }
 
         #[derive(Deserialize, Debug)]
