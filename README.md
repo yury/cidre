@@ -43,6 +43,7 @@ DEVICE_ID = device id from step 3
 ```
 5. Run `cargo t --target aarch64-apple-ios` (make sure you have connected and unlocked device)
 6. Run `cargo r --target aarch64-apple-ios --example device-formats`
+7. Run `cargo box capture` to take a screenshot of the device (uses `DEVICE_ID`, override with `--device`)
 
 ### Versioning (API Availability)
 

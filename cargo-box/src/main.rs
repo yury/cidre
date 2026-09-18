@@ -26,6 +26,11 @@ enum Cmd {
     /// in target/boxes for runner.
     #[command()]
     Proj(xcode::ProjArgs),
+
+    /// Capture a screenshot from a device
+    /// via `xcrun devicectl device capture screenshot`
+    #[command()]
+    Capture(capture::Args),
 }
 
 fn main() {
@@ -47,8 +52,17 @@ fn main() {
         Cmd::Teams => teams::list(),
         Cmd::Devices => device_ctl::list_devices(),
         Cmd::Proj(args) => _ = xcode::proj(args),
+        Cmd::Capture(args) => capture::run(args),
         _ => panic!("unknown command"),
     }
+}
+
+/// Loads `.box` and `.box.local` env files from the current directory.
+/// Devs can add `.box.local` to git ignore and override their DEVICE_IDs
+/// and other env vars there.
+fn load_box_env() {
+    _ = dotenv::from_filename(".box");
+    _ = dotenv::from_filename(".box.local");
 }
 
 mod runner {
@@ -505,9 +519,7 @@ mod xcode {
     pub(crate) fn proj(args: ProjArgs) -> Proj {
         let (mut path, mans, _ws) = cargo::manifests().unwrap();
 
-        _ = dotenv::from_filename(".box");
-        // devs can add .box.local to git ignore and override their DEVICE_IDs and other env vars
-        _ = dotenv::from_filename(".box.local");
+        crate::load_box_env();
 
         if let Some(uppercase_name) = args.bin.as_deref().map(str::to_ascii_uppercase) {
             // check binary replacement xcode project
@@ -617,6 +629,95 @@ BOX_ORG_ID = {box_org_id}
     }
 }
 
+mod capture {
+    use std::{
+        path::{Path, PathBuf},
+        process,
+    };
+
+    use crate::device_ctl;
+
+    #[derive(clap::Args, Debug)]
+    pub(crate) struct Args {
+        /// Device identifier, ECID, serial number, UDID, name or DNS name.
+        /// Defaults to DEVICE_ID from env, `.box` or `.box.local`.
+        #[arg(short, long)]
+        device: Option<String>,
+
+        /// Unique ID of the display to capture (primary display by default).
+        /// See `xcrun devicectl device info displays`.
+        #[arg(long)]
+        display: Option<String>,
+
+        /// Output .png file or directory. Defaults to a timestamped file
+        /// in the current directory.
+        #[arg()]
+        destination: Option<PathBuf>,
+    }
+
+    pub(crate) fn run(args: Args) {
+        crate::load_box_env();
+
+        let device = args.device.or_else(|| std::env::var("DEVICE_ID").ok());
+        let Some(device) = device else {
+            eprintln!(
+                "cargo box: pass --device or set DEVICE_ID env (you can add it to .box file)\n\
+                 use `cargo box devices` to list connected devices"
+            );
+            process::exit(2)
+        };
+
+        let destination = destination(args.destination.as_deref(), "screenshot", "png");
+        let destination = destination.to_str().unwrap();
+
+        let mut cmd_args = vec![
+            "device",
+            "capture",
+            "screenshot",
+            "--device",
+            &device,
+            "--destination",
+            destination,
+        ];
+        if let Some(display) = &args.display {
+            cmd_args.extend(["--display-unique-id", display]);
+        }
+
+        device_ctl::capture(&cmd_args);
+        println!("{destination}");
+    }
+
+    /// Resolves the output path: a directory gets a timestamped file name,
+    /// a file without the required extension gets it appended.
+    fn destination(path: Option<&Path>, prefix: &str, ext: &str) -> PathBuf {
+        let file_name = || format!("{prefix}-{}.{ext}", timestamp());
+        match path {
+            None => PathBuf::from(file_name()),
+            Some(p) if p.is_dir() => p.join(file_name()),
+            Some(p) if p.extension().is_some_and(|e| e.eq_ignore_ascii_case(ext)) => {
+                p.to_path_buf()
+            }
+            Some(p) => {
+                let mut s = p.as_os_str().to_owned();
+                s.push(".");
+                s.push(ext);
+                PathBuf::from(s)
+            }
+        }
+    }
+
+    fn timestamp() -> String {
+        use cidre::cf;
+        let mut fmt = cf::DateFormatter::with_styles(
+            cf::DateFormatterStyle::No,
+            cf::DateFormatterStyle::No,
+            None,
+        );
+        fmt.set_format(&cf::String::from_str("yyyyMMdd-HHmmss"));
+        fmt.string_from_date(&cf::Date::now()).to_string()
+    }
+}
+
 mod device_ctl {
     use std::{env, fs, path::Path, process};
 
@@ -685,6 +786,14 @@ mod device_ctl {
             .ok()
             .and_then(|v| v.get("result").map(|_| ()))
             .is_some()
+    }
+
+    /// Runs `devicectl device capture ..` and exits with a reason on failure.
+    pub(crate) fn capture(args: &[&str]) {
+        let buf = run_cmd(args);
+        if !succeeded(&buf) {
+            fail("capture", &buf);
+        }
     }
 
     pub(crate) fn install_app(device_id: &str, bundle: &Path) {
