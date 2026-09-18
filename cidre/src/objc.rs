@@ -194,7 +194,7 @@ macro_rules! init_with_default {
             fn init_fn(&self) -> Option<extern "C" fn()> {
                 extern "C" fn impl_init<T: Default>(
                     s: *mut $NewType,
-                    _sel: Option<$crate::objc::Sel>,
+                    _sel: Option<&$crate::objc::Sel>,
                 ) -> $crate::arc::R<$NewType> {
                     unsafe {
                         let ptr: *mut u8 = s.cast();

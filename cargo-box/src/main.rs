@@ -282,8 +282,21 @@ mod runner {
             let device_id = std::env::var("DEVICE_ID").unwrap();
 
             device_ctl::install_app(&device_id, &target);
+            let app_args = &args.args[3..];
             if box_debug() {
-                device_ctl::debug_app(&device_id, &xcode_proj.bundle_id, &args.args[3..]);
+                device_ctl::debug_app(&device_id, &xcode_proj.bundle_id, app_args);
+            } else if app_args.iter().any(|a| a == "--bench") {
+                // cargo bench
+                let mut results = project.clone();
+                results.pop();
+                results.push("criterion");
+                device_ctl::bench_app(
+                    &device_id,
+                    &xcode_proj.bundle_id,
+                    &name,
+                    app_args,
+                    &results,
+                );
             } else {
                 device_ctl::run_app(&device_id, &xcode_proj.bundle_id, &args.args[3..]);
             }
@@ -434,7 +447,7 @@ mod xcode {
     use crate::cargo;
 
     pub(crate) fn build(project: &Proj, platform: &str, conf: &str, target: &Path) {
-        process::Command::new("xcodebuild")
+        let status = process::Command::new("xcodebuild")
             .args(["-project".as_ref(), project.path.as_os_str()])
             .args(["-destination", &format!("generic/platform={platform}")])
             .args(["-configuration", conf])
@@ -444,6 +457,10 @@ mod xcode {
             // .args(env_args)
             .status()
             .unwrap();
+        if !status.success() {
+            eprintln!("cargo box: xcodebuild failed");
+            process::exit(status.code().unwrap_or(1));
+        }
     }
 
     #[derive(clap::Args, Debug, Default)]
@@ -529,6 +546,18 @@ mod xcode {
         None
     }
 
+    /// Bundle ids allow only alphanumerics, `-` and `.`, while tests and benches
+    /// are usually named with `_` (`cf_string`), which fails app id registration.
+    pub(crate) fn bundle_id_component(name: &str) -> String {
+        name.chars()
+            .map(|c| match c {
+                c if c.is_ascii_alphanumeric() => c,
+                '-' | '.' => c,
+                _ => '-',
+            })
+            .collect()
+    }
+
     pub(crate) fn proj(args: ProjArgs) -> Proj {
         let (mut path, mans, _ws) = cargo::manifests().unwrap();
 
@@ -591,6 +620,7 @@ use cidre-box teams command to list available team ids"
             path.push("deps")
         }
         let product_name = product.name.as_ref().unwrap();
+        let box_id = bundle_id_component(product_name);
         path.push(product_name);
 
         fs::create_dir_all(&path).unwrap();
@@ -606,7 +636,7 @@ use cidre-box teams command to list available team ids"
             format!(
                 r#"
 PRODUCT_NAME = {product_name}
-BOX_ID = {product_name}
+BOX_ID = {box_id}
 DEVELOPMENT_TEAM = {dev_team_id}
 BOX_ORG_ID = {box_org_id}
 "#
@@ -636,7 +666,7 @@ BOX_ORG_ID = {box_org_id}
         Proj {
             path,
             scheme: "box".to_owned(),
-            bundle_id: format!("{box_org_id}.{product_name}"),
+            bundle_id: format!("{box_org_id}.{box_id}"),
             replace_binary: true,
         }
     }
@@ -732,21 +762,56 @@ mod capture {
 }
 
 mod device_ctl {
-    use std::{env, fs, path::Path, process};
+    use std::{
+        env, fs,
+        path::{Path, PathBuf},
+        process, thread,
+        time::{Duration, Instant},
+    };
+
+    /// A running `devicectl` that reports to a json file.
+    struct Cmd {
+        child: process::Child,
+        json_output_path: PathBuf,
+    }
+
+    impl Cmd {
+        /// `tag` keeps json files of concurrently running commands apart.
+        fn spawn(tag: &str, args: &[&str]) -> Self {
+            Self::spawn_with(tag, args, process::Stdio::inherit())
+        }
+
+        fn spawn_with(tag: &str, args: &[&str], stderr: process::Stdio) -> Self {
+            let json_output_path =
+                env::temp_dir().join(format!("devicectl-{}{tag}.json", process::id()));
+            let child = process::Command::new("xcrun")
+                .args(["devicectl", "-q", "--json-output"])
+                .arg(&json_output_path)
+                .args(args)
+                .stderr(stderr)
+                .spawn()
+                .unwrap();
+            Self {
+                child,
+                json_output_path,
+            }
+        }
+
+        fn is_running(&mut self) -> bool {
+            matches!(self.child.try_wait(), Ok(None))
+        }
+
+        fn wait(mut self) -> String {
+            self.child.wait().unwrap();
+            // devicectl writes nothing when it dies early.
+            let buf = fs::read_to_string(&self.json_output_path).unwrap_or_default();
+            let _ = fs::remove_file(&self.json_output_path);
+            buf
+        }
+    }
 
     fn run_cmd(args: &[&str]) -> String {
-        let json_output_path = env::temp_dir().join(format!("devicectl-{}.json", process::id()));
-        let mut child = process::Command::new("xcrun")
-            .args(["devicectl", "-q", "--json-output"])
-            .arg(&json_output_path)
-            .args(args)
-            .spawn()
-            .unwrap();
-        child.wait().unwrap();
-        // devicectl writes nothing when it dies early.
-        let buf = fs::read_to_string(&json_output_path).unwrap_or_default();
-        let _ = fs::remove_file(json_output_path);
-        buf
+        Cmd::spawn("", args).wait()
     }
 
     /// The human-readable reason in a devicectl error reply, if any: devicectl
@@ -832,21 +897,141 @@ mod device_ctl {
             "-d",
             device_id,
             "--terminate-existing",
+            // ends devicectl's own options, so app args (`--bench`, `--help`, ..)
+            // are never taken by devicectl itself
+            "--",
             id,
         ];
         for s in args {
             args_vec.push(s);
         }
         let buf = run_cmd(&args_vec);
-        let Ok(run) = serde_json::from_str::<json::AppRun>(&buf) else {
+        process::exit(exit_code(&buf));
+    }
+
+    /// The exit code or the terminating signal from a `launch --console` reply.
+    fn exit_code(buf: &str) -> i32 {
+        let Ok(run) = serde_json::from_str::<json::AppRun>(buf) else {
             // A locked device, a lost console, or a launch error.
-            fail("launch", &buf);
+            fail("launch", buf);
         };
-        let code = match (run.result.termination.signal, run.result.termination.code) {
+        match (run.result.termination.signal, run.result.termination.code) {
             (Some(signal), None) => signal,
             (None, Some(code)) => code,
             _ => 0,
+        }
+    }
+
+    /// The pids of the app processes started from `{name}.app/{name}`.
+    fn app_pids(device_id: &str, name: &str) -> Vec<i32> {
+        let buf = run_cmd(&["device", "info", "processes", "-d", device_id]);
+        let Ok(list) = serde_json::from_str::<json::ProcessList>(&buf) else {
+            return Vec::new();
         };
+        let suffix = format!("/{name}.app/{name}");
+        list.result
+            .processes
+            .iter()
+            .filter(|p| p.executable.as_deref().is_some_and(|e| e.ends_with(&suffix)))
+            .map(|p| p.pid)
+            .collect()
+    }
+
+    /// Runs benches to completion with the console bridged, like `run_app`.
+    ///
+    /// iOS kills a launched process that doesn't become a UI app in ~20 secs,
+    /// which is fine for most tests but not for benches. The watchdog is off
+    /// for debugged processes, so the app is launched suspended and resumed
+    /// from a non interactive lldb (see `box/bench.py`), which also moves the app
+    /// to its Documents folder. Criterion keeps `target/criterion` there, so
+    /// runs are compared with previous ones on the device. That folder is copied
+    /// to `results` on the host after the run.
+    pub(crate) fn bench_app(
+        device_id: &str,
+        id: &str,
+        name: &str,
+        args: &[String],
+        results: &Path,
+    ) {
+        let mut args_vec = vec![
+            "device",
+            "process",
+            "launch",
+            "--console",
+            "--start-stopped",
+            "-d",
+            device_id,
+            "--terminate-existing",
+            "--",
+            id,
+        ];
+        for s in args {
+            args_vec.push(s);
+        }
+        eprintln!("cargo box: running {id} under lldb to keep the launch watchdog off");
+        // A previous instance may still be around (suspended or being
+        // terminated by the launch), lldb has to attach to the new one.
+        let old_pids = app_pids(device_id, name);
+        let mut launch = Cmd::spawn("-launch", &args_vec);
+
+        let deadline = Instant::now() + Duration::from_secs(60);
+        let pid = loop {
+            let pids = app_pids(device_id, name);
+            if let Some(pid) = pids.into_iter().find(|pid| !old_pids.contains(pid)) {
+                break pid;
+            }
+            if !launch.is_running() || Instant::now() > deadline {
+                let _ = launch.child.kill();
+                fail("launch", &launch.wait());
+            }
+            thread::sleep(Duration::from_millis(200));
+        };
+
+        let script_dir = env::temp_dir().join(format!("cargo-box-{}", process::id()));
+        fs::create_dir_all(&script_dir).unwrap();
+        let script = script_dir.join("cargo_box_bench.py");
+        fs::write(&script, include_str!("../box/bench.py")).unwrap();
+
+        // lldb quits when the app exits and kills it if something goes wrong
+        let lldb = process::Command::new("xcrun")
+            .args(["lldb", "--batch"])
+            .args(["-o", &format!("command script import {}", script.display())])
+            .args(["-o", &format!("device select {device_id}")])
+            .args(["-o", &format!("device process attach -p {pid}")])
+            .args(["-o", "script cargo_box_bench.run(lldb.debugger)"])
+            .stdin(process::Stdio::null())
+            .stderr(process::Stdio::inherit())
+            .output()
+            .unwrap();
+        let _ = fs::remove_dir_all(script_dir);
+        let lldb_out = String::from_utf8_lossy(&lldb.stdout);
+        if !lldb_out.contains("cargo box: resumed in Documents") {
+            eprintln!("cargo box: lldb didn't drive the app as expected:\n{lldb_out}");
+        }
+
+        let code = exit_code(&launch.wait());
+
+        // libtest benches have no criterion folder, don't report that
+        let _ = fs::remove_dir_all(results);
+        let copy_args = [
+            "device",
+            "copy",
+            "from",
+            "-d",
+            device_id,
+            "--domain-type",
+            "appDataContainer",
+            "--domain-identifier",
+            id,
+            "--source",
+            "Documents/target/criterion",
+            "--destination",
+            results.to_str().unwrap(),
+        ];
+        let buf = Cmd::spawn_with("", &copy_args, process::Stdio::null()).wait();
+        if succeeded(&buf) {
+            eprintln!("cargo box: criterion results are in {}", results.display());
+        }
         process::exit(code);
     }
 
@@ -862,6 +1047,9 @@ mod device_ctl {
             "-d",
             device_id,
             "--terminate-existing",
+            // ends devicectl's own options, so app args (`--bench`, `--help`, ..)
+            // are never taken by devicectl itself
+            "--",
             id,
         ];
         for s in args {
@@ -932,6 +1120,24 @@ mod device_ctl {
 
         #[derive(Deserialize, Debug)]
         pub(crate) struct AppLaunchProcess {
+            #[serde(rename = "processIdentifier")]
+            pub(crate) pid: i32,
+        }
+
+        #[derive(Deserialize, Debug)]
+        pub(crate) struct ProcessList {
+            pub(crate) result: ProcessListResult,
+        }
+
+        #[derive(Deserialize, Debug)]
+        pub(crate) struct ProcessListResult {
+            #[serde(rename = "runningProcesses")]
+            pub(crate) processes: Vec<Process>,
+        }
+
+        #[derive(Deserialize, Debug)]
+        pub(crate) struct Process {
+            pub(crate) executable: Option<String>,
             #[serde(rename = "processIdentifier")]
             pub(crate) pid: i32,
         }
@@ -1015,5 +1221,11 @@ mod tests {
         assert!(super::device_ctl::succeeded(
             r#"{"result": {"terminationResult": {}}}"#
         ));
+    }
+
+    #[test]
+    fn bundle_id_component() {
+        assert_eq!(super::xcode::bundle_id_component("cf_string"), "cf-string");
+        assert_eq!(super::xcode::bundle_id_component("am-device-list"), "am-device-list");
     }
 }

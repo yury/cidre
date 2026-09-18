@@ -239,7 +239,7 @@ unsafe extern "C" {
     static SC_CONTENT_SHARING_PICKER: &'static objc::Class<Picker>;
 }
 
-#[cfg(test)]
+#[cfg(all(test, target_os = "macos"))]
 mod tests {
     use crate::sc;
 

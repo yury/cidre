@@ -20,8 +20,10 @@ pub fn register_professional_video_workflow_format_readers() {
     unsafe { MTRegisterProfessionalVideoWorkflowFormatReaders() }
 }
 
-#[cfg(target_os = "macos")]
 #[link(name = "MediaToolbox", kind = "framework")]
+unsafe extern "C" {}
+
+#[cfg(target_os = "macos")]
 unsafe extern "C" {
     fn MTRegisterProfessionalVideoWorkflowFormatReaders();
 }

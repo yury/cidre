@@ -131,7 +131,7 @@ unsafe extern "C" {
     static SC_RECORDING_OUTPUT: &'static objc::Class<RecordingOutput>;
 }
 
-#[cfg(test)]
+#[cfg(all(test, target_os = "macos"))]
 mod tests {
     use crate::{av, sc};
 

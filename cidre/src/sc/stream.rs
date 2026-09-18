@@ -1261,7 +1261,7 @@ impl Stream {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, target_os = "macos"))]
 mod tests {
     use std::time::Duration;
 
