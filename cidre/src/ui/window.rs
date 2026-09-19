@@ -18,7 +18,7 @@ impl Window {
     pub fn window_scene(&self) -> Option<arc::R<ui::WindowScene>>;
 
     #[objc::msg_send(rootViewController)]
-    pub fn root_vc(&self) -> Option<&ui::ViewController>;
+    pub fn root_vc(&self) -> Option<arc::R<ui::ViewController>>;
 
     #[objc::msg_send(setRootViewController:)]
     pub fn set_root_vc(&mut self, val: Option<&ui::ViewController>);
