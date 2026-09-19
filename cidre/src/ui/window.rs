@@ -14,6 +14,9 @@ impl Window {
         Self::alloc().init_with_window_scene(scene)
     }
 
+    #[objc::msg_send(windowScene)]
+    pub fn window_scene(&self) -> Option<arc::R<ui::WindowScene>>;
+
     #[objc::msg_send(rootViewController)]
     pub fn root_vc(&self) -> Option<&ui::ViewController>;
 
