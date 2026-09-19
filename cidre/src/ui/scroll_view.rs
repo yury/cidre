@@ -42,6 +42,10 @@ impl ScrollView {
     #[objc::msg_send(setContentOffset:)]
     pub fn set_content_offset(&mut self, val: cg::Point);
 
+    /// Whether a finger is on the content, moving it.
+    #[objc::msg_send(isDragging)]
+    pub fn is_dragging(&self) -> bool;
+
     #[objc::msg_send(setContentOffset:animated:)]
     pub fn set_content_offset_animated(&mut self, val: cg::Point, animated: bool);
 

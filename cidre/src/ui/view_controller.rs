@@ -26,6 +26,17 @@ impl ViewController {
     #[objc::msg_send(parentViewController)]
     pub fn parent_vc(&self) -> Option<arc::R<ViewController>>;
 
+    /// The scroll view whose scrolling the bars at `edge` follow, for
+    /// their look and their minimization; without one UIKit looks for a
+    /// scroll view itself.
+    #[objc::msg_send(setContentScrollView:forEdge:)]
+    #[objc::available(ios = 15.0, tvos = 15.0)]
+    pub fn set_content_scroll_view_for_edge(
+        &mut self,
+        scroll_view: Option<&ui::ScrollView>,
+        edge: ui::DirectionalRectEdge,
+    );
+
     #[objc::msg_send(addChildViewController:)]
     pub fn add_child_vc(&mut self, child: &ViewController);
 

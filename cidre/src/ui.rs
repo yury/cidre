@@ -569,6 +569,12 @@ pub use bar_button_item::Style as BarButtonItemStyle;
 mod navigation_item;
 pub use navigation_item::NavItem;
 
+mod bar_minimization;
+pub use bar_minimization::BarMinimization;
+pub use bar_minimization::BarMinimizationBehavior;
+pub use bar_minimization::BarMinimizationRestorationBehavior;
+pub use bar_minimization::BarMinimizationSafeAreaAdjustment;
+
 mod list_content_configuration;
 pub use list_content_configuration::BgCfg;
 pub use list_content_configuration::ListContentCfg;

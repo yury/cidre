@@ -51,6 +51,9 @@ impl NavController {
     #[objc::msg_send(setNavigationBarHidden:)]
     pub fn set_nav_bar_hidden(&mut self, val: bool);
 
+    #[objc::msg_send(setNavigationBarHidden:animated:)]
+    pub fn set_nav_bar_hidden_animated(&mut self, val: bool, animated: bool);
+
     #[objc::msg_send(navigationBar)]
     pub fn nav_bar(&self) -> arc::R<ui::NavBar>;
 
