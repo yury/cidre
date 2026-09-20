@@ -341,6 +341,21 @@ impl CompileOpts {
 }
 
 define_obj_type!(
+    /// A reflection object containing information about a function in a Metal library.
+    #[doc(alias = "MTLFunctionReflection")]
+    pub FnReflection(ns::Id)
+);
+
+impl FnReflection {
+    /// Provides a list of inputs and outputs of the function.
+    #[objc::msg_send(bindings)]
+    pub fn bindings(&self) -> arc::R<ns::Array<mtl::Binding>>;
+
+    #[objc::msg_send(userAnnotation)]
+    pub fn user_annotation(&self) -> Option<arc::R<ns::String>>;
+}
+
+define_obj_type!(
     /// An object that represents a public shader function in a Metal library.
     #[doc(alias = "MTLFunction")]
     pub Fn(ns::Id)
@@ -402,6 +417,11 @@ impl Lib {
 
     #[objc::msg_send(newFunctionWithName:)]
     pub fn new_fn(&self, name: &ns::String) -> Option<arc::R<Fn>>;
+
+    /// Returns reflection information for a function in the library.
+    #[objc::msg_send(reflectionForFunctionWithName:)]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn reflection_for_fn(&self, name: &ns::String) -> Option<arc::R<FnReflection>>;
 
     /// # Safety
     ///

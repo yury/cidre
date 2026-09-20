@@ -193,6 +193,19 @@ impl Device {
         ns::if_none(|err| unsafe { self.new_lib_with_data_err(data, err) })
     }
 
+    /// Loads a library from a `.metallib` file or a `.mtlpackage`.
+    #[objc::msg_send(newLibraryWithURL:error:)]
+    pub unsafe fn new_lib_with_url_err<'ear>(
+        &self,
+        url: &ns::Url,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<Lib>>;
+
+    #[inline]
+    pub fn new_lib_with_url<'ear>(&self, url: &ns::Url) -> ns::Result<'ear, arc::R<Lib>> {
+        ns::if_none(|err| unsafe { self.new_lib_with_url_err(url, err) })
+    }
+
     #[objc::msg_send(newLibraryWithSource:options:error:)]
     pub unsafe fn new_lib_with_src_err<'ear>(
         &self,

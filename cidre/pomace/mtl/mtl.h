@@ -62,6 +62,9 @@ Class MTL4_MACHINE_LEARNING_PIPELINE_DESCRIPTOR;
 Class MTL4_RENDER_PASS_DESCRIPTOR;
 Class MTL4_PIPELINE_OPTIONS;
 Class MTL4_COMPILER_DESCRIPTOR;
+Class MTL4_LIBRARY_FUNCTION_DESCRIPTOR;
+Class MTL_TENSOR_EXTENTS;
+Class MTL_TENSOR_DESCRIPTOR;
 
 
 
@@ -130,6 +133,9 @@ static void mtl_initializer(void)
         MTL4_RENDER_PASS_DESCRIPTOR = NSClassFromString(@"MTL4RenderPassDescriptor");
         MTL4_PIPELINE_OPTIONS = NSClassFromString(@"MTL4PipelineOptions");
         MTL4_COMPILER_DESCRIPTOR =  NSClassFromString(@"MTL4CompilerDescriptor");
+        MTL4_LIBRARY_FUNCTION_DESCRIPTOR = NSClassFromString(@"MTL4LibraryFunctionDescriptor");
+        MTL_TENSOR_EXTENTS = NSClassFromString(@"MTLTensorExtents");
+        MTL_TENSOR_DESCRIPTOR = NSClassFromString(@"MTLTensorDescriptor");
         
         
     }

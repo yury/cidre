@@ -68,7 +68,10 @@ impl Desc {
     pub fn set_sparse_page_size(&mut self, val: mtl::SparsePageSize);
 }
 
-define_obj_type!(pub Heap(ns::Id));
+define_obj_type!(
+    #[doc(alias = "MTLHeap")]
+    pub Heap(mtl::Allocation)
+);
 
 impl Heap {
     define_mtl!(set_label, hazard_tracking_mode, res_opts);

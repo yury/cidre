@@ -1,9 +1,23 @@
-use crate::{api, arc, av, ns, swift, swift::abi};
+use crate::{api, arc, av, swift::abi};
 
-use crate::swift::concurrency::TaskPriority;
-
-use super::SpeechModule;
-use crate::swift::value::{Optional, Storage};
+// used by 27.0 api only
+#[cfg(any(
+    all(target_os = "macos", feature = "macos_27_0"),
+    all(target_os = "ios", feature = "ios_27_0"),
+    all(target_os = "tvos", feature = "tvos_27_0"),
+    all(target_os = "visionos", feature = "visionos_27_0"),
+    all(target_os = "ios", target_abi = "macabi", feature = "maccatalyst_27_0")
+))]
+use {
+    super::SpeechModule,
+    crate::{
+        ns, swift,
+        swift::{
+            concurrency::TaskPriority,
+            value::{Optional, Storage},
+        },
+    },
+};
 
 crate::define_swift_class!(pub CaptureInputSequenceProvider = accessor capture_input_sequence_provider_metadata);
 
@@ -35,15 +49,17 @@ crate::define_swift_marker!(
         opaque (&raw const CAPTURE_INPUT_SEQUENCE_PROVIDER_ANALYZER_INPUTS_DESCRIPTOR).cast(), 0
 );
 
+// The bodiless `swift::call` exists only when available, so its wrappers are
+// gated the same way instead of getting an unavailable variant.
+#[cfg(any(
+    all(target_os = "macos", feature = "macos_27_0"),
+    all(target_os = "ios", feature = "ios_27_0"),
+    all(target_os = "tvos", feature = "tvos_27_0"),
+    all(target_os = "visionos", feature = "visionos_27_0"),
+    all(target_os = "ios", target_abi = "macabi", feature = "maccatalyst_27_0")
+))]
 impl CaptureInputSequenceProvider {
     #[doc(alias = "CaptureInputSequenceProvider.providerWithSession")]
-    #[api::available(
-        macos = 27.0,
-        ios = 27.0,
-        maccatalyst = 27.0,
-        tvos = 27.0,
-        visionos = 27.0
-    )]
     /// The `SpeechModule` array is an existential the mangler cannot spell, so
     /// this one is given mangled.
     ///
@@ -108,7 +124,9 @@ impl CaptureInputSequenceProvider {
             Storage::none(),
         )
     }
+}
 
+impl CaptureInputSequenceProvider {
     #[doc(alias = "CaptureInputSequenceProvider.captureSession")]
     #[api::available(
         macos = 27.0,
