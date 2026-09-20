@@ -116,6 +116,7 @@ Class UI_NAVIGATION_ITEM;
 Class UI_LIST_CONTENT_CONFIGURATION;
 
 Class UI_COLLECTION_VIEW_COMPOSITIONAL_LAYOUT;
+Class UI_HINGE_INTERACTION;
 Class UI_COLLECTION_VIEW_SUPPLEMENTARY_REGISTRATION;
 Class UI_COLLECTION_REUSABLE_VIEW;
 Class NS_COLLECTION_LAYOUT_DIMENSION;
@@ -135,6 +136,7 @@ static void ui_initializer(void)
         initialized = 1;
         UI_COLLECTION_LAYOUT_LIST_CONFIGURATION = NSClassFromString(@"UICollectionLayoutListConfiguration");
         UI_COLLECTION_VIEW_COMPOSITIONAL_LAYOUT = NSClassFromString(@"UICollectionViewCompositionalLayout");
+        UI_HINGE_INTERACTION = NSClassFromString(@"UIHingeInteraction");
         UI_COLLECTION_VIEW_SUPPLEMENTARY_REGISTRATION = NSClassFromString(@"UICollectionViewSupplementaryRegistration");
         UI_COLLECTION_REUSABLE_VIEW = NSClassFromString(@"UICollectionReusableView");
         NS_COLLECTION_LAYOUT_DIMENSION = NSClassFromString(@"NSCollectionLayoutDimension");

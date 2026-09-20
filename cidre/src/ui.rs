@@ -417,6 +417,16 @@ pub use interaction::AnyInteraction;
 pub use interaction::Interaction;
 pub use interaction::InteractionImpl;
 
+mod hinge;
+pub use hinge::Hinge;
+pub use hinge::HingeStatus;
+
+mod hinge_interaction;
+pub use hinge_interaction::HingeInteraction;
+pub use hinge_interaction::HingeInteractionUpdate;
+#[cfg(feature = "blocks")]
+pub use hinge_interaction::HingeInteractionUpdateHandler;
+
 mod scene_definitions;
 pub use scene_definitions::SceneSessionRole;
 
