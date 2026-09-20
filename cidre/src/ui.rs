@@ -67,6 +67,7 @@ pub use geometry::Axis;
 pub use geometry::DirectionalEdgeInsets;
 pub use geometry::DirectionalRectEdge;
 pub use geometry::EdgeInsets;
+pub use geometry::RectEdge;
 pub use geometry::Offset;
 
 mod gesture_recognizer;
@@ -329,6 +330,10 @@ pub use corner_radius::CornerRadius;
 
 mod corner_configuration;
 pub use corner_configuration::CornerCfg;
+
+mod view_layout_region;
+pub use view_layout_region::ViewLayoutRegion;
+pub use view_layout_region::ViewLayoutRegionAdaptivityAxis;
 
 mod window;
 pub use window::Window;

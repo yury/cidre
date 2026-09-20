@@ -41,6 +41,7 @@ Class UI_TAB_ACCESSORY;
 Class UI_GLASS_EFFECT;
 Class UI_CORNER_RADIUS;
 Class UI_CORNER_CONFIGURATION;
+Class UI_VIEW_LAYOUT_REGION;
 Class UI_IMAGE_SYMBOL_CONFIGURATION;
 Class UI_TOOLBAR;
 Class UI_WINDOW;
@@ -191,6 +192,7 @@ static void ui_initializer(void)
         UI_GLASS_EFFECT = NSClassFromString(@"UIGlassEffect");
         UI_CORNER_RADIUS = NSClassFromString(@"UICornerRadius");
         UI_CORNER_CONFIGURATION = NSClassFromString(@"UICornerConfiguration");
+        UI_VIEW_LAYOUT_REGION = NSClassFromString(@"UIViewLayoutRegion");
         UI_IMAGE_SYMBOL_CONFIGURATION = NSClassFromString(@"UIImageSymbolConfiguration");
         UI_TOOLBAR = NSClassFromString(@"UIToolbar");
         UI_SCENE_CONFIGURATION = NSClassFromString(@"UISceneConfiguration");

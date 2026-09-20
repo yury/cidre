@@ -412,6 +412,24 @@ impl View {
     #[objc::available(ios = 9.0, tvos = 9.0)]
     pub fn layout_margins_guide(&self) -> arc::R<ui::LayoutGuide>;
 
+    #[objc::msg_send(layoutGuideForLayoutRegion:)]
+    #[objc::available(ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn layout_guide_for_layout_region(
+        &self,
+        region: &ui::ViewLayoutRegion,
+    ) -> arc::R<ui::LayoutGuide>;
+
+    #[objc::msg_send(edgeInsetsForLayoutRegion:)]
+    #[objc::available(ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn edge_insets_for_layout_region(&self, region: &ui::ViewLayoutRegion) -> ui::EdgeInsets;
+
+    #[objc::msg_send(directionalEdgeInsetsForLayoutRegion:)]
+    #[objc::available(ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn directional_edge_insets_for_layout_region(
+        &self,
+        region: &ui::ViewLayoutRegion,
+    ) -> ui::DirectionalEdgeInsets;
+
     #[objc::msg_send(addLayoutGuide:)]
     #[objc::available(ios = 9.0, tvos = 9.0)]
     pub fn add_layout_guide(&mut self, guide: &ui::LayoutGuide);
