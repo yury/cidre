@@ -199,6 +199,12 @@ impl Layer {
     #[objc::msg_send(setMasksToBounds:)]
     pub fn set_masks_to_bounds(&mut self, val: bool);
 
+    #[objc::msg_send(isOpaque)]
+    pub fn is_opaque(&self) -> bool;
+
+    #[objc::msg_send(setOpaque:)]
+    pub fn set_opaque(&mut self, val: bool);
+
     #[objc::msg_send(isHidden)]
     pub fn is_hidden(&self) -> bool;
 
