@@ -30,6 +30,7 @@ Class NS_MENU_ITEM;
 Class NS_PANEL;
 Class NS_SAVE_PANEL;
 Class NS_OPEN_PANEL;
+Class NS_ALERT;
 Class NS_PASTEBOARD;
 Class NS_SPLIT_VIEW_ITEM;
 Class NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER;
@@ -112,6 +113,7 @@ static void app_initializer(void)
         NS_PANEL = [NSPanel class];
         NS_SAVE_PANEL = [NSSavePanel class];
         NS_OPEN_PANEL = [NSOpenPanel class];
+        NS_ALERT = [NSAlert class];
         NS_PASTEBOARD = [NSPasteboard class];
         NS_SPLIT_VIEW_ITEM = [NSSplitViewItem class];
         NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER = [NSTitlebarAccessoryViewController class];

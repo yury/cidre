@@ -640,5 +640,13 @@ mod menu;
 pub use menu::Menu;
 pub use menu::MenuOpts;
 
+mod deferred_menu_element;
+pub use deferred_menu_element::DeferredMenuElement;
+#[cfg(feature = "blocks")]
+pub use deferred_menu_element::DeferredMenuElementCompletion;
+pub use deferred_menu_element::DeferredMenuElementProvider;
+#[cfg(feature = "blocks")]
+pub use deferred_menu_element::DeferredMenuElementProviderBlock;
+
 pub use split_view_controller::Delegate as SplitViewControllerDelegate;
 pub use split_view_controller::DelegateImpl as SplitViewControllerDelegateImpl;

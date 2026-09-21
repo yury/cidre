@@ -267,6 +267,17 @@ call!(a:A, b: B, c: C, d: D, e: E, f: F, g: G, h: H, i: I);
 call!(a:A, b: B, c: C, d: D, e: E, f: F, g: G, h: H, i: I, j: J);
 call!(a:A, b: B, c: C, d: D, e: E, f: F, g: G, h: H, i: I, j: J, k: K);
 
+impl<A: ?Sized, Attr> Block<fn(a: &A), Attr> {
+    /// Calls a block that takes a reference, such as a completion handed to a provider.
+    #[inline]
+    pub fn handle(&mut self, a: &A) {
+        let layout: &Layout1 = unsafe { std::mem::transmute(&self.0) };
+        let f: extern "C" fn(literal: &mut Self, a: &A) =
+            unsafe { std::mem::transmute(layout.invoke) };
+        f(self, a)
+    }
+}
+
 impl<A, Attr> Block<fn(a: Option<&A>), Attr> {
     #[inline]
     pub fn handle(&mut self, a: Option<&A>) {

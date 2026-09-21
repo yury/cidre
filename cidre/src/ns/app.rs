@@ -170,6 +170,10 @@ pub use save_panel::SavePanel;
 mod open_panel;
 pub use open_panel::OpenPanel;
 
+mod alert;
+pub use alert::Alert;
+pub use alert::AlertStyle;
+
 mod pasteboard;
 pub use pasteboard::Pasteboard;
 pub use pasteboard::PasteboardAccessBehavior;

@@ -25,6 +25,8 @@ Class UI_CONTROL;
 Class UI_BUTTON;
 Class UI_ACTION;
 Class UI_MENU;
+Class UI_DEFERRED_MENU_ELEMENT;
+Class UI_DEFERRED_MENU_ELEMENT_PROVIDER;
 Class UI_COMMAND;
 Class UI_KEY_COMMAND;
 Class UI_TEXT_FIELD;
@@ -175,6 +177,8 @@ static void ui_initializer(void)
         UI_CONTROL = NSClassFromString(@"UIControl");
         UI_ACTION = NSClassFromString(@"UIAction");
         UI_MENU = NSClassFromString(@"UIMenu");
+        UI_DEFERRED_MENU_ELEMENT = NSClassFromString(@"UIDeferredMenuElement");
+        UI_DEFERRED_MENU_ELEMENT_PROVIDER = NSClassFromString(@"UIDeferredMenuElementProvider");
         UI_COMMAND = NSClassFromString(@"UICommand");
         UI_KEY_COMMAND = NSClassFromString(@"UIKeyCommand");
         UI_BUTTON = NSClassFromString(@"UIButton");
