@@ -18,6 +18,20 @@ pub enum SizeClass {
     Regular = 2,
 }
 
+/// The edge where the system places the vertical bar.
+#[doc(alias = "UIVerticalBarEdge")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+#[non_exhaustive]
+pub enum VerticalBarEdge {
+    /// The system has no preferred edge for the vertical bar.
+    Unspecified = 0,
+    /// The vertical bar is on the leading edge.
+    Leading = 1,
+    /// The vertical bar is on the trailing edge.
+    Trailing = 2,
+}
+
 #[doc(alias = "UIUserInterfaceStyle")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]

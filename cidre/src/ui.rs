@@ -397,6 +397,7 @@ pub use tab_bar_controller::TabBarControllerMode;
 pub use tab_bar_controller::TabBarMinimizeBehavior;
 
 mod tab_bar_controller_sidebar;
+pub use tab_bar_controller_sidebar::Animating as TabBarControllerSidebarAnimating;
 pub use tab_bar_controller_sidebar::Delegate as TabBarControllerSidebarDelegate;
 pub use tab_bar_controller_sidebar::DelegateImpl as TabBarControllerSidebarDelegateImpl;
 pub use tab_bar_controller_sidebar::Placement as TabBarControllerSidebarPlacement;
@@ -445,6 +446,7 @@ pub use interface::BarStyle;
 pub use interface::DisplayGamut;
 pub use interface::LayoutDirection;
 pub use interface::SizeClass;
+pub use interface::VerticalBarEdge;
 pub use interface::Style;
 pub use interface::TraitEnvLayoutDirection;
 

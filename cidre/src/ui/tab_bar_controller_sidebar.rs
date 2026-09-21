@@ -1,9 +1,38 @@
 use crate::{arc, define_obj_type, ns, objc, ui};
 
+#[cfg(feature = "blocks")]
+use crate::blocks;
+
 define_obj_type!(
     #[doc(alias = "UITabBarControllerSidebar")]
     pub TabBarControllerSidebar(ns::Id)
 );
+
+define_obj_type!(
+    /// Takes animations and completions to run alongside the sidebar
+    /// showing or hiding; they run at once when that is not animated.
+    #[doc(alias = "UITabBarControllerSidebarAnimating")]
+    pub Animating(ns::Id)
+);
+
+#[cfg(feature = "blocks")]
+impl Animating {
+    #[objc::msg_send(addAnimations:)]
+    pub fn add_animations_block(&mut self, animations: &mut blocks::EscBlock<fn()>);
+
+    pub fn add_animations(&mut self, animations: impl FnMut() + 'static) {
+        let mut block = blocks::EscBlock::new0(animations);
+        self.add_animations_block(&mut block);
+    }
+
+    #[objc::msg_send(addCompletion:)]
+    pub fn add_completion_block(&mut self, completion: &mut blocks::EscBlock<fn()>);
+
+    pub fn add_completion(&mut self, completion: impl FnMut() + 'static) {
+        let mut block = blocks::EscBlock::new0(completion);
+        self.add_completion_block(&mut block);
+    }
+}
 
 #[doc(alias = "UITabBarControllerSidebarPlacement")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -50,4 +79,16 @@ pub trait Delegate: objc::Obj {
         sidebar: &mut TabBarControllerSidebar,
         tab: &ui::Tab,
     ) -> Option<arc::R<ui::ContextMenuCfg>>;
+
+    /// The sidebar is about to show or hide: `sidebar.is_hidden()` is
+    /// changing. `animator` takes animations and completions to run
+    /// alongside.
+    #[objc::optional]
+    #[objc::msg_send(tabBarController:sidebarVisibilityWillChange:animator:)]
+    fn sidebar_visibility_will_change(
+        &mut self,
+        controller: &mut ui::TabBarController,
+        sidebar: &mut TabBarControllerSidebar,
+        animator: &mut Animating,
+    );
 }

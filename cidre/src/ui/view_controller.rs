@@ -37,6 +37,16 @@ impl ViewController {
         edge: ui::DirectionalRectEdge,
     );
 
+    #[objc::msg_send(childViewControllers)]
+    pub fn child_vcs(&self) -> arc::R<ns::Array<ViewController>>;
+
+    /// Insets added to the safe area of this controller's view.
+    #[objc::msg_send(additionalSafeAreaInsets)]
+    pub fn additional_safe_area_insets(&self) -> ui::EdgeInsets;
+
+    #[objc::msg_send(setAdditionalSafeAreaInsets:)]
+    pub fn set_additional_safe_area_insets(&mut self, val: ui::EdgeInsets);
+
     #[objc::msg_send(addChildViewController:)]
     pub fn add_child_vc(&mut self, child: &ViewController);
 

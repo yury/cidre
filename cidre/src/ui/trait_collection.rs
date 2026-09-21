@@ -28,6 +28,12 @@ impl TraitCollection {
     #[objc::msg_send(verticalSizeClass)]
     pub fn vertical_size_class(&self) -> ui::SizeClass;
 
+    /// The edge where the system places the vertical bar, whether or not
+    /// one is visible; unspecified where the system never places one.
+    #[objc::msg_send(verticalBarEdge)]
+    #[objc::available(ios = 27.1, tvos = 27.1, visionos = 27.1)]
+    pub fn vertical_bar_edge(&self) -> ui::VerticalBarEdge;
+
     #[objc::msg_send(displayGamut)]
     pub fn display_gamut(&self) -> ui::DisplayGamut;
 
