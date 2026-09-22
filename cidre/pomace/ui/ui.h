@@ -51,6 +51,7 @@ Class UI_SCENE;
 Class UI_SCENE_CONFIGURATION;
 Class UI_SCREEN;
 Class UI_COLOR;
+Class UI_COLOR_WELL;
 Class UI_RESPONDER;
 Class UI_VIEW_CONTROLLER;
 Class UI_NAVIGATION_CONTROLLER;
@@ -202,6 +203,7 @@ static void ui_initializer(void)
         UI_SCENE_CONFIGURATION = NSClassFromString(@"UISceneConfiguration");
         UI_SCREEN = [UIScreen class];
         UI_COLOR = [UIColor class];
+        UI_COLOR_WELL = [UIColorWell class];
         UI_RESPONDER = NSClassFromString(@"UIResponder");
         UI_VIEW_CONTROLLER = NSClassFromString(@"UIViewController");
         UI_NAVIGATION_CONTROLLER = NSClassFromString(@"UINavigationController");

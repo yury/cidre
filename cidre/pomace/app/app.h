@@ -14,6 +14,7 @@ Class NS_CELL;
 Class NS_CURSOR;
 Class NS_VIEW;
 Class NS_COLOR;
+Class NS_COLOR_WELL;
 Class NS_WINDOW;
 Class NS_COLOR_SPACE;
 Class NS_RESPONDER;
@@ -97,6 +98,7 @@ static void app_initializer(void)
         NS_COLOR_SPACE = [NSColorSpace class];
         NS_VIEW = [NSView class];
         NS_COLOR = [NSColor class];
+        NS_COLOR_WELL = [NSColorWell class];
         NS_WINDOW = [NSWindow class];
         NS_COLOR_SPACE = [NSColorSpace class];
         NS_RESPONDER = [NSResponder class];

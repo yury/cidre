@@ -405,6 +405,9 @@ pub use tab_bar_controller_sidebar::DelegateImpl as TabBarControllerSidebarDeleg
 pub use tab_bar_controller_sidebar::Placement as TabBarControllerSidebarPlacement;
 pub use tab_bar_controller_sidebar::TabBarControllerSidebar;
 
+mod color_well;
+pub use color_well::ColorWell;
+
 mod color;
 pub use color::Color;
 pub use color::ColorProminence;

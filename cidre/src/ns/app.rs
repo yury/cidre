@@ -89,6 +89,9 @@ pub use user_interface_item_identification::UiItemIdentification;
 mod color_space;
 pub use color_space::ColorSpace;
 
+mod color_well;
+pub use color_well::{ColorWell, ColorWellStyle};
+
 pub mod color;
 pub use color::Color;
 pub use color::ColorSysEffect;

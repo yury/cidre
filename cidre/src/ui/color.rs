@@ -21,6 +21,15 @@ define_obj_type!(
 unsafe impl Send for Color {}
 
 impl Color {
+    #[objc::msg_send(getRed:green:blue:alpha:)]
+    pub fn get_rgba(
+        &self,
+        red: &mut cg::Float,
+        green: &mut cg::Float,
+        blue: &mut cg::Float,
+        alpha: &mut cg::Float,
+    ) -> bool;
+
     #[objc::init(initWithWhite:alpha:)]
     pub fn init_with_white_alpha(self, white: cg::Float, alpha: cg::Float) -> arc::Retained<Color>;
 

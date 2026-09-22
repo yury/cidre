@@ -18,6 +18,9 @@ define_obj_type!(
 );
 
 impl Color {
+    #[objc::msg_send(colorUsingColorSpace:)]
+    pub fn using_color_space(&self, space: &ns::ColorSpace) -> Option<arc::R<Self>>;
+
     #[objc::msg_send(colorWithWhite:alpha:)]
     pub fn with_white_alpha(white: cg::Float, alpha: cg::Float) -> arc::R<Self>;
 

@@ -54,3 +54,9 @@ impl TextField {
 unsafe extern "C" {
     static UI_TEXT_FIELD: &'static objc::Class<TextField>;
 }
+
+// UIView (UITextField), declared in UITextField.h.
+impl ui::View {
+    #[objc::msg_send(endEditing:)]
+    pub fn end_editing(&mut self, force: bool) -> bool;
+}
