@@ -31,6 +31,26 @@ impl Context {
         }
     }
 
+    /// Shadows everything drawn from now on: `offset` in base space, `blur` non-negative,
+    /// `color` possibly translucent; `None` turns shadowing off. A gstate parameter.
+    #[doc(alias = "CGContextSetShadowWithColor")]
+    #[inline]
+    pub fn set_shadow_with_color(
+        &mut self,
+        offset: cg::Size,
+        blur: cg::Float,
+        color: Option<&cg::Color>,
+    ) {
+        unsafe { CGContextSetShadowWithColor(self, offset, blur, color) }
+    }
+
+    /// [`Self::set_shadow_with_color`] with black at a third opacity.
+    #[doc(alias = "CGContextSetShadow")]
+    #[inline]
+    pub fn set_shadow(&mut self, offset: cg::Size, blur: cg::Float) {
+        unsafe { CGContextSetShadow(self, offset, blur) }
+    }
+
     #[doc(alias = "CGContextScaleCTM")]
     #[inline]
     pub fn scale(&mut self, sx: cg::Float, sy: cg::Float) {
@@ -185,6 +205,13 @@ unsafe extern "C" {
     fn CGContextGetTypeID() -> cf::TypeId;
     fn CGContextSaveGState(ctx: Option<&Context>);
     fn CGContextRestoreGState(ctx: Option<&Context>);
+    fn CGContextSetShadowWithColor(
+        ctx: *mut Context,
+        offset: cg::Size,
+        blur: cg::Float,
+        color: Option<&cg::Color>,
+    );
+    fn CGContextSetShadow(ctx: *mut Context, offset: cg::Size, blur: cg::Float);
     fn CGContextScaleCTM(ctx: *mut Context, sx: cg::Float, sy: cg::Float);
     fn CGContextTranslateCTM(ctx: *mut Context, tx: cg::Float, ty: cg::Float);
     fn CGContextRotateCTM(ctx: *mut Context, angle: cg::Float);
