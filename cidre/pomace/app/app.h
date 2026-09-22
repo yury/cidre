@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 Class NS_APPLICATION;
 Class NS_CELL;
+Class NS_CURSOR;
 Class NS_VIEW;
 Class NS_COLOR;
 Class NS_WINDOW;
@@ -44,6 +45,7 @@ Class NS_SWITCH;
 Class NS_SLIDER;
 Class NS_POP_UP_BUTTON;
 Class NS_TEXT_FIELD;
+Class NS_TEXT_VIEW;
 Class NS_TABLE_VIEW;
 Class NS_TABLE_CELL_VIEW;
 Class NS_IMAGE_VIEW;
@@ -91,6 +93,7 @@ static void app_initializer(void)
         
         NS_APPLICATION = [NSApplication class];
         NS_CELL = [NSCell class];
+        NS_CURSOR = [NSCursor class];
         NS_COLOR_SPACE = [NSColorSpace class];
         NS_VIEW = [NSView class];
         NS_COLOR = [NSColor class];
@@ -127,6 +130,7 @@ static void app_initializer(void)
         NS_SLIDER = [NSSlider class];
         NS_POP_UP_BUTTON = [NSPopUpButton class];
         NS_TEXT_FIELD = [NSTextField class];
+        NS_TEXT_VIEW = [NSTextView class];
         NS_TABLE_VIEW = [NSTableView class];
         NS_TABLE_CELL_VIEW = [NSTableCellView class];
         NS_IMAGE_VIEW = [NSImageView class];

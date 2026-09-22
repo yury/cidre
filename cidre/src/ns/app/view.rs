@@ -73,6 +73,14 @@ impl View {
     #[objc::msg_send(addSubview:)]
     pub fn add_subview(&mut self, subview: &ns::View);
 
+    #[objc::msg_send(addSubview:positioned:relativeTo:)]
+    pub fn add_subview_positioned_relative_to(
+        &mut self,
+        subview: &ns::View,
+        place: ns::WindowOrderingMode,
+        other_view: Option<&ns::View>,
+    );
+
     #[objc::msg_send(addGestureRecognizer:)]
     pub fn add_gesture_recognizer(&mut self, gr: &ns::GestureRecognizer);
 

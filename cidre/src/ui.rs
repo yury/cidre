@@ -1,3 +1,5 @@
+pub mod accessibility;
+
 mod application;
 pub use application::App;
 pub use application::AppDelegate;
@@ -67,8 +69,8 @@ pub use geometry::Axis;
 pub use geometry::DirectionalEdgeInsets;
 pub use geometry::DirectionalRectEdge;
 pub use geometry::EdgeInsets;
-pub use geometry::RectEdge;
 pub use geometry::Offset;
+pub use geometry::RectEdge;
 
 mod gesture_recognizer;
 pub use gesture_recognizer::AnyGestureRecognizerDelegate;
@@ -446,9 +448,9 @@ pub use interface::BarStyle;
 pub use interface::DisplayGamut;
 pub use interface::LayoutDirection;
 pub use interface::SizeClass;
-pub use interface::VerticalBarEdge;
 pub use interface::Style;
 pub use interface::TraitEnvLayoutDirection;
+pub use interface::VerticalBarEdge;
 
 mod update_link;
 pub use update_link::UpdateLink;
