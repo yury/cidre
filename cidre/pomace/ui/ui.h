@@ -51,7 +51,9 @@ Class UI_SCENE;
 Class UI_SCENE_CONFIGURATION;
 Class UI_SCREEN;
 Class UI_COLOR;
+#if !TARGET_OS_TV && !TARGET_OS_WATCH
 Class UI_COLOR_WELL;
+#endif
 Class UI_RESPONDER;
 Class UI_VIEW_CONTROLLER;
 Class UI_NAVIGATION_CONTROLLER;
@@ -203,7 +205,9 @@ static void ui_initializer(void)
         UI_SCENE_CONFIGURATION = NSClassFromString(@"UISceneConfiguration");
         UI_SCREEN = [UIScreen class];
         UI_COLOR = [UIColor class];
+#if !TARGET_OS_TV && !TARGET_OS_WATCH
         UI_COLOR_WELL = [UIColorWell class];
+#endif
         UI_RESPONDER = NSClassFromString(@"UIResponder");
         UI_VIEW_CONTROLLER = NSClassFromString(@"UIViewController");
         UI_NAVIGATION_CONTROLLER = NSClassFromString(@"UINavigationController");

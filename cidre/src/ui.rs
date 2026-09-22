@@ -405,7 +405,9 @@ pub use tab_bar_controller_sidebar::DelegateImpl as TabBarControllerSidebarDeleg
 pub use tab_bar_controller_sidebar::Placement as TabBarControllerSidebarPlacement;
 pub use tab_bar_controller_sidebar::TabBarControllerSidebar;
 
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 mod color_well;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 pub use color_well::ColorWell;
 
 mod color;
