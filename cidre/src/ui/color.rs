@@ -1,6 +1,6 @@
 #[cfg(feature = "blocks")]
 use crate::blocks;
-use crate::{arc, cg, define_obj_type, ns, objc};
+use crate::{arc, cg, define_obj_type, ns, objc, ui};
 
 #[doc(alias = "UIColorProminence")]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -21,6 +21,12 @@ define_obj_type!(
 unsafe impl Send for Color {}
 
 impl Color {
+    /// The colour a dynamic colour (a system colour) is for `traits`: light or dark, high
+    /// contrast or not. Its `cg_color` is otherwise resolved for whatever trait collection
+    /// is current, which is a view's only while UIKit lays it out or draws it.
+    #[objc::msg_send(resolvedColorWithTraitCollection:)]
+    pub fn resolved_with_traits(&self, traits: &ui::TraitCollection) -> arc::R<Self>;
+
     #[objc::msg_send(getRed:green:blue:alpha:)]
     pub fn get_rgba(
         &self,
