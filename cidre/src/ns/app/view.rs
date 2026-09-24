@@ -67,6 +67,13 @@ impl View {
     #[objc::msg_send(setHidden:)]
     pub fn set_hidden(&mut self, val: bool);
 
+    /// The text shown when the pointer rests over the view.
+    #[objc::msg_send(toolTip)]
+    pub fn tool_tip(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(setToolTip:)]
+    pub fn set_tool_tip(&mut self, val: Option<&ns::String>);
+
     #[objc::msg_send(isHiddenOrHasHiddenAncestor)]
     pub fn is_hidden_or_has_hidden_ancestor(&self) -> bool;
 
