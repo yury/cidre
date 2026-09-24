@@ -5,6 +5,7 @@ pub use font::UIFontType as FontUIFontType;
 
 mod font_descriptor;
 pub use font_descriptor::Desc as FontDesc;
+pub use font_descriptor::DescAttr as FontDescAttr;
 pub use font_descriptor::FontFormat;
 pub use font_descriptor::FontOrientation;
 pub use font_descriptor::FontPriority;

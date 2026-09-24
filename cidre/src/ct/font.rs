@@ -217,6 +217,60 @@ impl Font {
         unsafe { CTFontCopyPostScriptName(self) }
     }
 
+    /// The font `desc` describes, at `size` (0 for 12 points).
+    #[doc(alias = "CTFontCreateWithFontDescriptor")]
+    #[inline]
+    pub fn with_font_desc(
+        desc: &ct::FontDesc,
+        size: cg::Float,
+        matrix: Option<&cg::AffineTransform>,
+    ) -> arc::R<Self> {
+        unsafe {
+            CTFontCreateWithFontDescriptor(
+                desc,
+                size,
+                matrix.map_or(std::ptr::null(), |m| m as *const _),
+            )
+        }
+    }
+
+    /// The family the font is a face of: "Helvetica Neue" for `HelveticaNeue-Bold`.
+    #[doc(alias = "CTFontCopyFamilyName")]
+    #[inline]
+    pub fn family_name(&self) -> arc::R<cf::String> {
+        unsafe { CTFontCopyFamilyName(self) }
+    }
+
+    /// The name to show for the face: "Helvetica Neue Bold".
+    #[doc(alias = "CTFontCopyDisplayName")]
+    #[inline]
+    pub fn display_name(&self) -> arc::R<cf::String> {
+        unsafe { CTFontCopyDisplayName(self) }
+    }
+
+    /// The face of the same family with the traits in `mask` set as in `value` (bold on,
+    /// italic off, ...), at `size` (0 keeps the font's), or `None` if the family has no such
+    /// face.
+    #[doc(alias = "CTFontCreateCopyWithSymbolicTraits")]
+    #[inline]
+    pub fn copy_with_symbolic_traits(
+        &self,
+        size: cg::Float,
+        matrix: Option<&cg::AffineTransform>,
+        value: ct::FontSymbolicTraits,
+        mask: ct::FontSymbolicTraits,
+    ) -> Option<arc::R<Self>> {
+        unsafe {
+            CTFontCreateCopyWithSymbolicTraits(
+                self,
+                size,
+                matrix.map_or(std::ptr::null(), |m| m as *const _),
+                value,
+                mask,
+            )
+        }
+    }
+
     #[doc(alias = "CTFontGetAscent")]
     #[inline]
     pub fn ascent(&self) -> cg::Float {
@@ -377,6 +431,20 @@ unsafe extern "C-unwind" {
     ) -> Option<arc::R<cg::Path>>;
 
     fn CTFontCopyPostScriptName(font: &Font) -> arc::R<cf::String>;
+    fn CTFontCreateWithFontDescriptor(
+        desc: &ct::FontDesc,
+        size: cg::Float,
+        matrix: *const cg::AffineTransform,
+    ) -> arc::R<Font>;
+    fn CTFontCopyFamilyName(font: &Font) -> arc::R<cf::String>;
+    fn CTFontCopyDisplayName(font: &Font) -> arc::R<cf::String>;
+    fn CTFontCreateCopyWithSymbolicTraits(
+        font: &Font,
+        size: cg::Float,
+        matrix: *const cg::AffineTransform,
+        sym_trait_value: ct::FontSymbolicTraits,
+        sym_trait_mask: ct::FontSymbolicTraits,
+    ) -> Option<arc::R<Font>>;
     fn CTFontGetGlyphWithName(font: &Font, name: &cf::String) -> cg::Glyph;
 
     fn CTFontCopyNameForGlyph(font: &Font, glyph: cg::Glyph) -> Option<arc::R<cf::String>>;
@@ -430,6 +498,58 @@ unsafe extern "C-unwind" {
 #[cfg(test)]
 mod tests {
     use crate::{cf, cg, ct};
+
+    #[test]
+    fn a_family_descriptor_is_its_regular_face() {
+        let family: &cf::String = ct::FontDescAttr::family_name();
+        let desc = ct::FontDesc::with_attributes(&cf::DictionaryOf::with_keys_values(
+            &[family],
+            &[cf::str!(c"Georgia").as_type_ref()],
+        ));
+        let font = ct::Font::with_font_desc(&desc, 20.0, None);
+        assert_eq!(font.family_name().to_string(), "Georgia");
+        assert_eq!(font.post_script_name().to_string(), "Georgia");
+        assert!(
+            !font
+                .symbolic_traits()
+                .contains(ct::FontSymbolicTraits::BOLD)
+        );
+        assert_eq!(font.size(), 20.0);
+    }
+
+    #[test]
+    fn family_and_trait_faces() {
+        let font = ct::Font::with_name_size(cf::str!(c"HelveticaNeue"), 20.0);
+        assert_eq!(font.family_name().to_string(), "Helvetica Neue");
+        let bold = font
+            .copy_with_symbolic_traits(
+                0.0,
+                None,
+                ct::FontSymbolicTraits::BOLD,
+                ct::FontSymbolicTraits::BOLD,
+            )
+            .expect("Helvetica Neue has a bold face");
+        assert_eq!(bold.family_name().to_string(), "Helvetica Neue");
+        assert!(
+            bold.symbolic_traits()
+                .contains(ct::FontSymbolicTraits::BOLD)
+        );
+        assert_eq!(bold.size(), 20.0);
+        let regular = bold
+            .copy_with_symbolic_traits(
+                0.0,
+                None,
+                ct::FontSymbolicTraits::default(),
+                ct::FontSymbolicTraits::BOLD,
+            )
+            .unwrap();
+        assert!(
+            !regular
+                .symbolic_traits()
+                .contains(ct::FontSymbolicTraits::BOLD)
+        );
+        assert!(!font.display_name().to_string().is_empty());
+    }
 
     #[test]
     fn basics() {

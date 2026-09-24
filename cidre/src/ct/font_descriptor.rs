@@ -43,6 +43,26 @@ impl FontPriority {
     pub const PROCESS: Self = Self(60000);
 }
 
+// A font descriptor attribute's key.
+define_cf_type!(DescAttr(cf::String));
+
+impl DescAttr {
+    /// The family name, a `cf::String`: a descriptor with it alone resolves to the family's
+    /// regular face.
+    #[doc(alias = "kCTFontFamilyNameAttribute")]
+    #[inline]
+    pub fn family_name() -> &'static Self {
+        unsafe { kCTFontFamilyNameAttribute }
+    }
+
+    /// The PostScript name, a `cf::String`.
+    #[doc(alias = "kCTFontNameAttribute")]
+    #[inline]
+    pub fn name() -> &'static Self {
+        unsafe { kCTFontNameAttribute }
+    }
+}
+
 define_cf_type!(Desc(cf::Type));
 
 impl Desc {
@@ -60,6 +80,11 @@ impl Desc {
     pub fn with_attributes(attributes: &cf::DictionaryOf<cf::String, cf::Type>) -> arc::R<Self> {
         unsafe { CTFontDescriptorCreateWithAttributes(attributes) }
     }
+}
+
+unsafe extern "C" {
+    static kCTFontFamilyNameAttribute: &'static DescAttr;
+    static kCTFontNameAttribute: &'static DescAttr;
 }
 
 unsafe extern "C-unwind" {
