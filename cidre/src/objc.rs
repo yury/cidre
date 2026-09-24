@@ -1264,12 +1264,17 @@ macro_rules! define_obj_type {
 
             #[allow(dead_code)]
             pub fn cls() -> &'static $crate::objc::ClassInstExtra<Self, $InnerType> {
-                let name = concat!(stringify!($CLS), "\0");
-                let cls = unsafe { $crate::objc::objc_getClass(name.as_ptr()) };
-                match cls {
-                    Some(c) => unsafe { std::mem::transmute(c) }
-                    None => Self::register_cls()
-                }
+                // Once per process, whatever the thread: two threads both finding no class
+                // would both allocate the pair, and the second allocation fails.
+                static CLS: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
+                let ptr = *CLS.get_or_init(|| {
+                    let name = concat!(stringify!($CLS), "\0");
+                    match unsafe { $crate::objc::objc_getClass(name.as_ptr()) } {
+                        Some(c) => c as *const _ as usize,
+                        None => Self::register_cls() as *const _ as usize,
+                    }
+                });
+                unsafe { &*(ptr as *const $crate::objc::ClassInstExtra<Self, $InnerType>) }
             }
 
             #[allow(dead_code)]
@@ -1321,12 +1326,17 @@ macro_rules! define_obj_type {
 
             #[allow(dead_code)]
             pub fn cls() -> &'static $crate::objc::ClassInstExtra<Self, ()> {
-                let name = concat!(stringify!($CLS), "\0");
-                let cls = unsafe { $crate::objc::objc_getClass(name.as_ptr()) };
-                match cls {
-                    Some(c) => unsafe { std::mem::transmute(c) }
-                    None => Self::register_cls()
-                }
+                // Once per process, whatever the thread: two threads both finding no class
+                // would both allocate the pair, and the second allocation fails.
+                static CLS: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
+                let ptr = *CLS.get_or_init(|| {
+                    let name = concat!(stringify!($CLS), "\0");
+                    match unsafe { $crate::objc::objc_getClass(name.as_ptr()) } {
+                        Some(c) => c as *const _ as usize,
+                        None => Self::register_cls() as *const _ as usize,
+                    }
+                });
+                unsafe { &*(ptr as *const $crate::objc::ClassInstExtra<Self, ()>) }
             }
 
             #[allow(dead_code)]
@@ -1534,12 +1544,39 @@ mod is_getter_tests {
 mod tests {
 
     use super::ar_pool;
-    use crate::{arc, cf, dispatch, return_ar};
+    use crate::{arc, cf, dispatch, objc, return_ar};
     use std;
 
     fn autorelease_example_ar() -> arc::Rar<dispatch::Queue> {
         let q = dispatch::Queue::new();
         return_ar!(q)
+    }
+
+    crate::define_obj_type!(RacedClass, u32, CIDRE_TESTS_RACED_CLASS);
+    crate::define_obj_type!(RacedPlainClass, (), CIDRE_TESTS_RACED_PLAIN_CLASS);
+
+    /// Threads that all find the class unregistered must not each allocate the pair: the
+    /// second allocation fails.
+    #[test]
+    fn classes_register_once_across_threads() {
+        let barrier = std::sync::Arc::new(std::sync::Barrier::new(8));
+        let threads: Vec<_> = (0..8u32)
+            .map(|i| {
+                let barrier = barrier.clone();
+                std::thread::spawn(move || {
+                    barrier.wait();
+                    let obj = RacedClass::with(i);
+                    assert_eq!(*obj.inner(), i);
+                    let _ = RacedPlainClass::new();
+                    (
+                        RacedClass::cls() as *const _ as usize,
+                        RacedPlainClass::cls() as *const _ as usize,
+                    )
+                })
+            })
+            .collect();
+        let classes: Vec<_> = threads.into_iter().map(|t| t.join().unwrap()).collect();
+        assert!(classes.windows(2).all(|w| w[0] == w[1]));
     }
 
     #[test]
