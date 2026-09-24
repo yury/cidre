@@ -6,6 +6,13 @@ define_obj_type!(
 );
 
 impl Control {
+    /// The field editor while the control's text is being edited, else `None`.
+    #[objc::msg_send(currentEditor)]
+    pub fn current_editor(&self) -> Option<arc::R<ns::Text>>;
+
+    #[objc::msg_send(cell)]
+    pub fn cell(&self) -> Option<arc::R<ns::Cell>>;
+
     #[objc::msg_send(target)]
     pub fn target(&self) -> Option<arc::R<ns::Id>>;
 

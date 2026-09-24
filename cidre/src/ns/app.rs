@@ -2,6 +2,10 @@ mod cursor;
 pub use cursor::Cursor;
 
 mod accessibility;
+pub use accessibility::{
+    AccessibilityNotification, AccessibilityPriority, AccessibilityRole, accessibility_announce,
+    accessibility_notification, accessibility_post_notification, accessibility_role,
+};
 
 mod animation;
 pub use animation::AnimatablePropContainer;
@@ -91,6 +95,17 @@ pub use color_space::ColorSpace;
 
 mod color_well;
 pub use color_well::{ColorWell, ColorWellStyle};
+
+mod stepper;
+pub use stepper::Stepper;
+
+mod box_;
+pub use box_::{Box, BoxType, TitlePos};
+
+mod segmented_control;
+pub use segmented_control::{
+    SegmentDistribution, SegmentStyle, SegmentSwitchTracking, SegmentedControl,
+};
 
 pub mod color;
 pub use color::Color;

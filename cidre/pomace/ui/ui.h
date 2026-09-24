@@ -75,6 +75,7 @@ Class UI_TRAIT_TAB_ACCESSORY_ENVIRONMENT;
 Class UI_BACKGROUND_CONFIGURATION;
 Class UI_STACK_VIEW;
 Class UI_SWITCH;
+Class UI_SEGMENTED_CONTROL;
 Class UI_SLIDER;
 Class UI_STEPPER;
 Class UI_TEXT_VIEW;
@@ -232,6 +233,7 @@ static void ui_initializer(void)
         UI_TRAIT_TAB_ACCESSORY_ENVIRONMENT = NSClassFromString(@"UITraitTabAccessoryEnvironment");
         UI_BACKGROUND_CONFIGURATION = NSClassFromString(@"UIBackgroundConfiguration");
         UI_STACK_VIEW = [UIStackView class];
+        UI_SEGMENTED_CONTROL = [UISegmentedControl class];
 #if TARGET_OS_TV
 #else
         UI_SWITCH = [UISwitch class];

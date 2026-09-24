@@ -46,6 +46,27 @@ impl TextField {
     #[objc::msg_send(setAutocapitalizationType:)]
     pub fn set_autocapitalization_type(&mut self, val: ns::Integer);
 
+    /// `NSTextAlignment`: 0 left, 1 center, 2 right, 3 justified, 4 natural.
+    #[objc::msg_send(textAlignment)]
+    pub fn text_alignment(&self) -> ns::Integer;
+
+    #[objc::msg_send(setTextAlignment:)]
+    pub fn set_text_alignment(&mut self, val: ns::Integer);
+
+    /// `UIKeyboardType`: 0 default, 2 numbers and punctuation, 4 number pad, 8 decimal pad.
+    #[objc::msg_send(keyboardType)]
+    pub fn keyboard_type(&self) -> ns::Integer;
+
+    #[objc::msg_send(setKeyboardType:)]
+    pub fn set_keyboard_type(&mut self, val: ns::Integer);
+
+    /// `UITextFieldViewMode`: 0 never, 1 while editing, 2 unless editing, 3 always.
+    #[objc::msg_send(setClearButtonMode:)]
+    pub fn set_clear_button_mode(&mut self, val: ns::Integer);
+
+    #[objc::msg_send(setAdjustsFontSizeToFitWidth:)]
+    pub fn set_adjusts_font_size_to_fit_width(&mut self, val: bool);
+
     /// `UITextAutocorrectionType`: 1 no.
     #[objc::msg_send(setAutocorrectionType:)]
     pub fn set_autocorrection_type(&mut self, val: ns::Integer);

@@ -28,6 +28,16 @@ impl Button {
     #[objc::available(ios = 14.0)]
     pub fn set_menu(&mut self, menu: Option<&ui::Menu>);
 
+    /// A pop-up button: the menu's actions are a single selection, the selected one's title
+    /// is the button's, and picking one performs it. Needs `shows_menu_as_primary_action`.
+    #[objc::msg_send(changesSelectionAsPrimaryAction)]
+    #[objc::available(ios = 15.0)]
+    pub fn changes_selection_as_primary_action(&self) -> bool;
+
+    #[objc::msg_send(setChangesSelectionAsPrimaryAction:)]
+    #[objc::available(ios = 15.0)]
+    pub fn set_changes_selection_as_primary_action(&mut self, val: bool);
+
     #[objc::msg_send(configuration)]
     #[objc::available(ios = 15.0)]
     pub fn cfg(&self) -> Option<arc::R<ui::ButtonCfg>>;

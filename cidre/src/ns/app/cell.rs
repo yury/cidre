@@ -37,6 +37,20 @@ define_obj_type!(
 );
 
 impl Cell {
+    /// Whether the control sends its action when editing ends, by Tab or a click elsewhere,
+    /// and not only on Return.
+    #[objc::msg_send(sendsActionOnEndEditing)]
+    pub fn sends_action_on_end_editing(&self) -> bool;
+
+    #[objc::msg_send(setSendsActionOnEndEditing:)]
+    pub fn set_sends_action_on_end_editing(&mut self, val: bool);
+
+    #[objc::msg_send(wraps)]
+    pub fn wraps(&self) -> bool;
+
+    #[objc::msg_send(setWraps:)]
+    pub fn set_wraps(&mut self, val: bool);
+
     #[objc::init(initTextCell:)]
     pub fn init_text_cell(self, string: &ns::String) -> arc::R<Cell>;
 

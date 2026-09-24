@@ -16,6 +16,12 @@ impl Action {
         handler: &mut blocks::EscBlock<fn(&Action)>,
     ) -> arc::R<Self>;
 
+    /// The object that performed the action: a control that was sent it through
+    /// `add_action_for_events`, or `None`.
+    #[objc::msg_send(sender)]
+    #[objc::available(ios = 14.0, tvos = 14.0)]
+    pub fn sender(&self) -> Option<arc::R<ns::Id>>;
+
     #[objc::msg_send(identifier)]
     #[objc::available(ios = 13.0, tvos = 13.0)]
     pub fn id(&self) -> arc::R<ns::String>;

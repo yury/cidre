@@ -410,6 +410,9 @@ mod color_well;
 #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 pub use color_well::ColorWell;
 
+mod segmented_control;
+pub use segmented_control::SegmentedControl;
+
 mod color;
 pub use color::Color;
 pub use color::ColorProminence;

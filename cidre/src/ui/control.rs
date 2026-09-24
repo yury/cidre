@@ -96,6 +96,16 @@ impl Control {
         events: ControlEvents,
     );
 
+    /// Performs `action` on `events`; its handler gets the action, whose `sender` is this
+    /// control.
+    #[objc::msg_send(addAction:forControlEvents:)]
+    #[objc::available(ios = 14.0)]
+    pub fn add_action_for_events(&mut self, action: &ui::Action, events: ControlEvents);
+
+    #[objc::msg_send(removeAction:forControlEvents:)]
+    #[objc::available(ios = 14.0)]
+    pub fn remove_action_for_events(&mut self, action: &ui::Action, events: ControlEvents);
+
     #[objc::msg_send(removeTarget:action:forControlEvents:)]
     pub fn remove_target_action_for_events(
         &mut self,
