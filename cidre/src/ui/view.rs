@@ -87,6 +87,14 @@ impl View {
     #[objc::msg_send(setHidden:)]
     pub fn set_hidden(&self, val: bool);
 
+    /// Animatable.
+    #[objc::msg_send(alpha)]
+    pub fn alpha(&self) -> cg::Float;
+
+    /// Animatable. Below 0.01 the view takes no touches.
+    #[objc::msg_send(setAlpha:)]
+    pub fn set_alpha(&mut self, val: cg::Float);
+
     #[objc::msg_send(isUserInteractionEnabled)]
     pub fn is_user_interaction_enabled(&self) -> bool;
 

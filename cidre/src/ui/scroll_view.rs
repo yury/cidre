@@ -97,6 +97,14 @@ impl ScrollView {
     #[objc::msg_send(setBouncesZoom:)]
     pub fn set_bounces_zoom(&mut self, val: bool);
 
+    /// Whether a tap on the status bar (or the system's scroll-to-top gesture) scrolls it to
+    /// its top.
+    #[objc::msg_send(scrollsToTop)]
+    pub fn scrolls_to_top(&self) -> bool;
+
+    #[objc::msg_send(setScrollsToTop:)]
+    pub fn set_scrolls_to_top(&mut self, val: bool);
+
     #[objc::msg_send(isZooming)]
     pub fn is_zooming(&self) -> bool;
 
