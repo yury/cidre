@@ -378,6 +378,10 @@ impl Window {
     #[objc::msg_send(backingScaleFactor)]
     pub fn backing_scale_factor(&self) -> cg::Float;
 
+    /// The screen the window is on, the one with most of it; `None` when it is off screen.
+    #[objc::msg_send(screen)]
+    pub fn screen(&self) -> Option<arc::R<ns::Screen>>;
+
     #[objc::msg_send(isMiniaturized)]
     pub fn is_miniaturized(&self) -> bool;
 
