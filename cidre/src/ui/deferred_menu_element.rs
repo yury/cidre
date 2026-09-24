@@ -13,6 +13,18 @@ pub type DeferredMenuElementCompletion = blocks::EscBlock<fn(&ns::Array<ui::Menu
 pub type DeferredMenuElementProviderBlock =
     blocks::EscBlock<fn(&mut DeferredMenuElementCompletion)>;
 
+#[cfg(feature = "blocks")]
+impl DeferredMenuElementCompletion {
+    /// Hands the deferred element its elements.
+    pub fn complete(&mut self, elements: &ns::Array<ui::MenuElement>) {
+        // SAFETY: the same block, called with the same pointer; only the argument's lifetime
+        // is spelled another way, as `call` takes it.
+        let block: &mut blocks::EscBlock<fn(*const ns::Array<ui::MenuElement>)> =
+            unsafe { std::mem::transmute(self) };
+        block.call(elements)
+    }
+}
+
 define_obj_type!(
     /// A placeholder menu element, replaced with what its provider gives when the menu is
     /// presented; a loading UI takes its place until then.

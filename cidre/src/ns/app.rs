@@ -197,6 +197,20 @@ mod alert;
 pub use alert::Alert;
 pub use alert::AlertStyle;
 
+mod dragging;
+pub use dragging::AnyDraggingInfo;
+pub use dragging::DragOp;
+pub use dragging::DraggingDst;
+pub use dragging::DraggingDstImpl;
+pub use dragging::DraggingInfo;
+
+mod haptic_feedback;
+pub use haptic_feedback::AnyHapticFeedbackPerformer;
+pub use haptic_feedback::HapticFeedbackManager;
+pub use haptic_feedback::HapticFeedbackPattern;
+pub use haptic_feedback::HapticFeedbackPerformanceTime;
+pub use haptic_feedback::HapticFeedbackPerformer;
+
 mod pasteboard;
 pub use pasteboard::Pasteboard;
 pub use pasteboard::PasteboardAccessBehavior;

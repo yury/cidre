@@ -32,6 +32,7 @@ Class NS_DATE_FORMATTER;
 Class NS_ISO_8601_DATE_FORMATTER;
 Class NS_DICTIONARY;
 Class NS_MACH_PORT;
+Class NS_ITEM_PROVIDER;
 Class NS_MUTABLE_ARRAY;
 Class NS_MUTABLE_DATA;
 Class NS_MUTABLE_DICTIONARY;
@@ -139,6 +140,7 @@ static void common_initializer(void)
         NS_ISO_8601_DATE_FORMATTER = [NSISO8601DateFormatter class];
         NS_DICTIONARY = [NSDictionary class];
         NS_MACH_PORT = [NSMachPort class];
+        NS_ITEM_PROVIDER = [NSItemProvider class];
         NS_MUTABLE_ARRAY = [NSMutableArray class];
         NS_MUTABLE_DATA = [NSMutableData class];
         NS_MUTABLE_DICTIONARY= [NSMutableDictionary class];

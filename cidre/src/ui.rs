@@ -229,8 +229,15 @@ mod focus;
 pub use focus::FocusUpdateCtx;
 
 mod drop_interaction;
+pub use drop_interaction::AnyDropInteractionDelegate;
+pub use drop_interaction::DropInteraction;
+pub use drop_interaction::DropInteractionDelegate;
+pub use drop_interaction::DropInteractionDelegateImpl;
 pub use drop_interaction::DropOperation;
 pub use drop_interaction::DropProposal;
+
+mod feedback_generator;
+pub use feedback_generator::SelectionFeedbackGenerator;
 
 mod drop_session;
 pub use drop_session::AnyDropSession;

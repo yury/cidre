@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 Class NS_APPLICATION;
 Class NS_CELL;
 Class NS_CURSOR;
+Class NS_HAPTIC_FEEDBACK_MANAGER;
 Class NS_VIEW;
 Class NS_COLOR;
 Class NS_COLOR_WELL;
@@ -98,6 +99,7 @@ static void app_initializer(void)
         NS_APPLICATION = [NSApplication class];
         NS_CELL = [NSCell class];
         NS_CURSOR = [NSCursor class];
+        NS_HAPTIC_FEEDBACK_MANAGER = [NSHapticFeedbackManager class];
         NS_COLOR_SPACE = [NSColorSpace class];
         NS_VIEW = [NSView class];
         NS_COLOR = [NSColor class];

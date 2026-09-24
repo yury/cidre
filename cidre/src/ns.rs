@@ -34,6 +34,9 @@ pub use iso_8601_date_formatter::Iso8601DateFormatter;
 mod progress;
 pub use progress::Progress;
 
+mod item_provider;
+pub use item_provider::ItemProvider;
+
 pub mod objc_runtime;
 pub use objc_runtime::ComparisonResult;
 pub use objc_runtime::ExceptionName;

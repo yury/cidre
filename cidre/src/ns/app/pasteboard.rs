@@ -122,6 +122,39 @@ impl Pasteboard {
 
     #[objc::msg_send(stringForType:)]
     pub fn string_for_type(&self, data_type: &PasteboardType) -> Option<arc::R<ns::String>>;
+
+    /// The objects on the pasteboard that the classes (`NSPasteboardReading`) can read, as
+    /// `opts` ([`reading_option_key`]) narrow them.
+    #[objc::msg_send(readObjectsForClasses:options:)]
+    pub fn read_objs_for_classes_opts(
+        &self,
+        classes: &ns::Array<ns::Id>,
+        opts: Option<&ns::Dictionary<PasteboardReadingOptionKey, ns::Id>>,
+    ) -> Option<arc::R<ns::Array<ns::Id>>>;
+
+    /// The file URLs on the pasteboard whose contents conform to one of `type_ids` (UTIs such
+    /// as `public.image`), as a drag from Finder carries them.
+    pub fn file_urls_conforming_to(&self, type_ids: &[&ns::String]) -> Vec<arc::R<ns::Url>> {
+        // SAFETY: a class is an object; `NSURL` reads file URLs.
+        let url_class: &ns::Id = unsafe { std::mem::transmute(ns::Url::cls()) };
+        let classes = ns::Array::from_slice(&[url_class]);
+        let types = ns::Array::from_slice(type_ids);
+        let yes = ns::Number::with_bool(true);
+        let opts = ns::Dictionary::with_keys_values(
+            &[
+                reading_option_key::url_reading_file_urls_only(),
+                reading_option_key::url_reading_contents_conform_to_types(),
+            ],
+            &[yes.as_id_ref(), types.as_id_ref()],
+        );
+        self.read_objs_for_classes_opts(&classes, Some(&opts))
+            .map(|objs| {
+                objs.iter()
+                    .filter_map(|obj| objc::Obj::try_cast(obj, ns::Url::cls()).map(|url| url.retained()))
+                    .collect()
+            })
+            .unwrap_or_default()
+    }
 }
 
 pub mod types {
