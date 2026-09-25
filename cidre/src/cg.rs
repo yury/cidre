@@ -78,6 +78,8 @@ pub use image::ImageDst;
 #[cfg(feature = "iio")]
 pub use image::ImageSrc;
 #[cfg(feature = "iio")]
+pub use image::src_opt_keys as image_src_opt_keys;
+#[cfg(feature = "iio")]
 pub use image::animate_image_at_url;
 #[cfg(feature = "iio")]
 pub use image::animate_image_at_url_with_block;

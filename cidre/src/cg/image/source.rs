@@ -142,6 +142,56 @@ unsafe extern "C-unwind" {
     ) -> Option<arc::R<cg::Image>>;
 }
 
+/// Keys of the options of [`Src::image_at`] and [`Src::thumbnail_at`].
+pub mod opt_keys {
+    use crate::cf;
+
+    /// A cf::Boolean: decode and cache the image when it is created, not when drawn.
+    #[doc(alias = "kCGImageSourceShouldCacheImmediately")]
+    #[inline]
+    pub fn should_cache_immediately() -> &'static cf::String {
+        unsafe { kCGImageSourceShouldCacheImmediately }
+    }
+
+    /// A cf::Boolean: make the thumbnail from the full image if the file has none, or none
+    /// as big as asked.
+    #[doc(alias = "kCGImageSourceCreateThumbnailFromImageIfAbsent")]
+    #[inline]
+    pub fn create_thumbnail_from_image_if_absent() -> &'static cf::String {
+        unsafe { kCGImageSourceCreateThumbnailFromImageIfAbsent }
+    }
+
+    /// A cf::Boolean: make the thumbnail from the full image always, whatever the file has.
+    #[doc(alias = "kCGImageSourceCreateThumbnailFromImageAlways")]
+    #[inline]
+    pub fn create_thumbnail_from_image_always() -> &'static cf::String {
+        unsafe { kCGImageSourceCreateThumbnailFromImageAlways }
+    }
+
+    /// A cf::Number: the thumbnail's longer side at most this many pixels.
+    #[doc(alias = "kCGImageSourceThumbnailMaxPixelSize")]
+    #[inline]
+    pub fn thumbnail_max_pixel_size() -> &'static cf::String {
+        unsafe { kCGImageSourceThumbnailMaxPixelSize }
+    }
+
+    /// A cf::Boolean: the thumbnail turned and mirrored as the image's orientation (and pixel
+    /// aspect) says, upright.
+    #[doc(alias = "kCGImageSourceCreateThumbnailWithTransform")]
+    #[inline]
+    pub fn create_thumbnail_with_transform() -> &'static cf::String {
+        unsafe { kCGImageSourceCreateThumbnailWithTransform }
+    }
+
+    unsafe extern "C" {
+        static kCGImageSourceShouldCacheImmediately: &'static cf::String;
+        static kCGImageSourceCreateThumbnailFromImageIfAbsent: &'static cf::String;
+        static kCGImageSourceCreateThumbnailFromImageAlways: &'static cf::String;
+        static kCGImageSourceThumbnailMaxPixelSize: &'static cf::String;
+        static kCGImageSourceCreateThumbnailWithTransform: &'static cf::String;
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::cg;

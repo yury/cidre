@@ -187,6 +187,36 @@ pub mod webp_keys {
     }
 }
 
+/// Keys of an image's own properties ([`crate::cg::ImageSrc::props_at`]).
+pub mod keys {
+    use crate::cf;
+
+    /// A cf::Number, 1 to 8: how the stored pixels turn upright (see [`super::Orientation`]).
+    #[doc(alias = "kCGImagePropertyOrientation")]
+    #[inline]
+    pub fn orientation() -> &'static cf::String {
+        unsafe { kCGImagePropertyOrientation }
+    }
+
+    #[doc(alias = "kCGImagePropertyPixelWidth")]
+    #[inline]
+    pub fn pixel_width() -> &'static cf::String {
+        unsafe { kCGImagePropertyPixelWidth }
+    }
+
+    #[doc(alias = "kCGImagePropertyPixelHeight")]
+    #[inline]
+    pub fn pixel_height() -> &'static cf::String {
+        unsafe { kCGImagePropertyPixelHeight }
+    }
+
+    unsafe extern "C" {
+        static kCGImagePropertyOrientation: &'static cf::String;
+        static kCGImagePropertyPixelWidth: &'static cf::String;
+        static kCGImagePropertyPixelHeight: &'static cf::String;
+    }
+}
+
 pub mod gif_keys {
     use crate::cf;
 

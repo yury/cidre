@@ -4,6 +4,8 @@ use crate::{cf, cg, define_cf_type, define_opts};
 pub mod source;
 #[cfg(feature = "iio")]
 pub use source::Src as ImageSrc;
+#[cfg(feature = "iio")]
+pub use source::opt_keys as src_opt_keys;
 
 #[cfg(feature = "iio")]
 pub mod destination;
