@@ -1,4 +1,4 @@
-use crate::{arc, av, cm, define_cls, define_obj_type, define_opts, ns, objc};
+use crate::{api, arc, av, cm, define_cls, define_obj_type, define_opts, ns, objc};
 
 #[cfg(feature = "blocks")]
 use crate::{blocks, dispatch};
@@ -325,6 +325,46 @@ impl Player {
         &mut self,
         val: AudiovisualBackgroundPlaybackPolicy,
     );
+}
+
+/// AVPlayerAudioSessionParticipation
+#[cfg(not(target_abi = "macabi"))]
+impl Player {
+    /// Whether the player is disconnected from system audio (default `false`).
+    ///
+    /// When `true`, the player doesn't interact with the audio session and doesn't play audio.
+    #[objc::msg_send(disconnectedFromSystemAudio)]
+    #[api::available(ios = 27.0, tvos = 27.0, watchos = 27.0, visionos = 27.0)]
+    pub fn disconnected_from_sys_audio(&self) -> bool;
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(setDisconnectedFromSystemAudio:completionHandler:)]
+    #[api::available(ios = 27.0, tvos = 27.0, watchos = 27.0, visionos = 27.0)]
+    pub fn set_disconnected_from_sys_audio_ch_block(
+        &mut self,
+        val: bool,
+        ch: Option<&mut blocks::CompletionBlock>,
+    );
+
+    /// Changes whether the player is disconnected from system audio.
+    ///
+    /// The completion handler is called on an arbitrary queue.
+    #[cfg(feature = "blocks")]
+    #[api::available(ios = 27.0, tvos = 27.0, watchos = 27.0, visionos = 27.0)]
+    #[allow(unused_unsafe)]
+    pub fn set_disconnected_from_sys_audio_ch(&mut self, val: bool, ch: impl FnMut() + 'static) {
+        let mut block = blocks::CompletionBlock::new0(ch);
+        unsafe { self.set_disconnected_from_sys_audio_ch_block(val, Some(&mut block)) };
+    }
+
+    #[cfg(all(feature = "blocks", feature = "async"))]
+    #[api::available(ios = 27.0, tvos = 27.0, watchos = 27.0, visionos = 27.0)]
+    #[allow(unused_unsafe)]
+    pub async fn set_disconnected_from_sys_audio(&mut self, val: bool) {
+        let (fut, mut block) = blocks::comp0();
+        unsafe { self.set_disconnected_from_sys_audio_ch_block(val, Some(&mut block)) };
+        fut.await
+    }
 }
 
 define_obj_type!(
