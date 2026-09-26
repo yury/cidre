@@ -1,4 +1,4 @@
-use crate::{arc, av, cg, define_cls, define_obj_type, ns, objc};
+use crate::{api, arc, av, cg, define_cls, define_obj_type, ns, objc};
 
 #[cfg(feature = "cm")]
 use crate::cm;
@@ -566,6 +566,78 @@ impl Connection {
     #[cfg(any(target_os = "ios", target_os = "tvos"))]
     #[objc::msg_send(setCameraIntrinsicMatrixDeliveryEnabled:)]
     pub fn set_camera_intrinsic_matrix_delivery_enabled(&mut self, val: bool);
+
+    /// Whether the connection supports low light video noise reduction.
+    ///
+    /// Reflects the active configuration and can change with the active format,
+    /// video stabilization mode or frame rate. Key-value observable.
+    #[objc::msg_send(isLowLightVideoNoiseReductionSupported)]
+    #[api::available(
+        macos = 27.0,
+        ios = 27.0,
+        maccatalyst = 27.0,
+        tvos = 27.0,
+        visionos = 27.0
+    )]
+    pub fn is_low_light_video_noise_reduction_supported(&self) -> bool;
+
+    /// Whether the connection automatically enables low light video noise reduction
+    /// when it's supported. Defaults to `true` for movie file output connections.
+    #[objc::msg_send(automaticallyEnablesLowLightVideoNoiseReduction)]
+    #[api::available(
+        macos = 27.0,
+        ios = 27.0,
+        maccatalyst = 27.0,
+        tvos = 27.0,
+        visionos = 27.0
+    )]
+    pub fn automatically_enables_low_light_video_noise_reduction(&self) -> bool;
+
+    #[objc::msg_send(setAutomaticallyEnablesLowLightVideoNoiseReduction:)]
+    #[api::available(
+        macos = 27.0,
+        ios = 27.0,
+        maccatalyst = 27.0,
+        tvos = 27.0,
+        visionos = 27.0
+    )]
+    pub fn set_automatically_enables_low_light_video_noise_reduction(&mut self, val: bool);
+
+    #[objc::msg_send(isLowLightVideoNoiseReductionEnabled)]
+    #[api::available(
+        macos = 27.0,
+        ios = 27.0,
+        maccatalyst = 27.0,
+        tvos = 27.0,
+        visionos = 27.0
+    )]
+    pub fn is_low_light_video_noise_reduction_enabled(&self) -> bool;
+
+    /// Throws if `automatically_enables_low_light_video_noise_reduction` is `true`,
+    /// or if enabling while not supported.
+    #[objc::msg_send(setLowLightVideoNoiseReductionEnabled:)]
+    #[api::available(
+        macos = 27.0,
+        ios = 27.0,
+        maccatalyst = 27.0,
+        tvos = 27.0,
+        visionos = 27.0
+    )]
+    pub unsafe fn set_low_light_video_noise_reduction_enabled_throws(&mut self, val: bool);
+
+    #[api::available(
+        macos = 27.0,
+        ios = 27.0,
+        maccatalyst = 27.0,
+        tvos = 27.0,
+        visionos = 27.0
+    )]
+    pub fn set_low_light_video_noise_reduction_enabled<'ear>(
+        &mut self,
+        val: bool,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe { self.set_low_light_video_noise_reduction_enabled_throws(val) })
+    }
 }
 
 define_obj_type!(

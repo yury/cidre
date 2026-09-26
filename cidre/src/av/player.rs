@@ -1,7 +1,7 @@
-use crate::{api, arc, av, cm, define_cls, define_obj_type, define_opts, ns, objc};
+use crate::{arc, av, cm, define_cls, define_obj_type, define_opts, ns, objc};
 
 #[cfg(feature = "blocks")]
-use crate::{blocks, dispatch};
+use crate::{api, blocks, dispatch};
 
 pub mod item;
 pub use item::Item as PlayerItem;

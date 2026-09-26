@@ -8,6 +8,8 @@ pub use media_format::MediaCharacteristic;
 pub use media_format::MediaType;
 pub use media_format::VideoRange;
 
+pub mod error;
+
 pub mod depth_data;
 pub use depth_data::DepthData;
 

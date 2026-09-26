@@ -38,6 +38,15 @@ impl Factors {
     pub const SYSTEM_TEMPERATURE: Self = Self(1 << 0);
     pub const PEAK_POWER: Self = Self(1 << 1);
     pub const DEPTH_MODULE_TEMPERATURE: Self = Self(1 << 2);
+
+    /// The camera module is operating at an elevated temperature.
+    #[doc(alias = "AVCaptureSystemPressureFactorCameraTemperature")]
+    pub const CAMERA_TEMPERATURE: Self = Self(1 << 3);
+
+    /// Under the current battery conditions, the device will shut down within 30 seconds
+    /// if system load is not reduced.
+    #[doc(alias = "AVCaptureSystemPressureFactorBatteryStress")]
+    pub const BATTERY_STRESS: Self = Self(1 << 4);
 }
 
 define_obj_type!(pub State(ns::Id));

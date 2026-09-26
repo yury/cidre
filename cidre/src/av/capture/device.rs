@@ -1124,6 +1124,31 @@ impl Device {
     #[objc::msg_send(lensAperture)]
     pub fn lens_aperture(&self) -> f32;
 
+    /// Rate limit for aperture motion while auto-exposure is active, as the ratio of aperture
+    /// area between consecutive frames. `0` (the default) lets the system pick the speed.
+    #[objc::msg_send(autoExposureLensApertureRateLimit)]
+    #[api::available(ios = 27.0, maccatalyst = 27.0, tvos = 27.0)]
+    pub fn auto_exposure_lens_aperture_rate_limit(&self) -> f32;
+
+    #[objc::msg_send(setAutoExposureLensApertureRateLimit:)]
+    #[api::available(ios = 27.0, maccatalyst = 27.0, tvos = 27.0)]
+    unsafe fn set_auto_exposure_lens_aperture_rate_limit_throws(&mut self, val: f32);
+
+    /// `true` whenever lens aperture is unlocked and adjusted by auto-exposure.
+    #[objc::msg_send(automaticallyAdjustsLensAperture)]
+    #[api::available(ios = 27.0, maccatalyst = 27.0, tvos = 27.0)]
+    pub fn automatically_adjusts_lens_aperture(&self) -> bool;
+
+    /// `true` whenever exposure duration is unlocked and adjusted by auto-exposure.
+    #[objc::msg_send(automaticallyAdjustsExposureDuration)]
+    #[api::available(ios = 27.0, maccatalyst = 27.0, tvos = 27.0)]
+    pub fn automatically_adjusts_exposure_duration(&self) -> bool;
+
+    /// `true` whenever ISO is unlocked and adjusted by auto-exposure.
+    #[objc::msg_send(automaticallyAdjustsISO)]
+    #[api::available(ios = 27.0, maccatalyst = 27.0, tvos = 27.0)]
+    pub fn automatically_adjusts_iso(&self) -> bool;
+
     #[cfg(all(feature = "cm", any(target_os = "tvos", target_os = "ios")))]
     #[objc::msg_send(exposureDuration)]
     pub fn exposure_duration(&self) -> cm::Time;
@@ -1235,6 +1260,23 @@ impl<'a> ConfigLockGuard<'a> {
     #[cfg(all(feature = "cm", any(target_os = "tvos", target_os = "ios")))]
     pub fn set_active_max_exposure_duration<'ear>(&mut self, val: cm::Time) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_active_max_exposure_duration_throws(val) })
+    }
+
+    #[api::available(ios = 27.0, maccatalyst = 27.0, tvos = 27.0)]
+    pub unsafe fn set_auto_exposure_lens_aperture_rate_limit_throws(&mut self, val: f32) {
+        unsafe {
+            self.device
+                .set_auto_exposure_lens_aperture_rate_limit_throws(val)
+        }
+    }
+
+    /// Must be `0` or greater than or equal to `1.0`.
+    #[api::available(ios = 27.0, maccatalyst = 27.0, tvos = 27.0)]
+    pub fn set_auto_exposure_lens_aperture_rate_limit<'ear>(
+        &mut self,
+        val: f32,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe { self.set_auto_exposure_lens_aperture_rate_limit_throws(val) })
     }
 
     #[cfg(all(
@@ -2113,6 +2155,28 @@ impl Format {
     #[objc::msg_send(maxISO)]
     #[api::available(ios = 8.0, maccatalyst = 14.0, tvos = 17.0)]
     pub fn max_iso(&self) -> f32;
+
+    /// A sorted array of recommended values for the device's lens aperture.
+    ///
+    /// A single item means the aperture is fixed at that value.
+    #[objc::msg_send(recommendedLensApertureStops)]
+    #[api::available(ios = 27.0, maccatalyst = 27.0, tvos = 27.0)]
+    pub fn recommended_lens_aperture_stops(&self) -> arc::R<ns::Array<ns::Number>>;
+
+    /// The minimum supported lens aperture value.
+    #[objc::msg_send(minLensAperture)]
+    #[api::available(ios = 27.0, maccatalyst = 27.0, tvos = 27.0)]
+    pub fn min_lens_aperture(&self) -> f32;
+
+    /// The maximum supported lens aperture value.
+    #[objc::msg_send(maxLensAperture)]
+    #[api::available(ios = 27.0, maccatalyst = 27.0, tvos = 27.0)]
+    pub fn max_lens_aperture(&self) -> f32;
+
+    /// The default lens aperture value.
+    #[objc::msg_send(defaultLensAperture)]
+    #[api::available(ios = 27.0, maccatalyst = 27.0, tvos = 27.0)]
+    pub fn default_lens_aperture(&self) -> f32;
 
     #[objc::msg_send(isGlobalToneMappingSupported)]
     #[api::available(ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
