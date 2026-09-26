@@ -4,6 +4,7 @@ mod application;
 pub use application::App;
 pub use application::AppDelegate;
 pub use application::AppDelegateImpl;
+pub use application::OpenExternalUrlOptsKey;
 
 mod blur_effect;
 pub use blur_effect::BlurEffect;

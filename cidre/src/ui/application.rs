@@ -73,6 +73,11 @@ define_obj_type!(
     pub AnyAppDelegate(ns::Id)
 );
 
+define_obj_type!(
+    #[doc(alias = "UIApplicationOpenExternalURLOptionsKey")]
+    pub OpenExternalUrlOptsKey(ns::String)
+);
+
 impl AppDelegate for AnyAppDelegate {}
 
 impl App {
@@ -91,9 +96,20 @@ impl App {
     #[objc::msg_send(setIdleTimerDisabled:)]
     pub fn set_idle_timer_disabled(&mut self, val: bool);
 
-    //- (void)openURL:(NSURL*)url options:(NSDictionary<UIApplicationOpenExternalURLOptionsKey, id> *)options completionHandler:(void (^ __nullable NS_SWIFT_UI_ACTOR)(BOOL success))completion API_AVAILABLE(ios(10.0)) API_UNAVAILABLE(watchos);
-    //
-    // pub fn open_url_ch_block(&self, url: &ns::Url, options: )
+    #[cfg(all(feature = "blocks", not(target_os = "watchos")))]
+    #[objc::msg_send(openURL:options:completionHandler:)]
+    pub fn open_url_opts_ch_block(
+        &self,
+        url: &ns::Url,
+        options: &ns::Dictionary<OpenExternalUrlOptsKey, ns::Id>,
+        ch: Option<&mut blocks::EscBlock<fn(bool)>>,
+    );
+
+    /// Opens `url` with no options and no completion handler.
+    #[cfg(all(feature = "blocks", not(target_os = "watchos")))]
+    pub fn open_url(&self, url: &ns::Url) {
+        self.open_url_opts_ch_block(url, &ns::Dictionary::new(), None)
+    }
 
     #[doc(alias = "UIApplicationOpenSettingsURLString")]
     #[api::available(ios = 8.0)]
