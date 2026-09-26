@@ -103,7 +103,7 @@ impl PipControllerContentSrc {
     ) -> arc::R<PipControllerContentSrc>;
 
     #[api::available(macos = 10.15, ios = 9.0, tvos = 14.0, visionos = 1.0)]
-    crate::define_cls!(AV_PICTURE_IN_PICTURE_CONTROLLER_CONTENT_SRC);
+    crate::define_cls!(AV_PICTURE_IN_PICTURE_CONTROLLER_CONTENT_SOURCE);
 
     #[api::available(macos = 10.15, ios = 9.0, tvos = 14.0, visionos = 1.0)]
     pub fn with_player_layer(player_layer: &av::PlayerLayer) -> arc::R<Self> {
@@ -139,7 +139,7 @@ pub trait PipControllerDelegate: objc::Obj {
 
 unsafe extern "C" {
     static AV_PICTURE_IN_PICTURE_CONTROLLER: &'static objc::Class<PipController>;
-    static AV_PICTURE_IN_PICTURE_CONTROLLER_CONTENT_SRC:
+    static AV_PICTURE_IN_PICTURE_CONTROLLER_CONTENT_SOURCE:
         &'static objc::Class<PipControllerContentSrc>;
 }
 
