@@ -313,6 +313,20 @@ impl Player {
     pub fn set_muted(&mut self, val: bool);
 }
 
+/// AVPlayerBackgroundSupport
+impl Player {
+    /// What the player does with an audiovisual item when the app goes to the background
+    /// (default `Automatic`).
+    #[objc::msg_send(audiovisualBackgroundPlaybackPolicy)]
+    pub fn audiovisual_background_playback_policy(&self) -> AudiovisualBackgroundPlaybackPolicy;
+
+    #[objc::msg_send(setAudiovisualBackgroundPlaybackPolicy:)]
+    pub fn set_audiovisual_background_playback_policy(
+        &mut self,
+        val: AudiovisualBackgroundPlaybackPolicy,
+    );
+}
+
 define_obj_type!(
     #[doc(alias = "AVQueuePlayer")]
     pub QueuePlayer(Player),
@@ -381,7 +395,19 @@ mod tests {
     #[test]
     fn basics() {
         let url = ns::Url::with_str("file:///tmp/file.mp4").expect("Url is not valid");
-        let player = av::Player::with_url(&url);
+        let mut player = av::Player::with_url(&url);
         assert_eq!(player.status(), av::PlayerStatus::Unknown);
+
+        assert_eq!(
+            player.audiovisual_background_playback_policy(),
+            av::PlayerAudiovisualBackgroundPlaybackPolicy::Automatic
+        );
+        player.set_audiovisual_background_playback_policy(
+            av::PlayerAudiovisualBackgroundPlaybackPolicy::ContinuesIfPossible,
+        );
+        assert_eq!(
+            player.audiovisual_background_playback_policy(),
+            av::PlayerAudiovisualBackgroundPlaybackPolicy::ContinuesIfPossible
+        );
     }
 }
