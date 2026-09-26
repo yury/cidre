@@ -1153,9 +1153,9 @@ impl Device {
     #[objc::msg_send(exposureDuration)]
     pub fn exposure_duration(&self) -> cm::Time;
 
-    #[cfg(all(feature = "cm", any(target_os = "tvos", target_os = "ios")))]
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(ISO)]
-    pub fn iso(&self) -> cm::Time;
+    pub fn iso(&self) -> f32;
 
     #[cfg(all(
         feature = "blocks",
