@@ -96,10 +96,13 @@ impl AudioUnit {
     pub fn component_version(&self) -> u32;
 
     #[objc::msg_send(allocateRenderResourcesAndReturnError:)]
-    pub unsafe fn allocate_render_resources_err<'ear>(&mut self, err: *mut Option<&'ear ns::Error>);
+    pub unsafe fn allocate_render_resources_err<'ear>(
+        &mut self,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
 
     pub fn allocate_render_resources<'ear>(&mut self) -> ns::Result<'ear> {
-        ns::if_err(|err| unsafe { self.allocate_render_resources_err(err) })
+        ns::if_false(|err| unsafe { self.allocate_render_resources_err(err) })
     }
 
     #[objc::msg_send(deallocateRenderResources)]
@@ -150,10 +153,14 @@ impl AudioUnitBusArray {
     pub fn is_count_changeable(&self) -> bool;
 
     #[objc::msg_send(setBusCount:error:)]
-    pub unsafe fn set_bus_count_err<'ear>(&mut self, val: usize, err: *mut Option<&'ear ns::Error>);
+    pub unsafe fn set_bus_count_err<'ear>(
+        &mut self,
+        val: usize,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> bool;
 
     pub fn set_bus_count<'ear>(&mut self, val: usize) -> ns::Result<'ear> {
-        ns::if_err(|err| unsafe { self.set_bus_count_err(val, err) })
+        ns::if_false(|err| unsafe { self.set_bus_count_err(val, err) })
     }
 
     #[objc::msg_send(ownerAudioUnit)]
@@ -180,7 +187,7 @@ impl AudioUnitBus {
         &mut self,
         val: &av::AudioFormat,
         err: *mut Option<&'ear ns::Error>,
-    );
+    ) -> bool;
 
     /// Sets the bus's audio format.
     ///
@@ -188,7 +195,7 @@ impl AudioUnitBus {
     /// (deinterleaved 32-bit float), at any sample rate. Channel counts can be more complex;
     /// see AUAudioUnit.channelCapabilities.
     pub fn set_format<'ear>(&mut self, val: &av::AudioFormat) -> ns::Result<'ear> {
-        ns::if_err(|err| unsafe { self.set_format_err(val, err) })
+        ns::if_false(|err| unsafe { self.set_format_err(val, err) })
     }
 
     #[objc::msg_send(shouldAllocateBuffer)]

@@ -115,7 +115,8 @@ impl Heap {
     pub fn new_texture(&self, descriptor: &mtl::TextureDesc) -> Option<arc::R<mtl::Texture>>;
 
     #[objc::msg_send(setPurgeableState:)]
-    pub fn set_purgeable_state(&mut self, state: mtl::PurgableState);
+    /// Returns the previous purgeable state.
+    pub fn set_purgeable_state(&mut self, state: mtl::PurgableState) -> mtl::PurgableState;
 
     #[objc::msg_send(newBufferWithLength:options:offset:)]
     pub fn new_buf_with_offset(

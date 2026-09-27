@@ -27,7 +27,7 @@ pub trait Mixing: StereoMixing {
     #[objc::msg_send(destinationForMixer:bus:)]
     fn destination_for_mixer(
         &self,
-        mixer: av::AudioNode,
+        mixer: &av::AudioNode,
         bus: av::AudioNodeBus,
     ) -> Option<arc::R<av::audio::MixingDst>>;
 

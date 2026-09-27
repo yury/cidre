@@ -15,7 +15,7 @@ impl EdrMetadata {
         optical_output_scale: f32,
     ) -> arc::R<Self>;
 
-    #[objc::msg_send(HDR10MetadataWithDisplayInfo:contentInfo:opticalOutputScale:)]
+    #[objc::msg_send(HDR10MetadataWithMinLuminance:maxLuminance:opticalOutputScale:)]
     pub fn hdr_10_with_lum(min_nits: f32, max_nits: f32, optical_output_scale: f32)
     -> arc::R<Self>;
 

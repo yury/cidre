@@ -16,7 +16,7 @@ define_obj_type!(
 #[cfg(all(feature = "blocks", feature = "dispatch"))]
 impl av::QueuedSampleBufRendering for VideoRenderer {}
 
-#[cfg(feature = "blocks")]
+#[cfg(all(feature = "blocks", feature = "dispatch"))]
 use crate::blocks;
 
 #[cfg(all(feature = "blocks", feature = "dispatch"))]

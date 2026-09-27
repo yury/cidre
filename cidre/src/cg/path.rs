@@ -189,7 +189,19 @@ impl Path {
     #[doc(alias = "CGPathIsRect")]
     #[inline]
     pub fn is_rect(&self) -> bool {
-        unsafe { CGPathIsRect(self) }
+        unsafe { CGPathIsRect(self, std::ptr::null_mut()) }
+    }
+
+    /// Returns the rect if the path represents a rectangle.
+    #[doc(alias = "CGPathIsRect")]
+    #[inline]
+    pub fn as_rect(&self) -> Option<cg::Rect> {
+        let mut rect = cg::Rect::zero();
+        if unsafe { CGPathIsRect(self, &mut rect) } {
+            Some(rect)
+        } else {
+            None
+        }
     }
 
     #[doc(alias = "CGPathGetCurrentPoint")]
@@ -684,7 +696,7 @@ unsafe extern "C-unwind" {
 
     fn CGPathAddPath(path1: &mut PathMut, m: Option<&cg::AffineTransform>, path2: &Path);
     fn CGPathIsEmpty(path: &Path) -> bool;
-    fn CGPathIsRect(path: &Path) -> bool;
+    fn CGPathIsRect(path: &Path, rect: *mut cg::Rect) -> bool;
     fn CGPathGetCurrentPoint(path: &Path) -> cg::Point;
     fn CGPathGetBoundingBox(path: &Path) -> cg::Rect;
     fn CGPathGetPathBoundingBox(path: &Path) -> cg::Rect;

@@ -14,7 +14,7 @@ impl Font {
     pub fn preferred_for_text_style_trait(
         style: &ui::TextStyle,
         trait_collection: &ui::TraitCollection,
-    );
+    ) -> arc::R<Self>;
 
     /// Returns a font using CSS name matching semantics.
     #[objc::msg_send(fontWithName:size:)]

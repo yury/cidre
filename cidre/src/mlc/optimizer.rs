@@ -18,10 +18,10 @@ impl Optimizer {
     pub fn set_grad_rescale(&mut self, val: f32);
 
     #[objc::msg_send(appliesGradientClipping)]
-    pub fn applies_grad_clipping(&self) -> f32;
+    pub fn applies_grad_clipping(&self) -> bool;
 
     #[objc::msg_send(setAppliesGradientClipping:)]
-    pub fn set_applies_grad_clipping(&mut self, val: f32);
+    pub fn set_applies_grad_clipping(&mut self, val: bool);
 
     #[objc::msg_send(gradientClipMax)]
     pub fn grad_clip_max(&self) -> f32;

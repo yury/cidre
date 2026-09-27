@@ -14,11 +14,13 @@ define_cf_type!(
 );
 
 impl Buf {
+    /// `attachment_mode`, if provided, receives the mode the attachment was set with.
+    #[doc(alias = "CVBufferGetAttachment")]
     #[inline]
     pub fn attach<'a>(
         &'a self,
         key: &cf::String,
-        attachment_mode: AttachMode,
+        attachment_mode: Option<&mut AttachMode>,
     ) -> Option<&'a cf::Type> {
         unsafe { CVBufferGetAttachment(self, key, attachment_mode) }
     }
@@ -53,11 +55,13 @@ impl Buf {
         unsafe { CVBufferCopyAttachments(self, attachment_mode) }
     }
 
+    /// `attachment_mode`, if provided, receives the mode the attachment was set with.
+    #[doc(alias = "CVBufferCopyAttachment")]
     #[inline]
     pub fn copy_attach(
         &self,
         key: &cf::String,
-        attachment_mode: AttachMode,
+        attachment_mode: Option<&mut AttachMode>,
     ) -> Option<arc::R<cf::Type>> {
         unsafe { CVBufferCopyAttachment(self, key, attachment_mode) }
     }
@@ -140,13 +144,13 @@ unsafe extern "C-unwind" {
     fn CVBufferCopyAttachment(
         buffer: &Buf,
         key: &cf::String,
-        attachment_mode: AttachMode,
+        attachment_mode: Option<&mut AttachMode>,
     ) -> Option<arc::R<cf::Type>>;
     fn CVBufferHasAttachment(buffer: &Buf, key: &cf::String) -> bool;
     fn CVBufferGetAttachment<'a>(
         buffer: &'a Buf,
         key: &cf::String,
-        attachment_mode: AttachMode,
+        attachment_mode: Option<&mut AttachMode>,
     ) -> Option<&'a cf::Type>;
 
 }

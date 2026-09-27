@@ -135,7 +135,7 @@ impl MotionManager {
     pub fn available_attitude_ref_frames() -> cm::AttitudeRefFrame;
 
     #[objc::msg_send(attitudeReferenceFrame)]
-    pub fn attitude_ref_frame(&self) -> &cm::AttitudeRefFrame;
+    pub fn attitude_ref_frame(&self) -> cm::AttitudeRefFrame;
 
     #[objc::msg_send(isDeviceMotionAvailable)]
     pub fn is_device_motion_available(&self) -> bool;
@@ -170,19 +170,19 @@ impl MotionManager {
     pub fn stop_device_motion_updates(&mut self);
 
     #[objc::msg_send(startDeviceMotionUpdatesUsingReferenceFrame:)]
-    pub fn start_device_motion_updates_using_ref_frame(&mut self, ref_frame: &cm::AttitudeRefFrame);
+    pub fn start_device_motion_updates_using_ref_frame(&mut self, ref_frame: cm::AttitudeRefFrame);
 
     #[objc::msg_send(startDeviceMotionUpdatesUsingReferenceFrame:toQueue:withHandler:)]
     pub fn start_device_motion_updates_using_ref_frame_to_queue_handler(
         &mut self,
-        ref_frame: &cm::AttitudeRefFrame,
+        ref_frame: cm::AttitudeRefFrame,
         queue: &ns::OpQueue,
         handler: &mut blocks::ResultCh<cm::DeviceMotion>,
     );
 
     pub fn start_device_motion_updates_using_ref_frame_to_queue(
         &mut self,
-        ref_frame: &cm::AttitudeRefFrame,
+        ref_frame: cm::AttitudeRefFrame,
         queue: &ns::OpQueue,
         handler: impl FnMut(Option<&cm::DeviceMotion>, Option<&ns::Error>) + 'static + std::marker::Sync,
     ) {

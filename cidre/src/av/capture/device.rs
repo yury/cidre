@@ -2334,11 +2334,11 @@ impl Format {
 
     #[objc::msg_send(videoMinZoomFactorForCinematicVideo)]
     #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
-    pub fn video_min_zoom_factor_for_cinematic_video(&self) -> f32;
+    pub fn video_min_zoom_factor_for_cinematic_video(&self) -> cg::Float;
 
     #[objc::msg_send(videoMaxZoomFactorForCinematicVideo)]
     #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
-    pub fn video_max_zoom_factor_for_cinematic_video(&self) -> f32;
+    pub fn video_max_zoom_factor_for_cinematic_video(&self) -> cg::Float;
 
     #[objc::msg_send(videoFrameRateRangeForCinematicVideo)]
     #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]

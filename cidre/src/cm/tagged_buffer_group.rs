@@ -23,7 +23,7 @@ define_cf_type!(
 impl TaggedBufGroup {
     #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
     #[inline]
-    pub fn get_type_id() -> cf::Type {
+    pub fn get_type_id() -> cf::TypeId {
         unsafe { CMTaggedBufferGroupGetTypeID() }
     }
 
@@ -100,7 +100,7 @@ impl cm::SampleBuf {
 #[api::weak]
 unsafe extern "C-unwind" {
     #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
-    fn CMTaggedBufferGroupGetTypeID() -> cf::Type;
+    fn CMTaggedBufferGroupGetTypeID() -> cf::TypeId;
 
     #[api::available(macos = 14.0, ios = 17.0, tvos = 17.0, watchos = 10.0, visionos = 1.0)]
     fn CMTaggedBufferGroupCreate(

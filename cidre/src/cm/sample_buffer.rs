@@ -118,8 +118,8 @@ impl SampleBuf {
 
     #[doc(alias = "CMSampleBufferSetDataReady")]
     #[inline]
-    pub fn set_data_ready(&mut self) {
-        unsafe { CMSampleBufferSetDataReady(self) }
+    pub fn set_data_ready(&mut self) -> os::Result {
+        unsafe { CMSampleBufferSetDataReady(self).result() }
     }
 
     /// ```
@@ -319,8 +319,8 @@ impl SampleBuf {
 
     #[doc(alias = "CMSampleBufferSetOutputPresentationTimeStamp")]
     #[inline]
-    pub fn set_output_pts(&self, val: cm::Time) {
-        unsafe { CMSampleBufferSetOutputPresentationTimeStamp(self, val) }
+    pub fn set_output_pts(&self, val: cm::Time) -> os::Result {
+        unsafe { CMSampleBufferSetOutputPresentationTimeStamp(self, val).result() }
     }
 
     #[doc(alias = "CMSampleBufferGetSampleTimingInfo")]
@@ -658,7 +658,7 @@ unsafe extern "C-unwind" {
     ) -> os::Status;
 
     fn CMSampleBufferDataIsReady(sbuf: &SampleBuf) -> bool;
-    fn CMSampleBufferSetDataReady(sbuf: &mut SampleBuf);
+    fn CMSampleBufferSetDataReady(sbuf: &mut SampleBuf) -> os::Status;
 
     #[cfg(feature = "cv")]
     fn CMSampleBufferGetImageBuffer(sbuf: &SampleBuf) -> Option<&cv::ImageBuf>;
@@ -670,7 +670,7 @@ unsafe extern "C-unwind" {
     fn CMSampleBufferGetDecodeTimeStamp(sbuf: &SampleBuf) -> cm::Time;
     fn CMSampleBufferGetOutputPresentationTimeStamp(sbuf: &SampleBuf) -> cm::Time;
     fn CMSampleBufferGetOutputDecodeTimeStamp(sbuf: &SampleBuf) -> cm::Time;
-    fn CMSampleBufferSetOutputPresentationTimeStamp(sbuf: &SampleBuf, val: cm::Time);
+    fn CMSampleBufferSetOutputPresentationTimeStamp(sbuf: &SampleBuf, val: cm::Time) -> os::Status;
     fn CMSampleBufferGetSampleSize(sbuf: &SampleBuf, sample_index: cm::ItemIndex) -> usize;
     fn CMSampleBufferGetTotalSampleSize(sbuf: &SampleBuf) -> usize;
     fn CMSampleBufferGetFormatDescription(sbuf: &SampleBuf) -> Option<&cm::FormatDesc>;

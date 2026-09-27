@@ -84,7 +84,7 @@ impl Writer {
     }
 
     #[objc::msg_send(finishWriting)]
-    pub fn finish_writing(&mut self);
+    pub fn finish_writing(&mut self) -> bool;
 
     /// Marks all unfinished inputs as finished and completes the writing of the output file
     /// asynchronously; `handler` runs once the status is `Completed` (or `Failed`).

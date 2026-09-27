@@ -550,7 +550,7 @@ impl LSTMResultMode {
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-#[repr(usize)]
+#[repr(i32)]
 pub enum ComparisonOp {
     Equal = 0,
     NotEqual = 1,
@@ -575,7 +575,7 @@ impl ComparisonOp {
 /// The type of clipping applied to gradient
 #[doc(alias = "MLCGradientClippingType")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
-#[repr(usize)]
+#[repr(i32)]
 pub enum GradientClippingType {
     ByValue = 0,
     ByNorm = 1,

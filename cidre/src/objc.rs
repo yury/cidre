@@ -1340,6 +1340,7 @@ macro_rules! define_obj_type {
             }
 
             #[allow(dead_code)]
+            #[allow(unused_unsafe)]
             pub fn new() -> $crate::arc::R<Self> {
                 unsafe { Self::cls().new() }
             }

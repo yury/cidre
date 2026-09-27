@@ -311,6 +311,10 @@ pub enum EventSrcState {
 #[doc(alias = "CGEventMask")]
 pub type EventMask = u64;
 
+/// Event timestamp in nanoseconds since system startup.
+#[doc(alias = "CGEventTimestamp")]
+pub type EventTimestamp = u64;
+
 #[doc(alias = "CGEventTapProxy")]
 pub type EventTapProxy = std::ffi::c_void;
 

@@ -50,10 +50,8 @@ impl Id {
     /// the move. Points that lie outside the desktop are clipped to the
     /// desktop.
     #[inline]
-    pub fn move_cursor_to_point(self, point: cg::Point) {
-        unsafe {
-            CGDisplayMoveCursorToPoint(self, point);
-        }
+    pub fn move_cursor_to_point(self, point: cg::Point) -> Result<(), cg::Error> {
+        unsafe { CGDisplayMoveCursorToPoint(self, point).result() }
     }
 
     pub fn shielding_window_id(&self) -> cg::WindowId {
@@ -82,7 +80,7 @@ unsafe extern "C-unwind" {
     fn CGDisplayPixelsWide(display: Id) -> usize;
     fn CGDisplayPixelsHigh(display: Id) -> usize;
 
-    fn CGDisplayMoveCursorToPoint(display: Id, point: cg::Point);
+    fn CGDisplayMoveCursorToPoint(display: Id, point: cg::Point) -> cg::Status;
     fn CGShieldingWindowLevel() -> cg::WindowLevel;
     fn CGShieldingWindowID(display_id: cg::DirectDisplayId) -> cg::WindowId;
 }
@@ -104,7 +102,7 @@ mod tests {
     fn cursor_control() {
         let display = cg::DirectDisplayId::main();
 
-        display.move_cursor_to_point(cg::Point::zero());
+        display.move_cursor_to_point(cg::Point::zero()).unwrap();
         let pos = ns::Event::mouse_location();
         assert_eq!(pos.x, 0.0);
     }

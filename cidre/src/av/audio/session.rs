@@ -290,16 +290,19 @@ impl Session {
     #[objc::msg_send(setPreferredInputOrientation:error:)]
     pub unsafe fn set_preferred_input_orientation_err<'ear>(
         &mut self,
-        val: &Orientation,
+        val: StereoOrientation,
         err: *mut Option<&'ear ns::Error>,
     ) -> bool;
 
-    pub fn set_preferred_input_orientation<'ear>(&mut self, val: &Orientation) -> ns::Result<'ear> {
+    pub fn set_preferred_input_orientation<'ear>(
+        &mut self,
+        val: StereoOrientation,
+    ) -> ns::Result<'ear> {
         ns::if_false(|err| unsafe { self.set_preferred_input_orientation_err(val, err) })
     }
 
     #[objc::msg_send(preferredInputOrientation)]
-    pub fn preferred_input_orientation(&self) -> &Orientation;
+    pub fn preferred_input_orientation(&self) -> StereoOrientation;
 
     #[objc::msg_send(maximumInputNumberOfChannels)]
     pub fn max_input_channels_num(&self) -> isize;

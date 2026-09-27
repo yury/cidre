@@ -38,7 +38,7 @@ impl Node {
     /// Will return None if the engine is not running or if the node is not connected to an input or
     /// output node.
     #[objc::msg_send(lastRenderTime)]
-    pub fn last_render_time(&self) -> Option<av::AudioTime>;
+    pub fn last_render_time(&self) -> Option<arc::R<av::AudioTime>>;
 
     #[objc::msg_send(AUAudioUnit)]
     pub fn audio_unit(&self) -> arc::R<au::AudioUnit>;

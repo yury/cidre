@@ -189,13 +189,13 @@ impl Responder {
     pub fn can_become_first_responder(&self) -> bool;
 
     #[objc::msg_send(becomeFirstResponder)]
-    pub fn become_first_responder(&mut self);
+    pub fn become_first_responder(&mut self) -> bool;
 
     #[objc::msg_send(canResignFirstResponder)]
     pub fn can_resign_first_responder(&self) -> bool;
 
     #[objc::msg_send(resignFirstResponder)]
-    pub fn resign_first_responder(&mut self);
+    pub fn resign_first_responder(&mut self) -> bool;
 
     #[objc::msg_send(isFirstResponder)]
     pub fn is_first_responder(&self) -> bool;

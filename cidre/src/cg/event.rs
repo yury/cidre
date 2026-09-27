@@ -123,13 +123,14 @@ impl cg::Event {
         unsafe { CGEventSetType(self, val) };
     }
 
+    /// Event timestamp in nanoseconds.
     #[doc(alias = "CGEventGetTimestamp")]
-    pub fn timestamp(&self) -> cf::TimeInterval {
+    pub fn timestamp(&self) -> cg::EventTimestamp {
         unsafe { CGEventGetTimestamp(self) }
     }
 
     #[doc(alias = "CGEventSetTimestamp")]
-    pub fn set_timestamp(&mut self, val: cf::TimeInterval) {
+    pub fn set_timestamp(&mut self, val: cg::EventTimestamp) {
         unsafe {
             CGEventSetTimestamp(self, val);
         }
@@ -392,8 +393,8 @@ unsafe extern "C-unwind" {
     fn CGEventSetSource(event: *mut cg::Event, source: Option<&cg::EventSrc>);
     fn CGEventGetType(event: *const cg::Event) -> cg::EventType;
     fn CGEventSetType(event: *mut cg::Event, val: cg::EventType);
-    fn CGEventGetTimestamp(event: *const cg::Event) -> cf::TimeInterval;
-    fn CGEventSetTimestamp(event: *mut cg::Event, val: cf::TimeInterval);
+    fn CGEventGetTimestamp(event: *const cg::Event) -> cg::EventTimestamp;
+    fn CGEventSetTimestamp(event: *mut cg::Event, val: cg::EventTimestamp);
     fn CGEventGetLocation(event: *const cg::Event) -> cg::Point;
     fn CGEventGetUnflippedLocation(event: *const cg::Event) -> cg::Point;
     fn CGEventSetLocation(event: *mut cg::Event, val: cg::Point);

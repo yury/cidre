@@ -304,7 +304,7 @@ impl Cfg {
 
     #[objc::msg_send(setPreservesAspectRatio:)]
     #[api::available(macos = 14.0, maccatalyst = 18.2)]
-    pub fn set_preserves_aspect_ratio(&self, val: bool) -> bool;
+    pub fn set_preserves_aspect_ratio(&mut self, val: bool);
 
     #[objc::msg_send(streamName)]
     #[api::available(macos = 14.0, maccatalyst = 18.2)]

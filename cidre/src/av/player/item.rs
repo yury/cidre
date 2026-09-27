@@ -89,7 +89,7 @@ impl Item {
     pub fn can_step_backward(&self) -> bool;
 
     #[objc::msg_send(configuredTimeOffsetFromLive)]
-    pub fn configured_time_offset_from_live(&self) -> bool;
+    pub fn configured_time_offset_from_live(&self) -> cm::Time;
 
     #[objc::msg_send(setConfiguredTimeOffsetFromLive:)]
     pub fn set_configured_time_offset_from_live(&mut self, val: cm::Time);

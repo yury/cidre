@@ -101,7 +101,7 @@ impl LogicalToPhysicalColorAttachMap {
     pub fn set(&mut self, physical_index: usize, logical_index: usize);
 
     #[objc::msg_send(getPhysicalIndexForLogicalIndex:)]
-    pub fn get(&self, logical_index: usize);
+    pub fn get(&self, logical_index: usize) -> usize;
 
     #[objc::msg_send(reset)]
     pub fn reset(&mut self);

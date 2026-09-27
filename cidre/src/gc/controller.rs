@@ -32,7 +32,7 @@ impl Controller {
     pub fn player_index(&self) -> PlayerIndex;
 
     #[objc::msg_send(setPlayerIndex:)]
-    pub fn set_player_index(&mut self, val: PlayerIndex) -> PlayerIndex;
+    pub fn set_player_index(&mut self, val: PlayerIndex);
 
     #[objc::msg_send(light)]
     pub fn light(&self) -> Option<arc::R<gc::DeviceLight>>;

@@ -63,7 +63,7 @@ impl Desc {
     pub fn inherit_ps(&self) -> bool;
 
     #[objc::msg_send(setInheritPipelineState:)]
-    pub fn set_inherit_ps(&mut self, val: bool) -> bool;
+    pub fn set_inherit_ps(&mut self, val: bool);
 
     #[objc::msg_send(inheritBuffers)]
     pub fn inherit_bufs(&self) -> bool;

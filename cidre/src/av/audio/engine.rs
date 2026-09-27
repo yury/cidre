@@ -195,7 +195,7 @@ impl Engine {
         format: &av::AudioFormat,
         max_frame_count: av::AudioFrameCount,
         error: *mut Option<&'ar ns::Error>,
-    );
+    ) -> bool;
 
     /// Set the engine to operate in a manual rendering mode with the specified render format and
     /// maximum frame count.
@@ -226,7 +226,7 @@ impl Engine {
         format: &av::AudioFormat,
         max_frame_count: av::AudioFrameCount,
     ) -> ns::Result<'ear> {
-        ns::if_err(|err| unsafe {
+        ns::if_false(|err| unsafe {
             self.enable_manual_rendering_mode_err(mode, format, max_frame_count, err)
         })
     }

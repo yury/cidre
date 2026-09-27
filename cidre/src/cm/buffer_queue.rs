@@ -199,8 +199,8 @@ impl BufQueue {
 
     #[doc(alias = "CMBufferQueueMarkEndOfData")]
     #[inline]
-    pub fn mark_end_of_data(&mut self) {
-        unsafe { CMBufferQueueMarkEndOfData(self) }
+    pub fn mark_end_of_data(&mut self) -> os::Result {
+        unsafe { CMBufferQueueMarkEndOfData(self).result() }
     }
 
     #[doc(alias = "CMBufferQueueContainsEndOfData")]
@@ -217,8 +217,8 @@ impl BufQueue {
 
     #[doc(alias = "CMBufferQueueReset")]
     #[inline]
-    pub fn reset(&mut self) {
-        unsafe { CMBufferQueueReset(self) }
+    pub fn reset(&mut self) -> os::Result {
+        unsafe { CMBufferQueueReset(self).result() }
     }
 }
 
@@ -239,7 +239,7 @@ impl<T: AsRef<Buf> + arc::Retain> BufQueueOf<T> {
         self.inner.is_empty()
     }
 
-    pub fn mark_end_of_data(&mut self) {
+    pub fn mark_end_of_data(&mut self) -> os::Result {
         self.inner.mark_end_of_data()
     }
 
@@ -251,8 +251,8 @@ impl<T: AsRef<Buf> + arc::Retain> BufQueueOf<T> {
         self.inner.is_at_end_of_data()
     }
 
-    pub fn reset(&mut self) {
-        self.inner.reset();
+    pub fn reset(&mut self) -> os::Result {
+        self.inner.reset()
     }
 
     pub fn dequeue(&mut self) -> Option<arc::R<T>> {
@@ -328,10 +328,10 @@ unsafe extern "C-unwind" {
     ))]
     fn CMBufferQueueCopyHead(queue: &BufQueue) -> Option<arc::R<Buf>>;
     fn CMBufferQueueIsEmpty(queue: &BufQueue) -> bool;
-    fn CMBufferQueueMarkEndOfData(queue: &mut BufQueue);
+    fn CMBufferQueueMarkEndOfData(queue: &mut BufQueue) -> os::Status;
     fn CMBufferQueueContainsEndOfData(queue: &BufQueue) -> bool;
     fn CMBufferQueueIsAtEndOfData(queue: &BufQueue) -> bool;
-    fn CMBufferQueueReset(queue: &mut BufQueue);
+    fn CMBufferQueueReset(queue: &mut BufQueue) -> os::Status;
 }
 
 #[cfg(test)]

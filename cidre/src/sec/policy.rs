@@ -1,4 +1,36 @@
-use crate::{api, arc, cf, sec};
+use crate::{api, arc, cf, define_opts, sec};
+
+define_opts!(
+    /// Revocation checking options for [`sec::Policy::revocation`].
+    #[doc(alias = "CFOptionFlags")]
+    pub RevocationFlags(usize)
+);
+
+impl RevocationFlags {
+    /// Perform revocation checking using OCSP.
+    #[doc(alias = "kSecRevocationOCSPMethod")]
+    pub const OCSP_METHOD: Self = Self(1 << 0);
+
+    /// Perform revocation checking using the CRL.
+    #[doc(alias = "kSecRevocationCRLMethod")]
+    pub const CRL_METHOD: Self = Self(1 << 1);
+
+    /// Prefer CRL over OCSP when both are available.
+    #[doc(alias = "kSecRevocationPreferCRL")]
+    pub const PREFER_CRL: Self = Self(1 << 2);
+
+    /// Require a positive response to pass the policy.
+    #[doc(alias = "kSecRevocationRequirePositiveResponse")]
+    pub const REQUIRE_POSITIVE_RESPONSE: Self = Self(1 << 3);
+
+    /// Don't access the network; only use locally cached responses.
+    #[doc(alias = "kSecRevocationNetworkAccessDisabled")]
+    pub const NETWORK_ACCESS_DISABLED: Self = Self(1 << 4);
+
+    /// Use OCSP or CRL, depending on the certificate.
+    #[doc(alias = "kSecRevocationUseAnyAvailableMethod")]
+    pub const USE_ANY_AVAILABLE_METHOD: Self = Self(Self::OCSP_METHOD.0 | Self::CRL_METHOD.0);
+}
 
 impl sec::Policy {
     #[doc(alias = "SecPolicyGetTypeID")]
@@ -94,8 +126,8 @@ impl sec::Policy {
     }
 
     #[doc(alias = "SecPolicyCreateRevocation")]
-    pub fn revocation() -> Option<arc::R<Self>> {
-        unsafe { SecPolicyCreateRevocation() }
+    pub fn revocation(flags: RevocationFlags) -> Option<arc::R<Self>> {
+        unsafe { SecPolicyCreateRevocation(flags) }
     }
 
     /// Returns a policy object for evaluating SSL certificate chains.
@@ -126,7 +158,7 @@ unsafe extern "C-unwind" {
         policy_identifier: &cf::Type,
         props: Option<&cf::Dictionary>,
     ) -> Option<arc::R<sec::Policy>>;
-    fn SecPolicyCreateRevocation() -> Option<arc::R<sec::Policy>>;
+    fn SecPolicyCreateRevocation(flags: RevocationFlags) -> Option<arc::R<sec::Policy>>;
     fn SecPolicyCreateSSL(server: bool, hostname: Option<&cf::String>) -> arc::R<sec::Policy>;
     fn SecPolicyCreateBasicX509() -> arc::R<sec::Policy>;
 

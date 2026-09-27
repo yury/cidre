@@ -11,7 +11,7 @@ impl OptimizerDesc {
     pub fn grad_rescale(&self) -> f32;
 
     #[objc::msg_send(appliesGradientClipping)]
-    pub fn applies_grad_clipping(&self) -> f32;
+    pub fn applies_grad_clipping(&self) -> bool;
 
     #[objc::msg_send(gradientClipMax)]
     pub fn grad_clip_max(&self) -> f32;

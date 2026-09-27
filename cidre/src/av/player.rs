@@ -1,7 +1,10 @@
 use crate::{arc, av, cm, define_cls, define_obj_type, define_opts, ns, objc};
 
 #[cfg(feature = "blocks")]
-use crate::{api, blocks, dispatch};
+use crate::{api, blocks};
+
+#[cfg(all(feature = "blocks", feature = "dispatch"))]
+use crate::dispatch;
 
 pub mod item;
 pub use item::Item as PlayerItem;
@@ -285,7 +288,7 @@ impl Player {
 
 /// AVPlayerTimeObservation
 impl Player {
-    #[cfg(feature = "blocks")]
+    #[cfg(all(feature = "blocks", feature = "dispatch"))]
     #[objc::msg_send(addPeriodicTimeObserverForInterval:queue:usingBlock:)]
     pub fn add_periodic_time_observer_for_interval(
         &mut self,
