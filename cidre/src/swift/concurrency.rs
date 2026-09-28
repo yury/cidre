@@ -850,6 +850,11 @@ unsafe extern "C" fn pulled_iter_task_requested() {
 }
 
 /// Tail-calls the iterator's `next()`.
+///
+/// Only `x20` and `x22` change on the way: an async callee takes no error
+/// register, and the job runner keeps its own state in the callee-saved ones
+/// — the macOS 15 runtime holds the job's autorelease pool token in `x21`, so
+/// zeroing it here made the pool pop after the job fault.
 #[unsafe(naked)]
 unsafe extern "C" fn pulled_iter_task_fetch() {
     core::arch::naked_asm!(
@@ -868,7 +873,6 @@ unsafe extern "C" fn pulled_iter_task_fetch() {
         "ldr x0, [x22, #40]",
         "ldr x20, [x22, #32]",
         "mov x22, x9",
-        "mov x21, #0",
         swift_async_epilogue!(frame: "32", fp: "16"),
         "br x16",
         next_async_fn = sym cidre_pulled_iter_next_async_fn,
@@ -1985,6 +1989,62 @@ mod notification_sequence {
 
 #[cfg(test)]
 mod tests {
+    /// The async trampolines run between the Swift job runner and Swift
+    /// functions, and nothing restores a register they write: only the
+    /// argument registers, the scratch ones, `x20` (`self`) and `x22` (the
+    /// async context) may change. The runner keeps its own state in the other
+    /// callee-saved registers — the macOS 15 runtime its autorelease pool
+    /// token in `x21` — and a trampoline that clobbers one breaks a runtime
+    /// that happens to use it, even where the one under test does not.
+    #[test]
+    fn async_trampolines_leave_callee_saved_registers_alone() {
+        let sources = [
+            ("concurrency.rs", include_str!("concurrency.rs")),
+            (
+                "speech_transcriber.rs",
+                include_str!("speech/speech_transcriber.rs"),
+            ),
+        ];
+        let forbidden = [
+            "x19", "x21", "x23", "x24", "x25", "x26", "x27", "x28", "w19", "w21", "w23", "w24",
+            "w25", "w26", "w27", "w28", "d8", "d9", "d10", "d11", "d12", "d13", "d14", "d15",
+        ];
+        let mut offenders = Vec::new();
+        for (file, text) in sources {
+            for (number, line) in text.lines().enumerate() {
+                let Some(insn) = line
+                    .trim()
+                    .strip_prefix('"')
+                    .and_then(|l| l.split('"').next())
+                else {
+                    continue;
+                };
+                let mut parts = insn.splitn(2, char::is_whitespace);
+                let op = parts.next().unwrap_or("");
+                let operands: Vec<&str> = parts
+                    .next()
+                    .unwrap_or("")
+                    .split(',')
+                    .map(str::trim)
+                    .collect();
+                // Stores, branches and compares write no register; a load pair
+                // writes its first two operands, everything else its first.
+                let written = match op {
+                    o if o.starts_with("st") || o.starts_with('b') || o.starts_with("cb") => 0,
+                    "cmp" | "cmn" | "tst" | "ret" | "tbz" | "tbnz" => 0,
+                    "ldp" => 2,
+                    _ => 1,
+                };
+                for operand in operands.iter().take(written) {
+                    if forbidden.contains(operand) {
+                        offenders.push(format!("{file}:{}: {insn}", number + 1));
+                    }
+                }
+            }
+        }
+        assert!(offenders.is_empty(), "{}", offenders.join("\n"));
+    }
+
     /// Drives the stream through its feed callback, which is what a Swift
     /// sequence does, so the buffering and wake-up can be checked without one.
     #[cfg(feature = "async")]
