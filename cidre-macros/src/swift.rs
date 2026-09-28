@@ -1443,9 +1443,9 @@ where
 /// - a three-word result, which C returns through a buffer at `x8`, is stored
 ///   from `x0`-`x2` into the buffer the caller passed there.
 ///
-/// `x20` and `x21` are callee-saved under C, so the thunk restores both, and
-/// it keeps a frame record so a backtrace through the Swift callee still
-/// reaches the Rust caller.
+/// `x20` and `x21` are callee-saved under C, so the thunk restores the ones it
+/// writes — `x21` only for a throwing call — and it keeps a frame record so a
+/// backtrace through the Swift callee still reaches the Rust caller.
 #[allow(clippy::too_many_arguments)]
 fn gen_thunk_call(
     sig: &Signature,
@@ -1503,20 +1503,35 @@ fn gen_thunk_call(
     }
     call_args.extend(float_args.iter().cloned());
 
-    // The frame: the record at the bottom, then the callee-saved pair, then
-    // the two addresses the thunk writes through once the callee is back.
+    // The frame holds only what the call needs. Every thunk keeps the frame
+    // record and `x20`; `x21` is saved only when the callee writes it, which
+    // is when it throws. The words above hold the addresses the thunk writes
+    // through once the callee is back: the error's and the three-word
+    // result's.
+    //
+    //   [sp, #0]  x29, x30       always
+    //   [sp, #16] x20            always, with x21 beside it when throwing
+    //   [sp, #24] x8             three-word result, when not throwing
+    //   [sp, #32] error address  throwing
+    //   [sp, #40] x8             three-word result, when throwing
     let self_reg = int_args.len() + indirect_slot;
+    let frame = if throws { 48 } else { 32 };
+    let words3_slot = if throws { 40 } else { 24 };
     let mut insns: Vec<String> = vec![
-        "stp x29, x30, [sp, #-48]!".into(),
+        format!("stp x29, x30, [sp, #-{frame}]!"),
         "mov x29, sp".into(),
-        "stp x20, x21, [sp, #16]".into(),
     ];
+    insns.push(if throws {
+        "stp x20, x21, [sp, #16]".into()
+    } else {
+        "str x20, [sp, #16]".into()
+    });
     if throws {
         insns.push(format!("str x{}, [sp, #32]", self_reg + 1));
         insns.push("mov x21, xzr".into());
     }
     if words3 {
-        insns.push("str x8, [sp, #40]".into());
+        insns.push(format!("str x8, [sp, #{words3_slot}]"));
     }
     if indirect_slot == 1 {
         insns.push(format!("mov x8, x{}", int_args.len()));
@@ -1528,12 +1543,16 @@ fn gen_thunk_call(
         insns.push("str x21, [x9]".into());
     }
     if words3 {
-        insns.push("ldr x9, [sp, #40]".into());
+        insns.push(format!("ldr x9, [sp, #{words3_slot}]"));
         insns.push("stp x0, x1, [x9]".into());
         insns.push("str x2, [x9, #16]".into());
     }
-    insns.push("ldp x20, x21, [sp, #16]".into());
-    insns.push("ldp x29, x30, [sp], #48".into());
+    insns.push(if throws {
+        "ldp x20, x21, [sp, #16]".into()
+    } else {
+        "ldr x20, [sp, #16]".into()
+    });
+    insns.push(format!("ldp x29, x30, [sp], #{frame}"));
     insns.push("ret".into());
     let asm: String = insns
         .iter()
