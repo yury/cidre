@@ -76,20 +76,19 @@ jobs:
           RUST_BACKTRACE=1 cargo t --lib --features="${{ matrix.macos }},async" swift::
           -- --nocapture --test-threads=1
 
-    - name: Crash reports
+    # The runners keep no crash reports, so a crash is rerun under lldb, which
+    # prints where it happened.
+    - name: Backtrace
       if: failure()
       run: |
-        ls -la ~/Library/Logs/DiagnosticReports || true
-        for f in ~/Library/Logs/DiagnosticReports/cidre-*; do
-          [ -e "$f" ] || continue
-          echo "===== $f"
-          head -c 20000 "$f"
-        done
-
-    - name: Upload crash reports
-      if: failure()
-      uses: actions/upload-artifact@v4
-      with:
-        name: crash-reports-${{ matrix.os }}
-        path: ~/Library/Logs/DiagnosticReports/cidre-*
-        if-no-files-found: ignore
+        BIN=$(cargo t --lib --features="${{ matrix.macos }},async" --no-run --message-format=json 2>/dev/null \
+          | jq -r 'select(.profile.test == true and .target.name == "cidre") | .executable' | tail -1)
+        echo "test binary: $BIN"
+        lldb --batch \
+          -o "settings set target.process.stop-on-exec false" \
+          -o run \
+          -k "thread backtrace all" \
+          -k "register read" \
+          -k "disassemble --pc --count 24" \
+          -k "quit 1" \
+          -- "$BIN" swift:: --nocapture --test-threads=1
