@@ -36,7 +36,7 @@ impl Player {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Player>>;
 
-    define_cls!(AV_AUDIO_PLAYER);
+    define_cls!(sym AVAudioPlayer);
 
     pub fn with_url<'ear>(url: &ns::Url) -> Result<arc::R<Self>, &'ear ns::Error> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_url_err(url, err) })
@@ -179,10 +179,6 @@ pub trait Delegate: objc::Obj {
 
 define_obj_type!(pub AnyDelegate(ns::Id));
 impl Delegate for AnyDelegate {}
-
-unsafe extern "C" {
-    static AV_AUDIO_PLAYER: &'static objc::Class<Player>;
-}
 
 #[cfg(test)]
 mod tests {

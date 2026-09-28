@@ -6,7 +6,7 @@ define_obj_type!(
 );
 
 impl Scene {
-    define_cls!(UI_SCENE);
+    define_cls!(sym UIScene);
 
     #[objc::msg_send(delegate)]
     pub fn delegate(&self) -> Option<&AnySceneDelegate>;
@@ -44,10 +44,6 @@ define_obj_type!(
 );
 
 impl SceneDelegate for AnySceneDelegate {}
-
-unsafe extern "C" {
-    static UI_SCENE: &'static objc::Class<Scene>;
-}
 
 pub mod notifications {
     use crate::ns;

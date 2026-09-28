@@ -18,7 +18,7 @@ define_obj_type!(
 );
 
 impl Item {
-    define_cls!(AV_PLAYER_ITEM);
+    define_cls!(sym AVPlayerItem);
 
     #[objc::msg_send(playerItemWithURL:)]
     pub fn with_url(val: &ns::Url) -> arc::R<Self>;
@@ -353,8 +353,4 @@ unsafe extern "C" {
     static AVPlayerItemRecommendedTimeOffsetFromLiveDidChangeNotification:
         &'static ns::NotificationName;
     static AVPlayerItemMediaSelectionDidChangeNotification: &'static ns::NotificationName;
-}
-
-unsafe extern "C" {
-    static AV_PLAYER_ITEM: &'static objc::Class<Item>;
 }

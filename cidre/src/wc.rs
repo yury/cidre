@@ -8,6 +8,3 @@ pub use error::Domain as ErrorDomain;
 
 #[link(name = "WatchConnectivity", kind = "framework")]
 unsafe extern "C" {}
-
-#[link(name = "wc", kind = "static")]
-unsafe extern "C" {}

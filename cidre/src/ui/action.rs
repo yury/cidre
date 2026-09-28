@@ -3,7 +3,7 @@ use crate::{arc, blocks, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UIAction")]
     pub Action(ui::MenuElement),
-    UI_ACTION
+    sym UIAction
 );
 
 impl Action {
@@ -41,8 +41,4 @@ impl Action {
     #[objc::msg_send(setAttributes:)]
     #[objc::available(ios = 13.0, tvos = 13.0)]
     pub fn set_attrs(&mut self, val: ui::MenuElementAttrs);
-}
-
-unsafe extern "C" {
-    static UI_ACTION: &'static objc::Class<Action>;
 }

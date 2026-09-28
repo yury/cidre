@@ -12,7 +12,7 @@ pub enum SwitchStyle {
 define_obj_type!(
     #[doc(alias = "UISwitch")]
     pub Switch(ui::Control),
-    UI_SWITCH
+    sym UISwitch
 );
 
 impl Switch {
@@ -76,8 +76,4 @@ impl Switch {
     #[objc::msg_send(setTitle:)]
     #[objc::available(ios = 14.0)]
     pub fn set_title(&mut self, val: Option<&ns::String>);
-}
-
-unsafe extern "C" {
-    static UI_SWITCH: &'static objc::Class<Switch>;
 }

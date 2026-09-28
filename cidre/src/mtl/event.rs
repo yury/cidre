@@ -33,7 +33,7 @@ impl SharedEventListener {
     #[objc::init(initWithDispatchQueue:)]
     pub fn init_with_dispatch_queue(self, queue: &dispatch::Queue) -> arc::R<SharedEventListener>;
 
-    define_cls!(MTL_SHARED_EVENT_LISTENER);
+    define_cls!(sym MTLSharedEventListener);
 
     /// Creates a new shareable event listener with a specific dispatch queue.
     #[inline]
@@ -99,8 +99,4 @@ impl SharedEvent {
 
     #[objc::msg_send(setSignaledValue:)]
     pub fn set_signaled_value(&self, val: u64);
-}
-
-unsafe extern "C" {
-    static MTL_SHARED_EVENT_LISTENER: &'static objc::Class<SharedEventListener>;
 }

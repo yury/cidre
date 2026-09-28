@@ -116,7 +116,7 @@ impl CornerMask {
 define_obj_type!(
     #[doc(alias = "CALayer")]
     pub Layer(ns::Id),
-    CA_LAYER
+    sym CALayer
 );
 
 impl Layer {
@@ -373,10 +373,6 @@ define_obj_type!(
 );
 
 impl LayerDelegate for AnyLayerDelegate {}
-
-unsafe extern "C" {
-    static CA_LAYER: &'static objc::Class<Layer>;
-}
 
 #[api::weak]
 unsafe extern "C" {

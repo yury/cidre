@@ -50,7 +50,7 @@ impl ItemVideoOutput {
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<ItemVideoOutput>;
 
-    define_cls!(AV_PLAYER_ITEM_VIDEO_OUTPUT);
+    define_cls!(sym AVPlayerItemVideoOutput);
 
     pub fn new() -> arc::R<ItemVideoOutput> {
         Self::with_pixel_buf_attrs(None)
@@ -124,7 +124,3 @@ define_obj_type!(
 );
 
 impl ItemOutputPullDelegate for AnyItemOutputPullDelegate {}
-
-unsafe extern "C" {
-    static AV_PLAYER_ITEM_VIDEO_OUTPUT: &'static objc::Class<ItemVideoOutput>;
-}

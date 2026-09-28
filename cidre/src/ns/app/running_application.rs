@@ -12,7 +12,7 @@ pub enum AppActivationPolicy {
 define_obj_type!(
     #[doc(alias = "NSRunningApplication")]
     pub RunningApp(ns::Id),
-    NS_RUNNING_APPLICATION
+    sym NSRunningApplication
 );
 
 impl RunningApp {
@@ -104,8 +104,4 @@ mod tests {
 
         let _app = ns::RunningApp::current();
     }
-}
-
-unsafe extern "C" {
-    static NS_RUNNING_APPLICATION: &'static objc::Class<RunningApp>;
 }

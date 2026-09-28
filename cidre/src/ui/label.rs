@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UILabel")]
     pub Label(ui::View),
-    UI_LABEL
+    sym UILabel
 );
 
 impl Label {
@@ -51,8 +51,4 @@ impl Label {
 
     #[objc::msg_send(setTextAlignment:)]
     pub fn set_text_alignment(&mut self, val: ns::Integer);
-}
-
-unsafe extern "C" {
-    static UI_LABEL: &'static objc::Class<Label>;
 }

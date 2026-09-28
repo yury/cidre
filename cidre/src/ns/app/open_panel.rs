@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSOpenPanel")]
     pub OpenPanel(ns::SavePanel),
-    NS_OPEN_PANEL
+    sym NSOpenPanel
 );
 
 impl OpenPanel {
@@ -38,8 +38,4 @@ impl OpenPanel {
 
     #[objc::msg_send(setCanChooseFiles:)]
     pub fn set_can_choose_files(&mut self, val: bool);
-}
-
-unsafe extern "C" {
-    static NS_OPEN_PANEL: &'static objc::Class<OpenPanel>;
 }

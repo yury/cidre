@@ -14,7 +14,7 @@ define_obj_type!(
     /// What a drop would do, as a drop interaction's delegate answers while the drag moves.
     #[doc(alias = "UIDropProposal")]
     pub DropProposal(ns::Id),
-    UI_DROP_PROPOSAL
+    sym UIDropProposal
 );
 
 impl arc::A<DropProposal> {
@@ -35,7 +35,7 @@ define_obj_type!(
     /// Lets a view take drops: its delegate says what it accepts and takes it.
     #[doc(alias = "UIDropInteraction")]
     pub DropInteraction(ns::Id),
-    UI_DROP_INTERACTION
+    sym UIDropInteraction
 );
 
 impl ui::Interaction for DropInteraction {}
@@ -123,11 +123,6 @@ define_obj_type!(
 );
 
 impl DropInteractionDelegate for AnyDropInteractionDelegate {}
-
-unsafe extern "C" {
-    static UI_DROP_PROPOSAL: &'static objc::Class<DropProposal>;
-    static UI_DROP_INTERACTION: &'static objc::Class<DropInteraction>;
-}
 
 #[cfg(test)]
 mod tests {

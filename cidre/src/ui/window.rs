@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, objc, ui};
 define_obj_type!(
     #[doc(alias = "UIWindow")]
     pub Window(ui::View),
-    UI_WINDOW
+    sym UIWindow
 );
 
 impl Window {
@@ -25,8 +25,4 @@ impl Window {
 
     #[objc::msg_send(makeKeyAndVisible)]
     pub fn make_key_and_visible(&self);
-}
-
-unsafe extern "C" {
-    static UI_WINDOW: &'static objc::Class<Window>;
 }

@@ -82,7 +82,7 @@ impl<S: objc::Obj, I: objc::Obj> CollectionViewDiffableDataSrcReorderingHandlers
 impl<S: objc::Obj + 'static, I: objc::Obj + 'static>
     CollectionViewDiffableDataSrcReorderingHandlers<S, I>
 {
-    define_cls!(UI_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE_REORDERING_HANDLERS);
+    define_cls!(sym UICollectionViewDiffableDataSourceReorderingHandlers);
 
     #[inline]
     pub fn new() -> arc::R<Self> {
@@ -161,7 +161,7 @@ impl<I: objc::Obj + 'static> CollectionViewDiffableDataSrcSectionSnapshotHandler
     #[objc::init(init)]
     pub fn init(self) -> arc::R<CollectionViewDiffableDataSrcSectionSnapshotHandlers<I>>;
 
-    define_cls!(UI_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT_HANDLERS);
+    define_cls!(sym UICollectionViewDiffableDataSourceSectionSnapshotHandlers);
 
     #[inline]
     pub fn new() -> arc::R<Self> {
@@ -294,7 +294,7 @@ impl<S: objc::Obj, I: objc::Obj> CollectionViewDiffableDataSrc<S, I> {
         cell_provider: &mut CollectionViewDiffableDataSrcCellProvider<I>,
     ) -> arc::R<CollectionViewDiffableDataSrc<S, I>>;
 
-    define_cls!(UI_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE);
+    define_cls!(sym UICollectionViewDiffableDataSource);
 
     #[cfg(feature = "blocks")]
     pub fn with_collection_view_cell_provider(
@@ -485,12 +485,3 @@ impl<S: objc::Obj, I: objc::Obj> CollectionViewDiffableDataSrc<S, I> {
 }
 
 impl<S: objc::Obj, I: objc::Obj> ui::CollectionViewDataSrc for CollectionViewDiffableDataSrc<S, I> {}
-
-unsafe extern "C" {
-    static UI_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE:
-        &'static objc::Class<CollectionViewDiffableDataSrc<ns::Id, ns::Id>>;
-    static UI_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE_REORDERING_HANDLERS:
-        &'static objc::Class<CollectionViewDiffableDataSrcReorderingHandlers<ns::Id, ns::Id>>;
-    static UI_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT_HANDLERS:
-        &'static objc::Class<CollectionViewDiffableDataSrcSectionSnapshotHandlers<ns::Id>>;
-}

@@ -39,7 +39,7 @@ pub enum StackViewDistribution {
 define_obj_type!(
     #[doc(alias = "NSStackView")]
     pub StackView(ns::View),
-    NS_STACK_VIEW
+    sym NSStackView
 );
 
 impl StackView {
@@ -102,8 +102,4 @@ impl StackView {
 
     #[objc::msg_send(customSpacingAfterView:)]
     pub fn custom_spacing_after_view(&self, view: &ns::View) -> cg::Float;
-}
-
-unsafe extern "C" {
-    static NS_STACK_VIEW: &'static objc::Class<StackView>;
 }

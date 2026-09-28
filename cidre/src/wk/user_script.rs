@@ -20,7 +20,7 @@ impl UserScript {
         for_main_frame_only: bool,
     ) -> arc::R<UserScript>;
 
-    define_cls!(WK_USER_SCRIPT);
+    define_cls!(sym WKUserScript);
 
     pub fn with_src(
         src: &ns::String,
@@ -42,8 +42,4 @@ impl UserScript {
 
     #[objc::msg_send(isForMainFrameOnly)]
     pub fn is_for_main_frame_only(&self) -> bool;
-}
-
-unsafe extern "C" {
-    static WK_USER_SCRIPT: &'static objc::Class<UserScript>;
 }

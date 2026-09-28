@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, nl, ns, objc};
 define_obj_type!(
     #[doc(alias = "NLLanguageRecognizer")]
     pub LangRecognizer(ns::Id),
-    NL_LANGUAGE_RECOGNIZER
+    sym NLLanguageRecognizer
 );
 
 impl LangRecognizer {
@@ -33,10 +33,6 @@ impl LangRecognizer {
 
     #[objc::msg_send(setLanguageConstraints:)]
     pub fn set_lang_constraints(&mut self, val: &ns::Array<nl::Lang>);
-}
-
-unsafe extern "C" {
-    static NL_LANGUAGE_RECOGNIZER: &'static objc::Class<LangRecognizer>;
 }
 
 #[cfg(test)]

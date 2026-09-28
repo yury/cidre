@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UIButtonConfiguration")]
     pub ButtonCfg(ns::Id),
-    UI_BUTTON_CONFIGURATION
+    sym UIButtonConfiguration
 );
 
 impl ButtonCfg {
@@ -114,10 +114,6 @@ impl ButtonCfg {
     #[objc::available(ios = 15.0, tvos = 15.0)]
     #[objc::msg_send(setButtonSize:)]
     pub fn set_button_size(&mut self, val: Size);
-}
-
-unsafe extern "C" {
-    static UI_BUTTON_CONFIGURATION: &'static objc::Class<ButtonCfg>;
 }
 
 #[doc(alias = "UIButtonConfigurationSize")]

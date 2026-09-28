@@ -26,7 +26,7 @@ impl Constraint {
         durations: &ns::Array<ns::Value>,
     ) -> arc::R<Constraint>;
 
-    define_cls!(SN_TIME_DURATION_CONSTRAINT);
+    define_cls!(sym SNTimeDurationConstraint);
 
     pub fn with_duration_range(duration_range: cm::TimeRange) -> arc::R<Self> {
         Self::alloc().init_with_duration_range(duration_range)
@@ -44,8 +44,4 @@ impl Constraint {
 
     #[objc::msg_send(durationRange)]
     pub fn duration_range(&self) -> cm::TimeRange;
-}
-
-unsafe extern "C" {
-    static SN_TIME_DURATION_CONSTRAINT: &'static objc::Class<Constraint>;
 }

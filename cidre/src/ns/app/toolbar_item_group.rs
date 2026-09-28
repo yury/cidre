@@ -24,7 +24,7 @@ define_obj_type!(
     /// A toolbar item that presents several items as one group.
     #[doc(alias = "NSToolbarItemGroup")]
     pub ToolbarItemGroup(ns::ToolbarItem),
-    NS_TOOLBAR_ITEM_GROUP
+    sym NSToolbarItemGroup
 );
 
 impl ToolbarItemGroup {
@@ -56,8 +56,4 @@ impl ToolbarItemGroup {
     #[objc::msg_send(setSelectionMode:)]
     #[objc::available(macos = 10.15)]
     pub fn set_selection_mode(&mut self, val: ToolbarItemGroupSelectionMode);
-}
-
-unsafe extern "C" {
-    static NS_TOOLBAR_ITEM_GROUP: &'static objc::Class<ToolbarItemGroup>;
 }

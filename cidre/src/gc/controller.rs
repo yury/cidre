@@ -19,7 +19,7 @@ define_obj_type!(
 );
 
 impl Controller {
-    define_cls!(GC_CONTROLLER);
+    define_cls!(sym GCController);
 
     #[objc::msg_send(current)]
     pub fn current() -> Option<arc::R<Controller>>;
@@ -93,10 +93,6 @@ impl Controller {
     pub fn user_customizations_did_change_notification() -> &'static ns::NotificationName {
         unsafe { GCControllerUserCustomizationsDidChangeNotification }
     }
-}
-
-unsafe extern "C" {
-    static GC_CONTROLLER: &'static objc::Class<Controller>;
 }
 
 #[api::weak]

@@ -3,7 +3,7 @@ use crate::{arc, blocks, core_motion as cm, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "CMMotionManager")]
     pub MotionManager(ns::Id),
-    CM_MOTION_MANAGER
+    sym CMMotionManager
 );
 
 impl MotionManager {
@@ -193,8 +193,4 @@ impl MotionManager {
             &mut handler,
         )
     }
-}
-
-unsafe extern "C" {
-    static CM_MOTION_MANAGER: &'static objc::Class<MotionManager>;
 }

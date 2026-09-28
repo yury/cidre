@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UISegmentedControl")]
     pub SegmentedControl(ui::Control),
-    UI_SEGMENTED_CONTROL
+    sym UISegmentedControl
 );
 
 impl SegmentedControl {
@@ -126,8 +126,4 @@ impl SegmentedControl {
 
     #[objc::msg_send(setSelectedSegmentTintColor:)]
     pub fn set_selected_segment_tint_color(&mut self, val: Option<&ui::Color>);
-}
-
-unsafe extern "C" {
-    static UI_SEGMENTED_CONTROL: &'static objc::Class<SegmentedControl>;
 }

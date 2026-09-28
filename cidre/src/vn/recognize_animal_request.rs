@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc, vn};
 define_obj_type!(
     #[doc(alias = "VNRecognizeAnimalsRequest")]
     pub RecognizeAnimalsRequest(vn::ImageBasedRequest),
-    VN_RECOGNIZE_ANIMALS_REQUEST
+    sym VNRecognizeAnimalsRequest
 );
 
 define_obj_type!(pub AnimalId(ns::String));
@@ -53,10 +53,6 @@ impl RecognizeAnimalsRequest {
 unsafe extern "C" {
     static VNAnimalIdentifierDog: &'static AnimalId;
     static VNAnimalIdentifierCat: &'static AnimalId;
-}
-
-unsafe extern "C" {
-    static VN_RECOGNIZE_ANIMALS_REQUEST: &'static objc::Class<RecognizeAnimalsRequest>;
 }
 
 #[cfg(test)]

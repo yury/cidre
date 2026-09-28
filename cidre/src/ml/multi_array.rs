@@ -25,7 +25,7 @@ pub enum MultiArrayDType {
 define_obj_type!(
     #[doc(alias = "MLMultiArray")]
     pub MultiArray(ns::Id),
-    ML_MULTI_ARRAY,
+    sym MLMultiArray,
     #[api::available(macos = 10.13, ios = 11.0, watchos = 4.0, tvos = 11.0)]
 );
 
@@ -198,10 +198,6 @@ impl MultiArray {
 impl MultiArray {
     #[objc::msg_send(transferToMultiArray:)]
     pub fn transfer_to(&self, dst: &mut Self);
-}
-
-unsafe extern "C" {
-    static ML_MULTI_ARRAY: &'static objc::Class<MultiArray>;
 }
 
 #[cfg(test)]

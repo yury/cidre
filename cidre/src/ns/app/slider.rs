@@ -21,7 +21,7 @@ pub enum TickMarkPosition {
 define_obj_type!(
     #[doc(alias = "NSSlider")]
     pub Slider(ns::Control),
-    NS_SLIDER
+    sym NSSlider
 );
 
 impl Slider {
@@ -93,8 +93,4 @@ impl Slider {
 
     #[objc::msg_send(closestTickMarkValueToValue:)]
     pub fn closest_tick_mark_value_to_value(&self, val: f64) -> f64;
-}
-
-unsafe extern "C" {
-    static NS_SLIDER: &'static objc::Class<Slider>;
 }

@@ -6,7 +6,7 @@ define_obj_type!(
 );
 
 impl TensorData {
-    define_cls!(MLC_TENSOR_DATA);
+    define_cls!(sym MLCTensorData);
 
     #[objc::msg_send(bytes)]
     pub fn bytes(&self) -> *const u8;
@@ -38,8 +38,4 @@ impl TensorData {
     pub unsafe fn with_slice_no_copy<T: Sized>(slice: &[T]) -> arc::R<Self> {
         unsafe { Self::with_bytes_no_copy(slice.as_ptr() as _, std::mem::size_of_val(slice)) }
     }
-}
-
-unsafe extern "C" {
-    static MLC_TENSOR_DATA: &'static objc::Class<TensorData>;
 }

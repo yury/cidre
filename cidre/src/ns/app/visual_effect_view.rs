@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSVisualEffectView")]
     pub VisualEffectView(ns::View),
-    NS_VISUAL_EFFECT_VIEW
+    sym NSVisualEffectView
 );
 
 impl VisualEffectView {
@@ -18,10 +18,6 @@ impl VisualEffectView {
 
     #[objc::msg_send(setState:)]
     pub fn set_state(&mut self, val: State);
-}
-
-unsafe extern "C" {
-    static NS_VISUAL_EFFECT_VIEW: &'static objc::Class<VisualEffectView>;
 }
 
 #[doc(alias = "NSVisualEffectMaterial")]

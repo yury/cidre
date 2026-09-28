@@ -36,7 +36,7 @@ pub enum StackViewAlignment {
 define_obj_type!(
     #[doc(alias = "UIStackView")]
     pub StackView(ui::View),
-    UI_STACK_VIEW
+    sym UIStackView
 );
 
 impl StackView {
@@ -107,8 +107,4 @@ impl StackView {
 
     #[objc::msg_send(setLayoutMarginsRelativeArrangement:)]
     pub fn set_layout_margins_relative_arrangement(&mut self, val: bool);
-}
-
-unsafe extern "C" {
-    static UI_STACK_VIEW: &'static objc::Class<StackView>;
 }

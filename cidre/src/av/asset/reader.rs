@@ -32,7 +32,7 @@ impl Reader {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Reader>>;
 
-    define_cls!(AV_ASSET_READER);
+    define_cls!(sym AVAssetReader);
 
     pub fn with_asset<'ear>(asset: &av::Asset) -> ns::Result<'ear, arc::R<Reader>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_assert_err(asset, err) })
@@ -96,8 +96,4 @@ impl Reader {
 
     #[objc::msg_send(outputs)]
     pub fn outputs(&self) -> arc::R<ns::Array<av::AssetReaderOutput>>;
-}
-
-unsafe extern "C" {
-    static AV_ASSET_READER: &'static objc::Class<Reader>;
 }

@@ -15,7 +15,7 @@ impl DictionaryFeatureProvider {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<DictionaryFeatureProvider>>;
 
-    define_cls!(ML_DICTIONARY_FEATURE_PROVIDER);
+    define_cls!(sym MLDictionaryFeatureProvider);
 
     #[objc::msg_send(dictionary)]
     pub fn dictionary(&self) -> arc::R<ns::Dictionary<ns::String, ml::FeatureValue>>;
@@ -36,8 +36,4 @@ impl DictionaryFeatureProvider {
     ) -> ns::Result<'ear, arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_dictionary_err(dictionary, err) })
     }
-}
-
-unsafe extern "C" {
-    static ML_DICTIONARY_FEATURE_PROVIDER: &'static objc::Class<DictionaryFeatureProvider>;
 }

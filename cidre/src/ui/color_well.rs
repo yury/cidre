@@ -1,6 +1,6 @@
 use crate::{arc, cg, define_obj_type, ns, objc, ui};
 
-define_obj_type!(#[doc(alias = "UIColorWell")] pub ColorWell(ui::Control), UI_COLOR_WELL);
+define_obj_type!(#[doc(alias = "UIColorWell")] pub ColorWell(ui::Control), sym UIColorWell);
 impl ColorWell {
     #[objc::init(initWithFrame:)]
     pub fn init_with_frame(self, frame: cg::Rect) -> arc::R<ColorWell>;
@@ -19,7 +19,4 @@ impl ColorWell {
     pub fn selected_color(&self) -> Option<arc::R<ui::Color>>;
     #[objc::msg_send(setSelectedColor:)]
     pub fn set_selected_color(&mut self, value: Option<&ui::Color>);
-}
-unsafe extern "C" {
-    static UI_COLOR_WELL: &'static objc::Class<ColorWell>;
 }

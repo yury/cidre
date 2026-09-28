@@ -19,6 +19,7 @@ impl ViewControllerTransition {
     ) -> arc::R<Self>;
 
     #[objc::available(ios = 18.0, maccatalyst = 18.0, tvos = 18.0, visionos = 2.0)]
+    #[allow(unused_unsafe)]
     pub fn zoom(
         options: Option<&ui::ZoomTransitionOpts>,
         src_view_provider: impl FnMut(
@@ -27,7 +28,7 @@ impl ViewControllerTransition {
         + 'static,
     ) -> arc::R<Self> {
         let mut block = blocks::EscBlock::new1(src_view_provider);
-        Self::zoom_block(options, &mut block)
+        unsafe { Self::zoom_block(options, &mut block) }
     }
 
     #[objc::msg_send(zoomWithOptions:sourceBarButtonItemProvider:)]

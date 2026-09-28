@@ -16,7 +16,7 @@ pub type CollectionLayoutSectionProvider = blocks::EscBlock<
 define_obj_type!(
     #[doc(alias = "UICollectionViewCompositionalLayout")]
     pub CollectionViewCompositionalLayout(ui::CollectionViewLayout),
-    UI_COLLECTION_VIEW_COMPOSITIONAL_LAYOUT
+    sym UICollectionViewCompositionalLayout
 );
 
 impl CollectionViewCompositionalLayout {
@@ -121,7 +121,7 @@ pub enum RectAlignment {
 define_obj_type!(
     #[doc(alias = "NSCollectionLayoutDimension")]
     pub CollectionLayoutDimension(ns::Id),
-    NS_COLLECTION_LAYOUT_DIMENSION
+    sym NSCollectionLayoutDimension
 );
 
 impl CollectionLayoutDimension {
@@ -144,7 +144,7 @@ impl CollectionLayoutDimension {
 define_obj_type!(
     #[doc(alias = "NSCollectionLayoutSize")]
     pub CollectionLayoutSize(ns::Id),
-    NS_COLLECTION_LAYOUT_SIZE
+    sym NSCollectionLayoutSize
 );
 
 impl CollectionLayoutSize {
@@ -158,7 +158,7 @@ impl CollectionLayoutSize {
 define_obj_type!(
     #[doc(alias = "NSCollectionLayoutItem")]
     pub CollectionLayoutItem(ns::Id),
-    NS_COLLECTION_LAYOUT_ITEM
+    sym NSCollectionLayoutItem
 );
 
 impl CollectionLayoutItem {
@@ -172,7 +172,7 @@ impl CollectionLayoutItem {
 define_obj_type!(
     #[doc(alias = "NSCollectionLayoutGroup")]
     pub CollectionLayoutGroup(CollectionLayoutItem),
-    NS_COLLECTION_LAYOUT_GROUP
+    sym NSCollectionLayoutGroup
 );
 
 impl CollectionLayoutGroup {
@@ -195,7 +195,7 @@ impl CollectionLayoutGroup {
 define_obj_type!(
     #[doc(alias = "NSCollectionLayoutBoundarySupplementaryItem")]
     pub CollectionLayoutBoundarySupplementaryItem(ns::Id),
-    NS_COLLECTION_LAYOUT_BOUNDARY_SUPPLEMENTARY_ITEM
+    sym NSCollectionLayoutBoundarySupplementaryItem
 );
 
 impl CollectionLayoutBoundarySupplementaryItem {
@@ -216,7 +216,7 @@ impl CollectionLayoutBoundarySupplementaryItem {
 define_obj_type!(
     #[doc(alias = "NSCollectionLayoutSection")]
     pub CollectionLayoutSection(ns::Id),
-    NS_COLLECTION_LAYOUT_SECTION
+    sym NSCollectionLayoutSection
 );
 
 impl CollectionLayoutSection {
@@ -251,16 +251,4 @@ impl CollectionLayoutSection {
         &mut self,
         val: &ns::Array<CollectionLayoutBoundarySupplementaryItem>,
     );
-}
-
-unsafe extern "C" {
-    static UI_COLLECTION_VIEW_COMPOSITIONAL_LAYOUT:
-        &'static objc::Class<CollectionViewCompositionalLayout>;
-    static NS_COLLECTION_LAYOUT_DIMENSION: &'static objc::Class<CollectionLayoutDimension>;
-    static NS_COLLECTION_LAYOUT_SIZE: &'static objc::Class<CollectionLayoutSize>;
-    static NS_COLLECTION_LAYOUT_ITEM: &'static objc::Class<CollectionLayoutItem>;
-    static NS_COLLECTION_LAYOUT_GROUP: &'static objc::Class<CollectionLayoutGroup>;
-    static NS_COLLECTION_LAYOUT_BOUNDARY_SUPPLEMENTARY_ITEM:
-        &'static objc::Class<CollectionLayoutBoundarySupplementaryItem>;
-    static NS_COLLECTION_LAYOUT_SECTION: &'static objc::Class<CollectionLayoutSection>;
 }

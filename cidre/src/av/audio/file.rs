@@ -40,7 +40,7 @@ impl File {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<File>>;
 
-    define_cls!(AV_AUDIO_FILE);
+    define_cls!(sym AVAudioFile);
 
     pub fn open_read<'ear>(file_url: &ns::Url) -> ns::Result<'ear, arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::alloc().init_for_reading_err(file_url, err) })
@@ -154,10 +154,6 @@ impl File {
 
     #[objc::msg_send(setFramePosition:)]
     pub fn set_frame_pos(&mut self, val: av::audio::FramePos);
-}
-
-unsafe extern "C" {
-    static AV_AUDIO_FILE: &'static objc::Class<File>;
 }
 
 #[cfg(test)]

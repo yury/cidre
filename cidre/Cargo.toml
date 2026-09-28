@@ -1,6 +1,6 @@
 [package]
 name = "cidre"
-version = "0.29.0"
+version = "0.30.0"
 edition = "2024"
 rust-version = "1.88"
 license = "MIT"
@@ -112,7 +112,7 @@ am = ["private", "cf", "dep:tokio"]
 at = ["av", "cat", "cf", "cm", "ns", "objc"]
 av = ["ns", "ut", "cv", "ca", "at"]
 av_kit = ["av"]
-ar = ["ns", "simd", "cm", "cv", "ios_12_0"]
+ar = ["ns", "simd", "cm", "cv"]
 ca = ["ns"]
 sc = ["ns", "cm", "cv", "dispatch", "av", "macos_12_3"] # optional blocks, async
 cl = ["ns"]
@@ -172,22 +172,7 @@ swift = []
 
 # deployment targets
 
-macos_10_0 = []
-macos_10_4 = ["macos_10_0"]
-macos_10_5 = ["macos_10_4"]
-macos_10_6 = ["macos_10_5"]
-macos_10_7 = ["macos_10_6"]
-macos_10_8 = ["macos_10_7"]
-macos_10_9 = ["macos_10_8"]
-macos_10_10 = ["macos_10_9"]
-macos_10_11 = ["macos_10_10"]
-macos_10_12 = ["macos_10_11"]
-macos_10_13 = ["macos_10_12"]
-macos_10_14 = ["macos_10_13"]
-macos_10_15 = ["macos_10_14"]
-macos_11_0 = ["macos_10_15"]
-macos_11_3 = ["macos_11_0"]
-macos_12_0 = ["macos_11_3"]
+macos_12_0 = []
 macos_12_1 = ["macos_12_0"]
 macos_12_3 = ["macos_12_1"]
 macos_12_7 = ["macos_12_3"]
@@ -206,10 +191,7 @@ macos_26_1 = ["macos_26_0"]
 macos_27_0 = ["macos_26_1"]
 macos_27_2 = ["macos_27_0"]
 
-maccatalyst_13_0 = []
-maccatalyst_13_1 = ["maccatalyst_13_0"]
-maccatalyst_14_0 = ["maccatalyst_13_1"]
-maccatalyst_15_0 = ["maccatalyst_14_0"]
+maccatalyst_15_0 = []
 maccatalyst_15_4 = ["maccatalyst_15_0"]
 maccatalyst_16_0 = ["maccatalyst_15_4"]
 maccatalyst_16_1 = ["maccatalyst_16_0"]
@@ -223,29 +205,7 @@ maccatalyst_27_0 = ["maccatalyst_26_1"]
 maccatalyst_27_1 = ["maccatalyst_27_0"]
 maccatalyst_27_2 = ["maccatalyst_27_1"]
 
-ios_2_0 = []
-ios_3_0 = ["ios_2_0"]
-ios_3_1 = ["ios_3_0"]
-ios_4_0 = ["ios_3_1"]
-ios_5_0 = ["ios_4_0"]
-ios_6_0 = ["ios_5_0"]
-ios_7_0 = ["ios_6_0"]
-ios_8_0 = ["ios_7_0"]
-ios_8_3 = ["ios_8_0"]
-ios_9_0 = ["ios_8_3"]
-ios_9_3 = ["ios_9_0"]
-ios_10_0 = ["ios_9_3"]
-ios_10_2 = ["ios_10_0"]
-ios_11_0 = ["ios_10_2"]
-ios_11_1 = ["ios_11_0"]
-ios_12_0 = ["ios_11_1"]
-ios_13_0 = ["ios_12_0"]
-ios_14_0 = ["ios_13_0"]
-ios_14_1 = ["ios_14_0"]
-ios_14_2 = ["ios_14_1"]
-ios_14_3 = ["ios_14_2"]
-ios_14_5 = ["ios_14_3"]
-ios_15_0 = ["ios_14_5"]
+ios_15_0 = []
 ios_15_4 = ["ios_15_0"]
 ios_16_0 = ["ios_15_4"]
 ios_16_3 = ["ios_16_0"]
@@ -327,8 +287,8 @@ cc = "1"
 [dependencies]
 
 parking_lot = { optional = true, version = "0.12" }
-# cidre-macros = { version = "0.12.0", path = "../cidre-macros" }
-cidre-macros = { version = "0.12.0" }
+cidre-macros = { version = "0.13.0", path = "../cidre-macros" }
+# cidre-macros = { version = "0.13.0" }
 half = { optional = true, version = "2.6" }
 
 [target.'cfg(target_os = "macos")'.dependencies]

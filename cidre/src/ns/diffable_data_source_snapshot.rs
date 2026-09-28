@@ -19,7 +19,7 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
     #[objc::init(init)]
     pub fn init(self) -> arc::R<DiffableDataSrcSnapshot<S, I>>;
 
-    define_cls!(NS_DIFFABLE_DATA_SOURCE_SNAPSHOT);
+    define_cls!(sym NSDiffableDataSourceSnapshot);
 
     #[inline]
     pub fn new() -> arc::R<Self> {
@@ -258,21 +258,6 @@ impl<S: objc::Obj, I: objc::Obj> DiffableDataSrcSnapshot<S, I> {
 }
 
 impl<S: objc::Obj, I: objc::Obj> ns::Copying for DiffableDataSrcSnapshot<S, I> {}
-
-#[cfg(all(feature = "app", target_os = "macos"))]
-unsafe extern "C" {
-    static NS_DIFFABLE_DATA_SOURCE_SNAPSHOT:
-        &'static objc::Class<DiffableDataSrcSnapshot<ns::Id, ns::Id>>;
-}
-
-#[cfg(all(
-    feature = "ui",
-    any(target_os = "ios", target_os = "tvos", target_os = "visionos")
-))]
-unsafe extern "C" {
-    static NS_DIFFABLE_DATA_SOURCE_SNAPSHOT:
-        &'static objc::Class<DiffableDataSrcSnapshot<ns::Id, ns::Id>>;
-}
 
 #[cfg(test)]
 mod tests {

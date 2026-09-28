@@ -33,7 +33,7 @@ pub enum CellType {
 define_obj_type!(
     #[doc(alias = "NSCell")]
     pub Cell(ns::Id),
-    NS_CELL
+    sym NSCell
 );
 
 impl Cell {
@@ -139,10 +139,6 @@ impl ControlStateValue {
     pub const MIXED: Self = Self(-1);
     pub const OFF: Self = Self(0);
     pub const ON: Self = Self(1);
-}
-
-unsafe extern "C" {
-    static NS_CELL: &'static objc::Class<Cell>;
 }
 
 #[cfg(test)]

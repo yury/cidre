@@ -15,7 +15,7 @@ define_obj_type!(
 );
 
 impl CollectionViewCellRegistration {
-    define_cls!(UI_COLLECTION_VIEW_CELL_REGISTRATION);
+    define_cls!(sym UICollectionViewCellRegistration);
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(registrationWithCellClass:configurationHandler:)]
@@ -54,7 +54,7 @@ define_obj_type!(
 );
 
 impl CollectionViewSupplementaryRegistration {
-    define_cls!(UI_COLLECTION_VIEW_SUPPLEMENTARY_REGISTRATION);
+    define_cls!(sym UICollectionViewSupplementaryRegistration);
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(registrationWithSupplementaryClass:elementKind:configurationHandler:)]
@@ -83,11 +83,4 @@ impl CollectionViewSupplementaryRegistration {
             &mut handler,
         )
     }
-}
-
-unsafe extern "C" {
-    static UI_COLLECTION_VIEW_CELL_REGISTRATION:
-        &'static objc::Class<CollectionViewCellRegistration>;
-    static UI_COLLECTION_VIEW_SUPPLEMENTARY_REGISTRATION:
-        &'static objc::Class<CollectionViewSupplementaryRegistration>;
 }

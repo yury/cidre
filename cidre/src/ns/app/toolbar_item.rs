@@ -22,7 +22,7 @@ impl ToolbarItemVisibilityPriority {
 define_obj_type! {
     #[doc(alias = "NSToolbarItem")]
     pub ToolbarItem(ns::Id),
-    NS_TOOLBAR_ITEM
+    sym NSToolbarItem
 }
 
 impl ToolbarItem {
@@ -213,10 +213,6 @@ impl ns::ToolbarItemId {
     pub fn inspector_tracking_separator() -> &'static Self {
         unsafe { NSToolbarInspectorTrackingSeparatorItemIdentifier }
     }
-}
-
-unsafe extern "C" {
-    static NS_TOOLBAR_ITEM: &'static objc::Class<ToolbarItem>;
 }
 
 #[api::weak]

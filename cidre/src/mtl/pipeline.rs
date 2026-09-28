@@ -24,7 +24,7 @@ pub enum ShaderValidation {
 
 define_obj_type!(
     #[doc(alias = "MTLPipelineBufferDescriptor")]
-    pub PipelineBufDesc(ns::Id), MTL_PIPELINE_BUFFER_DESCRIPTOR
+    pub PipelineBufDesc(ns::Id), sym MTLPipelineBufferDescriptor
 );
 
 impl PipelineBufDesc {
@@ -46,8 +46,4 @@ impl PipelineBufDescArray {
 
     #[objc::msg_send(setObject:atIndexedSubscript:)]
     pub fn set(&mut self, val: Option<&PipelineBufDesc>, index: usize);
-}
-
-unsafe extern "C" {
-    static MTL_PIPELINE_BUFFER_DESCRIPTOR: &'static objc::Class<PipelineBufDesc>;
 }

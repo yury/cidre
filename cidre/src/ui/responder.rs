@@ -176,7 +176,7 @@ pub trait ResponderStandardEditActions: objc::Obj {
 define_obj_type!(
     #[doc(alias = "UIResponder")]
     pub Responder(ns::Id),
-    UI_RESPONDER
+    sym UIResponder
 );
 
 impl ResponderStandardEditActions for Responder {}
@@ -214,8 +214,4 @@ impl Responder {
 
     #[objc::msg_send(touchesEstimatedPropertiesUpdated:)]
     pub fn touches_estimated_props_updated(&mut self, touches: &ns::Set<ui::Touch>);
-}
-
-unsafe extern "C" {
-    static UI_RESPONDER: &'static objc::Class<Responder>;
 }

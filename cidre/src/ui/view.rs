@@ -67,7 +67,7 @@ impl ViewAutoresizing {
 
 define_obj_type!(
     #[doc(alias = "UIView")]
-    pub View(ns::Id), UI_VIEW
+    pub View(ns::Id), sym UIView
 );
 
 impl View {
@@ -548,10 +548,6 @@ impl AnyCoordinateSpace {
     pub const fn new(other: &impl CoordinateSpace) -> &Self {
         unsafe { std::mem::transmute(other) }
     }
-}
-
-unsafe extern "C" {
-    static UI_VIEW: &'static objc::Class<View>;
 }
 
 impl View {

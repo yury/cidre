@@ -46,7 +46,7 @@ impl Time {
     #[objc::init(initWithSampleTime:atRate:)]
     pub fn init_with_sample_time_at_rate(self, time: FramePos, at_rate: f64) -> arc::R<Time>;
 
-    define_cls!(AV_AUDIO_TIME);
+    define_cls!(sym AVAudioTime);
 
     pub fn with_ts(ts: &cat::AudioTimeStamp, sample_rate: f64) -> arc::R<Time> {
         Self::alloc().init_with_audio_ts_sample_rate(ts, sample_rate)
@@ -101,10 +101,6 @@ impl Time {
     /// fill in valid host time representationAVAudioTime *fullTime0 = [time0 extrapolateTimeFromAnchor: anchor];
     #[objc::msg_send(extrapolateTimeFromAnchor:)]
     pub fn extrapolate_time_from_anchor(&self, anchor: &Time) -> Option<arc::R<Time>>;
-}
-
-unsafe extern "C" {
-    static AV_AUDIO_TIME: &'static objc::Class<Time>;
 }
 
 #[cfg(test)]

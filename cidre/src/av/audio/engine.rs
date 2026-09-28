@@ -62,7 +62,7 @@ pub enum ManualRenderingMode {
 
 define_obj_type!(
     #[doc(alias = "AVAudioEngine")]
-    pub Engine(ns::Id), AV_AUDIO_ENGINE
+    pub Engine(ns::Id), sym AVAudioEngine
 );
 
 /// An AVAudioEngine contains a group of connected AVAudioNodes ("nodes"), each of which performs
@@ -283,10 +283,6 @@ impl Engine {
     /// timeline back to zero.
     #[objc::msg_send(manualRenderingSampleTime)]
     pub fn manual_rendering_sample_time(&self) -> av::audio::FramePos;
-}
-
-unsafe extern "C" {
-    static AV_AUDIO_ENGINE: &'static objc::Class<Engine>;
 }
 
 #[cfg(test)]

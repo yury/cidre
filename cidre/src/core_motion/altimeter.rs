@@ -4,7 +4,7 @@ use crate::{arc, blocks, core_motion as cm, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "CMAltimeter")]
     pub Altimeter(ns::Id),
-    CM_ALTIMETER
+    sym CMAltimeter
 );
 
 #[cfg(any(target_os = "ios", target_os = "watchos"))]
@@ -58,8 +58,4 @@ impl Altimeter {
 
     #[objc::msg_send(stopAbsoluteAltitudeUpdates)]
     pub fn stop_abs_altitude_updates(&mut self);
-}
-
-unsafe extern "C" {
-    static CM_ALTIMETER: &'static objc::Class<Altimeter>;
 }

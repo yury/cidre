@@ -14,7 +14,7 @@ impl NearbyServiceAdvertiser {
         service_type: &ns::String,
     ) -> arc::R<NearbyServiceAdvertiser>;
 
-    define_cls!(MC_NEARBY_SERVICE_ADVERTISER);
+    define_cls!(sym MCNearbyServiceAdvertiser);
 
     pub fn with_peer<'ear>(
         my_peer: &mc::PeerId,
@@ -75,7 +75,3 @@ define_obj_type!(
 );
 
 impl Delegate for AnyDelegate {}
-
-unsafe extern "C" {
-    static MC_NEARBY_SERVICE_ADVERTISER: &'static objc::Class<NearbyServiceAdvertiser>;
-}

@@ -13,7 +13,7 @@ impl ClassifySoundRequest {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ClassifySoundRequest>>;
 
-    define_cls!(SN_CLASSIFY_SOUND_REQUEST);
+    define_cls!(sym SNClassifySoundRequest);
 
     pub fn with_classifier_id<'ear>(id: &sn::Id) -> ns::Result<'ear, arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_classifier_id_err(id, err) })
@@ -40,10 +40,6 @@ impl ClassifySoundRequest {
 
     #[objc::msg_send(knownClassifications)]
     pub fn known_classifications(&self) -> arc::R<ns::Array<ns::String>>;
-}
-
-unsafe extern "C" {
-    static SN_CLASSIFY_SOUND_REQUEST: &'static objc::Class<ClassifySoundRequest>;
 }
 
 #[cfg(test)]

@@ -2,7 +2,7 @@ use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
 define_obj_type!(pub TensorDesc(ns::Id));
 impl TensorDesc {
-    define_cls!(MLC_TENSOR_DESCRIPTOR);
+    define_cls!(sym MLCTensorDescriptor);
 
     /// The tensor data type.  The default is mlc::DataType::F32.
     #[objc::msg_send(dataType)]
@@ -109,10 +109,6 @@ impl TensorDesc {
         feature_channle_count: usize,
         data_type: mlc::DType,
     ) -> Option<arc::R<Self>>;
-}
-
-unsafe extern "C" {
-    static MLC_TENSOR_DESCRIPTOR: &'static objc::Class<TensorDesc>;
 }
 
 #[cfg(test)]

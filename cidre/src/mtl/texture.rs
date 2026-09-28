@@ -147,7 +147,7 @@ define_obj_type!(
     /// An object that you use to configure new Metal texture objects.
     #[doc(alias = "MTLTextureDescriptor")]
     pub Desc(ns::Id),
-    MTL_TEXTURE_DESCRIPTOR
+    sym MTLTextureDescriptor
 );
 
 impl ns::Copying for Desc {}
@@ -353,10 +353,6 @@ impl From<arc::R<mtl::Texture>> for arc::R<mtl::Allocation> {
     fn from(value: arc::R<mtl::Texture>) -> Self {
         unsafe { std::mem::transmute(value) }
     }
-}
-
-unsafe extern "C" {
-    static MTL_TEXTURE_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
 #[cfg(test)]

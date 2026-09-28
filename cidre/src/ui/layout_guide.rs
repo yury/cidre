@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UILayoutGuide")]
     pub LayoutGuide(ns::Id),
-    UI_LAYOUT_GUIDE
+    sym UILayoutGuide
 );
 
 impl LayoutGuide {
@@ -24,7 +24,3 @@ impl LayoutGuide {
 }
 
 ns::impl_layout_anchors!(LayoutGuide);
-
-unsafe extern "C" {
-    static UI_LAYOUT_GUIDE: &'static objc::Class<LayoutGuide>;
-}

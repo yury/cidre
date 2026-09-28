@@ -6,8 +6,7 @@ define_obj_type!(
 );
 
 impl Visit {
-    #[objc::available(macos = 10.15, ios = 8.0)]
-    crate::define_cls!(CL_VISIT);
+    crate::define_cls!(sym CLVisit);
 
     #[objc::msg_send(arrivalDate)]
     pub fn arrival_date(&self) -> arc::R<ns::Date>;
@@ -20,9 +19,4 @@ impl Visit {
 
     #[objc::msg_send(horizontalAccuracy)]
     pub fn horizontal_accuracy(&self) -> cl::LocationAccuracy;
-}
-
-#[cfg(any(target_os = "macos", target_os = "ios"))]
-unsafe extern "C" {
-    static CL_VISIT: &'static objc::Class<Visit>;
 }

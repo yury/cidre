@@ -1,4 +1,4 @@
-use crate::{define_cls, define_obj_type, ns, objc};
+use crate::{define_cls, define_obj_type, ns};
 
 /// Represents the current state of the device with reference to a region.
 #[doc(alias = "CLRegionState")]
@@ -29,10 +29,5 @@ define_obj_type!(
 
 #[cfg(not(target_os = "visionos"))]
 impl Region {
-    define_cls!(CL_REGION);
-}
-
-unsafe extern "C" {
-    #[cfg(not(target_os = "visionos"))]
-    static CL_REGION: &'static objc::Class<Region>;
+    define_cls!(sym CLRegion);
 }

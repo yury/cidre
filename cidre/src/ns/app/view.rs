@@ -32,7 +32,7 @@ impl AutoresizingMaskOpts {
 define_obj_type!(
     #[doc(alias = "NSView")]
     pub View(ns::Responder),
-    NS_VIEW
+    sym NSView
 );
 
 impl View {
@@ -326,10 +326,6 @@ ns::impl_layout_anchors!(View);
 ns::impl_baseline_anchors!(View);
 
 impl ns::AnimatablePropContainer for View {}
-
-unsafe extern "C" {
-    static NS_VIEW: &'static objc::Class<View>;
-}
 
 #[cfg(test)]
 mod tests {

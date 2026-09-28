@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, wk};
 define_obj_type!(
     #[doc(alias = "WKPreferences")]
     pub Preferences(ns::Id),
-    WK_PREFERENCES
+    sym WKPreferences
 );
 
 impl Preferences {
@@ -80,8 +80,4 @@ pub enum InactiveSchedulingPolicy {
     Suspend,
     Throttle,
     None,
-}
-
-unsafe extern "C" {
-    static WK_PREFERENCES: &'static objc::Class<Preferences>;
 }

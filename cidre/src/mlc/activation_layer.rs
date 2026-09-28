@@ -3,7 +3,7 @@ use crate::{arc, define_cls, define_obj_type, mlc, objc};
 define_obj_type!(pub ActivationLayer(mlc::Layer));
 
 impl ActivationLayer {
-    define_cls!(MLC_ACTIVATION_LAYER);
+    define_cls!(sym MLCActivationLayer);
 
     #[objc::msg_send(descriptor)]
     pub fn descriptor(&self) -> &mlc::ActivationDesc;
@@ -94,10 +94,6 @@ impl ActivationLayer {
 
     #[objc::msg_send(clampLayerWithMinValue:maxValue:)]
     pub fn clamp(min: f32, max: f32) -> arc::R<Self>;
-}
-
-unsafe extern "C" {
-    static MLC_ACTIVATION_LAYER: &'static objc::Class<ActivationLayer>;
 }
 
 #[cfg(test)]

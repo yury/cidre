@@ -64,7 +64,7 @@ impl ImageBasedRequest {
 define_obj_type!(
     #[doc(alias = "VNDetectHorizonRequest")]
     pub DetectHorizonRequest(ImageBasedRequest),
-    VN_DETECT_HORIZON_REQUEST
+    sym VNDetectHorizonRequest
 );
 
 impl DetectHorizonRequest {
@@ -88,8 +88,4 @@ pub trait RequestProgressProviding: objc::Obj {
 
     #[objc::msg_send(indeterminate)]
     fn indeterminate(&self) -> bool;
-}
-
-unsafe extern "C" {
-    static VN_DETECT_HORIZON_REQUEST: &'static objc::Class<DetectHorizonRequest>;
 }

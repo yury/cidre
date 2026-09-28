@@ -20,7 +20,7 @@ pub enum CellAccessoryOutlineDisclosureStyle {
 define_obj_type!(
     #[doc(alias = "UICellAccessoryOutlineDisclosure")]
     pub CellAccessoryOutlineDisclosure(CellAccessory),
-    UI_CELL_ACCESSORY_OUTLINE_DISCLOSURE
+    sym UICellAccessoryOutlineDisclosure
 );
 
 impl CellAccessoryOutlineDisclosure {
@@ -31,9 +31,4 @@ impl CellAccessoryOutlineDisclosure {
     #[objc::msg_send(setStyle:)]
     #[objc::available(ios = 14.0, tvos = 14.0)]
     pub fn set_style(&mut self, val: CellAccessoryOutlineDisclosureStyle);
-}
-
-unsafe extern "C" {
-    static UI_CELL_ACCESSORY_OUTLINE_DISCLOSURE:
-        &'static objc::Class<CellAccessoryOutlineDisclosure>;
 }

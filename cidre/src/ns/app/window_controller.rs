@@ -2,7 +2,7 @@ use crate::{arc, define_obj_type, ns, objc};
 
 define_obj_type!(
     pub WindowController(ns::Responder),
-    NS_WINDOW_CONTROLLER
+    sym NSWindowController
 );
 
 impl WindowController {
@@ -36,8 +36,4 @@ impl WindowController {
 
     #[objc::msg_send(dismissController:)]
     pub fn dismiss_controller(&self, sender: Option<&ns::Id>);
-}
-
-unsafe extern "C" {
-    static NS_WINDOW_CONTROLLER: &'static objc::Class<WindowController>;
 }

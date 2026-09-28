@@ -32,7 +32,7 @@ pub enum CompletionCbType {
 define_obj_type!(
     #[doc(alias = "AVAudioPlayerNode")]
     pub PlayerNode(audio::Node),
-    AV_AUDIO_PLAYER_NODE
+    sym AVAudioPlayerNode
 );
 
 impl PlayerNode {
@@ -86,8 +86,4 @@ impl PlayerNode {
 
     #[objc::msg_send(setPan:)]
     pub fn set_pan(&mut self, val: f32);
-}
-
-unsafe extern "C" {
-    static AV_AUDIO_PLAYER_NODE: &'static objc::Class<PlayerNode>;
 }

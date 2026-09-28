@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UIScrollView")]
     pub ScrollView(ui::View),
-    UI_SCROLL_VIEW
+    sym UIScrollView
 );
 
 impl ScrollView {
@@ -181,8 +181,4 @@ pub enum ContentInsetAdjustmentBehavior {
     ScrollableAxes,
     Never,
     Always,
-}
-
-unsafe extern "C" {
-    static UI_SCROLL_VIEW: &'static objc::Class<ScrollView>;
 }

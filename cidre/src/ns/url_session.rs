@@ -1,7 +1,4 @@
-use crate::{
-    arc, define_cls, define_obj_type, ns,
-    objc::{self, Class},
-};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
@@ -276,7 +273,7 @@ impl WebSocketMessage {
     #[objc::init(initWithString:)]
     pub fn init_with_string(self, string: &ns::String) -> arc::R<WebSocketMessage>;
 
-    define_cls!(NS_URL_SESSION_WEB_SOCKET_MESSAGE);
+    define_cls!(sym NSURLSessionWebSocketMessage);
 
     #[inline]
     pub fn with_data(data: &ns::Data) -> arc::R<Self> {
@@ -296,10 +293,6 @@ impl WebSocketMessage {
 
     #[objc::msg_send(type)]
     pub fn type_(&self) -> WebSocketMessageType;
-}
-
-unsafe extern "C" {
-    static NS_URL_SESSION_WEB_SOCKET_MESSAGE: &'static Class<WebSocketMessage>;
 }
 
 #[cfg(test)]

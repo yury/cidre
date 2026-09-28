@@ -13,7 +13,7 @@ impl AdvertiserAssistant {
         session: &mc::Session,
     ) -> arc::R<AdvertiserAssistant>;
 
-    define_cls!(MC_ADVERTISER_ASSISTANT);
+    define_cls!(sym MCAdvertiserAssistant);
 
     pub fn with_service_type<'ear>(
         service_type: &ns::String,
@@ -61,7 +61,3 @@ define_obj_type!(
 );
 
 impl Delegate for AnyDelegate {}
-
-unsafe extern "C" {
-    static MC_ADVERTISER_ASSISTANT: &'static objc::Class<AdvertiserAssistant>;
-}

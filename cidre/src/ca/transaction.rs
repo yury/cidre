@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
    #[doc(alias = "CATransaction")]
    pub Transaction(ns::Id),
-   CA_TRANSACTION
+   sym CATransaction
 );
 
 impl Transaction {
@@ -43,8 +43,4 @@ impl Transaction {
             f()
         })
     }
-}
-
-unsafe extern "C" {
-    static CA_TRANSACTION: &'static objc::Class<Transaction>;
 }

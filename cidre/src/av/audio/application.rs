@@ -137,24 +137,28 @@ impl App {
 
     #[cfg(all(target_os = "macos", feature = "blocks"))]
     #[objc::available(macos = 14.0)]
+    #[allow(unused_unsafe)]
     pub fn set_input_mute_state_change_handler_block<'ear>(
         &mut self,
         handler: Option<&mut MuteChangeHandler>,
     ) -> ns::Result<'ear> {
-        ns::if_false(|err| self.set_input_mute_state_change_handler_block_err(handler, err))
+        ns::if_false(|err| unsafe {
+            self.set_input_mute_state_change_handler_block_err(handler, err)
+        })
     }
 
     #[cfg(all(target_os = "macos", feature = "blocks"))]
     #[objc::available(macos = 14.0)]
+    #[allow(unused_unsafe)]
     pub fn set_input_mute_state_change_handler<'ear>(
         &mut self,
         mut handler: Option<impl FnMut(bool) -> bool + 'static + Send>,
     ) -> ns::Result<'ear> {
         if let Some(block) = handler.take() {
             let mut block = MuteChangeHandler::new1(block);
-            self.set_input_mute_state_change_handler_block(Some(&mut block))
+            unsafe { self.set_input_mute_state_change_handler_block(Some(&mut block)) }
         } else {
-            self.set_input_mute_state_change_handler_block(None)
+            unsafe { self.set_input_mute_state_change_handler_block(None) }
         }
     }
 

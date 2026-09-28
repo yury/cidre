@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UIPinchGestureRecognizer")]
     pub PinchGestureRecognizer(ui::GestureRecognizer),
-    UI_PINCH_GESTURE_RECOGNIZER
+    sym UIPinchGestureRecognizer
 );
 
 impl PinchGestureRecognizer {
@@ -28,8 +28,4 @@ impl PinchGestureRecognizer {
     /// Velocity of the pinch in scale/second.
     #[objc::msg_send(velocity)]
     pub fn velocity(&self) -> cg::Float;
-}
-
-unsafe extern "C" {
-    static UI_PINCH_GESTURE_RECOGNIZER: &'static objc::Class<PinchGestureRecognizer>;
 }

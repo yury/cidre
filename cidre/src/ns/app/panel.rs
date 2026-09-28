@@ -1,11 +1,7 @@
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, ns};
 
 define_obj_type!(
     #[doc(alias = "NSPanel")]
     pub Panel(ns::Window),
-    NS_PANEL
+    sym NSPanel
 );
-
-unsafe extern "C" {
-    static NS_PANEL: &'static objc::Class<Panel>;
-}

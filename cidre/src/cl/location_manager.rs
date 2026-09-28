@@ -76,7 +76,7 @@ pub type HistoricalLocationsHandler =
 define_obj_type!(
     #[doc(alias = "CLLocationManager")]
     pub LocationManager(ns::Id),
-    CL_LOCATION_MANAGER
+    sym CLLocationManager
 );
 
 impl LocationManager {
@@ -324,10 +324,6 @@ impl LocationManager {
             self.request_historical_locations_ch_block(purpose_key, sample_count, &mut completion);
         }
     }
-}
-
-unsafe extern "C" {
-    static CL_LOCATION_MANAGER: &'static objc::Class<LocationManager>;
 }
 
 #[cfg(test)]

@@ -25,7 +25,7 @@ impl AudioUnit {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<AudioUnit>>;
 
-    define_cls!(AU_AUDIO_UNIT);
+    define_cls!(sym AUAudioUnit);
 
     pub fn with_comp_desc_opts<'ear>(
         self,
@@ -265,8 +265,4 @@ impl AudioUnitBus {
 pub enum AudioUnitBusType {
     Input = 1,
     Ouptut = 2,
-}
-
-unsafe extern "C" {
-    static AU_AUDIO_UNIT: &'static objc::Class<AudioUnit>;
 }

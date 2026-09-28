@@ -14,7 +14,7 @@ pub enum Appearance {
 define_obj_type!(
     #[doc(alias = "UICollectionLayoutListConfiguration")]
     pub CollectionLayoutListCfg(ns::Id),
-    UI_COLLECTION_LAYOUT_LIST_CONFIGURATION
+    sym UICollectionLayoutListConfiguration
 );
 
 impl CollectionLayoutListCfg {
@@ -32,8 +32,4 @@ impl ui::CollectionViewCompositionalLayout {
     #[objc::msg_send(layoutWithListConfiguration:)]
     #[objc::available(ios = 14.0)]
     pub fn with_list_cfg(cfg: &CollectionLayoutListCfg) -> arc::R<Self>;
-}
-
-unsafe extern "C" {
-    static UI_COLLECTION_LAYOUT_LIST_CONFIGURATION: &'static objc::Class<CollectionLayoutListCfg>;
 }

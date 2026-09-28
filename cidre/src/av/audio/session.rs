@@ -40,7 +40,7 @@ define_obj_type!(
 
 #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
 impl Session {
-    define_cls!(AV_AUDIO_SESSION);
+    define_cls!(sym AVAudioSession);
 
     #[objc::msg_send(sharedInstance)]
     pub fn shared() -> &'static mut Self;
@@ -563,11 +563,6 @@ impl Session {
     #[objc::msg_send(isEchoCancelledInputAvailable)]
     #[api::available(ios = 18.2, maccatalyst = 18.2)]
     pub fn is_echo_cancelled_input_available(&self) -> bool;
-}
-
-#[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
-unsafe extern "C" {
-    static AV_AUDIO_SESSION: &'static objc::Class<Session>;
 }
 
 /// Notifications

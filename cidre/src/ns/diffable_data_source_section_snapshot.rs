@@ -16,7 +16,7 @@ impl<I: objc::Obj> DiffableDataSrcSectionSnapshot<I> {
     #[objc::init(init)]
     pub fn init(self) -> arc::R<DiffableDataSrcSectionSnapshot<I>>;
 
-    define_cls!(NS_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT);
+    define_cls!(sym NSDiffableDataSourceSectionSnapshot);
 
     #[inline]
     pub fn new() -> arc::R<Self> {
@@ -204,8 +204,3 @@ impl<I: objc::Obj + 'static> DiffableDataSrcSectionSnapshot<I> {
 }
 
 impl<I: objc::Obj> ns::Copying for DiffableDataSrcSectionSnapshot<I> {}
-
-unsafe extern "C" {
-    static NS_DIFFABLE_DATA_SOURCE_SECTION_SNAPSHOT:
-        &'static objc::Class<DiffableDataSrcSectionSnapshot<ns::Id>>;
-}

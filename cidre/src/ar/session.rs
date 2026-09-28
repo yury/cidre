@@ -23,7 +23,7 @@ define_obj_type!(
     #[doc(alias = "ARSession")]
     /// Configures and runs AR techniques on the device.
     pub Session(ns::Id),
-    AR_SESSION
+    sym ARSession
 );
 
 impl Session {
@@ -180,7 +180,3 @@ define_obj_type!(
 
 impl SessionObserver for AnySessionDelegate {}
 impl SessionDelegate for AnySessionDelegate {}
-
-unsafe extern "C" {
-    static AR_SESSION: &'static objc::Class<Session>;
-}

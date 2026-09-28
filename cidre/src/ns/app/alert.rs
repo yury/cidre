@@ -37,7 +37,7 @@ impl ns::ModalResponse {
 define_obj_type!(
     #[doc(alias = "NSAlert")]
     pub Alert(ns::Id),
-    NS_ALERT
+    sym NSAlert
 );
 
 impl Alert {
@@ -127,8 +127,4 @@ impl Alert {
     /// The alert's panel.
     #[objc::msg_send(window)]
     pub fn window(&self) -> arc::R<ns::Window>;
-}
-
-unsafe extern "C" {
-    static NS_ALERT: &'static objc::Class<Alert>;
 }

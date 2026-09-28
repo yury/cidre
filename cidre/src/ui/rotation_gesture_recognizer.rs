@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UIRotationGestureRecognizer")]
     pub RotationGestureRecognizer(ui::GestureRecognizer),
-    UI_ROTATION_GESTURE_RECOGNIZER
+    sym UIRotationGestureRecognizer
 );
 
 impl RotationGestureRecognizer {
@@ -28,8 +28,4 @@ impl RotationGestureRecognizer {
     /// Velocity of the rotation in radians/second.
     #[objc::msg_send(velocity)]
     pub fn velocity(&self) -> cg::Float;
-}
-
-unsafe extern "C" {
-    static UI_ROTATION_GESTURE_RECOGNIZER: &'static objc::Class<RotationGestureRecognizer>;
 }

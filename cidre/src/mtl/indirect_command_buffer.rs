@@ -49,7 +49,7 @@ define_obj_type!(
     /// Describes the limits and features that can be used in an indirect command
     #[doc(alias = "MTLIndirectCommandBufferDescriptor")]
     pub Desc(ns::Id),
-    MTL_INDIRECT_COMMAND_BUFFER_DESCRIPTOR
+    sym MTLIndirectCommandBufferDescriptor
 );
 
 impl Desc {
@@ -171,8 +171,4 @@ impl IndirectCmdBuf {
     ) -> ns::ExResult<'ear, arc::R<mtl::IndirectComputeCmd>> {
         ns::try_catch(|| unsafe { self.indirect_compute_cmd_at_throws(index) })
     }
-}
-
-unsafe extern "C" {
-    static MTL_INDIRECT_COMMAND_BUFFER_DESCRIPTOR: &'static objc::Class<Desc>;
 }

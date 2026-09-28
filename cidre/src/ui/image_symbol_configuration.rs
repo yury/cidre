@@ -35,7 +35,7 @@ define_obj_type!(
 );
 
 impl ImageSymbolCfg {
-    define_cls!(UI_IMAGE_SYMBOL_CONFIGURATION);
+    define_cls!(sym UIImageSymbolConfiguration);
 
     #[objc::msg_send(unspecifiedConfiguration)]
     pub fn unspecified() -> arc::R<Self>;
@@ -79,8 +79,4 @@ impl ImageSymbolCfg {
     #[objc::msg_send(configurationWithHierarchicalColor:)]
     #[objc::available(ios = 15.0, tvos = 15.0, watchos = 8.0)]
     pub fn with_hierarchical_color(color: &ui::Color) -> arc::R<Self>;
-}
-
-unsafe extern "C" {
-    static UI_IMAGE_SYMBOL_CONFIGURATION: &'static objc::Class<ImageSymbolCfg>;
 }

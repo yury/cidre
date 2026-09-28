@@ -16,7 +16,7 @@ pub enum Style {
 define_obj_type!(
     #[doc(alias = "UIBarButtonItem")]
     pub BarButtonItem(ns::Id),
-    UI_BAR_BUTTON_ITEM
+    sym UIBarButtonItem
 );
 
 impl BarButtonItem {
@@ -93,11 +93,13 @@ impl BarButtonItem {
     ) -> arc::R<BarButtonItem>;
 
     #[objc::available(ios = 16.0, tvos = 16.0)]
+    #[allow(unused_unsafe)]
     pub fn with_primary_action_menu(
         action: Option<&ui::Action>,
         menu: Option<&ui::Menu>,
     ) -> arc::R<Self> {
-        Self::alloc().init_with_primary_action_menu(action, menu)
+        let alloc = Self::alloc();
+        unsafe { alloc.init_with_primary_action_menu(action, menu) }
     }
 
     /// Creates a fixed-space bar button item of the given width.
@@ -182,8 +184,4 @@ impl BarButtonItem {
     #[objc::msg_send(setSharesBackground:)]
     #[objc::available(ios = 26.0)]
     pub fn set_shares_background(&mut self, val: bool);
-}
-
-unsafe extern "C" {
-    static UI_BAR_BUTTON_ITEM: &'static objc::Class<BarButtonItem>;
 }

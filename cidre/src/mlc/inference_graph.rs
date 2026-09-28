@@ -2,7 +2,7 @@ use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
 define_obj_type!(pub InferenceGraph(mlc::Graph));
 impl InferenceGraph {
-    define_cls!(MLC_INFERENCE_GRAPH);
+    define_cls!(sym MLCInferenceGraph);
 
     #[objc::msg_send(graphWithGraphObjects:)]
     pub fn with_graph_objs(graph_objects: &ns::Array<mlc::Graph>) -> arc::R<Self>;
@@ -56,8 +56,4 @@ impl InferenceGraph {
         options: mlc::ExecutionOpts,
         ch: Option<&mut mlc::GraphCompletionHandler>,
     ) -> bool;
-}
-
-unsafe extern "C" {
-    static MLC_INFERENCE_GRAPH: &'static objc::Class<InferenceGraph>;
 }

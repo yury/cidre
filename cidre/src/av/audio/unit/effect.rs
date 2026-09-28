@@ -9,7 +9,7 @@ impl Effect {
         description: at::audio::ComponentDesc,
     ) -> arc::R<Effect>;
 
-    define_cls!(AV_AUDIO_UNIT_EFFECT);
+    define_cls!(sym AVAudioUnitEffect);
 
     pub fn with_component_desc(description: at::audio::ComponentDesc) -> arc::R<Self> {
         Self::alloc().init_with_audio_component_desc(description)
@@ -20,8 +20,4 @@ impl Effect {
 
     #[objc::msg_send(setBypass:)]
     pub fn set_bypass(&mut self, value: bool);
-}
-
-unsafe extern "C" {
-    static AV_AUDIO_UNIT_EFFECT: &'static objc::Class<Effect>;
 }

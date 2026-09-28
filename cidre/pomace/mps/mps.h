@@ -13,9 +13,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-Class MPS_NDARRAY_DESCRIPTOR;
-Class MPS_NDARRAY;
-
 __attribute__((constructor))
 static void mps_initializer(void)
 {
@@ -23,15 +20,7 @@ static void mps_initializer(void)
     if (!initialized) {
         initialized = 1;
 
-#if TARGET_OS_SIMULATOR
-#else
-        MPS_NDARRAY_DESCRIPTOR = [MPSNDArrayDescriptor class];
-        MPS_NDARRAY = [MPSNDArray class];
-#endif
-        
-        
     }
 }
-
 
 NS_ASSUME_NONNULL_END

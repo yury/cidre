@@ -6,7 +6,7 @@ define_obj_type!(
 );
 
 impl Model {
-    define_cls!(ML_MODEL);
+    define_cls!(sym MLModel);
 
     /// A model holds a description of its required inputs and expected outputs.
     #[objc::msg_send(modelDescription)]
@@ -98,10 +98,6 @@ impl Model {
             self.predictions_from_batch_opts_err(input_batch, options, err)
         })
     }
-}
-
-unsafe extern "C" {
-    static ML_MODEL: &'static objc::Class<Model>;
 }
 
 #[cfg(test)]

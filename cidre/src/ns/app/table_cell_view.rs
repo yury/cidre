@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSTableCellView")]
     pub TableCellView(ns::View),
-    NS_TABLE_CELL_VIEW
+    sym NSTableCellView
 );
 
 impl TableCellView {
@@ -45,8 +45,4 @@ impl TableCellView {
 
     #[objc::msg_send(setRowSizeStyle:)]
     pub fn set_row_size_style(&mut self, val: ns::TableViewRowSizeStyle);
-}
-
-unsafe extern "C" {
-    static NS_TABLE_CELL_VIEW: &'static objc::Class<TableCellView>;
 }

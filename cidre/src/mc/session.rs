@@ -79,7 +79,7 @@ impl Session {
         encryption_preference: mc::EncryptionPreference,
     ) -> arc::R<Session>;
 
-    define_cls!(MC_SESSION);
+    define_cls!(sym MCSession);
 
     /// Create a session with an MCPeerID for the local peer.
     #[inline]
@@ -260,10 +260,6 @@ impl Session {
     /// Cancel connection attempt with a peer.    
     #[objc::msg_send(cancelConnectPeer:)]
     pub fn cancel_connect_peer(&mut self, peer: &mc::PeerId);
-}
-
-unsafe extern "C" {
-    static MC_SESSION: &'static objc::Class<Session>;
 }
 
 #[cfg(test)]

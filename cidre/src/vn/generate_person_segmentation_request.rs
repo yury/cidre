@@ -13,7 +13,7 @@ pub enum QualityLevel {
 define_obj_type!(
     #[doc(alias = "VNGeneratePersonSegmentationRequest")]
     pub GenPersonSegmentationRequest(vn::StatefulRequest),
-    VN_GENERATE_PERSON_SEGMENTAION_REQUEST
+    sym VNGeneratePersonSegmentationRequest
 );
 
 impl GenPersonSegmentationRequest {
@@ -59,11 +59,6 @@ impl GenPersonSegmentationRequest {
     ) -> ns::Result<'ear, arc::R<ns::Array<ns::Number>>> {
         ns::if_none(|err| unsafe { self.supported_output_pixel_formats_err(err) })
     }
-}
-
-unsafe extern "C" {
-    static VN_GENERATE_PERSON_SEGMENTAION_REQUEST:
-        &'static objc::Class<GenPersonSegmentationRequest>;
 }
 
 #[cfg(test)]

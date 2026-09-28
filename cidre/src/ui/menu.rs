@@ -22,7 +22,7 @@ impl MenuOpts {
 define_obj_type!(
     #[doc(alias = "UIMenu")]
     pub Menu(ui::MenuElement),
-    UI_MENU
+    sym UIMenu
 );
 
 impl Menu {
@@ -61,8 +61,4 @@ impl Menu {
 
     #[objc::msg_send(menuByReplacingChildren:)]
     pub fn by_replacing_children(&self, children: &ns::Array<ui::MenuElement>) -> arc::R<Self>;
-}
-
-unsafe extern "C" {
-    static UI_MENU: &'static objc::Class<Menu>;
 }

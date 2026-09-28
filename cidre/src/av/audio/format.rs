@@ -81,7 +81,7 @@ impl Format {
         settings: &ns::Dictionary<ns::String, ns::Id>,
     ) -> Option<arc::R<Format>>;
 
-    define_cls!(AV_AUDIO_FORMAT);
+    define_cls!(sym AVAudioFormat);
 
     /// If the format specifies more than 2 channels, this method fails (returns None).
     pub fn with_asbd(asbd: &StreamBasicDesc) -> Option<arc::R<Self>> {
@@ -170,8 +170,4 @@ impl Format {
 
     #[objc::msg_send(magicCookie)]
     pub fn magic_cookie(&self) -> Option<arc::R<ns::Data>>;
-}
-
-unsafe extern "C" {
-    static AV_AUDIO_FORMAT: &'static objc::Class<Format>;
 }

@@ -22,3 +22,7 @@ pub use core::NdArrayDesc;
 
 #[link(name = "mps", kind = "static")]
 unsafe extern "C" {}
+
+#[cfg(not(target_os = "watchos"))]
+#[link(name = "MetalPerformanceShaders", kind = "framework")]
+unsafe extern "C" {}

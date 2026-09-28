@@ -37,17 +37,13 @@ impl HapticFeedbackPerformer for AnyHapticFeedbackPerformer {}
 define_obj_type!(
     #[doc(alias = "NSHapticFeedbackManager")]
     pub HapticFeedbackManager(ns::Id),
-    NS_HAPTIC_FEEDBACK_MANAGER
+    sym NSHapticFeedbackManager
 );
 
 impl HapticFeedbackManager {
     /// The performer for the device the user is on.
     #[objc::msg_send(defaultPerformer)]
     pub fn default_performer() -> arc::R<AnyHapticFeedbackPerformer>;
-}
-
-unsafe extern "C" {
-    static NS_HAPTIC_FEEDBACK_MANAGER: &'static objc::Class<HapticFeedbackManager>;
 }
 
 #[cfg(test)]

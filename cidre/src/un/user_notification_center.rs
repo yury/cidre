@@ -49,7 +49,7 @@ define_obj_type!(
 );
 
 impl Center {
-    define_cls!(UN_USER_NOTIFICATION_CENTER);
+    define_cls!(sym UNUserNotificationCenter);
 
     #[objc::msg_send(supportsContentExtensions)]
     pub fn supports_content_extensions(&self) -> bool;
@@ -85,8 +85,4 @@ pub trait CenterDelegate: objc::Obj {
         center: &mut un::Center,
         notification: &un::Notification,
     );
-}
-
-unsafe extern "C" {
-    static UN_USER_NOTIFICATION_CENTER: &'static objc::Class<Center>;
 }

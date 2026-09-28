@@ -3,7 +3,7 @@ use crate::{arc, av::audio, define_obj_type, objc};
 define_obj_type!(
     #[doc(alias = "AVAudioMixerNode")]
     pub MixerNode(audio::Node),
-    AV_AUDIO_MIXER_NODE
+    sym AVAudioMixerNode
 );
 
 impl MixerNode {
@@ -21,8 +21,4 @@ impl MixerNode {
     /// This will find and return the first input bus to which no other node is connected.
     #[objc::msg_send(nextAvailableInputBus)]
     pub fn next_available_input_bus(&self) -> audio::NodeBus;
-}
-
-unsafe extern "C" {
-    static AV_AUDIO_MIXER_NODE: &'static objc::Class<MixerNode>;
 }

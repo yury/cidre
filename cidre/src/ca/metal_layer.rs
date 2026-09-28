@@ -3,7 +3,7 @@ use crate::{arc, ca, cg, define_obj_type, mtl, ns, objc};
 define_obj_type!(
     #[doc(alias = "CAMetalLayer")]
     pub MetalLayer(ca::Layer),
-    CA_METAL_LAYER
+    sym CAMetalLayer
 );
 
 pub trait MetalDrawable: mtl::Drawable {
@@ -146,10 +146,6 @@ impl MetalLayer {
     #[objc::msg_send(residencySet)]
     #[objc::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
     pub fn residency_set(&self) -> arc::R<mtl::ResidencySet>;
-}
-
-unsafe extern "C" {
-    static CA_METAL_LAYER: &'static objc::Class<MetalLayer>;
 }
 
 #[cfg(test)]

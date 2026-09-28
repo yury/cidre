@@ -17,7 +17,7 @@ impl SceneCfg {
         session_role: &ui::SceneSessionRole,
     ) -> arc::R<SceneCfg>;
 
-    define_cls!(UI_SCENE_CONFIGURATION);
+    define_cls!(sym UISceneConfiguration);
 
     pub fn with_name_role(
         name: Option<&ns::String>,
@@ -56,8 +56,4 @@ impl SceneSession {
 
     #[objc::msg_send(role)]
     pub fn role(&self) -> &ui::SceneSessionRole;
-}
-
-unsafe extern "C" {
-    static UI_SCENE_CONFIGURATION: &'static objc::Class<SceneCfg>;
 }

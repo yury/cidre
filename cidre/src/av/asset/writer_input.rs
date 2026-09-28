@@ -25,7 +25,7 @@ impl WriterInput {
         source_format_hint: Option<&cm::FormatDesc>,
     ) -> arc::R<WriterInput>;
 
-    define_cls!(AV_ASSET_WRITER_INPUT);
+    define_cls!(sym AVAssetWriterInput);
 
     pub unsafe fn with_media_type_output_settings_throws(
         media_type: &MediaType,
@@ -171,7 +171,7 @@ impl WriterInputPixelBufAdaptor {
         src_pixel_buf_attrs: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<WriterInputPixelBufAdaptor>;
 
-    define_cls!(AV_ASSET_WRITER_INPUT_PIXEL_BUFFER_ADAPTOR);
+    define_cls!(sym AVAssetWriterInputPixelBufferAdaptor);
 
     pub fn with_input_writer<'ear>(
         input: &WriterInput,
@@ -211,12 +211,6 @@ impl WriterInputPixelBufAdaptor {
     ) -> ns::ExResult<'ear, bool> {
         ns::try_catch(|| unsafe { self.append_pixel_buf_with_pts_throws(buf, pts) })
     }
-}
-
-unsafe extern "C" {
-    static AV_ASSET_WRITER_INPUT: &'static objc::Class<WriterInput>;
-    static AV_ASSET_WRITER_INPUT_PIXEL_BUFFER_ADAPTOR:
-        &'static objc::Class<WriterInputPixelBufAdaptor>;
 }
 
 #[cfg(test)]

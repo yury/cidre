@@ -5,7 +5,7 @@ define_obj_type!(pub Reflection(ns::Id));
 define_obj_type!(
     #[doc(alias = "MTLComputePipelineDescriptor")]
     pub Desc(ns::Id),
-    MTL_COMPUTE_PIPELINE_DESCRIPTOR
+    sym MTLComputePipelineDescriptor
 );
 
 impl Desc {
@@ -41,10 +41,6 @@ impl Desc {
     /// Restore all compute pipeline descriptor properties to their default values.
     #[objc::msg_send(reset)]
     pub fn reset(&mut self);
-}
-
-unsafe extern "C" {
-    static MTL_COMPUTE_PIPELINE_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
 define_obj_type!(

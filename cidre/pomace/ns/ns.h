@@ -25,18 +25,6 @@ id _Nullable cidre_try_catch(void (*during)(void *), void * context ) {
     }
 }
 
-Class NS_URL_SESSION_WEB_SOCKET_MESSAGE;
-
-Class NS_ORDERED_COLLECTION_CHANGE;
-Class NS_ORDERED_COLLECTION_DIFFERENCE;
-
-
-
-
-
-
-
-
 typedef void cidre_change(
                           void * _Nullable,
                           NSString * _Nullable,
@@ -69,23 +57,13 @@ void cidre_log(NSString * str) {
     NSLog(@"%@", str);
 }
 
-
 __attribute__((constructor))
 static void common_initializer(void)
 {
     static int initialized = 0;
     if (!initialized) {
         initialized = 1;
-        
-        NS_URL_SESSION_WEB_SOCKET_MESSAGE = [NSURLSessionWebSocketMessage class];
-        
-        
 
-     
-        
-        
-        NS_ORDERED_COLLECTION_DIFFERENCE = [NSOrderedCollectionDifference class];
-        NS_ORDERED_COLLECTION_CHANGE = [NSOrderedCollectionChange class];
     }
 }
 NS_ASSUME_NONNULL_END

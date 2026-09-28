@@ -754,7 +754,7 @@ impl CollectionView {
     #[objc::init(initWithCoder:)]
     pub fn init_with_coder(self, coder: &ns::Coder) -> Option<arc::R<CollectionView>>;
 
-    define_cls!(UI_COLLECTION_VIEW);
+    define_cls!(sym UICollectionView);
 
     #[objc::msg_send(collectionViewLayout)]
     pub fn collection_view_layout(&self) -> arc::R<ui::CollectionViewLayout>;
@@ -1179,7 +1179,7 @@ impl CollectionViewDropProposal {
         intent: CollectionViewDropIntent,
     ) -> arc::R<CollectionViewDropProposal>;
 
-    define_cls!(UI_COLLECTION_VIEW_DROP_PROPOSAL);
+    define_cls!(sym UICollectionViewDropProposal);
 
     #[objc::msg_send(intent)]
     pub fn intent(&self) -> CollectionViewDropIntent;
@@ -1193,7 +1193,7 @@ impl CollectionViewPlaceholder {
         reuse_id: &ns::String,
     ) -> arc::R<CollectionViewPlaceholder>;
 
-    define_cls!(UI_COLLECTION_VIEW_PLACEHOLDER);
+    define_cls!(sym UICollectionViewPlaceholder);
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(setCellUpdateHandler:)]
@@ -1220,7 +1220,7 @@ impl CollectionViewDropPlaceholder {
         reuse_id: &ns::String,
     ) -> arc::R<CollectionViewDropPlaceholder>;
 
-    define_cls!(UI_COLLECTION_VIEW_DROP_PLACEHOLDER);
+    define_cls!(sym UICollectionViewDropPlaceholder);
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(setPreviewParametersProvider:)]
@@ -1242,11 +1242,4 @@ impl CollectionViewDropPlaceholder {
         let mut handler = blocks::EscBlock::new1(handler);
         self.set_preview_parameters_provider_block(Some(&mut handler));
     }
-}
-
-unsafe extern "C" {
-    static UI_COLLECTION_VIEW: &'static objc::Class<CollectionView>;
-    static UI_COLLECTION_VIEW_DROP_PROPOSAL: &'static objc::Class<CollectionViewDropProposal>;
-    static UI_COLLECTION_VIEW_PLACEHOLDER: &'static objc::Class<CollectionViewPlaceholder>;
-    static UI_COLLECTION_VIEW_DROP_PLACEHOLDER: &'static objc::Class<CollectionViewDropPlaceholder>;
 }

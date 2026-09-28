@@ -9,8 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-Class AU_AUDIO_UNIT;
-
 __attribute__((constructor))
 static void at_initializer(void)
 {
@@ -18,10 +16,8 @@ static void at_initializer(void)
     if (!initialized) {
         initialized = 1;
 
-        AU_AUDIO_UNIT = [AUAudioUnit class];
     }
     
 }
-
 
 NS_ASSUME_NONNULL_END

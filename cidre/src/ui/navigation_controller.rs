@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UINavigationController")]
     pub NavController(ui::ViewController),
-    UI_NAVIGATION_CONTROLLER
+    sym UINavigationController
 );
 
 impl NavController {
@@ -163,10 +163,6 @@ pub trait NavControllerDelegate: objc::Obj {
 define_obj_type!(
     pub AnyNavControllerDelegate(ns::Id)
 );
-
-unsafe extern "C" {
-    static UI_NAVIGATION_CONTROLLER: &'static objc::Class<NavController>;
-}
 
 /// `UIViewController (UINavigationControllerItem)`: the items of the navigation
 /// controller's toolbar while this view controller is on top.

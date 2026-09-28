@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSPopUpButton")]
     pub PopUpButton(ns::Button),
-    NS_POP_UP_BUTTON
+    sym NSPopUpButton
 );
 
 impl PopUpButton {
@@ -50,8 +50,4 @@ impl PopUpButton {
 
     #[objc::msg_send(synchronizeTitleAndSelectedItem)]
     pub fn synchronize_title_and_selected_item(&mut self);
-}
-
-unsafe extern "C" {
-    static NS_POP_UP_BUTTON: &'static objc::Class<PopUpButton>;
 }

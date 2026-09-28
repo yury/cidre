@@ -29,7 +29,7 @@ impl GestureRecognizer {
         action: Option<&objc::Sel>,
     ) -> arc::R<GestureRecognizer>;
 
-    define_cls!(UI_GESTURE_RECOGNIZER);
+    define_cls!(sym UIGestureRecognizer);
 
     pub fn with_target_action(target: Option<&ns::Id>, action: Option<&objc::Sel>) -> arc::R<Self> {
         Self::alloc().init_with_target_action(target, action)
@@ -167,7 +167,3 @@ define_obj_type!(
 );
 
 impl GestureRecognizerDelegate for AnyGestureRecognizerDelegate {}
-
-unsafe extern "C" {
-    static UI_GESTURE_RECOGNIZER: &'static objc::Class<GestureRecognizer>;
-}

@@ -17,7 +17,7 @@ pub enum ComputeUnits {
 define_obj_type!(
     #[doc(alias = "MLModelConfiguration")]
     pub ModelCfg(ns::Id),
-    ML_MODEL_CONFIGURATION,
+    sym MLModelConfiguration,
     #[api::available(macos = 10.15, ios = 13.0, watchos = 6.0, tvos = 13.0)]
 );
 
@@ -33,8 +33,4 @@ impl ModelCfg {
 
     #[objc::msg_send(setComputeUnits:)]
     pub fn set_compute_units(&mut self, val: ComputeUnits);
-}
-
-unsafe extern "C" {
-    static ML_MODEL_CONFIGURATION: &'static objc::Class<ModelCfg>;
 }

@@ -9,10 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-Class GC_COLOR;
-Class GC_CONTROLLER;
-Class GC_KEYBOARD;
-
 __attribute__((constructor))
 static void gc_initializer(void)
 {
@@ -20,11 +16,7 @@ static void gc_initializer(void)
     if (!initialized) {
         initialized = 1;
 
-        GC_COLOR = [GCColor class];
-        GC_CONTROLLER = [GCController class];
-        GC_KEYBOARD = NSClassFromString(@"GCKeyboard");
     }
 }
-
 
 NS_ASSUME_NONNULL_END

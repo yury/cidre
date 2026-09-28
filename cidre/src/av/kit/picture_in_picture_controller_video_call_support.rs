@@ -3,7 +3,7 @@ use crate::{api, arc, av, define_obj_type, objc, ui};
 define_obj_type!(
     #[doc(alias = "AVPictureInPictureVideoCallViewController")]
     pub PipViewCallController(ui::ViewController),
-    AV_PICTURE_IN_PICTURE_VIDEO_CALL_VIEW_CONTROLLER,
+    sym AVPictureInPictureVideoCallViewController,
     #[api::available(ios = 15.0, visionos = 1.0)]
 );
 
@@ -32,11 +32,4 @@ impl av::PipControllerContentSrc {
     #[objc::msg_send(activeVideoCallContentViewController)]
     #[api::available(ios = 15.0, visionos = 1.0)]
     pub fn active_video_call_content_vc(&self) -> arc::R<av::PipViewCallController>;
-}
-
-#[api::weak]
-unsafe extern "C" {
-    #[api::available(ios = 15.0, visionos = 1.0)]
-    static AV_PICTURE_IN_PICTURE_VIDEO_CALL_VIEW_CONTROLLER:
-        &'static objc::Class<PipViewCallController>;
 }

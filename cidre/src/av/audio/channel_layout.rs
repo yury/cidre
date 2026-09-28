@@ -15,7 +15,7 @@ impl ChannelLayout {
     #[objc::init(initWithLayoutTag:)]
     pub fn init_with_layout_tag(self, tag: cat::AudioChannelLayoutTag) -> arc::R<ChannelLayout>;
 
-    define_cls!(AV_AUDIO_CHANNEL_LAYOUT);
+    define_cls!(sym AVAudioChannelLayout);
 
     pub fn with_layout<const N: usize>(layout: &cat::AudioChannelLayout<N>) -> arc::R<Self> {
         Self::alloc().init_with_layout(layout)
@@ -30,10 +30,6 @@ impl ChannelLayout {
 
     #[objc::msg_send(channelCount)]
     pub fn channel_count(&self) -> av::AudioChannelCount;
-}
-
-unsafe extern "C" {
-    static AV_AUDIO_CHANNEL_LAYOUT: &'static objc::Class<ChannelLayout>;
 }
 
 #[cfg(test)]

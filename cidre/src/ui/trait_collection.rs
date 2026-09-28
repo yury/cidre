@@ -2,7 +2,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, ui};
 
 define_obj_type!(
     pub TraitCollection(ns::Id),
-    UI_TRAIT_COLLECTION
+    sym UITraitCollection
 );
 
 impl TraitCollection {
@@ -44,8 +44,4 @@ impl TraitCollection {
     pub fn tab_accessory_env(&self) -> ui::TabAccessoryEnv;
 
     // pub fn scene_capture_state(&self) -> ui::SceneCa
-}
-
-unsafe extern "C" {
-    static UI_TRAIT_COLLECTION: &'static objc::Class<TraitCollection>;
 }

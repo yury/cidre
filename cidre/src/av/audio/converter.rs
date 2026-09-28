@@ -74,7 +74,7 @@ impl Converter {
         to: &av::AudioFormat,
     ) -> Option<arc::R<Converter>>;
 
-    define_cls!(AV_AUDIO_CONVERTER);
+    define_cls!(sym AVAudioConverter);
 
     pub fn with_formats(from: &av::AudioFormat, to: &av::AudioFormat) -> Option<arc::R<Self>> {
         Self::alloc().init_from_format_to_format(from, to)
@@ -177,8 +177,4 @@ impl Converter {
             }
         }
     }
-}
-
-unsafe extern "C" {
-    static AV_AUDIO_CONVERTER: &'static objc::Class<Converter>;
 }

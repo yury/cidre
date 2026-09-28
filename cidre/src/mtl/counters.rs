@@ -81,7 +81,7 @@ impl CounterSet {
 define_obj_type!(
     /// A group of properties that configures the counter sample buffers you create with it.
     #[doc(alias = "MTLCounterSampleBufferDescriptor")]
-    pub Desc(ns::Id), MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR
+    pub Desc(ns::Id), sym MTLCounterSampleBufferDescriptor
 );
 
 impl Desc {
@@ -96,10 +96,6 @@ impl Desc {
 
     #[objc::msg_send(setSampleCount:)]
     pub fn set_sample_count(&mut self, val: usize);
-}
-
-unsafe extern "C" {
-    static MTL_COUNTER_SAMPLE_BUFFER_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
 #[cfg(test)]

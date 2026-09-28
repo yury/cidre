@@ -75,7 +75,7 @@ define_obj_type!(
 );
 
 impl Device {
-    define_cls!(UI_DEVICE);
+    define_cls!(sym UIDevice);
 
     #[objc::msg_send(currentDevice)]
     pub fn current() -> arc::R<Device>;
@@ -126,8 +126,4 @@ impl Device {
     /// unless device orientation notifications are being generated.
     #[objc::msg_send(orientation)]
     pub fn orientation(&self) -> ui::DeviceOrientation;
-}
-
-unsafe extern "C" {
-    static UI_DEVICE: &'static objc::Class<Device>;
 }

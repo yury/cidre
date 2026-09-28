@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSMenuItem")]
     pub MenuItem(ns::Id),
-    NS_MENU_ITEM
+    sym NSMenuItem
 );
 
 impl MenuItem {
@@ -114,10 +114,6 @@ impl MenuItem {
 
     #[objc::msg_send(isHighlighted)]
     pub fn is_highlighted(&self) -> bool;
-}
-
-unsafe extern "C" {
-    static NS_MENU_ITEM: &'static objc::Class<MenuItem>;
 }
 
 #[cfg(test)]

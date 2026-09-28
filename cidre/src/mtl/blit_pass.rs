@@ -41,7 +41,7 @@ impl SampleBufAttachDescArray {
 define_obj_type!(
     #[doc(alias = "MTLBlitPassDescriptor")]
     pub Desc(ns::Id),
-    MTL_BLIT_PASS_DESCRIPTOR
+    sym MTLBlitPassDescriptor
 );
 
 /// Represents a collection of attachments to be used to create a concrete blit command encoder
@@ -49,10 +49,6 @@ impl Desc {
     /// An array of sample buffers and associated sample indices.
     #[objc::msg_send(sampleBufferAttachments)]
     pub fn sample_buf_attaches(&self) -> arc::R<SampleBufAttachDescArray>;
-}
-
-unsafe extern "C" {
-    static MTL_BLIT_PASS_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
 #[cfg(test)]

@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, objc, ui};
 define_obj_type!(
     #[doc(alias = "UIStepper")]
     pub Stepper(ui::Control),
-    UI_STEPPER
+    sym UIStepper
 );
 
 impl Stepper {
@@ -55,8 +55,4 @@ impl Stepper {
 
     #[objc::msg_send(setStepValue:)]
     pub fn set_step_value(&mut self, val: f64);
-}
-
-unsafe extern "C" {
-    static UI_STEPPER: &'static objc::Class<Stepper>;
 }

@@ -29,7 +29,7 @@ impl AudiovisualMediaTypes {
 define_obj_type!(
     #[doc(alias = "WKWebViewConfiguration")]
     pub WebViewCfg(ns::Id),
-    WK_WEB_VIEW_CONFIGURATION
+    sym WKWebViewConfiguration
 );
 
 impl WebViewCfg {
@@ -149,8 +149,4 @@ impl WebViewCfg {
 
     #[objc::msg_send(setUserInterfaceDirectionPolicy:)]
     pub fn set_ui_direction_policy(&self, val: wk::UiDirectionPolicy);
-}
-
-unsafe extern "C" {
-    static WK_WEB_VIEW_CONFIGURATION: &'static objc::Class<WebViewCfg>;
 }

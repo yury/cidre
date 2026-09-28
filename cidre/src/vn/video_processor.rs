@@ -22,7 +22,7 @@ impl FrameRateCadence {
     #[objc::init(initWithFrameRate:)]
     pub fn init_with_frame_rate(self, frame_rate: isize) -> arc::R<FrameRateCadence>;
 
-    crate::define_cls!(VN_VIDEO_PROCESSOR_FRAME_RATE_CADENCE);
+    crate::define_cls!(sym VNVideoProcessorFrameRateCadence);
 
     pub fn new(frame_rate: isize) -> arc::R<Self> {
         Self::alloc().init_with_frame_rate(frame_rate)
@@ -40,7 +40,7 @@ impl TimeIntervalCadence {
         time_interval: cf::TimeInterval,
     ) -> arc::R<TimeIntervalCadence>;
 
-    crate::define_cls!(VN_VIDEO_PROCESSOR_TIME_INTERVAL_CADENCE);
+    crate::define_cls!(sym VNVideoProcessorTimeIntervalCadence);
 
     pub fn new(time_interval: cf::TimeInterval) -> arc::R<Self> {
         Self::alloc().init_with_time_interval(time_interval)
@@ -54,7 +54,7 @@ impl TimeIntervalCadence {
 define_obj_type!(
     #[doc(alias = "VNVideoProcessorRequestProcessingOptions")]
     pub RequestProcessingOpts(ns::Id),
-    VN_VIDEO_PROCESSOR_REQUEST_PROCESSING_OPTIONS
+    sym VNVideoProcessorRequestProcessingOptions
 );
 
 impl RequestProcessingOpts {
@@ -81,7 +81,7 @@ impl VideoProcessor {
     )]
     pub fn init_with_url(self, url: &ns::Url) -> arc::R<VideoProcessor>;
 
-    crate::define_cls!(VN_VIDEO_PROCESSOR);
+    crate::define_cls!(sym VNVideoProcessor);
 
     /// Creates a video processor to perform Vision requests against the specified video asset.
     #[objc::available(
@@ -152,12 +152,4 @@ impl VideoProcessor {
 
     #[objc::msg_send(cancel)]
     pub fn cancel(&mut self);
-}
-
-unsafe extern "C" {
-    static VN_VIDEO_PROCESSOR: &'static objc::Class<VideoProcessor>;
-    static VN_VIDEO_PROCESSOR_FRAME_RATE_CADENCE: &'static objc::Class<FrameRateCadence>;
-    static VN_VIDEO_PROCESSOR_TIME_INTERVAL_CADENCE: &'static objc::Class<TimeIntervalCadence>;
-    static VN_VIDEO_PROCESSOR_REQUEST_PROCESSING_OPTIONS:
-        &'static objc::Class<RequestProcessingOpts>;
 }

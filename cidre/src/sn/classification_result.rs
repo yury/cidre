@@ -16,7 +16,7 @@ impl Classification {
 define_obj_type!(
     #[doc(alias = "SNClassificationResult")]
     pub ClassificationResult(sn::Result),
-    SN_CLASSIFICATION_RESULT
+    sym SNClassificationResult
 );
 
 impl ClassificationResult {
@@ -28,8 +28,4 @@ impl ClassificationResult {
 
     #[objc::msg_send(classificationForIdentifier:)]
     pub fn classification_for_id(&self, id: &ns::String) -> Option<arc::R<Classification>>;
-}
-
-unsafe extern "C" {
-    static SN_CLASSIFICATION_RESULT: &'static objc::Class<ClassificationResult>;
 }

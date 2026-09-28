@@ -61,7 +61,7 @@ impl PcmBuf {
         deallocator: Option<&mut blocks::EscBlock<fn(buf_list: *const AudioBufList<N>)>>,
     ) -> Option<arc::R<PcmBuf>>;
 
-    define_cls!(AV_AUDIO_PCM_BUFFER);
+    define_cls!(sym AVAudioPCMBuffer);
 
     pub fn with_format(format: &Format, frame_capacity: FrameCount) -> Option<arc::R<Self>> {
         Self::alloc().init_with_pcm_format_frame_capacity(format, frame_capacity)
@@ -218,7 +218,7 @@ impl CompressedBuf {
         maximum_packet_size: isize,
     ) -> arc::R<CompressedBuf>;
 
-    define_cls!(AV_AUDIO_COMPRESSED_BUFFER);
+    define_cls!(sym AVAudioCompressedBuffer);
 
     /// Creates a buffer that contains constant bytes per packet of audio data in a compressed state.
     ///
@@ -281,11 +281,6 @@ impl CompressedBuf {
 
     #[objc::msg_send(data)]
     pub fn data(&self) -> *const c_void;
-}
-
-unsafe extern "C" {
-    static AV_AUDIO_PCM_BUFFER: &'static objc::Class<PcmBuf>;
-    static AV_AUDIO_COMPRESSED_BUFFER: &'static objc::Class<CompressedBuf>;
 }
 
 #[cfg(test)]

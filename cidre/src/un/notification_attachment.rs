@@ -6,7 +6,7 @@ define_obj_type!(
 );
 
 impl NotificationAttach {
-    define_cls!(UN_NOTIFICATION_ATTACHMENT);
+    define_cls!(sym UNNotificationAttachment);
     #[objc::msg_send(identifier)]
     pub fn id(&self) -> arc::R<ns::String>;
 
@@ -64,8 +64,4 @@ unsafe extern "C" {
     static UNNotificationAttachmentOptionsThumbnailHiddenKey: &'static NotificationAttachOpts;
     static UNNotificationAttachmentOptionsThumbnailClippingRectKey: &'static NotificationAttachOpts;
     static UNNotificationAttachmentOptionsThumbnailTimeKey: &'static NotificationAttachOpts;
-}
-
-unsafe extern "C" {
-    static UN_NOTIFICATION_ATTACHMENT: &'static objc::Class<NotificationAttach>;
 }

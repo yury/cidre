@@ -2,7 +2,7 @@ use crate::{arc, define_obj_type, ns, objc, wk};
 
 define_obj_type!(
     pub UserContentController(ns::Id),
-    WK_USER_CONTENT_CONTROLLER
+    sym WKUserContentController
 );
 
 impl UserContentController {
@@ -14,8 +14,4 @@ impl UserContentController {
 
     #[objc::msg_send(removeAllUserScripts)]
     pub fn remove_all_user_scripts(&mut self);
-}
-
-unsafe extern "C" {
-    static WK_USER_CONTENT_CONTROLLER: &'static objc::Class<UserContentController>;
 }

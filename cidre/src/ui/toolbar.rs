@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UIToolbar")]
     pub Toolbar(ui::View),
-    UI_TOOLBAR
+    sym UIToolbar
 );
 
 impl Toolbar {
@@ -46,8 +46,4 @@ impl Toolbar {
 
     #[objc::msg_send(setBarTintColor:)]
     pub fn set_bar_tint_color(&mut self, val: Option<&ui::Color>);
-}
-
-unsafe extern "C" {
-    static UI_TOOLBAR: &'static objc::Class<Toolbar>;
 }

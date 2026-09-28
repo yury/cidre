@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UIPanGestureRecognizer")]
     pub PanGestureRecognizer(ui::GestureRecognizer),
-    UI_PAN_GESTURE_RECOGNIZER
+    sym UIPanGestureRecognizer
 );
 
 impl PanGestureRecognizer {
@@ -40,8 +40,4 @@ impl PanGestureRecognizer {
     /// Velocity of the pan in points/second in the coordinate system of the specified view.
     #[objc::msg_send(velocityInView:)]
     pub fn velocity_in_view(&self, view: Option<&ui::View>) -> cg::Point;
-}
-
-unsafe extern "C" {
-    static UI_PAN_GESTURE_RECOGNIZER: &'static objc::Class<PanGestureRecognizer>;
 }

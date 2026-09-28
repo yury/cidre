@@ -150,7 +150,7 @@ impl TextureLoader {
     #[objc::init(initWithDevice:)]
     pub fn init_with_device(self, device: &mtl::Device) -> arc::R<TextureLoader>;
 
-    define_cls!(MTK_TEXTURE_LOADER);
+    define_cls!(sym MTKTextureLoader);
 
     #[objc::msg_send(device)]
     pub fn device(&self) -> arc::R<mtl::Device>;
@@ -292,10 +292,6 @@ impl OptionTexture {
             Some(unsafe { std::mem::transmute(self) })
         }
     }
-}
-
-unsafe extern "C" {
-    static MTK_TEXTURE_LOADER: &'static objc::Class<TextureLoader>;
 }
 
 impl ns::ErrorDomain {

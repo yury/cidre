@@ -7,7 +7,7 @@ pub enum ColorWellStyle {
     Minimal = 1,
     Expanded = 2,
 }
-define_obj_type!(#[doc(alias = "NSColorWell")] pub ColorWell(ns::Control), NS_COLOR_WELL);
+define_obj_type!(#[doc(alias = "NSColorWell")] pub ColorWell(ns::Control), sym NSColorWell);
 impl ColorWell {
     #[objc::msg_send(colorWellWithStyle:)]
     #[objc::available(macos = 13.0)]
@@ -24,7 +24,4 @@ impl ColorWell {
     pub fn set_supports_alpha(&mut self, value: bool);
     #[objc::msg_send(deactivate)]
     pub fn deactivate(&mut self);
-}
-unsafe extern "C" {
-    static NS_COLOR_WELL: &'static objc::Class<ColorWell>;
 }

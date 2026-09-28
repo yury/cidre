@@ -32,7 +32,7 @@ define_obj_type!(
 
 #[cfg(not(target_os = "tvos"))]
 impl NotificationAction {
-    define_cls!(UN_NOTIFICATION_ACTION);
+    define_cls!(sym UNNotificationAction);
 
     #[objc::msg_send(identifier)]
     pub fn id(&self) -> arc::R<ns::String>;
@@ -70,7 +70,7 @@ define_obj_type!(
 
 #[cfg(not(target_os = "tvos"))]
 impl TextInputNotificationAction {
-    define_cls!(UN_TEXT_INPUT_NOTIFICATION_ACTION);
+    define_cls!(sym UNTextInputNotificationAction);
 
     #[objc::msg_send(textInputButtonTitle)]
     pub fn text_input_button_title(&self) -> arc::R<ns::String>;
@@ -96,10 +96,4 @@ impl TextInputNotificationAction {
         text_input_button_title: &ns::String,
         text_input_placeholder: &ns::String,
     ) -> arc::R<Self>;
-}
-
-#[cfg(not(target_os = "tvos"))]
-unsafe extern "C" {
-    static UN_NOTIFICATION_ACTION: &'static objc::Class<NotificationAction>;
-    static UN_TEXT_INPUT_NOTIFICATION_ACTION: &'static objc::Class<TextInputNotificationAction>;
 }

@@ -15,7 +15,7 @@ pub type PasteboardItem = ns::Dictionary<ns::String, ns::Id>;
 define_obj_type!(
     #[doc(alias = "UIPasteboard")]
     pub Pasteboard(ns::Id),
-    UI_PASTEBOARD
+    sym UIPasteboard
 );
 
 impl Pasteboard {
@@ -268,8 +268,4 @@ pub mod types {
         #[api::available(ios = 10.0)]
         static UIPasteboardTypeAutomatic: &'static ns::String;
     }
-}
-
-unsafe extern "C" {
-    static UI_PASTEBOARD: &'static objc::Class<Pasteboard>;
 }

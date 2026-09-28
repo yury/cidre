@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSColorSpace")]
     pub ColorSpace(ns::Id),
-    NS_COLOR_SPACE
+    sym NSColorSpace
 );
 
 unsafe impl Send for ColorSpace {}
@@ -66,10 +66,6 @@ impl ColorSpace {
 
     #[objc::msg_send(deviceCMYKColorSpace)]
     pub fn device_cmyk() -> arc::R<Self>;
-}
-
-unsafe extern "C" {
-    static NS_COLOR_SPACE: &'static objc::Class<ColorSpace>;
 }
 
 #[cfg(test)]

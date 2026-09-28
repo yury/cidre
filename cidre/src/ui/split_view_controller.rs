@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, objc, ui};
 define_obj_type!(
     #[doc(alias = "UISplitViewController")]
     pub SplitViewController(ui::ViewController),
-    UI_SPLIT_VIEW_CONTROLLER
+    sym UISplitViewController
 );
 
 impl SplitViewController {
@@ -98,10 +98,6 @@ impl SplitViewController {
     #[objc::msg_send(hideColumn:)]
     #[objc::available(ios = 14.0)]
     pub fn hide_column(&mut self, column: Column);
-}
-
-unsafe extern "C" {
-    static UI_SPLIT_VIEW_CONTROLLER: &'static objc::Class<SplitViewController>;
 }
 
 #[doc(alias = "UISplitViewControllerStyle")]

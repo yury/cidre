@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UITextField")]
     pub TextField(ui::Control),
-    UI_TEXT_FIELD
+    sym UITextField
 );
 
 impl TextField {
@@ -70,10 +70,6 @@ impl TextField {
     /// `UITextAutocorrectionType`: 1 no.
     #[objc::msg_send(setAutocorrectionType:)]
     pub fn set_autocorrection_type(&mut self, val: ns::Integer);
-}
-
-unsafe extern "C" {
-    static UI_TEXT_FIELD: &'static objc::Class<TextField>;
 }
 
 // UIView (UITextField), declared in UITextField.h.

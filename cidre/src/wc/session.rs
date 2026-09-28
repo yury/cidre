@@ -14,7 +14,7 @@ define_obj_type!(
 );
 
 impl Session {
-    define_cls!(WC_SESSION);
+    define_cls!(sym WCSession);
 
     #[objc::msg_send(isSupported)]
     pub fn is_supported() -> bool;
@@ -126,7 +126,3 @@ define_obj_type!(
 );
 
 impl Delegate for AnyDelegate {}
-
-unsafe extern "C" {
-    static WC_SESSION: &'static objc::Class<Session>;
-}

@@ -14,7 +14,7 @@ pub enum DistanceType {
 define_obj_type!(
     #[doc(alias = "NLEmbedding")]
     pub Embedding(ns::Id),
-    NL_EMBEDDING
+    sym NLEmbedding
 );
 
 impl Embedding {
@@ -238,10 +238,6 @@ impl Embedding {
         max_distance: nl::Distance,
         distance_type: DistanceType,
     ) -> Option<arc::R<ns::Array<ns::String>>>;
-}
-
-unsafe extern "C" {
-    static NL_EMBEDDING: &'static objc::Class<Embedding>;
 }
 
 #[cfg(test)]

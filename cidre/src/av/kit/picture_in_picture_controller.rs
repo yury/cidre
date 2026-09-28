@@ -19,8 +19,7 @@ impl PipController {
         player_layer: &av::PlayerLayer,
     ) -> Option<arc::R<PipController>>;
 
-    #[api::available(macos = 10.15, ios = 9.0, tvos = 15.0, visionos = 1.0)]
-    crate::define_cls!(AV_PICTURE_IN_PICTURE_CONTROLLER);
+    crate::define_cls!(sym AVPictureInPictureController);
 
     #[objc::msg_send(isPictureInPictureSupported)]
     pub fn is_pip_supported() -> bool;
@@ -102,8 +101,7 @@ impl PipControllerContentSrc {
         player_layer: &av::PlayerLayer,
     ) -> arc::R<PipControllerContentSrc>;
 
-    #[api::available(macos = 10.15, ios = 9.0, tvos = 14.0, visionos = 1.0)]
-    crate::define_cls!(AV_PICTURE_IN_PICTURE_CONTROLLER_CONTENT_SOURCE);
+    crate::define_cls!(sym AVPictureInPictureControllerContentSource);
 
     #[api::available(macos = 10.15, ios = 9.0, tvos = 14.0, visionos = 1.0)]
     pub fn with_player_layer(player_layer: &av::PlayerLayer) -> arc::R<Self> {
@@ -135,12 +133,6 @@ pub trait PipControllerDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(pictureInPictureControllerDidStopPictureInPicture:)]
     fn pip_controller_did_stop_pip(&mut self, ctrl: &av::PipController);
-}
-
-unsafe extern "C" {
-    static AV_PICTURE_IN_PICTURE_CONTROLLER: &'static objc::Class<PipController>;
-    static AV_PICTURE_IN_PICTURE_CONTROLLER_CONTENT_SOURCE:
-        &'static objc::Class<PipControllerContentSrc>;
 }
 
 #[cfg(test)]

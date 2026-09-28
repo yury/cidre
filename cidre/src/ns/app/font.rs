@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSFont")]
     pub Font(ns::Id),
-    NS_FONT
+    sym NSFont
 );
 
 impl Font {
@@ -98,8 +98,4 @@ impl AsRef<crate::ct::Font> for Font {
     fn as_ref(&self) -> &crate::ct::Font {
         self.as_ct()
     }
-}
-
-unsafe extern "C" {
-    static NS_FONT: &'static objc::Class<Font>;
 }

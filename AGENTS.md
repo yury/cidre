@@ -28,6 +28,7 @@
 - Use standard Rust formatting (`cargo fmt`) and idiomatic Rust style; keep APIs `snake_case` and types `CamelCase`.
 - Follow the project’s abbreviation shortcuts from `README.md` (e.g., `fmt`, `cfg`, `opts`, `ptr`, `dst`).
 - Feature flags encode deployment targets (e.g., `macos_15_0`, `ios_18_0`); keep new flags consistent.
+- The lowest supported targets are macOS 12.0, iOS 15.0 and Mac Catalyst 15.0 (`macos_12_0`/`ios_15_0`/`maccatalyst_15_0` have no dependencies). `#[objc::available]`/`#[api::available]` versions at or below them are unconditional (`MACOS_FLOOR`/`IOS_FLOOR`/`MACCATALYST_FLOOR` in `cidre-macros`); don't add lower flags.
 
 ## Feature-Gating Rules
 - Guard imports from optional modules (`blocks`, `ca`, etc.) with `#[cfg(feature = "...")]`.

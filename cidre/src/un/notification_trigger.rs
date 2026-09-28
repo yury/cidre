@@ -9,7 +9,7 @@ define_obj_type!(
 );
 
 impl NotificationTrigger {
-    define_cls!(UN_NOTIFICATION_TRIGGER);
+    define_cls!(sym UNNotificationTrigger);
 
     #[objc::msg_send(repeats)]
     pub fn repeats(&self) -> bool;
@@ -21,7 +21,7 @@ define_obj_type!(
 );
 
 impl PushNotificationTrigger {
-    define_cls!(UN_PUSH_NOTIFICATION_TRIGGER);
+    define_cls!(sym UNPushNotificationTrigger);
 }
 
 define_obj_type!(
@@ -30,7 +30,7 @@ define_obj_type!(
 );
 
 impl TimeIntervalNotificationTrigger {
-    define_cls!(UN_TIME_INTERVAL_NOTIFICATION_TRIGGER);
+    define_cls!(sym UNTimeIntervalNotificationTrigger);
 
     #[objc::msg_send(timeInterval)]
     pub fn time_interval(&self) -> ns::TimeInterval;
@@ -48,7 +48,7 @@ define_obj_type!(
 );
 
 impl CalendarNotificationTrigger {
-    define_cls!(UN_CALENDAR_NOTIFICATION_TRIGGER);
+    define_cls!(sym UNCalendarNotificationTrigger);
 }
 
 define_obj_type!(
@@ -58,21 +58,11 @@ define_obj_type!(
 
 #[cfg(all(feature = "cl", any(target_os = "ios", target_os = "watchos")))]
 impl LocationNotificationTrigger {
-    define_cls!(UN_LOCATION_NOTIFICATION_TRIGGER);
+    define_cls!(sym UNLocationNotificationTrigger);
 
     #[objc::msg_send(region)]
     pub fn region(&self) -> arc::R<cl::Region>;
 
     #[objc::msg_send(triggerWithRegion:repeats:)]
     pub fn with_region(region: &cl::Region, repeats: bool) -> arc::R<Self>;
-}
-
-unsafe extern "C" {
-    static UN_NOTIFICATION_TRIGGER: &'static objc::Class<NotificationTrigger>;
-    static UN_PUSH_NOTIFICATION_TRIGGER: &'static objc::Class<PushNotificationTrigger>;
-    static UN_TIME_INTERVAL_NOTIFICATION_TRIGGER:
-        &'static objc::Class<TimeIntervalNotificationTrigger>;
-    static UN_CALENDAR_NOTIFICATION_TRIGGER: &'static objc::Class<CalendarNotificationTrigger>;
-    #[cfg(all(feature = "cl", any(target_os = "ios", target_os = "watchos")))]
-    static UN_LOCATION_NOTIFICATION_TRIGGER: &'static objc::Class<LocationNotificationTrigger>;
 }

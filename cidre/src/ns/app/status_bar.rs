@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSStatusBar")]
     pub StatusBar(ns::Id),
-    NS_STATUS_BAR
+    sym NSStatusBar
 );
 
 impl StatusBar {
@@ -15,8 +15,4 @@ impl StatusBar {
 
     #[objc::msg_send(thickness)]
     pub fn thickness(&self) -> cg::Float;
-}
-
-unsafe extern "C" {
-    static NS_STATUS_BAR: &'static objc::Class<StatusBar>;
 }

@@ -13,7 +13,7 @@ define_obj_type!(
 );
 
 impl Device {
-    define_cls!(MPS_GRAPH_DEVICE);
+    define_cls!(sym MPSGraphDevice);
 
     #[objc::msg_send(metalDevice)]
     pub fn metal_device(&self) -> Option<&mtl::Device>;
@@ -23,10 +23,6 @@ impl Device {
 
     #[objc::msg_send(deviceWithMTLDevice:)]
     pub fn with_mtl_device(mtl_device: &mtl::Device) -> arc::R<Device>;
-}
-
-unsafe extern "C" {
-    static MPS_GRAPH_DEVICE: &'static objc::Class<Device>;
 }
 
 #[cfg(test)]

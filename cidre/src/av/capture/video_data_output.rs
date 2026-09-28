@@ -32,7 +32,7 @@ pub trait VideoDataOutputSampleBufDelegate: objc::Obj {
 
 define_obj_type!(
     #[doc(alias = "AVCaptureVideoDataOuput")]
-    pub VideoDataOutput(Output), AV_CAPTURE_VIDEO_DATA_OUTPUT
+    pub VideoDataOutput(Output), sym AVCaptureVideoDataOutput
 );
 
 impl VideoDataOutput {
@@ -169,8 +169,4 @@ impl VideoDataOutput {
     #[objc::msg_send(recommendedMediaTimeScaleForAssetWriter)]
     #[objc::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, tvos = 26.0)]
     pub fn recommended_media_time_scale_for_asset_writer(&self) -> cm::TimeScale;
-}
-
-unsafe extern "C" {
-    static AV_CAPTURE_VIDEO_DATA_OUTPUT: &'static objc::Class<VideoDataOutput>;
 }

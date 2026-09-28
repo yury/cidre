@@ -92,7 +92,7 @@ define_obj_type!(
 );
 
 impl Device {
-    define_cls!(AV_CAPTURE_DEVICE);
+    define_cls!(sym AVCaptureDevice);
 
     #[objc::msg_send(defaultDeviceWithDeviceType:mediaType:position:)]
     pub fn with_type_media_and_pos(
@@ -888,10 +888,6 @@ impl<'a> DerefMut for ConfigLockGuard<'a> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.device
     }
-}
-
-unsafe extern "C" {
-    static AV_CAPTURE_DEVICE: &'static objc::Class<Device>;
 }
 
 #[doc(alias = "AVCaptureFocusMode")]

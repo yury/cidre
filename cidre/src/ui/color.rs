@@ -15,7 +15,7 @@ pub enum ColorProminence {
 define_obj_type!(
     #[doc(alias = "UIColor")]
     pub Color(ns::Id),
-    UI_COLOR
+    sym UIColor
 );
 
 unsafe impl Send for Color {}
@@ -199,8 +199,4 @@ impl Color {
 
     #[objc::msg_send(clearColor)]
     pub fn clear() -> arc::R<Self>;
-}
-
-unsafe extern "C" {
-    static UI_COLOR: &'static objc::Class<Color>;
 }

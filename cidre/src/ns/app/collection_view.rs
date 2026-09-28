@@ -121,7 +121,7 @@ pub trait CollectionViewSectionHeaderView: CollectionViewElement {
 define_obj_type!(
     #[doc(alias = "NSCollectionView")]
     pub CollectionView(ns::View),
-    NS_COLLECTION_VIEW
+    sym NSCollectionView
 );
 
 impl CollectionView {
@@ -767,7 +767,3 @@ define_obj_type!(
 );
 
 impl CollectionViewDelegate for AnyCollectionViewDelegate {}
-
-unsafe extern "C" {
-    static NS_COLLECTION_VIEW: &'static objc::Class<CollectionView>;
-}

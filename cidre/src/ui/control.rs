@@ -55,7 +55,7 @@ pub enum ControlContentHorizontalAlignment {
 define_obj_type!(
     #[doc(alias = "UIControl")]
     pub Control(ui::View),
-    UI_CONTROL
+    sym UIControl
 );
 
 impl Control {
@@ -113,8 +113,4 @@ impl Control {
         action: Option<&objc::Sel>,
         events: ControlEvents,
     );
-}
-
-unsafe extern "C" {
-    static UI_CONTROL: &'static objc::Class<Control>;
 }

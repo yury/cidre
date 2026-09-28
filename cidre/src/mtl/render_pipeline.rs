@@ -179,7 +179,7 @@ impl Reflection {
 define_obj_type!(
    #[doc(alias = "MTLRenderPipelineDescriptor")]
    pub Desc(ns::Id),
-   MTL_RENDER_PIPELINE_DESCRIPTOR
+   sym MTLRenderPipelineDescriptor
 );
 
 impl arc::R<Desc> {
@@ -270,11 +270,6 @@ impl Desc {
     pub fn set_shader_validation(&mut self, val: mtl::ShaderValidation);
 }
 
-unsafe extern "C" {
-    static MTL_RENDER_PIPELINE_DESCRIPTOR: &'static objc::Class<Desc>;
-    static MTL_TILE_RENDER_PIPELINE_DESCRIPTOR: &'static objc::Class<TileRenderPipelineDesc>;
-}
-
 define_obj_type!(
     #[doc(alias = "MTLRenderPipelineFunctionsDescriptor")]
     pub FnsDesc(ns::Id)
@@ -361,7 +356,7 @@ impl arc::R<TileRenderPipelineDesc> {
 define_obj_type!(
     #[doc(alias = "MTLTileRenderPipelineDescriptor")]
     pub TileRenderPipelineDesc(ns::Id),
-    MTL_TILE_RENDER_PIPELINE_DESCRIPTOR
+    sym MTLTileRenderPipelineDescriptor
 );
 
 impl TileRenderPipelineDesc {

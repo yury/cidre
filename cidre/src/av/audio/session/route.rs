@@ -295,15 +295,11 @@ define_obj_type!(
 );
 
 impl RouteDesc {
-    define_cls!(AV_AUDIO_SESSION_ROUTE_DESCRIPTION);
+    define_cls!(sym AVAudioSessionRouteDescription);
 
     #[objc::msg_send(inputs)]
     pub fn inputs(&self) -> arc::R<ns::Array<PortDesc>>;
 
     #[objc::msg_send(outputs)]
     pub fn outputs(&self) -> arc::R<ns::Array<PortDesc>>;
-}
-
-unsafe extern "C" {
-    static AV_AUDIO_SESSION_ROUTE_DESCRIPTION: &'static objc::Class<RouteDesc>;
 }

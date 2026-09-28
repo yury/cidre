@@ -3,7 +3,7 @@ use crate::blocks;
 use crate::{arc, define_obj_type, define_opts, ns, objc};
 
 define_obj_type!(
-    pub ViewController(ns::Responder), NS_VIEW_CONTROLLER
+    pub ViewController(ns::Responder), sym NSViewController
 );
 
 impl ViewController {
@@ -169,10 +169,6 @@ impl ViewController {
 
     #[objc::msg_send(viewWillTransitionToSize:)]
     pub fn view_will_transition_to_size(&mut self, val: ns::Size);
-}
-
-unsafe extern "C" {
-    static NS_VIEW_CONTROLLER: &'static objc::Class<ViewController>;
 }
 
 #[cfg(test)]

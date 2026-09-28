@@ -16,7 +16,7 @@ impl TableColumnResizingOpts {
 define_obj_type!(
     #[doc(alias = "NSTableColumn")]
     pub TableColumn(ns::Id),
-    NS_TABLE_COLUMN
+    sym NSTableColumn
 );
 
 impl TableColumn {
@@ -50,8 +50,4 @@ impl TableColumn {
 
     #[objc::msg_send(setEditable:)]
     pub fn set_editable(&mut self, val: bool);
-}
-
-unsafe extern "C" {
-    static NS_TABLE_COLUMN: &'static objc::Class<TableColumn>;
 }

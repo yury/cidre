@@ -41,7 +41,7 @@ impl RaycastQuery {
         alignment: TargetAlignment,
     ) -> arc::R<RaycastQuery>;
 
-    define_cls!(AR_RAYCAST_QUERY);
+    define_cls!(sym ARRaycastQuery);
 
     /// Creates a query from ray origin/direction, allowed target, and alignment.
     #[inline]
@@ -71,8 +71,4 @@ impl RaycastQuery {
     /// Alignment considered during raycasting.
     #[objc::msg_send(targetAlignment)]
     pub fn target_alignment(&self) -> TargetAlignment;
-}
-
-unsafe extern "C" {
-    static AR_RAYCAST_QUERY: &'static objc::Class<RaycastQuery>;
 }

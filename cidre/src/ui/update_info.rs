@@ -1,4 +1,4 @@
-use crate::{api, arc, define_cls, define_obj_type, ns, objc, ui};
+use crate::{api, arc, define_obj_type, ns, objc, ui};
 
 define_obj_type!(
     #[doc(alias = "UIUpdateInfo")]
@@ -10,7 +10,7 @@ define_obj_type!(
 /// in which case such views may have different `ui::UpdateInfo` (e.g. `estimatedPresentationTime` may differ).
 impl UpdateInfo {
     #[api::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
-    define_cls!(UI_UPDATE_INFO);
+    crate::define_cls!(UI_UPDATE_INFO);
 
     #[objc::msg_send(currentUpdateInfoForWindowScene:)]
     #[api::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]

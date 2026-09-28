@@ -735,17 +735,21 @@ impl ContentFilter {
     /// Note: This is intended for "desktop independent" windows like overlays or HUDs.
     /// For regular application windows, use `with_display_including_windows` instead.
     #[api::available(macos = 12.3, maccatalyst = 18.2)]
+    #[allow(unused_unsafe)]
     pub fn with_desktop_independent_window(window: &sc::Window) -> arc::R<ContentFilter> {
-        Self::alloc().init_with_desktop_independent_window(window)
+        let alloc = Self::alloc();
+        unsafe { alloc.init_with_desktop_independent_window(window) }
     }
 
     /// Creates a content filter for a display, excluding the specified windows.
     #[api::available(macos = 12.3, maccatalyst = 18.2)]
+    #[allow(unused_unsafe)]
     pub fn with_display_excluding_windows(
         display: &sc::Display,
         windows: &ns::Array<sc::Window>,
     ) -> arc::R<Self> {
-        Self::alloc().init_with_display_excluding_windows(display, windows)
+        let alloc = Self::alloc();
+        unsafe { alloc.init_with_display_excluding_windows(display, windows) }
     }
 
     /// Creates a content filter that includes only the specified windows on the given display.
@@ -770,11 +774,13 @@ impl ContentFilter {
     /// }
     /// ```
     #[api::available(macos = 12.3, maccatalyst = 18.2)]
+    #[allow(unused_unsafe)]
     pub fn with_display_including_windows(
         display: &sc::Display,
         windows: &ns::Array<sc::Window>,
     ) -> arc::R<Self> {
-        Self::alloc().init_with_display_including_windows(display, windows)
+        let alloc = Self::alloc();
+        unsafe { alloc.init_with_display_including_windows(display, windows) }
     }
 
     /// Creates a content filter that includes content from the specified applications,
@@ -783,16 +789,20 @@ impl ContentFilter {
     /// Use this to capture all windows from specific applications while optionally
     /// excluding certain windows.
     #[api::available(macos = 12.3, maccatalyst = 18.2)]
+    #[allow(unused_unsafe)]
     pub fn with_display_including_apps_excepting_windows(
         display: &sc::Display,
         apps: &ns::Array<sc::RunningApp>,
         excepting_windows: &ns::Array<sc::Window>,
     ) -> arc::R<Self> {
-        Self::alloc().init_with_display_including_apps_excepting_windows(
-            display,
-            apps,
-            excepting_windows,
-        )
+        let alloc = Self::alloc();
+        unsafe {
+            alloc.init_with_display_including_apps_excepting_windows(
+                display,
+                apps,
+                excepting_windows,
+            )
+        }
     }
 
     /// Creates a content filter that excludes content from the specified applications,
@@ -800,16 +810,20 @@ impl ContentFilter {
     ///
     /// Use this to capture a display while hiding content from certain applications.
     #[api::available(macos = 12.3, maccatalyst = 18.2)]
+    #[allow(unused_unsafe)]
     pub fn with_display_excluding_apps_excepting_windows(
         display: &sc::Display,
         apps: &ns::Array<sc::RunningApp>,
         excepting_windows: &ns::Array<sc::Window>,
     ) -> arc::R<Self> {
-        Self::alloc().init_with_display_excluding_apps_excepting_windows(
-            display,
-            apps,
-            excepting_windows,
-        )
+        let alloc = Self::alloc();
+        unsafe {
+            alloc.init_with_display_excluding_apps_excepting_windows(
+                display,
+                apps,
+                excepting_windows,
+            )
+        }
     }
 
     #[objc::msg_send(style)]
@@ -1036,23 +1050,25 @@ impl Stream {
 
     #[cfg(feature = "blocks")]
     #[api::available(macos = 12.3, maccatalyst = 18.2)]
+    #[allow(unused_unsafe)]
     pub fn update_content_filter_ch(
         &self,
         filter: &ContentFilter,
         ch: impl FnMut(Option<&ns::Error>) + 'static,
     ) {
         let mut block = blocks::ErrCh::new1(ch);
-        self.update_content_filter_ch_block(filter, Some(&mut block));
+        unsafe { self.update_content_filter_ch_block(filter, Some(&mut block)) };
     }
 
     #[cfg(all(feature = "blocks", feature = "async"))]
     #[api::available(macos = 12.3, maccatalyst = 18.2)]
+    #[allow(unused_unsafe)]
     pub async fn update_content_filter(
         &self,
         filter: &ContentFilter,
     ) -> Result<(), arc::R<ns::Error>> {
         let (future, mut block) = blocks::ok();
-        self.update_content_filter_ch_block(filter, Some(&mut block));
+        unsafe { self.update_content_filter_ch_block(filter, Some(&mut block)) };
         future.await
     }
 
@@ -1063,16 +1079,18 @@ impl Stream {
 
     #[cfg(feature = "blocks")]
     #[api::available(macos = 12.3, maccatalyst = 18.2)]
+    #[allow(unused_unsafe)]
     pub fn update_cfg_ch(&self, cfg: &Cfg, ch: impl FnMut(Option<&ns::Error>) + 'static) {
         let mut block = blocks::ErrCh::new1(ch);
-        self.update_cfg_ch_block(cfg, Some(&mut block));
+        unsafe { self.update_cfg_ch_block(cfg, Some(&mut block)) };
     }
 
     #[cfg(all(feature = "blocks", feature = "async"))]
     #[api::available(macos = 12.3, maccatalyst = 18.2)]
+    #[allow(unused_unsafe)]
     pub async fn update_cfg(&self, cfg: &Cfg) -> Result<(), arc::R<ns::Error>> {
         let (future, mut block) = blocks::ok();
-        self.update_cfg_ch_block(cfg, Some(&mut block));
+        unsafe { self.update_cfg_ch_block(cfg, Some(&mut block)) };
         future.await
     }
 
@@ -1227,6 +1245,7 @@ impl Stream {
     }
 
     /// Adds a video effect output to the stream.
+    #[cfg(not(target_abi = "macabi"))]
     #[objc::msg_send(addVideoEffectOutput:error:)]
     #[api::available(ios = 27.0)]
     pub unsafe fn add_video_effect_output_err<'ar>(
@@ -1235,6 +1254,7 @@ impl Stream {
         error: *mut Option<&'ar ns::Error>,
     ) -> bool;
 
+    #[cfg(not(target_abi = "macabi"))]
     #[api::available(ios = 27.0)]
     pub fn add_video_effect_output<'ear>(
         &mut self,
@@ -1244,6 +1264,7 @@ impl Stream {
     }
 
     /// Removes a video effect output from the stream.
+    #[cfg(not(target_abi = "macabi"))]
     #[objc::msg_send(removeVideoEffectOutput:error:)]
     #[api::available(ios = 27.0)]
     pub unsafe fn remove_video_effect_output_err<'ar>(
@@ -1252,6 +1273,7 @@ impl Stream {
         error: *mut Option<&'ar ns::Error>,
     ) -> bool;
 
+    #[cfg(not(target_abi = "macabi"))]
     #[api::available(ios = 27.0)]
     pub fn remove_video_effect_output<'ear>(
         &mut self,

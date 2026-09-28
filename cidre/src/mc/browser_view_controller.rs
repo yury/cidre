@@ -38,7 +38,7 @@ impl BrowserViewController {
         session: &mc::Session,
     ) -> arc::R<BrowserViewController>;
 
-    define_cls!(MC_BROWSER_VIEW_CONTROLLER);
+    define_cls!(sym MCBrowserViewController);
 
     pub fn with_service_type<'ear>(
         service_type: &ns::String,
@@ -106,10 +106,6 @@ define_obj_type!(
 );
 
 impl Delegate for AnyDelegate {}
-
-unsafe extern "C" {
-    static MC_BROWSER_VIEW_CONTROLLER: &'static objc::Class<BrowserViewController>;
-}
 
 #[cfg(test)]
 mod tests {

@@ -21,7 +21,7 @@ impl ArrayBatchProvider {
         err: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<ArrayBatchProvider>>;
 
-    define_cls!(ML_ARRAY_BATCH_PROVIDER);
+    define_cls!(sym MLArrayBatchProvider);
 
     #[objc::msg_send(array)]
     pub fn array(&self) -> arc::R<ns::Array<ml::AnyFeatureProvider>>;
@@ -35,8 +35,4 @@ impl ArrayBatchProvider {
     ) -> ns::Result<'ear, arc::R<Self>> {
         ns::if_none(|err| unsafe { Self::alloc().init_with_dictionary(dictionary, err) })
     }
-}
-
-unsafe extern "C" {
-    static ML_ARRAY_BATCH_PROVIDER: &'static objc::Class<ArrayBatchProvider>;
 }

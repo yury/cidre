@@ -28,7 +28,7 @@ pub enum TabBarMinimizeBehavior {
 define_obj_type!(
     #[doc(alias = "UITabBarController")]
     pub TabBarController(ui::ViewController),
-    UI_TAB_BAR_CONTROLLER
+    sym UITabBarController
 );
 
 impl TabBarController {
@@ -41,8 +41,10 @@ impl TabBarController {
     pub fn init_with_tabs(self, tabs: &ns::Array<ui::Tab>) -> arc::R<TabBarController>;
 
     #[objc::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
+    #[allow(unused_unsafe)]
     pub fn with_tabs(tabs: &ns::Array<ui::Tab>) -> arc::R<Self> {
-        Self::alloc().init_with_tabs(tabs)
+        let alloc = Self::alloc();
+        unsafe { alloc.init_with_tabs(tabs) }
     }
 
     #[objc::msg_send(delegate)]
@@ -247,8 +249,4 @@ impl ui::ViewController {
 
     #[objc::msg_send(tabBarController)]
     pub fn tab_bar_controller(&self) -> Option<arc::R<TabBarController>>;
-}
-
-unsafe extern "C" {
-    static UI_TAB_BAR_CONTROLLER: &'static objc::Class<TabBarController>;
 }

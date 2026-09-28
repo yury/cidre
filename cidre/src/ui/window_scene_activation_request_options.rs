@@ -4,7 +4,7 @@ use crate::{api, arc, define_obj_type, objc, ui};
 define_obj_type!(
     #[doc(alias = "UIWindowSceneActivationRequestOptions")]
     pub WindowSceneActivationRequestOpts(ui::SceneActivationRequestOpts),
-    UI_WINDOW_SCENE_ACTIVATION_REQUEST_OPTIONS,
+    sym UIWindowSceneActivationRequestOptions,
     #[api::available(ios = 15.0)]
 );
 
@@ -15,10 +15,4 @@ impl WindowSceneActivationRequestOpts {
 
     #[objc::msg_send(setPlacement:)]
     pub fn set_placement(&mut self, val: Option<&ui::WindowScenePlacement>);
-}
-
-#[cfg(target_os = "ios")]
-unsafe extern "C" {
-    static UI_WINDOW_SCENE_ACTIVATION_REQUEST_OPTIONS:
-        &'static objc::Class<WindowSceneActivationRequestOpts>;
 }

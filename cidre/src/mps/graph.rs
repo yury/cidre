@@ -140,7 +140,7 @@ pub type CompilationCompletionHandler = blocks::ResultCh<Executable>;
 define_obj_type!(
     #[doc(alias = "MPSGraphCompilationDescriptor")]
     pub CompilationDesc(ns::Id),
-    MPS_GRAPH_COMPILATION_DESCRIPTOR
+    sym MPSGraphCompilationDescriptor
 );
 
 impl CompilationDesc {
@@ -168,7 +168,7 @@ impl CompilationDesc {
 define_obj_type!(
     #[doc(alias = "MPSGraphExecutionDescriptor")]
     pub ExecutionDesc(ns::Id),
-    MPS_GRAPH_EXECUTION_DESCRIPTOR
+    sym MPSGraphExecutionDescriptor
 );
 
 impl ExecutionDesc {
@@ -203,7 +203,7 @@ impl ExecutionDesc {
     pub fn set_compilation_desc(&mut self, val: Option<&CompilationDesc>);
 }
 
-define_obj_type!(pub Graph(ns::Id), MPS_GRAPH);
+define_obj_type!(pub Graph(ns::Id), sym MPSGraph);
 
 impl Graph {
     #[objc::msg_send(options)]
@@ -261,11 +261,7 @@ impl Graph {
 }
 
 #[link(name = "mpsg", kind = "static")]
-unsafe extern "C" {
-    static MPS_GRAPH_COMPILATION_DESCRIPTOR: &'static objc::Class<CompilationDesc>;
-    static MPS_GRAPH_EXECUTION_DESCRIPTOR: &'static objc::Class<ExecutionDesc>;
-    static MPS_GRAPH: &'static objc::Class<Graph>;
-}
+unsafe extern "C" {}
 
 #[cfg(not(target_os = "watchos"))]
 #[link(name = "MetalPerformanceShadersGraph", kind = "framework")]

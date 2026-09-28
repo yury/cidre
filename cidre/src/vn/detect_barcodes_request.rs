@@ -2,7 +2,7 @@ use crate::{arc, define_obj_type, ns, objc, vn};
 
 define_obj_type!(
     pub DetectBarcodesRequest(vn::ImageBasedRequest),
-    VN_DETECT_BARCODES_REQUEST
+    sym VNDetectBarcodesRequest
 );
 
 impl DetectBarcodesRequest {
@@ -30,10 +30,6 @@ impl DetectBarcodesRequest {
     ) -> Result<arc::R<ns::Array<vn::BarcodeSymbology>>, &'ar ns::Error> {
         ns::if_none(|err| unsafe { self.supported_symbologies_and_return_err(err) })
     }
-}
-
-unsafe extern "C" {
-    static VN_DETECT_BARCODES_REQUEST: &'static objc::Class<DetectBarcodesRequest>;
 }
 
 #[cfg(test)]

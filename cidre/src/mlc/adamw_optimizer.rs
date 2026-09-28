@@ -2,7 +2,7 @@ use crate::{arc, define_cls, define_obj_type, mlc, objc};
 
 define_obj_type!(pub AdamWOptimizer(mlc::Optimizer));
 impl AdamWOptimizer {
-    define_cls!(MLC_ADAMW_OPTIMIZER);
+    define_cls!(sym MLCAdamWOptimizer);
 
     #[objc::msg_send(beta1)]
     pub fn beta1(&self) -> f32;
@@ -31,8 +31,4 @@ impl AdamWOptimizer {
         uses_ams_grad: bool,
         time_step: usize,
     ) -> arc::R<Self>;
-}
-
-unsafe extern "C" {
-    static MLC_ADAMW_OPTIMIZER: &'static objc::Class<AdamWOptimizer>;
 }

@@ -1,7 +1,10 @@
 use crate::{arc, av, cm, define_cls, define_obj_type, define_opts, ns, objc};
 
 #[cfg(feature = "blocks")]
-use crate::{api, blocks};
+use crate::blocks;
+
+#[cfg(not(target_abi = "macabi"))]
+use crate::api;
 
 #[cfg(all(feature = "blocks", feature = "dispatch"))]
 use crate::dispatch;
@@ -85,7 +88,7 @@ impl Player {
     #[objc::init(initWithPlayerItem:)]
     pub unsafe fn init_with_player_item_throws(self, item: Option<&PlayerItem>) -> arc::R<Player>;
 
-    define_cls!(AV_PLAYER);
+    define_cls!(sym AVPlayer);
 
     pub fn with_url(url: &ns::Url) -> arc::R<Self> {
         Self::alloc().init_with_url(url)
@@ -373,7 +376,7 @@ impl Player {
 define_obj_type!(
     #[doc(alias = "AVQueuePlayer")]
     pub QueuePlayer(Player),
-    AV_QUEUE_PLAYER
+    sym AVQueuePlayer
 );
 
 impl QueuePlayer {
@@ -408,11 +411,6 @@ impl QueuePlayer {
 
     #[objc::msg_send(removeAllItems)]
     pub fn remove_all_items(&mut self);
-}
-
-unsafe extern "C" {
-    static AV_PLAYER: &'static objc::Class<Player>;
-    static AV_QUEUE_PLAYER: &'static objc::Class<QueuePlayer>;
 }
 
 impl ns::NotificationName {

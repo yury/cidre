@@ -3,7 +3,7 @@ use crate::{arc, av, blocks, define_obj_type, ns, objc, sn};
 define_obj_type!(
     #[doc(alias = "SNAudioStreamAnalyzer")]
     pub AudioStreamAnalyzer(ns::Id),
-    SN_AUDIO_STREAM_ANALYZER
+    sym SNAudioStreamAnalyzer
 );
 
 unsafe impl Send for AudioStreamAnalyzer {}
@@ -50,7 +50,7 @@ impl AudioStreamAnalyzer {
 define_obj_type!(
     #[doc(alias = "SNAudioFileAnalyzer")]
     pub AudioFileAnalyzer(ns::Id),
-    SN_AUDIO_FILE_ANALYZER
+    sym SNAudioFileAnalyzer
 );
 
 pub type FileCompletionHandler = blocks::Block<fn(bool), blocks::Send>;
@@ -106,9 +106,4 @@ impl AudioFileAnalyzer {
 
     #[objc::msg_send(cancelAnalysis)]
     pub fn cancel_analysis(&mut self);
-}
-
-unsafe extern "C" {
-    static SN_AUDIO_STREAM_ANALYZER: &'static objc::Class<AudioStreamAnalyzer>;
-    static SN_AUDIO_FILE_ANALYZER: &'static objc::Class<AudioFileAnalyzer>;
 }

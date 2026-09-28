@@ -69,7 +69,7 @@ define_obj_type!(
     /// from input devices to capture outputs.
     #[doc(alias = "AVCaptureSession")]
     pub Session(ns::Id),
-    AV_CAPTURE_SESSION
+    sym AVCaptureSession
 );
 
 impl Session {
@@ -341,9 +341,7 @@ impl Session {
 }
 
 unsafe extern "C" {
-    static AV_CAPTURE_SESSION: &'static objc::Class<Session>;
     static AV_CAPTURE_MULTI_CAM_SESSION: &'static objc::Class<MultiCamSession>;
-    static AV_CAPTURE_CONNECTION: &'static objc::Class<Connection>;
 }
 
 #[objc::protocol(AVCaptureSessionControlsDelegate)]
@@ -460,7 +458,7 @@ impl Connection {
         layer: &av::CaptureVideoPreviewLayer,
     ) -> arc::R<Connection>;
 
-    define_cls!(AV_CAPTURE_CONNECTION);
+    define_cls!(sym AVCaptureConnection);
 
     pub fn with_ports(
         input: &ns::Array<av::CaptureInputPort>,

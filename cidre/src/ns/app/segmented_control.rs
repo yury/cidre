@@ -45,7 +45,7 @@ pub enum SegmentDistribution {
 define_obj_type!(
     #[doc(alias = "NSSegmentedControl")]
     pub SegmentedControl(ns::Control),
-    NS_SEGMENTED_CONTROL
+    sym NSSegmentedControl
 );
 
 impl SegmentedControl {
@@ -146,8 +146,4 @@ impl SegmentedControl {
 
     #[objc::msg_send(setSelectedSegmentBezelColor:)]
     pub fn set_selected_segment_bezel_color(&mut self, val: Option<&ns::Color>);
-}
-
-unsafe extern "C" {
-    static NS_SEGMENTED_CONTROL: &'static objc::Class<SegmentedControl>;
 }

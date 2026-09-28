@@ -6,7 +6,7 @@ define_obj_type!(
 );
 
 impl Keyboard {
-    define_cls!(GC_KEYBOARD);
+    define_cls!(sym GCKeyboard);
 
     #[objc::msg_send(keyboardInput)]
     #[api::available(macos = 11.0, ios = 14.0, tvos = 14.0)]
@@ -29,10 +29,6 @@ impl Keyboard {
     pub fn did_disconnect_notification() -> &'static ns::NotificationName {
         unsafe { GCKeyboardDidDisconnectNotification }
     }
-}
-
-unsafe extern "C" {
-    static GC_KEYBOARD: &'static objc::Class<Keyboard>;
 }
 
 #[api::weak]

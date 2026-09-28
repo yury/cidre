@@ -15,7 +15,7 @@ pub enum ScrollElasticity {
 define_obj_type!(
     #[doc(alias = "NSScrollView")]
     pub ScrollView(ns::View),
-    NS_SCROLL_VIEW
+    sym NSScrollView
 );
 
 impl ScrollView {
@@ -114,8 +114,4 @@ impl ScrollView {
 
     #[objc::msg_send(setVerticalScrollElasticity:)]
     pub fn set_vertical_scroll_elasticity(&mut self, val: ns::ScrollElasticity);
-}
-
-unsafe extern "C" {
-    static NS_SCROLL_VIEW: &'static objc::Class<ScrollView>;
 }

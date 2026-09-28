@@ -130,7 +130,7 @@ pub enum TitlebarSeparatorStyle {
 define_obj_type!(
    #[doc(alias = "NSWindow")]
    pub Window(ns::Responder),
-   NS_WINDOW
+   sym NSWindow
 );
 
 impl Window {
@@ -440,10 +440,6 @@ define_obj_type!(
 impl WindowDelegate for AnyWindowDelegate {}
 
 impl ns::AnimatablePropContainer for Window {}
-
-unsafe extern "C" {
-    static NS_WINDOW: &'static objc::Class<Window>;
-}
 
 pub mod notifications {
     use crate::ns;

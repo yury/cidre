@@ -16,7 +16,7 @@ pub enum ButtonType {
 define_obj_type!(
     #[doc(alias = "UIButton")]
     pub Button(ui::Control),
-    UI_BUTTON
+    sym UIButton
 );
 
 impl Button {
@@ -67,8 +67,4 @@ impl Button {
 
     #[objc::msg_send(sizeToFit)]
     pub fn size_to_fit(&mut self);
-}
-
-unsafe extern "C" {
-    static UI_BUTTON: &'static objc::Class<Button>;
 }

@@ -8,7 +8,7 @@ define_obj_type!(
 define_obj_type!(
     #[doc(alias = "MTLFunctionStitchingAttributeAlwaysInline")]
     pub FnStitchingAttrAlwaysInline(FnStitchingAttr),
-    MTL_FUNCTION_STITCHING_ATTRIBUTE_ALWAYS_INLINE
+    sym MTLFunctionStitchingAttributeAlwaysInline
 );
 
 define_obj_type!(
@@ -19,7 +19,7 @@ define_obj_type!(
 define_obj_type!(
     #[doc(alias = "MTLFunctionStitchingInputNode")]
     pub FnStitchingInputNode(FnStitchingNode),
-    MTL_FUNCTION_STITCHING_INPUT_NODE
+    sym MTLFunctionStitchingInputNode
 );
 
 impl FnStitchingInputNode {
@@ -51,7 +51,7 @@ impl FnStitchingFnNode {
         control_deps: &ns::Array<FnStitchingFnNode>,
     ) -> arc::R<FnStitchingFnNode>;
 
-    define_cls!(MTL_FUNCTION_STITCHING_FUNCTION_NODE);
+    define_cls!(sym MTLFunctionStitchingFunctionNode);
 
     pub fn with_name(
         name: &ns::String,
@@ -95,7 +95,7 @@ impl FnStitchingGraph {
         attribtues: &ns::Array<FnStitchingAttr>,
     ) -> arc::R<FnStitchingGraph>;
 
-    define_cls!(MTL_FUNCTION_STITCHING_GRAPH);
+    define_cls!(sym MTLFunctionStitchingGraph);
 
     pub fn with_fn_name(
         fn_name: &ns::String,
@@ -134,7 +134,7 @@ impl FnStitchingGraph {
 define_obj_type!(
     #[doc(alias = "MTLStitchedLibraryDescriptor")]
     pub FnStitchedLibDesc(ns::Id),
-    MTL_FUNCTION_STITCHED_LIBRARY_DESCRIPTOR
+    sym MTLStitchedLibraryDescriptor
 );
 
 impl FnStitchedLibDesc {
@@ -149,15 +149,6 @@ impl FnStitchedLibDesc {
 
     #[objc::msg_send(setFunctions:)]
     pub fn set_fns(&self, val: &ns::Array<mtl::Fn>);
-}
-
-unsafe extern "C" {
-    static MTL_FUNCTION_STITCHING_GRAPH: &'static objc::Class<FnStitchingGraph>;
-    static MTL_FUNCTION_STITCHING_INPUT_NODE: &'static objc::Class<FnStitchingInputNode>;
-    static MTL_FUNCTION_STITCHING_FUNCTION_NODE: &'static objc::Class<FnStitchingFnNode>;
-    static MTL_FUNCTION_STITCHING_ATTRIBUTE_ALWAYS_INLINE:
-        &'static objc::Class<FnStitchingAttrAlwaysInline>;
-    static MTL_FUNCTION_STITCHED_LIBRARY_DESCRIPTOR: &'static objc::Class<FnStitchedLibDesc>;
 }
 
 #[cfg(test)]

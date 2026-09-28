@@ -51,7 +51,7 @@ impl DeviceInput {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<DeviceInput>>;
 
-    define_cls!(AV_CAPTURE_DEVICE_INPUT);
+    define_cls!(sym AVCaptureDeviceInput);
 
     pub fn with_device<'ear>(device: &av::CaptureDevice) -> Result<arc::R<Self>, &'ear ns::Error> {
         let mut error = None;
@@ -162,16 +162,8 @@ impl DeviceInput {
 define_obj_type!(
     #[doc(alias = "AVCaptureMetadataInput")]
     pub MetadataInput(Input),
-    AV_CAPTURE_METADATA_INPUT
+    sym AVCaptureMetadataInput
 );
-
-unsafe extern "C" {
-    #[cfg(not(target_os = "watchos"))]
-    static AV_CAPTURE_DEVICE_INPUT: &'static objc::Class<DeviceInput>;
-
-    #[cfg(any(target_os = "ios", target_os = "tvos"))]
-    static AV_CAPTURE_METADATA_INPUT: &'static objc::Class<MetadataInput>;
-}
 
 impl Port {
     /// The input that owns the receiver.

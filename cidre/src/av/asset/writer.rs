@@ -43,7 +43,7 @@ impl Writer {
         output_content_type: &ut::Type,
     ) -> arc::R<Writer>;
 
-    define_cls!(AV_ASSET_WRITER);
+    define_cls!(sym AVAssetWriter);
 
     #[objc::msg_send(shouldOptimizeForNetworkUse)]
     pub fn should_optimize_for_network_use(&self) -> bool;
@@ -271,10 +271,6 @@ pub trait Delegate: objc::Obj {
 
 define_obj_type!(pub AnyDelegate(ns::Id));
 impl Delegate for AnyDelegate {}
-
-unsafe extern "C" {
-    static AV_ASSET_WRITER: &'static objc::Class<Writer>;
-}
 
 #[cfg(test)]
 mod tests {

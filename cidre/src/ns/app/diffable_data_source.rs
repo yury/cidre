@@ -34,7 +34,7 @@ impl<S: objc::Obj, I: objc::Obj> CollectionViewDiffableDataSrc<S, I> {
         item_provider: &mut CollectionViewDiffableDataSrcItemProvider<I>,
     ) -> arc::R<CollectionViewDiffableDataSrc<S, I>>;
 
-    define_cls!(NS_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE);
+    define_cls!(sym NSCollectionViewDiffableDataSource);
 
     #[cfg(feature = "blocks")]
     pub fn with_collection_view_item_provider(
@@ -95,8 +95,3 @@ impl<S: objc::Obj, I: objc::Obj> CollectionViewDiffableDataSrc<S, I> {
 }
 
 impl<S: objc::Obj, I: objc::Obj> ns::CollectionViewDataSrc for CollectionViewDiffableDataSrc<S, I> {}
-
-unsafe extern "C" {
-    static NS_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE:
-        &'static objc::Class<CollectionViewDiffableDataSrc<ns::Id, ns::Id>>;
-}

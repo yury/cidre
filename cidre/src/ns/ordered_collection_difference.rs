@@ -37,7 +37,7 @@ impl<T: objc::Obj> OrderedCollectionDiff<T> {
         changes: &ns::Array<ns::OrderedCollectionChange<T>>,
     ) -> arc::R<OrderedCollectionDiff<T>>;
 
-    define_cls!(NS_ORDERED_COLLECTION_DIFFERENCE);
+    define_cls!(sym NSOrderedCollectionDifference);
 
     #[inline]
     pub fn with_changes(changes: &ns::Array<ns::OrderedCollectionChange<T>>) -> arc::R<Self> {
@@ -63,10 +63,6 @@ impl<T: objc::Obj> OrderedCollectionDiff<T> {
 pub enum OrderedCollectionDiffInverseOpts {
     InsertedObjsFirst = 0,
     RemovedObjsFirst = 1,
-}
-
-unsafe extern "C" {
-    static NS_ORDERED_COLLECTION_DIFFERENCE: &'static objc::Class<OrderedCollectionDiff<ns::Id>>;
 }
 
 #[cfg(test)]

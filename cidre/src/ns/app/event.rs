@@ -460,7 +460,7 @@ pub enum PressureBehavior {
 define_obj_type!(
     #[doc(alias = "NSEvent")]
     pub Event(ns::Id),
-    NS_EVENT
+    sym NSEvent
 );
 
 impl Event {
@@ -727,10 +727,6 @@ impl Event {
 
     #[objc::msg_send(removeMonitor:)]
     pub fn remove_monitor(event_monitor: &ns::Id);
-}
-
-unsafe extern "C" {
-    static NS_EVENT: &'static objc::Class<Event>;
 }
 
 #[cfg(test)]

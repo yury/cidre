@@ -71,7 +71,7 @@ impl arc::A<Anchor> {
 }
 
 impl Anchor {
-    define_cls!(AR_ANCHOR);
+    define_cls!(sym ARAnchor);
 
     /// Creates an anchor with `transform`.
     #[inline]
@@ -127,8 +127,4 @@ impl Anchor {
     pub fn transform(&self) -> simd::f32x4x4 {
         unimplemented!()
     }
-}
-
-unsafe extern "C" {
-    static AR_ANCHOR: &'static objc::Class<Anchor>;
 }

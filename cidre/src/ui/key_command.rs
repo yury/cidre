@@ -4,7 +4,7 @@ define_obj_type!(
     /// A menu element that runs a selector.
     #[doc(alias = "UICommand")]
     pub Cmd(ui::MenuElement),
-    UI_COMMAND
+    sym UICommand
 );
 
 impl Cmd {
@@ -22,7 +22,7 @@ define_obj_type!(
     /// A key press that sends `action` up the responder chain.
     #[doc(alias = "UIKeyCommand")]
     pub KeyCmd(Cmd),
-    UI_KEY_COMMAND
+    sym UIKeyCommand
 );
 
 impl KeyCmd {
@@ -73,11 +73,6 @@ impl KeyCmd {
     #[objc::msg_send(setWantsPriorityOverSystemBehavior:)]
     #[objc::available(ios = 15.0)]
     pub fn set_wants_priority_over_sys_behavior(&mut self, val: bool);
-}
-
-unsafe extern "C" {
-    static UI_COMMAND: &'static objc::Class<Cmd>;
-    static UI_KEY_COMMAND: &'static objc::Class<KeyCmd>;
 }
 
 #[api::weak]

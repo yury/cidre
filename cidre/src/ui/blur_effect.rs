@@ -7,7 +7,7 @@ define_obj_type!(
 
 #[cfg(not(target_os = "watchos"))]
 impl BlurEffect {
-    define_cls!(UI_BLUR_EFFECT);
+    define_cls!(sym UIBlurEffect);
 
     #[objc::msg_send(effectWithStyle:)]
     pub fn with_style(style: ui::BlurEffectStyle) -> arc::R<Self>;
@@ -37,8 +37,4 @@ pub enum BlurEffectStyle {
     SysMaterialDark,
     SysThickMaterialDark,
     SysChromeMaterialDark,
-}
-
-unsafe extern "C" {
-    static UI_BLUR_EFFECT: &'static objc::Class<BlurEffect>;
 }

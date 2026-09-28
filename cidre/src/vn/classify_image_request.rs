@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc, vn};
 define_obj_type!(
     #[doc(alias = "VNClassifyImageRequest")]
     pub ClassifyImageRequest(vn::ImageBasedRequest),
-    VN_CLASSIFY_IMAGE_REQUEST
+    sym VNClassifyImageRequest
 );
 
 impl ClassifyImageRequest {
@@ -35,10 +35,6 @@ impl ClassifyImageRequest {
             }
         }
     }
-}
-
-unsafe extern "C" {
-    static VN_CLASSIFY_IMAGE_REQUEST: &'static objc::Class<ClassifyImageRequest>;
 }
 
 #[cfg(test)]

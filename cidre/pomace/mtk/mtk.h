@@ -9,8 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-Class MTK_TEXTURE_LOADER;
-
 __attribute__((constructor))
 static void mtk_initializer(void)
 {
@@ -18,9 +16,7 @@ static void mtk_initializer(void)
     if (!initialized) {
         initialized = 1;
         
-        MTK_TEXTURE_LOADER = [MTKTextureLoader class];
     }
 }
-
 
 NS_ASSUME_NONNULL_END

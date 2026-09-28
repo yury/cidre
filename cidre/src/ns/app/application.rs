@@ -106,7 +106,7 @@ define_obj_type!(pub AnyDelegate(ns::Id));
 impl Delegate for AnyDelegate {}
 
 impl App {
-    define_cls!(NS_APPLICATION);
+    define_cls!(sym NSApplication);
 
     #[objc::msg_send(sharedApplication)]
     pub fn shared() -> arc::R<Self>;
@@ -167,10 +167,6 @@ impl App {
 
     #[objc::msg_send(setHelpMenu:)]
     pub fn set_help_menu(&mut self, val: Option<&ns::Menu>);
-}
-
-unsafe extern "C" {
-    static NS_APPLICATION: &'static objc::Class<App>;
 }
 
 pub mod notifications {

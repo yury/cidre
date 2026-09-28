@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSImageView")]
     pub ImageView(ns::Control),
-    NS_IMAGE_VIEW
+    sym NSImageView
 );
 
 impl ImageView {
@@ -59,8 +59,4 @@ impl ImageView {
     #[objc::msg_send(setSymbolConfiguration:)]
     #[objc::available(macos = 11.0)]
     pub fn set_symbol_cfg(&mut self, val: Option<&ns::ImageSymbolCfg>);
-}
-
-unsafe extern "C" {
-    static NS_IMAGE_VIEW: &'static objc::Class<ImageView>;
 }

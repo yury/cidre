@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UITextView")]
     pub TextView(ui::ScrollView),
-    UI_TEXT_VIEW
+    sym UITextView
 );
 
 impl TextView {
@@ -77,8 +77,4 @@ impl TextView {
 
     #[objc::msg_send(scrollRangeToVisible:)]
     pub fn scroll_range_to_visible(&mut self, range: ns::Range);
-}
-
-unsafe extern "C" {
-    static UI_TEXT_VIEW: &'static objc::Class<TextView>;
 }

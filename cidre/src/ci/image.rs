@@ -37,7 +37,7 @@ impl Image {
         options: Option<&cf::DictionaryOf<ImageOpt, cf::Type>>,
     ) -> Option<arc::Retained<Image>>;
 
-    define_cls!(CI_IMAGE);
+    define_cls!(sym CIImage);
 
     #[cfg(feature = "mtl")]
     pub fn with_mtl_texture(
@@ -500,7 +500,6 @@ impl ImageOpt {
 
 #[api::weak]
 unsafe extern "C" {
-    static CI_IMAGE: &'static objc::Class<Image>;
 
     static kCIImageColorSpace: &'static ImageOpt;
     static kCIImageToneMapHDRtoSDR: &'static ImageOpt;

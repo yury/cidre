@@ -2,7 +2,7 @@ use crate::{arc, define_obj_type, define_opts, mtl, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "MTLFunctionDescriptor")]
-    pub FnDesc(ns::Id), MTL_FUNCTION_DESCRIPTOR
+    pub FnDesc(ns::Id), sym MTLFunctionDescriptor
 );
 
 define_opts!(
@@ -72,10 +72,6 @@ impl FnDesc {
     /// The options to use for this new `mtl::Fn`.
     #[objc::msg_send(setOptions:)]
     pub fn set_opts(&mut self, val: mtl::FnOpts);
-}
-
-unsafe extern "C" {
-    static MTL_FUNCTION_DESCRIPTOR: &'static objc::Class<FnDesc>;
 }
 
 #[cfg(test)]

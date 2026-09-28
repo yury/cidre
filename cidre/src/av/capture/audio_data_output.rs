@@ -23,7 +23,7 @@ pub trait AudioDataOutputSampleBufDelegate: objc::Obj {
 
 define_obj_type!(
     pub AudioDataOutput(Output),
-    AV_CAPTURE_AUDIO_DATA_OUTPUT
+    sym AVCaptureAudioDataOutput
 );
 
 impl AudioDataOutput {
@@ -46,8 +46,4 @@ impl AudioDataOutput {
         &'a self,
         output_file_type: &av::FileType,
     ) -> Option<&'a ns::Dictionary<ns::String, ns::Id>>;
-}
-
-unsafe extern "C" {
-    static AV_CAPTURE_AUDIO_DATA_OUTPUT: &'static objc::Class<AudioDataOutput>;
 }

@@ -36,7 +36,7 @@ impl ImageGenerator {
     #[objc::init(initWithAsset:)]
     pub fn init_with_asset(self, asset: &av::Asset) -> arc::R<ImageGenerator>;
 
-    crate::define_cls!(AV_ASSET_IMAGE_GENERATOR);
+    crate::define_cls!(sym AVAssetImageGenerator);
 
     pub fn with_asset(asset: &av::Asset) -> arc::R<Self> {
         Self::alloc().init_with_asset(asset)
@@ -116,8 +116,4 @@ impl ImageGenerator {
 
     #[objc::msg_send(cancelAllCGImageGeneration)]
     pub fn cancel_all_cg_image_gen(&mut self);
-}
-
-unsafe extern "C" {
-    static AV_ASSET_IMAGE_GENERATOR: &'static objc::Class<ImageGenerator>;
 }

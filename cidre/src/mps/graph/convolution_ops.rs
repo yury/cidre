@@ -6,7 +6,7 @@ define_obj_type!(
 );
 
 impl Conv2dOpDesc {
-    define_cls!(MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR);
+    define_cls!(sym MPSGraphConvolution2DOpDescriptor);
 
     #[objc::msg_send(descriptorWithStrideInX:strideInY:dilationRateInX:dilationRateInY:groups:paddingLeft:paddingRight:paddingTop:paddingBottom:paddingStyle:dataLayout:weightsLayout:)]
     pub fn with(
@@ -34,8 +34,4 @@ impl graph::Graph {
         descriptor: &Conv2dOpDesc,
         name: Option<&ns::String>,
     ) -> arc::R<graph::Tensor>;
-}
-
-unsafe extern "C" {
-    static MPS_GRAPH_CONVOLUTION_2D_OP_DESCRIPTOR: &'static objc::Class<Conv2dOpDesc>;
 }

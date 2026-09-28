@@ -43,7 +43,7 @@ impl ImageRequestHandler {
         options: Option<&ns::Dictionary<ns::Id, ns::Id>>,
     ) -> Option<arc::R<ImageRequestHandler>>;
 
-    define_cls!(VN_IMAGE_REQUEST_HANDLER);
+    define_cls!(sym VNImageRequestHandler);
     /// Creates a vn::ImageRequestHandler to be used for performing requests against an image
     /// specified by it's URL
     pub fn with_url(
@@ -107,7 +107,7 @@ impl ImageRequestHandler {
     }
 }
 
-define_obj_type!(pub SequenceRequestHandler(ns::Id), VN_SEQUENCE_REQUEST_HANDLER);
+define_obj_type!(pub SequenceRequestHandler(ns::Id), sym VNSequenceRequestHandler);
 
 /// Performs requests on a sequence of images.
 ///
@@ -159,11 +159,6 @@ impl SequenceRequestHandler {
             self.perform_requests_on_cm_sample_buf_err(requests, sample_buf, err)
         })
     }
-}
-
-unsafe extern "C" {
-    static VN_IMAGE_REQUEST_HANDLER: &'static objc::Class<ImageRequestHandler>;
-    static VN_SEQUENCE_REQUEST_HANDLER: &'static objc::Class<SequenceRequestHandler>;
 }
 
 #[cfg(test)]

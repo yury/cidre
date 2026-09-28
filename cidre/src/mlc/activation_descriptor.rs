@@ -2,7 +2,7 @@ use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
 define_obj_type!(pub ActivationDesc(ns::Id));
 impl ActivationDesc {
-    define_cls!(MLC_ACTIVATION_DESCRIPTOR);
+    define_cls!(sym MLCActivationDescriptor);
 
     #[objc::msg_send(activationType)]
     pub fn activation_type(&self) -> mlc::ActivationType;
@@ -36,10 +36,6 @@ impl ActivationDesc {
         b: f32,
         c: f32,
     ) -> Option<arc::R<Self>>;
-}
-
-unsafe extern "C" {
-    static MLC_ACTIVATION_DESCRIPTOR: &'static objc::Class<ActivationDesc>;
 }
 
 #[cfg(test)]

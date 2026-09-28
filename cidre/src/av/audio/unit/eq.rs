@@ -85,7 +85,7 @@ impl UnitEq {
     #[objc::init(initWithNumberOfBands:)]
     pub fn init_with_number_of_bands(self, number_of_bands: usize) -> arc::R<UnitEq>;
 
-    define_cls!(AV_AUDIO_UNIT_EQ);
+    define_cls!(sym AVAudioUnitEQ);
 
     pub fn with_bands(number_of_bands: usize) -> arc::R<Self> {
         Self::alloc().init_with_number_of_bands(number_of_bands)
@@ -99,10 +99,6 @@ impl UnitEq {
 
     #[objc::msg_send(setGlobalGain:)]
     pub fn set_global_gain(&mut self, value: f32);
-}
-
-unsafe extern "C" {
-    static AV_AUDIO_UNIT_EQ: &'static objc::Class<UnitEq>;
 }
 
 #[cfg(test)]

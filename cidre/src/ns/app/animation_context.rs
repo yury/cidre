@@ -9,7 +9,7 @@ use crate::ca;
 define_obj_type!(
     #[doc(alias = "NSAnimationContext")]
     pub AnimationCtx(ns::Id),
-    NS_ANIMATION_CONTEXT
+    sym NSAnimationContext
 );
 
 impl AnimationCtx {
@@ -92,8 +92,4 @@ impl AnimationCtx {
             Self::run_animation_group_block(&mut changes);
         }
     }
-}
-
-unsafe extern "C" {
-    static NS_ANIMATION_CONTEXT: &'static objc::Class<AnimationCtx>;
 }

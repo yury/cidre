@@ -13,7 +13,7 @@ impl StatefulRequest {
         ch: Option<&mut vn::RequestCh>,
     ) -> arc::R<StatefulRequest>;
 
-    define_cls!(VN_STATEFUL_REQUEST);
+    define_cls!(sym VNStatefulRequest);
 
     pub fn with_frame_analysis_spacing_ch(
         frame_analysis_spacing: cm::Time,
@@ -46,10 +46,6 @@ impl StatefulRequest {
     /// The analysis is not done by wall time but by analysis of of the time stamps of the samplebuffers being processed.
     #[objc::msg_send(frameAnalysisSpacing)]
     pub fn frame_analysis_spacing(&self) -> cm::Time;
-}
-
-unsafe extern "C" {
-    static VN_STATEFUL_REQUEST: &'static objc::Class<StatefulRequest>;
 }
 
 #[cfg(test)]

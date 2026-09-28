@@ -314,8 +314,21 @@ fn aliases(
     (map, names)
 }
 
-/// The class of the first pomace symbol mentioned in `text`.
+/// The class named by `sym NSName` in `text`, or else of the first pomace symbol mentioned in it.
 fn symbol_class(text: &str, symbols: &HashMap<String, String>) -> Option<String> {
+    for (i, _) in text.match_indices("sym ") {
+        if text[..i].ends_with(|c: char| c.is_alphanumeric() || c == '_') {
+            continue;
+        }
+        let name: String = text[i + 4..]
+            .trim_start()
+            .chars()
+            .take_while(|c| c.is_alphanumeric() || *c == '_')
+            .collect();
+        if !name.is_empty() {
+            return Some(name);
+        }
+    }
     text.split(|c: char| !(c.is_ascii_uppercase() || c.is_ascii_digit() || c == '_'))
         .filter(|w| w.len() > 2 && w.contains('_'))
         .find_map(|w| symbols.get(w).cloned())

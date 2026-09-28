@@ -6,7 +6,7 @@ pub const OUTLINE_VIEW_DROP_ON_ITEM_INDEX: ns::Integer = -1;
 define_obj_type!(
     #[doc(alias = "NSOutlineView")]
     pub OutlineView(ns::TableView),
-    NS_OUTLINE_VIEW
+    sym NSOutlineView
 );
 
 impl OutlineView {
@@ -673,10 +673,6 @@ pub mod notifications {
         static NSOutlineViewItemWillCollapseNotification: &'static ns::NotificationName;
         static NSOutlineViewItemDidCollapseNotification: &'static ns::NotificationName;
     }
-}
-
-unsafe extern "C" {
-    static NS_OUTLINE_VIEW: &'static objc::Class<OutlineView>;
 }
 
 #[api::weak]

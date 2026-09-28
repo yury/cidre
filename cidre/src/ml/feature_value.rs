@@ -3,7 +3,7 @@ use crate::{api, arc, cv, define_obj_type, ml, ns, objc};
 define_obj_type!(
     #[doc(alias = "MLFeatureValue")]
     pub FeatureValue(ns::Id),
-    ML_FEATURE_VALUE,
+    sym MLFeatureValue,
     #[api::available(macos = 10.13, ios = 11.0, watchos = 4.0, tvos = 11.0)]
 );
 
@@ -68,10 +68,6 @@ impl FeatureValue {
 
     #[objc::msg_send(isEqualToFeatureValue:)]
     pub fn is_equal_to_feature_value(&self, val: &Self) -> bool;
-}
-
-unsafe extern "C" {
-    static ML_FEATURE_VALUE: &'static objc::Class<FeatureValue>;
 }
 
 #[cfg(test)]

@@ -65,7 +65,7 @@ define_obj_type!(
 
 /// `first.attr1 <relation> second.attr2 * multiplier + constant`
 impl LayoutConstraint {
-    crate::define_cls!(NS_LAYOUT_CONSTRAINT);
+    crate::define_cls!(sym NSLayoutConstraint);
 
     #[objc::msg_send(constraintWithItem:attribute:relatedBy:toItem:attribute:multiplier:constant:)]
     pub fn with_item(
@@ -138,8 +138,4 @@ impl LayoutConstraint {
 
     #[objc::msg_send(setIdentifier:)]
     pub fn set_id(&mut self, val: Option<&ns::String>);
-}
-
-unsafe extern "C" {
-    static NS_LAYOUT_CONSTRAINT: &'static objc::Class<LayoutConstraint>;
 }

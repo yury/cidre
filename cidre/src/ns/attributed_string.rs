@@ -5,7 +5,18 @@ define_obj_type!(
     pub AttrStringKey(ns::String)
 );
 
-#[cfg(any(feature = "app", feature = "ui"))]
+#[cfg(any(
+    all(feature = "app", target_os = "macos"),
+    all(
+        feature = "ui",
+        any(
+            target_os = "ios",
+            target_os = "tvos",
+            target_os = "watchos",
+            target_os = "visionos"
+        )
+    )
+))]
 impl AttrStringKey {
     #[doc(alias = "NSFontAttributeName")]
     #[inline]
@@ -122,30 +133,18 @@ impl AttrStringKey {
     }
 }
 
-#[cfg(all(feature = "app", target_os = "macos"))]
-unsafe extern "C" {
-    static NSFontAttributeName: &'static AttrStringKey;
-    static NSParagraphStyleAttributeName: &'static AttrStringKey;
-    static NSForegroundColorAttributeName: &'static AttrStringKey;
-    static NSBackgroundColorAttributeName: &'static AttrStringKey;
-    static NSLigatureAttributeName: &'static AttrStringKey;
-    static NSKernAttributeName: &'static AttrStringKey;
-    static NSTrackingAttributeName: &'static AttrStringKey;
-    static NSStrikethroughStyleAttributeName: &'static AttrStringKey;
-    static NSUnderlineStyleAttributeName: &'static AttrStringKey;
-    static NSStrokeColorAttributeName: &'static AttrStringKey;
-    static NSStrokeWidthAttributeName: &'static AttrStringKey;
-    static NSShadowAttributeName: &'static AttrStringKey;
-    static NSTextEffectAttributeName: &'static AttrStringKey;
-    static NSAttachmentAttributeName: &'static AttrStringKey;
-    static NSLinkAttributeName: &'static AttrStringKey;
-    static NSBaselineOffsetAttributeName: &'static AttrStringKey;
-    static NSUnderlineColorAttributeName: &'static AttrStringKey;
-    static NSStrikethroughColorAttributeName: &'static AttrStringKey;
-    static NSWritingDirectionAttributeName: &'static AttrStringKey;
-}
-
-#[cfg(any(target_os = "ios", target_os = "tvos", target_os = "watchos"))]
+#[cfg(any(
+    all(feature = "app", target_os = "macos"),
+    all(
+        feature = "ui",
+        any(
+            target_os = "ios",
+            target_os = "tvos",
+            target_os = "watchos",
+            target_os = "visionos"
+        )
+    )
+))]
 unsafe extern "C" {
     static NSFontAttributeName: &'static AttrStringKey;
     static NSParagraphStyleAttributeName: &'static AttrStringKey;

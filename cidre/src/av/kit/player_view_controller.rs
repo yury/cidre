@@ -15,7 +15,7 @@ pub enum PlayerViewControllerSkippingBehavior {
 define_obj_type!(
     #[doc(alias = "AVPlayerViewController")]
     pub PlayerViewController(ui::ViewController),
-    AV_PLAYER_VIEW_CONTROLLER
+    sym AVPlayerViewController
 );
 
 impl PlayerViewController {
@@ -268,7 +268,3 @@ pub trait PlayerViewControllerDelegate: objc::Obj {
 define_obj_type!(
     pub AnyPlayerViewControllerDelegate(ns::Id)
 );
-
-unsafe extern "C" {
-    static AV_PLAYER_VIEW_CONTROLLER: &'static objc::Class<PlayerViewController>;
-}

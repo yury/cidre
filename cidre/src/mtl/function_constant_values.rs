@@ -5,7 +5,7 @@ use crate::{arc, define_mtl, define_obj_type, mtl, ns, objc};
 define_obj_type!(
     #[doc(alias = "MTLFunctionConstantValues")]
     pub FnConstValues(ns::Id),
-    MTL_FUNCTION_CONSTANT_VALUES
+    sym MTLFunctionConstantValues
 );
 
 impl FnConstValues {
@@ -39,10 +39,6 @@ impl FnConstValues {
 
     #[objc::msg_send(setConstantValue:type:withName:)]
     pub fn set_value_with_name(&mut self, val: *const c_void, type_: mtl::DType, name: &ns::String);
-}
-
-unsafe extern "C" {
-    static MTL_FUNCTION_CONSTANT_VALUES: &'static objc::Class<FnConstValues>;
 }
 
 #[cfg(test)]

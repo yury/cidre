@@ -2,7 +2,7 @@ use crate::{arc, define_obj_type, ns, objc};
 
 define_obj_type!(
     pub Responder(ns::Id),
-    NS_RESPONDER
+    sym NSResponder
 );
 
 impl Responder {
@@ -18,8 +18,4 @@ impl Responder {
     /// that responds to it; whether one did.
     #[objc::msg_send(tryToPerform:with:)]
     pub fn try_to_perform_with(&mut self, action: &objc::Sel, obj: Option<&ns::Id>) -> bool;
-}
-
-unsafe extern "C" {
-    static NS_RESPONDER: &'static objc::Class<Responder>;
 }

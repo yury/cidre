@@ -2,7 +2,7 @@ use crate::{arc, define_obj_type, ns, objc, vn};
 
 define_obj_type!(
     pub GenImageFeaturePrintRequest(vn::ImageBasedRequest),
-    VN_GENERATE_IMAGE_FEAUTRE_PRINT_REQUEST
+    sym VNGenerateImageFeaturePrintRequest
 );
 
 impl GenImageFeaturePrintRequest {
@@ -31,9 +31,4 @@ impl GenImageFeaturePrintRequest {
 
     #[objc::msg_send(setImageCropAndScaleOption:)]
     pub fn set_image_crop_and_scale_option(&mut self, value: vn::ImageCropAndScaleOpt);
-}
-
-unsafe extern "C" {
-    static VN_GENERATE_IMAGE_FEAUTRE_PRINT_REQUEST:
-        &'static objc::Class<GenImageFeaturePrintRequest>;
 }

@@ -6,6 +6,20 @@ struct Version {
     minor: u32,
 }
 
+/// Lowest supported deployment targets, used when no newer feature is enabled.
+const MACOS_FLOOR: Version = Version {
+    major: 12,
+    minor: 0,
+};
+const IOS_FLOOR: Version = Version {
+    major: 15,
+    minor: 0,
+};
+const MACCATALYST_FLOOR: Version = Version {
+    major: 15,
+    minor: 0,
+};
+
 #[derive(Debug, Clone, Default)]
 struct DeploymentTargets {
     macos: Option<Version>,
@@ -69,30 +83,36 @@ fn build_pomace_target(name: &str, sdk: &str, deployment_targets: &DeploymentTar
     // available even for targets that import C-only frameworks like CoreAudio.
     // Xcode does this implicitly for all Obj-C targets.
     build.flag("-include").flag("Foundation/Foundation.h");
+    if sdk == "maccatalyst" {
+        // cc passes the iOSSupport library path even when only compiling.
+        build.flag("-Wno-unused-command-line-argument");
+    }
 
-    // Set deployment target flags
-    match sdk {
-        "macosx" | "maccatalyst" => {
-            if let Some(v) = &deployment_targets.macos {
-                build.flag(&format!("-mmacosx-version-min={}", v.to_string()));
-            }
+    // The cc crate derives the clang target triple (and so the deployment target) from these
+    // variables and falls back to the SDK version, so set them unless the user already did.
+    let (var, version) = match sdk {
+        "macosx" => (
+            "MACOSX_DEPLOYMENT_TARGET",
+            Some(deployment_targets.macos.unwrap_or(MACOS_FLOOR)),
+        ),
+        // Mac Catalyst uses the iOS deployment target
+        "maccatalyst" => (
+            "IPHONEOS_DEPLOYMENT_TARGET",
+            Some(deployment_targets.ios.unwrap_or(MACCATALYST_FLOOR)),
+        ),
+        "iphoneos" | "iphonesimulator" => (
+            "IPHONEOS_DEPLOYMENT_TARGET",
+            Some(deployment_targets.ios.unwrap_or(IOS_FLOOR)),
+        ),
+        "appletvos" | "appletvsimulator" => ("TVOS_DEPLOYMENT_TARGET", deployment_targets.tvos),
+        "watchos" | "watchsimulator" => ("WATCHOS_DEPLOYMENT_TARGET", deployment_targets.watchos),
+        _ => ("XROS_DEPLOYMENT_TARGET", deployment_targets.visionos),
+    };
+    if let Some(v) = version {
+        if env::var_os(var).is_none() {
+            // SAFETY: build scripts are single-threaded here; only cc reads it afterwards.
+            unsafe { env::set_var(var, v.to_string()) };
         }
-        "iphoneos" | "iphonesimulator" => {
-            if let Some(v) = &deployment_targets.ios {
-                build.flag(&format!("-mios-version-min={}", v.to_string()));
-            }
-        }
-        "appletvos" | "appletvsimulator" => {
-            if let Some(v) = &deployment_targets.tvos {
-                build.flag(&format!("-mtvos-version-min={}", v.to_string()));
-            }
-        }
-        "watchos" | "watchsimulator" => {
-            if let Some(v) = &deployment_targets.watchos {
-                build.flag(&format!("-mwatchos-version-min={}", v.to_string()));
-            }
-        }
-        _ => {}
     }
 
     build.compile(name);
@@ -172,10 +192,6 @@ fn collect_targets(sdk: &str) -> Vec<&'static str> {
         targets.push("ui");
     }
 
-    // iPhone/iPad/Catalyst only
-    if sdk == "iphoneos" || sdk == "iphonesimulator" {
-        targets.push("wc");
-    }
     if sdk == "iphoneos" || sdk == "iphonesimulator" || sdk == "maccatalyst" {
         targets.push("ar");
     }

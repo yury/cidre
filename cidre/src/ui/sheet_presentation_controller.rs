@@ -55,7 +55,7 @@ define_obj_type!(
 );
 
 impl Detent {
-    define_cls!(UI_SHEET_PRESENTATION_CONTROLLER_DETENT);
+    define_cls!(sym UISheetPresentationControllerDetent);
 
     #[objc::msg_send(mediumDetent)]
     #[objc::available(ios = 15.0)]
@@ -80,12 +80,13 @@ impl Detent {
 
     #[cfg(feature = "blocks")]
     #[objc::available(ios = 16.0)]
+    #[allow(unused_unsafe)]
     pub fn custom_with_id(
         id: Option<&DetentId>,
         resolver: impl FnMut(&DetentResolutionCtx) -> crate::cg::Float + 'static,
     ) -> arc::R<Self> {
         let mut resolver = DetentResolver::new1(resolver);
-        Self::custom_with_id_resolver_block(id, &mut resolver)
+        unsafe { Self::custom_with_id_resolver_block(id, &mut resolver) }
     }
 
     /// The detent's height for `ctx`, or `nil` if it does not apply.
@@ -149,8 +150,4 @@ unsafe extern "C" {
     static UISheetPresentationControllerDetentIdentifierMedium: &'static DetentId;
     #[api::available(ios = 15.0)]
     static UISheetPresentationControllerDetentIdentifierLarge: &'static DetentId;
-}
-
-unsafe extern "C" {
-    static UI_SHEET_PRESENTATION_CONTROLLER_DETENT: &'static objc::Class<Detent>;
 }

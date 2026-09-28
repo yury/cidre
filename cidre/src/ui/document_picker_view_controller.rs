@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UIDocumentPickerViewController")]
     pub DocumentPickerViewController(ui::ViewController),
-    UI_DOCUMENT_PICKER_VIEW_CONTROLLER
+    sym UIDocumentPickerViewController
 );
 
 impl DocumentPickerViewController {
@@ -71,7 +71,3 @@ define_obj_type!(
 );
 
 impl DocumentPickerDelegate for AnyDocumentPickerDelegate {}
-
-unsafe extern "C" {
-    static UI_DOCUMENT_PICKER_VIEW_CONTROLLER: &'static objc::Class<DocumentPickerViewController>;
-}

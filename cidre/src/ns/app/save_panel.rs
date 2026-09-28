@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSSavePanel")]
     pub SavePanel(ns::Panel),
-    NS_SAVE_PANEL
+    sym NSSavePanel
 );
 
 impl SavePanel {
@@ -78,8 +78,4 @@ impl SavePanel {
     /// Runs the panel as an app-modal dialog and returns the user's choice.
     #[objc::msg_send(runModal)]
     pub fn run_modal(&mut self) -> ns::ModalResponse;
-}
-
-unsafe extern "C" {
-    static NS_SAVE_PANEL: &'static objc::Class<SavePanel>;
 }

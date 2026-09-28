@@ -37,7 +37,7 @@ pub enum PasteboardAccessBehavior {
 define_obj_type!(
     #[doc(alias = "NSPasteboard")]
     pub Pasteboard(ns::Id),
-    NS_PASTEBOARD
+    sym NSPasteboard
 );
 
 impl Pasteboard {
@@ -388,8 +388,4 @@ pub mod reading_option_key {
         #[api::available(macos = 10.6)]
         static NSPasteboardURLReadingContentsConformToTypesKey: &'static PasteboardReadingOptionKey;
     }
-}
-
-unsafe extern "C" {
-    static NS_PASTEBOARD: &'static objc::Class<Pasteboard>;
 }

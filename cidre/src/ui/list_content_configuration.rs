@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UIListContentConfiguration")]
     pub ListContentCfg(ns::Id),
-    UI_LIST_CONTENT_CONFIGURATION
+    sym UIListContentConfiguration
 );
 
 impl ListContentCfg {
@@ -135,7 +135,7 @@ define_obj_type!(
     /// A cell's or button's background.
     #[doc(alias = "UIBackgroundConfiguration")]
     pub BgCfg(ns::Id),
-    UI_BACKGROUND_CONFIGURATION
+    sym UIBackgroundConfiguration
 );
 
 impl BgCfg {
@@ -186,9 +186,4 @@ impl BgCfg {
 
     #[objc::msg_send(setCustomView:)]
     pub fn set_custom_view(&mut self, val: Option<&ui::View>);
-}
-
-unsafe extern "C" {
-    static UI_LIST_CONTENT_CONFIGURATION: &'static objc::Class<ListContentCfg>;
-    static UI_BACKGROUND_CONFIGURATION: &'static objc::Class<BgCfg>;
 }

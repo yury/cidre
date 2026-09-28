@@ -32,7 +32,7 @@ impl Desc {
     #[objc::init(init)]
     fn init(self) -> arc::R<Desc>;
 
-    define_cls!(MTL_HEAP_DESCRIPTOR);
+    define_cls!(sym MTLHeapDescriptor);
     define_mtl!(
         storage_mode,
         set_storage_mode,
@@ -168,10 +168,6 @@ impl Heap {
 
     #[objc::msg_send(type)]
     pub fn type_(&self) -> Type;
-}
-
-unsafe extern "C" {
-    static MTL_HEAP_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
 #[cfg(test)]

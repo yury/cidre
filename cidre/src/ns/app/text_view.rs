@@ -1,11 +1,7 @@
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, ns};
 
 define_obj_type!(
     #[doc(alias = "NSTextView")]
     pub TextView(ns::Text),
-    NS_TEXT_VIEW
+    sym NSTextView
 );
-
-unsafe extern "C" {
-    static NS_TEXT_VIEW: &'static objc::Class<TextView>;
-}

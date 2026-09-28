@@ -12,7 +12,7 @@ define_obj_type!(
     pub NdArray(ns::Id)
 );
 impl NdArray {
-    define_cls!(MPS_NDARRAY);
+    define_cls!(sym MPSNDArray);
 
     #[objc::msg_send(defaultAllocator)]
     pub fn default_allocator() -> arc::R<NdArrayAllocator>;
@@ -61,7 +61,7 @@ define_obj_type!(
 );
 
 impl NdArrayDesc {
-    define_cls!(MPS_NDARRAY_DESCRIPTOR);
+    define_cls!(sym MPSNDArrayDescriptor);
 
     #[objc::msg_send(dataType)]
     pub fn data_type(&self) -> mps::DType;
@@ -83,9 +83,4 @@ impl NdArrayDesc {
 
     #[objc::msg_send(sliceDimension:withSubrange:)]
     pub fn slice_dim_with_subrange(&mut self, dim_index: usize, sub_range: mps::DimensionSlice);
-}
-
-unsafe extern "C" {
-    static MPS_NDARRAY: &'static objc::Class<NdArray>;
-    static MPS_NDARRAY_DESCRIPTOR: &'static objc::Class<NdArrayDesc>;
 }

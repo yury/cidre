@@ -13,7 +13,7 @@ impl NearbyServiceBrowser {
         service_type: &ns::String,
     ) -> arc::R<NearbyServiceBrowser>;
 
-    define_cls!(MC_NEARBY_SERVICE_BROWSER);
+    define_cls!(sym MCNearbyServiceBrowser);
 
     pub fn with_peer<'ear>(
         peer: &mc::PeerId,
@@ -77,10 +77,6 @@ define_obj_type!(
 );
 
 impl Delegate for AnyDelegate {}
-
-unsafe extern "C" {
-    static MC_NEARBY_SERVICE_BROWSER: &'static objc::Class<NearbyServiceBrowser>;
-}
 
 #[cfg(test)]
 mod tests {

@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSTextField")]
     pub TextField(ns::Control),
-    NS_TEXT_FIELD
+    sym NSTextField
 );
 
 impl TextField {
@@ -173,10 +173,6 @@ define_obj_type!(
 );
 
 impl TextFieldDelegate for AnyTextFieldDelegate {}
-
-unsafe extern "C" {
-    static NS_TEXT_FIELD: &'static objc::Class<TextField>;
-}
 
 // #[cfg(test)]
 // mod tests {

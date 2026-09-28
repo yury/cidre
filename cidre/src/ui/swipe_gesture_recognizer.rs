@@ -15,7 +15,7 @@ impl SwipeGestureRecognizerDirection {
 define_obj_type!(
     #[doc(alias = "UISwipeGestureRecognizer")]
     pub SwipeGestureRecognizer(ui::GestureRecognizer),
-    UI_SWIPE_GESTURE_RECOGNIZER
+    sym UISwipeGestureRecognizer
 );
 
 impl SwipeGestureRecognizer {
@@ -46,8 +46,4 @@ impl SwipeGestureRecognizer {
 
     #[objc::msg_send(setDirection:)]
     pub fn set_direction(&mut self, val: SwipeGestureRecognizerDirection);
-}
-
-unsafe extern "C" {
-    static UI_SWIPE_GESTURE_RECOGNIZER: &'static objc::Class<SwipeGestureRecognizer>;
 }

@@ -1,4 +1,4 @@
-use crate::{api, arc, define_cls, define_obj_type, ns, objc};
+use crate::{api, arc, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "UIUpdateActionPhase")]
@@ -27,7 +27,7 @@ define_obj_type!(
 /// before the completion deadline.
 impl UpdateActionPhase {
     #[api::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
-    define_cls!(UI_UPDATE_ACTION_PHASE);
+    crate::define_cls!(UI_UPDATE_ACTION_PHASE);
 
     /// Phase that runs after UI update was scheduled and its timing information is know. This is a good place for things
     /// that only rely on UI update timing and don't need user input events. Running at this stage allows to utilize time

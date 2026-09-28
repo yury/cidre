@@ -79,6 +79,7 @@ macro_rules! trait_env {
             /// Runs `handler` whenever one of `traits` changes on this environment.
             #[cfg(feature = "blocks")]
             #[objc::available(ios = 17.0, tvos = 17.0)]
+            #[allow(unused_unsafe)]
             pub fn register_for_trait_changes(
                 &mut self,
                 traits: &[&objc::Class<ns::Id>],
@@ -88,7 +89,7 @@ macro_rules! trait_env {
                 let traits: &[&ns::Id] = unsafe { std::mem::transmute(traits) };
                 let traits: arc::R<ns::Array<objc::Class<ns::Id>>> =
                     unsafe { std::mem::transmute(ns::Array::<ns::Id>::from_slice(traits)) };
-                self.register_for_trait_changes_block(&traits, &mut handler)
+                unsafe { self.register_for_trait_changes_block(&traits, &mut handler) }
             }
 
             #[objc::msg_send(unregisterForTraitChanges:)]

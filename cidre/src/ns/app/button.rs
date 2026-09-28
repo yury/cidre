@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSButton")]
     pub Button(ns::Control),
-    NS_BUTTON
+    sym NSButton
 );
 
 impl Button {
@@ -210,10 +210,6 @@ impl Button {
 
     #[objc::msg_send(performKeyEquivalent:)]
     pub fn perform_key_equivalent(&mut self, key: &ns::Event) -> bool;
-}
-
-unsafe extern "C" {
-    static NS_BUTTON: &'static objc::Class<Button>;
 }
 
 // #[cfg(test)]

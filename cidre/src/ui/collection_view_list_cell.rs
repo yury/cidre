@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UICollectionViewListCell")]
     pub CollectionViewListCell(ui::CollectionViewCell),
-    UI_COLLECTION_VIEW_LIST_CELL
+    sym UICollectionViewListCell
 );
 
 impl CollectionViewListCell {
@@ -42,8 +42,4 @@ impl CollectionViewListCell {
     #[objc::msg_send(setAccessories:)]
     #[objc::available(ios = 14.0, tvos = 14.0)]
     pub fn set_accessories(&mut self, val: &ns::Array<ui::CellAccessory>);
-}
-
-unsafe extern "C" {
-    static UI_COLLECTION_VIEW_LIST_CELL: &'static objc::Class<CollectionViewListCell>;
 }

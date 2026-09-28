@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UIImage")]
     pub Image(ns::Id),
-    UI_IMAGE
+    sym UIImage
 );
 
 impl Image {
@@ -48,8 +48,4 @@ impl Image {
     pub fn with_data(data: &ns::Data) -> Option<arc::R<Self>> {
         Self::alloc().init_with_data(data)
     }
-}
-
-unsafe extern "C" {
-    static UI_IMAGE: &'static objc::Class<Image>;
 }

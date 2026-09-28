@@ -9,10 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-Class CI_IMAGE;
-Class CI_VECTOR;
-Class CI_CONTEXT;
-
 __attribute__((constructor))
 static void ci_initializer(void)
 {
@@ -20,9 +16,6 @@ static void ci_initializer(void)
     if (!initialized) {
         initialized = 1;
         
-        CI_IMAGE = [CIImage class];
-        CI_VECTOR = [CIVector class];
-        CI_CONTEXT = [CIContext class];
     }
 }
 

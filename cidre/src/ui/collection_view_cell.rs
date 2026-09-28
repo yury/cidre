@@ -15,7 +15,7 @@ pub enum CollectionViewCellDragState {
 }
 
 impl CollectionViewCell {
-    define_cls!(UI_COLLECTION_VIEW_CELL);
+    define_cls!(sym UICollectionViewCell);
     /// The object must conform to UIContentConfiguration (for example ListContentCfg).
     #[objc::msg_send(setContentConfiguration:)]
     #[objc::available(ios = 14.0)]
@@ -58,8 +58,4 @@ impl CollectionViewCell {
 
     #[objc::msg_send(dragStateDidChange:)]
     pub fn drag_state_did_change(&self, drag_state: CollectionViewCellDragState);
-}
-
-unsafe extern "C" {
-    static UI_COLLECTION_VIEW_CELL: &'static objc::Class<CollectionViewCell>;
 }

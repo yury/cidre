@@ -18,7 +18,7 @@ impl GestureRecognizerState {
 define_obj_type!(
     #[doc(alias = "NSGestureRecognizer")]
     pub GestureRecognizer(ns::Id),
-    NS_GESTURE_RECOGNIZER
+    sym NSGestureRecognizer
 );
 
 impl GestureRecognizer {
@@ -108,7 +108,7 @@ impl GestureRecognizer {
 define_obj_type!(
     #[doc(alias = "NSClickGestureRecognizer")]
     pub ClickGestureRecognizer(GestureRecognizer),
-    NS_CLICK_GESTURE_RECOGNIZER
+    sym NSClickGestureRecognizer
 );
 
 impl ClickGestureRecognizer {
@@ -133,7 +133,7 @@ impl ClickGestureRecognizer {
 define_obj_type!(
     #[doc(alias = "NSPanGestureRecognizer")]
     pub PanGestureRecognizer(GestureRecognizer),
-    NS_PAN_GESTURE_RECOGNIZER
+    sym NSPanGestureRecognizer
 );
 
 impl PanGestureRecognizer {
@@ -163,7 +163,7 @@ impl PanGestureRecognizer {
 define_obj_type!(
     #[doc(alias = "NSMagnificationGestureRecognizer")]
     pub MagnificationGestureRecognizer(GestureRecognizer),
-    NS_MAGNIFICATION_GESTURE_RECOGNIZER
+    sym NSMagnificationGestureRecognizer
 );
 
 impl MagnificationGestureRecognizer {
@@ -189,7 +189,7 @@ impl MagnificationGestureRecognizer {
 define_obj_type!(
     #[doc(alias = "NSRotationGestureRecognizer")]
     pub RotationGestureRecognizer(GestureRecognizer),
-    NS_ROTATION_GESTURE_RECOGNIZER
+    sym NSRotationGestureRecognizer
 );
 
 impl RotationGestureRecognizer {
@@ -260,15 +260,6 @@ define_obj_type!(
 );
 
 impl GestureRecognizerDelegate for AnyGestureRecognizerDelegate {}
-
-unsafe extern "C" {
-    static NS_GESTURE_RECOGNIZER: &'static objc::Class<GestureRecognizer>;
-    static NS_CLICK_GESTURE_RECOGNIZER: &'static objc::Class<ClickGestureRecognizer>;
-    static NS_PAN_GESTURE_RECOGNIZER: &'static objc::Class<PanGestureRecognizer>;
-    static NS_MAGNIFICATION_GESTURE_RECOGNIZER:
-        &'static objc::Class<MagnificationGestureRecognizer>;
-    static NS_ROTATION_GESTURE_RECOGNIZER: &'static objc::Class<RotationGestureRecognizer>;
-}
 
 #[cfg(test)]
 mod tests {

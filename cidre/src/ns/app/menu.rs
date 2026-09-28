@@ -11,7 +11,7 @@ pub trait MenuItemValidation: objc::Obj {
 define_obj_type!(
     #[doc(alias = "NSMenu")]
     pub Menu(ns::Id),
-    NS_MENU
+    sym NSMenu
 );
 
 impl Menu {
@@ -84,10 +84,6 @@ impl Menu {
 
     #[objc::msg_send(supermenu)]
     pub fn supermenu(&self) -> Option<arc::R<ns::Menu>>;
-}
-
-unsafe extern "C" {
-    static NS_MENU: &'static objc::Class<Menu>;
 }
 
 #[cfg(test)]

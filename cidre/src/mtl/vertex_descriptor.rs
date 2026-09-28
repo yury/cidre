@@ -244,7 +244,7 @@ pub enum VertexStepFn {
 
 define_obj_type!(
     pub VertexBufLayoutDesc(ns::Id),
-    MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR
+    sym MTLVertexBufferLayoutDescriptor
 );
 
 impl VertexBufLayoutDesc {
@@ -291,7 +291,7 @@ impl VertexBufLayoutDescArray {
 define_obj_type!(
    #[doc(alias = "MTLVertexAttributeDescriptor")]
    pub VertexAttrDesc(ns::Id),
-   MTL_VERTEX_ATTRIBUTE_DESCRIPTOR
+   sym MTLVertexAttributeDescriptor
 );
 
 impl VertexAttrDesc {
@@ -330,7 +330,7 @@ impl VertexAttrDescArray {
 define_obj_type!(
     #[doc(alias = "MTLVertexDescriptor")]
     pub Desc(ns::Id),
-    MTL_VERTEX_DESCRIPTOR
+    sym MTLVertexDescriptor
 );
 
 impl Desc {
@@ -339,12 +339,6 @@ impl Desc {
 
     #[objc::msg_send(attributes)]
     pub fn attrs(&self) -> arc::R<VertexAttrDescArray>;
-}
-
-unsafe extern "C" {
-    static MTL_VERTEX_DESCRIPTOR: &'static objc::Class<Desc>;
-    static MTL_VERTEX_BUFFER_LAYOUT_DESCRIPTOR: &'static objc::Class<VertexBufLayoutDesc>;
-    static MTL_VERTEX_ATTRIBUTE_DESCRIPTOR: &'static objc::Class<VertexAttrDesc>;
 }
 
 #[cfg(test)]

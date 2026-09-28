@@ -6,7 +6,7 @@ define_obj_type!(
 );
 
 impl NotificationRequest {
-    define_cls!(UN_NOTIFICATION_REQUEST);
+    define_cls!(sym UNNotificationRequest);
 
     #[objc::msg_send(identifier)]
     pub fn id(&self) -> arc::R<ns::String>;
@@ -20,8 +20,4 @@ impl NotificationRequest {
         content: &un::NotificationContent,
         trigger: Option<&un::NotificationTrigger>,
     ) -> arc::R<Self>;
-}
-
-unsafe extern "C" {
-    static UN_NOTIFICATION_REQUEST: &'static objc::Class<NotificationRequest>;
 }

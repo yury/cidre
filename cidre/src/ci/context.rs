@@ -35,7 +35,7 @@ define_obj_type!(
     /// An evaluation context for rendering image processing results and performing image analysis.
     #[doc(alias = "CIContext")]
     pub Context(ns::Id),
-    CI_CONTEXT
+    sym CIContext
 );
 
 impl Context {
@@ -94,10 +94,6 @@ impl Context {
         device: &crate::mtl::Device,
         opts: Option<&ns::Dictionary<ContextOpt, ns::Id>>,
     ) -> arc::R<Self>;
-}
-
-unsafe extern "C" {
-    static CI_CONTEXT: &'static objc::Class<Context>;
 }
 
 unsafe extern "C" {

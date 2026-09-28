@@ -53,7 +53,7 @@ define_obj_type!(
 );
 
 impl PlaneAnchor {
-    define_cls!(AR_PLANE_ANCHOR);
+    define_cls!(sym ARPlaneAnchor);
 
     /// Whether plane classification is supported on this device.
     #[objc::msg_send(isClassificationSupported)]
@@ -81,8 +81,4 @@ impl PlaneAnchor {
     #[objc::msg_send(classification)]
     #[objc::available(ios = 12.0)]
     pub fn classification(&self) -> PlaneClassification;
-}
-
-unsafe extern "C" {
-    static AR_PLANE_ANCHOR: &'static objc::Class<PlaneAnchor>;
 }

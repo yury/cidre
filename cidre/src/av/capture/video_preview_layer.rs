@@ -15,7 +15,7 @@ impl VideoPreviewLayer {
         session: &av::CaptureSession,
     ) -> arc::R<VideoPreviewLayer>;
 
-    define_cls!(AV_CAPTURE_VIDEO_PREVIEW_LAYER);
+    define_cls!(sym AVCaptureVideoPreviewLayer);
 
     pub fn with_session(session: &av::CaptureSession) -> arc::R<Self> {
         Self::alloc().init_with_session(session)
@@ -64,8 +64,4 @@ impl VideoPreviewLayer {
         &self,
         obj: &av::MetadataObj,
     ) -> Option<arc::R<av::MetadataObj>>;
-}
-
-unsafe extern "C" {
-    static AV_CAPTURE_VIDEO_PREVIEW_LAYER: &'static objc::Class<VideoPreviewLayer>;
 }

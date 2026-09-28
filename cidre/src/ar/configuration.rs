@@ -69,7 +69,7 @@ define_obj_type!(
 );
 
 impl Cfg {
-    define_cls!(AR_CONFIGURATION);
+    define_cls!(sym ARConfiguration);
 
     /// Returns whether this configuration type is supported on the current device.
     #[objc::msg_send(isSupported)]
@@ -171,7 +171,7 @@ define_obj_type!(
     #[doc(alias = "ARWorldTrackingConfiguration")]
     /// World-tracking configuration (6DoF tracking).
     pub WorldTrackingCfg(Cfg),
-    AR_WORLD_TRACKING_CONFIGURATION
+    sym ARWorldTrackingConfiguration
 );
 
 impl WorldTrackingCfg {
@@ -274,9 +274,4 @@ impl WorldTrackingCfg {
     #[objc::msg_send(setSceneReconstruction:)]
     #[objc::available(ios = 14.0)]
     pub fn set_scene_reconstruction(&mut self, val: SceneReconstruction);
-}
-
-unsafe extern "C" {
-    static AR_CONFIGURATION: &'static objc::Class<Cfg>;
-    static AR_WORLD_TRACKING_CONFIGURATION: &'static objc::Class<WorldTrackingCfg>;
 }

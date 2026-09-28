@@ -12,7 +12,7 @@ pub enum CaptureDst {
     GpuTraceDocument,
 }
 
-define_obj_type!(pub CaptureDesc(ns::Id), MTL_CAPTURE_DESCRIPTOR);
+define_obj_type!(pub CaptureDesc(ns::Id), sym MTLCaptureDescriptor);
 
 impl CaptureDesc {
     /// The object that is captured.
@@ -48,7 +48,7 @@ impl CaptureDesc {
 define_obj_type!(pub CaptureManager(ns::Id));
 
 impl CaptureManager {
-    define_cls!(MTL_CAPTURE_MANAGER);
+    define_cls!(sym MTLCaptureManager);
 }
 
 // #[api::available(macos = 10.15, ios = 13.0)]
@@ -91,11 +91,6 @@ impl CaptureManager {
 
     #[objc::msg_send(defaultCaptureScope)]
     pub fn default_capture_scope(&self) -> Option<arc::R<mtl::CaptureScope>>;
-}
-
-unsafe extern "C" {
-    static MTL_CAPTURE_DESCRIPTOR: &'static objc::Class<CaptureDesc>;
-    static MTL_CAPTURE_MANAGER: &'static objc::Class<CaptureManager>;
 }
 
 #[cfg(test)]

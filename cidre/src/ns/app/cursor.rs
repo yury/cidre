@@ -4,7 +4,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSCursor")]
     pub Cursor(ns::Id),
-    NS_CURSOR
+    sym NSCursor
 );
 impl Cursor {
     #[objc::msg_send(arrowCursor)]
@@ -15,8 +15,4 @@ impl Cursor {
     pub fn closed_hand() -> arc::R<Self>;
     #[objc::msg_send(set)]
     pub fn set(&self);
-}
-
-unsafe extern "C" {
-    static NS_CURSOR: &'static objc::Class<Cursor>;
 }

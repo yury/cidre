@@ -31,7 +31,7 @@ impl Coordinate2d {
 define_obj_type!(
     #[doc(alias = "CLLocation")]
     pub Location(ns::Id),
-    CL_LOCATION
+    sym CLLocation
 );
 
 unsafe impl Send for Location {}
@@ -88,10 +88,6 @@ impl Location {
 
     #[objc::msg_send(distanceFromLocation:)]
     pub fn distance_from_location(&self, location: &cl::Location) -> cl::LocationDistance;
-}
-
-unsafe extern "C" {
-    static CL_LOCATION: &'static objc::Class<Location>;
 }
 
 unsafe extern "C" {

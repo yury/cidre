@@ -21,7 +21,7 @@ impl FontTraitMask {
 
 define_obj_type!(
     pub FontManager(ns::Id),
-    NS_FONT_MANAGER
+    sym NSFontManager
 );
 
 impl FontManager {
@@ -54,10 +54,6 @@ impl FontManager {
 
     #[objc::msg_send(availableFontFamilies)]
     pub fn available_font_families(&self) -> arc::R<ns::Array<ns::String>>;
-}
-
-unsafe extern "C" {
-    static NS_FONT_MANAGER: &'static objc::Class<FontManager>;
 }
 
 #[cfg(test)]

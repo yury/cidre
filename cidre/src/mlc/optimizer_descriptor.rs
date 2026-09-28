@@ -2,7 +2,7 @@ use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
 define_obj_type!(pub OptimizerDesc(ns::Id));
 impl OptimizerDesc {
-    define_cls!(MLC_OPTIMIZER_DESCRIPTOR);
+    define_cls!(sym MLCOptimizerDescriptor);
 
     #[objc::msg_send(learningRate)]
     pub fn learning_rate(&self) -> f32;
@@ -74,8 +74,4 @@ impl OptimizerDesc {
         regularization_type: mlc::RegularizationType,
         regularization_scale: f32,
     ) -> arc::R<Self>;
-}
-
-unsafe extern "C" {
-    static MLC_OPTIMIZER_DESCRIPTOR: &'static objc::Class<OptimizerDesc>;
 }

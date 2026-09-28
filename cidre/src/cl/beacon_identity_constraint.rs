@@ -24,25 +24,12 @@ impl BeaconIdentityConstraint {
         minor: cl::BeaconMinorValue,
     ) -> arc::R<BeaconIdentityConstraint>;
 
-    #[objc::available(macos = 10.15, ios = 13.0)]
-    crate::define_cls!(CL_BEACON_IDENTITY_CONSTRAINT);
+    crate::define_cls!(sym CLBeaconIdentityConstraint);
 
     #[cfg(any(target_os = "macos", target_os = "ios"))]
     #[inline]
     fn alloc_if_available() -> Option<arc::A<Self>> {
-        #[cfg(any(
-            all(target_os = "macos", feature = "macos_10_15"),
-            all(target_os = "ios", feature = "ios_13_0")
-        ))]
-        {
-            Some(Self::alloc())
-        }
-
-        #[cfg(not(any(
-            all(target_os = "macos", feature = "macos_10_15"),
-            all(target_os = "ios", feature = "ios_13_0")
-        )))]
-        Self::alloc()
+        Some(Self::alloc())
     }
 
     #[cfg(any(target_os = "macos", target_os = "ios"))]
@@ -66,9 +53,4 @@ impl BeaconIdentityConstraint {
     ) -> Option<arc::R<Self>> {
         Self::alloc_if_available().map(|obj| obj.init_with_uuid_major_minor(uuid, major, minor))
     }
-}
-
-#[cfg(any(target_os = "macos", target_os = "ios"))]
-unsafe extern "C" {
-    static CL_BEACON_IDENTITY_CONSTRAINT: &'static objc::Class<BeaconIdentityConstraint>;
 }

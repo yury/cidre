@@ -30,7 +30,7 @@ define_obj_type!(
     /// presented; a loading UI takes its place until then.
     #[doc(alias = "UIDeferredMenuElement")]
     pub DeferredMenuElement(ui::MenuElement),
-    UI_DEFERRED_MENU_ELEMENT
+    sym UIDeferredMenuElement
 );
 
 impl DeferredMenuElement {
@@ -97,6 +97,5 @@ impl DeferredMenuElementProvider {
 }
 
 unsafe extern "C" {
-    static UI_DEFERRED_MENU_ELEMENT: &'static objc::Class<DeferredMenuElement>;
     static UI_DEFERRED_MENU_ELEMENT_PROVIDER: &'static objc::Class<DeferredMenuElementProvider>;
 }

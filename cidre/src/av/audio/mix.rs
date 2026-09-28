@@ -11,7 +11,7 @@ define_obj_type!(
     /// Allows custom audio processing to be performed on audio tracks during playback or other operations.
     #[doc(alias = "AVAudioMix")]
     pub Mix(ns::Id),
-    AV_AUDIO_MIX
+    sym AVAudioMix
 );
 
 impl ns::Copying for Mix {}
@@ -33,7 +33,7 @@ impl Mix {
 define_obj_type!(
     #[doc(alias = "AVMutableAudioMix")]
     pub MixMut(Mix),
-    AV_MUTABLE_AUDIO_MIX
+    sym AVMutableAudioMix
 );
 
 impl MixMut {
@@ -47,7 +47,7 @@ impl MixMut {
 define_obj_type!(
     #[doc(alias = "AVAudioMixInputParameters")]
     pub InputParams(ns::Id),
-    AV_AUDIO_MIX_INPUT_PARAMETERS
+    sym AVAudioMixInputParameters
 );
 
 impl ns::Copying for InputParams {}
@@ -86,7 +86,7 @@ impl InputParams {
 define_obj_type!(
     #[doc(alias = "AVMutableAudioMixInputParameters")]
     pub InputParamsMut(InputParams),
-    AV_MUTABLE_AUDIO_MIX_INPUT_PARAMETERS
+    sym AVMutableAudioMixInputParameters
 );
 
 impl InputParamsMut {
@@ -128,13 +128,6 @@ impl InputParamsMut {
     pub fn set_volume_at_time<'ear>(&mut self, volume: f32, time: cm::Time) -> ns::ExResult<'ear> {
         unsafe { ns::try_catch(|| self.set_volume_at_time_throws(volume, time)) }
     }
-}
-
-unsafe extern "C" {
-    static AV_AUDIO_MIX: &'static objc::Class<Mix>;
-    static AV_MUTABLE_AUDIO_MIX: &'static objc::Class<MixMut>;
-    static AV_AUDIO_MIX_INPUT_PARAMETERS: &'static objc::Class<InputParams>;
-    static AV_MUTABLE_AUDIO_MIX_INPUT_PARAMETERS: &'static objc::Class<InputParamsMut>;
 }
 
 #[cfg(test)]

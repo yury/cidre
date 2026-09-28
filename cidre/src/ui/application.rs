@@ -66,7 +66,7 @@ pub trait AppDelegate {
 
 define_obj_type!(
     pub App(ui::Responder),
-    UI_APPLICATION
+    sym UIApplication
 );
 
 define_obj_type!(
@@ -188,10 +188,6 @@ impl App {
     /// Requests that any system UI representing a scene be updated due to background updates or any other relevant model/state update.
     #[objc::msg_send(requestSceneSessionRefresh:)]
     pub fn request_scene_session_refresh(&self, session: &ui::SceneSession);
-}
-
-unsafe extern "C" {
-    static UI_APPLICATION: &'static objc::Class<App>;
 }
 
 #[api::weak]

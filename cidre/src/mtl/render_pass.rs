@@ -167,7 +167,7 @@ impl StencilAttachDesc {
 
 define_obj_type!(
     #[doc(alias = "MTLRenderPassDescriptor")]
-    pub Desc(ns::Id), MTL_RENDER_PASS_DESCRIPTOR
+    pub Desc(ns::Id), sym MTLRenderPassDescriptor
 );
 
 impl Desc {
@@ -310,10 +310,6 @@ impl AttachDesc {
 
     #[objc::msg_send(setStoreActionOptions:)]
     pub fn set_store_action_options(&mut self, val: StoreActionOpts);
-}
-
-unsafe extern "C" {
-    static MTL_RENDER_PASS_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
 define_obj_type!(

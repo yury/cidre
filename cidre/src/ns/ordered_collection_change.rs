@@ -37,7 +37,7 @@ impl<T: objc::Obj> OrderedCollectionChange<T> {
         associated_index: ns::UInteger,
     ) -> arc::R<OrderedCollectionChange<T>>;
 
-    define_cls!(NS_ORDERED_COLLECTION_CHANGE);
+    define_cls!(sym NSOrderedCollectionChange);
 
     #[inline]
     pub fn new(
@@ -96,10 +96,6 @@ impl<T: objc::Obj> OrderedCollectionChange<T> {
 pub enum CollectionChangeType {
     Insert = 0,
     Remove = 1,
-}
-
-unsafe extern "C" {
-    static NS_ORDERED_COLLECTION_CHANGE: &'static objc::Class<OrderedCollectionChange<ns::Id>>;
 }
 
 #[cfg(test)]

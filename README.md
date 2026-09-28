@@ -55,6 +55,10 @@ should check if object responses to that selector before call it.
 
 Default features: `macos_15_0`, `ios_18_0`, `tvos_18_0`, `maccatalyst_18_0`, `watchos_11_0`, `visionos_2_0`;
 
+Minimum deployment targets are macOS 12.0, iOS 15.0 and Mac Catalyst 15.0 starting with v0.30.0;
+APIs available at or below them need no feature flag. If you need to target older macOS, iOS or
+Mac Catalyst versions, use v0.29.0.
+
 ### Shortcuts
 
 - address -> addr

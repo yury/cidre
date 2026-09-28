@@ -5,7 +5,7 @@ use crate::{arc, define_obj_type, mps, mps::graph, mtl, ns, objc};
 define_obj_type!(
     #[doc(alias = "MPSGraphTensorData")]
     pub TensorData(ns::Id),
-    MPS_GRAPH_TENSOR_DATA
+    sym MPSGraphTensorData
 );
 
 impl TensorData {
@@ -89,6 +89,4 @@ impl TensorData {
 }
 
 #[link(name = "mpsg", kind = "static")]
-unsafe extern "C" {
-    static MPS_GRAPH_TENSOR_DATA: &'static objc::Class<TensorData>;
-}
+unsafe extern "C" {}

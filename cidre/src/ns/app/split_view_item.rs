@@ -34,7 +34,7 @@ pub enum SplitViewItemCollapseBehavior {
 define_obj_type!(
     #[doc(alias = "NSSplitViewItem")]
     pub SplitViewItem(ns::Id),
-    NS_SPLIT_VIEW_ITEM
+    sym NSSplitViewItem
 );
 
 impl SplitViewItem {
@@ -140,7 +140,3 @@ impl SplitViewItem {
 }
 
 impl ns::AnimatablePropContainer for SplitViewItem {}
-
-unsafe extern "C" {
-    static NS_SPLIT_VIEW_ITEM: &'static objc::Class<SplitViewItem>;
-}

@@ -7,7 +7,7 @@ define_obj_type!(
 );
 
 impl LightEstimate {
-    define_cls!(AR_LIGHT_ESTIMATE);
+    define_cls!(sym ARLightEstimate);
 
     /// Ambient intensity of the scene lighting.
     ///
@@ -27,7 +27,7 @@ define_obj_type!(
 );
 
 impl DirectionalLightEstimate {
-    define_cls!(AR_DIRECTIONAL_LIGHT_ESTIMATE);
+    define_cls!(sym ARDirectionalLightEstimate);
 
     /// Second-degree spherical harmonics coefficients.
     ///
@@ -62,9 +62,4 @@ impl DirectionalLightEstimate {
     /// Intensity of light in the primary direction.
     #[objc::msg_send(primaryLightIntensity)]
     pub fn primary_light_intensity(&self) -> cg::Float;
-}
-
-unsafe extern "C" {
-    static AR_LIGHT_ESTIMATE: &'static objc::Class<LightEstimate>;
-    static AR_DIRECTIONAL_LIGHT_ESTIMATE: &'static objc::Class<DirectionalLightEstimate>;
 }

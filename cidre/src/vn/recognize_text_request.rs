@@ -9,7 +9,7 @@ pub enum RecognitionLevel {
 
 define_obj_type!(
     pub RecognizeTextRequest(vn::ImageBasedRequest),
-    VN_RECOGNIZE_TEXT_REQUEST
+    sym VNRecognizeTextRequest
 );
 
 impl vn::RequestProgressProviding for RecognizeTextRequest {}
@@ -112,10 +112,6 @@ impl RecognizeTextRequest {
 
     #[objc::msg_send(setMinimumTextHeight:)]
     pub fn set_min_text_height(&mut self, val: f32);
-}
-
-unsafe extern "C" {
-    static VN_RECOGNIZE_TEXT_REQUEST: &'static objc::Class<RecognizeTextRequest>;
 }
 
 #[cfg(test)]

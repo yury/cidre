@@ -37,7 +37,7 @@ pub enum ToolbarDisplayMode {
 define_obj_type!(
     #[doc(alias = "NSToolbar")]
     pub Toolbar(ns::Id),
-    NS_TOOLBAR
+    sym NSToolbar
 );
 
 impl Toolbar {
@@ -205,7 +205,3 @@ define_obj_type!(
 );
 
 impl ToolbarDelegate for AnyToolbarDelegate {}
-
-unsafe extern "C" {
-    static NS_TOOLBAR: &'static objc::Class<Toolbar>;
-}

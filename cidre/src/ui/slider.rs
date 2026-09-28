@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, objc, ui};
 define_obj_type!(
     #[doc(alias = "UISlider")]
     pub Slider(ui::Control),
-    UI_SLIDER
+    sym UISlider
 );
 
 impl Slider {
@@ -70,8 +70,4 @@ impl Slider {
 
     #[objc::msg_send(setThumbTintColor:)]
     pub fn set_thumb_tint_color(&mut self, val: Option<&ui::Color>);
-}
-
-unsafe extern "C" {
-    static UI_SLIDER: &'static objc::Class<Slider>;
 }

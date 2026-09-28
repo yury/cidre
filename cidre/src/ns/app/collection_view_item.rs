@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSCollectionViewItem")]
     pub CollectionViewItem(ns::ViewController),
-    NS_COLLECTION_VIEW_ITEM
+    sym NSCollectionViewItem
 );
 
 impl CollectionViewItem {
@@ -36,8 +36,4 @@ impl CollectionViewItem {
 
     #[objc::msg_send(draggingImageComponents)]
     pub fn dragging_image_components(&self) -> arc::R<ns::Array<ns::Id>>;
-}
-
-unsafe extern "C" {
-    static NS_COLLECTION_VIEW_ITEM: &'static objc::Class<CollectionViewItem>;
 }

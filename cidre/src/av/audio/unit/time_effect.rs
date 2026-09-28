@@ -16,7 +16,7 @@ impl TimeEffect {
         description: at::audio::ComponentDesc,
     ) -> arc::R<TimeEffect>;
 
-    define_cls!(AV_AUDIO_UNIT_TIME_EFFECT);
+    define_cls!(sym AVAudioUnitTimeEffect);
 
     #[objc::msg_send(bypass)]
     pub fn bypass(&self) -> bool;
@@ -27,8 +27,4 @@ impl TimeEffect {
     pub fn with_component_desc(description: at::audio::ComponentDesc) -> arc::R<Self> {
         Self::alloc().init_with_audio_component_desc(description)
     }
-}
-
-unsafe extern "C" {
-    static AV_AUDIO_UNIT_TIME_EFFECT: &'static objc::Class<TimeEffect>;
 }

@@ -1,6 +1,6 @@
 use crate::{arc, define_obj_type, mlc, mtl, ns, objc};
 
-define_obj_type!(pub Device(ns::Id), MLC_DEVICE);
+define_obj_type!(pub Device(ns::Id), sym MLCDevice);
 impl Device {
     #[objc::msg_send(aneDevice)]
     pub fn ane() -> Option<arc::R<Device>>;
@@ -31,10 +31,6 @@ impl Device {
 
     #[objc::msg_send(actualDeviceType)]
     pub fn actual_device_type(&self) -> mlc::DeviceType;
-}
-
-unsafe extern "C" {
-    static MLC_DEVICE: &'static objc::Class<Device>;
 }
 
 #[cfg(test)]

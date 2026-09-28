@@ -9,7 +9,7 @@ impl Color {
     #[objc::init(initWithRed:green:blue:)]
     pub fn init_with_rgb(self, r: f32, g: f32, b: f32) -> arc::R<Color>;
 
-    define_cls!(GC_COLOR);
+    define_cls!(sym GCColor);
 
     pub fn with_rgb(r: f32, g: f32, b: f32) -> arc::R<Self> {
         Self::alloc().init_with_rgb(r, g, b)
@@ -23,10 +23,6 @@ impl Color {
 
     #[objc::msg_send(blue)]
     pub fn b(&self) -> f32;
-}
-
-unsafe extern "C" {
-    static GC_COLOR: &'static objc::Class<Color>;
 }
 
 #[cfg(test)]

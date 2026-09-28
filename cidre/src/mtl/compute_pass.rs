@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, mtl, ns, objc};
 define_obj_type!(
     #[doc(alias = "MTLComputePassDescriptor")]
     pub Desc(ns::Id),
-    MTL_COMPUTE_PASS_DESCRIPTOR
+    sym MTLComputePassDescriptor
 );
 
 impl Desc {
@@ -15,10 +15,6 @@ impl Desc {
 
     #[objc::msg_send(sampleBufferAttachments)]
     pub fn sample_buf_attaches(&self) -> arc::R<SampleBufAttachDescArray>;
-}
-
-unsafe extern "C" {
-    static MTL_COMPUTE_PASS_DESCRIPTOR: &'static objc::Class<Desc>;
 }
 
 define_obj_type!(

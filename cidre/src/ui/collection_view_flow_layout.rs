@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, objc, ui};
 define_obj_type!(
     #[doc(alias = "UICollectionViewFlowLayout")]
     pub CollectionViewFlowLayout(ui::CollectionViewLayout),
-    UI_COLLECTION_VIEW_FLOW_LAYOUT
+    sym UICollectionViewFlowLayout
 );
 
 impl CollectionViewFlowLayout {
@@ -42,8 +42,4 @@ impl CollectionViewFlowLayout {
 
     #[objc::msg_send(setSectionInset:)]
     pub fn set_section_inset(&mut self, val: ui::EdgeInsets);
-}
-
-unsafe extern "C" {
-    static UI_COLLECTION_VIEW_FLOW_LAYOUT: &'static objc::Class<CollectionViewFlowLayout>;
 }

@@ -43,7 +43,7 @@ impl MediaTimingFn {
         c2y: f32,
     ) -> arc::R<MediaTimingFn>;
 
-    define_cls!(CA_MEDIA_TIMING_FUNCTION);
+    define_cls!(sym CAMediaTimingFunction);
 
     #[objc::msg_send(functionWithName:)]
     pub fn with_name(name: &Name) -> arc::R<Self>;
@@ -60,10 +60,6 @@ unsafe extern "C" {
     static kCAMediaTimingFunctionEaseOut: &'static Name;
     static kCAMediaTimingFunctionEaseInEaseOut: &'static Name;
     static kCAMediaTimingFunctionDefault: &'static Name;
-}
-
-unsafe extern "C" {
-    static CA_MEDIA_TIMING_FUNCTION: &'static objc::Class<MediaTimingFn>;
 }
 
 #[cfg(test)]

@@ -2,7 +2,7 @@ use crate::{arc, define_obj_type, ns, objc, vn};
 
 define_obj_type!(
     pub DetectFaceCaptureQualityRequest(vn::ImageBasedRequest),
-    VN_DETECT_FACE_CAPTURE_QUALITY_REQUEST
+    sym VNDetectFaceCaptureQualityRequest
 );
 
 impl DetectFaceCaptureQualityRequest {
@@ -11,11 +11,6 @@ impl DetectFaceCaptureQualityRequest {
 
     #[objc::msg_send(results)]
     pub fn results(&self) -> Option<arc::R<ns::Array<vn::FaceObservation>>>;
-}
-
-unsafe extern "C" {
-    static VN_DETECT_FACE_CAPTURE_QUALITY_REQUEST:
-        &'static objc::Class<DetectFaceCaptureQualityRequest>;
 }
 
 #[cfg(test)]

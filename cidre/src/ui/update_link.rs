@@ -1,4 +1,4 @@
-use crate::{api, arc, ca, define_cls, define_obj_type, ns, objc, ui};
+use crate::{api, arc, ca, define_obj_type, ns, objc, ui};
 
 #[cfg(feature = "blocks")]
 use crate::blocks;
@@ -11,7 +11,7 @@ define_obj_type!(
 /// Allows to formally participate in UI updates and influence UI update behavior.
 impl UpdateLink {
     #[api::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
-    define_cls!(UI_UPDATE_LINK);
+    crate::define_cls!(UI_UPDATE_LINK);
 
     #[objc::msg_send(updateLinkForWindowScene:)]
     #[api::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
@@ -143,12 +143,13 @@ impl UpdateLink {
     /// Adds action to `ui::UpdateActionPhase.before_ca_display_link_dispatch` phase
     #[cfg(feature = "blocks")]
     #[api::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
+    #[allow(unused_unsafe)]
     pub fn with_window_scene_handler(
         window_scene: &ui::WindowScene,
         handler: impl FnMut(&mut Self, &ui::UpdateInfo) + 'static,
     ) -> arc::R<Self> {
         let mut handler = blocks::EscBlock::new2(handler);
-        Self::with_window_scene_handler_block(window_scene, &mut handler)
+        unsafe { Self::with_window_scene_handler_block(window_scene, &mut handler) }
     }
 
     /// Adds action to `ui::UpdateActionPhase.before_ca_display_link_dispatch` phase
@@ -163,12 +164,13 @@ impl UpdateLink {
     /// Adds action to `ui::UpdateActionPhase.before_ca_display_link_dispatch` phase
     #[cfg(feature = "blocks")]
     #[api::available(ios = 18.0, tvos = 18.0, visionos = 2.0)]
+    #[allow(unused_unsafe)]
     pub fn with_view_handler(
         view: &ui::View,
         handler: impl FnMut(&mut Self, &ui::UpdateInfo) + 'static,
     ) -> arc::R<Self> {
         let mut handler = blocks::EscBlock::new2(handler);
-        Self::with_view_handler_block(view, &mut handler)
+        unsafe { Self::with_view_handler_block(view, &mut handler) }
     }
 
     /// Adds action to `ui::UpdateActionPhase.before_ca_display_link_dispatch` phase

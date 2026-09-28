@@ -3,7 +3,7 @@ use crate::{arc, av, ca, cg, cv, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "AVPlayerLayer")]
     pub PlayerLayer(ca::Layer),
-    AV_PLAYER_LAYER
+    sym AVPlayerLayer
 );
 
 impl PlayerLayer {
@@ -40,10 +40,6 @@ impl PlayerLayer {
     /// Returns the pixel buffer that the player layer currently displays.
     #[objc::msg_send(copyDisplayedPixelBuffer)]
     pub fn displayed_pixel_buf(&self) -> Option<arc::Retained<cv::PixelBuf>>;
-}
-
-unsafe extern "C" {
-    static AV_PLAYER_LAYER: &'static objc::Class<PlayerLayer>;
 }
 
 #[cfg(test)]

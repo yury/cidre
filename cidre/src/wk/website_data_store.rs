@@ -6,7 +6,7 @@ define_obj_type!(
 );
 
 impl WebsiteDataStore {
-    define_cls!(WK_WEBSITE_DATA_STORE);
+    define_cls!(sym WKWebsiteDataStore);
 
     #[objc::msg_send(defaultDataStore)]
     pub fn default() -> arc::R<Self>;
@@ -34,8 +34,4 @@ impl WebsiteDataStore {
     pub fn with_id<'ear>(id: &ns::Uuid) -> ns::ExResult<'ear, arc::R<Self>> {
         ns::try_catch(|| unsafe { Self::with_id_throws(id) })
     }
-}
-
-unsafe extern "C" {
-    static WK_WEBSITE_DATA_STORE: &'static objc::Class<WebsiteDataStore>;
 }

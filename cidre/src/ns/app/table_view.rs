@@ -125,7 +125,7 @@ pub type TableViewAutosaveName = ns::String;
 define_obj_type!(
     #[doc(alias = "NSTableView")]
     pub TableView(ns::Control),
-    NS_TABLE_VIEW
+    sym NSTableView
 );
 
 impl TableView {
@@ -973,10 +973,6 @@ pub mod notifications {
         static NSTableViewColumnDidResizeNotification: &'static ns::NotificationName;
         static NSTableViewSelectionIsChangingNotification: &'static ns::NotificationName;
     }
-}
-
-unsafe extern "C" {
-    static NS_TABLE_VIEW: &'static objc::Class<TableView>;
 }
 
 #[api::weak]

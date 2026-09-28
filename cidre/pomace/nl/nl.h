@@ -9,10 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-Class NL_LANGUAGE_RECOGNIZER;
-Class NL_EMBEDDING;
-
-
 __attribute__((constructor))
 static void nl_initializer(void)
 {
@@ -20,12 +16,8 @@ static void nl_initializer(void)
     if (!initialized) {
         initialized = 1;
         
-        NL_LANGUAGE_RECOGNIZER = [NLLanguageRecognizer class];
-        NL_EMBEDDING = [NLEmbedding class];
     }
 }
-
-
 
 NS_ASSUME_NONNULL_END
 

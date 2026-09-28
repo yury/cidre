@@ -3,7 +3,7 @@ use crate::{arc, cg, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSTitlebarAccessoryViewController")]
     pub TitlebarAccessoryViewController(ns::ViewController),
-    NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER
+    sym NSTitlebarAccessoryViewController
 );
 
 impl TitlebarAccessoryViewController {
@@ -47,11 +47,6 @@ impl TitlebarAccessoryViewController {
 // }
 
 impl ns::AnimatablePropContainer for TitlebarAccessoryViewController {}
-
-unsafe extern "C" {
-    static NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER:
-        &'static objc::Class<TitlebarAccessoryViewController>;
-}
 
 #[cfg(test)]
 mod test {

@@ -4,7 +4,7 @@ pub type Shape = ns::Array<ns::Number>;
 
 define_obj_type!(pub Tensor(ns::Id));
 impl Tensor {
-    define_cls!(MLC_TENSOR);
+    define_cls!(sym MLCTensor);
 
     /// A unique number to identify each tensor.  Assigned when the tensor is created.
     #[objc::msg_send(tensorID)]
@@ -56,8 +56,4 @@ impl Tensor {
             Err(())
         }
     }
-}
-
-unsafe extern "C" {
-    static MLC_TENSOR: &'static objc::Class<Tensor>;
 }

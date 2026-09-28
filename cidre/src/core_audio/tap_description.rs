@@ -24,7 +24,7 @@ define_obj_type!(
     /// The input stream is a mix of all of the specified processes output audio.
     #[doc(alias = "CATapDescription")]
     pub TapDesc(ns::Id),
-    CA_TAP_DESCRIPTION,
+    sym CATapDescription,
     #[api::available(macos = 12.0)]
 );
 
@@ -195,10 +195,6 @@ impl TapDesc {
 
     #[objc::msg_send(setStream:)]
     pub fn set_stream(&mut self, val: Option<&ns::Number>);
-}
-
-unsafe extern "C" {
-    static CA_TAP_DESCRIPTION: &'static objc::Class<TapDesc>;
 }
 
 #[cfg(test)]

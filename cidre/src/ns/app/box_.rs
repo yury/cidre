@@ -28,7 +28,7 @@ pub enum TitlePos {
 define_obj_type!(
     #[doc(alias = "NSBox")]
     pub Box(ns::View),
-    NS_BOX
+    sym NSBox
 );
 
 impl Box {
@@ -102,10 +102,6 @@ impl Box {
         val.set_frame(frame);
         val
     }
-}
-
-unsafe extern "C" {
-    static NS_BOX: &'static objc::Class<Box>;
 }
 
 #[cfg(test)]

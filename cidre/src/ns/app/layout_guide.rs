@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSLayoutGuide")]
     pub LayoutGuide(ns::Id),
-    NS_LAYOUT_GUIDE
+    sym NSLayoutGuide
 );
 
 /// A rectangle that takes part in Auto Layout without being a view.
@@ -26,7 +26,3 @@ impl LayoutGuide {
 }
 
 ns::impl_layout_anchors!(LayoutGuide);
-
-unsafe extern "C" {
-    static NS_LAYOUT_GUIDE: &'static objc::Class<LayoutGuide>;
-}

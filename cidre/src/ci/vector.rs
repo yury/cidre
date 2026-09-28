@@ -12,7 +12,7 @@ impl ci::Vec {
     #[objc::init(initWithString:)]
     pub fn init_ns_string(self, val: &ns::String) -> arc::R<ci::Vec>;
 
-    define_cls!(CI_VECTOR);
+    define_cls!(sym CIVector);
 
     #[inline]
     pub fn with_vals(vals: &[cg::Float]) -> arc::R<Self> {
@@ -92,10 +92,6 @@ impl ci::Vec {
 
     #[objc::msg_send(W)]
     pub fn w(&self) -> cg::Float;
-}
-
-unsafe extern "C" {
-    static CI_VECTOR: &'static objc::Class<Vec>;
 }
 
 #[cfg(test)]

@@ -2033,8 +2033,15 @@ pub fn api_weak(_ts: TokenStream, body: TokenStream) -> TokenStream {
     original_body
 }
 
-#[derive(Default, Debug, Copy, Clone)]
+#[derive(Default, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 struct Version(u32, u32);
+
+/// Lowest supported macOS. APIs available at or below it need no feature flag.
+const MACOS_FLOOR: Version = Version(12, 0);
+/// Lowest supported iOS. APIs available at or below it need no feature flag.
+const IOS_FLOOR: Version = Version(15, 0);
+/// Lowest supported Mac Catalyst. APIs available at or below it need no feature flag.
+const MACCATALYST_FLOOR: Version = Version(15, 0);
 
 impl Version {
     fn from_str(str: &str) -> Option<Self> {
@@ -2072,15 +2079,36 @@ impl Versions {
         TokenStream::from_str(&self.available_cfg()).unwrap()
     }
 
+    fn macos_always(&self) -> bool {
+        self.macos.is_some_and(|v| v <= MACOS_FLOOR)
+    }
+
+    fn ios_always(&self) -> bool {
+        self.ios.is_some_and(|v| v <= IOS_FLOOR)
+    }
+
+    fn maccatalyst_always(&self) -> bool {
+        self.maccatalyst.is_some_and(|v| v <= MACCATALYST_FLOOR)
+    }
+
     fn available_cfg(&self) -> String {
         let mut vec = Vec::with_capacity(6);
-        if let Some(v) = self.macos {
+        if self.macos_always() {
+            vec.push("target_os=\"macos\"".to_string());
+        } else if let Some(v) = self.macos {
             vec.push(format!(
                 "all(target_os=\"macos\", feature=\"macos_{}_{}\")",
                 v.0, v.1
             ));
         }
-        if let Some(v) = self.ios {
+        if self.ios_always() {
+            // Mac Catalyst is also `target_os = "ios"`; leave it to its own version when given.
+            if self.maccatalyst.is_some() {
+                vec.push("all(target_os=\"ios\", not(target_abi=\"macabi\"))".to_string());
+            } else {
+                vec.push("target_os=\"ios\"".to_string());
+            }
+        } else if let Some(v) = self.ios {
             vec.push(format!(
                 "all(target_os=\"ios\", feature=\"ios_{}_{}\")",
                 v.0, v.1
@@ -2104,7 +2132,9 @@ impl Versions {
                 v.0, v.1
             ));
         }
-        if let Some(v) = self.maccatalyst {
+        if self.maccatalyst_always() {
+            vec.push("all(target_os=\"ios\", target_abi=\"macabi\")".to_string());
+        } else if let Some(v) = self.maccatalyst {
             vec.push(format!(
                 "all(target_os=\"ios\", target_abi=\"macabi\", feature=\"maccatalyst_{}_{}\")",
                 v.0, v.1
@@ -2123,13 +2153,13 @@ impl Versions {
 
     fn unavailable_cfg(&self) -> String {
         let mut vec = Vec::with_capacity(6);
-        if let Some(v) = self.macos {
+        if let Some(v) = self.macos.filter(|_| !self.macos_always()) {
             vec.push(format!(
                 "all(target_os=\"macos\", not(feature=\"macos_{}_{}\"))",
                 v.0, v.1
             ));
         }
-        if let Some(v) = self.ios {
+        if let Some(v) = self.ios.filter(|_| !self.ios_always()) {
             vec.push(format!(
                 "all(target_os=\"ios\", not(feature=\"ios_{}_{}\"))",
                 v.0, v.1
@@ -2153,7 +2183,7 @@ impl Versions {
                 v.0, v.1
             ));
         }
-        if let Some(v) = self.maccatalyst {
+        if let Some(v) = self.maccatalyst.filter(|_| !self.maccatalyst_always()) {
             vec.push(format!(
                 "all(target_os=\"ios\", target_abi=\"macabi\", not(feature=\"maccatalyst_{}_{}\"))",
                 v.0, v.1
@@ -2161,6 +2191,8 @@ impl Versions {
         }
 
         match vec.len() {
+            // Every listed platform is at or below the floor: never unavailable.
+            0 if self.any() => "#[cfg(any())]\n".to_string(),
             0 => String::new(),
             1 => format!("#[cfg({})]\n", vec[0]),
             _ => format!("#[cfg(any({}))]\n", vec.join(", ")),

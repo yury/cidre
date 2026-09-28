@@ -76,7 +76,7 @@ impl VoiceTraits {
 define_obj_type!(
     #[doc(alias = "AVSpeechSynthesisVoice")]
     pub Voice(ns::Id),
-    AV_SPEECH_SYNTHESIS_VOICE
+    sym AVSpeechSynthesisVoice
 );
 
 impl Voice {
@@ -114,7 +114,7 @@ impl Voice {
 define_obj_type!(
     #[doc(alias = "AVSpeechUtterance")]
     pub Utterance(ns::Id),
-    AV_SPEECH_UTTERANCE
+    sym AVSpeechUtterance
 );
 
 impl Utterance {
@@ -267,7 +267,7 @@ pub trait Delegate: Obj {
 define_obj_type!(
     #[doc(alias = "AVSpeechSynthesizer")]
     pub Synthesizer(ns::Id),
-    AV_SPEECH_SYNTHESIZER
+    sym AVSpeechSynthesizer
 );
 
 impl Synthesizer {
@@ -364,9 +364,6 @@ unsafe extern "C" {
     static AVSpeechUtteranceMaximumSpeechRate: f32;
     static AVSpeechUtteranceDefaultSpeechRate: f32;
 
-    static AV_SPEECH_SYNTHESIS_VOICE: &'static objc::Class<Voice>;
-    static AV_SPEECH_SYNTHESIZER: &'static objc::Class<Synthesizer>;
-    static AV_SPEECH_UTTERANCE: &'static objc::Class<Utterance>;
 }
 
 #[cfg(test)]

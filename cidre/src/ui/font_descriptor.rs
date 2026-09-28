@@ -1,4 +1,4 @@
-use crate::{arc, cg, define_obj_type, define_opts, ns, objc};
+use crate::{arc, cg, define_obj_type, define_opts, ns};
 
 define_opts!(
     #[doc(alias = "UIFontDescriptorSymbolicTraits")]
@@ -191,9 +191,5 @@ unsafe extern "C" {
 define_obj_type!(
     #[doc(alias = "UIFontDescriptor")]
     pub FontDesc(ns::Id),
-    UI_FONT_DESCRIPTOR
+    sym UIFontDescriptor
 );
-
-unsafe extern "C" {
-    static UI_FONT_DESCRIPTOR: &'static objc::Class<FontDesc>;
-}

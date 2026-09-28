@@ -11,7 +11,7 @@ define_obj_type!(
 );
 
 impl Workspace {
-    define_cls!(NS_WORKSPACE);
+    define_cls!(sym NSWorkspace);
 
     #[objc::msg_send(sharedWorkspace)]
     pub fn shared() -> arc::R<Self>;
@@ -187,7 +187,7 @@ impl ns::FileManager {
 define_obj_type!(
     #[doc(alias = "NSWorkspaceOpenConfiguration")]
     pub WorkspaceOpenCfg(ns::Id),
-    NS_WORKSPACE_OPEN_CONFIGURATION
+    sym NSWorkspaceOpenConfiguration
 );
 
 impl WorkspaceOpenCfg {
@@ -411,11 +411,6 @@ pub mod notification {
         static NSWorkspaceDidChangeFileLabelsNotification: &'static ns::NotificationName;
         static NSWorkspaceActiveSpaceDidChangeNotification: &'static ns::NotificationName;
     }
-}
-
-unsafe extern "C" {
-    static NS_WORKSPACE: &'static objc::Class<Workspace>;
-    static NS_WORKSPACE_OPEN_CONFIGURATION: &'static objc::Class<WorkspaceOpenCfg>;
 }
 
 #[cfg(test)]

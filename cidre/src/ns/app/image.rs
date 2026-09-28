@@ -3,7 +3,7 @@ use crate::{arc, cf, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSImage")]
     pub Image(ns::Id),
-    NS_IMAGE
+    sym NSImage
 );
 
 impl Image {
@@ -53,10 +53,6 @@ define_obj_type!(
     #[doc(alias = "NSImageSymbolConfiguration")]
     pub ImageSymbolCfg(ns::Id)
 );
-
-unsafe extern "C" {
-    static NS_IMAGE: &'static objc::Class<Image>;
-}
 
 #[cfg(test)]
 mod tests {

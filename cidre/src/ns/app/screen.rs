@@ -2,7 +2,7 @@ use crate::{arc, ca, cg, define_obj_type, ns, objc};
 
 define_obj_type!(
     pub Screen(ns::Id),
-    NS_SCREEN
+    sym NSScreen
 );
 
 impl Screen {
@@ -97,10 +97,6 @@ impl Screen {
             self.display_link_with_target_selector(target.as_id_ref(), D::sel_on_display_link())
         }
     }
-}
-
-unsafe extern "C" {
-    static NS_SCREEN: &'static objc::Class<Screen>;
 }
 
 #[cfg(test)]

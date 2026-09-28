@@ -2,7 +2,7 @@ use crate::{arc, define_cls, define_obj_type, mlc, ns, objc};
 
 define_obj_type!(pub Desc(ns::Id));
 impl Desc {
-    define_cls!(MLC_MATMUL_DESCRIPTOR);
+    define_cls!(sym MLCMatMulDescriptor);
 
     #[objc::msg_send(alpha)]
     pub fn alpha(&self) -> f32;
@@ -31,7 +31,7 @@ define_obj_type!(
 );
 
 impl Layer {
-    define_cls!(MLC_MATMUL_LAYER);
+    define_cls!(sym MLCMatMulLayer);
 
     #[objc::msg_send(layerWithDescriptor:)]
     pub fn with_desc(desc: &Desc) -> Option<arc::R<Self>>;
@@ -42,9 +42,4 @@ impl Layer {
     pub fn new() -> arc::R<Self> {
         Self::with_desc(&Desc::new()).unwrap()
     }
-}
-
-unsafe extern "C" {
-    static MLC_MATMUL_DESCRIPTOR: &'static objc::Class<Desc>;
-    static MLC_MATMUL_LAYER: &'static objc::Class<Layer>;
 }

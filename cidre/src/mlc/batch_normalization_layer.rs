@@ -3,7 +3,7 @@ use crate::{define_cls, define_obj_type, mlc, objc};
 define_obj_type!(pub BatchNormalizationLayer(mlc::Layer));
 
 impl BatchNormalizationLayer {
-    define_cls!(MLC_BATCH_NORMALIZATION_LAYER);
+    define_cls!(sym MLCBatchNormalizationLayer);
 
     /// The number of feature channels
     #[objc::msg_send(featureChannelCount)]
@@ -17,8 +17,4 @@ impl BatchNormalizationLayer {
 
     #[objc::msg_send(gamma)]
     pub fn gamma(&self) -> Option<&mlc::Tensor>;
-}
-
-unsafe extern "C" {
-    static MLC_BATCH_NORMALIZATION_LAYER: &'static objc::Class<BatchNormalizationLayer>;
 }

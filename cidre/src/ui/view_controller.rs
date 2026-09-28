@@ -19,7 +19,7 @@ pub enum ModalPresentationStyle {
 
 define_obj_type!(
     #[doc(alias = "UIViewController")]
-    pub ViewController(ui::Responder), UI_VIEW_CONTROLLER
+    pub ViewController(ui::Responder), sym UIViewController
 );
 
 impl ViewController {
@@ -171,10 +171,6 @@ impl ViewController {
 
     #[objc::msg_send(viewDidLayoutSubviews)]
     pub fn view_did_layout_subviews(&mut self);
-}
-
-unsafe extern "C" {
-    static UI_VIEW_CONTROLLER: &'static objc::Class<ViewController>;
 }
 
 /// Scene accessories

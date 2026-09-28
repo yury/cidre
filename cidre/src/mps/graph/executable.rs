@@ -11,7 +11,7 @@ pub type ScheduledHandler = blocks::ResultCh<ns::Array<graph::TensorData>>;
 define_obj_type!(
     #[doc(alias = "MPSGraphExecutableExecutionDescriptor")]
     pub ExecutionDesc(ns::Id),
-    MPS_GRAPH_EXECUTABLE_EXECUTION_DESCRIPTOR
+    sym MPSGraphExecutableExecutionDescriptor
 );
 
 impl ExecutionDesc {
@@ -41,7 +41,7 @@ impl ExecutionDesc {
 define_obj_type!(
     #[doc(alias = "MPSGraphExecutable")]
     pub Executable(ns::Id),
-    MPS_GRAPH_EXECUTABLE
+    sym MPSGraphExecutable
 );
 
 impl Executable {
@@ -126,7 +126,4 @@ impl Executable {
 }
 
 #[link(name = "mpsg", kind = "static")]
-unsafe extern "C" {
-    static MPS_GRAPH_EXECUTABLE_EXECUTION_DESCRIPTOR: &'static objc::Class<ExecutionDesc>;
-    static MPS_GRAPH_EXECUTABLE: &'static objc::Class<Executable>;
-}
+unsafe extern "C" {}

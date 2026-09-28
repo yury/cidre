@@ -25,7 +25,7 @@ pub enum NotificationInterruptionLevel {
 define_obj_type!(
     #[doc(alias = "UNNotificationContent")]
     pub NotificationContent(ns::Id),
-    UN_NOTIFICATION_CONTENT
+    sym UNNotificationContent
 );
 
 impl NotificationContent {
@@ -102,7 +102,7 @@ impl NotificationContent {
 define_obj_type!(
     #[doc(alias = "UNMutableNotificationContent")]
     pub NotificationContentMut(NotificationContent),
-    UN_MUTABLE_NOTIFICATION_CONTENT
+    sym UNMutableNotificationContent
 );
 
 impl NotificationContentMut {
@@ -159,11 +159,6 @@ impl NotificationContentMut {
     #[cfg(not(target_os = "tvos"))]
     #[objc::msg_send(setFilterCriteria:)]
     pub fn set_filter_criteria(&mut self, val: Option<&ns::String>);
-}
-
-unsafe extern "C" {
-    static UN_NOTIFICATION_CONTENT: &'static objc::Class<NotificationContent>;
-    static UN_MUTABLE_NOTIFICATION_CONTENT: &'static objc::Class<NotificationContent>;
 }
 
 #[cfg(test)]

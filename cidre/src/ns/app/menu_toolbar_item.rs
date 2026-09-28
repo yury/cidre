@@ -4,7 +4,7 @@ define_obj_type!(
     /// A toolbar item that shows a menu when clicked.
     #[doc(alias = "NSMenuToolbarItem")]
     pub MenuToolbarItem(ns::ToolbarItem),
-    NS_MENU_TOOLBAR_ITEM
+    sym NSMenuToolbarItem
 );
 
 impl MenuToolbarItem {
@@ -27,8 +27,4 @@ impl MenuToolbarItem {
 
     #[objc::msg_send(setShowsIndicator:)]
     pub fn set_shows_indicator(&mut self, val: bool);
-}
-
-unsafe extern "C" {
-    static NS_MENU_TOOLBAR_ITEM: &'static objc::Class<MenuToolbarItem>;
 }

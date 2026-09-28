@@ -27,10 +27,10 @@ pub enum FullscreenState {
 }
 
 #[cfg(target_os = "ios")]
-define_obj_type!(pub WebView(crate::ui::View), WK_WEB_VIEW);
+define_obj_type!(pub WebView(crate::ui::View), sym WKWebView);
 
 #[cfg(target_os = "macos")]
-define_obj_type!(pub WebView(ns::View), WK_WEB_VIEW);
+define_obj_type!(pub WebView(ns::View), sym WKWebView);
 
 impl WebView {
     #[objc::init(initWithFrame:configuration:)]
@@ -149,8 +149,4 @@ impl WebView {
     #[objc::msg_send(fullscreenState)]
     #[objc::available(macos = 13.0, ios = 16.0)]
     pub fn fullscreen_state(&self) -> wk::FullscreenState;
-}
-
-unsafe extern "C" {
-    static WK_WEB_VIEW: &'static objc::Class<WebView>;
 }

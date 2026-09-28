@@ -19,7 +19,7 @@ use crate::ns::Image;
 define_obj_type!(
     #[doc(alias = "NSTextAttachment")]
     pub TextAttachment(ns::Id),
-    NS_TEXT_ATTACHMENT
+    sym NSTextAttachment
 );
 
 #[cfg(any(
@@ -93,15 +93,4 @@ impl TextAttachment {
 impl ns::AttrString {
     #[objc::msg_send(attributedStringWithAttachment:)]
     pub fn with_attachment(attachment: &ns::TextAttachment) -> arc::R<Self>;
-}
-
-#[cfg(any(
-    all(
-        any(target_os = "ios", target_os = "tvos", target_os = "watchos"),
-        feature = "ui"
-    ),
-    all(target_os = "macos", feature = "app")
-))]
-unsafe extern "C" {
-    static NS_TEXT_ATTACHMENT: &'static objc::Class<TextAttachment>;
 }

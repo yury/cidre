@@ -1,6 +1,6 @@
 use crate::{arc, define_obj_type, mlc, objc};
 
-define_obj_type!(pub TrainingGraph(mlc::Graph), MLC_TRAINING_GRAPH);
+define_obj_type!(pub TrainingGraph(mlc::Graph), sym MLCTrainingGraph);
 impl TrainingGraph {
     /// The optimizer to be used with the training graph
     #[objc::msg_send(optimizer)]
@@ -15,10 +15,6 @@ impl TrainingGraph {
     /// optimizer update is executed.
     #[objc::msg_send(deviceMemorySize)]
     pub fn device_mem_size(&self) -> usize;
-}
-
-unsafe extern "C" {
-    static MLC_TRAINING_GRAPH: &'static objc::Class<TrainingGraph>;
 }
 
 #[cfg(test)]

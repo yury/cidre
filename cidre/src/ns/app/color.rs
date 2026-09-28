@@ -14,7 +14,7 @@ pub enum ColorSysEffect {
 define_obj_type!(
     #[doc(alias = "NSColor")]
     pub Color(ns::Id),
-    NS_COLOR
+    sym NSColor
 );
 
 impl Color {
@@ -454,10 +454,6 @@ impl Color {
 }
 
 unsafe impl Send for Color {}
-
-unsafe extern "C" {
-    static NS_COLOR: &'static objc::Class<Color>;
-}
 
 #[cfg(test)]
 mod tests {

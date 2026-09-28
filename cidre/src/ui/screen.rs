@@ -6,7 +6,7 @@ use crate::cf;
 define_obj_type!(
     #[doc(alias = "UIScreen")]
     pub Screen(ns::Id),
-    UI_SCREEN
+    sym UIScreen
 );
 
 impl Screen {
@@ -79,8 +79,4 @@ impl Screen {
 impl Screen {
     #[objc::msg_send(snapshotViewAfterScreenUpdates:)]
     fn snapshot_view_after_screen_updates(&self, after_updates: bool) -> arc::R<ui::View>;
-}
-
-unsafe extern "C" {
-    static UI_SCREEN: &'static objc::Class<Screen>;
 }

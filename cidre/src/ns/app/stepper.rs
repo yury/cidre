@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSStepper")]
     pub Stepper(ns::Control),
-    NS_STEPPER
+    sym NSStepper
 );
 
 impl Stepper {
@@ -47,10 +47,6 @@ impl Stepper {
         stepper.set_frame(frame);
         stepper
     }
-}
-
-unsafe extern "C" {
-    static NS_STEPPER: &'static objc::Class<Stepper>;
 }
 
 #[cfg(test)]

@@ -63,7 +63,7 @@ impl PedometerEvent {
 define_obj_type!(
     #[doc(alias = "CMPedometer")]
     pub Pedometer(ns::Id),
-    CM_PEDOMETER
+    sym CMPedometer
 );
 
 impl Pedometer {
@@ -151,10 +151,6 @@ impl Pedometer {
 
     #[objc::msg_send(stopPedometerUpdates)]
     pub fn stop_pedometer_updates(&mut self);
-}
-
-unsafe extern "C" {
-    static CM_PEDOMETER: &'static objc::Class<Pedometer>;
 }
 
 #[cfg(test)]

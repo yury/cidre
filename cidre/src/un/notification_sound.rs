@@ -12,7 +12,7 @@ define_obj_type!(
 
 #[cfg(not(target_os = "tvos"))]
 impl NotificationSound {
-    define_cls!(UN_NOTIFICATION_SOUND);
+    define_cls!(sym UNNotificationSound);
 
     #[objc::msg_send(defaultSound)]
     pub fn default() -> arc::R<Self>;
@@ -46,11 +46,6 @@ impl NotificationSound {
         name: &un::NotificationSoundName,
         volume: f32,
     ) -> arc::R<Self>;
-}
-
-unsafe extern "C" {
-    #[cfg(not(target_os = "tvos"))]
-    static UN_NOTIFICATION_SOUND: &'static objc::Class<NotificationSound>;
 }
 
 #[cfg(not(target_os = "tvos"))]

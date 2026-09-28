@@ -185,7 +185,7 @@ define_obj_type!(
     /// Compilation settings for a Metal shader library.
     #[doc(alias = "MTLCompileOptions")]
     pub CompileOpts(ns::Id),
-    MTL_COMPILE_OPTIONS
+    sym MTLCompileOptions
 );
 
 /// ```
@@ -512,10 +512,6 @@ impl PartialEq<isize> for Error {
 
 unsafe extern "C" {
     static MTLLibraryErrorDomain: &'static ErrorDomain;
-}
-
-unsafe extern "C" {
-    static MTL_COMPILE_OPTIONS: &'static objc::Class<CompileOpts>;
 }
 
 #[cfg(test)]

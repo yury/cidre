@@ -97,7 +97,7 @@ impl ReaderTrackOutput {
         output_settings: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<ReaderTrackOutput>;
 
-    define_cls!(AV_ASSET_READER_TRACK_OUTPUT);
+    define_cls!(sym AVAssetReaderTrackOutput);
 
     /// Returns an instance of AVAssetReaderTrackOutput for reading from the specified track and
     /// supplying media data according to the specified output settings.
@@ -152,8 +152,4 @@ impl ReaderTrackOutput {
 
     #[objc::msg_send(resetForReadingTimeRanges:)]
     pub fn reset_for_reading_time_ranges(&mut self, ranges: &ns::Array<ns::Value>);
-}
-
-unsafe extern "C" {
-    static AV_ASSET_READER_TRACK_OUTPUT: &'static objc::Class<ReaderTrackOutput>;
 }

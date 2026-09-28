@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc, vn};
 define_obj_type!(
     #[doc(alias = "VNDetectFaceRectanglesRequest")]
     pub DetectFaceRectanglesRequest(vn::ImageBasedRequest),
-    VN_DETECT_FACE_RECTANGLES_REQUEST
+    sym VNDetectFaceRectanglesRequest
 );
 
 impl DetectFaceRectanglesRequest {
@@ -18,8 +18,4 @@ impl DetectFaceRectanglesRequest {
 
     #[objc::msg_send(results)]
     pub fn results(&self) -> Option<arc::R<ns::Array<vn::FaceObservation>>>;
-}
-
-unsafe extern "C" {
-    static VN_DETECT_FACE_RECTANGLES_REQUEST: &'static objc::Class<DetectFaceRectanglesRequest>;
 }

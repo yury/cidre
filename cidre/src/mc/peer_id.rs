@@ -9,7 +9,7 @@ impl PeerId {
     #[objc::init(initWithDisplayName:)]
     pub unsafe fn init_with_display_name_throws(self, display_name: &ns::String) -> arc::R<PeerId>;
 
-    define_cls!(MC_PEER_ID);
+    define_cls!(sym MCPeerID);
 
     #[inline]
     pub fn with_display_name<'ear>(name: &ns::String) -> ns::ExResult<'ear, arc::R<Self>> {
@@ -18,10 +18,6 @@ impl PeerId {
 
     #[objc::msg_send(displayName)]
     pub fn display_name(&self) -> arc::R<ns::String>;
-}
-
-unsafe extern "C" {
-    static MC_PEER_ID: &'static objc::Class<PeerId>;
 }
 
 #[cfg(test)]

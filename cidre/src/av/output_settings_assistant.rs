@@ -128,7 +128,7 @@ define_obj_type!(
 );
 
 impl OutputSettingsAssistant {
-    define_cls!(AV_OUTPUT_SETTINGS_ASSISTANT);
+    define_cls!(sym AVOutputSettingsAssistant);
 
     #[objc::msg_send(availableOutputSettingsPresets)]
     pub fn available_presets() -> arc::R<ns::Array<OutputSettingsPreset>>;
@@ -166,10 +166,6 @@ impl OutputSettingsAssistant {
 
     #[objc::msg_send(setSourceVideoAverageFrameDuration:)]
     pub fn set_src_video_average_frame_duration(&mut self, val: cm::Time);
-}
-
-unsafe extern "C" {
-    static AV_OUTPUT_SETTINGS_ASSISTANT: &'static objc::Class<OutputSettingsAssistant>;
 }
 
 #[cfg(test)]

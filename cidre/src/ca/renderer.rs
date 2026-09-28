@@ -39,7 +39,7 @@ define_obj_type!(
 );
 
 impl Renderer {
-    define_cls!(CA_RENDERER);
+    define_cls!(sym CARenderer);
 
     #[cfg(feature = "mtl")]
     #[objc::msg_send(rendererWithMTLTexture:options:)]
@@ -99,10 +99,6 @@ impl Renderer {
     #[cfg(feature = "mtl")]
     #[objc::msg_send(setDestination:)]
     pub fn set_dst(&mut self, val: &mtl::Texture);
-}
-
-unsafe extern "C" {
-    static CA_RENDERER: &'static objc::Class<Renderer>;
 }
 
 unsafe extern "C" {

@@ -213,13 +213,13 @@ define_obj_type!(
 );
 
 impl ScreenshotManager {
-    #[api::available(macos = 14.0)]
+    #[api::available(macos = 14.0, maccatalyst = 18.2)]
     crate::define_cls!(SC_SCREENSHOT_MANAGER);
 
     #[cfg(all(feature = "blocks", feature = "cm"))]
     /// Captures one sample buffer using a content filter and stream configuration.
     #[objc::msg_send(captureSampleBufferWithFilter:configuration:completionHandler:)]
-    #[api::available(macos = 14.0)]
+    #[api::available(macos = 14.0, maccatalyst = 18.2)]
     pub fn capture_sample_buf_ch(
         filter: &sc::ContentFilter,
         cfg: &sc::StreamCfg,
@@ -228,20 +228,21 @@ impl ScreenshotManager {
 
     #[cfg(all(feature = "blocks", feature = "async", feature = "cm"))]
     /// Captures one sample buffer using a content filter and stream configuration.
-    #[api::available(macos = 14.0)]
+    #[api::available(macos = 14.0, maccatalyst = 18.2)]
+    #[allow(unused_unsafe)]
     pub async fn capture_sample_buf(
         filter: &sc::ContentFilter,
         cfg: &sc::StreamCfg,
     ) -> Result<arc::R<cm::SampleBuf>, arc::R<ns::Error>> {
         let (future, mut block) = blocks::result();
-        Self::capture_sample_buf_ch(filter, cfg, Some(&mut block));
+        unsafe { Self::capture_sample_buf_ch(filter, cfg, Some(&mut block)) };
         future.await
     }
 
     #[cfg(feature = "blocks")]
     /// Captures one Core Graphics image using a content filter and stream configuration.
     #[objc::msg_send(captureImageWithFilter:configuration:completionHandler:)]
-    #[api::available(macos = 14.0)]
+    #[api::available(macos = 14.0, maccatalyst = 18.2)]
     pub fn capture_image_ch(
         filter: &sc::ContentFilter,
         cfg: &sc::StreamCfg,
@@ -250,13 +251,14 @@ impl ScreenshotManager {
 
     #[cfg(all(feature = "blocks", feature = "async"))]
     /// Captures one Core Graphics image using a content filter and stream configuration.
-    #[api::available(macos = 14.0)]
+    #[api::available(macos = 14.0, maccatalyst = 18.2)]
+    #[allow(unused_unsafe)]
     pub async fn capture_image(
         filter: &sc::ContentFilter,
         cfg: &sc::StreamCfg,
     ) -> Result<arc::R<cg::Image>, arc::R<ns::Error>> {
         let (future, mut block) = blocks::result();
-        Self::capture_image_ch(filter, cfg, Some(&mut block));
+        unsafe { Self::capture_image_ch(filter, cfg, Some(&mut block)) };
         future.await
     }
 

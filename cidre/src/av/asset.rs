@@ -76,7 +76,7 @@ impl UrlAsset {
         options: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> Option<arc::R<UrlAsset>>;
 
-    define_cls!(AV_URL_ASSET);
+    define_cls!(sym AVURLAsset);
 
     #[inline]
     pub fn with_url(
@@ -129,10 +129,6 @@ impl UrlAsset {
     #[cfg(feature = "cm")]
     #[objc::msg_send(duration)]
     pub fn duration(&self) -> cm::Time;
-}
-
-unsafe extern "C" {
-    static AV_URL_ASSET: &'static objc::Class<UrlAsset>;
 }
 
 #[cfg(test)]

@@ -27,7 +27,7 @@ unsafe impl Send for Looper {}
 unsafe impl Sync for Looper {}
 
 impl Looper {
-    define_cls!(AV_PLAYER_LOOPER);
+    define_cls!(sym AVPlayerLooper);
 
     #[objc::msg_send(playerLooperWithPlayer:templateItem:)]
     pub unsafe fn with_player_throws(
@@ -73,8 +73,4 @@ impl Looper {
 
     #[objc::msg_send(loopingPlayerItems)]
     pub fn looping_player_items(&self) -> arc::R<ns::Array<av::PlayerItem>>;
-}
-
-unsafe extern "C" {
-    static AV_PLAYER_LOOPER: &'static objc::Class<Looper>;
 }

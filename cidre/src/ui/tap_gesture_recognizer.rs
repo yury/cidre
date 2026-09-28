@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc, ui};
 define_obj_type!(
     #[doc(alias = "UITapGestureRecognizer")]
     pub TapGestureRecognizer(ui::GestureRecognizer),
-    UI_TAP_GESTURE_RECOGNIZER
+    sym UITapGestureRecognizer
 );
 
 impl TapGestureRecognizer {
@@ -29,8 +29,4 @@ impl TapGestureRecognizer {
 
     #[objc::msg_send(setNumberOfTouchesRequired:)]
     pub fn set_number_of_touches_required(&mut self, val: usize);
-}
-
-unsafe extern "C" {
-    static UI_TAP_GESTURE_RECOGNIZER: &'static objc::Class<TapGestureRecognizer>;
 }

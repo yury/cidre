@@ -52,7 +52,7 @@ pub enum StencilOp {
     DecrementWrap = 7,
 }
 
-define_obj_type!(pub StencilDesc(ns::Id), MTL_STENCIL_DESCRIPTOR);
+define_obj_type!(pub StencilDesc(ns::Id), sym MTLStencilDescriptor);
 
 impl StencilDesc {
     /// The comparison that is performed between the masked reference value and a
@@ -102,7 +102,7 @@ impl StencilDesc {
     pub fn set_write_mask(&mut self, val: u32);
 }
 
-define_obj_type!(pub DepthStencilDesc(ns::Id), MTL_DEPTH_STENCIL_DESCRIPTOR);
+define_obj_type!(pub DepthStencilDesc(ns::Id), sym MTLDepthStencilDescriptor);
 
 impl DepthStencilDesc {
     /// Defaults to mtl::CompareFnAlways, which effectively skips the depth test
@@ -169,9 +169,4 @@ impl State {
 
     #[objc::msg_send(label)]
     pub fn label(&self) -> Option<arc::R<ns::String>>;
-}
-
-unsafe extern "C" {
-    static MTL_STENCIL_DESCRIPTOR: &'static objc::Class<StencilDesc>;
-    static MTL_DEPTH_STENCIL_DESCRIPTOR: &'static objc::Class<DepthStencilDesc>;
 }

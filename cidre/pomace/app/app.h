@@ -9,74 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-Class NS_APPLICATION;
-Class NS_CELL;
-Class NS_CURSOR;
-Class NS_HAPTIC_FEEDBACK_MANAGER;
-Class NS_VIEW;
-Class NS_COLOR;
-Class NS_COLOR_WELL;
-Class NS_WINDOW;
-Class NS_COLOR_SPACE;
-Class NS_RESPONDER;
-Class NS_SCREEN;
-Class NS_VIEW_CONTROLLER;
-Class NS_WINDOW_CONTROLLER;
-Class NS_WORKSPACE;
-Class NS_WORKSPACE_OPEN_CONFIGURATION;
-Class NS_RUNNING_APPLICATION;
-Class NS_TEXT_ATTACHMENT;
-Class NS_IMAGE;
-Class NS_EVENT;
-Class NS_MENU;
-Class NS_MENU_ITEM;
-Class NS_PANEL;
-Class NS_SAVE_PANEL;
-Class NS_OPEN_PANEL;
-Class NS_ALERT;
-Class NS_PASTEBOARD;
-Class NS_SPLIT_VIEW_ITEM;
-Class NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER;
-Class NS_TOOLBAR;
-Class NS_TOOLBAR_ITEM;
-Class NS_MENU_TOOLBAR_ITEM;
-Class NS_TOOLBAR_ITEM_GROUP;
-Class NS_BUTTON;
-Class NS_STACK_VIEW;
-Class NS_SWITCH;
-Class NS_SEGMENTED_CONTROL;
-Class NS_SLIDER;
-Class NS_STEPPER;
-Class NS_BOX;
-Class NS_POP_UP_BUTTON;
-Class NS_TEXT_FIELD;
-Class NS_TEXT_VIEW;
-Class NS_TABLE_VIEW;
-Class NS_TABLE_CELL_VIEW;
-Class NS_IMAGE_VIEW;
-Class NS_OUTLINE_VIEW;
-Class NS_FONT;
-Class NS_FONT_MANAGER;
-Class NS_GESTURE_RECOGNIZER;
-Class NS_CLICK_GESTURE_RECOGNIZER;
-Class NS_PAN_GESTURE_RECOGNIZER;
-Class NS_MAGNIFICATION_GESTURE_RECOGNIZER;
-Class NS_ROTATION_GESTURE_RECOGNIZER;
-Class NS_STATUS_BAR;
-Class NS_ANIMATION_CONTEXT;
-
-Class NS_DIFFABLE_DATA_SOURCE_SNAPSHOT;
-Class NS_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE;
-
-Class NS_SCROLL_VIEW;
-Class NS_TABLE_COLUMN;
-Class NS_VISUAL_EFFECT_VIEW;
-Class NS_LAYOUT_CONSTRAINT;
-Class NS_LAYOUT_GUIDE;
 Class NS_BACKGROUND_EXTENSION_VIEW;
-Class NS_SECURE_TEXT_FIELD;
-Class NS_SPLIT_VIEW_CONTROLLER;
-Class NS_SPLIT_VIEW;
 
 __attribute__((constructor))
 static void app_initializer(void)
@@ -85,78 +18,8 @@ static void app_initializer(void)
     static int initialized = 0;
     if (!initialized) {
         initialized = 1;
-        NS_SCROLL_VIEW = NSClassFromString(@"NSScrollView");
-        NS_TABLE_COLUMN = NSClassFromString(@"NSTableColumn");
-        NS_VISUAL_EFFECT_VIEW = NSClassFromString(@"NSVisualEffectView");
-        NS_LAYOUT_CONSTRAINT = [NSLayoutConstraint class];
-        NS_LAYOUT_GUIDE = [NSLayoutGuide class];
         NS_BACKGROUND_EXTENSION_VIEW = NSClassFromString(@"NSBackgroundExtensionView");
-        NS_SECURE_TEXT_FIELD = NSClassFromString(@"NSSecureTextField");
-        NS_SPLIT_VIEW_CONTROLLER = NSClassFromString(@"NSSplitViewController");
-        NS_SPLIT_VIEW = NSClassFromString(@"NSSplitView");
 
-        
-        NS_APPLICATION = [NSApplication class];
-        NS_CELL = [NSCell class];
-        NS_CURSOR = [NSCursor class];
-        NS_HAPTIC_FEEDBACK_MANAGER = [NSHapticFeedbackManager class];
-        NS_COLOR_SPACE = [NSColorSpace class];
-        NS_VIEW = [NSView class];
-        NS_COLOR = [NSColor class];
-        NS_COLOR_WELL = [NSColorWell class];
-        NS_WINDOW = [NSWindow class];
-        NS_COLOR_SPACE = [NSColorSpace class];
-        NS_RESPONDER = [NSResponder class];
-        NS_SCREEN = [NSScreen class];
-        NS_VIEW_CONTROLLER = [NSViewController class];
-        NS_WINDOW_CONTROLLER = [NSWindowController class];
-        NS_WORKSPACE = [NSWorkspace class];
-        NS_WORKSPACE_OPEN_CONFIGURATION = [NSWorkspaceOpenConfiguration class];
-        NS_RUNNING_APPLICATION = [NSRunningApplication class];
-    
-        
-        NS_TEXT_ATTACHMENT = [NSTextAttachment class];
-        NS_IMAGE = [NSImage class];
-        NS_EVENT = [NSEvent class];
-        NS_MENU = [NSMenu class];
-        NS_MENU_ITEM = [NSMenuItem class];
-        NS_PANEL = [NSPanel class];
-        NS_SAVE_PANEL = [NSSavePanel class];
-        NS_OPEN_PANEL = [NSOpenPanel class];
-        NS_ALERT = [NSAlert class];
-        NS_PASTEBOARD = [NSPasteboard class];
-        NS_SPLIT_VIEW_ITEM = [NSSplitViewItem class];
-        NS_TITLEBAR_ACCESSORY_VIEW_CONTROLLER = [NSTitlebarAccessoryViewController class];
-        NS_TOOLBAR = [NSToolbar class];
-        NS_TOOLBAR_ITEM = [NSToolbarItem class];
-        NS_MENU_TOOLBAR_ITEM = [NSMenuToolbarItem class];
-        NS_TOOLBAR_ITEM_GROUP = [NSToolbarItemGroup class];
-        NS_BUTTON = [NSButton class];
-        NS_STACK_VIEW = [NSStackView class];
-        NS_SWITCH = [NSSwitch class];
-        NS_SEGMENTED_CONTROL = [NSSegmentedControl class];
-        NS_SLIDER = [NSSlider class];
-        NS_STEPPER = [NSStepper class];
-        NS_BOX = [NSBox class];
-        NS_POP_UP_BUTTON = [NSPopUpButton class];
-        NS_TEXT_FIELD = [NSTextField class];
-        NS_TEXT_VIEW = [NSTextView class];
-        NS_TABLE_VIEW = [NSTableView class];
-        NS_TABLE_CELL_VIEW = [NSTableCellView class];
-        NS_IMAGE_VIEW = [NSImageView class];
-        NS_OUTLINE_VIEW = [NSOutlineView class];
-        NS_FONT = [NSFont class];
-        NS_FONT_MANAGER = [NSFontManager class];
-        NS_GESTURE_RECOGNIZER = [NSGestureRecognizer class];
-        NS_CLICK_GESTURE_RECOGNIZER = [NSClickGestureRecognizer class];
-        NS_PAN_GESTURE_RECOGNIZER = [NSPanGestureRecognizer class];
-        NS_MAGNIFICATION_GESTURE_RECOGNIZER = [NSMagnificationGestureRecognizer class];
-        NS_ROTATION_GESTURE_RECOGNIZER = [NSRotationGestureRecognizer class];
-        NS_STATUS_BAR = [NSStatusBar class];
-        NS_ANIMATION_CONTEXT = [NSAnimationContext class];
-        
-        NS_DIFFABLE_DATA_SOURCE_SNAPSHOT = [NSDiffableDataSourceSnapshot class];
-        NS_COLLECTION_VIEW_DIFFABLE_DATA_SOURCE = [NSCollectionViewDiffableDataSource class];
     }
 }
 

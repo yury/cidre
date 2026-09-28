@@ -20,7 +20,7 @@ pub enum AlertActionStyle {
 define_obj_type!(
     #[doc(alias = "UIAlertAction")]
     pub AlertAction(ns::Id),
-    UI_ALERT_ACTION
+    sym UIAlertAction
 );
 
 impl AlertAction {
@@ -56,7 +56,7 @@ impl AlertAction {
 define_obj_type!(
     #[doc(alias = "UIAlertController")]
     pub AlertController(ui::ViewController),
-    UI_ALERT_CONTROLLER
+    sym UIAlertController
 );
 
 impl AlertController {
@@ -102,9 +102,4 @@ impl AlertController {
 
     #[objc::msg_send(setMessage:)]
     pub fn set_message(&mut self, val: Option<&ns::String>);
-}
-
-unsafe extern "C" {
-    static UI_ALERT_ACTION: &'static objc::Class<AlertAction>;
-    static UI_ALERT_CONTROLLER: &'static objc::Class<AlertController>;
 }

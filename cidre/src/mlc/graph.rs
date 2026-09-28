@@ -2,7 +2,7 @@ use crate::{arc, define_obj_type, mlc, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "MLCGraph")]
-    pub Graph(ns::Id), MLC_GRAPH
+    pub Graph(ns::Id), sym MLCGraph
 );
 
 impl Graph {
@@ -22,8 +22,4 @@ impl Graph {
         let sources = ns::Array::from_slice(sources);
         self.node_with_layer_sources_array(layer, &sources)
     }
-}
-
-unsafe extern "C" {
-    static MLC_GRAPH: &'static objc::Class<Graph>;
 }
