@@ -69,7 +69,27 @@ jobs:
 
     # The Swift bindings for this runner's OS, and the audit of every Swift
     # symbol they link, which skips what this OS is too old to have.
+    # One test at a time, so a crash is reported against the test it happened
+    # in rather than whichever were running beside it.
     - name: Test swift
       run: >
           RUST_BACKTRACE=1 cargo t --lib --features="${{ matrix.macos }},async" swift::
-          -- --nocapture
+          -- --nocapture --test-threads=1
+
+    - name: Crash reports
+      if: failure()
+      run: |
+        ls -la ~/Library/Logs/DiagnosticReports || true
+        for f in ~/Library/Logs/DiagnosticReports/cidre-*; do
+          [ -e "$f" ] || continue
+          echo "===== $f"
+          head -c 20000 "$f"
+        done
+
+    - name: Upload crash reports
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: crash-reports-${{ matrix.os }}
+        path: ~/Library/Logs/DiagnosticReports/cidre-*
+        if-no-files-found: ignore
