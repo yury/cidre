@@ -3,7 +3,7 @@ use std::{ffi::c_void, marker::PhantomData, ops::Deref};
 use crate::{
     arc, define_cls,
     ns::{self, Copying, CopyingMut},
-    objc::{self, Class, Obj},
+    objc::{self, Obj},
 };
 
 #[cfg(feature = "cf")]
@@ -53,7 +53,7 @@ impl<T: Obj> Set<T> {
     #[objc::init(initWithObjects:count:)]
     pub fn init_with_objs_count(self, ptr: *const c_void, count: usize) -> arc::R<Set<T>>;
 
-    define_cls!(NS_SET);
+    define_cls!(sym NSSet);
 
     #[inline]
     pub fn new() -> arc::R<Self> {
@@ -149,7 +149,7 @@ impl<T: Obj> SetMut<T> {
     #[objc::init(initWithCapacity:)]
     pub fn init_with_capacity(self, capacity: usize) -> arc::R<SetMut<T>>;
 
-    define_cls!(NS_MUTABLE_SET);
+    define_cls!(sym NSMutableSet);
 
     #[inline]
     pub fn new() -> arc::R<Self> {
@@ -231,11 +231,6 @@ impl<T: Obj> SetMut<T> {
 
 impl<T> ns::FastEnum<T> for Set<T> where T: Obj {}
 impl<T> ns::FastEnum<T> for SetMut<T> where T: Obj {}
-
-unsafe extern "C" {
-    static NS_SET: &'static Class<ns::Set<ns::Id>>;
-    static NS_MUTABLE_SET: &'static Class<ns::SetMut<ns::Id>>;
-}
 
 #[cfg(test)]
 mod tests {

@@ -51,7 +51,7 @@ impl Connection {
     #[objc::init(initWithListenerEndpoint:)]
     pub fn init_with_listener_endpoint(self, endpoint: &ListenerEndpoint) -> arc::R<Connection>;
 
-    define_cls!(NS_XPC_CONNECTION);
+    define_cls!(sym NSXPCConnection);
 
     #[cfg(target_os = "macos")]
     pub fn with_service_name(name: &ns::String) -> arc::R<Self> {
@@ -147,7 +147,7 @@ define_obj_type!(
 );
 
 impl Iface {
-    define_cls!(NS_XPC_INTERFACE);
+    define_cls!(sym NSXPCInterface);
 
     #[objc::msg_send(interfaceWithProtocol:)]
     pub fn interface_with_protocol(protocol: &ns::Id) -> arc::R<Self>;
@@ -168,7 +168,7 @@ impl Listener {
     #[objc::init(initWithMachServiceName:)]
     pub fn init_with_mach_service_name(self, name: &ns::String) -> arc::R<Listener>;
 
-    define_cls!(NS_XPC_LISTENER);
+    define_cls!(sym NSXPCListener);
 
     #[objc::msg_send(serviceListener)]
     pub fn service() -> arc::R<Self>;
@@ -179,10 +179,4 @@ impl Listener {
     pub fn with_mach_service_name(name: &ns::String) -> arc::R<Self> {
         Self::alloc().init_with_mach_service_name(name)
     }
-}
-
-unsafe extern "C" {
-    static NS_XPC_CONNECTION: &'static objc::Class<Connection>;
-    static NS_XPC_LISTENER: &'static objc::Class<Listener>;
-    static NS_XPC_INTERFACE: &'static objc::Class<Iface>;
 }

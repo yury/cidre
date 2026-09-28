@@ -69,7 +69,7 @@ impl SearchOpts {
 
 define_obj_type!(
     #[doc(alias = "NSData")]
-    pub Data(ns::Id), NS_DATA
+    pub Data(ns::Id), sym NSData
 );
 
 unsafe impl Send for Data {}
@@ -82,7 +82,7 @@ impl AsRef<cf::Data> for Data {
 
 define_obj_type!(
     #[doc(alias = "NSMutableData")]
-    pub DataMut(Data), NS_MUTABLE_DATA
+    pub DataMut(Data), sym NSMutableData
 );
 
 impl Data {
@@ -230,11 +230,6 @@ impl AsMut<cf::DataMut> for DataMut {
     fn as_mut(&mut self) -> &mut cf::DataMut {
         self.as_cf_mut()
     }
-}
-
-unsafe extern "C" {
-    static NS_DATA: &'static objc::Class<Data>;
-    static NS_MUTABLE_DATA: &'static objc::Class<DataMut>;
 }
 
 #[cfg(test)]

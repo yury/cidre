@@ -64,7 +64,7 @@ impl UrlRequest {
         timeout: ns::TimeInterval,
     ) -> arc::R<UrlRequest>;
 
-    define_cls!(NS_URL_REQUEST);
+    define_cls!(sym NSURLRequest);
 
     #[inline]
     pub fn with_url(url: &ns::Url) -> arc::R<UrlRequest> {
@@ -155,7 +155,7 @@ impl UrlRequestMut {
         timeout: ns::TimeInterval,
     ) -> arc::R<UrlRequestMut>;
 
-    define_cls!(NS_MUTABLE_URL_REQUEST);
+    define_cls!(sym NSMutableURLRequest);
 
     #[inline]
     pub fn with_url(url: &ns::Url) -> arc::R<Self> {
@@ -222,11 +222,6 @@ impl UrlRequestMut {
 
     #[objc::msg_send(setHTTPBody:)]
     pub fn set_http_body(&mut self, value: Option<&ns::Data>);
-}
-
-unsafe extern "C" {
-    static NS_URL_REQUEST: &'static objc::Class<UrlRequest>;
-    static NS_MUTABLE_URL_REQUEST: &'static objc::Class<UrlRequestMut>;
 }
 
 #[cfg(test)]

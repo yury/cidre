@@ -78,7 +78,7 @@ impl Error {
         user_info: Option<&ns::Dictionary<ns::String, ns::Id>>,
     ) -> arc::R<Error>;
 
-    define_cls!(NS_ERROR);
+    define_cls!(sym NSError);
 
     #[objc::msg_send(code)]
     pub fn code(&self) -> ns::Integer;
@@ -169,10 +169,6 @@ impl Domain {
     pub fn mach() -> &'static Self {
         unsafe { NSMachErrorDomain }
     }
-}
-
-unsafe extern "C" {
-    static NS_ERROR: &'static objc::Class<Error>;
 }
 
 unsafe extern "C" {

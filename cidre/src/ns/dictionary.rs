@@ -22,7 +22,7 @@ impl<K: Obj, V: Obj> Dictionary<K, V> {
         count: usize,
     ) -> arc::R<Dictionary<K, V>>;
 
-    define_cls!(NS_DICTIONARY);
+    define_cls!(sym NSDictionary);
 
     #[inline]
     pub fn new() -> arc::R<Self> {
@@ -97,7 +97,7 @@ impl<K: Obj, V: Obj> DictionaryMut<K, V> {
     #[objc::init(initWithCapacity:)]
     pub fn init_with_capacity(self, capacity: usize) -> arc::R<DictionaryMut<K, V>>;
 
-    define_cls!(NS_MUTABLE_DICTIONARY);
+    define_cls!(sym NSMutableDictionary);
 
     #[inline]
     pub fn new() -> arc::R<Self> {
@@ -128,11 +128,6 @@ impl<K: Obj, V: Obj> DictionaryMut<K, V> {
 
     #[objc::msg_send(setDictionary:)]
     pub fn set_dictionary(&mut self, other: &Self);
-}
-
-unsafe extern "C" {
-    static NS_DICTIONARY: &'static ns::Class<Dictionary<ns::Id, ns::Id>>;
-    static NS_MUTABLE_DICTIONARY: &'static ns::Class<DictionaryMut<ns::Id, ns::Id>>;
 }
 
 #[cfg(test)]

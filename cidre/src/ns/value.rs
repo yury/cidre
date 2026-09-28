@@ -1,7 +1,4 @@
-use crate::{
-    arc, define_cls, define_obj_type, ns,
-    objc::{self, Class},
-};
+use crate::{arc, define_cls, define_obj_type, ns, objc};
 
 #[cfg(feature = "cf")]
 use crate::cf;
@@ -12,7 +9,7 @@ define_obj_type!(
 );
 
 impl Value {
-    define_cls!(NS_VALUE);
+    define_cls!(sym NSValue);
 
     #[objc::msg_send(isEqualToValue:)]
     pub fn eq_to_value(&self, other: &Self) -> bool;
@@ -63,7 +60,7 @@ impl Number {
     #[objc::init(initWithUnsignedInteger:)]
     fn init_with_unsigned_integer(self, value: ns::UInteger) -> arc::R<Number>;
 
-    define_cls!(NS_NUMBER);
+    define_cls!(sym NSNumber);
 
     #[inline]
     pub fn with_i8(value: i8) -> arc::R<Self> {
@@ -421,11 +418,6 @@ impl std::hash::Hash for arc::R<ns::Number> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.0.hash().hash(state);
     }
-}
-
-unsafe extern "C" {
-    static NS_VALUE: &'static Class<ns::Value>;
-    static NS_NUMBER: &'static Class<ns::Number>;
 }
 
 #[cfg(test)]

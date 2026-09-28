@@ -9,7 +9,7 @@ impl Bundle {
     #[objc::init(initWithPath:)]
     pub fn init_with_path(self, path: &ns::String) -> Option<arc::R<Bundle>>;
 
-    define_cls!(NS_BUNDLE);
+    define_cls!(sym NSBundle);
 
     #[objc::msg_send(mainBundle)]
     pub fn main() -> arc::R<Self>;
@@ -51,10 +51,6 @@ impl Bundle {
 
     #[objc::msg_send(bundleIdentifier)]
     pub fn bundle_id(&self) -> Option<arc::R<ns::String>>;
-}
-
-unsafe extern "C" {
-    static NS_BUNDLE: &'static objc::Class<Bundle>;
 }
 
 #[cfg(test)]

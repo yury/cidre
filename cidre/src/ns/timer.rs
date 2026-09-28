@@ -30,7 +30,7 @@ impl Timer {
         repeats: bool,
     ) -> arc::R<Timer>;
 
-    define_cls!(NS_TIMER);
+    define_cls!(sym NSTimer);
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(scheduledTimerWithTimeInterval:repeats:block:)]
@@ -123,10 +123,6 @@ impl Timer {
     pub fn as_cf(&self) -> &cf::RunLoopTimer {
         unsafe { std::mem::transmute(self) }
     }
-}
-
-unsafe extern "C" {
-    static NS_TIMER: &'static objc::Class<Timer>;
 }
 
 #[cfg(test)]

@@ -16,7 +16,6 @@ impl SelectionFeedbackGenerator {
     pub fn selection_changed(&self);
 }
 
-
 unsafe extern "C" {
     static UI_SELECTION_FEEDBACK_GENERATOR: &'static objc::Class<SelectionFeedbackGenerator>;
 }

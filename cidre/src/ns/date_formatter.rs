@@ -3,7 +3,7 @@ use crate::{arc, cf, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSDateFormatter")]
     pub DateFormatter(ns::Formatter),
-    NS_DATE_FORMATTER
+    sym NSDateFormatter
 );
 
 unsafe impl Send for DateFormatter {}
@@ -46,10 +46,6 @@ impl DateFormatter {
 
     #[objc::msg_send(setDateFormat:)]
     pub fn set_date_format(&mut self, val: Option<&ns::String>);
-}
-
-unsafe extern "C" {
-    static NS_DATE_FORMATTER: &'static objc::Class<DateFormatter>;
 }
 
 #[cfg(test)]

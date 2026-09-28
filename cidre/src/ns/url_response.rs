@@ -13,7 +13,7 @@ impl UrlResponse {
         text_encoding_name: Option<&ns::String>,
     ) -> arc::R<UrlResponse>;
 
-    define_cls!(NS_URL_RESPONSE);
+    define_cls!(sym NSURLResponse);
     /// ```
     /// use cidre::ns;
     /// let url = ns::Url::with_str("https://google.com").unwrap();
@@ -51,10 +51,6 @@ impl HttpUrlResponse {
 
     #[objc::msg_send(allHeaderFields)]
     pub fn all_header_fields(&self) -> arc::R<ns::Dictionary<ns::String, ns::Id>>;
-}
-
-unsafe extern "C" {
-    static NS_URL_RESPONSE: &'static objc::Class<UrlResponse>;
 }
 
 #[cfg(test)]

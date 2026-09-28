@@ -176,7 +176,7 @@ define_obj_type!(
 define_obj_type!(
     #[doc(alias = "NSAttributedString")]
     pub AttrString(ns::Id),
-    NS_ATTRIBUTED_STRING
+    sym NSAttributedString
 );
 
 impl AttrString {
@@ -246,7 +246,7 @@ impl AttrString {
 define_obj_type!(
     #[doc(alias = "NSMutableAttributedString")]
     pub AttrStringMut(AttrString),
-    NS_MUTABLE_ATTRIBUTED_STRING
+    sym NSMutableAttributedString
 );
 
 impl AttrStringMut {
@@ -354,11 +354,6 @@ impl InlinePresentationIntent {
     pub const LINE_BREAK: Self = Self(1 << 7);
     pub const INLINE_HTML: Self = Self(1 << 8);
     pub const BLOCK_HTML: Self = Self(1 << 9);
-}
-
-unsafe extern "C" {
-    static NS_ATTRIBUTED_STRING: &'static objc::Class<AttrString>;
-    static NS_MUTABLE_ATTRIBUTED_STRING: &'static objc::Class<AttrStringMut>;
 }
 
 #[cfg(all(test, target_os = "macos", feature = "app"))]

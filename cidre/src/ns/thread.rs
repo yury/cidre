@@ -5,7 +5,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSThread")]
     pub Thread(ns::Id),
-    NS_THREAD
+    sym NSThread
 );
 
 #[objc::protocol(CidreThreadTarget)]
@@ -142,10 +142,6 @@ impl Thread {
 
     #[objc::msg_send(exit)]
     pub fn exit();
-}
-
-unsafe extern "C" {
-    static NS_THREAD: &'static objc::Class<Thread>;
 }
 
 #[cfg(test)]

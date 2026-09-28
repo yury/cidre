@@ -12,7 +12,7 @@ impl Locale {
     #[objc::init(initWithLocaleIdentifier:)]
     pub fn init_with_locale_id(self, id: &ns::String) -> arc::R<Locale>;
 
-    define_cls!(NS_LOCALE);
+    define_cls!(sym NSLocale);
 
     #[objc::msg_send(availableLocaleIdentifiers)]
     pub fn available_locale_ids() -> arc::R<ns::Array<ns::String>>;
@@ -38,8 +38,4 @@ impl Locale {
 
     #[objc::msg_send(regionCode)]
     pub fn region_code(&self) -> Option<arc::R<ns::String>>;
-}
-
-unsafe extern "C" {
-    static NS_LOCALE: &'static objc::Class<Locale>;
 }

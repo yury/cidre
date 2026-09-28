@@ -7,7 +7,7 @@ pub const TIME_INTERVAL_SINCE_1970: TimeInterval = 978307200.0f64;
 
 define_obj_type!(
     #[doc(alias = "NSDate")]
-    pub Date(ns::Id), NS_DATE
+    pub Date(ns::Id), sym NSDate
 );
 
 impl Date {
@@ -41,10 +41,6 @@ impl Date {
 
     #[objc::msg_send(dateByAddingTimeInterval:)]
     pub fn add_time_interval(&self, val: TimeInterval) -> arc::R<Self>;
-}
-
-unsafe extern "C" {
-    static NS_DATE: &'static objc::Class<ns::Date>;
 }
 
 impl std::convert::TryFrom<std::time::SystemTime> for arc::R<Date> {

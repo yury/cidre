@@ -40,7 +40,7 @@ unsafe extern "C" {
     static NSRunLoopCommonModes: &'static RunLoopMode;
 }
 
-define_obj_type!(pub RunLoop(ns::Id), NS_RUN_LOOP);
+define_obj_type!(pub RunLoop(ns::Id), sym NSRunLoop);
 
 impl RunLoop {
     #[objc::msg_send(currentRunLoop)]
@@ -68,10 +68,6 @@ impl RunLoop {
     #[cfg(feature = "cf")]
     #[objc::msg_send(getCFRunLoop)]
     pub fn as_cf(&self) -> &cf::RunLoop;
-}
-
-unsafe extern "C" {
-    static NS_RUN_LOOP: &'static objc::Class<ns::Id>;
 }
 
 #[cfg(test)]

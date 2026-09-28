@@ -36,7 +36,7 @@ impl ns::KvObserverRegistration for ProcessInfo {}
 pub type OsVersion = crate::api::OsVersion;
 
 impl ProcessInfo {
-    define_cls!(NS_PROCESS_INFO);
+    define_cls!(sym NSProcessInfo);
     /// ```
     /// use cidre::ns;
     ///
@@ -120,10 +120,6 @@ impl ProcessInfo {
     #[objc::msg_send(isiOSAppOnVision)]
     #[objc::available(macos = 26.1, ios = 26.1, watchos = 26.1, tvos = 26.1, visionos = 26.1)]
     pub fn is_ios_app_on_vision(&self) -> bool;
-}
-
-unsafe extern "C" {
-    static NS_PROCESS_INFO: &'static objc::Class<ProcessInfo>;
 }
 
 #[cfg(test)]

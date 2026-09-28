@@ -12,7 +12,7 @@ define_obj_type!(
 );
 
 impl Op {
-    define_cls!(NS_OPERATION);
+    define_cls!(sym NSOperation);
 
     #[objc::msg_send(isCancelled)]
     pub fn is_cancelled(&self) -> bool;
@@ -70,7 +70,7 @@ define_obj_type!(
 );
 
 impl BlockOp {
-    define_cls!(NS_BLOCK_OPERATION);
+    define_cls!(sym NSBlockOperation);
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(blockOperationWithBlock:)]
@@ -82,7 +82,7 @@ impl ns::KvObserverRegistration for BlockOp {}
 
 define_obj_type!(
     #[doc(alias = "NSOperationQueue")]
-    pub OpQueue(ns::Id), NS_OPERATION_QUEUE
+    pub OpQueue(ns::Id), sym NSOperationQueue
 );
 
 impl ns::KvObserverRegistration for OpQueue {}
@@ -175,12 +175,6 @@ impl OpQueue {
 impl OpQueue {
     #[objc::msg_send(progress)]
     pub fn progress(&self) -> arc::R<ns::Progress>;
-}
-
-unsafe extern "C" {
-    static NS_OPERATION: &'static objc::Class<Op>;
-    static NS_BLOCK_OPERATION: &'static objc::Class<BlockOp>;
-    static NS_OPERATION_QUEUE: &'static objc::Class<OpQueue>;
 }
 
 #[cfg(test)]

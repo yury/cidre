@@ -4,7 +4,7 @@ use crate::{arc, define_obj_type, ns, objc};
 
 define_obj_type!(
     pub Predicate(ns::Id),
-    NS_PREDICATE
+    sym NSPredicate
 );
 
 impl ns::Copying for Predicate {}
@@ -84,10 +84,6 @@ impl<T: objc::Obj> ns::Set<T> {
 impl<T: objc::Obj> ns::SetMut<T> {
     #[objc::msg_send(filterUsingPredicate:)]
     pub fn filter_using_predicate(&mut self, predicate: &ns::Predicate);
-}
-
-unsafe extern "C" {
-    static NS_PREDICATE: &'static objc::Class<Predicate>;
 }
 
 #[cfg(test)]

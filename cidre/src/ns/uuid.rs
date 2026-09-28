@@ -2,7 +2,7 @@ use crate::{arc, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "NSUUID")]
-    pub Uuid(ns::Id), NS_UUID
+    pub Uuid(ns::Id), sym NSUUID
 );
 
 unsafe impl Send for Uuid {}
@@ -17,10 +17,6 @@ impl Uuid {
     pub fn with_string(str: &ns::String) -> Option<arc::R<Self>> {
         Self::alloc().init_with_uuid_string(str)
     }
-}
-
-unsafe extern "C" {
-    static NS_UUID: &'static objc::Class<Uuid>;
 }
 
 #[cfg(test)]

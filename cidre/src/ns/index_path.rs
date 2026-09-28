@@ -3,7 +3,7 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSIndexPath")]
     pub IndexPath(ns::Id),
-    NS_INDEX_PATH
+    sym NSIndexPath
 );
 
 impl ns::Copying for IndexPath {}
@@ -86,10 +86,6 @@ impl std::hash::Hash for arc::R<IndexPath> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.0.hash().hash(state);
     }
-}
-
-unsafe extern "C" {
-    static NS_INDEX_PATH: &'static objc::Class<IndexPath>;
 }
 
 #[cfg(test)]

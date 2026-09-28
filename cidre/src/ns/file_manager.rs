@@ -107,7 +107,7 @@ define_obj_type!(
 );
 
 impl FileManager {
-    define_cls!(NS_FILE_MANAGER);
+    define_cls!(sym NSFileManager);
 
     #[objc::msg_send(defaultManager)]
     pub fn default() -> arc::R<FileManager>;
@@ -332,10 +332,6 @@ impl FileManager {
         self.unmount_volume_at_url_ch_block(url, options, &mut ch);
         future.await
     }
-}
-
-unsafe extern "C" {
-    static NS_FILE_MANAGER: &'static objc::Class<FileManager>;
 }
 
 unsafe extern "C" {

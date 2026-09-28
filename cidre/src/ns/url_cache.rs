@@ -27,7 +27,7 @@ impl UrlCache {
         directory_url: Option<&ns::Url>,
     ) -> arc::R<UrlCache>;
 
-    define_cls!(NS_URL_CACHE);
+    define_cls!(sym NSURLCache);
     /// ```
     /// use cidre::ns;
     ///
@@ -67,10 +67,6 @@ impl UrlCache {
 
     #[objc::msg_send(currentDiskUsage)]
     pub fn current_disk_usage(&self) -> usize;
-}
-
-unsafe extern "C" {
-    static NS_URL_CACHE: &'static objc::Class<UrlCache>;
 }
 
 #[cfg(test)]

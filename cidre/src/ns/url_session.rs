@@ -52,7 +52,7 @@ define_obj_type!(
 );
 
 impl Session {
-    define_cls!(NS_URL_SESSION);
+    define_cls!(sym NSURLSession);
     /// ```
     /// use cidre::ns;
     ///
@@ -299,7 +299,6 @@ impl WebSocketMessage {
 }
 
 unsafe extern "C" {
-    static NS_URL_SESSION: &'static Class<Session>;
     static NS_URL_SESSION_WEB_SOCKET_MESSAGE: &'static Class<WebSocketMessage>;
 }
 

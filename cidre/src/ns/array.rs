@@ -66,7 +66,7 @@ impl<T: objc::Obj> Array<T> {
     #[objc::init(initWithObjects:count:)]
     pub unsafe fn init_with_objs(self, ptr: *const &T, count: usize) -> arc::R<Array<T>>;
 
-    define_cls!(NS_ARRAY);
+    define_cls!(sym NSArray);
 
     /// Creates an empty array via `alloc` + `init`.
     #[inline]
@@ -79,12 +79,12 @@ impl<T: objc::Obj> Array<T> {
         Self::new()
     }
 
-    /// Alternate constructor using `NS_ARRAY.new()`.
+    /// Alternate constructor using `NSArray.new()`.
     ///
     /// Prefer `new()`; this path is slower.
     #[inline]
     pub fn _new() -> arc::R<Self> {
-        unsafe { transmute(NS_ARRAY.new()) }
+        unsafe { transmute(Self::cls().new()) }
     }
 
     /// Builds an array from borrowed object references.
@@ -220,7 +220,7 @@ impl<T: objc::Obj> ArrayMut<T> {
     #[objc::init(initWithObjects:count:)]
     pub unsafe fn init_with_objs(self, ptr: *const &T, count: usize) -> arc::R<ArrayMut<T>>;
 
-    define_cls!(NS_MUTABLE_ARRAY);
+    define_cls!(sym NSMutableArray);
 
     /// Creates a mutable array with preallocated capacity.
     #[inline]
@@ -510,11 +510,6 @@ impl<const N: usize> From<[u32; N]> for arc::R<ns::Array<ns::Number>> {
         }
         ns::Array::from_slice(unsafe { std::mem::transmute(&vals[..]) })
     }
-}
-
-unsafe extern "C" {
-    static NS_ARRAY: &'static objc::Class<ns::Array<ns::Id>>;
-    static NS_MUTABLE_ARRAY: &'static objc::Class<ns::ArrayMut<ns::Id>>;
 }
 
 #[macro_export]

@@ -6,7 +6,7 @@ define_obj_type!(
 );
 
 impl KeyedArchiver {
-    define_cls!(NS_KEYED_ARCHIVER);
+    define_cls!(sym NSKeyedArchiver);
 
     #[objc::msg_send(archivedDataWithRootObject:requiringSecureCoding:error:)]
     pub unsafe fn archived_data_with_root_obj_err<'ear>(
@@ -22,10 +22,6 @@ impl KeyedArchiver {
     ) -> Result<arc::R<ns::Data>, &'ear ns::Error> {
         ns::if_none(|err| unsafe { Self::archived_data_with_root_obj_err(obj, secure_coding, err) })
     }
-}
-
-unsafe extern "C" {
-    static NS_KEYED_ARCHIVER: &'static objc::Class<KeyedArchiver>;
 }
 
 #[cfg(test)]

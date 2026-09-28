@@ -36,7 +36,7 @@ impl Iso8601DateFormatOpts {
 define_obj_type!(
     #[doc(alias = "NSISO8601DateFormatter")]
     pub Iso8601DateFormatter(ns::Formatter),
-    NS_ISO_8601_DATE_FORMATTER
+    sym NSISO8601DateFormatter
 );
 
 impl Iso8601DateFormatter {
@@ -48,10 +48,6 @@ impl Iso8601DateFormatter {
 
     #[objc::msg_send(setFormatOptions:)]
     pub fn set_format_opts(&mut self, val: ns::Iso8601DateFormatOpts);
-}
-
-unsafe extern "C" {
-    static NS_ISO_8601_DATE_FORMATTER: &'static objc::Class<Iso8601DateFormatter>;
 }
 
 #[cfg(test)]

@@ -820,14 +820,14 @@ unsafe extern "C-unwind" {
 /// Same as `define_cls!` but with open `init`
 #[macro_export]
 macro_rules! define_cls_init {
-    ($NewType:ident, $CLS:ident) => {
+    ($NewType:ident, $($CLS:ident)+) => {
         impl $crate::arc::A<$NewType> {
             #[$crate::objc::msg_send(init)]
             pub fn init(self) -> arc::Retained<$NewType>;
         }
 
         impl $NewType {
-            $crate::define_cls!($CLS);
+            $crate::define_cls!($($CLS)+);
 
             /// shortcut to `Self::alloc().init()`
             #[inline]
@@ -865,6 +865,29 @@ macro_rules! define_weak_cls_init {
 /// - (instancetype)init NS_UNAVAILABLE;
 #[macro_export]
 macro_rules! define_cls {
+    // Links `OBJC_CLASS_$_Name` directly: dyld binds the class address at load time,
+    // so no pomace constructor has to run. Only for classes available on every
+    // supported deployment target (stable Rust can't weak-link).
+    (sym $Name:ident) => {
+        #[inline]
+        pub fn cls() -> &'static $crate::objc::Class<Self> {
+            unsafe { std::mem::transmute(Self::cls_ptr()) }
+        }
+
+        #[inline]
+        pub fn cls_ptr() -> *const std::ffi::c_void {
+            unsafe extern "C" {
+                #[link_name = concat!("OBJC_CLASS_$_", stringify!($Name))]
+                static CLS: $crate::objc::Class<$crate::objc::Id>;
+            }
+            &raw const CLS as _
+        }
+
+        #[inline]
+        pub fn alloc() -> $crate::arc::A<Self> {
+            Self::cls().alloc()
+        }
+    };
     ($CLS:ident) => {
         #[inline]
         pub fn cls() -> &'static $crate::objc::Class<Self> {
@@ -1406,7 +1429,7 @@ macro_rules! define_obj_type {
     (
         $(#[$outer:meta])*
         $vis:vis
-        $NewType:ident($BaseType:path), $CLS:ident
+        $NewType:ident($BaseType:path), $($CLS:ident)+
         $(, #[$api_available:meta])?
     ) => {
         $crate::define_obj_type!(
@@ -1415,7 +1438,7 @@ macro_rules! define_obj_type {
             NewType($BaseType)
         );
         $(#[$api_available])?
-        $crate::define_cls_init!($NewType, $CLS);
+        $crate::define_cls_init!($NewType, $($CLS)+);
     };
 }
 

@@ -7,7 +7,7 @@ define_obj_type!(
     /// Data or files another app offers, in drag and drop and sharing, loaded on demand.
     #[doc(alias = "NSItemProvider")]
     pub ItemProvider(ns::Id),
-    NS_ITEM_PROVIDER
+    sym NSItemProvider
 );
 
 impl ItemProvider {
@@ -43,10 +43,6 @@ impl ItemProvider {
         let mut ch = blocks::ResultCh::new2(ch);
         self.load_file_repr_for_type_id_ch_block(type_id, &mut ch)
     }
-}
-
-unsafe extern "C" {
-    static NS_ITEM_PROVIDER: &'static objc::Class<ItemProvider>;
 }
 
 #[cfg(test)]

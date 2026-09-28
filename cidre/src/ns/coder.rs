@@ -1,4 +1,4 @@
-use crate::{arc, define_obj_type, ns, objc};
+use crate::{arc, define_obj_type, ns};
 
 /// Describes the action an ns::Coder should take when it encounters decode failures (e.g. corrupt data)
 /// for non-TopLevel decodes.
@@ -21,14 +21,10 @@ pub enum DecodingFailurePolicy {
 
 define_obj_type!(
     #[doc(alias = "NSCoder")]
-    pub Coder(ns::Id), NS_CODER
+    pub Coder(ns::Id), sym NSCoder
 );
 
 impl Coder {}
-
-unsafe extern "C" {
-    static NS_CODER: &'static objc::Class<Coder>;
-}
 
 #[cfg(test)]
 mod tests {

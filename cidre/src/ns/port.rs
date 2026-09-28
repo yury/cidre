@@ -2,12 +2,12 @@ use crate::{arc, define_obj_type, mach, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "NSPort")]
-    pub Port(ns::Id), NS_PORT
+    pub Port(ns::Id), sym NSPort
 );
 
 define_obj_type!(
     #[doc(alias = "NSMachPort")]
-    pub MachPort(Port), NS_MACH_PORT
+    pub MachPort(Port), sym NSMachPort
 );
 
 impl Port {
@@ -44,11 +44,6 @@ pub trait MachPortDelegate: objc::Obj {
 
 define_obj_type!(pub AnyMachPortDelegate(ns::Id));
 impl MachPortDelegate for AnyMachPortDelegate {}
-
-unsafe extern "C" {
-    static NS_PORT: &'static objc::Class<Port>;
-    static NS_MACH_PORT: &'static objc::Class<MachPort>;
-}
 
 #[cfg(test)]
 mod tests {

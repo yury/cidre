@@ -8,8 +8,6 @@ use crate::{
 #[cfg(feature = "cf")]
 use crate::cf;
 
-use super::Class;
-
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(usize)]
 pub enum Encoding {
@@ -20,12 +18,12 @@ pub enum Encoding {
 
 define_obj_type!(
     #[doc(alias = "NSString")]
-    pub String(ns::Id), NS_STRING
+    pub String(ns::Id), sym NSString
 );
 
 define_obj_type!(
     #[doc(alias = "NSMutableString")]
-    pub StringMut(String), NS_MUTABLE_STRING
+    pub StringMut(String), sym NSMutableString
 );
 
 impl String {
@@ -253,11 +251,6 @@ impl StringMut {
 
     #[objc::msg_send(hash)]
     pub fn hash(&self) -> ns::UInteger;
-}
-
-unsafe extern "C" {
-    static NS_STRING: &'static Class<String>;
-    static NS_MUTABLE_STRING: &'static Class<StringMut>;
 }
 
 impl PartialEq<str> for String {

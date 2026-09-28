@@ -6,7 +6,7 @@ use crate::{
 define_obj_type!(
     #[doc(alias = "NSUserDefaults")]
     pub UserDefaults(ns::Id),
-    NS_USER_DEFAULTS
+    sym NSUserDefaults
 );
 
 impl UserDefaults {
@@ -121,10 +121,6 @@ impl ns::KvObserverRegistration for UserDefaults {}
 
 unsafe impl Send for UserDefaults {}
 unsafe impl Sync for UserDefaults {}
-
-unsafe extern "C" {
-    static NS_USER_DEFAULTS: &'static objc::Class<UserDefaults>;
-}
 
 #[cfg(test)]
 mod tests {

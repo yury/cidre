@@ -3,8 +3,6 @@ use crate::{arc, define_cls, define_obj_type, ns, objc};
 #[cfg(feature = "cf")]
 use crate::cf;
 
-use super::Class;
-
 define_obj_type!(
     #[doc(alias = "NSURLResourceKey")]
     pub ResKey(ns::String)
@@ -31,7 +29,7 @@ impl Url {
         relative_to: Option<&ns::Url>,
     ) -> Option<arc::R<ns::Url>>;
 
-    define_cls!(NS_URL);
+    define_cls!(sym NSURL);
 
     #[inline]
     pub fn file_url_relative_to(
@@ -144,10 +142,6 @@ impl AsRef<cf::Url> for Url {
 }
 
 unsafe impl Send for Url {}
-
-unsafe extern "C" {
-    static NS_URL: &'static Class<Url>;
-}
 
 impl ResKey {
     #[inline]

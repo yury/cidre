@@ -5,13 +5,13 @@ use crate::{arc, define_obj_type, ns, objc};
 define_obj_type!(
     #[doc(alias = "NSIndexSet")]
     pub IndexSet(ns::Id),
-    NS_INDEX_SET
+    sym NSIndexSet
 );
 
 define_obj_type!(
     #[doc(alias = "NSMutableIndexSet")]
     pub IndexSetMut(ns::IndexSet),
-    NS_MUTABLE_INDEX_SET
+    sym NSMutableIndexSet
 );
 
 impl IndexSet {
@@ -202,11 +202,6 @@ impl Default for arc::R<IndexSetMut> {
     fn default() -> Self {
         IndexSetMut::with_range(Default::default())
     }
-}
-
-unsafe extern "C" {
-    static NS_INDEX_SET: &'static objc::Class<IndexSet>;
-    static NS_MUTABLE_INDEX_SET: &'static objc::Class<IndexSetMut>;
 }
 
 #[cfg(test)]

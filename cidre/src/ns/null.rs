@@ -11,7 +11,7 @@ define_obj_type!(
 unsafe impl Send for Null {}
 
 impl Null {
-    define_cls!(NS_NULL);
+    define_cls!(sym NSNull);
 
     /// The singleton instance of [`ns::Null`]. Equal to [`cf::Null::value()`].
     ///
@@ -42,8 +42,4 @@ impl AsRef<cf::Type> for Null {
     fn as_ref(&self) -> &cf::Type {
         self.as_cf()
     }
-}
-
-unsafe extern "C" {
-    static NS_NULL: &'static objc::Class<Null>;
 }

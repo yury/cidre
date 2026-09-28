@@ -101,7 +101,7 @@ impl Regex {
         error: *mut Option<&'ear ns::Error>,
     ) -> Option<arc::R<Regex>>;
 
-    define_cls!(NS_REGULAR_EXPRESSION);
+    define_cls!(sym NSRegularExpression);
 
     #[inline]
     pub fn with_pattern<'ear>(
@@ -110,10 +110,6 @@ impl Regex {
     ) -> Result<arc::R<Self>, &'ear ns::Error> {
         ns::if_none(|err| Self::alloc().init_with_pattern_opts_err(pattern, opts, err))
     }
-}
-
-unsafe extern "C" {
-    static NS_REGULAR_EXPRESSION: &'static objc::Class<Regex>;
 }
 
 #[cfg(test)]

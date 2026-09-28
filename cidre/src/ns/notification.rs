@@ -40,7 +40,7 @@ impl Notification {
     #[objc::init(initWithCoder:)]
     pub fn init_with_coder(self, coder: &ns::Coder) -> arc::R<Notification>;
 
-    define_cls!(NS_NOTIFICATION);
+    define_cls!(sym NSNotification);
 
     #[objc::msg_send(name)]
     pub fn name(&self) -> arc::R<ns::NotificationName>;
@@ -66,7 +66,7 @@ impl Notification {
 
 define_obj_type!(
     #[doc(alias = "NSNotificationCenter")]
-    pub NotificationCenter(ns::Id), NS_NOTIFICATION_CENTER
+    pub NotificationCenter(ns::Id), sym NSNotificationCenter
 );
 
 unsafe impl Send for NotificationCenter {}
@@ -142,11 +142,6 @@ impl Drop for NotificationGuard {
     fn drop(&mut self) {
         self.center.remove_observer(&self.token);
     }
-}
-
-unsafe extern "C" {
-    static NS_NOTIFICATION: &'static objc::Class<Notification>;
-    static NS_NOTIFICATION_CENTER: &'static objc::Class<NotificationCenter>;
 }
 
 #[cfg(test)]

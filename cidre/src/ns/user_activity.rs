@@ -35,7 +35,7 @@ impl UserActivity {
     #[objc::init(initWithActivityType:)]
     pub fn init_with_activity_type(self, activity_type: &ns::String) -> arc::R<UserActivity>;
 
-    define_cls!(NS_USER_ACTIVITY);
+    define_cls!(sym NSUserActivity);
 
     pub fn with_activity_type(activity_type: &ns::String) -> arc::R<Self> {
         Self::alloc().init_with_activity_type(activity_type)
@@ -241,10 +241,6 @@ define_obj_type!(
 );
 
 impl UserActivityDelegate for AnyUserActivityDelegate {}
-
-unsafe extern "C" {
-    static NS_USER_ACTIVITY: &'static objc::Class<UserActivity>;
-}
 
 #[cfg(test)]
 mod tests {

@@ -150,7 +150,9 @@ impl Pasteboard {
         self.read_objs_for_classes_opts(&classes, Some(&opts))
             .map(|objs| {
                 objs.iter()
-                    .filter_map(|obj| objc::Obj::try_cast(obj, ns::Url::cls()).map(|url| url.retained()))
+                    .filter_map(|obj| {
+                        objc::Obj::try_cast(obj, ns::Url::cls()).map(|url| url.retained())
+                    })
                     .collect()
             })
             .unwrap_or_default()

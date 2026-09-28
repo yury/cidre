@@ -6,7 +6,7 @@ define_obj_type!(
 );
 
 impl KeyedUnarchiver {
-    define_cls!(NS_KEYED_UNARCHIVER);
+    define_cls!(sym NSKeyedUnarchiver);
 
     #[objc::msg_send(unarchivedObjectOfClass:fromData:error:)]
     pub unsafe fn unarchived_obj_of_cls_err<'a, 'ear, T: objc::Obj>(
@@ -22,10 +22,6 @@ impl KeyedUnarchiver {
     ) -> Result<arc::R<T>, &'ear ns::Error> {
         ns::if_none(|err| unsafe { Self::unarchived_obj_of_cls_err(cls, data, err) })
     }
-}
-
-unsafe extern "C" {
-    static NS_KEYED_UNARCHIVER: &'static objc::Class<KeyedUnarchiver>;
 }
 
 #[cfg(test)]
