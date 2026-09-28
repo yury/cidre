@@ -26,9 +26,15 @@
 //! - every other `"$s..."` string literal, which is how a hand-mangled symbol
 //!   is written wherever it appears.
 //!
-//! A symbol from a framework that cannot be loaded here (another platform's) is
-//! skipped, so run it on each platform. Set `CIDRE_AUDIT_VERBOSE=1` to list
-//! what was skipped.
+//! A symbol is skipped when this system cannot have it: its framework does not
+//! load here (another platform's), or every binding that names it needs a
+//! newer OS than the one running the test — by a `#[cfg(feature =
+//! "macos_27_0")]` on it or on a module above it, or an
+//! `#[api::available(macos = 27.0)]`. A hand-written symbol has neither when
+//! the code using it stays compiled for older targets, so a comment before it
+//! states it the same way: `// available(macos = 27.0)`. So run it on each
+//! platform, and on the newest OS to cover everything. Set `CIDRE_AUDIT_VERBOSE=1` to list what was
+//! skipped, and `CIDRE_AUDIT_OS=26.0` to audit as if running an older OS.
 
 use std::{
     collections::BTreeMap,
@@ -57,6 +63,8 @@ struct Site {
     line: usize,
     /// The declaration it was mangled from, if it was not written mangled.
     decl: Option<String>,
+    /// The oldest version of this OS the binding naming it can be built for.
+    requires: Version,
 }
 
 impl std::fmt::Display for Site {
@@ -281,9 +289,230 @@ enum Source<'a> {
     Mangled(String),
 }
 
+/// An OS version, as `(major, minor)`.
+type Version = (u32, u32);
+
+/// The version of the OS running the test, or the one `CIDRE_AUDIT_OS` names,
+/// which is how the skipping is checked for an older OS without one.
+fn running_os() -> Version {
+    if let Some(text) = std::env::var("CIDRE_AUDIT_OS")
+        .ok()
+        .filter(|text| !text.is_empty())
+    {
+        let mut parts = text.split('.').map(|part| part.parse::<u32>().unwrap_or(0));
+        return (parts.next().unwrap_or(0), parts.next().unwrap_or(0));
+    }
+    unsafe extern "C" {
+        fn sysctlbyname(
+            name: *const c_char,
+            old: *mut c_void,
+            old_len: *mut usize,
+            new: *const c_void,
+            new_len: usize,
+        ) -> c_int;
+    }
+    let mut buf = [0u8; 32];
+    let mut len = buf.len();
+    let name = CString::new("kern.osproductversion").unwrap();
+    let status = unsafe {
+        sysctlbyname(
+            name.as_ptr(),
+            buf.as_mut_ptr().cast(),
+            &mut len,
+            core::ptr::null(),
+            0,
+        )
+    };
+    assert_eq!(0, status, "kern.osproductversion must be readable");
+    let text = std::str::from_utf8(&buf[..len])
+        .unwrap()
+        .trim_end_matches('\0');
+    let mut parts = text.split('.').map(|part| part.parse::<u32>().unwrap_or(0));
+    (parts.next().unwrap_or(0), parts.next().unwrap_or(0))
+}
+
+/// The name this OS goes by in feature flags and availability attributes.
+fn os_key() -> &'static str {
+    match std::env::consts::OS {
+        "macos" => "macos",
+        "ios" => "ios",
+        "tvos" => "tvos",
+        "watchos" => "watchos",
+        "visionos" => "visionos",
+        other => other,
+    }
+}
+
+/// The newest version of this OS that attributes in `text` require: a
+/// `feature = "macos_27_0"` in a `cfg`, or `macos = 27.0` in an `available`.
+/// Several conditions on one item all have to hold, so the newest wins.
+fn required_version(text: &str) -> Version {
+    let key = os_key();
+    let mut version = (0, 0);
+    let feature = format!("feature = \"{key}_");
+    for (at, _) in text.match_indices(&feature) {
+        let rest = &text[at + feature.len()..];
+        let digits: String = rest
+            .chars()
+            .take_while(|c| c.is_ascii_digit() || *c == '_')
+            .collect();
+        let mut parts = digits.split('_').map(|part| part.parse().unwrap_or(0));
+        version = version.max((parts.next().unwrap_or(0), parts.next().unwrap_or(0)));
+    }
+    for attr in ["available("] {
+        for (at, _) in text.match_indices(attr) {
+            let Some(args) = group(text, at + attr.len() - 1) else {
+                continue;
+            };
+            for kv in args.split(',') {
+                let Some((name, value)) = kv.split_once('=') else {
+                    continue;
+                };
+                if name.trim() != key {
+                    continue;
+                }
+                let mut parts = value
+                    .trim()
+                    .split('.')
+                    .map(|part| part.parse().unwrap_or(0));
+                version = version.max((parts.next().unwrap_or(0), parts.next().unwrap_or(0)));
+            }
+        }
+    }
+    version
+}
+
+/// What each line of a file requires of the OS: `base`, the requirement of
+/// the module the file is, raised by the attributes of every item the line
+/// is part of.
+///
+/// An item is taken to be the attributes and doc comments before it, then
+/// everything up to where its brackets close — so an `impl` block's
+/// attributes cover its members, and a member's cover the attributes written
+/// beside the one that names a symbol.
+fn line_requirements(text: &str, base: Version) -> Vec<Version> {
+    let lines: Vec<&str> = text.lines().collect();
+    let mut requires = vec![base; lines.len()];
+    let mut index = 0;
+    while index < lines.len() {
+        // The attribute block, including attributes that span lines.
+        let block_start = index;
+        let mut depth = 0i32;
+        while index < lines.len() {
+            let line = lines[index].trim();
+            if depth > 0 || line.starts_with("#[") {
+                depth += bracket_depth(line, b'[', b']');
+            } else if !(line.is_empty() || line.starts_with("//")) {
+                break;
+            }
+            index += 1;
+        }
+        if index >= lines.len() {
+            break;
+        }
+        // The item, up to where its brackets close or its statement ends.
+        let item_start = index;
+        let mut depth = 0i32;
+        let mut opened = false;
+        while index < lines.len() {
+            let line = lines[index];
+            let change = bracket_depth(line, b'{', b'}') + bracket_depth(line, b'(', b')');
+            opened |= depth + change > 0 || line.contains('{') || line.contains('(');
+            depth += change;
+            index += 1;
+            if depth <= 0 && (opened || line.trim_end().ends_with(';')) {
+                break;
+            }
+        }
+        let block: String = lines[block_start..item_start.max(block_start)].join("\n");
+        let header = lines[item_start];
+        let needed = required_version(&block).max(required_version(header));
+        if needed > (0, 0) {
+            for line in &mut requires[block_start..index] {
+                *line = (*line).max(needed);
+            }
+        }
+        // An item with a body holds items of its own, whose attributes add
+        // to this one's, so the scan goes back inside it.
+        if index > item_start + 1 {
+            index = item_start + 1;
+        }
+    }
+    requires
+}
+
+/// How far a line moves the nesting of one kind of bracket, not counting any
+/// inside a literal.
+fn bracket_depth(line: &str, open: u8, close: u8) -> i32 {
+    let bytes = line.as_bytes();
+    let mut depth = 0;
+    let mut index = 0;
+    while index < bytes.len() {
+        if let Some((_, next)) = literal_at(bytes, index) {
+            index = next;
+            continue;
+        }
+        if bytes[index] == open {
+            depth += 1;
+        } else if bytes[index] == close {
+            depth -= 1;
+        }
+        index += 1;
+    }
+    depth
+}
+
+/// What each file requires of the OS, from the `cfg`s on the `mod`
+/// declarations leading to it: a module compiled only for a newer OS holds
+/// only symbols that OS has.
+fn module_requirements(root: &Path) -> BTreeMap<PathBuf, Version> {
+    let mut out = BTreeMap::new();
+    let mut pending = vec![(root.join("lib.rs"), (0, 0))];
+    while let Some((file, base)) = pending.pop() {
+        let Ok(source) = fs::read_to_string(&file) else {
+            continue;
+        };
+        out.insert(file.clone(), base);
+        let text = code_only(&source);
+        let requires = line_requirements(&text, base);
+        // `lib.rs` and `foo/mod.rs` own their directory; `foo.rs` owns `foo/`.
+        let dir = if file
+            .file_name()
+            .is_some_and(|name| name == "lib.rs" || name == "mod.rs")
+        {
+            file.parent().unwrap().to_path_buf()
+        } else {
+            file.with_extension("")
+        };
+        for (number, line) in text.lines().enumerate() {
+            let module = line
+                .trim()
+                .trim_start_matches("pub ")
+                .trim_start_matches("pub(crate) ")
+                .trim_start_matches("pub(super) ")
+                .strip_prefix("mod ")
+                .and_then(|rest| rest.strip_suffix(';'));
+            if let Some(module) = module {
+                let needed = requires[number];
+                pending.push((dir.join(format!("{module}.rs")), needed));
+                pending.push((dir.join(module).join("mod.rs"), needed));
+            }
+        }
+    }
+    out
+}
+
 /// Every symbol the bindings in `file` name, and where.
-fn collect(file: &Path, out: &mut BTreeMap<String, Vec<Site>>, errors: &mut Vec<String>) {
-    let text = code_only(&fs::read_to_string(file).unwrap());
+fn collect(
+    file: &Path,
+    base: Version,
+    out: &mut BTreeMap<String, Vec<Site>>,
+    errors: &mut Vec<String>,
+) {
+    let source = fs::read_to_string(file).unwrap();
+    let text = code_only(&source);
+    // Read off the source with its comments, which may state availability.
+    let requires = line_requirements(&source, base);
     let shown = file
         .strip_prefix(env!("CARGO_MANIFEST_DIR"))
         .unwrap_or(file)
@@ -317,6 +546,7 @@ fn collect(file: &Path, out: &mut BTreeMap<String, Vec<Site>>, errors: &mut Vec<
                         file: shown.clone(),
                         line,
                         decl: decl.clone(),
+                        requires: requires[line - 1],
                     })
                 };
                 if also_async {
@@ -533,11 +763,14 @@ fn symbol_audit() {
 
     let mut symbols = BTreeMap::new();
     let mut errors = Vec::new();
+    let modules = module_requirements(&root);
     // This file spells out example symbols of its own.
     let this = root.join("swift").join("symbol_audit.rs");
     for file in files.iter().filter(|file| **file != this) {
-        collect(file, &mut symbols, &mut errors);
+        let base = modules.get(file).copied().unwrap_or((0, 0));
+        collect(file, base, &mut symbols, &mut errors);
     }
+    let os = running_os();
 
     let verbose = std::env::var_os("CIDRE_AUDIT_VERBOSE").is_some();
     let mut images = Images::default();
@@ -553,6 +786,27 @@ fn symbol_audit() {
             }
             continue;
         }
+        // Named only by bindings built for a newer OS than this one, which
+        // need not have it.
+        let needed = sites
+            .iter()
+            .map(|site| site.requires)
+            .min()
+            .unwrap_or((0, 0));
+        if needed > os {
+            skipped += 1;
+            if verbose {
+                eprintln!(
+                    "skipped {symbol}: needs {} {}.{}, running {}.{}",
+                    os_key(),
+                    needed.0,
+                    needed.1,
+                    os.0,
+                    os.1
+                );
+            }
+            continue;
+        }
         checked += 1;
         if !resolves(symbol) {
             let sites: Vec<String> = sites.iter().map(|site| format!("  {site}")).collect();
@@ -564,7 +818,10 @@ fn symbol_audit() {
     }
 
     eprintln!(
-        "swift symbol audit: {checked} checked, {skipped} skipped, {} problems",
+        "swift symbol audit on {} {}.{}: {checked} checked, {skipped} skipped, {} problems",
+        os_key(),
+        os.0,
+        os.1,
         errors.len()
     );
     assert!(

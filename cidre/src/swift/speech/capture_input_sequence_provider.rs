@@ -1,4 +1,4 @@
-use crate::{api, arc, av, swift::abi};
+use crate::{api, swift::abi};
 
 // used by 27.0 api only
 #[cfg(any(
@@ -11,7 +11,7 @@ use crate::{api, arc, av, swift::abi};
 use {
     super::SpeechModule,
     crate::{
-        ns, swift,
+        arc, av, ns, swift,
         swift::{
             concurrency::TaskPriority,
             value::{Optional, Storage},
@@ -19,6 +19,9 @@ use {
     },
 };
 
+// available(macos = 27.0, ios = 27.0): the class is new in 27. The type exists
+// on every target, as the unavailable variants of its API name it, but only a
+// 27 build reaches the framework.
 crate::define_swift!(
     #[swift::class("Speech.CaptureInputSequenceProvider")]
     pub CaptureInputSequenceProvider
@@ -33,6 +36,7 @@ unsafe impl Send for AnalyzerInputSequence {}
 
 // `analyzerInputs` is an opaque `some AsyncSequence`, whose getter and
 // descriptor the mangler does not spell.
+// available(macos = 27.0, ios = 27.0)
 #[link(name = "Speech", kind = "framework")]
 unsafe extern "C" {
     #[link_name = "$s6Speech28CaptureInputSequenceProviderC14analyzerInputsQrvg"]

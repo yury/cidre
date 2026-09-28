@@ -12,10 +12,28 @@ env:
 jobs:
   build:
     strategy:
-        matrix:
-          os: [macos-15]
+      fail-fast: false
+      matrix:
+        include:
+          # The oldest SDK cidre builds against: catches symbols and APIs
+          # that only newer SDKs have.
+          - os: macos-15
+            xcode: /Applications/Xcode_16.app
+            macos: macos_15_0
+          # The current release SDK, the first with the Speech API.
+          - os: macos-26
+            xcode: /Applications/Xcode_26.6.app
+            macos: macos_26_0
+          # The only place the OS 27 API (MusicUnderstanding, Speech capture)
+          # builds and runs. A preview image, so it may fail without failing
+          # the run.
+          - os: xcode-27
+            xcode: /Applications/Xcode_27.app
+            macos: macos_27_0
+            preview: true
 
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.preview == true }}
 
     steps:
     - uses: actions/checkout@v7
@@ -25,7 +43,7 @@ jobs:
     - name: os ver
       run: sw_vers
     - name: switch xcode
-      run: sudo xcode-select -s '/Applications/Xcode_16.app'
+      run: sudo xcode-select -s '${{ matrix.xcode }}'
     - name: list sdks
       run: xcodebuild -showsdks
     - name: macosx sdk version
@@ -39,7 +57,7 @@ jobs:
           rustup +nightly target add aarch64-apple-darwin &&
           rustup +nightly target add aarch64-apple-ios &&
           rustup component add rust-src --toolchain nightly-aarch64-apple-darwin
-    
+
     - name: Build
       run: ./build.sh
 
@@ -48,3 +66,10 @@ jobs:
 
     - name: Test cf
       run: 'RUST_BACKTRACE=1 cargo t --features="macos_14_0" cf::'
+
+    # The Swift bindings for this runner's OS, and the audit of every Swift
+    # symbol they link, which skips what this OS is too old to have.
+    - name: Test swift
+      run: >
+          RUST_BACKTRACE=1 cargo t --lib --features="${{ matrix.macos }},async" swift::
+          -- --nocapture

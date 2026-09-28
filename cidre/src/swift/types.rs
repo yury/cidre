@@ -977,34 +977,59 @@ mod tests {
         check::<f64>();
     }
 
-    /// A three-word result, which C returns through a buffer, comes back from
-    /// `x0`-`x2` through the thunk.
+    // Stand-ins for Swift functions that return three words, written as the
+    // callee would see its registers so the test depends on no SDK: the
+    // arguments come back in `x0` and `x1`, and `x2` reports the `self` the
+    // thunk put in `x20`. The throwing one reports in `x1` the `x21` it was
+    // entered with, which the thunk must have zeroed, and leaves it zero, which
+    // is how a Swift callee says it did not throw.
     #[cfg(feature = "cm")]
-    impl crate::cm::Time {
-        // Declared in CoreMedia's extension of the imported struct, which the
-        // mangler does not spell.
-        #[crate::swift::call(
-            sym = "$sSo6CMTimea9CoreMediaE5value9timescaleABs5Int64V_s5Int32VtcfC"
-        )]
-        fn swift_with_value(value: i64, timescale: i32) -> crate::cm::Time;
-
-        #[crate::swift::call(
-            sym = "$sSo6CMTimea9CoreMediaE7seconds18preferredTimescaleABSd_s5Int32VtcfC"
-        )]
-        fn swift_with_seconds(seconds: f64, preferred_timescale: i32) -> crate::cm::Time;
+    #[unsafe(naked)]
+    #[unsafe(export_name = "cidre_test_swift_words3")]
+    extern "C" fn fake_swift_words3() {
+        core::arch::naked_asm!("mov x2, x20", "ret")
     }
 
     #[cfg(feature = "cm")]
+    #[unsafe(naked)]
+    #[unsafe(export_name = "cidre_test_swift_throwing_words3")]
+    extern "C" fn fake_swift_throwing_words3() {
+        core::arch::naked_asm!("mov x1, x21", "mov x2, x20", "ret")
+    }
+
+    #[cfg(feature = "cm")]
+    impl crate::cm::Time {
+        #[crate::swift::call(sym = "cidre_test_swift_words3")]
+        fn swift_words3(first: i64, second: i64) -> crate::cm::Time;
+
+        #[crate::swift::call(sym = "cidre_test_swift_throwing_words3")]
+        fn swift_throwing_words3(
+            first: i64,
+        ) -> Result<crate::cm::Time, crate::arc::R<crate::ns::Error>>;
+    }
+
+    /// The words of a `CMTime`, which is what the stand-ins fill it with.
+    #[cfg(feature = "cm")]
+    fn words(time: crate::cm::Time) -> [u64; 3] {
+        unsafe { core::mem::transmute(time) }
+    }
+
+    /// A three-word result, which C returns through a buffer, comes back from
+    /// `x0`-`x2` through the thunk, with `self` in `x20` on the way in — for a
+    /// static member, the type's metadata.
+    #[cfg(feature = "cm")]
     #[test]
     fn a_three_word_result_comes_back_whole() {
-        assert_eq!(
-            crate::cm::Time::new(1234, 600),
-            crate::cm::Time::swift_with_value(1234, 600)
-        );
-        assert_eq!(
-            crate::cm::Time::with_secs(2.5, 1000),
-            crate::cm::Time::swift_with_seconds(2.5, 1000)
-        );
+        let _ = (fake_swift_words3, fake_swift_throwing_words3);
+        let metadata = <crate::cm::Time as SwiftMetadata>::metadata() as u64;
+
+        let time = crate::cm::Time::swift_words3(0x1111, -2);
+        assert_eq!([0x1111, -2i64 as u64, metadata], words(time));
+
+        // The throwing layout keeps the result buffer's address in another
+        // slot of a larger frame, beside the error's.
+        let time = crate::cm::Time::swift_throwing_words3(0x2222).expect("did not throw");
+        assert_eq!([0x2222, 0, metadata], words(time));
     }
 
     /// Guards both the mangled name and that Rust's `cm::Time` really matches
