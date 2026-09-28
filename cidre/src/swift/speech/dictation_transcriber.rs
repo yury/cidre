@@ -1,69 +1,68 @@
 use crate::{
-    api, arc, define_swift_getter_enum, ns, swift::concurrency::swift_opaque_iterator_typeref,
+    api, arc, define_swift_getter_enum, ns, swift,
+    swift::{concurrency::swift_opaque_iterator_typeref, foundation, value::Storage},
 };
 
-use super::{speech_transcriber::ResultsTask, transcriber_with_id_and_preset};
+use super::speech_transcriber::ResultsTask;
 
-crate::define_swift_class!(pub DictationTranscriber = accessor dictation_transcriber_metadata);
+crate::define_swift!(#[swift::class("Speech.DictationTranscriber")] pub DictationTranscriber);
 
 define_swift_getter_enum!(
     /// `DictationTranscriber.Preset`.
     ///
     /// The `private` cases are presets Speech ships but does not declare in its
     /// public interface.
-    pub DictationPreset in "Speech"
-        = accessor "$s6Speech20DictationTranscriberC6PresetVMa"
-    {
-        LongDictation = "$s6Speech20DictationTranscriberC6PresetV04longB0AEvgZ",
-        Phrase = "$s6Speech20DictationTranscriberC6PresetV6phraseAEvgZ",
-        ProgressiveLongDictation = "$s6Speech20DictationTranscriberC6PresetV015progressiveLongB0AEvgZ",
-        ProgressiveShortDictation = "$s6Speech20DictationTranscriberC6PresetV016progressiveShortB0AEvgZ",
-        ShortDictation = "$s6Speech20DictationTranscriberC6PresetV05shortB0AEvgZ",
-        TimeIndexedLongDictation = "$s6Speech20DictationTranscriberC6PresetV015timeIndexedLongB0AEvgZ",
+    pub DictationPreset = swift "Speech.DictationTranscriber(class).Preset" {
+        LongDictation = "longDictation",
+        Phrase = "phrase",
+        ProgressiveLongDictation = "progressiveLongDictation",
+        ProgressiveShortDictation = "progressiveShortDictation",
+        ShortDictation = "shortDictation",
+        TimeIndexedLongDictation = "timeIndexedLongDictation",
         #[cfg(feature = "private")]
-        Assistant = "$s6Speech20DictationTranscriberC6PresetV9assistantAEvgZ",
+        Assistant = "assistant",
         #[cfg(feature = "private")]
-        AssistantDictation = "$s6Speech20DictationTranscriberC6PresetV09assistantB0AEvgZ",
+        AssistantDictation = "assistantDictation",
         #[cfg(feature = "private")]
-        Captioning = "$s6Speech20DictationTranscriberC6PresetV10captioningAEvgZ",
+        Captioning = "captioning",
         #[cfg(feature = "private")]
-        DictationCC = "$s6Speech20DictationTranscriberC6PresetV11dictationCCAEvgZ",
+        DictationCC = "dictationCC",
         #[cfg(feature = "private")]
-        FoundInCalls = "$s6Speech20DictationTranscriberC6PresetV12foundInCallsAEvgZ",
+        FoundInCalls = "foundInCalls",
         #[cfg(feature = "private")]
-        KeyboardDictation = "$s6Speech20DictationTranscriberC6PresetV08keyboardB0AEvgZ",
+        KeyboardDictation = "keyboardDictation",
         #[cfg(feature = "private")]
-        MultisegmentAssistant = "$s6Speech20DictationTranscriberC6PresetV21multisegmentAssistantAEvgZ",
+        MultisegmentAssistant = "multisegmentAssistant",
         #[cfg(feature = "private")]
-        MultisegmentAssistantDictation = "$s6Speech20DictationTranscriberC6PresetV021multisegmentAssistantB0AEvgZ",
+        MultisegmentAssistantDictation = "multisegmentAssistantDictation",
         #[cfg(feature = "private")]
-        MultisegmentCaptioning = "$s6Speech20DictationTranscriberC6PresetV22multisegmentCaptioningAEvgZ",
+        MultisegmentCaptioning = "multisegmentCaptioning",
         #[cfg(feature = "private")]
-        MultisegmentDictationCC = "$s6Speech20DictationTranscriberC6PresetV012multisegmentB2CCAEvgZ",
+        MultisegmentDictationCC = "multisegmentDictationCC",
         #[cfg(feature = "private")]
-        MultisegmentFoundInCalls = "$s6Speech20DictationTranscriberC6PresetV24multisegmentFoundInCallsAEvgZ",
+        MultisegmentFoundInCalls = "multisegmentFoundInCalls",
         #[cfg(feature = "private")]
-        MultisegmentKeyboardDictation = "$s6Speech20DictationTranscriberC6PresetV020multisegmentKeyboardB0AEvgZ",
+        MultisegmentKeyboardDictation = "multisegmentKeyboardDictation",
         #[cfg(feature = "private")]
-        MultisegmentSearch = "$s6Speech20DictationTranscriberC6PresetV18multisegmentSearchAEvgZ",
+        MultisegmentSearch = "multisegmentSearch",
         #[cfg(feature = "private")]
-        MultisegmentSpellCC = "$s6Speech20DictationTranscriberC6PresetV19multisegmentSpellCCAEvgZ",
+        MultisegmentSpellCC = "multisegmentSpellCC",
         #[cfg(feature = "private")]
-        MultisegmentSpelling = "$s6Speech20DictationTranscriberC6PresetV20multisegmentSpellingAEvgZ",
+        MultisegmentSpelling = "multisegmentSpelling",
         #[cfg(feature = "private")]
-        MultisegmentTshot = "$s6Speech20DictationTranscriberC6PresetV17multisegmentTshotAEvgZ",
+        MultisegmentTshot = "multisegmentTshot",
         #[cfg(feature = "private")]
-        MultisegmentVoicemail = "$s6Speech20DictationTranscriberC6PresetV21multisegmentVoicemailAEvgZ",
+        MultisegmentVoicemail = "multisegmentVoicemail",
         #[cfg(feature = "private")]
-        Search = "$s6Speech20DictationTranscriberC6PresetV6searchAEvgZ",
+        Search = "search",
         #[cfg(feature = "private")]
-        SpellCC = "$s6Speech20DictationTranscriberC6PresetV7spellCCAEvgZ",
+        SpellCC = "spellCC",
         #[cfg(feature = "private")]
-        Spelling = "$s6Speech20DictationTranscriberC6PresetV8spellingAEvgZ",
+        Spelling = "spelling",
         #[cfg(feature = "private")]
-        Tshot = "$s6Speech20DictationTranscriberC6PresetV5tshotAEvgZ",
+        Tshot = "tshot",
         #[cfg(feature = "private")]
-        Voicemail = "$s6Speech20DictationTranscriberC6PresetV9voicemailAEvgZ",
+        Voicemail = "voicemail",
     }
 );
 
@@ -76,23 +75,11 @@ impl Default for DictationPreset {
 
 #[link(name = "Speech", kind = "framework")]
 unsafe extern "C" {
-    #[link_name = "$s6Speech20DictationTranscriberCMa"]
-    fn dictation_transcriber_metadata();
-
-    #[link_name = "$s6Speech20DictationTranscriberC6locale6presetAC10Foundation6LocaleV_AC6PresetVtcfC"]
-    fn dictation_transcriber_init();
-
     #[link_name = "$s6Speech20DictationTranscriberC7resultsQrvg"]
     fn dictation_transcriber_results();
 
     #[link_name = "$s6Speech20DictationTranscriberC7resultsQrvpQOMQ"]
     static DICTATION_TRANSCRIBER_RESULTS_DESCRIPTOR: u8;
-
-    #[link_name = "$s6Speech20DictationTranscriberC6ResultVMa"]
-    fn dictation_transcriber_result_metadata();
-
-    #[link_name = "$s6Speech20DictationTranscriberC6ResultV4text10Foundation16AttributedStringVvg"]
-    fn dictation_transcriber_result_text();
 }
 
 impl DictationTranscriber {
@@ -107,18 +94,32 @@ impl DictationTranscriber {
         visionos = 26.0
     )]
     pub fn with_locale_id(locale_id: &str, preset: DictationPreset) -> arc::R<Self> {
-        unsafe {
-            arc::R::from_raw(
-                transcriber_with_id_and_preset(
-                    locale_id,
-                    preset,
-                    dictation_transcriber_metadata as _,
-                    dictation_transcriber_init as _,
-                )
-                .cast(),
-            )
-        }
+        Self::with_locale(foundation::Locale::with_id(locale_id), preset)
     }
+
+    /// Creates a transcriber for `locale` with one of Speech's standard
+    /// presets.
+    #[doc(alias = "DictationTranscriber.init(locale:preset:)")]
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn with_locale(locale: foundation::Locale, preset: DictationPreset) -> arc::R<Self> {
+        Self::init_with_locale(locale, Storage::from_value(&preset))
+    }
+
+    /// The initializer takes both values at `+1`.
+    #[swift::call(
+        "Speech.DictationTranscriber(class).init(locale: Foundation.Locale(struct), \
+         preset: Speech.DictationTranscriber(class).Preset(struct))"
+    )]
+    fn init_with_locale(
+        locale: foundation::Locale,
+        preset: Storage<DictationPreset>,
+    ) -> arc::R<Self>;
 
     /// Iterates `DictationTranscriber.results` on a Swift concurrency task.
     #[doc(alias = "DictationTranscriber.results")]
@@ -140,9 +141,12 @@ impl DictationTranscriber {
                 (&raw const DICTATION_TRANSCRIBER_RESULTS_DESCRIPTOR).cast(),
                 &raw const cidre_dictation_transcriber_results_iterator_type_start,
                 &raw const cidre_dictation_transcriber_results_iterator_type_end,
-                dictation_transcriber_result_metadata as *const (),
+                swift::metadata_accessor!(struct, "Speech.DictationTranscriber(class).Result"),
                 "6Speech20DictationTranscriberC6ResultVSg",
-                dictation_transcriber_result_text as *const (),
+                swift::symbol!(
+                    "Speech.DictationTranscriber(class).Result(struct).text: \
+                     Foundation.AttributedString(struct) { get }"
+                ),
                 callback,
             );
         }

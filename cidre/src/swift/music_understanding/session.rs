@@ -43,23 +43,18 @@ impl MusicUnderstandingSession {
     }
 
     /// Runs every analysis the session supports.
-    ///
-    /// The result is the session's own nested type, which the symbol reaches by
-    /// back reference rather than by name, so this one is given mangled.
     #[doc(alias = "MusicUnderstandingSession.analyze()")]
     #[api::available(macos = 27.0, ios = 27.0, tvos = 27.0, watchos = 27.0, visionos = 27.0)]
     #[swift::call(
-        sym = "$s18MusicUnderstanding0aB7SessionC7analyzeAC0C6ResultVyYaKFTj",
-        async
+        "MusicUnderstanding.MusicUnderstandingSession(class).analyze() async throws -> \
+         MusicUnderstanding.MusicUnderstandingSession(class).SessionResult(struct) thunk"
     )]
     pub fn analyze(&self) -> Result<SessionResult, arc::R<ns::Error>>;
 
-    /// As [`Self::analyze`], the result is the session's own nested type, so
-    /// this symbol is given mangled too.
     #[api::available(macos = 27.0, ios = 27.0, tvos = 27.0, watchos = 27.0, visionos = 27.0)]
     #[swift::call(
-        sym = "$s18MusicUnderstanding0aB7SessionC7analyze3forAC0C6ResultVShyAA12AnalysisTypeVG_tYaKFTj",
-        async
+        "MusicUnderstanding.MusicUnderstandingSession(class).analyze(for: Set<MusicUnderstanding.AnalysisType(struct)>) async throws -> \
+         MusicUnderstanding.MusicUnderstandingSession(class).SessionResult(struct) thunk"
     )]
     fn analyze_set(
         &self,

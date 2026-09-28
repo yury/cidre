@@ -12,20 +12,48 @@
 /// Declares a resilient Swift `enum` whose cases are exported tag descriptors.
 ///
 /// The value is the tag byte the runtime published, which is what makes this
-/// survive a case being inserted in a later OS release. `hash` is the type's
-/// `hashValue` getter; `debug` is `debugDescription`, for the types that have
-/// one — without it, [`Debug`](core::fmt::Debug) names whichever case matches.
+/// survive a case being inserted in a later OS release. The enum is named the
+/// way Swift spells it, and every symbol — each case's descriptor, the
+/// `hashValue` getter, and `debugDescription` for the types that list `debug`
+/// — is derived from that name. Without `debug`, [`Debug`](core::fmt::Debug)
+/// names whichever case matches.
 ///
-/// Each case's symbol is declared inside the function that reads it, so a
-/// binding writes the mangled name once and invents no identifiers for it.
+/// ```ignore
+/// define_swift_tag_enum!(
+///     pub State = swift "DockKit.DockAccessory(class).State" {
+///         debug,
+///         cases { undocked = "undocked", docked = "docked" }
+///     }
+/// );
+/// ```
 #[macro_export]
 macro_rules! define_swift_tag_enum {
     (
         $(#[$meta:meta])*
-        $vis:vis $ty:ident in $framework:literal {
-            hash = $hash:literal,
-            $(debug = $debug:literal,)?
-            cases { $($case:ident = $symbol:literal),+ $(,)? }
+        $vis:vis $ty:ident = swift $path:literal {
+            debug,
+            cases { $($case:ident = $swift_case:literal),+ $(,)? }
+        }
+    ) => {
+        $crate::define_swift_tag_enum!(@impl [debug] $(#[$meta])* $vis $ty = $path {
+            $($case = $swift_case),+
+        });
+    };
+    (
+        $(#[$meta:meta])*
+        $vis:vis $ty:ident = swift $path:literal {
+            cases { $($case:ident = $swift_case:literal),+ $(,)? }
+        }
+    ) => {
+        $crate::define_swift_tag_enum!(@impl [] $(#[$meta])* $vis $ty = $path {
+            $($case = $swift_case),+
+        });
+    };
+    (
+        @impl [$($debug:ident)?]
+        $(#[$meta:meta])*
+        $vis:vis $ty:ident = $path:literal {
+            $($case:ident = $swift_case:literal),+
         }
     ) => {
         $(#[$meta])*
@@ -37,12 +65,7 @@ macro_rules! define_swift_tag_enum {
             $(
                 #[inline]
                 pub fn $case() -> Self {
-                    #[link(name = $framework, kind = "framework")]
-                    unsafe extern "C" {
-                        #[link_name = $symbol]
-                        static TAG: u8;
-                    }
-                    unsafe { Self(TAG) }
+                    unsafe { Self(*$crate::swift::enum_case!($path, "(enum).", $swift_case)) }
                 }
             )+
 
@@ -52,6 +75,9 @@ macro_rules! define_swift_tag_enum {
             pub fn as_abi_ptr(&self) -> *const () {
                 core::ptr::from_ref(self).cast()
             }
+
+            #[$crate::swift::call($path, "(enum).hashValue: Int { get }")]
+            pub fn hash_value(&self) -> isize;
         }
 
         /// Passed indirectly, so what a call hands over is the value's address.
@@ -64,46 +90,48 @@ macro_rules! define_swift_tag_enum {
             }
         }
 
-        impl $ty {
+        /// The value is plain data, so taking it leaves nothing to release.
+        unsafe impl $crate::swift::SwiftConsume for $ty {}
+
+        /// A resilient enum comes back indirectly, into the tag byte itself.
+        unsafe impl $crate::swift::SwiftAbi for $ty {
+            const CLASS: $crate::swift::AbiClass = $crate::swift::AbiClass::Indirect;
+        }
+
+        impl $crate::swift::value::SwiftOut for $ty {
+            type Buf = ::core::mem::MaybeUninit<Self>;
 
             #[inline]
-            pub fn hash_value(&self) -> isize {
-                #[link(name = $framework, kind = "framework")]
-                unsafe extern "C" {
-                    #[link_name = $hash]
-                    fn hash_value();
-                }
-                unsafe {
-                    $crate::swift::abi::call::value_to_int(
-                        hash_value as *const (),
-                        self.as_abi_ptr(),
-                    )
-                }
+            fn out_buf() -> Self::Buf {
+                ::core::mem::MaybeUninit::uninit()
             }
 
-            $(
-                /// Swift's own `debugDescription`.
-                #[inline]
-                pub fn debug_desc(&self) -> $crate::swift::String {
-                    #[link(name = $framework, kind = "framework")]
-                    unsafe extern "C" {
-                        #[link_name = $debug]
-                        fn debug_description();
-                    }
-                    unsafe {
-                        $crate::swift::String::from_raw($crate::swift::abi::call::value_to_string(
-                            debug_description as *const (),
-                            self.as_abi_ptr(),
-                        ))
-                    }
-                }
-            )?
+            #[inline]
+            fn out_ptr(buf: &mut Self::Buf) -> *mut () {
+                buf.as_mut_ptr().cast()
+            }
+
+            #[inline]
+            unsafe fn out_take(buf: Self::Buf) -> Self {
+                unsafe { buf.assume_init() }
+            }
         }
+
+        $(
+            $crate::define_swift_tag_enum!(@debug_desc $debug $ty $path);
+        )?
 
         $crate::define_swift_tag_enum!(@debug $ty $(, $debug)?; $($case),+);
     };
+    (@debug_desc debug $ty:ident $path:literal) => {
+        impl $ty {
+            /// Swift's own `debugDescription`.
+            #[$crate::swift::call($path, "(enum).debugDescription: String { get }")]
+            pub fn debug_desc(&self) -> $crate::swift::String;
+        }
+    };
     // With a `debugDescription`, print what Swift prints.
-    (@debug $ty:ident, $debug:literal; $($case:ident),+) => {
+    (@debug $ty:ident, debug; $($case:ident),+) => {
         impl core::fmt::Debug for $ty {
             fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
                 f.write_str(&self.debug_desc().to_string())
@@ -131,50 +159,23 @@ macro_rules! define_swift_tag_enum {
 /// enum is a choice of getter and [`ToSwift`](crate::swift::ToSwift) is what
 /// turns it back into the Swift value — which is what lets one be a set
 /// element, a dictionary key, or an argument.
+///
+/// The type is named the way Swift spells it, and each case by the static
+/// property it reads, so the metadata accessor and every getter's symbol are
+/// derived rather than written out:
+///
+/// ```ignore
+/// define_swift_getter_enum!(
+///     pub TranscriberPreset = swift "Speech.SpeechTranscriber(class).Preset" {
+///         Transcription = "transcription",
+///     }
+/// );
+/// ```
 #[macro_export]
 macro_rules! define_swift_getter_enum {
-    // The enum's own metadata accessor is derived from the Swift type's name;
-    // each case's static getter keeps its symbol, since a member's mangling
-    // needs substitutions this cannot reproduce.
     (
         $(#[$meta:meta])*
-        $vis:vis $ty:ident in $framework:literal = swift $name:literal {
-            $($(#[$case_meta:meta])* $case:ident = $getter:literal),+ $(,)?
-        }
-    ) => {
-        $crate::define_swift_getter_enum!(
-            $(#[$meta])*
-            $vis $ty in $framework
-                = accessor_ptr $crate::swift::metadata_accessor!(struct, $name), cases {
-                $($(#[$case_meta])* $case = $getter),+
-            }
-        );
-    };
-    // A case's getter symbol is still needed, so the framework to link stays
-    // even when the accessor arrives as a pointer.
-    (
-        $(#[$meta:meta])*
-        $vis:vis $ty:ident in $framework:literal = accessor $metadata:literal {
-            $($(#[$case_meta:meta])* $case:ident = $getter:literal),+ $(,)?
-        }
-    ) => {
-        $crate::define_swift_getter_enum!(
-            $(#[$meta])*
-            $vis $ty in $framework = accessor_ptr {
-                #[link(name = $framework, kind = "framework")]
-                unsafe extern "C" {
-                    #[link_name = $metadata]
-                    fn metadata();
-                }
-                metadata as *const ()
-            }, cases {
-                $($(#[$case_meta])* $case = $getter),+
-            }
-        );
-    };
-    (
-        $(#[$meta:meta])*
-        $vis:vis $ty:ident in $framework:literal = accessor_ptr $accessor:expr, cases {
+        $vis:vis $ty:ident = swift $path:literal {
             $($(#[$case_meta:meta])* $case:ident = $getter:literal),+ $(,)?
         }
     ) => {
@@ -188,18 +189,13 @@ macro_rules! define_swift_getter_enum {
         impl $ty {
             /// The static property this case reads its value from.
             fn getter(self) -> *const () {
-                #[allow(non_snake_case)]
-                #[link(name = $framework, kind = "framework")]
-                unsafe extern "C" {
+                match self {
                     $(
                         $(#[$case_meta])*
-                        #[link_name = $getter]
-                        fn $case();
+                        Self::$case => $crate::swift::symbol!(
+                            "static ", $path, "(struct).", $getter, ": ", $path, "(struct) { get }"
+                        ),
                     )+
-                }
-
-                match self {
-                    $($(#[$case_meta])* Self::$case => $case as *const (),)+
                 }
             }
 
@@ -220,7 +216,9 @@ macro_rules! define_swift_getter_enum {
                 static CACHE: $crate::swift::abi::MetadataCache =
                     $crate::swift::abi::MetadataCache::new();
                 CACHE.get(|| unsafe {
-                    $crate::swift::abi::call_metadata_accessor($accessor as *const ())
+                    $crate::swift::abi::call_metadata_accessor(
+                        $crate::swift::metadata_accessor!(struct, $path),
+                    )
                 })
             }
         }

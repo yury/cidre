@@ -107,6 +107,30 @@ pub fn swift_symbol(args: TokenStream) -> TokenStream {
     swift::gen_symbol(args)
 }
 
+/// The address of a protocol conformance's descriptor, from `Type: Protocol`.
+#[proc_macro]
+pub fn swift_conformance(args: TokenStream) -> TokenStream {
+    swift::gen_conformance(args, "Mc")
+}
+
+/// The address of a conformance's witness table, from `Type: Protocol`.
+#[proc_macro]
+pub fn swift_witness_table(args: TokenStream) -> TokenStream {
+    swift::gen_conformance(args, "WP")
+}
+
+/// A suspending function's entry point and its async function pointer.
+#[proc_macro]
+pub fn swift_async_symbols(args: TokenStream) -> TokenStream {
+    swift::gen_async_symbols(args)
+}
+
+/// The address of a Swift enum case's descriptor, from the case's name.
+#[proc_macro]
+pub fn swift_enum_case(args: TokenStream) -> TokenStream {
+    swift::gen_enum_case(args)
+}
+
 /// The address of a Swift type's metadata accessor, from the type's name.
 #[proc_macro]
 pub fn swift_metadata_accessor(args: TokenStream) -> TokenStream {

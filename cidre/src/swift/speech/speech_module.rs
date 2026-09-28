@@ -15,18 +15,6 @@ pub struct SpeechModule {
 unsafe impl Send for SpeechModule {}
 unsafe impl Sync for SpeechModule {}
 
-#[link(name = "Speech", kind = "framework")]
-unsafe extern "C" {
-    #[link_name = "$s6Speech0A8DetectorCAA0A6ModuleAAWP"]
-    static SPEECH_DETECTOR_MODULE_WITNESS: u8;
-
-    #[link_name = "$s6Speech0A11TranscriberCAA0A6ModuleAAWP"]
-    static SPEECH_TRANSCRIBER_MODULE_WITNESS: u8;
-
-    #[link_name = "$s6Speech20DictationTranscriberCAA0A6ModuleAAWP"]
-    static DICTATION_TRANSCRIBER_MODULE_WITNESS: u8;
-}
-
 impl SpeechModule {
     unsafe fn from_object<T>(object: &T, witness: *const ()) -> Self {
         let object = unsafe { abi::object_retain((object as *const T).cast()) }.cast_mut();
@@ -42,14 +30,26 @@ impl SpeechModule {
 impl From<&SpeechDetector> for SpeechModule {
     #[inline]
     fn from(value: &SpeechDetector) -> Self {
-        unsafe { Self::from_object(value, (&raw const SPEECH_DETECTOR_MODULE_WITNESS).cast()) }
+        unsafe {
+            Self::from_object(
+                value,
+                crate::swift::witness_table!("Speech.SpeechDetector(class): Speech.SpeechModule"),
+            )
+        }
     }
 }
 
 impl From<&SpeechTranscriber> for SpeechModule {
     #[inline]
     fn from(value: &SpeechTranscriber) -> Self {
-        unsafe { Self::from_object(value, (&raw const SPEECH_TRANSCRIBER_MODULE_WITNESS).cast()) }
+        unsafe {
+            Self::from_object(
+                value,
+                crate::swift::witness_table!(
+                    "Speech.SpeechTranscriber(class): Speech.SpeechModule"
+                ),
+            )
+        }
     }
 }
 
@@ -59,7 +59,9 @@ impl From<&DictationTranscriber> for SpeechModule {
         unsafe {
             Self::from_object(
                 value,
-                (&raw const DICTATION_TRANSCRIBER_MODULE_WITNESS).cast(),
+                crate::swift::witness_table!(
+                    "Speech.DictationTranscriber(class): Speech.SpeechModule"
+                ),
             )
         }
     }

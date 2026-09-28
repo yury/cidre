@@ -1,17 +1,25 @@
 //! Swift ABI interop.
 //!
-//! This module intentionally calls Swift ABI entry points directly from Rust
-//! inline assembly. It does not use C or Objective-C wrapper functions.
+//! This module calls Swift entry points directly, with no C or Objective-C
+//! wrapper functions in between. A direct call goes through a small naked
+//! thunk that fills the registers Swift's convention adds to C's — `self`,
+//! the error, and the indirect result — so the caller makes an ordinary C
+//! call; a suspending one runs on a Swift task through the trampolines in
+//! `concurrency`.
 
 pub mod abi;
 mod array;
 pub(crate) mod concurrency;
 mod dictionary;
+mod duration;
 mod enums;
 mod set;
 mod string;
 mod types;
 pub(crate) mod value;
+
+#[cfg(test)]
+mod symbol_audit;
 
 /// DockKit.
 #[cfg(all(
@@ -50,11 +58,13 @@ pub mod store_kit;
 
 pub use array::{Array, ArrayIter};
 pub use dictionary::Dictionary;
+pub use duration::Duration;
 pub use set::Set;
 pub use string::{RawString, SmallStringError, String};
 pub use types::{
-    AbiClass, FromSwift, FromSwiftDoubles, SwiftAbi, SwiftClass, SwiftError, SwiftHashable,
-    SwiftMetadata, SwiftOptional, SwiftSelf, SwiftSendable, SwiftType, ToSwift, ToSwiftDoubles,
+    AbiClass, FromSwift, FromSwiftDoubles, SwiftAbi, SwiftClass, SwiftConsume, SwiftError,
+    SwiftHashable, SwiftMetadata, SwiftOptional, SwiftSelf, SwiftSendable, SwiftType, ToSwift,
+    ToSwiftDoubles,
 };
 
 /// Calls a Swift entry point instead of writing out the call.
@@ -66,6 +76,21 @@ pub use cidre_macros::swift_call as call;
 /// The address of the Swift entry point a declaration names, for handing to
 /// something that will call it rather than calling it here.
 pub use cidre_macros::swift_symbol as symbol;
+
+/// The address of a protocol conformance's descriptor, named `Type: Protocol`.
+pub use cidre_macros::swift_conformance as conformance;
+
+/// The address of the witness table a conformance publishes, named
+/// `Type: Protocol`, for one that needs no instantiation.
+pub use cidre_macros::swift_witness_table as witness_table;
+
+/// A suspending function's entry point and the async function pointer that
+/// sizes its context, for a call built by hand rather than generated.
+pub use cidre_macros::swift_async_symbols as async_symbols;
+
+/// The address of a Swift enum case's descriptor, the constant a resilient
+/// enum publishes a case's tag through, named as Swift spells the case.
+pub use cidre_macros::swift_enum_case as enum_case;
 
 /// The address of a Swift type's metadata accessor, named as Swift spells the
 /// type rather than as the symbol spells it.

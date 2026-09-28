@@ -20,48 +20,8 @@ pub use speech_detector::{SensitivityLevel, SpeechDetector};
 pub use speech_module::SpeechModule;
 pub use speech_transcriber::{SpeechTranscriber, TranscriberPreset};
 
-use crate::swift::{
-    ToSwift, abi, foundation,
-    value::{Storage, call_with_owned_value},
-};
-
 #[link(name = "Speech", kind = "framework")]
 unsafe extern "C" {}
-
-/// Creates a transcriber through `init(locale:preset:)`.
-///
-/// `SpeechTranscriber` and `DictationTranscriber` both conform to
-/// `LocaleDependentSpeechModule` and are both created by an `init(locale:preset:)`
-/// taking two indirect `@owned` values. Only the symbols differ, so the
-/// construction sequence lives here once. Both the locale and the preset are
-/// consumed by the initializer.
-///
-/// # Safety
-///
-/// The symbols must belong to one type: `class_metadata_accessor` and `init`
-/// must name a transcriber whose `Preset` is `P`.
-unsafe fn transcriber_with_id_and_preset<P: ToSwift>(
-    locale_id: &str,
-    preset: P,
-    class_metadata_accessor: *const (),
-    init: *const (),
-) -> *mut () {
-    unsafe {
-        let locale = foundation::Locale::with_id(locale_id);
-
-        let mut preset_storage = Storage::<P>::new();
-        preset.copy_to_swift(preset_storage.as_mut_ptr());
-        let preset = preset_storage;
-
-        let class_metadata = abi::call_metadata_accessor(class_metadata_accessor).cast();
-        // `init(locale:preset:)` takes both at +1, so the locale is handed
-        // over rather than dropped here.
-        let locale = core::mem::ManuallyDrop::new(locale);
-        call_with_owned_value(preset, |preset| {
-            abi::call::static_values_to_object(init, class_metadata, locale.as_ptr(), preset)
-        })
-    }
-}
 
 #[cfg(test)]
 mod tests {
@@ -96,6 +56,24 @@ mod tests {
 
             let _analyzer = SpeechAnalyzer::with_modules(&[module]);
         }
+    }
+
+    /// `init(locale:preset:)` consumes both values. Handing over clones of one
+    /// locale many times would release it once too often per call if the
+    /// generated call also dropped what Swift took, and leave the original
+    /// dangling; it has to stay readable throughout.
+    #[test]
+    fn a_consumed_locale_is_released_exactly_once() {
+        let locale = crate::swift::foundation::Locale::with_id("en_US");
+        for _ in 0..500 {
+            let transcriber =
+                SpeechTranscriber::with_locale(locale.clone(), TranscriberPreset::Transcription);
+            drop(transcriber);
+            let dictation =
+                DictationTranscriber::with_locale(locale.clone(), DictationPreset::default());
+            drop(dictation);
+        }
+        assert_eq!("en_US", locale.id().to_string());
     }
 
     #[test]

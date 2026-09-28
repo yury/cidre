@@ -10,25 +10,18 @@ use crate::swift::concurrency::{
     swift_opaque_iterator_typeref, swift_task_alloc, swift_task_dealloc, swift_task_switch,
 };
 
-use super::transcriber_with_id_and_preset;
 use crate::swift::value::{AnyValue, DynamicStorage, Storage};
 
-crate::define_swift_class!(pub SpeechTranscriber = accessor speech_transcriber_metadata);
+crate::define_swift!(#[swift::class("Speech.SpeechTranscriber")] pub SpeechTranscriber);
 
 crate::define_swift_getter_enum!(
     /// `SpeechTranscriber.Preset`.
-    pub TranscriberPreset in "Speech"
-        = accessor "$s6Speech0A11TranscriberC6PresetVMa"
-    {
-        Transcription = "$s6Speech0A11TranscriberC6PresetV13transcriptionAEvgZ",
-        TranscriptionWithAlternatives =
-            "$s6Speech0A11TranscriberC6PresetV29transcriptionWithAlternativesAEvgZ",
-        TimeIndexedTranscriptionWithAlternatives =
-            "$s6Speech0A11TranscriberC6PresetV40timeIndexedTranscriptionWithAlternativesAEvgZ",
-        ProgressiveTranscription =
-            "$s6Speech0A11TranscriberC6PresetV24progressiveTranscriptionAEvgZ",
-        TimeIndexedProgressiveTranscription =
-            "$s6Speech0A11TranscriberC6PresetV35timeIndexedProgressiveTranscriptionAEvgZ",
+    pub TranscriberPreset = swift "Speech.SpeechTranscriber(class).Preset" {
+        Transcription = "transcription",
+        TranscriptionWithAlternatives = "transcriptionWithAlternatives",
+        TimeIndexedTranscriptionWithAlternatives = "timeIndexedTranscriptionWithAlternatives",
+        ProgressiveTranscription = "progressiveTranscription",
+        TimeIndexedProgressiveTranscription = "timeIndexedProgressiveTranscription",
     }
 );
 
@@ -42,12 +35,6 @@ impl Default for TranscriberPreset {
 #[link(name = "Speech", kind = "framework")]
 #[link(name = "swiftFoundation")]
 unsafe extern "C" {
-    #[link_name = "$s6Speech0A11TranscriberCMa"]
-    fn speech_transcriber_metadata();
-
-    #[link_name = "$s6Speech0A11TranscriberC6locale6presetAC10Foundation6LocaleV_AC6PresetVtcfC"]
-    fn speech_transcriber_init();
-
     #[link_name = "$s6Speech0A11TranscriberC7resultsQrvg"]
     fn speech_transcriber_results();
 
@@ -79,18 +66,32 @@ impl SpeechTranscriber {
         visionos = 26.0
     )]
     pub fn with_locale_id(locale_id: &str, preset: TranscriberPreset) -> arc::R<Self> {
-        unsafe {
-            arc::R::from_raw(
-                transcriber_with_id_and_preset(
-                    locale_id,
-                    preset,
-                    speech_transcriber_metadata as _,
-                    speech_transcriber_init as _,
-                )
-                .cast(),
-            )
-        }
+        Self::with_locale(foundation::Locale::with_id(locale_id), preset)
     }
+
+    /// Creates a transcriber for `locale` with one of Speech's standard
+    /// presets.
+    #[doc(alias = "SpeechTranscriber.init(locale:preset:)")]
+    #[api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    pub fn with_locale(locale: foundation::Locale, preset: TranscriberPreset) -> arc::R<Self> {
+        Self::init_with_locale(locale, Storage::from_value(&preset))
+    }
+
+    /// The initializer takes both values at `+1`.
+    #[swift::call(
+        "Speech.SpeechTranscriber(class).init(locale: Foundation.Locale(struct), \
+         preset: Speech.SpeechTranscriber(class).Preset(struct))"
+    )]
+    fn init_with_locale(
+        locale: foundation::Locale,
+        preset: Storage<TranscriberPreset>,
+    ) -> arc::R<Self>;
 
     /// Iterates `SpeechTranscriber.results` on a Swift concurrency task.
     ///

@@ -1293,63 +1293,57 @@ macro_rules! swift_opaque_iterator_typeref {
 /// one is written `class C` and uses `arc::R<C>`, which already names the type
 /// and carries its ABI shape.
 macro_rules! define_async_sequence {
-    // A struct-typed sequence, which needs a marker minted for its metadata.
+    // A struct-typed sequence named the way Swift spells it, with its element.
+    // The sequence's and iterator's metadata accessors, `makeAsyncIterator()`,
+    // and the iterator's `next()` with its async function pointer are all
+    // derived from the two names.
     (
         $(#[$meta:meta])*
         $sequence:ident, $sequence_value:ident, $iterator_value:ident,
-        framework = $framework:literal,
-        element = $element:ty,
-        sequence_metadata = $sequence_metadata:ident => $sequence_metadata_link:literal,
-        iterator_metadata = $iterator_metadata:ident => $iterator_metadata_link:literal,
-        make_iterator = $make_iterator:ident => $make_iterator_link:literal,
-        next = $next:ident => $next_link:literal,
-        next_async = $next_async:ident => $next_async_link:literal,
+        sequence = $path:literal,
+        element = $element:ty = $element_path:literal,
         async_iter = $async_iter:ident $(,)?
     ) => {
-        #[link(name = $framework, kind = "framework")]
-        unsafe extern "C" {
-            #[link_name = $sequence_metadata_link]
-            fn $sequence_metadata();
-        }
-
-        $crate::define_swift_marker!(pub(crate) $sequence_value = accessor $sequence_metadata);
+        $crate::define_swift_marker!(
+            pub(crate) $sequence_value = accessor $crate::swift::metadata_accessor!(struct, $path)
+        );
 
         $crate::swift::concurrency::define_async_sequence! {
             @build
             $(#[$meta])*
             $sequence, $sequence_value, $iterator_value,
-            framework = $framework,
             element = $element,
-            iterator_metadata = $iterator_metadata => $iterator_metadata_link,
-            make_iterator = $make_iterator => $make_iterator_link,
-            next = $next => $next_link,
-            next_async = $next_async => $next_async_link,
+            iterator_metadata = $crate::swift::metadata_accessor!(struct, $path, "(struct).Iterator"),
+            make_iterator = $crate::swift::symbol!(
+                $path, "(struct).makeAsyncIterator() -> ", $path, "(struct).Iterator(struct)"
+            ),
+            next = $crate::swift::async_symbols!(
+                $path, "(struct).Iterator(struct).next() async -> ", $element_path, "?"
+            ),
             async_iter = $async_iter,
         }
     };
     // A class-typed sequence: its value is the class reference, so
-    // `arc::R<Class>` already carries the metadata and the ABI shape.
+    // `arc::R<Class>` already carries the metadata and the ABI shape. Its
+    // symbols are given as expressions, for a sequence the mangler cannot
+    // name — one declared in an extension, say.
     (
         $(#[$meta:meta])*
         $sequence:ident, class $class:ty, $iterator_value:ident,
-        framework = $framework:literal,
         element = $element:ty,
-        iterator_metadata = $iterator_metadata:ident => $iterator_metadata_link:literal,
-        make_iterator = $make_iterator:ident => $make_iterator_link:literal,
-        next = $next:ident => $next_link:literal,
-        next_async = $next_async:ident => $next_async_link:literal,
+        iterator_metadata = $iterator_metadata:expr,
+        make_iterator = $make_iterator:expr,
+        next = $next:expr,
         async_iter = $async_iter:ident $(,)?
     ) => {
         $crate::swift::concurrency::define_async_sequence! {
             @build
             $(#[$meta])*
             $sequence, $crate::arc::R<$class>, $iterator_value,
-            framework = $framework,
             element = $element,
-            iterator_metadata = $iterator_metadata => $iterator_metadata_link,
-            make_iterator = $make_iterator => $make_iterator_link,
-            next = $next => $next_link,
-            next_async = $next_async => $next_async_link,
+            iterator_metadata = $iterator_metadata,
+            make_iterator = $make_iterator,
+            next = $next,
             async_iter = $async_iter,
         }
     };
@@ -1357,12 +1351,10 @@ macro_rules! define_async_sequence {
         @build
         $(#[$meta:meta])*
         $sequence:ident, $sequence_value:ty, $iterator_value:ident,
-        framework = $framework:literal,
         element = $element:ty,
-        iterator_metadata = $iterator_metadata:ident => $iterator_metadata_link:literal,
-        make_iterator = $make_iterator:ident => $make_iterator_link:literal,
-        next = $next:ident => $next_link:literal,
-        next_async = $next_async:ident => $next_async_link:literal,
+        iterator_metadata = $iterator_metadata:expr,
+        make_iterator = $make_iterator:expr,
+        next = $next:expr,
         async_iter = $async_iter:ident $(,)?
     ) => {
         $(#[$meta])*
@@ -1395,21 +1387,6 @@ macro_rules! define_async_sequence {
             unsafe fn out_take(buf: Self::Buf) -> Self {
                 Self(unsafe { buf.assume_init() })
             }
-        }
-
-        #[link(name = $framework, kind = "framework")]
-        unsafe extern "C" {
-            #[link_name = $iterator_metadata_link]
-            fn $iterator_metadata();
-
-            #[link_name = $make_iterator_link]
-            fn $make_iterator();
-
-            #[link_name = $next_link]
-            fn $next();
-
-            #[link_name = $next_async_link]
-            static $next_async: u8;
         }
 
         $crate::define_swift_marker!($iterator_value = accessor $iterator_metadata);
@@ -1459,14 +1436,15 @@ macro_rules! define_async_sequence {
             }
 
             fn symbols() -> $crate::swift::concurrency::AsyncSequenceSymbols {
+                let (next, next_async): (*const (), *const u8) = $next;
                 unsafe {
                     $crate::swift::concurrency::AsyncSequenceSymbols::new(
                         <$iterator_value as $crate::swift::SwiftMetadata>::metadata(),
                         <$element as $crate::swift::SwiftMetadata>::metadata(),
-                        $make_iterator as *const (),
+                        $make_iterator,
                         <$sequence_value as $crate::swift::SwiftMetadata>::IS_CLASS_REF,
-                        $next as *const (),
-                        (&raw const $next_async).cast(),
+                        next,
+                        next_async.cast(),
                     )
                 }
             }
@@ -1925,17 +1903,28 @@ mod notification_sequence {
 
     #[link(name = "Foundation", kind = "framework")]
     unsafe extern "C" {
-        #[link_name = "$s10Foundation12NotificationVMa"]
-        fn notification_metadata();
-
         #[link_name = "$sSo20NSNotificationCenterC10FoundationE13NotificationsCMa"]
         fn notifications_metadata();
 
         #[link_name = "$sSo20NSNotificationCenterC10FoundationE13notifications5named6objectAbCE13NotificationsCSo0A4Namea_yXlSgtF"]
         fn notifications_named();
+
+        // Declared in an extension of an imported class, which the mangler
+        // does not spell, so these stay written out.
+        #[link_name = "$sSo20NSNotificationCenterC10FoundationE13NotificationsC8IteratorVMa"]
+        fn notifications_iterator_metadata();
+
+        #[link_name = "$sSo20NSNotificationCenterC10FoundationE13NotificationsC17makeAsyncIteratorAE0G0VyF"]
+        fn notifications_make_iterator();
+
+        #[link_name = "$sSo20NSNotificationCenterC10FoundationE13NotificationsC8IteratorV4nextAC12NotificationVSgyYaF"]
+        fn notifications_next();
+
+        #[link_name = "$sSo20NSNotificationCenterC10FoundationE13NotificationsC8IteratorV4nextAC12NotificationVSgyYaFTu"]
+        static NOTIFICATIONS_NEXT_ASYNC: u8;
     }
 
-    crate::define_swift_marker!(pub(crate) NotificationValue = accessor notification_metadata);
+    crate::define_swift!(#[swift::struct("Foundation.Notification")] pub(crate) NotificationValue);
 
     // `NotificationCenter.Notifications` is a class, so its value is a
     // reference and `arc::R` is what the sequence holds.
@@ -1944,12 +1933,13 @@ mod notification_sequence {
     define_async_sequence! {
         /// `NotificationCenter.Notifications`.
         Notifications, class NotificationsClass, NotificationsIteratorValue,
-        framework = "Foundation",
         element = Notification,
-        iterator_metadata = notifications_iterator_metadata => "$sSo20NSNotificationCenterC10FoundationE13NotificationsC8IteratorVMa",
-        make_iterator = notifications_make_iterator => "$sSo20NSNotificationCenterC10FoundationE13NotificationsC17makeAsyncIteratorAE0G0VyF",
-        next = notifications_next => "$sSo20NSNotificationCenterC10FoundationE13NotificationsC8IteratorV4nextAC12NotificationVSgyYaF",
-        next_async = NOTIFICATIONS_NEXT_ASYNC => "$sSo20NSNotificationCenterC10FoundationE13NotificationsC8IteratorV4nextAC12NotificationVSgyYaFTu",
+        iterator_metadata = notifications_iterator_metadata,
+        make_iterator = notifications_make_iterator as *const (),
+        next = (
+            notifications_next as *const (),
+            &raw const NOTIFICATIONS_NEXT_ASYNC,
+        ),
         async_iter = NotificationsAsyncIter,
     }
 

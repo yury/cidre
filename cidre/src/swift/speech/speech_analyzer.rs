@@ -1,4 +1,4 @@
-use crate::{api, arc, swift, swift::abi};
+use crate::{api, arc, swift};
 
 #[cfg(feature = "av")]
 use crate::ns;
@@ -10,21 +10,14 @@ use crate::swift::concurrency::{self, AsyncCallArgs};
 use super::CaptureInputSequenceProvider;
 
 use super::SpeechModule;
-use crate::swift::value::{Optional, Storage, call_with_owned_value};
+use crate::swift::value::{Optional, Storage};
 
-crate::define_swift_class!(pub SpeechAnalyzer = accessor speech_analyzer_metadata);
+crate::define_swift!(#[swift::class("Speech.SpeechAnalyzer")] pub SpeechAnalyzer);
 
+// `analyzeSequence(_:)` is generic over its input sequence, with requirements
+// the mangler does not spell, so it stays written out.
 #[link(name = "Speech", kind = "framework")]
 unsafe extern "C" {
-    #[link_name = "$s6Speech0A8AnalyzerCMa"]
-    fn speech_analyzer_metadata();
-
-    #[link_name = "$s6Speech0A8AnalyzerC7modules7optionsACSayAA0A6Module_pG_AC7OptionsVSgtcfC"]
-    fn speech_analyzer_init();
-
-    #[link_name = "$s6Speech0A8AnalyzerC7OptionsVMa"]
-    fn speech_analyzer_options_metadata();
-
     #[cfg(feature = "av")]
     #[link_name = "$s6Speech0A8AnalyzerC15analyzeSequenceySo6CMTimeaSgxYaKs8SendableRzSciRzAA0B5InputV7ElementRtzlF"]
     fn speech_analyzer_analyze_sequence();
@@ -34,7 +27,7 @@ unsafe extern "C" {
     static ANALYZE_SEQUENCE_ASYNC_FN: u8;
 }
 
-crate::define_swift_marker!(AnalyzerOptions = accessor speech_analyzer_options_metadata);
+crate::define_swift!(#[swift::struct("Speech.SpeechAnalyzer(class).Options")] AnalyzerOptions);
 
 impl SpeechAnalyzer {
     /// Creates an analyzer with `options: nil`.
@@ -47,22 +40,17 @@ impl SpeechAnalyzer {
         visionos = 26.0
     )]
     pub fn with_modules(modules: &[SpeechModule]) -> arc::R<Self> {
-        unsafe {
-            let modules = swift::Array::from_slice(modules);
-            let options = Storage::<Optional<AnalyzerOptions>>::none();
-            let analyzer_metadata =
-                <SpeechAnalyzer as crate::swift::SwiftMetadata>::metadata().cast();
-            let object = call_with_owned_value(options, |options| {
-                abi::call::static_array_value_to_object(
-                    speech_analyzer_init as *const (),
-                    analyzer_metadata,
-                    modules.into_raw(),
-                    options,
-                )
-            });
-            arc::R::from_raw(object.cast())
-        }
+        Self::init(swift::Array::from_slice(modules), Storage::none())
     }
+
+    #[swift::call(
+        "Speech.SpeechAnalyzer(class).init(modules: [any Speech.SpeechModule], \
+         options: Speech.SpeechAnalyzer(class).Options(struct)?)"
+    )]
+    fn init(
+        modules: swift::Array<SpeechModule>,
+        options: Storage<Optional<AnalyzerOptions>>,
+    ) -> arc::R<Self>;
 
     /// Starts consuming the provider's live analyzer-input sequence.
     #[cfg(feature = "av")]

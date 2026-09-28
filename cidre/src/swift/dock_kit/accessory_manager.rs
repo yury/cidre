@@ -10,7 +10,10 @@ impl AccessoryManager {
     ///
     /// Swift emits a class metadata access before calling a static member, and
     /// the generated call does the same.
-    #[swift::call(sym = "$s7DockKit0A16AccessoryManagerC6sharedACvgZ")]
+    #[swift::call(
+        "static DockKit.DockAccessoryManager(class).shared: \
+         DockKit.DockAccessoryManager(class) { get }"
+    )]
     pub fn shared() -> arc::R<Self>;
 
     #[swift::call(
@@ -20,7 +23,10 @@ impl AccessoryManager {
 
     /// Bridging returns the error box itself, so the reference the call gets
     /// back becomes the `ns::Error`'s and is not released again.
-    #[swift::call(sym = "$s7DockKit0A16AccessoryManagerC21accessoryStateChangesAA0aC0C0fG0VvgTj")]
+    #[swift::call(
+        "DockKit.DockAccessoryManager(class).accessoryStateChanges: \
+         DockKit.DockAccessory(class).StateChanges(struct) { get } thunk"
+    )]
     pub fn accessory_state_changes(&self) -> Result<StateChanges, arc::R<ns::Error>>;
 
     /// Turns system tracking on or off.

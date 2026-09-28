@@ -1,12 +1,12 @@
-use std::{hash::Hash, mem::size_of, ptr::NonNull};
+use std::{hash::Hash, mem::size_of};
 
 use crate::{
     arc, cg, define_swift_tag_enum, ns, spatial, swift,
     swift::{
-        FromSwift, SwiftMetadata, SwiftOptional, SwiftType, abi,
+        FromSwift, SwiftMetadata, abi,
         concurrency::{self, define_async_sequence},
         foundation::{Date, Uuid},
-        value::{Optional, Storage},
+        value::{Optional, Storage, ValueRef},
     },
 };
 
@@ -25,33 +25,32 @@ impl StateChange {
     /// Reads the three stored properties out of a borrowed Swift
     /// `DockAccessory.StateChange`. The caller still owns the value.
     unsafe fn copy_from_ptr(value: *const ()) -> Self {
-        unsafe {
-            let mut state_storage = Storage::<StateValue>::new();
-            abi::call::value_to_value(
-                dock_accessory_state_change_state as *const (),
-                value,
-                state_storage.as_mut_ptr(),
-            );
-            let state = State(*(state_storage.as_ptr().cast::<u8>()));
-            state_storage.destroy();
-
-            let tracking_button_enabled = abi::call::value_to_bool(
-                dock_accessory_state_change_tracking_button_enabled as *const (),
-                value,
-            );
-            let accessory = NonNull::new(abi::call::value_to_object(
-                dock_accessory_state_change_accessory as *const (),
-                value,
-            ))
-            .map(|accessory| arc::R::from_raw(accessory.as_ptr().cast()));
-
-            Self {
-                accessory,
-                state,
-                tracking_button_enabled,
-            }
+        let value = unsafe { ValueRef::<StateChangeValue>::new(value) };
+        Self {
+            accessory: value.accessory(),
+            state: value.state(),
+            tracking_button_enabled: value.tracking_button_enabled(),
         }
     }
+}
+
+impl ValueRef<StateChangeValue> {
+    #[swift::call(
+        "DockKit.DockAccessory(class).StateChange(struct).state: \
+         DockKit.DockAccessory(class).State(enum) { get }"
+    )]
+    fn state(&self) -> State;
+
+    #[swift::call(
+        "DockKit.DockAccessory(class).StateChange(struct).trackingButtonEnabled: Bool { get }"
+    )]
+    fn tracking_button_enabled(&self) -> bool;
+
+    #[swift::call(
+        "DockKit.DockAccessory(class).StateChange(struct).accessory: \
+         DockKit.DockAccessory(class)? { get }"
+    )]
+    fn accessory(&self) -> Option<arc::R<Accessory>>;
 }
 
 impl core::fmt::Debug for StateChange {
@@ -188,125 +187,6 @@ impl CameraIntrinsics {
     }
 }
 
-#[link(name = "DockKit", kind = "framework")]
-unsafe extern "C" {
-
-    #[link_name = "$s7DockKit0A9AccessoryC11StateChangeV5stateAC0D0Ovg"]
-    fn dock_accessory_state_change_state();
-
-    #[link_name = "$s7DockKit0A9AccessoryC11StateChangeV21trackingButtonEnabledSbvg"]
-    fn dock_accessory_state_change_tracking_button_enabled();
-
-    #[link_name = "$s7DockKit0A9AccessoryC11StateChangeV9accessoryACSgvg"]
-    fn dock_accessory_state_change_accessory();
-
-    #[link_name = "$s7DockKit0A9AccessoryC10IdentifierV8categoryAC8CategoryOvg"]
-    fn dock_accessory_identifier_category();
-
-    #[link_name = "$s7DockKit0A9AccessoryC11MotionStateV5errors5Error_pSgvg"]
-    fn dock_accessory_motion_state_error();
-
-    #[link_name = "$s7DockKit0A9AccessoryC12BatteryStateV06chargeE0AC0d6ChargeE0Ovg"]
-    fn dock_accessory_battery_state_charge_state();
-
-    #[link_name = "$s7DockKit0A9AccessoryC6LimitsV3yawAE5LimitVSgvg"]
-    fn dock_accessory_limits_yaw();
-
-    #[link_name = "$s7DockKit0A9AccessoryC6LimitsV5pitchAE5LimitVSgvg"]
-    fn dock_accessory_limits_pitch();
-
-    #[link_name = "$s7DockKit0A9AccessoryC6LimitsV4rollAE5LimitVSgvg"]
-    fn dock_accessory_limits_roll();
-
-    #[link_name = "$s7DockKit0A9AccessoryC6LimitsV5LimitV13positionRangeSnySdGvg"]
-    fn dock_accessory_limit_position_range();
-
-    #[link_name = "$s7DockKit0A9AccessoryC6LimitsV5LimitV13positionRange12maximumSpeedAGSnySdG_SdtKcfC"]
-    fn dock_accessory_limit_init();
-
-    #[link_name = "$s7DockKit0A9AccessoryC6LimitsV3yaw5pitch4rollA2E5LimitVSg_A2KtcfC"]
-    fn dock_accessory_limits_init();
-
-    #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC17CameraInformationV13captureDeviceSo09AVCaptureG4Typeavg"]
-    fn dock_accessory_camera_information_capture_device();
-
-    #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC17CameraInformationV14cameraPositionSo015AVCaptureDeviceG0Vvg"]
-    fn dock_accessory_camera_information_camera_position();
-
-    #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC17CameraInformationV11orientationAC0D11OrientationOvg"]
-    fn dock_accessory_camera_information_orientation();
-
-    #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC17CameraInformationV16cameraIntrinsicsSo13simd_float3x3aSgvg"]
-    fn dock_accessory_camera_information_intrinsics();
-
-    #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC17CameraInformationV19referenceDimensionsSo6CGSizeVSgvg"]
-    fn dock_accessory_camera_information_reference_dimensions();
-
-    #[link_name = "$s7DockKit0A9AccessoryC0C5EventO6buttonyAESi_SbtcAEmFWC"]
-    static DOCK_ACCESSORY_EVENT_BUTTON_TAG: u32;
-
-    #[link_name = "$s7DockKit0A9AccessoryC0C5EventO13cameraShutteryA2EmFWC"]
-    static DOCK_ACCESSORY_EVENT_CAMERA_SHUTTER_TAG: u32;
-
-    #[link_name = "$s7DockKit0A9AccessoryC0C5EventO10cameraFlipyA2EmFWC"]
-    static DOCK_ACCESSORY_EVENT_CAMERA_FLIP_TAG: u32;
-
-    #[link_name = "$s7DockKit0A9AccessoryC0C5EventO10cameraZoomyAESd_tcAEmFWC"]
-    static DOCK_ACCESSORY_EVENT_CAMERA_ZOOM_TAG: u32;
-
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackedPersonV10identifier10Foundation4UUIDVvg"]
-    fn dock_accessory_tracked_person_identifier();
-
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackedPersonV4rectSo6CGRectVvg"]
-    fn dock_accessory_tracked_person_rect();
-
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackedPersonV12saliencyRankSiSgvg"]
-    fn dock_accessory_tracked_person_saliency_rank();
-
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackedPersonV18speakingConfidenceSdSgvg"]
-    fn dock_accessory_tracked_person_speaking_confidence();
-
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackedPersonV25lookingAtCameraConfidenceSdSgvg"]
-    fn dock_accessory_tracked_person_looking_at_camera_confidence();
-
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackedObjectV10identifier10Foundation4UUIDVvg"]
-    fn dock_accessory_tracked_object_identifier();
-
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackedObjectV4rectSo6CGRectVvg"]
-    fn dock_accessory_tracked_object_rect();
-
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackedObjectV12saliencyRankSiSgvg"]
-    fn dock_accessory_tracked_object_saliency_rank();
-
-    #[link_name = "$s7DockKit0A9AccessoryC18TrackedSubjectTypeO6personyAeC0D6PersonVcAEmFWC"]
-    static DOCK_ACCESSORY_TRACKED_SUBJECT_PERSON_TAG: u32;
-
-    #[link_name = "$s7DockKit0A9AccessoryC18TrackedSubjectTypeO6objectyAeC0D6ObjectVcAEmFWC"]
-    static DOCK_ACCESSORY_TRACKED_SUBJECT_OBJECT_TAG: u32;
-
-    #[link_name = "$s7DockKit0A9AccessoryC13TrackingStateV15trackedSubjectsSayAC18TrackedSubjectTypeOGvg"]
-    fn dock_accessory_tracking_state_subjects();
-
-    #[link_name = "$s7DockKit0A9AccessoryC11ObservationV10identifier4type4rect12faceYawAngleAESi_AE0D4TypeOSo6CGRectV10Foundation11MeasurementVySo06NSUnitJ0CGSgtcfC"]
-    fn dock_accessory_observation_init();
-
-    #[link_name = "$s7DockKit0A9AccessoryC11ObservationV4typeAE0D4TypeOvg"]
-    fn dock_accessory_observation_type();
-
-    #[link_name = "$s7DockKit0A9AccessoryC11ObservationV4rectSo6CGRectVvg"]
-    fn dock_accessory_observation_rect();
-
-    #[cfg(feature = "av")]
-    #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC17CameraInformationV13captureDevice14cameraPosition11orientation0H10Intrinsics19referenceDimensionsAESo09AVCaptureG4Typea_So0ngI0VAC0D11OrientationOSo13simd_float3x3aSgSo6CGSizeVSgtcfC"]
-    fn dock_accessory_camera_information_init();
-}
-
 crate::define_swift!(#[swift::struct("DockKit.DockAccessory(class).StateChange")] pub(crate) StateChangeValue);
 
 unsafe impl SwiftMetadata for StateChange {
@@ -322,8 +202,6 @@ unsafe impl crate::swift::FromSwift for StateChange {
         unsafe { Self::copy_from_ptr(value) }
     }
 }
-
-crate::define_swift_marker!(pub(crate) StateValue = mangled "7DockKit0A9AccessoryC5StateO");
 
 crate::define_swift!(#[swift::enum("DockKit.DockAccessory(class).AccessoryEvent")] pub(crate) AccessoryEventValue);
 
@@ -350,17 +228,11 @@ crate::define_swift_marker!(pub(crate) CameraIntrinsicsValue = mangled "So13simd
 crate::define_swift_marker!(pub(crate) ReferenceDimensionsValue = mangled "So6CGSizeV");
 
 impl Identifier {
-    pub fn category(&self) -> Category {
-        let mut value = Category::tracking_stand();
-        unsafe {
-            abi::call::value_to_value(
-                dock_accessory_identifier_category as *const (),
-                self.as_ptr(),
-                (&mut value as *mut Category).cast(),
-            );
-        }
-        value
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).Identifier(struct).category: \
+         DockKit.DockAccessory(class).Category(enum) { get }"
+    )]
+    pub fn category(&self) -> Category;
 
     #[swift::call("DockKit.DockAccessory(class).Identifier(struct).name: String { get }")]
     pub fn name(&self) -> swift::String;
@@ -382,7 +254,9 @@ impl Identifier {
 impl Identifier {
     /// Swift's `==` is a static member taking both operands as arguments
     /// rather than one of them as `self`.
-    #[swift::call(sym = "$s7DockKit0A9AccessoryC10IdentifierV2eeoiySbAE_AEtFZ")]
+    #[swift::call(
+        "static DockKit.DockAccessory(class).Identifier(struct).==(_: DockKit.DockAccessory(class).Identifier(struct), _: DockKit.DockAccessory(class).Identifier(struct)) -> Bool"
+    )]
     fn swift_eq(lhs: &Self, rhs: &Self) -> bool;
 }
 
@@ -416,15 +290,8 @@ impl MotionState {
     #[swift::call("DockKit.DockAccessory(class).MotionState(struct).timestamp: Double { get }")]
     pub fn timestamp(&self) -> f64;
 
-    pub fn error(&self) -> Option<arc::R<ns::Error>> {
-        unsafe {
-            NonNull::new(abi::call::value_to_object(
-                dock_accessory_motion_state_error as *const (),
-                self.as_ptr(),
-            ))
-            .map(|error| arc::R::from_raw(abi::error_as_ns_error(error.as_ptr()).cast()))
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).MotionState(struct).error: Error? { get }")]
+    pub fn error(&self) -> Option<arc::R<ns::Error>>;
 }
 
 impl BatteryState {
@@ -437,17 +304,11 @@ impl BatteryState {
     #[swift::call("DockKit.DockAccessory(class).BatteryState(struct).lowBattery: Bool { get }")]
     pub fn is_low_battery(&self) -> bool;
 
-    pub fn charge_state(&self) -> BatteryChargeState {
-        let mut value = BatteryChargeState::not_charging();
-        unsafe {
-            abi::call::value_to_value(
-                dock_accessory_battery_state_charge_state as *const (),
-                self.as_ptr(),
-                (&mut value as *mut BatteryChargeState).cast(),
-            );
-        }
-        value
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).BatteryState(struct).chargeState: \
+         DockKit.DockAccessory(class).BatteryChargeState(enum) { get }"
+    )]
+    pub fn charge_state(&self) -> BatteryChargeState;
 
     #[swift::call("DockKit.DockAccessory(class).BatteryState(struct).hashValue: Int { get }")]
     pub fn hash_value(&self) -> isize;
@@ -456,7 +317,9 @@ impl BatteryState {
 impl BatteryState {
     /// Swift's `==` is a static member taking both operands as arguments
     /// rather than one of them as `self`.
-    #[swift::call(sym = "$s7DockKit0A9AccessoryC12BatteryStateV2eeoiySbAE_AEtFZ")]
+    #[swift::call(
+        "static DockKit.DockAccessory(class).BatteryState(struct).==(_: DockKit.DockAccessory(class).BatteryState(struct), _: DockKit.DockAccessory(class).BatteryState(struct)) -> Bool"
+    )]
     fn swift_eq(lhs: &Self, rhs: &Self) -> bool;
 }
 
@@ -474,97 +337,58 @@ impl std::hash::Hash for BatteryState {
 
 impl Limits {
     pub fn new(yaw: Option<&Limit>, pitch: Option<&Limit>, roll: Option<&Limit>) -> Self {
-        unsafe {
-            fn optional(value: Option<&Limit>) -> Storage<Optional<Limit>> {
-                match value {
-                    None => Storage::none(),
-                    Some(value) => unsafe {
-                        let mut storage = Storage::<Optional<Limit>>::new();
-                        abi::initialize_with_copy(
-                            storage.as_mut_ptr().cast(),
-                            value.as_ptr(),
-                            <Limit as SwiftMetadata>::metadata(),
-                        );
-                        abi::store_enum_tag_single_payload(
-                            storage.as_mut_ptr().cast(),
-                            0,
-                            1,
-                            <Limit as SwiftMetadata>::metadata(),
-                        );
-                        storage
-                    },
-                }
-            }
-
-            let mut yaw = optional(yaw);
-            let mut pitch = optional(pitch);
-            let mut roll = optional(roll);
-            let mut storage = core::mem::MaybeUninit::<Limits>::uninit();
-            abi::call::values3_to_value(
-                dock_accessory_limits_init as *const (),
-                yaw.as_mut_ptr(),
-                pitch.as_mut_ptr(),
-                roll.as_mut_ptr(),
-                storage.as_mut_ptr().cast(),
-            );
-            storage.assume_init()
-        }
+        Self::init(
+            Storage::from_option(yaw),
+            Storage::from_option(pitch),
+            Storage::from_option(roll),
+        )
     }
 
-    unsafe fn optional_limit(&self, getter: *const ()) -> Option<Limit> {
-        unsafe {
-            let mut storage = Storage::<Optional<Limit>>::new();
-            abi::call::value_to_value(getter, self.as_ptr(), storage.as_mut_ptr().cast());
-            storage.take()
-        }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).Limits(struct).init(\
+         yaw: DockKit.DockAccessory(class).Limits(struct).Limit(struct)?, \
+         pitch: DockKit.DockAccessory(class).Limits(struct).Limit(struct)?, \
+         roll: DockKit.DockAccessory(class).Limits(struct).Limit(struct)?)"
+    )]
+    fn init(
+        yaw: Storage<Optional<Limit>>,
+        pitch: Storage<Optional<Limit>>,
+        roll: Storage<Optional<Limit>>,
+    ) -> Self;
 
-    pub fn yaw(&self) -> Option<Limit> {
-        unsafe { self.optional_limit(dock_accessory_limits_yaw as *const ()) }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).Limits(struct).yaw: DockKit.DockAccessory(class).Limits(struct).Limit(struct)? { get }"
+    )]
+    pub fn yaw(&self) -> Option<Limit>;
 
-    pub fn pitch(&self) -> Option<Limit> {
-        unsafe { self.optional_limit(dock_accessory_limits_pitch as *const ()) }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).Limits(struct).pitch: DockKit.DockAccessory(class).Limits(struct).Limit(struct)? { get }"
+    )]
+    pub fn pitch(&self) -> Option<Limit>;
 
-    pub fn roll(&self) -> Option<Limit> {
-        unsafe { self.optional_limit(dock_accessory_limits_roll as *const ()) }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).Limits(struct).roll: DockKit.DockAccessory(class).Limits(struct).Limit(struct)? { get }"
+    )]
+    pub fn roll(&self) -> Option<Limit>;
 }
 
 impl Limit {
+    /// Swift traps on a range whose lower bound is above its upper one, so
+    /// that is checked on the way in.
+    #[swift::call(
+        "DockKit.DockAccessory(class).Limits(struct).Limit(struct).init(\
+         positionRange: Range<Double>, maximumSpeed: Double) throws"
+    )]
     pub fn new(
         position_range: std::ops::Range<f64>,
         maximum_speed: f64,
-    ) -> Result<Self, arc::R<ns::Error>> {
-        assert!(
-            position_range.start <= position_range.end,
-            "Swift Range requires lowerBound <= upperBound"
-        );
-        unsafe {
-            let mut storage = core::mem::MaybeUninit::<Limit>::uninit();
-            let error = abi::call::doubles3_to_throwing_value(
-                dock_accessory_limit_init as *const (),
-                (position_range.start, position_range.end, maximum_speed),
-                storage.as_mut_ptr().cast(),
-            );
-            if error.is_null() {
-                Ok(storage.assume_init())
-            } else {
-                Err(arc::R::from_raw(abi::error_as_ns_error(error).cast()))
-            }
-        }
-    }
+    ) -> Result<Self, arc::R<ns::Error>>;
 
-    pub fn position_range(&self) -> std::ops::Range<f64> {
-        let (start, end) = unsafe {
-            abi::call::value_to_doubles2(
-                dock_accessory_limit_position_range as *const (),
-                self.as_ptr(),
-            )
-        };
-        start..end
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).Limits(struct).Limit(struct).positionRange: \
+         Range<Double> { get }"
+    )]
+    pub fn position_range(&self) -> std::ops::Range<f64>;
 
     #[swift::call(
         "DockKit.DockAccessory(class).Limits(struct).Limit(struct).maximumSpeed: Double { get }"
@@ -572,7 +396,37 @@ impl Limit {
     pub fn maximum_speed(&self) -> f64;
 }
 
+/// The tag an enum value carries for a case, read from the case's descriptor.
+#[inline]
+fn case_tag(descriptor: *const u8) -> u32 {
+    unsafe { descriptor.cast::<u32>().read() }
+}
+
 impl AccessoryEvent {
+    fn button_tag() -> u32 {
+        case_tag(swift::enum_case!(
+            "DockKit.DockAccessory(class).AccessoryEvent(enum).button(Int, Bool)"
+        ))
+    }
+
+    fn camera_shutter_tag() -> u32 {
+        case_tag(swift::enum_case!(
+            "DockKit.DockAccessory(class).AccessoryEvent(enum).cameraShutter"
+        ))
+    }
+
+    fn camera_flip_tag() -> u32 {
+        case_tag(swift::enum_case!(
+            "DockKit.DockAccessory(class).AccessoryEvent(enum).cameraFlip"
+        ))
+    }
+
+    fn camera_zoom_tag() -> u32 {
+        case_tag(swift::enum_case!(
+            "DockKit.DockAccessory(class).AccessoryEvent(enum).cameraZoom(factor: Double)"
+        ))
+    }
+
     unsafe fn copy_from_ptr(value: *const ()) -> Self {
         unsafe {
             let mut storage = Storage::<AccessoryEventValue>::new();
@@ -586,7 +440,7 @@ impl AccessoryEvent {
             // Projecting a case is destructive, so the payload is read out and
             // nothing is left to destroy. A case that is not projected still
             // holds the whole value, which is destroyed through its witness.
-            if tag == DOCK_ACCESSORY_EVENT_BUTTON_TAG {
+            if tag == Self::button_tag() {
                 abi::destructive_project_enum_data(
                     storage.as_mut_ptr(),
                     AccessoryEventValue::metadata(),
@@ -594,17 +448,17 @@ impl AccessoryEvent {
                 let id = storage.as_ptr().cast::<isize>().read();
                 let pressed = storage.as_ptr().cast::<u8>().add(size_of::<isize>()).read() != 0;
                 Self::Button { id, pressed }
-            } else if tag == DOCK_ACCESSORY_EVENT_CAMERA_ZOOM_TAG {
+            } else if tag == Self::camera_zoom_tag() {
                 abi::destructive_project_enum_data(
                     storage.as_mut_ptr(),
                     AccessoryEventValue::metadata(),
                 );
                 let factor = storage.as_ptr().cast::<f64>().read();
                 Self::CameraZoom { factor }
-            } else if tag == DOCK_ACCESSORY_EVENT_CAMERA_SHUTTER_TAG {
+            } else if tag == Self::camera_shutter_tag() {
                 storage.destroy();
                 Self::CameraShutter
-            } else if tag == DOCK_ACCESSORY_EVENT_CAMERA_FLIP_TAG {
+            } else if tag == Self::camera_flip_tag() {
                 storage.destroy();
                 Self::CameraFlip
             } else {
@@ -615,84 +469,38 @@ impl AccessoryEvent {
     }
 }
 
-unsafe fn optional_primitive<T: SwiftType + SwiftOptional + FromSwift + Copy>(
-    owner: *const (),
-    getter: *const (),
-) -> Option<T> {
-    unsafe {
-        let mut storage = Storage::<Optional<T>>::new();
-        abi::call::value_to_value(getter, owner, storage.as_mut_ptr().cast());
-        storage.take()
-    }
-}
-
-unsafe fn uuid_property(owner: *const (), getter: *const ()) -> Uuid {
-    unsafe {
-        let mut storage = core::mem::MaybeUninit::<Uuid>::uninit();
-        abi::call::value_to_value(getter, owner, storage.as_mut_ptr().cast());
-        storage.assume_init()
-    }
-}
-
-unsafe fn rect_property(owner: *const (), getter: *const ()) -> cg::Rect {
-    let (x, y, width, height) = unsafe { abi::call::value_to_rect(getter, owner) };
-    cg::Rect {
-        origin: cg::Point { x, y },
-        size: cg::Size { width, height },
-    }
-}
-
 impl TrackedPerson {
-    pub fn identifier(&self) -> Uuid {
-        unsafe {
-            uuid_property(
-                self.as_ptr(),
-                dock_accessory_tracked_person_identifier as *const (),
-            )
-        }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).TrackedPerson(struct).identifier: Foundation.UUID(struct) { get }"
+    )]
+    pub fn identifier(&self) -> Uuid;
 
-    pub fn rect(&self) -> cg::Rect {
-        unsafe {
-            rect_property(
-                self.as_ptr(),
-                dock_accessory_tracked_person_rect as *const (),
-            )
-        }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).TrackedPerson(struct).rect: __C.CGRect(struct) { get }"
+    )]
+    pub fn rect(&self) -> cg::Rect;
 
-    pub fn saliency_rank(&self) -> Option<isize> {
-        unsafe {
-            optional_primitive(
-                self.as_ptr(),
-                dock_accessory_tracked_person_saliency_rank as *const (),
-            )
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).TrackedPerson(struct).saliencyRank: Int? { get }")]
+    pub fn saliency_rank(&self) -> Option<isize>;
 
-    pub fn speaking_confidence(&self) -> Option<f64> {
-        unsafe {
-            optional_primitive(
-                self.as_ptr(),
-                dock_accessory_tracked_person_speaking_confidence as *const (),
-            )
-        }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).TrackedPerson(struct).speakingConfidence: Double? { get }"
+    )]
+    pub fn speaking_confidence(&self) -> Option<f64>;
 
-    pub fn looking_at_camera_confidence(&self) -> Option<f64> {
-        unsafe {
-            optional_primitive(
-                self.as_ptr(),
-                dock_accessory_tracked_person_looking_at_camera_confidence as *const (),
-            )
-        }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).TrackedPerson(struct).lookingAtCameraConfidence: \
+         Double? { get }"
+    )]
+    pub fn looking_at_camera_confidence(&self) -> Option<f64>;
 }
 
 impl TrackedPerson {
     /// Swift's `==` is a static member taking both operands as arguments
     /// rather than one of them as `self`.
-    #[swift::call(sym = "$s7DockKit0A9AccessoryC13TrackedPersonV2eeoiySbAE_AEtFZ")]
+    #[swift::call(
+        "static DockKit.DockAccessory(class).TrackedPerson(struct).==(_: DockKit.DockAccessory(class).TrackedPerson(struct), _: DockKit.DockAccessory(class).TrackedPerson(struct)) -> Bool"
+    )]
     fn swift_eq(lhs: &Self, rhs: &Self) -> bool;
 }
 
@@ -703,38 +511,26 @@ impl PartialEq for TrackedPerson {
 }
 
 impl TrackedObject {
-    pub fn identifier(&self) -> Uuid {
-        unsafe {
-            uuid_property(
-                self.as_ptr(),
-                dock_accessory_tracked_object_identifier as *const (),
-            )
-        }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).TrackedObject(struct).identifier: Foundation.UUID(struct) { get }"
+    )]
+    pub fn identifier(&self) -> Uuid;
 
-    pub fn rect(&self) -> cg::Rect {
-        unsafe {
-            rect_property(
-                self.as_ptr(),
-                dock_accessory_tracked_object_rect as *const (),
-            )
-        }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).TrackedObject(struct).rect: __C.CGRect(struct) { get }"
+    )]
+    pub fn rect(&self) -> cg::Rect;
 
-    pub fn saliency_rank(&self) -> Option<isize> {
-        unsafe {
-            optional_primitive(
-                self.as_ptr(),
-                dock_accessory_tracked_object_saliency_rank as *const (),
-            )
-        }
-    }
+    #[swift::call("DockKit.DockAccessory(class).TrackedObject(struct).saliencyRank: Int? { get }")]
+    pub fn saliency_rank(&self) -> Option<isize>;
 }
 
 impl TrackedObject {
     /// Swift's `==` is a static member taking both operands as arguments
     /// rather than one of them as `self`.
-    #[swift::call(sym = "$s7DockKit0A9AccessoryC13TrackedObjectV2eeoiySbAE_AEtFZ")]
+    #[swift::call(
+        "static DockKit.DockAccessory(class).TrackedObject(struct).==(_: DockKit.DockAccessory(class).TrackedObject(struct), _: DockKit.DockAccessory(class).TrackedObject(struct)) -> Bool"
+    )]
     fn swift_eq(lhs: &Self, rhs: &Self) -> bool;
 }
 
@@ -762,7 +558,12 @@ unsafe impl FromSwift for TrackedSubject {
             );
             let tag = abi::get_enum_tag(storage.as_ptr(), TrackedSubjectValue::metadata());
 
-            if tag == DOCK_ACCESSORY_TRACKED_SUBJECT_PERSON_TAG {
+            if tag
+                == case_tag(swift::enum_case!(
+                    "DockKit.DockAccessory(class).TrackedSubjectType(enum).person(\
+                 DockKit.DockAccessory(class).TrackedPerson(struct))"
+                ))
+            {
                 abi::destructive_project_enum_data(
                     storage.as_mut_ptr(),
                     TrackedSubjectValue::metadata(),
@@ -773,7 +574,12 @@ unsafe impl FromSwift for TrackedSubject {
                     <TrackedPerson as SwiftMetadata>::metadata(),
                 );
                 Self::Person(person)
-            } else if tag == DOCK_ACCESSORY_TRACKED_SUBJECT_OBJECT_TAG {
+            } else if tag
+                == case_tag(swift::enum_case!(
+                    "DockKit.DockAccessory(class).TrackedSubjectType(enum).object(\
+                 DockKit.DockAccessory(class).TrackedObject(struct))"
+                ))
+            {
                 abi::destructive_project_enum_data(
                     storage.as_mut_ptr(),
                     TrackedSubjectValue::metadata(),
@@ -798,14 +604,11 @@ impl TrackingState {
     )]
     pub fn time(&self) -> Date;
 
-    pub fn tracked_subjects(&self) -> swift::Array<TrackedSubject> {
-        unsafe {
-            swift::Array::from_raw(abi::call::value_to_object(
-                dock_accessory_tracking_state_subjects as *const (),
-                self.as_ptr(),
-            ))
-        }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).TrackingState(struct).trackedSubjects: \
+         [DockKit.DockAccessory(class).TrackedSubjectType(enum)] { get }"
+    )]
+    pub fn tracked_subjects(&self) -> swift::Array<TrackedSubject>;
 
     #[swift::call("DockKit.DockAccessory(class).TrackingState(struct).description: String { get }")]
     pub fn description(&self) -> swift::String;
@@ -814,44 +617,36 @@ impl TrackingState {
 impl Observation {
     /// Creates an observation without a face-yaw measurement.
     pub fn new(identifier: isize, ty: ObservationType, rect: cg::Rect) -> Self {
-        unsafe {
-            let face_yaw = Storage::<Optional<MeasurementAngleValue>>::none();
-            let mut storage = core::mem::MaybeUninit::<Observation>::uninit();
-            abi::call::int_value_rect_value_to_value(
-                dock_accessory_observation_init as *const (),
-                identifier,
-                ty.as_abi_ptr(),
-                (
-                    rect.origin.x,
-                    rect.origin.y,
-                    rect.size.width,
-                    rect.size.height,
-                ),
-                face_yaw.as_ptr(),
-                storage.as_mut_ptr().cast(),
-            );
-            storage.assume_init()
-        }
+        Self::init(identifier, ty, rect, Storage::none())
     }
+
+    #[swift::call(
+        "DockKit.DockAccessory(class).Observation(struct).init(\
+         identifier: Int, \
+         type: DockKit.DockAccessory(class).Observation(struct).ObservationType(enum), \
+         rect: __C.CGRect(struct), \
+         faceYawAngle: Foundation.Measurement(struct)<__C.NSUnitAngle(class)>?)"
+    )]
+    fn init(
+        identifier: isize,
+        ty: ObservationType,
+        rect: cg::Rect,
+        face_yaw_angle: Storage<Optional<MeasurementAngleValue>>,
+    ) -> Self;
 
     #[swift::call("DockKit.DockAccessory(class).Observation(struct).identifier: Int { get }")]
     pub fn identifier(&self) -> isize;
 
-    pub fn ty(&self) -> ObservationType {
-        let mut value = ObservationType::human_face();
-        unsafe {
-            abi::call::value_to_value(
-                dock_accessory_observation_type as *const (),
-                self.as_ptr(),
-                (&mut value as *mut ObservationType).cast(),
-            );
-        }
-        value
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).Observation(struct).type: \
+         DockKit.DockAccessory(class).Observation(struct).ObservationType(enum) { get }"
+    )]
+    pub fn ty(&self) -> ObservationType;
 
-    pub fn rect(&self) -> cg::Rect {
-        unsafe { rect_property(self.as_ptr(), dock_accessory_observation_rect as *const ()) }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).Observation(struct).rect: __C.CGRect(struct) { get }"
+    )]
+    pub fn rect(&self) -> cg::Rect;
 }
 
 #[cfg(feature = "av")]
@@ -911,9 +706,20 @@ impl CameraInformation {
             };
             let words = dimensions.as_ptr().cast::<u64>();
             let mut storage = core::mem::MaybeUninit::<CameraInformation>::uninit();
+            // Written out rather than generated: the optional size travels as
+            // three words in registers, which a generated call cannot pass yet.
+            // The initializer takes the device type at `+1`, so it gets a
+            // reference of its own.
             abi::call::camera_information_init(
-                dock_accessory_camera_information_init as *const (),
-                (device_type as *const crate::av::CaptureDeviceType).cast(),
+                swift::symbol!(
+                    "DockKit.DockAccessory(class).CameraInformation(struct).init(\
+                     captureDevice: __C.AVCaptureDeviceType, \
+                     cameraPosition: __C.AVCaptureDevicePosition(struct), \
+                     orientation: DockKit.DockAccessory(class).CameraOrientation(enum), \
+                     cameraIntrinsics: __C.simd_float3x3?, \
+                     referenceDimensions: __C.CGSize(struct)?)"
+                ),
+                arc::Retain::retained(device_type).into_raw().cast(),
                 position as isize,
                 orientation.as_abi_ptr(),
                 intrinsics.as_ptr(),
@@ -924,44 +730,37 @@ impl CameraInformation {
         }
     }
 
-    pub fn capture_device(&self) -> arc::R<crate::av::CaptureDeviceType> {
-        unsafe {
-            arc::R::from_raw(
-                abi::call::value_to_object(
-                    dock_accessory_camera_information_capture_device as *const (),
-                    self.as_ptr(),
-                )
-                .cast(),
-            )
-        }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).CameraInformation(struct).captureDevice: \
+         __C.AVCaptureDeviceType { get }"
+    )]
+    pub fn capture_device(&self) -> arc::R<crate::av::CaptureDeviceType>;
 
     pub fn camera_position(&self) -> crate::av::CaptureDevicePos {
-        unsafe {
-            std::mem::transmute(abi::call::value_to_int(
-                dock_accessory_camera_information_camera_position as *const (),
-                self.as_ptr(),
-            ))
-        }
+        unsafe { std::mem::transmute(self.camera_position_raw()) }
     }
 
-    pub fn orientation(&self) -> CameraOrientation {
-        let mut value = CameraOrientation::portrait();
-        unsafe {
-            abi::call::value_to_value(
-                dock_accessory_camera_information_orientation as *const (),
-                self.as_ptr(),
-                (&mut value as *mut CameraOrientation).cast(),
-            );
-        }
-        value
-    }
+    /// An `NS_ENUM`, which Swift returns as its raw integer.
+    #[swift::call(
+        "DockKit.DockAccessory(class).CameraInformation(struct).cameraPosition: \
+         __C.AVCaptureDevicePosition(struct) { get }"
+    )]
+    fn camera_position_raw(&self) -> isize;
+
+    #[swift::call(
+        "DockKit.DockAccessory(class).CameraInformation(struct).orientation: \
+         DockKit.DockAccessory(class).CameraOrientation(enum) { get }"
+    )]
+    pub fn orientation(&self) -> CameraOrientation;
 
     pub fn camera_intrinsics(&self) -> Option<CameraIntrinsics> {
         unsafe {
             let mut storage = Storage::<Optional<CameraIntrinsicsValue>>::new();
             abi::call::value_to_value(
-                dock_accessory_camera_information_intrinsics as *const (),
+                swift::symbol!(
+                    "DockKit.DockAccessory(class).CameraInformation(struct).cameraIntrinsics: \
+                     __C.simd_float3x3? { get }"
+                ),
                 self.as_ptr(),
                 storage.as_mut_ptr().cast(),
             );
@@ -973,8 +772,12 @@ impl CameraInformation {
 
     pub fn reference_dimensions(&self) -> Option<cg::Size> {
         unsafe {
+            // Three words: the size's two doubles and the optional's tag.
             let words = abi::call::value_to_words3(
-                dock_accessory_camera_information_reference_dimensions as *const (),
+                swift::symbol!(
+                    "DockKit.DockAccessory(class).CameraInformation(struct).referenceDimensions: \
+                     __C.CGSize(struct)? { get }"
+                ),
                 self.as_ptr(),
             );
             let mut storage = Storage::<Optional<ReferenceDimensionsValue>>::new();
@@ -992,77 +795,51 @@ impl CameraInformation {
 define_async_sequence! {
     /// `DockAccessory.StateChanges`.
     StateChanges, StateChangesValue, StateChangesIteratorValue,
-    framework = "DockKit",
-    element = StateChange,
-    sequence_metadata = dock_accessory_state_changes_metadata => "$s7DockKit0A9AccessoryC12StateChangesVMa",
-    iterator_metadata = dock_accessory_state_changes_iterator_metadata => "$s7DockKit0A9AccessoryC12StateChangesV8IteratorVMa",
-    make_iterator = dock_accessory_state_changes_make_iterator => "$s7DockKit0A9AccessoryC12StateChangesV17makeAsyncIteratorAE0H0VyF",
-    next = dock_accessory_state_changes_next => "$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaF",
-    next_async = DOCK_ACCESSORY_STATE_CHANGES_NEXT_ASYNC => "$s7DockKit0A9AccessoryC12StateChangesV8IteratorV4nextAC0D6ChangeVSgyYaFTu",
+    sequence = "DockKit.DockAccessory(class).StateChanges",
+    element = StateChange = "DockKit.DockAccessory(class).StateChange(struct)",
     async_iter = StateChangesAsyncIter,
 }
 
 define_async_sequence! {
     /// `DockAccessory.MotionStates`.
     MotionStates, MotionStatesValue, MotionStatesIteratorValue,
-    framework = "DockKit",
-    element = MotionState,
-    sequence_metadata = dock_accessory_motion_states_metadata => "$s7DockKit0A9AccessoryC12MotionStatesVMa",
-    iterator_metadata = dock_accessory_motion_states_iterator_metadata => "$s7DockKit0A9AccessoryC12MotionStatesV8IteratorVMa",
-    make_iterator = dock_accessory_motion_states_make_iterator => "$s7DockKit0A9AccessoryC12MotionStatesV17makeAsyncIteratorAE0H0VyF",
-    next = dock_accessory_motion_states_next => "$s7DockKit0A9AccessoryC12MotionStatesV8IteratorV4nextAC0D5StateVSgyYaF",
-    next_async = DOCK_ACCESSORY_MOTION_STATES_NEXT_ASYNC => "$s7DockKit0A9AccessoryC12MotionStatesV8IteratorV4nextAC0D5StateVSgyYaFTu",
+    sequence = "DockKit.DockAccessory(class).MotionStates",
+    element = MotionState = "DockKit.DockAccessory(class).MotionState(struct)",
     async_iter = MotionStatesAsyncIter,
 }
 
 define_async_sequence! {
     /// `DockAccessory.AccessoryEvents`.
     AccessoryEvents, AccessoryEventsValue, AccessoryEventsIteratorValue,
-    framework = "DockKit",
-    element = AccessoryEvent,
-    sequence_metadata = dock_accessory_events_metadata => "$s7DockKit0A9AccessoryC0C6EventsVMa",
-    iterator_metadata = dock_accessory_events_iterator_metadata => "$s7DockKit0A9AccessoryC0C6EventsV8IteratorVMa",
-    make_iterator = dock_accessory_events_make_iterator => "$s7DockKit0A9AccessoryC0C6EventsV17makeAsyncIteratorAE0G0VyF",
-    next = dock_accessory_events_next => "$s7DockKit0A9AccessoryC0C6EventsV8IteratorV4nextAC0C5EventOSgyYaF",
-    next_async = DOCK_ACCESSORY_EVENTS_NEXT_ASYNC => "$s7DockKit0A9AccessoryC0C6EventsV8IteratorV4nextAC0C5EventOSgyYaFTu",
+    sequence = "DockKit.DockAccessory(class).AccessoryEvents",
+    element = AccessoryEvent = "DockKit.DockAccessory(class).AccessoryEvent(enum)",
     async_iter = AccessoryEventsAsyncIter,
 }
 
 define_async_sequence! {
     /// `DockAccessory.TrackingStates`.
     TrackingStates, TrackingStatesValue, TrackingStatesIteratorValue,
-    framework = "DockKit",
-    element = TrackingState,
-    sequence_metadata = dock_accessory_tracking_states_metadata => "$s7DockKit0A9AccessoryC14TrackingStatesVMa",
-    iterator_metadata = dock_accessory_tracking_states_iterator_metadata => "$s7DockKit0A9AccessoryC14TrackingStatesV8IteratorVMa",
-    make_iterator = dock_accessory_tracking_states_make_iterator => "$s7DockKit0A9AccessoryC14TrackingStatesV17makeAsyncIteratorAE0H0VyF",
-    next = dock_accessory_tracking_states_next => "$s7DockKit0A9AccessoryC14TrackingStatesV8IteratorV4nextAC0D5StateVSgyYaF",
-    next_async = DOCK_ACCESSORY_TRACKING_STATES_NEXT_ASYNC => "$s7DockKit0A9AccessoryC14TrackingStatesV8IteratorV4nextAC0D5StateVSgyYaFTu",
+    sequence = "DockKit.DockAccessory(class).TrackingStates",
+    element = TrackingState = "DockKit.DockAccessory(class).TrackingState(struct)",
     async_iter = TrackingStatesAsyncIter,
 }
 
 define_async_sequence! {
     /// `DockAccessory.BatteryStates`.
     BatteryStates, BatteryStatesValue, BatteryStatesIteratorValue,
-    framework = "DockKit",
-    element = BatteryState,
-    sequence_metadata = dock_accessory_battery_states_metadata => "$s7DockKit0A9AccessoryC13BatteryStatesVMa",
-    iterator_metadata = dock_accessory_battery_states_iterator_metadata => "$s7DockKit0A9AccessoryC13BatteryStatesV8IteratorVMa",
-    make_iterator = dock_accessory_battery_states_make_iterator => "$s7DockKit0A9AccessoryC13BatteryStatesV17makeAsyncIteratorAE0H0VyF",
-    next = dock_accessory_battery_states_next => "$s7DockKit0A9AccessoryC13BatteryStatesV8IteratorV4nextAC0D5StateVSgyYaF",
-    next_async = DOCK_ACCESSORY_BATTERY_STATES_NEXT_ASYNC => "$s7DockKit0A9AccessoryC13BatteryStatesV8IteratorV4nextAC0D5StateVSgyYaFTu",
+    sequence = "DockKit.DockAccessory(class).BatteryStates",
+    element = BatteryState = "DockKit.DockAccessory(class).BatteryState(struct)",
     async_iter = BatteryStatesAsyncIter,
 }
 
 define_swift_tag_enum!(
     /// DockKit `DockAccessory.State`.
     #[doc(alias = "DockAccessory.State")]
-    pub State in "DockKit" {
-        hash = "$s7DockKit0A9AccessoryC5StateO9hashValueSivg",
-        debug = "$s7DockKit0A9AccessoryC5StateO16debugDescriptionSSvg",
+    pub State = swift "DockKit.DockAccessory(class).State" {
+        debug,
         cases {
-            undocked = "$s7DockKit0A9AccessoryC5StateO8undockedyA2EmFWC",
-            docked = "$s7DockKit0A9AccessoryC5StateO6dockedyA2EmFWC",
+            undocked = "undocked",
+            docked = "docked",
         }
     }
 );
@@ -1070,11 +847,10 @@ define_swift_tag_enum!(
 define_swift_tag_enum!(
     /// DockKit `DockAccessory.Category`.
     #[doc(alias = "DockAccessory.Category")]
-    pub Category in "DockKit" {
-        hash = "$s7DockKit0A9AccessoryC8CategoryO9hashValueSivg",
-        debug = "$s7DockKit0A9AccessoryC8CategoryO16debugDescriptionSSvg",
+    pub Category = swift "DockKit.DockAccessory(class).Category" {
+        debug,
         cases {
-            tracking_stand = "$s7DockKit0A9AccessoryC8CategoryO13trackingStandyA2EmFWC",
+            tracking_stand = "trackingStand",
         }
     }
 );
@@ -1082,17 +858,16 @@ define_swift_tag_enum!(
 define_swift_tag_enum!(
     /// DockKit `DockAccessory.CameraOrientation`.
     #[doc(alias = "DockAccessory.CameraOrientation")]
-    pub CameraOrientation in "DockKit" {
-        hash = "$s7DockKit0A9AccessoryC17CameraOrientationO9hashValueSivg",
+    pub CameraOrientation = swift "DockKit.DockAccessory(class).CameraOrientation" {
         cases {
-            unknown = "$s7DockKit0A9AccessoryC17CameraOrientationO7unknownyA2EmFWC",
-            portrait = "$s7DockKit0A9AccessoryC17CameraOrientationO8portraityA2EmFWC",
-            portrait_upside_down = "$s7DockKit0A9AccessoryC17CameraOrientationO18portraitUpsideDownyA2EmFWC",
-            landscape_right = "$s7DockKit0A9AccessoryC17CameraOrientationO14landscapeRightyA2EmFWC",
-            landscape_left = "$s7DockKit0A9AccessoryC17CameraOrientationO13landscapeLeftyA2EmFWC",
-            face_up = "$s7DockKit0A9AccessoryC17CameraOrientationO6faceUpyA2EmFWC",
-            face_down = "$s7DockKit0A9AccessoryC17CameraOrientationO8faceDownyA2EmFWC",
-            corrected = "$s7DockKit0A9AccessoryC17CameraOrientationO9correctedyA2EmFWC",
+            unknown = "unknown",
+            portrait = "portrait",
+            portrait_upside_down = "portraitUpsideDown",
+            landscape_right = "landscapeRight",
+            landscape_left = "landscapeLeft",
+            face_up = "faceUp",
+            face_down = "faceDown",
+            corrected = "corrected",
         }
     }
 );
@@ -1100,12 +875,11 @@ define_swift_tag_enum!(
 define_swift_tag_enum!(
     /// DockKit `DockAccessory.Observation.ObservationType`.
     #[doc(alias = "DockAccessory.Observation.ObservationType")]
-    pub ObservationType in "DockKit" {
-        hash = "$s7DockKit0A9AccessoryC11ObservationV0D4TypeO9hashValueSivg",
+    pub ObservationType = swift "DockKit.DockAccessory(class).Observation(struct).ObservationType" {
         cases {
-            human_face = "$s7DockKit0A9AccessoryC11ObservationV0D4TypeO9humanFaceyA2GmFWC",
-            human_body = "$s7DockKit0A9AccessoryC11ObservationV0D4TypeO9humanBodyyA2GmFWC",
-            object = "$s7DockKit0A9AccessoryC11ObservationV0D4TypeO6objectyA2GmFWC",
+            human_face = "humanFace",
+            human_body = "humanBody",
+            object = "object",
         }
     }
 );
@@ -1113,12 +887,11 @@ define_swift_tag_enum!(
 define_swift_tag_enum!(
     /// DockKit `DockAccessory.BatteryChargeState`.
     #[doc(alias = "DockAccessory.BatteryChargeState")]
-    pub BatteryChargeState in "DockKit" {
-        hash = "$s7DockKit0A9AccessoryC18BatteryChargeStateO9hashValueSivg",
+    pub BatteryChargeState = swift "DockKit.DockAccessory(class).BatteryChargeState" {
         cases {
-            not_charging = "$s7DockKit0A9AccessoryC18BatteryChargeStateO11notChargingyA2EmFWC",
-            charging = "$s7DockKit0A9AccessoryC18BatteryChargeStateO8chargingyA2EmFWC",
-            not_chargeable = "$s7DockKit0A9AccessoryC18BatteryChargeStateO13notChargeableyA2EmFWC",
+            not_charging = "notCharging",
+            charging = "charging",
+            not_chargeable = "notChargeable",
         }
     }
 );
@@ -1126,13 +899,12 @@ define_swift_tag_enum!(
 define_swift_tag_enum!(
     /// DockKit `DockAccessory.FramingMode`.
     #[doc(alias = "DockAccessory.FramingMode")]
-    pub FramingMode in "DockKit" {
-        hash = "$s7DockKit0A9AccessoryC11FramingModeO9hashValueSivg",
+    pub FramingMode = swift "DockKit.DockAccessory(class).FramingMode" {
         cases {
-            automatic = "$s7DockKit0A9AccessoryC11FramingModeO9automaticyA2EmFWC",
-            center = "$s7DockKit0A9AccessoryC11FramingModeO6centeryA2EmFWC",
-            left = "$s7DockKit0A9AccessoryC11FramingModeO4leftyA2EmFWC",
-            right = "$s7DockKit0A9AccessoryC11FramingModeO5rightyA2EmFWC",
+            automatic = "automatic",
+            center = "center",
+            left = "left",
+            right = "right",
         }
     }
 );
@@ -1140,75 +912,23 @@ define_swift_tag_enum!(
 define_swift_tag_enum!(
     /// DockKit `DockAccessory.Animation`.
     #[doc(alias = "DockAccessory.Animation")]
-    pub Animation in "DockKit" {
-        hash = "$s7DockKit0A9AccessoryC9AnimationO9hashValueSivg",
+    pub Animation = swift "DockKit.DockAccessory(class).Animation" {
         cases {
-            wakeup = "$s7DockKit0A9AccessoryC9AnimationO6wakeupyA2EmFWC",
-            yes = "$s7DockKit0A9AccessoryC9AnimationO3yesyA2EmFWC",
-            no = "$s7DockKit0A9AccessoryC9AnimationO2noyA2EmFWC",
-            kapow = "$s7DockKit0A9AccessoryC9AnimationO5kapowyA2EmFWC",
+            wakeup = "wakeup",
+            yes = "yes",
+            no = "no",
+            kapow = "kapow",
         }
     }
 );
-
-#[link(name = "DockKit", kind = "framework")]
-unsafe extern "C" {
-
-    #[link_name = "$s7DockKit0A9AccessoryC11framingModeAC07FramingE0Ovg"]
-    fn dock_accessory_framing_mode();
-
-    #[link_name = "$s7DockKit0A9AccessoryC15accessoryEventsAC0cE0Vvg"]
-    fn dock_accessory_events();
-
-    #[link_name = "$s7DockKit0A9AccessoryC14trackingStatesAC08TrackingE0Vvg"]
-    fn dock_accessory_tracking_states();
-
-    #[link_name = "$s7DockKit0A9AccessoryC9setLimitsyyAC0E0VKF"]
-    fn dock_accessory_set_limits();
-
-    #[link_name = "$s7DockKit0A9AccessoryC14setOrientation_8duration8relativeSo10NSProgressCSo10SPVector3Da_s8DurationVSbtYaKF"]
-    fn dock_accessory_set_vector_orientation();
-
-    #[link_name = "$s7DockKit0A9AccessoryC14setOrientation_8duration8relativeSo10NSProgressCSo10SPVector3Da_s8DurationVSbtKF"]
-    fn dock_accessory_set_vector_orientation_sync();
-
-    #[link_name = "$s7DockKit0A9AccessoryC14setOrientation_8duration8relativeSo10NSProgressCSo10SPVector3Da_s8DurationVSbtYaKFTu"]
-    static DOCK_ACCESSORY_SET_VECTOR_ORIENTATION_ASYNC: u8;
-
-    #[link_name = "$s7DockKit0A9AccessoryC14setOrientation_8duration8relativeSo10NSProgressCSo12SPRotation3Da_s8DurationVSbtYaKF"]
-    fn dock_accessory_set_rotation_orientation();
-
-    #[link_name = "$s7DockKit0A9AccessoryC14setOrientation_8duration8relativeSo10NSProgressCSo12SPRotation3Da_s8DurationVSbtKF"]
-    fn dock_accessory_set_rotation_orientation_sync();
-
-    #[link_name = "$s7DockKit0A9AccessoryC14setOrientation_8duration8relativeSo10NSProgressCSo12SPRotation3Da_s8DurationVSbtYaKFTu"]
-    static DOCK_ACCESSORY_SET_ROTATION_ORIENTATION_ASYNC: u8;
-
-    #[link_name = "$ss8DurationV7secondsyABSdFZ"]
-    fn swift_duration_seconds();
-
-    #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC5track_17cameraInformation5imageySayAC11ObservationVG_AC06CameraF0VSo11CVBufferRefatYaKF"]
-    fn dock_accessory_track_observations_with_image();
-
-    #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC5track_17cameraInformation5imageySayAC11ObservationVG_AC06CameraF0VSo11CVBufferRefatYaKFTu"]
-    static DOCK_ACCESSORY_TRACK_OBSERVATIONS_WITH_IMAGE_ASYNC: u8;
-
-    #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC5track_17cameraInformation5imageySaySo16AVMetadataObjectCG_AC06CameraF0VSo11CVBufferRefatYaKF"]
-    fn dock_accessory_track_metadata_with_image();
-
-    #[cfg(feature = "av")]
-    #[link_name = "$s7DockKit0A9AccessoryC5track_17cameraInformation5imageySaySo16AVMetadataObjectCG_AC06CameraF0VSo11CVBufferRefatYaKFTu"]
-    static DOCK_ACCESSORY_TRACK_METADATA_WITH_IMAGE_ASYNC: u8;
-}
 
 impl Accessory {
     #[swift::call("DockKit.DockAccessory(class).hashValue: Int { get }")]
     pub fn hash_value(&self) -> isize;
 
-    #[swift::call(sym = "$s7DockKit0A9AccessoryC10identifierAC10IdentifierVvg")]
+    #[swift::call(
+        "DockKit.DockAccessory(class).identifier: DockKit.DockAccessory(class).Identifier(struct) { get }"
+    )]
     #[doc(alias = "DockAccessory.identifier")]
     pub fn identifier(&self) -> Identifier;
 
@@ -1216,18 +936,11 @@ impl Accessory {
     pub fn debug_desc(&self) -> swift::String;
 
     #[doc(alias = "DockAccessory.framingMode")]
-    #[inline]
-    pub fn framing_mode(&self) -> FramingMode {
-        let mut value = FramingMode::automatic();
-        unsafe {
-            abi::call::object_to_value(
-                dock_accessory_framing_mode as *const (),
-                (self as *const Self).cast(),
-                (&mut value as *mut FramingMode).cast(),
-            );
-        }
-        value
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).framingMode: \
+         DockKit.DockAccessory(class).FramingMode(enum) { get }"
+    )]
+    pub fn framing_mode(&self) -> FramingMode;
 
     /// A `String?` getter hands back the string's own two words, and Swift
     /// spells the empty case as a null word pair.
@@ -1242,70 +955,48 @@ impl Accessory {
     #[swift::call("DockKit.DockAccessory(class).regionOfInterest: __C.CGRect(struct) { get }")]
     pub fn region_of_interest(&self) -> cg::Rect;
 
-    #[swift::call(sym = "$s7DockKit0A9AccessoryC6limitsAC6LimitsVvg")]
+    #[swift::call(
+        "DockKit.DockAccessory(class).limits: DockKit.DockAccessory(class).Limits(struct) { get }"
+    )]
     #[doc(alias = "DockAccessory.limits")]
     pub fn limits(&self) -> Result<Limits, arc::R<ns::Error>>;
 
-    #[swift::call(sym = "$s7DockKit0A9AccessoryC12motionStatesAC06MotionE0Vvg")]
+    #[swift::call(
+        "DockKit.DockAccessory(class).motionStates: \
+         DockKit.DockAccessory(class).MotionStates(struct) { get }"
+    )]
     #[doc(alias = "DockAccessory.motionStates")]
     pub fn motion_states(&self) -> Result<MotionStates, arc::R<ns::Error>>;
 
     #[crate::api::available(macos = 15.0, ios = 18.0)]
-    #[swift::call(sym = "$s7DockKit0A9AccessoryC13batteryStatesAC07BatteryE0Vvg")]
+    #[swift::call(
+        "DockKit.DockAccessory(class).batteryStates: \
+         DockKit.DockAccessory(class).BatteryStates(struct) { get }"
+    )]
     #[doc(alias = "DockAccessory.batteryStates")]
     pub fn battery_states(&self) -> Result<BatteryStates, arc::R<ns::Error>>;
 
     #[doc(alias = "DockAccessory.accessoryEvents")]
     #[crate::api::available(macos = 14.4, ios = 17.4)]
-    pub fn accessory_events(&self) -> Result<AccessoryEvents, arc::R<ns::Error>> {
-        unsafe {
-            let mut storage = <AccessoryEvents as crate::swift::value::SwiftOut>::out_buf();
-            let error = abi::call::object_to_throwing_value(
-                dock_accessory_events as *const (),
-                (self as *const Self).cast(),
-                storage.as_mut_ptr().cast(),
-            );
-            if error.is_null() {
-                Ok(AccessoryEvents::from_storage(storage))
-            } else {
-                Err(arc::R::from_raw(abi::error_as_ns_error(error).cast()))
-            }
-        }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).accessoryEvents: \
+         DockKit.DockAccessory(class).AccessoryEvents(struct) { get }"
+    )]
+    pub fn accessory_events(&self) -> Result<AccessoryEvents, arc::R<ns::Error>>;
 
     #[doc(alias = "DockAccessory.trackingStates")]
     #[crate::api::available(macos = 15.0, ios = 18.0)]
-    pub fn tracking_states(&self) -> Result<TrackingStates, arc::R<ns::Error>> {
-        unsafe {
-            let mut storage = <TrackingStates as crate::swift::value::SwiftOut>::out_buf();
-            let error = abi::call::object_to_throwing_value(
-                dock_accessory_tracking_states as *const (),
-                (self as *const Self).cast(),
-                storage.as_mut_ptr().cast(),
-            );
-            if error.is_null() {
-                Ok(TrackingStates::from_storage(storage))
-            } else {
-                Err(arc::R::from_raw(abi::error_as_ns_error(error).cast()))
-            }
-        }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).trackingStates: \
+         DockKit.DockAccessory(class).TrackingStates(struct) { get }"
+    )]
+    pub fn tracking_states(&self) -> Result<TrackingStates, arc::R<ns::Error>>;
 
     #[doc(alias = "DockAccessory.setLimits(_:)")]
-    pub fn set_limits(&self, limits: &Limits) -> Result<(), arc::R<ns::Error>> {
-        unsafe {
-            let error = abi::call::value_object_to_throwing_void(
-                dock_accessory_set_limits as *const (),
-                limits.as_ptr(),
-                (self as *const Self).cast(),
-            );
-            if error.is_null() {
-                Ok(())
-            } else {
-                Err(arc::R::from_raw(abi::error_as_ns_error(error).cast()))
-            }
-        }
-    }
+    #[swift::call(
+        "DockKit.DockAccessory(class).setLimits(_: DockKit.DockAccessory(class).Limits(struct)) throws"
+    )]
+    pub fn set_limits(&self, limits: &Limits) -> Result<(), arc::R<ns::Error>>;
 
     /// Deprecated synchronous DockKit orientation API.
     #[doc(alias = "DockAccessory.setOrientation(_:duration:relative:)")]
@@ -1316,25 +1007,20 @@ impl Accessory {
         duration: std::time::Duration,
         relative: bool,
     ) -> Result<arc::R<ns::Progress>, arc::R<ns::Error>> {
-        unsafe {
-            let duration = abi::call::double_to_words2(
-                swift_duration_seconds as *const (),
-                duration.as_secs_f64(),
-            );
-            let (result, error) = abi::call::vector_duration_bool_object(
-                dock_accessory_set_vector_orientation_sync as *const (),
-                (rotation.x, rotation.y, rotation.z),
-                duration,
-                relative,
-                (self as *const Self).cast(),
-            );
-            if error.is_null() {
-                Ok(arc::R::from_raw(result.cast()))
-            } else {
-                Err(arc::R::from_raw(abi::error_as_ns_error(error).cast()))
-            }
-        }
+        self.set_vector_orientation_sync(rotation, duration.into(), relative)
     }
+
+    #[swift::call(
+        "DockKit.DockAccessory(class).setOrientation(_: __C.SPVector3D, \
+         duration: Swift.Duration(struct), relative: Bool) \
+         throws -> __C.NSProgress(class)"
+    )]
+    fn set_vector_orientation_sync(
+        &self,
+        rotation: spatial::Vector3D,
+        duration: swift::Duration,
+        relative: bool,
+    ) -> Result<arc::R<ns::Progress>, arc::R<ns::Error>>;
 
     /// Deprecated synchronous DockKit rotation API.
     #[doc(alias = "DockAccessory.setOrientation(_:duration:relative:)")]
@@ -1345,30 +1031,27 @@ impl Accessory {
         duration: std::time::Duration,
         relative: bool,
     ) -> Result<arc::R<ns::Progress>, arc::R<ns::Error>> {
-        unsafe {
-            let duration = abi::call::double_to_words2(
-                swift_duration_seconds as *const (),
-                duration.as_secs_f64(),
-            );
-            let (result, error) = abi::call::rotation_duration_bool_object(
-                dock_accessory_set_rotation_orientation_sync as *const (),
-                (rotation.x, rotation.y, rotation.z, rotation.w),
-                duration,
-                relative,
-                (self as *const Self).cast(),
-            );
-            if error.is_null() {
-                Ok(arc::R::from_raw(result.cast()))
-            } else {
-                Err(arc::R::from_raw(abi::error_as_ns_error(error).cast()))
-            }
-        }
+        self.set_rotation_orientation_sync(rotation, duration.into(), relative)
     }
+
+    /// Passed directly, the quaternion takes `d0`-`d3`.
+    #[swift::call(
+        "DockKit.DockAccessory(class).setOrientation(_: __C.SPRotation3D, \
+         duration: Swift.Duration(struct), relative: Bool) \
+         throws -> __C.NSProgress(class)"
+    )]
+    fn set_rotation_orientation_sync(
+        &self,
+        rotation: spatial::Rotation3D,
+        duration: swift::Duration,
+        relative: bool,
+    ) -> Result<arc::R<ns::Progress>, arc::R<ns::Error>>;
 
     /// Awaits one of the accessory's `Void`-returning methods.
     ///
     /// They differ only in which registers their arguments go in, so the call
     /// itself is `owned` — whatever has to stay alive — plus where it goes.
+    #[cfg(feature = "av")]
     fn call_void<O, F>(
         &self,
         function: *const (),
@@ -1418,7 +1101,7 @@ impl Accessory {
 
     /// The future sibling of [`Self::call_void`], which builds its awaiting
     /// state on the task's own allocation rather than beside it.
-    #[cfg(feature = "async")]
+    #[cfg(all(feature = "async", feature = "av"))]
     fn call_void_future<O>(
         &self,
         function: *const (),
@@ -1476,10 +1159,11 @@ impl Accessory {
     )]
     pub fn select_subject(&self, point: cg::Point) -> Result<(), arc::R<ns::Error>>;
 
-    /// The mode is the accessory's own nested type, which the symbol reaches by
-    /// back reference rather than by name, so this one is given mangled.
     #[doc(alias = "DockAccessory.setFramingMode(_:)")]
-    #[swift::call(sym = "$s7DockKit0A9AccessoryC14setFramingModeyyAC0eF0OYaKF", async)]
+    #[swift::call(
+        "DockKit.DockAccessory(class).setFramingMode(\
+         _: DockKit.DockAccessory(class).FramingMode(enum)) async throws"
+    )]
     pub fn set_framing_mode(&self, mode: FramingMode) -> Result<(), arc::R<ns::Error>>;
 
     #[swift::call(
@@ -1504,15 +1188,12 @@ impl Accessory {
     /// The four `track` overloads differ only in what they hand over as the
     /// observations and whether they carry an image, so each is declared
     /// against its own symbol rather than routed through one call.
-    ///
-    /// `Observation` and `CameraInformation` are the accessory's own nested
-    /// types, which the symbols reach by back reference, so these are given
-    /// mangled.
     #[cfg(feature = "av")]
     #[doc(alias = "DockAccessory.track(_:cameraInformation:)")]
     #[swift::call(
-        sym = "$s7DockKit0A9AccessoryC5track_17cameraInformationySayAC11ObservationVG_AC06CameraF0VtYaKF",
-        async
+        "DockKit.DockAccessory(class).track(\
+         _: [DockKit.DockAccessory(class).Observation(struct)], \
+         cameraInformation: DockKit.DockAccessory(class).CameraInformation(struct)) async throws"
     )]
     pub fn track(
         &self,
@@ -1522,8 +1203,9 @@ impl Accessory {
 
     #[cfg(feature = "av")]
     #[swift::call(
-        sym = "$s7DockKit0A9AccessoryC5track_17cameraInformationySaySo16AVMetadataObjectCG_AC06CameraF0VtYaKF",
-        async
+        "DockKit.DockAccessory(class).track(\
+         _: [__C.AVMetadataObject(class)], \
+         cameraInformation: DockKit.DockAccessory(class).CameraInformation(struct)) async throws"
     )]
     fn track_metadata_array(
         &self,
@@ -1538,8 +1220,7 @@ impl Accessory {
     #[cfg(feature = "av")]
     fn track_image<F>(
         &self,
-        function: *const (),
-        async_fn: *const u8,
+        (function, async_fn): (*const (), *const u8),
         data: TrackData,
         camera: CameraInformation,
         image: arc::R<crate::cv::PixelBuf>,
@@ -1564,8 +1245,7 @@ impl Accessory {
     #[cfg(all(feature = "async", feature = "av"))]
     fn track_image_future(
         &self,
-        function: *const (),
-        async_fn: *const u8,
+        (function, async_fn): (*const (), *const u8),
         data: TrackData,
         camera: CameraInformation,
         image: arc::R<crate::cv::PixelBuf>,
@@ -1594,8 +1274,7 @@ impl Accessory {
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
         self.track_image(
-            dock_accessory_track_observations_with_image as *const (),
-            (&raw const DOCK_ACCESSORY_TRACK_OBSERVATIONS_WITH_IMAGE_ASYNC).cast(),
+            track_observations_with_image(),
             TrackData::Observations(observations),
             camera,
             arc::Retain::retained(image),
@@ -1611,8 +1290,7 @@ impl Accessory {
         image: &crate::cv::PixelBuf,
     ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
         self.track_image_future(
-            dock_accessory_track_observations_with_image as *const (),
-            (&raw const DOCK_ACCESSORY_TRACK_OBSERVATIONS_WITH_IMAGE_ASYNC).cast(),
+            track_observations_with_image(),
             TrackData::Observations(observations),
             camera,
             arc::Retain::retained(image),
@@ -1644,8 +1322,7 @@ impl Accessory {
         F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
     {
         self.track_image(
-            dock_accessory_track_metadata_with_image as *const (),
-            (&raw const DOCK_ACCESSORY_TRACK_METADATA_WITH_IMAGE_ASYNC).cast(),
+            track_metadata_with_image(),
             TrackData::Metadata(metadata_objects(metadata)),
             camera,
             arc::Retain::retained(image),
@@ -1679,8 +1356,7 @@ impl Accessory {
         image: &crate::cv::PixelBuf,
     ) -> impl std::future::Future<Output = Result<(), arc::R<ns::Error>>> {
         self.track_image_future(
-            dock_accessory_track_metadata_with_image as *const (),
-            (&raw const DOCK_ACCESSORY_TRACK_METADATA_WITH_IMAGE_ASYNC).cast(),
+            track_metadata_with_image(),
             TrackData::Metadata(metadata_objects(metadata)),
             camera,
             arc::Retain::retained(image),
@@ -1689,8 +1365,8 @@ impl Accessory {
 
     #[doc(alias = "DockAccessory.animate(motion:)")]
     #[swift::call(
-        sym = "$s7DockKit0A9AccessoryC7animate6motionSo10NSProgressCAC9AnimationO_tYaKF",
-        async
+        "DockKit.DockAccessory(class).animate(\
+         motion: DockKit.DockAccessory(class).Animation(enum)) async throws -> __C.NSProgress(class)"
     )]
     pub fn animate(&self, animation: Animation) -> Result<arc::R<ns::Progress>, arc::R<ns::Error>>;
 
@@ -1705,10 +1381,11 @@ impl Accessory {
     ) where
         F: FnOnce(Result<arc::R<ns::Progress>, arc::R<ns::Error>>) + Send + 'static,
     {
-        let duration = swift_duration(duration);
+        let duration = duration.into();
+        let vector_orientation = vector_orientation();
         self.call_progress(
-            dock_accessory_set_vector_orientation as *const (),
-            (&raw const DOCK_ACCESSORY_SET_VECTOR_ORIENTATION_ASYNC).cast(),
+            vector_orientation.0,
+            vector_orientation.1,
             (),
             move |_| vector_orientation_args(rotation, duration, relative),
             callback,
@@ -1726,10 +1403,11 @@ impl Accessory {
     ) where
         F: FnOnce(Result<arc::R<ns::Progress>, arc::R<ns::Error>>) + Send + 'static,
     {
-        let duration = swift_duration(duration);
+        let duration = duration.into();
+        let rotation_orientation = rotation_orientation();
         self.call_progress(
-            dock_accessory_set_rotation_orientation as *const (),
-            (&raw const DOCK_ACCESSORY_SET_ROTATION_ORIENTATION_ASYNC).cast(),
+            rotation_orientation.0,
+            rotation_orientation.1,
             (),
             move |_| rotation_orientation_args(rotation, duration, relative),
             callback,
@@ -1745,13 +1423,11 @@ impl Accessory {
         duration: std::time::Duration,
         relative: bool,
     ) -> impl std::future::Future<Output = Result<arc::R<ns::Progress>, arc::R<ns::Error>>> {
-        let duration = swift_duration(duration);
-        self.call_progress_future(
-            dock_accessory_set_vector_orientation as *const (),
-            (&raw const DOCK_ACCESSORY_SET_VECTOR_ORIENTATION_ASYNC).cast(),
-            (),
-            move |_| vector_orientation_args(rotation, duration, relative),
-        )
+        let duration = duration.into();
+        let vector_orientation = vector_orientation();
+        self.call_progress_future(vector_orientation.0, vector_orientation.1, (), move |_| {
+            vector_orientation_args(rotation, duration, relative)
+        })
     }
 
     #[cfg(feature = "async")]
@@ -1763,10 +1439,11 @@ impl Accessory {
         duration: std::time::Duration,
         relative: bool,
     ) -> impl std::future::Future<Output = Result<arc::R<ns::Progress>, arc::R<ns::Error>>> {
-        let duration = swift_duration(duration);
+        let duration = duration.into();
+        let rotation_orientation = rotation_orientation();
         self.call_progress_future(
-            dock_accessory_set_rotation_orientation as *const (),
-            (&raw const DOCK_ACCESSORY_SET_ROTATION_ORIENTATION_ASYNC).cast(),
+            rotation_orientation.0,
+            rotation_orientation.1,
             (),
             move |_| rotation_orientation_args(rotation, duration, relative),
         )
@@ -1776,7 +1453,10 @@ impl Accessory {
 impl Accessory {
     /// Swift's `==` is a static member taking both operands as arguments
     /// rather than one of them as `self`.
-    #[swift::call(sym = "$s7DockKit0A9AccessoryC2eeoiySbAC_ACtFZ")]
+    #[swift::call(
+        "static DockKit.DockAccessory(class).==(_: DockKit.DockAccessory(class), \
+                   _: DockKit.DockAccessory(class)) -> Bool"
+    )]
     fn swift_eq(lhs: &Self, rhs: &Self) -> bool;
 }
 
@@ -1815,27 +1495,66 @@ fn track_args(track: &mut TrackArgs) -> concurrency::AsyncCallArgs {
     }
 }
 
-/// Builds the `Swift.Duration` the orientation calls take, which is two words
-/// rather than a value Rust can hand over directly.
-fn swift_duration(duration: std::time::Duration) -> (u64, u64) {
-    unsafe {
-        abi::call::double_to_words2(swift_duration_seconds as *const (), duration.as_secs_f64())
-    }
+/// `setOrientation(_:duration:relative:)` with a vector: the entry point and
+/// the async function pointer that sizes its context.
+fn vector_orientation() -> (*const (), *const u8) {
+    swift::async_symbols!(
+        "DockKit.DockAccessory(class).setOrientation(_: __C.SPVector3D, \
+         duration: Swift.Duration(struct), relative: Bool) \
+         async throws -> __C.NSProgress(class)"
+    )
+}
+
+/// The same, with a rotation.
+fn rotation_orientation() -> (*const (), *const u8) {
+    swift::async_symbols!(
+        "DockKit.DockAccessory(class).setOrientation(_: __C.SPRotation3D, \
+         duration: Swift.Duration(struct), relative: Bool) \
+         async throws -> __C.NSProgress(class)"
+    )
+}
+
+/// `track(_:cameraInformation:image:)` with observations.
+#[cfg(feature = "av")]
+fn track_observations_with_image() -> (*const (), *const u8) {
+    swift::async_symbols!(
+        "DockKit.DockAccessory(class).track(\
+         _: [DockKit.DockAccessory(class).Observation(struct)], \
+         cameraInformation: DockKit.DockAccessory(class).CameraInformation(struct), \
+         image: __C.CVBufferRef) async throws"
+    )
+}
+
+/// `track(_:cameraInformation:image:)` with metadata objects.
+#[cfg(feature = "av")]
+fn track_metadata_with_image() -> (*const (), *const u8) {
+    swift::async_symbols!(
+        "DockKit.DockAccessory(class).track(\
+         _: [__C.AVMetadataObject(class)], \
+         cameraInformation: DockKit.DockAccessory(class).CameraInformation(struct), \
+         image: __C.CVBufferRef) async throws"
+    )
+}
+
+/// A `Swift.Duration`'s two words, as the argument registers take them.
+fn duration_words(duration: swift::Duration) -> [usize; 2] {
+    unsafe { core::mem::transmute(duration) }
 }
 
 /// `setOrientation(_:duration:relative:)` with a vector, whose three doubles
 /// each take a register of their own.
 fn vector_orientation_args(
     rotation: spatial::Vector3D,
-    duration: (u64, u64),
+    duration: swift::Duration,
     relative: bool,
 ) -> concurrency::AsyncCallArgs {
+    let [low, high] = duration_words(duration);
     concurrency::AsyncCallArgs::new()
         .float(0, rotation.x)
         .float(1, rotation.y)
         .float(2, rotation.z)
-        .arg(0, duration.0 as *mut ())
-        .arg(1, duration.1 as *mut ())
+        .arg(0, low as *mut ())
+        .arg(1, high as *mut ())
         .arg(2, relative as usize as *mut ())
 }
 
@@ -1843,14 +1562,15 @@ fn vector_orientation_args(
 /// two of them rather than as four scalars.
 fn rotation_orientation_args(
     rotation: spatial::Rotation3D,
-    duration: (u64, u64),
+    duration: swift::Duration,
     relative: bool,
 ) -> concurrency::AsyncCallArgs {
+    let [low, high] = duration_words(duration);
     concurrency::AsyncCallArgs::new()
         .vector2(0, [rotation.x, rotation.y])
         .vector2(1, [rotation.z, rotation.w])
-        .arg(0, duration.0 as *mut ())
-        .arg(1, duration.1 as *mut ())
+        .arg(0, low as *mut ())
+        .arg(1, high as *mut ())
         .arg(2, relative as usize as *mut ())
 }
 
@@ -1943,13 +1663,13 @@ mod abi_tests {
         }
 
         unsafe {
-            let shutter = event(DOCK_ACCESSORY_EVENT_CAMERA_SHUTTER_TAG);
+            let shutter = event(AccessoryEvent::camera_shutter_tag());
             assert_eq!(
                 AccessoryEvent::CameraShutter,
                 AccessoryEvent::copy_from_ptr(shutter.as_ptr())
             );
 
-            let flip = event(DOCK_ACCESSORY_EVENT_CAMERA_FLIP_TAG);
+            let flip = event(AccessoryEvent::camera_flip_tag());
             assert_eq!(
                 AccessoryEvent::CameraFlip,
                 AccessoryEvent::copy_from_ptr(flip.as_ptr())

@@ -1,23 +1,20 @@
 use crate::{cm, define_swift_getter_enum, swift};
 
-#[link(name = "MusicUnderstanding", kind = "framework")]
-unsafe extern "C" {
-    #[link_name = "$s18MusicUnderstanding24InstrumentActivityResultV0C0VSHAAMc"]
-    static INSTRUMENT_HASHABLE: u8;
-}
-
 define_swift_getter_enum!(
     /// `InstrumentActivityResult.Instrument`.
-    pub Instrument in "MusicUnderstanding"
-        = swift "MusicUnderstanding.InstrumentActivityResult(struct).Instrument" {
-        Vocal = "$s18MusicUnderstanding24InstrumentActivityResultV0C0V5vocalAEvgZ",
-        Drum = "$s18MusicUnderstanding24InstrumentActivityResultV0C0V4drumAEvgZ",
-        Bass = "$s18MusicUnderstanding24InstrumentActivityResultV0C0V4bassAEvgZ",
-        Other = "$s18MusicUnderstanding24InstrumentActivityResultV0C0V5otherAEvgZ",
+    pub Instrument = swift "MusicUnderstanding.InstrumentActivityResult(struct).Instrument" {
+        Vocal = "vocal",
+        Drum = "drum",
+        Bass = "bass",
+        Other = "other",
     }
 );
 
-crate::impl_swift_hashable!(Instrument = descriptor(&raw const INSTRUMENT_HASHABLE).cast());
+crate::impl_swift_hashable!(
+    Instrument = descriptor swift::conformance!(
+        "MusicUnderstanding.InstrumentActivityResult(struct).Instrument(struct): Hashable"
+    )
+);
 
 crate::define_swift!(
     #[swift::struct("MusicUnderstanding.InstrumentActivityResult", size(16), align(8), sendable)]
@@ -34,11 +31,10 @@ impl InstrumentActivityResult {
 
     /// `InstrumentActivityResult.ranges`, the whole dictionary the getter hands
     /// back at `+1`.
-    /// The dictionary's key is the enclosing type's own nested `Instrument`,
-    /// which the symbol reaches by back reference rather than by name, so this
-    /// one keeps its mangled symbol.
     #[swift::call(
-        sym = "$s18MusicUnderstanding24InstrumentActivityResultV6rangesSDyAC0C0VSaySo11CMTimeRangeaGGvg"
+        "MusicUnderstanding.InstrumentActivityResult(struct).ranges: \
+         [MusicUnderstanding.InstrumentActivityResult(struct).Instrument(struct): \
+         [__C.CMTimeRange]] { get }"
     )]
     #[doc(alias = "InstrumentActivityResult.ranges")]
     pub fn ranges_by_instrument(

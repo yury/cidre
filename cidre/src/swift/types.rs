@@ -51,6 +51,35 @@ pub unsafe trait SwiftSelf {
     fn swift_self_ptr(&self) -> *const ();
 }
 
+/// A value a callee can take at `+1` through its address.
+///
+/// Swift passes a value of a type held indirectly as the address of the value,
+/// and a consuming callee moves the value out of that storage, leaving only
+/// the storage itself behind. [`#[swift::call]`](crate::swift::call) hands such
+/// an argument over through this trait: the value is kept from being dropped
+/// for the call, and whatever still holds its storage is released afterwards
+/// without destroying the value again.
+///
+/// # Safety
+///
+/// [`forget_consumed`](Self::forget_consumed) must release only the storage,
+/// never destroy the value [`swift_self_ptr`](SwiftSelf::swift_self_ptr) points
+/// at.
+pub unsafe trait SwiftConsume: SwiftSelf + Sized {
+    /// Releases the storage of a value a callee has taken.
+    ///
+    /// The default does nothing, which is right for a type that *is* the
+    /// value's bytes: there is nothing left over once the value is gone.
+    ///
+    /// # Safety
+    ///
+    /// The value must have been consumed.
+    #[inline]
+    unsafe fn forget_consumed(this: core::mem::ManuallyDrop<Self>) {
+        let _ = this;
+    }
+}
+
 /// Which registers a value of this type occupies when Swift returns it.
 ///
 /// [`#[swift::call]`](crate::swift::call) picks the registers by reading the
@@ -162,6 +191,26 @@ unsafe impl SwiftAbi for crate::spatial::Vector3D {
     const CLASS: AbiClass = AbiClass::Doubles(3);
 }
 
+#[cfg(feature = "spatial")]
+unsafe impl SwiftAbi for crate::spatial::Rotation3D {
+    const CLASS: AbiClass = AbiClass::Doubles(4);
+}
+
+#[cfg(feature = "cg")]
+unsafe impl SwiftAbi for crate::cg::Point {
+    const CLASS: AbiClass = AbiClass::Doubles(2);
+}
+
+#[cfg(feature = "cg")]
+unsafe impl SwiftAbi for crate::cg::Size {
+    const CLASS: AbiClass = AbiClass::Doubles(2);
+}
+
+/// `Range<Double>` is its two bounds.
+unsafe impl SwiftAbi for std::ops::Range<f64> {
+    const CLASS: AbiClass = AbiClass::Doubles(2);
+}
+
 /// A geometric value Swift returns in floating-point registers.
 ///
 /// How many registers that is belongs to the Swift type, not the Rust one — a
@@ -195,6 +244,32 @@ unsafe impl FromSwiftDoubles for crate::spatial::Vector3D {
     fn from_doubles(values: &[f64]) -> Self {
         let [x, y, z] = values.try_into().expect("a vector is three doubles");
         Self::new(x, y, z)
+    }
+}
+
+#[cfg(feature = "cg")]
+unsafe impl FromSwiftDoubles for crate::cg::Point {
+    #[inline]
+    fn from_doubles(values: &[f64]) -> Self {
+        let [x, y] = values.try_into().expect("a point is two doubles");
+        Self { x, y }
+    }
+}
+
+#[cfg(feature = "cg")]
+unsafe impl FromSwiftDoubles for crate::cg::Size {
+    #[inline]
+    fn from_doubles(values: &[f64]) -> Self {
+        let [width, height] = values.try_into().expect("a size is two doubles");
+        Self { width, height }
+    }
+}
+
+unsafe impl FromSwiftDoubles for std::ops::Range<f64> {
+    #[inline]
+    fn from_doubles(values: &[f64]) -> Self {
+        let [start, end] = values.try_into().expect("a range is two doubles");
+        start..end
     }
 }
 
@@ -250,6 +325,44 @@ unsafe impl ToSwiftDoubles for crate::spatial::Vector3D {
     #[inline]
     fn write_doubles(&self, out: &mut [f64]) {
         out.copy_from_slice(&[self.x, self.y, self.z]);
+    }
+}
+
+/// A quaternion, in `d0`-`d3` when passed directly. An asynchronous entry
+/// point passes the same value as two vector registers, which this does not
+/// describe.
+#[cfg(feature = "spatial")]
+unsafe impl ToSwiftDoubles for crate::spatial::Rotation3D {
+    const COUNT: usize = 4;
+
+    #[inline]
+    fn write_doubles(&self, out: &mut [f64]) {
+        out.copy_from_slice(&[self.x, self.y, self.z, self.w]);
+    }
+}
+
+#[cfg(feature = "cg")]
+unsafe impl ToSwiftDoubles for crate::cg::Size {
+    const COUNT: usize = 2;
+
+    #[inline]
+    fn write_doubles(&self, out: &mut [f64]) {
+        out.copy_from_slice(&[self.width, self.height]);
+    }
+}
+
+/// A `Range<Double>`'s bounds. Swift requires `lowerBound <= upperBound`,
+/// which is checked here since the callee would trap on it.
+unsafe impl ToSwiftDoubles for std::ops::Range<f64> {
+    const COUNT: usize = 2;
+
+    #[inline]
+    fn write_doubles(&self, out: &mut [f64]) {
+        assert!(
+            self.start <= self.end,
+            "Swift Range requires lowerBound <= upperBound"
+        );
+        out.copy_from_slice(&[self.start, self.end]);
     }
 }
 
@@ -674,17 +787,8 @@ macro_rules! impl_swift_type {
     };
 }
 
-#[link(name = "swiftCore")]
-unsafe extern "C" {
-    #[link_name = "$sSiSHsMc"]
-    static INT_HASHABLE: u8;
-
-    #[link_name = "$sSSSHsMc"]
-    static STRING_HASHABLE: u8;
-}
-
-impl_swift_hashable!(isize = descriptor(&raw const INT_HASHABLE).cast());
-impl_swift_hashable!(super::String = descriptor(&raw const STRING_HASHABLE).cast());
+impl_swift_hashable!(isize = descriptor crate::swift::conformance!("Int: Hashable"));
+impl_swift_hashable!(super::String = descriptor crate::swift::conformance!("String: Hashable"));
 
 impl_swift_type!(bool, bool_metadata);
 impl_swift_type!(isize, int_metadata);
@@ -871,6 +975,36 @@ mod tests {
         check::<u64>();
         check::<f32>();
         check::<f64>();
+    }
+
+    /// A three-word result, which C returns through a buffer, comes back from
+    /// `x0`-`x2` through the thunk.
+    #[cfg(feature = "cm")]
+    impl crate::cm::Time {
+        // Declared in CoreMedia's extension of the imported struct, which the
+        // mangler does not spell.
+        #[crate::swift::call(
+            sym = "$sSo6CMTimea9CoreMediaE5value9timescaleABs5Int64V_s5Int32VtcfC"
+        )]
+        fn swift_with_value(value: i64, timescale: i32) -> crate::cm::Time;
+
+        #[crate::swift::call(
+            sym = "$sSo6CMTimea9CoreMediaE7seconds18preferredTimescaleABSd_s5Int32VtcfC"
+        )]
+        fn swift_with_seconds(seconds: f64, preferred_timescale: i32) -> crate::cm::Time;
+    }
+
+    #[cfg(feature = "cm")]
+    #[test]
+    fn a_three_word_result_comes_back_whole() {
+        assert_eq!(
+            crate::cm::Time::new(1234, 600),
+            crate::cm::Time::swift_with_value(1234, 600)
+        );
+        assert_eq!(
+            crate::cm::Time::with_secs(2.5, 1000),
+            crate::cm::Time::swift_with_seconds(2.5, 1000)
+        );
     }
 
     /// Guards both the mangled name and that Rust's `cm::Time` really matches

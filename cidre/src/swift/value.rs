@@ -68,6 +68,18 @@ impl<T: SwiftMetadata> Storage<T> {
     }
 }
 
+impl<T: super::ToSwift> Storage<T> {
+    /// Storage holding a copy of `value`, as Swift lays it out.
+    ///
+    /// The storage never destroys what it holds, so this is for handing the
+    /// copy to a callee that consumes it, or for destroying it explicitly.
+    pub(crate) fn from_value(value: &T) -> Self {
+        let mut storage = Self::new();
+        unsafe { value.copy_to_swift(storage.as_mut_ptr()) };
+        storage
+    }
+}
+
 impl<T: SwiftMetadata> Storage<T> {
     /// Destroys the value this storage holds, through its own witness.
     ///
@@ -90,6 +102,67 @@ unsafe impl<T: SwiftMetadata> super::SwiftSelf for Storage<T> {
     #[inline]
     fn swift_self_ptr(&self) -> *const () {
         self.as_ptr()
+    }
+}
+
+/// A value returned indirectly may be written straight into storage sized from
+/// its metadata, for a type the bindings only name.
+unsafe impl<T: SwiftMetadata> super::SwiftAbi for Storage<T> {
+    const CLASS: super::AbiClass = super::AbiClass::Indirect;
+}
+
+impl<T: SwiftMetadata> SwiftOut for Storage<T> {
+    type Buf = Self;
+
+    #[inline]
+    fn out_buf() -> Self {
+        Self::new()
+    }
+
+    #[inline]
+    fn out_ptr(buf: &mut Self) -> *mut () {
+        buf.as_mut_ptr()
+    }
+
+    #[inline]
+    unsafe fn out_take(buf: Self) -> Self {
+        buf
+    }
+}
+
+/// A `Storage` only ever owns the allocation, so once the callee has moved the
+/// value out, dropping it is exactly what is left to do.
+unsafe impl<T: SwiftMetadata> super::SwiftConsume for Storage<T> {
+    #[inline]
+    unsafe fn forget_consumed(this: core::mem::ManuallyDrop<Self>) {
+        drop(core::mem::ManuallyDrop::into_inner(this));
+    }
+}
+
+/// A Swift value borrowed by its address, for reading one the caller does not
+/// hold as a Rust value — a sequence element or an enum payload being decoded
+/// in place.
+///
+/// It is what lets a generated getter take such a value as `self`: the
+/// address is what Swift passes a value type's `self` as anyway.
+#[repr(transparent)]
+pub(crate) struct ValueRef<T>(*const (), PhantomData<T>);
+
+impl<T> ValueRef<T> {
+    /// # Safety
+    ///
+    /// `value` must point at an initialized value of the Swift type `T` names,
+    /// which must outlive every use of this.
+    #[inline]
+    pub(crate) unsafe fn new(value: *const ()) -> Self {
+        Self(value, PhantomData)
+    }
+}
+
+unsafe impl<T> super::SwiftSelf for ValueRef<T> {
+    #[inline]
+    fn swift_self_ptr(&self) -> *const () {
+        self.0
     }
 }
 
@@ -257,6 +330,31 @@ impl<T: SwiftOptional> Storage<Optional<T>> {
         let mut storage = Self::new();
         unsafe { abi::store_enum_tag_single_payload(storage.as_mut_ptr(), 1, 1, T::metadata()) };
         storage
+    }
+
+    /// Builds `Optional<T>.some` holding a copy of `value`.
+    pub(crate) fn some(value: &T) -> Self
+    where
+        T: super::ToSwift,
+    {
+        let mut storage = Self::new();
+        unsafe {
+            // The payload of a single-payload enum sits at offset zero.
+            value.copy_to_swift(storage.as_mut_ptr());
+            abi::store_enum_tag_single_payload(storage.as_mut_ptr(), 0, 1, T::metadata());
+        }
+        storage
+    }
+
+    /// `Optional<T>` holding a copy of `value`, or `.none`.
+    pub(crate) fn from_option(value: Option<&T>) -> Self
+    where
+        T: super::ToSwift,
+    {
+        match value {
+            Some(value) => Self::some(value),
+            None => Self::none(),
+        }
     }
 
     /// Whether the value is `.some`, reading the tag through `T`'s witnesses.
@@ -559,6 +657,10 @@ macro_rules! swift_value {
                 self.as_ptr()
             }
         }
+
+        /// The wrapper is the value's bytes, so a consumed value leaves
+        /// nothing behind to release.
+        unsafe impl $crate::swift::SwiftConsume for $ty {}
 
         unsafe impl $crate::swift::SwiftAbi for $ty {
             const CLASS: $crate::swift::AbiClass = $crate::swift::AbiClass::Indirect;

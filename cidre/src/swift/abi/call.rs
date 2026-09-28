@@ -1,37 +1,20 @@
-//! Calling Swift functions from Rust.
+//! Calls into Swift that `#[swift::call]` does not generate.
 //!
 //! Swift's calling convention is the C one plus three registers Rust cannot
 //! name in a function type: `x20` carries `self`, `x21` carries a thrown error,
-//! and `x8` points at storage for a value returned indirectly. So every call
-//! goes through one of the two forms below, each naming only the registers the
-//! callee actually reads.
+//! and `x8` points at storage for a value returned indirectly. What is left
+//! here are the shapes a generated call cannot express: members reached through
+//! a raw function pointer the caller looked up at runtime (a witness, an opaque
+//! getter, a static a macro picked), members of generic types, which also take
+//! the generic context, and the one initializer whose optional size travels in
+//! three argument registers.
 //!
-//! Filling every register instead — one block taking the whole set as data —
-//! costs a `mov` of zero per unused register at each call site, which is a
-//! dozen instructions Swift itself never emits. So the register list is per
-//! shape, and the hand-off stays here.
-//!
-//! Most shapes go through [`swift_thunk!`], reached by an ordinary C call, so
-//! the AAPCS register mask applies and the caller keeps `d8`-`d15`. An `asm!`
-//! block would have to declare the C clobbers, which cover all of `v8`-`v15`,
-//! costing every caller eight registers.
-//!
-//! [`swift_call!`] remains for what a thunk cannot carry: throwing calls (`x21`
-//! has no C return), three-word results (`x0`-`x2` vs C's indirect return), and
-//! the one initializer with no argument register free for the callee address.
+//! Every one goes through a [`swift_thunk!`], reached by an ordinary C call,
+//! so the AAPCS register mask applies and the caller keeps `d8`-`d15`. An
+//! `asm!` block would have to declare the C clobbers, which cover all of
+//! `v8`-`v15`, costing every caller eight registers.
 
 use super::{RawString, TypeMetadata};
-
-/// Two words, which C returns in `x0` and `x1` just as Swift does.
-#[repr(C)]
-struct Words2(u64, u64);
-
-/// A homogeneous float aggregate, which is what puts these in `d0` up.
-#[repr(C)]
-struct Doubles2(f64, f64);
-
-#[repr(C)]
-struct Doubles4(f64, f64, f64, f64);
 
 /// Declares a naked thunk that fills the registers C cannot name and hands off
 /// to a Swift entry point held in one of its own arguments.
@@ -39,12 +22,13 @@ struct Doubles4(f64, f64, f64, f64);
 /// Integer parameters fill `x0` up and floating-point ones `d0` up, each in
 /// declaration order, so the instructions can name them. A thunk that writes
 /// `x20` must restore it — it is callee-saved under C, and the Swift callee
-/// gives back what the thunk left, not what the caller had.
+/// gives back what the thunk left, not what the caller had — which is what
+/// [`thunk_enter!`] and [`thunk_leave!`] are for.
 macro_rules! swift_thunk {
     (
         $(#[$meta:meta])*
         fn $name:ident($($param:ident: $ty:ty),* $(,)?) $(-> $ret:ty)?,
-        $($insn:literal),+ $(,)?
+        $($insn:expr),+ $(,)?
     ) => {
         $(#[$meta])*
         #[unsafe(naked)]
@@ -54,26 +38,26 @@ macro_rules! swift_thunk {
     };
 }
 
-/// Calls a Swift entry point with `operands` naming the registers it reads and
-/// writes.
-///
-/// Prefer [`swift_thunk!`]; this form spills `d8`–`d15` in whatever inlines it.
-///
-/// # Safety
-///
-/// `function` must be a Swift entry point whose parameters are what `operands`
-/// fills in, still owned as its convention expects, and any value it returns
-/// indirectly must have storage to be written into.
-macro_rules! swift_call {
-    ($function:expr, $($operands:tt)*) => {
-        core::arch::asm!(
-            "blr {__fn}",
-            __fn = in(reg) $function,
-            $($operands)*
-            clobber_abi("C"),
-        )
+/// Opens a thunk that calls rather than tail-calls: a frame record, so a
+/// backtrace through the Swift callee still reaches the Rust caller, and `x20`
+/// saved beside it. The frame's last word is free for the thunk's own use.
+macro_rules! thunk_enter {
+    () => {
+        "stp x29, x30, [sp, #-32]!\nmov x29, sp\nstr x20, [sp, #16]"
     };
 }
+
+/// Closes what [`thunk_enter!`] opened and returns.
+macro_rules! thunk_leave {
+    () => {
+        "ldr x20, [sp, #16]\nldp x29, x30, [sp], #32\nret"
+    };
+}
+
+/// Three words, which C returns through a buffer at `x8` and Swift in
+/// `x0`-`x2`, so a thunk moves them from one to the other.
+#[repr(C)]
+struct Words3(u64, u64, u64);
 
 /// Calls a member of a generic type that returns its value indirectly.
 ///
@@ -101,12 +85,11 @@ swift_thunk!(
         _self: *const (),
         _function: *const (),
     ),
-    "stp x20, x30, [sp, #-16]!",
+    thunk_enter!(),
     "mov x8, x1",
     "mov x20, x2",
     "blr x3",
-    "ldp x20, x30, [sp], #16",
-    "ret",
+    thunk_leave!(),
 );
 
 /// Calls a protocol requirement through its witness.
@@ -134,12 +117,11 @@ swift_thunk!(
         _self: *mut (),
         _function: *const (),
     ),
-    "stp x20, x30, [sp, #-16]!",
+    thunk_enter!(),
     "mov x8, x2",
     "mov x20, x3",
     "blr x4",
-    "ldp x20, x30, [sp], #16",
-    "ret",
+    thunk_leave!(),
 );
 
 /// Calls a member of a generic type that returns three words directly, such as
@@ -155,148 +137,22 @@ pub unsafe fn generic_value_to_words3(
     value: *const (),
     metadata: *const TypeMetadata,
 ) -> (u64, u64, u64) {
-    let (w0, w1, w2): (u64, u64, u64);
-    unsafe {
-        swift_call!(function,
-            in("x20") value,
-            inlateout("x0") metadata => w0, lateout("x1") w1, lateout("x2") w2,
-        );
-    }
-    (w0, w1, w2)
-}
-
-#[inline]
-pub unsafe fn double_to_words2(function: *const (), value: f64) -> (u64, u64) {
-    let words = unsafe { double_to_words2_thunk(function, value) };
-    (words.0, words.1)
+    let words = unsafe { words3_thunk(metadata.cast(), value, function) };
+    (words.0, words.1, words.2)
 }
 
 swift_thunk!(
-    fn double_to_words2_thunk(_function: *const (), _value: f64) -> Words2,
-    "br x0",
+    /// One operand in `x0`, `self` in `x20`, and three words back.
+    fn words3_thunk(_first: *const (), _self: *const (), _function: *const ()) -> Words3,
+    thunk_enter!(),
+    "str x8, [sp, #24]",
+    "mov x20, x1",
+    "blr x2",
+    "ldr x9, [sp, #24]",
+    "stp x0, x1, [x9]",
+    "str x2, [x9, #16]",
+    thunk_leave!(),
 );
-
-/// The deprecated synchronous `setOrientation(_:duration:relative:)`, taking a
-/// vector.
-///
-/// # Safety
-///
-/// `object` must be the accessory the method is called on.
-#[inline]
-pub unsafe fn vector_duration_bool_object(
-    function: *const (),
-    vector: (f64, f64, f64),
-    duration: (u64, u64),
-    relative: bool,
-    object: *const (),
-) -> (*mut (), *mut ()) {
-    let (result, error): (usize, *mut ());
-    unsafe {
-        swift_call!(function,
-            in("d0") vector.0, in("d1") vector.1, in("d2") vector.2,
-            inlateout("x0") duration.0 as usize => result,
-            in("x1") duration.1 as usize,
-            in("x2") relative as usize,
-            in("x20") object,
-            inlateout("x21") 0usize => error,
-        );
-    }
-    (result as *mut (), error)
-}
-
-/// The same, taking a rotation.
-///
-/// Note that this passes the quaternion's four `Double`s in `d0`–`d3`, where
-/// the asynchronous entry point passes the same value as two vector registers.
-///
-/// # Safety
-///
-/// As [`vector_duration_bool_object`].
-#[inline]
-pub unsafe fn rotation_duration_bool_object(
-    function: *const (),
-    rotation: (f64, f64, f64, f64),
-    duration: (u64, u64),
-    relative: bool,
-    object: *const (),
-) -> (*mut (), *mut ()) {
-    let (result, error): (usize, *mut ());
-    unsafe {
-        swift_call!(function,
-            in("d0") rotation.0, in("d1") rotation.1,
-            in("d2") rotation.2, in("d3") rotation.3,
-            inlateout("x0") duration.0 as usize => result,
-            in("x1") duration.1 as usize,
-            in("x2") relative as usize,
-            in("x20") object,
-            inlateout("x21") 0usize => error,
-        );
-    }
-    (result as *mut (), error)
-}
-
-/// # Safety
-///
-/// `out` must be uninitialized storage for what the initializer returns.
-#[inline]
-pub unsafe fn doubles3_to_throwing_value(
-    function: *const (),
-    values: (f64, f64, f64),
-    out: *mut (),
-) -> *mut () {
-    let error: *mut ();
-    unsafe {
-        swift_call!(function,
-            in("d0") values.0, in("d1") values.1, in("d2") values.2,
-            in("x8") out,
-            inlateout("x21") 0usize => error,
-        );
-    }
-    error
-}
-
-/// # Safety
-///
-/// The three values must be what the callee takes, and `out` uninitialized
-/// storage for what it returns.
-#[inline]
-pub unsafe fn values3_to_value(
-    function: *const (),
-    first: *const (),
-    second: *const (),
-    third: *const (),
-    out: *mut (),
-) {
-    unsafe { values3_to_value_thunk(first, second, third, out, function) }
-}
-
-swift_thunk!(
-    fn values3_to_value_thunk(
-        _first: *const (),
-        _second: *const (),
-        _third: *const (),
-        _out: *mut (),
-        _function: *const (),
-    ),
-    "mov x8, x3",
-    "br x4",
-);
-
-/// # Safety
-///
-/// `value` must be what the static method takes, and `type_metadata` the
-/// metadata of the type it belongs to.
-#[inline]
-pub unsafe fn static_value_bool_to_object(
-    function: *const (),
-    type_metadata: *const (),
-    value: *const (),
-    flag: bool,
-) -> *mut () {
-    unsafe {
-        static_pair_to_object_thunk(value, flag as usize as *const (), type_metadata, function)
-    }
-}
 
 swift_thunk!(
     /// Two operands and the type's metadata as `self`.
@@ -306,16 +162,16 @@ swift_thunk!(
         _self: *const (),
         _function: *const (),
     ) -> *mut (),
-    "stp x20, x30, [sp, #-16]!",
+    thunk_enter!(),
     "mov x20, x2",
     "blr x3",
-    "ldp x20, x30, [sp], #16",
-    "ret",
+    thunk_leave!(),
 );
 
 /// # Safety
 ///
-/// As [`static_value_bool_to_object`], for a method taking two values.
+/// The two values must be what the static method takes, and `type_metadata`
+/// the metadata of the type it belongs to.
 #[inline]
 pub unsafe fn static_values_to_object(
     function: *const (),
@@ -325,66 +181,6 @@ pub unsafe fn static_values_to_object(
 ) -> *mut () {
     unsafe { static_pair_to_object_thunk(first, second, type_metadata, function) }
 }
-
-/// # Safety
-///
-/// `array` must be an owned array the method consumes, and `value` what it
-/// takes alongside it.
-#[inline]
-pub unsafe fn static_array_value_to_object(
-    function: *const (),
-    type_metadata: *const (),
-    array: *mut (),
-    value: *const (),
-) -> *mut () {
-    unsafe { static_pair_to_object_thunk(array.cast_const(), value, type_metadata, function) }
-}
-
-/// `DockAccessory.Observation.init(identifier:type:rect:faceYawAngle:)`.
-///
-/// # Safety
-///
-/// The arguments must be what that initializer takes, and `out` uninitialized
-/// storage for an observation.
-#[inline]
-pub unsafe fn int_value_rect_value_to_value(
-    function: *const (),
-    integer: isize,
-    value: *const (),
-    rect: (f64, f64, f64, f64),
-    trailing_value: *const (),
-    out: *mut (),
-) {
-    unsafe {
-        int_value_rect_value_to_value_thunk(
-            integer,
-            value,
-            trailing_value,
-            out,
-            function,
-            rect.0,
-            rect.1,
-            rect.2,
-            rect.3,
-        )
-    }
-}
-
-swift_thunk!(
-    fn int_value_rect_value_to_value_thunk(
-        _integer: isize,
-        _value: *const (),
-        _trailing: *const (),
-        _out: *mut (),
-        _function: *const (),
-        _r0: f64,
-        _r1: f64,
-        _r2: f64,
-        _r3: f64,
-    ),
-    "mov x8, x3",
-    "br x4",
-);
 
 /// `DockAccessory.CameraInformation.init(...)`, whose seven arguments are more
 /// than any other call these bindings make.
@@ -405,16 +201,40 @@ pub unsafe fn camera_information_init(
     out: *mut (),
 ) {
     unsafe {
-        swift_call!(function,
-            in("x0") device_type, in("x1") position,
-            in("x2") orientation, in("x3") intrinsics,
-            in("x4") reference_dimensions.0 as usize,
-            in("x5") reference_dimensions.1 as usize,
-            in("x6") reference_dimensions.2 as usize,
-            in("x8") out,
-        );
+        camera_information_init_thunk(
+            device_type,
+            position,
+            orientation,
+            intrinsics,
+            reference_dimensions.0,
+            reference_dimensions.1,
+            reference_dimensions.2,
+            out,
+            function,
+        )
     }
 }
+
+#[cfg(feature = "av")]
+swift_thunk!(
+    /// Seven argument words and the buffer fill `x0`-`x7`, so the callee's
+    /// address arrives on the stack; the thunk tail-calls it.
+    #[allow(clippy::too_many_arguments)]
+    fn camera_information_init_thunk(
+        _device_type: *const (),
+        _position: isize,
+        _orientation: *const (),
+        _intrinsics: *const (),
+        _w0: u64,
+        _w1: u64,
+        _w2: u64,
+        _out: *mut (),
+        _function: *const (),
+    ),
+    "ldr x16, [sp]",
+    "mov x8, x7",
+    "br x16",
+);
 
 /// # Safety
 ///
@@ -435,11 +255,10 @@ macro_rules! value_getter {
     ($(#[$meta:meta])* $vis:vis fn $name:ident -> $ret:ty, $thunk:ident) => {
         swift_thunk!(
             fn $thunk(_value: *const (), _self: *const (), _function: *const ()) -> $ret,
-            "stp x20, x30, [sp, #-16]!",
+            thunk_enter!(),
             "mov x20, x1",
             "blr x2",
-            "ldp x20, x30, [sp], #16",
-            "ret",
+            thunk_leave!(),
         );
 
         $(#[$meta])*
@@ -450,41 +269,27 @@ macro_rules! value_getter {
     };
 }
 
-value_getter!(pub fn value_to_int -> isize, value_to_int_thunk);
-value_getter!(fn value_to_bool_word -> usize, value_to_bool_thunk);
-value_getter!(fn value_to_doubles2_pair -> Doubles2, value_to_doubles2_thunk);
-value_getter!(fn value_to_rect_quad -> Doubles4, value_to_rect_thunk);
-value_getter!(pub fn value_to_object -> *mut (), value_to_object_thunk);
-value_getter!(pub fn value_to_string -> RawString, value_to_string_thunk);
+value_getter!(
+    /// A getter returning a `String`, in `x0` and `x1`.
+    ///
+    /// # Safety
+    ///
+    /// `function` must be a getter of the type `value` is an instance of that
+    /// returns a `String`.
+    pub fn value_to_string -> RawString,
+    value_to_string_thunk
+);
 
-/// Swift's `Bool` leaves the other bits undefined, so it is masked.
-#[inline]
-pub unsafe fn value_to_bool(function: *const (), value: *const ()) -> bool {
-    unsafe { value_to_bool_word(function, value) & 1 != 0 }
-}
-
+/// A getter returning three words in `x0`-`x2`.
+///
+/// # Safety
+///
+/// `function` must be a getter of the type `value` is an instance of that
+/// returns exactly three words in registers.
 #[inline]
 pub unsafe fn value_to_words3(function: *const (), value: *const ()) -> (u64, u64, u64) {
-    let (w0, w1, w2): (u64, u64, u64);
-    unsafe {
-        swift_call!(function,
-            in("x20") value,
-            inlateout("x0") value => w0, lateout("x1") w1, lateout("x2") w2,
-        );
-    }
-    (w0, w1, w2)
-}
-
-#[inline]
-pub unsafe fn value_to_doubles2(function: *const (), value: *const ()) -> (f64, f64) {
-    let pair = unsafe { value_to_doubles2_pair(function, value) };
-    (pair.0, pair.1)
-}
-
-#[inline]
-pub unsafe fn value_to_rect(function: *const (), value: *const ()) -> (f64, f64, f64, f64) {
-    let quad = unsafe { value_to_rect_quad(function, value) };
-    (quad.0, quad.1, quad.2, quad.3)
+    let words = unsafe { words3_thunk(value, value, function) };
+    (words.0, words.1, words.2)
 }
 
 /// # Safety
@@ -503,12 +308,11 @@ swift_thunk!(
         _self: *const (),
         _function: *const (),
     ),
-    "stp x20, x30, [sp, #-16]!",
+    thunk_enter!(),
     "mov x8, x1",
     "mov x20, x2",
     "blr x3",
-    "ldp x20, x30, [sp], #16",
-    "ret",
+    thunk_leave!(),
 );
 
 /// # Safety
@@ -517,48 +321,4 @@ swift_thunk!(
 #[inline]
 pub unsafe fn value_to_value(function: *const (), value: *const (), out: *mut ()) {
     unsafe { self_to_value_thunk(value, out, value, function) }
-}
-
-/// Returns the error the getter threw, or null.
-///
-/// # Safety
-///
-/// `out` must be uninitialized storage for what the getter returns, and is only
-/// initialized when this returns null.
-#[inline]
-pub unsafe fn object_to_throwing_value(
-    function: *const (),
-    object: *const (),
-    out: *mut (),
-) -> *mut () {
-    let error: *mut ();
-    unsafe {
-        swift_call!(function,
-            in("x20") object, in("x0") object, in("x8") out,
-            inlateout("x21") 0usize => error,
-        );
-    }
-    error
-}
-
-/// Returns the error the method threw, or null.
-///
-/// # Safety
-///
-/// `value` must be what the method takes and `object` the instance it is called
-/// on.
-#[inline]
-pub unsafe fn value_object_to_throwing_void(
-    function: *const (),
-    value: *const (),
-    object: *const (),
-) -> *mut () {
-    let error: *mut ();
-    unsafe {
-        swift_call!(function,
-            in("x0") value, in("x20") object,
-            inlateout("x21") 0usize => error,
-        );
-    }
-    error
 }

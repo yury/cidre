@@ -95,15 +95,15 @@ impl Drop for Product {
 
 impl Product {
     #[doc(alias = "Product.id")]
-    #[swift::call(sym = "$s8StoreKit7ProductV2idSSvg")]
+    #[swift::call("StoreKit.Product(struct).id: String { get }")]
     pub fn id(&self) -> swift::String;
 
     #[doc(alias = "Product.displayName")]
-    #[swift::call(sym = "$s8StoreKit7ProductV11displayNameSSvg")]
+    #[swift::call("StoreKit.Product(struct).displayName: String { get }")]
     pub fn display_name(&self) -> swift::String;
 
     #[doc(alias = "Product.displayPrice")]
-    #[swift::call(sym = "$s8StoreKit7ProductV12displayPriceSSvg")]
+    #[swift::call("StoreKit.Product(struct).displayPrice: String { get }")]
     pub fn display_price(&self) -> swift::String;
 
     /// The `[String]: Collection` witness table the generic `products(for:)`

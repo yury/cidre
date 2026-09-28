@@ -19,7 +19,10 @@ use {
     },
 };
 
-crate::define_swift_class!(pub CaptureInputSequenceProvider = accessor capture_input_sequence_provider_metadata);
+crate::define_swift!(
+    #[swift::class("Speech.CaptureInputSequenceProvider")]
+    pub CaptureInputSequenceProvider
+);
 
 pub(super) struct AnalyzerInputSequence {
     pub(super) value: crate::swift::value::AnyValue,
@@ -28,14 +31,10 @@ pub(super) struct AnalyzerInputSequence {
 
 unsafe impl Send for AnalyzerInputSequence {}
 
+// `analyzerInputs` is an opaque `some AsyncSequence`, whose getter and
+// descriptor the mangler does not spell.
 #[link(name = "Speech", kind = "framework")]
 unsafe extern "C" {
-    #[link_name = "$s6Speech28CaptureInputSequenceProviderCMa"]
-    fn capture_input_sequence_provider_metadata();
-
-    #[link_name = "$s6Speech28CaptureInputSequenceProviderC14captureSessionSo09AVCaptureG0Cvg"]
-    fn capture_input_sequence_provider_capture_session();
-
     #[link_name = "$s6Speech28CaptureInputSequenceProviderC14analyzerInputsQrvg"]
     fn capture_input_sequence_provider_analyzer_inputs();
 
@@ -60,9 +59,6 @@ crate::define_swift_marker!(
 ))]
 impl CaptureInputSequenceProvider {
     #[doc(alias = "CaptureInputSequenceProvider.providerWithSession")]
-    /// The `SpeechModule` array is an existential the mangler cannot spell, so
-    /// this one is given mangled.
-    ///
     /// `priority` is the call's `TaskPriority?`, which these bindings always
     /// leave to the runtime.
     #[api::available(
@@ -73,8 +69,10 @@ impl CaptureInputSequenceProvider {
         visionos = 27.0
     )]
     #[swift::call(
-        sym = "$s6Speech28CaptureInputSequenceProviderC19providerWithSession4from010compatibleG08priorityACSo15AVCaptureDeviceC_SayAA0A6Module_pGScPSgtYaKFZ",
-        async
+        "static Speech.CaptureInputSequenceProvider(class).providerWithSession(\
+         from: __C.AVCaptureDevice(class), \
+         compatibleWith: [any Speech.SpeechModule], \
+         priority: TaskPriority?) async throws -> Speech.CaptureInputSequenceProvider(class)"
     )]
     fn provider_with_session(
         device: arc::R<av::CaptureDevice>,
@@ -135,17 +133,11 @@ impl CaptureInputSequenceProvider {
         tvos = 27.0,
         visionos = 27.0
     )]
-    pub fn capture_session(&self) -> arc::R<av::CaptureSession> {
-        unsafe {
-            arc::R::from_raw(
-                abi::call::value_to_object(
-                    capture_input_sequence_provider_capture_session as *const (),
-                    (self as *const Self).cast(),
-                )
-                .cast(),
-            )
-        }
-    }
+    #[swift::call(
+        "Speech.CaptureInputSequenceProvider(class).captureSession: \
+         __C.AVCaptureSession(class) { get }"
+    )]
+    pub fn capture_session(&self) -> arc::R<av::CaptureSession>;
 
     pub(super) fn analyzer_inputs(&self) -> AnalyzerInputSequence {
         unsafe {

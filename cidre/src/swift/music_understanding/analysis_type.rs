@@ -1,27 +1,24 @@
 use crate::define_swift_getter_enum;
 
-#[link(name = "MusicUnderstanding", kind = "framework")]
-unsafe extern "C" {
-    /// Exported as a descriptor only; the witness table itself is built at
-    /// runtime by whoever needs the conformance.
-    #[link_name = "$s18MusicUnderstanding12AnalysisTypeVSHAAMc"]
-    static ANALYSIS_TYPE_HASHABLE: u8;
-}
-
 define_swift_getter_enum!(
     /// `MusicUnderstanding.AnalysisType`.
-    pub AnalysisType in "MusicUnderstanding"
-        = swift "MusicUnderstanding.AnalysisType" {
-        InstrumentActivity = "$s18MusicUnderstanding12AnalysisTypeV18instrumentActivityACvgZ",
-        Loudness = "$s18MusicUnderstanding12AnalysisTypeV8loudnessACvgZ",
-        Pace = "$s18MusicUnderstanding12AnalysisTypeV4paceACvgZ",
-        Rhythm = "$s18MusicUnderstanding12AnalysisTypeV6rhythmACvgZ",
-        Structure = "$s18MusicUnderstanding12AnalysisTypeV9structureACvgZ",
-        Key = "$s18MusicUnderstanding12AnalysisTypeV3keyACvgZ",
+    pub AnalysisType = swift "MusicUnderstanding.AnalysisType" {
+        InstrumentActivity = "instrumentActivity",
+        Loudness = "loudness",
+        Pace = "pace",
+        Rhythm = "rhythm",
+        Structure = "structure",
+        Key = "key",
     }
 );
 
-crate::impl_swift_hashable!(AnalysisType = descriptor(&raw const ANALYSIS_TYPE_HASHABLE).cast());
+// Exported as a descriptor only; the witness table itself is built at runtime
+// by whoever needs the conformance.
+crate::impl_swift_hashable!(
+    AnalysisType = descriptor crate::swift::conformance!(
+        "MusicUnderstanding.AnalysisType(struct): Hashable"
+    )
+);
 
 #[cfg(test)]
 mod tests {

@@ -4,15 +4,6 @@ use crate::{
     swift::{SwiftMetadata, abi},
 };
 
-#[link(name = "MusicUnderstanding", kind = "framework")]
-unsafe extern "C" {
-    #[link_name = "$s18MusicUnderstanding0aB7SessionC10TimedValueV5valuexvg"]
-    fn timed_value_value();
-
-    #[link_name = "$s18MusicUnderstanding0aB7SessionC10TimedValueV4timeSo6CMTimeavg"]
-    fn timed_value_time();
-}
-
 crate::define_swift!(
     #[swift::struct("MusicUnderstanding.MusicUnderstandingSession(class).SessionResult", size(296), align(8), sendable)]
     /// A Swift value type whose layout is only known at runtime, so it is kept
@@ -22,17 +13,24 @@ crate::define_swift!(
 
 impl SessionResult {
     /// `SessionResult.rhythm`, present only when rhythm analysis ran.
-    #[swift::call(sym = "$s18MusicUnderstanding0aB7SessionC0C6ResultV6rhythmAA06RhythmD0VSgvg")]
+    #[swift::call(
+        "MusicUnderstanding.MusicUnderstandingSession(class).SessionResult(struct).rhythm: \
+         MusicUnderstanding.RhythmResult(struct)? { get }"
+    )]
     #[doc(alias = "SessionResult.rhythm")]
     pub fn rhythm(&self) -> Option<RhythmResult>;
 
     /// `SessionResult.loudness`, present only when loudness analysis ran.
-    #[swift::call(sym = "$s18MusicUnderstanding0aB7SessionC0C6ResultV8loudnessAA08LoudnessD0VSgvg")]
+    #[swift::call(
+        "MusicUnderstanding.MusicUnderstandingSession(class).SessionResult(struct).loudness: \
+         MusicUnderstanding.LoudnessResult(struct)? { get }"
+    )]
     #[doc(alias = "SessionResult.loudness")]
     pub fn loudness(&self) -> Option<LoudnessResult>;
 
     #[swift::call(
-        sym = "$s18MusicUnderstanding0aB7SessionC0C6ResultV18instrumentActivityAA010InstrumentfD0VSgvg"
+        "MusicUnderstanding.MusicUnderstandingSession(class).SessionResult(struct).instrumentActivity: \
+         MusicUnderstanding.InstrumentActivityResult(struct)? { get }"
     )]
     #[doc(alias = "SessionResult.instrumentActivity")]
     pub fn instrument_activity(&self) -> Option<InstrumentActivityResult>;
@@ -70,14 +68,16 @@ crate::define_swift!(
 impl LoudnessResult {
     /// `LoudnessResult.integrated`, the whole track's loudness.
     #[swift::call(
-        sym = "$s18MusicUnderstanding14LoudnessResultV10integratedAA0aB7SessionC10TimedValueVy_SfGvg"
+        "MusicUnderstanding.LoudnessResult(struct).integrated: \
+         MusicUnderstanding.MusicUnderstandingSession(class).TimedValue(struct)<Float> { get }"
     )]
     #[doc(alias = "LoudnessResult.integrated")]
     pub fn integrated(&self) -> TimedValue;
 
     /// `LoudnessResult.peak`.
     #[swift::call(
-        sym = "$s18MusicUnderstanding14LoudnessResultV4peakAA0aB7SessionC10TimedValueVy_SfGvg"
+        "MusicUnderstanding.LoudnessResult(struct).peak: \
+         MusicUnderstanding.MusicUnderstandingSession(class).TimedValue(struct)<Float> { get }"
     )]
     #[doc(alias = "LoudnessResult.peak")]
     pub fn peak(&self) -> TimedValue;
@@ -107,7 +107,9 @@ impl TimedValue {
         unsafe {
             let mut out = core::mem::MaybeUninit::<f32>::uninit();
             abi::call::generic_value_to_value(
-                timed_value_value as *const (),
+                swift::symbol!(
+                    "MusicUnderstanding.MusicUnderstandingSession(class).TimedValue(struct).value: T { get }"
+                ),
                 self.as_ptr(),
                 <TimedValue as SwiftMetadata>::metadata(),
                 out.as_mut_ptr().cast(),
@@ -121,7 +123,9 @@ impl TimedValue {
     pub fn time(&self) -> cm::Time {
         unsafe {
             let words = abi::call::generic_value_to_words3(
-                timed_value_time as *const (),
+                swift::symbol!(
+                    "MusicUnderstanding.MusicUnderstandingSession(class).TimedValue(struct).time: __C.CMTime { get }"
+                ),
                 self.as_ptr(),
                 <TimedValue as SwiftMetadata>::metadata(),
             );

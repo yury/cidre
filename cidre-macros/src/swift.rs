@@ -55,6 +55,12 @@ enum Class {
     /// A run of floating-point registers, which is how a geometric value comes
     /// back rather than through an indirect result.
     Doubles(usize, String),
+    /// Two integer registers holding a small frozen value, such as a
+    /// `Swift.Duration`, passed as its bytes.
+    Words2(String),
+    /// An `(any Error)?`: one register holding the error box or null, which
+    /// the caller bridges to the `NSError` the box already is.
+    OptError,
 }
 
 impl Class {
@@ -66,6 +72,7 @@ impl Class {
             Class::RawWord(ty) => Some((ty, "Word".to_string())),
             Class::Words3 => None,
             Class::Doubles(count, ty) => Some((ty, format!("Doubles({count})"))),
+            Class::Words2(ty) => Some((ty, "Words2".to_string())),
             _ => None,
         }
     }
@@ -136,6 +143,9 @@ fn classify_ret(ty: &str) -> Class {
     if let Some(inner) = inner_of(&ty, "Option") {
         let inner = normalize(inner);
         return match classify_ret(&inner) {
+            // A thrown-error type is an existential rather than a class, and
+            // reaches Rust bridged.
+            Class::ClassRef(t) if last_segment(&t) == "Error" => Class::OptError,
             Class::ClassRef(t) => Class::OptClassRef(t),
             Class::Indirect(t) => Class::OptIndirect(t),
             Class::String => Class::OptString,
@@ -162,8 +172,11 @@ fn classify_ret(ty: &str) -> Class {
     if let Some(class) = container_class(&ty) {
         return class;
     }
-    if ty == "cm::Time" {
+    if matches!(ty.as_str(), "cm::Time" | "crate::cm::Time") {
         return Class::Words3;
+    }
+    if let Some(class) = words2_class(&ty) {
+        return class;
     }
     if let Some(class) = doubles_class(&ty) {
         return class;
@@ -211,12 +224,17 @@ fn container_class(ty: &str) -> Option<Class> {
 /// reads a register the callee never wrote.
 fn doubles_class(ty: &str) -> Option<Class> {
     let count = match ty {
-        "cg::Rect" => 4,
+        "cg::Rect" | "spatial::Rotation3D" => 4,
         "spatial::Vector3D" => 3,
-        "cg::Point" => 2,
+        "cg::Point" | "cg::Size" | "std::ops::Range<f64>" | "Range<f64>" => 2,
         _ => return None,
     };
     Some(Class::Doubles(count, ty.to_string()))
+}
+
+/// Whether a type is a small frozen value Swift passes as two integer words.
+fn words2_class(ty: &str) -> Option<Class> {
+    matches!(ty, "swift::Duration" | "Duration").then(|| Class::Words2(ty.to_string()))
 }
 
 /// Whether a return type is a `Result`, and so needs the error register.
@@ -244,6 +262,9 @@ fn classify_arg(ty: &str) -> Class {
         return class;
     }
     if let Some(class) = container_class(&bare) {
+        return class;
+    }
+    if let Some(class) = words2_class(&bare) {
         return class;
     }
     match last_segment(&bare) {
@@ -383,24 +404,6 @@ fn parse_signature(func: TokenStream) -> Signature {
     }
 }
 
-/// One `asm!` operand.
-struct Operand {
-    reg: String,
-    input: Option<String>,
-    output: Option<String>,
-}
-
-impl Operand {
-    fn render(&self) -> String {
-        match (&self.input, &self.output) {
-            (Some(i), Some(o)) => format!("inlateout(\"{}\") {i} => {o},", self.reg),
-            (Some(i), None) => format!("in(\"{}\") {i},", self.reg),
-            (None, Some(o)) => format!("lateout(\"{}\") {o},", self.reg),
-            (None, None) => String::new(),
-        }
-    }
-}
-
 /// The Swift entry point named by the attribute.
 enum Symbol {
     /// A mangled symbol given as-is.
@@ -448,11 +451,24 @@ fn parse_attr(attr: TokenStream) -> Attr {
     let mut symbol = None;
     let mut is_async = false;
     let mut owned = Vec::new();
+    // A declaration may come in several literals, which a `macro_rules!`
+    // builds a member's declaration from: the type's path it was handed and
+    // the member it adds.
+    let mut decl = String::new();
 
     for segment in segments {
         let Some(head) = segment.first() else {
             continue;
         };
+        let is_literal = match head {
+            TokenTree::Literal(_) => true,
+            TokenTree::Group(group) => group.delimiter() == Delimiter::None,
+            _ => false,
+        };
+        if is_literal {
+            decl.push_str(&concat_literals(segment.into_iter().collect()));
+            continue;
+        }
         match head.to_string().as_str() {
             "async" => is_async = true,
             "owned" => {
@@ -474,9 +490,15 @@ fn parse_attr(attr: TokenStream) -> Attr {
                     .to_string();
                 symbol = Some(Symbol::Mangled(unescape(&literal)));
             }
-            // Anything else is the declaration itself, written as one literal.
-            other => symbol = Some(Symbol::Decl(unescape(other))),
+            other => panic!("swift::call: unexpected `{other}`"),
         }
+    }
+    if !decl.is_empty() {
+        assert!(
+            symbol.is_none(),
+            "swift::call: give either a declaration or `sym = \"$s...\"`, not both"
+        );
+        symbol = Some(Symbol::Decl(decl));
     }
 
     Attr {
@@ -489,17 +511,20 @@ fn parse_attr(attr: TokenStream) -> Attr {
 /// Expands `kind, "Module.Type"` into the address of that type's metadata
 /// accessor, declaring the symbol it links against along the way.
 ///
-/// A nominal type's symbol is its context and nothing else, so unlike a member
-/// it needs none of the substitution bookkeeping a function signature does and
-/// can always be derived from the name.
+/// The path may come in pieces, which are joined, so a `macro_rules!` can name
+/// a type nested in one it was given.
 pub fn gen_metadata_accessor(args: TokenStream) -> TokenStream {
-    let text = args.to_string();
-    let (kind, path) = text
-        .split_once(',')
-        .unwrap_or_else(|| panic!("swift::metadata_accessor: expected `kind, \"Module.Type\"`"));
+    let mut iter = args.into_iter();
+    let kind = match iter.next() {
+        Some(TokenTree::Ident(kind)) => kind.to_string(),
+        Some(TokenTree::Group(group)) if group.delimiter() == Delimiter::None => {
+            group.stream().to_string()
+        }
+        _ => panic!("swift::metadata_accessor: expected `kind, \"Module.Type\"`"),
+    };
     let kind = crate::swift_mangle::kind_letter(kind.trim())
         .unwrap_or_else(|e| panic!("swift::metadata_accessor: {e}"));
-    let path = unescape(path.trim());
+    let path = concat_literals(iter.collect());
     let path = path.as_str();
 
     let symbol = crate::swift_mangle::mangle_metadata_accessor(path, kind)
@@ -570,14 +595,35 @@ fn unescape(literal: &str) -> String {
     out
 }
 
+/// The string a macro's arguments spell: every string literal among them,
+/// unescaped and joined, with the commas between them ignored.
+///
+/// Joining is what lets a `macro_rules!` build a declaration out of pieces —
+/// a type's path it was given and the member it adds — since it cannot
+/// concatenate literals itself before handing them over. A literal forwarded
+/// through a `macro_rules!` fragment arrives wrapped in an invisible group,
+/// which is looked through.
+fn concat_literals(args: TokenStream) -> String {
+    let mut out = String::new();
+    for tt in args {
+        match tt {
+            TokenTree::Literal(literal) => out.push_str(&unescape(&literal.to_string())),
+            TokenTree::Group(group) if group.delimiter() == Delimiter::None => {
+                out.push_str(&concat_literals(group.stream()))
+            }
+            TokenTree::Punct(p) if p.as_char() == ',' => {}
+            other => panic!("swift: expected string literals, found `{other}`"),
+        }
+    }
+    out
+}
+
 /// Expands a Swift declaration into the address of the entry point it names.
 ///
 /// The pointer-valued sibling of `#[swift::call]`, for the places that hand a
 /// Swift entry point to something else rather than calling it themselves.
 pub fn gen_symbol(args: TokenStream) -> TokenStream {
-    let text = args.to_string();
-    let decl = text.trim();
-    let decl = unescape(decl);
+    let decl = concat_literals(args);
     let decl = decl.as_str();
 
     let symbol = crate::swift_mangle::mangle(decl)
@@ -594,6 +640,79 @@ pub fn gen_symbol(args: TokenStream) -> TokenStream {
     )
     .parse()
     .expect("valid symbol expression")
+}
+
+/// Expands a suspending function's declaration into the pair a hand-built
+/// async call needs: the entry point, and the async function pointer beside it
+/// that sizes the callee's context.
+pub fn gen_async_symbols(args: TokenStream) -> TokenStream {
+    let decl = concat_literals(args);
+    let decl = decl.as_str();
+
+    let symbol = crate::swift_mangle::mangle(decl)
+        .unwrap_or_else(|e| panic!("swift::async_symbols: cannot mangle `{decl}`: {e}"));
+    let is_async = crate::swift_mangle::is_async(decl)
+        .unwrap_or_else(|e| panic!("swift::async_symbols: cannot read `{decl}`: {e}"));
+    assert!(is_async, "swift::async_symbols: `{decl}` does not suspend");
+
+    format!(
+        "{{
+            unsafe extern \"C\" {{
+                #[link_name = \"{symbol}\"]
+                fn __swift_symbol();
+                #[link_name = \"{symbol}Tu\"]
+                static __SWIFT_ASYNC_FN: u8;
+            }}
+            (__swift_symbol as *const (), &raw const __SWIFT_ASYNC_FN)
+        }}"
+    )
+    .parse()
+    .expect("valid symbol expression")
+}
+
+/// Expands `Type: Protocol` into the address of one of the conformance's
+/// symbols, `Mc` for its descriptor or `WP` for its witness table.
+pub fn gen_conformance(args: TokenStream, suffix: &str) -> TokenStream {
+    let decl = concat_literals(args);
+    let decl = decl.as_str();
+
+    let symbol = crate::swift_mangle::mangle_conformance(decl, suffix)
+        .unwrap_or_else(|e| panic!("swift: cannot mangle the conformance `{decl}`: {e}"));
+
+    format!(
+        "{{
+            unsafe extern \"C\" {{
+                #[link_name = \"{symbol}\"]
+                static __SWIFT_CONFORMANCE: u8;
+            }}
+            (&raw const __SWIFT_CONFORMANCE).cast::<()>()
+        }}"
+    )
+    .parse()
+    .expect("valid conformance expression")
+}
+
+/// Expands an enum case, written as Swift spells it after its enum, into the
+/// address of the case's descriptor: the constant holding the tag a resilient
+/// enum's value carries for that case.
+pub fn gen_enum_case(args: TokenStream) -> TokenStream {
+    let decl = concat_literals(args);
+    let decl = decl.as_str();
+
+    let symbol = crate::swift_mangle::mangle_enum_case(decl)
+        .unwrap_or_else(|e| panic!("swift::enum_case: cannot mangle `{decl}`: {e}"));
+
+    format!(
+        "{{
+            unsafe extern \"C\" {{
+                #[link_name = \"{symbol}\"]
+                static __SWIFT_ENUM_CASE: u8;
+            }}
+            &raw const __SWIFT_ENUM_CASE
+        }}"
+    )
+    .parse()
+    .expect("valid enum case expression")
 }
 
 pub fn gen_swift_call(attr: TokenStream, func: TokenStream) -> TokenStream {
@@ -649,8 +768,19 @@ pub fn gen_swift_call(attr: TokenStream, func: TokenStream) -> TokenStream {
     // needs in order to name the parameter that lands in the register.
     let mut float_tys: Vec<&str> = Vec::new();
     let mut prelude = String::new();
+    // What has to happen once the call is back and before the result is built:
+    // handing back the storage of values the callee consumed.
+    let mut postlude = String::new();
+
+    for name in &attr.owned {
+        assert!(
+            sig.args.iter().any(|arg| arg.name == *name),
+            "swift::call: `owned` names `{name}`, which is not a parameter"
+        );
+    }
 
     for (index, arg) in sig.args.iter().enumerate() {
+        let consumed = consumes(&alias, &conventions, &attr.owned, index, &arg.name);
         match classify_arg(&arg.ty) {
             Class::Bool => int_args.push(format!("{} as usize", arg.name)),
             Class::Word => int_args.push(format!("{} as usize", arg.name)),
@@ -664,7 +794,7 @@ pub fn gen_swift_call(attr: TokenStream, func: TokenStream) -> TokenStream {
             }
             class @ (Class::String | Class::StringRef) => {
                 let by_value = class == Class::String;
-                check_ownership(&alias, &conventions, index, &arg.name, by_value);
+                check_ownership(&alias, consumed, &arg.name, by_value);
                 let raw = format!("__raw_{}", arg.name);
                 let take = if by_value {
                     format!("crate::swift::String::into_raw({})", arg.name)
@@ -675,25 +805,119 @@ pub fn gen_swift_call(attr: TokenStream, func: TokenStream) -> TokenStream {
                 int_args.push(format!("{raw}.word0"));
                 int_args.push(format!("{raw}.word1"));
             }
-            Class::ValuePtr => int_args.push(format!(
-                "crate::swift::SwiftSelf::swift_self_ptr({}) as usize",
-                arg.name
-            )),
+            // The reference itself. A consumed one is handed over with the
+            // caller's retain; a borrowed one is written `&arc::R<T>` and stays
+            // the caller's.
+            Class::ClassRef(_) => {
+                let by_value = !arg.ty.trim().starts_with('&');
+                check_ownership(&alias, consumed, &arg.name, by_value);
+                int_args.push(if by_value {
+                    format!("crate::arc::R::into_raw({}) as usize", arg.name)
+                } else {
+                    format!("crate::arc::R::as_ptr({}) as usize", arg.name)
+                });
+            }
+            // A container is one word, which the wrapper is holding. Taken by
+            // value, the word and the reference it carries go to the callee.
+            Class::RawWord(ty) => {
+                let by_value = !arg.ty.trim().starts_with('&');
+                check_ownership(&alias, consumed, &arg.name, by_value);
+                prelude.push_str(&format!(
+                    "const {{
+                        assert!(
+                            <{ty} as crate::swift::SwiftAbi>::CLASS.tag()
+                                == crate::swift::AbiClass::Word.tag(),
+                            \"swift::call: this type is not passed the way the call assumes\"
+                        )
+                    }};\n"
+                ));
+                int_args.push(if by_value {
+                    format!("{}.into_raw() as usize", arg.name)
+                } else {
+                    format!("{}.as_raw() as usize", arg.name)
+                });
+            }
+            // Several floating-point registers from the one value, taken apart
+            // through the type's own conversion. Plain data, so ownership does
+            // not come into it.
+            Class::Doubles(count, ty) => {
+                let fd = format!("__fd_{}", arg.name);
+                prelude.push_str(&format!(
+                    "const {{
+                        assert!(
+                            <{ty} as crate::swift::ToSwiftDoubles>::COUNT == {count},
+                            \"swift::call: this type does not travel in the registers the call assumes\"
+                        )
+                    }};
+                    let mut {fd} = [0f64; {count}];
+                    <{ty} as crate::swift::ToSwiftDoubles>::write_doubles(
+                        core::borrow::Borrow::borrow(&{name}),
+                        &mut {fd},
+                    );\n",
+                    name = arg.name,
+                ));
+                for offset in 0..count {
+                    float_args.push(format!("{fd}[{offset}]"));
+                    float_tys.push("f64");
+                }
+            }
+            // A small frozen value's bytes, in two integer registers.
+            Class::Words2(ty) => {
+                let w = format!("__w_{}", arg.name);
+                prelude.push_str(&format!(
+                    "const {{
+                        assert!(
+                            <{ty} as crate::swift::SwiftAbi>::CLASS.tag()
+                                == crate::swift::AbiClass::Words2.tag(),
+                            \"swift::call: this type is not passed the way the call assumes\"
+                        )
+                    }};
+                    let {w}: [usize; 2] = core::mem::transmute::<{ty}, [usize; 2]>({name});\n",
+                    name = arg.name,
+                ));
+                int_args.push(format!("{w}[0]"));
+                int_args.push(format!("{w}[1]"));
+            }
+            // A value passed indirectly is its address either way. Which of
+            // the two the callee does with it — borrow it, or move it out and
+            // leave the storage behind — decides whether the Rust value may
+            // still be dropped afterwards, so it has to agree with the
+            // declaration just as a `String`'s does.
+            Class::ValuePtr => {
+                let by_value = !arg.ty.trim().starts_with('&');
+                check_ownership(&alias, consumed, &arg.name, by_value);
+                if by_value {
+                    let own = format!("__own_{}", arg.name);
+                    prelude.push_str(&format!(
+                        "let {own} = core::mem::ManuallyDrop::new({});\n",
+                        arg.name
+                    ));
+                    int_args.push(format!(
+                        "crate::swift::SwiftSelf::swift_self_ptr(&*{own}) as usize"
+                    ));
+                    postlude.push_str(&format!(
+                        "crate::swift::SwiftConsume::forget_consumed({own});\n"
+                    ));
+                } else {
+                    int_args.push(format!(
+                        "crate::swift::SwiftSelf::swift_self_ptr({}) as usize",
+                        arg.name
+                    ));
+                }
+            }
             other => panic!("swift::call: argument `{}` is {other:?}", arg.name),
         }
     }
 
     let self_operand = if sig.takes_self {
-        Some("crate::swift::SwiftSelf::swift_self_ptr(self) as usize".to_string())
+        "crate::swift::SwiftSelf::swift_self_ptr(self) as usize".to_string()
     } else {
         // A static member takes the type's metadata where an instance member
         // takes the instance.
-        Some("<Self as crate::swift::SwiftMetadata>::metadata() as usize".to_string())
+        "<Self as crate::swift::SwiftMetadata>::metadata() as usize".to_string()
     };
 
-    // Results.
-    let mut outs: Vec<(String, String)> = Vec::new(); // (register, binding)
-    let mut bindings = String::new();
+    // Results, as the expression the thunk's return registers are read into.
     let mut tail;
 
     // The register class was read off the Rust type's *name*; the type itself
@@ -719,92 +943,81 @@ pub fn gen_swift_call(attr: TokenStream, func: TokenStream) -> TokenStream {
             tail = "()".to_string();
         }
         Class::Bool => {
-            bindings.push_str("let __r0: usize;\n");
-            outs.push(("x0".into(), "__r0".into()));
             tail = "__r0 & 1 != 0".to_string();
         }
         Class::Word => {
-            bindings.push_str("let __r0: usize;\n");
-            outs.push(("x0".into(), "__r0".into()));
             tail = format!("__r0 as {}", ret_ok_type(&sig.ret_source));
         }
         Class::Double => {
-            bindings.push_str("let __d0: f64;\n");
-            outs.push(("d0".into(), "__d0".into()));
             tail = "__d0".to_string();
         }
         Class::Float => {
-            bindings.push_str("let __s0: f32;\n");
-            outs.push(("s0".into(), "__s0".into()));
             tail = "__s0".to_string();
         }
         Class::String => {
-            bindings.push_str("let (__r0, __r1): (usize, usize);\n");
-            outs.push(("x0".into(), "__r0".into()));
-            outs.push(("x1".into(), "__r1".into()));
             tail =
                 "crate::swift::String::from_raw(crate::swift::RawString { word0: __r0, word1: __r1 })"
                     .to_string();
         }
         Class::ClassRef(_) | Class::OptClassRef(_) => {
-            bindings.push_str("let __r0: usize;\n");
-            outs.push(("x0".into(), "__r0".into()));
             let ok = ret_ok_type(&sig.ret_source);
             tail = if matches!(ret_class, Class::OptClassRef(_)) {
                 format!(
-                    "if __r0 == 0 {{ None }} else {{ Some(crate::arc::R::from_raw(__r0 as *mut _)) }} as {ok}"
+                    "{{ let __v: {ok} = if __r0 == 0 {{ None }} else {{ \
+                     Some(crate::arc::R::from_raw(__r0 as *mut _)) }}; __v }}"
                 )
             } else {
                 "crate::arc::R::from_raw(__r0 as *mut _)".to_string()
             };
         }
         Class::RawWord(ty) => {
-            bindings.push_str("let __r0: usize;\n");
-            outs.push(("x0".into(), "__r0".into()));
             tail = format!("<{ty}>::from_raw(__r0 as *mut ())");
         }
         Class::Words3 => {
-            bindings.push_str("let (__r0, __r1, __r2): (u64, u64, u64);\n");
-            outs.push(("x0".into(), "__r0".into()));
-            outs.push(("x1".into(), "__r1".into()));
-            outs.push(("x2".into(), "__r2".into()));
             tail = format!(
                 "core::mem::transmute::<(u64, u64, u64), {}>((__r0, __r1, __r2))",
                 ret_ok_type(&sig.ret_source)
             );
         }
         Class::OptPrimitive(ty) => {
-            // The word holds both the payload and the tag, and only the type's
-            // own witnesses know where the tag sits, so it is read back through
-            // them rather than by assuming a niche.
-            bindings.push_str("let __r0: usize;\n");
-            outs.push(("x0".into(), "__r0".into()));
+            // The registers hold the optional's bytes as memory would: a
+            // `Float?` packs its tag above the payload in `x0`, while an
+            // `Int?` or `Double?` needs `x1` for it. Copying both words into
+            // the optional's storage covers either, and only the type's own
+            // witnesses know where the tag sits, so it is read back through
+            // them rather than by assuming one.
             tail = format!(
                 "{{
-            let mut __opt = crate::swift::value::Storage::<crate::swift::value::Optional<{ty}>>::new();
-            crate::swift::value::Storage::as_mut_ptr(&mut __opt).cast::<usize>().write(__r0);
+            type __Opt = crate::swift::value::Optional<{ty}>;
+            let mut __opt = crate::swift::value::Storage::<__Opt>::new();
+            let __size = crate::swift::abi::value_layout(
+                <__Opt as crate::swift::SwiftMetadata>::metadata(),
+            ).size;
+            assert!(__size <= 2 * core::mem::size_of::<usize>(), \"swift::call: this optional does not fit in two registers\");
+            core::ptr::copy_nonoverlapping(
+                [__r0, __r1].as_ptr().cast::<u8>(),
+                crate::swift::value::Storage::as_mut_ptr(&mut __opt).cast::<u8>(),
+                __size,
+            );
             __opt.take()
         }}"
             );
         }
+        Class::Words2(ty) => {
+            tail = format!("core::mem::transmute::<[usize; 2], {ty}>([__r0, __r1])");
+        }
+        Class::OptError => {
+            tail = "if __r0 == 0 { None } else { \
+                Some(crate::arc::R::from_raw(crate::swift::abi::error_as_ns_error(__r0 as *mut ()).cast())) }"
+                .to_string();
+        }
         Class::OptString => {
-            bindings.push_str("let (__r0, __r1): (usize, usize);\n");
-            outs.push(("x0".into(), "__r0".into()));
-            outs.push(("x1".into(), "__r1".into()));
             tail = "(__r0 != 0 || __r1 != 0).then(|| \
                 crate::swift::String::from_raw(crate::swift::RawString { word0: __r0, word1: __r1 }))"
                 .to_string();
         }
         Class::Doubles(count, ty) => {
             let names: Vec<String> = (0..*count).map(|i| format!("__d{i}")).collect();
-            bindings.push_str(&format!(
-                "let ({}): ({});\n",
-                names.join(", "),
-                vec!["f64"; *count].join(", ")
-            ));
-            for (index, name) in names.iter().enumerate() {
-                outs.push((format!("d{index}"), name.clone()));
-            }
             tail = format!(
                 "<{ty} as crate::swift::FromSwiftDoubles>::from_doubles(&[{}])",
                 names.join(", ")
@@ -830,170 +1043,30 @@ pub fn gen_swift_call(attr: TokenStream, func: TokenStream) -> TokenStream {
     }
 
     if throws {
-        bindings.push_str("let __error: *mut ();\n");
+        // The thunk writes the error register through this pointer.
+        prelude.push_str("let mut __error: *mut () = core::ptr::null_mut();\n");
         tail = format!(
             "if __error.is_null() {{ Ok({tail}) }} else {{ Err(crate::arc::R::from_raw(crate::swift::abi::error_as_ns_error(__error).cast())) }}"
         );
     }
 
-    // A naked `extern "C"` thunk beats an `asm!` block here: `clobber_abi`
-    // cannot say a Swift callee keeps the low half of `v8`-`v15`, so it marks
-    // all sixteen and every caller spills `d8`-`d15`. Behind a C call the
-    // register mask applies instead.
-    //
-    // Falls back to assembly for what a thunk cannot carry: the error register,
-    // a three-word return, and calls too wide to spare an argument register.
     let indirect_slot = usize::from(ret_class.is_indirect());
-    let self_slot = 1;
-    let use_thunk = !throws
-        && !matches!(ret_class, Class::Words3)
-        && int_args.len() + indirect_slot + self_slot <= 8
-        && float_args.len() <= 8;
-
-    if use_thunk {
-        return gen_thunk_call(
-            &sig,
-            &link_name,
-            &alias,
-            &ret_class,
-            &int_args,
-            &float_args,
-            &float_tys,
-            indirect_slot,
-            &self_operand.expect("a call always names a self operand"),
-            &checks,
-            &prelude,
-            &tail,
-        );
-    }
-
-    // Register assignment. Arguments claim x0 up and d0 up; a returned value
-    // claims the same registers back, so the two meet as `inlateout` wherever
-    // they overlap.
-    let mut operands: Vec<Operand> = Vec::new();
-    let int_ret: Vec<&(String, String)> = outs.iter().filter(|(r, _)| r.starts_with('x')).collect();
-    let float_ret: Vec<&(String, String)> = outs
-        .iter()
-        .filter(|(r, _)| r.starts_with('d') || r.starts_with('s'))
-        .collect();
-
-    let int_used = int_args.len().max(int_ret.len());
-    for index in 0..int_used {
-        let reg = format!("x{index}");
-        let input = int_args.get(index).cloned();
-        let output = int_ret.get(index).map(|(_, binding)| binding.clone());
-        operands.push(Operand { reg, input, output });
-    }
-
-    let float_used = float_args.len().max(float_ret.len());
-    for index in 0..float_used {
-        let input = float_args.get(index).cloned();
-        let output = float_ret.get(index).map(|(reg, binding)| {
-            // A `float` result comes back in the low half of the same register.
-            (reg.clone(), binding.clone())
-        });
-        let reg = match &output {
-            Some((reg, _)) => reg
-                .replace(['d', 's'], "")
-                .parse::<usize>()
-                .ok()
-                .map_or_else(|| format!("d{index}"), |_| format!("{}{index}", &reg[..1])),
-            None => format!("d{index}"),
-        };
-        operands.push(Operand {
-            reg,
-            input,
-            output: output.map(|(_, binding)| binding),
-        });
-    }
-
-    if ret_class.is_indirect() {
-        operands.push(Operand {
-            reg: "x8".into(),
-            // Where the buffer's address comes from depends on which kind of
-            // buffer the return type asked for.
-            input: Some(match &ret_class {
-                Class::Indirect(ty) => {
-                    format!("<{ty} as crate::swift::value::SwiftOut>::out_ptr(&mut __out) as usize")
-                }
-                _ => "crate::swift::value::Storage::as_mut_ptr(&mut __out) as usize".to_string(),
-            }),
-            output: None,
-        });
-    }
-
-    if let Some(self_expr) = self_operand {
-        operands.push(Operand {
-            reg: "x20".into(),
-            input: Some(self_expr),
-            output: None,
-        });
-    }
-
-    if throws {
-        operands.push(Operand {
-            reg: "x21".into(),
-            input: Some("0usize".into()),
-            output: Some("__error".into()),
-        });
-    }
-
-    let operand_list: String = operands
-        .iter()
-        .map(|o| o.render())
-        .collect::<Vec<_>>()
-        .join("\n            ");
-
-    let doc_alias = alias
-        .map(|a| format!("#[doc(alias = \"{a}\")]"))
-        .unwrap_or_default();
-
-    let Signature {
-        meta,
-        vis_and_qualifiers,
-        name,
-        generics,
-        args_source,
-        ret_source,
-        ..
-    } = sig;
-
-    let ret_clause = if ret_source.is_empty() {
-        String::new()
-    } else {
-        format!("-> {ret_source}")
-    };
-
-    let out = format!(
-        "
-{meta}
-{doc_alias}
-#[inline]
-{vis_and_qualifiers} fn {name}{generics}{args_source} {ret_clause} {{
-    #[allow(non_snake_case)]
-    unsafe extern \"C\" {{
-        #[link_name = \"{link_name}\"]
-        fn __swift_callee();
-    }}
-    unsafe {{
-        {checks}
-        let __fn = __swift_callee as *const ();
-        {prelude}
-        {bindings}
-        core::arch::asm!(
-            \"blr {{__fn}}\",
-            __fn = in(reg) __fn,
-            {operand_list}
-            clobber_abi(\"C\"),
-        );
-        {tail}
-    }}
-}}
-"
-    );
-
-    out.parse()
-        .unwrap_or_else(|e| panic!("swift::call generated invalid code: {e}\n{out}"))
+    gen_thunk_call(
+        &sig,
+        &link_name,
+        &alias,
+        &ret_class,
+        &int_args,
+        &float_args,
+        &float_tys,
+        indirect_slot,
+        throws,
+        &self_operand,
+        &checks,
+        &prelude,
+        &postlude,
+        &tail,
+    )
 }
 
 /// The success half of a `Result<T, arc::R<ns::Error>>`, which is what every
@@ -1354,14 +1427,25 @@ where
 "
     );
 
-    out.parse()
-        .unwrap_or_else(|e| panic!("swift::call generated invalid code: {e}\n{out}"))
+    finish(&out).unwrap_or_else(|e| panic!("swift::call generated invalid code: {e}\n{out}"))
 }
 
-/// Expands the call as a plain C call to a naked thunk that tail-calls Swift.
+/// Expands the call as a plain C call to a naked thunk that calls Swift.
 ///
-/// The thunk places the two operands C cannot name — the context register and
-/// the indirect-result register — and restores the first afterwards.
+/// A naked `extern "C"` thunk rather than an `asm!` block: `clobber_abi`
+/// cannot say a Swift callee keeps the low half of `v8`-`v15`, so it marks all
+/// sixteen and every caller spills `d8`-`d15`. Behind a C call the register
+/// mask applies instead, and the thunk does what C cannot name:
+///
+/// - `self` goes in `x20` and an indirect result's buffer in `x8`;
+/// - a throwing callee's `x21` starts at zero and is written back through a
+///   pointer the caller passes after `self`;
+/// - a three-word result, which C returns through a buffer at `x8`, is stored
+///   from `x0`-`x2` into the buffer the caller passed there.
+///
+/// `x20` and `x21` are callee-saved under C, so the thunk restores both, and
+/// it keeps a frame record so a backtrace through the Swift callee still
+/// reaches the Rust caller.
 #[allow(clippy::too_many_arguments)]
 fn gen_thunk_call(
     sig: &Signature,
@@ -1372,11 +1456,23 @@ fn gen_thunk_call(
     float_args: &[String],
     float_tys: &[&str],
     indirect_slot: usize,
+    throws: bool,
     self_operand: &str,
     checks: &str,
     prelude: &str,
+    postlude: &str,
     tail: &str,
 ) -> TokenStream {
+    let error_slot = usize::from(throws);
+    let int_regs = int_args.len() + indirect_slot + 1 + error_slot;
+    assert!(
+        int_regs <= 8 && float_args.len() <= 8,
+        "swift::call: `{}` needs more argument registers than a call has; \
+         write it out by hand",
+        sig.name
+    );
+    let words3 = matches!(ret_class, Class::Words3);
+
     // Integer parameters fill x0 up and floating-point ones d0 up, each in
     // declaration order, so the thunk groups them that way.
     let mut params: Vec<String> = (0..int_args.len())
@@ -1397,22 +1493,52 @@ fn gen_thunk_call(
     params.push("__self: usize".to_string());
     call_args.push(self_operand.to_string());
 
+    if throws {
+        params.push("__error_out: *mut *mut ()".to_string());
+        call_args.push("&raw mut __error".to_string());
+    }
+
     for (index, ty) in float_tys.iter().enumerate() {
         params.push(format!("__f{index}: {ty}"));
     }
     call_args.extend(float_args.iter().cloned());
 
-    // `x20` is callee-saved under C, so the thunk must restore it: the callee
-    // gives back what the thunk left, not what the caller had. That rules out a
-    // tail call and costs the stack slot. The pair also saves the link register.
-    let mut shuffle = String::from("\"stp x20, x30, [sp, #-16]!\",\n            ");
-    if indirect_slot == 1 {
-        shuffle.push_str(&format!("\"mov x8, x{}\",\n            ", int_args.len()));
+    // The frame: the record at the bottom, then the callee-saved pair, then
+    // the two addresses the thunk writes through once the callee is back.
+    let self_reg = int_args.len() + indirect_slot;
+    let mut insns: Vec<String> = vec![
+        "stp x29, x30, [sp, #-48]!".into(),
+        "mov x29, sp".into(),
+        "stp x20, x21, [sp, #16]".into(),
+    ];
+    if throws {
+        insns.push(format!("str x{}, [sp, #32]", self_reg + 1));
+        insns.push("mov x21, xzr".into());
     }
-    shuffle.push_str(&format!(
-        "\"mov x20, x{}\",\n            ",
-        int_args.len() + indirect_slot
-    ));
+    if words3 {
+        insns.push("str x8, [sp, #40]".into());
+    }
+    if indirect_slot == 1 {
+        insns.push(format!("mov x8, x{}", int_args.len()));
+    }
+    insns.push(format!("mov x20, x{self_reg}"));
+    insns.push("bl {__callee}".into());
+    if throws {
+        insns.push("ldr x9, [sp, #32]".into());
+        insns.push("str x21, [x9]".into());
+    }
+    if words3 {
+        insns.push("ldr x9, [sp, #40]".into());
+        insns.push("stp x0, x1, [x9]".into());
+        insns.push("str x2, [x9, #16]".into());
+    }
+    insns.push("ldp x20, x21, [sp, #16]".into());
+    insns.push("ldp x29, x30, [sp], #48".into());
+    insns.push("ret".into());
+    let asm: String = insns
+        .iter()
+        .map(|insn| format!("\"{insn}\",\n            "))
+        .collect();
 
     // Named as a Rust return type so the compiler places the registers; the
     // bindings match what the shared tail expression reads.
@@ -1425,7 +1551,7 @@ fn gen_thunk_call(
         | Class::ClassRef(_)
         | Class::OptClassRef(_)
         | Class::RawWord(_)
-        | Class::OptPrimitive(_) => (
+        | Class::OptError => (
             "-> usize".to_string(),
             String::new(),
             "let __r0: usize = __CALL__;".to_string(),
@@ -1439,6 +1565,19 @@ fn gen_thunk_call(
             "-> f32".to_string(),
             String::new(),
             "let __s0: f32 = __CALL__;".to_string(),
+        ),
+        // Three words, which C returns through the buffer at `x8` that the
+        // thunk fills from `x0`-`x2`.
+        Class::Words3 => (
+            "-> __SwiftWords3".to_string(),
+            "#[repr(C)] struct __SwiftWords3(u64, u64, u64);\n".to_string(),
+            "let __w3 = __CALL__;\nlet (__r0, __r1, __r2) = (__w3.0, __w3.1, __w3.2);".to_string(),
+        ),
+        // Two words, as C returns a two-word struct.
+        Class::OptPrimitive(_) | Class::Words2(_) => (
+            "-> __SwiftWords2".to_string(),
+            "#[repr(C)] struct __SwiftWords2(usize, usize);\n".to_string(),
+            "let __w2 = __CALL__;\nlet (__r0, __r1) = (__w2.0, __w2.1);".to_string(),
         ),
         // Two words, which is the same pair `RawString` already is.
         Class::String | Class::OptString => (
@@ -1507,24 +1646,39 @@ fn gen_thunk_call(
     #[allow(non_snake_case, improper_ctypes_definitions)]
     unsafe extern \"C\" fn __swift_thunk({params}) {thunk_ret} {{
         core::arch::naked_asm!(
-            {shuffle}\"bl {{__callee}}\",
-            \"ldp x20, x30, [sp], #16\",
-            \"ret\",
-            __callee = sym __swift_callee,
+            {asm}__callee = sym __swift_callee,
         )
     }}
     unsafe {{
         {checks}
         {prelude}
         {bind}
+        {postlude}
         {tail}
     }}
 }}
 "
     );
 
-    out.parse()
-        .unwrap_or_else(|e| panic!("swift::call generated invalid thunk: {e}\n{out}"))
+    finish(&out).unwrap_or_else(|e| panic!("swift::call generated invalid thunk: {e}\n{out}"))
+}
+
+/// Whether the callee takes an argument at `+1`.
+///
+/// A declaration says so for each parameter; a bare symbol says nothing, so
+/// there it is whatever `owned(...)` lists, borrowing being a method's default.
+fn consumes(
+    alias: &Option<String>,
+    conventions: &[bool],
+    owned: &[String],
+    index: usize,
+    name: &str,
+) -> Option<bool> {
+    if alias.is_some() {
+        conventions.get(index).copied()
+    } else {
+        Some(owned.iter().any(|owned| owned == name))
+    }
 }
 
 /// Requires the Rust signature and the Swift declaration to agree on who owns
@@ -1533,32 +1687,38 @@ fn gen_thunk_call(
 /// Taking a value by reference in Rust and surrendering it to Swift, or the
 /// reverse, is a leak or a double release that nothing else would catch, so the
 /// two spellings of the same fact are made to match.
-fn check_ownership(
-    alias: &Option<String>,
-    conventions: &[bool],
-    index: usize,
-    name: &str,
-    by_value: bool,
-) {
-    let Some(decl) = alias else {
-        // Only a declaration says what the callee wants; a bare symbol does
-        // not, so there is nothing to check against.
+fn check_ownership(alias: &Option<String>, consumed: Option<bool>, name: &str, by_value: bool) {
+    let Some(consumed) = consumed else {
         return;
     };
-    let Some(&consumed) = conventions.get(index) else {
+    if consumed == by_value {
         return;
+    }
+    let (wants, has) = if consumed {
+        ("takes it at `+1`", "`&`")
+    } else {
+        ("borrows it", "by value")
     };
-    if consumed != by_value {
-        let (wants, has) = if consumed {
-            ("takes it at `+1`", "`&`")
-        } else {
-            ("borrows it", "by value")
-        };
-        panic!(
+    match alias {
+        Some(decl) => panic!(
             "swift::call: `{decl}` {wants}, but `{name}` is declared {has}. \
              Take a borrowed argument by reference and a consumed one by value."
-        );
+        ),
+        None => panic!(
+            "swift::call: `{name}` is declared {has}, but `owned(...)` says the callee {wants}. \
+             Take a borrowed argument by reference and list a consumed one in `owned`."
+        ),
     }
+}
+
+/// Parses the generated source.
+///
+/// A signature written inside a `macro_rules!` may name types through
+/// `$crate`, which survives into the printed source but not a re-parse. The
+/// generated code refers to cidre as `crate` throughout, which is the same
+/// crate, since only cidre's own bindings expand this.
+fn finish(out: &str) -> Result<TokenStream, proc_macro::LexError> {
+    out.replace("$crate", "crate").parse()
 }
 
 /// The success half of a return type, which is the whole type unless it throws.
