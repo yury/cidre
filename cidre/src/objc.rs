@@ -1,9 +1,3 @@
-#[cfg(all(
-    target_arch = "aarch64",
-    not(target_pointer_width = "32"),
-    not(feature = "classic-objc-retain-release")
-))]
-use std::arch::asm;
 use std::{
     borrow::Cow,
     ffi::c_void,
@@ -494,61 +488,22 @@ impl<T: Obj> arc::Retain for T {
 }
 
 pub trait Obj: Sized + arc::Retain {
+    /// A plain C call to `objc_retain`.
+    ///
+    /// The runtime also exports `objc_retain_xN` entry points that take the
+    /// object in any register, but reaching them takes an `asm!` block, and
+    /// `clobber_abi("C")` cannot say the callee keeps the low halves of
+    /// `v8`-`v15`: every function holding a retain or release then saves all
+    /// of `d8`-`d15`. A C call costs at most one `mov`.
     #[inline]
     unsafe fn retain(id: &Self) -> arc::R<Self> {
-        unsafe {
-            #[cfg(all(target_arch = "aarch64", not(feature = "classic-objc-retain-release")))]
-            {
-                let result: *mut Self;
-                core::arch::asm!(
-                    "bl _objc_retain_{obj:x}",
-                    obj = in(reg) id,
-                    lateout("x0") result,
-                    out("x16") _,
-                    out("x17") _,
-                    out("x30") _,
-                    clobber_abi("C"),
-                );
-                std::mem::transmute(result)
-            }
-
-            #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
-            {
-                std::mem::transmute(objc_retain(std::mem::transmute(id)))
-            }
-        }
+        unsafe { std::mem::transmute(objc_retain(std::mem::transmute(id))) }
     }
 
+    /// A plain C call to `objc_release`, for the reason [`Obj::retain`] gives.
     #[inline]
     unsafe fn release(id: NonNull<Self>) {
-        unsafe {
-            #[cfg(all(
-                target_arch = "aarch64",
-                target_pointer_width = "64",
-                not(feature = "classic-objc-retain-release")
-            ))]
-            {
-                asm!(
-                    "bl _objc_release_{x}",
-                    x = in(reg) id.as_ptr(),
-                    out("x16") _,
-                    out("x17") _,
-                    out("x30") _,
-                    clobber_abi("C")
-                    // system also works
-                    // clobber_abi("system")
-                );
-            }
-
-            #[cfg(any(
-                target_arch = "x86_64",
-                target_pointer_width = "32",
-                feature = "classic-objc-retain-release"
-            ))]
-            {
-                objc_release(id.cast().as_ptr());
-            }
-        }
+        unsafe { objc_release(id.cast().as_ptr()) }
     }
 
     #[objc::msg_send(description)]
@@ -738,15 +693,17 @@ pub unsafe fn msg_send_super_void(sup: &Super, sel: &Sel) {
     }
 }
 
+/// Marks the image as carrying Objective-C metadata, as clang does for every
+/// object it compiles. Without it the runtime skips the image's selector
+/// references, and a binary with no Objective-C object of its own sends
+/// selectors the runtime never uniqued.
+#[used]
+#[unsafe(link_section = "__DATA,__objc_imageinfo,regular,no_dead_strip")]
+static OBJC_IMAGE_INFO: [u32; 2] = [0, 0x40];
+
 #[link(name = "objc", kind = "dylib")]
 unsafe extern "C-unwind" {
-    #[cfg(any(target_arch = "x86_64", feature = "classic-objc-retain-release"))]
     pub fn objc_retain<'a>(obj: &Id) -> &'a Id;
-    #[cfg(any(
-        target_arch = "x86_64",
-        target_pointer_width = "32",
-        feature = "classic-objc-retain-release"
-    ))]
     fn objc_release(obj: *mut Id);
 
     // fn objc_msgSend();

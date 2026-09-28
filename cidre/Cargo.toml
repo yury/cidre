@@ -166,7 +166,6 @@ wk = ["blocks", "ns", "ui"]
 gc = ["ns"]
 xpc = ["ns", "blocks", "dispatch"]
 custom-allocator = []
-classic-objc-retain-release = []
 half = ["dep:half"]
 swift = []
 

@@ -89,6 +89,16 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             })
         })
     });
+
+    // A retain and a release of an object that stays alive, which is what
+    // cloning and dropping an `arc::R` costs.
+    let number = ns::Number::with_i64(num);
+    c.bench_function("retain_release", |b| {
+        b.iter(|| {
+            let copy = std::hint::black_box(&number).clone();
+            drop(std::hint::black_box(copy));
+        })
+    });
 }
 
 criterion_group!(benches, criterion_benchmark);
