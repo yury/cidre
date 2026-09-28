@@ -1,77 +1,59 @@
-use crate::{api, swift::abi};
+//! `CaptureInputSequenceProvider`, new in OS 27, and analyzing what it
+//! captures. The module is compiled only for 27, so nothing here reaches a
+//! symbol an older system lacks.
 
-// used by 27.0 api only
-#[cfg(any(
-    all(target_os = "macos", feature = "macos_27_0"),
-    all(target_os = "ios", feature = "ios_27_0"),
-    all(target_os = "tvos", feature = "tvos_27_0"),
-    all(target_os = "visionos", feature = "visionos_27_0"),
-    all(target_os = "ios", target_abi = "macabi", feature = "maccatalyst_27_0")
-))]
-use {
-    super::SpeechModule,
-    crate::{
-        arc, av, ns, swift,
-        swift::{
-            concurrency::TaskPriority,
-            value::{Optional, Storage},
-        },
+use crate::{
+    arc, av, ns, swift,
+    swift::{
+        abi,
+        concurrency::{self, AsyncCallArgs, TaskPriority},
+        value::{Optional, Storage},
     },
 };
 
-// available(macos = 27.0, ios = 27.0): the class is new in 27. The type exists
-// on every target, as the unavailable variants of its API name it, but only a
-// 27 build reaches the framework.
+use super::{SpeechAnalyzer, SpeechModule};
+
 crate::define_swift!(
     #[swift::class("Speech.CaptureInputSequenceProvider")]
     pub CaptureInputSequenceProvider
 );
 
-pub(super) struct AnalyzerInputSequence {
-    pub(super) value: crate::swift::value::AnyValue,
-    pub(super) witness: *const (),
+struct AnalyzerInputSequence {
+    value: crate::swift::value::AnyValue,
+    witness: *const (),
 }
 
 unsafe impl Send for AnalyzerInputSequence {}
 
-// `analyzerInputs` is an opaque `some AsyncSequence`, whose getter and
-// descriptor the mangler does not spell.
-// available(macos = 27.0, ios = 27.0)
 #[link(name = "Speech", kind = "framework")]
 unsafe extern "C" {
+    // `analyzerInputs` is an opaque `some AsyncSequence`, whose getter and
+    // descriptor the mangler does not spell.
     #[link_name = "$s6Speech28CaptureInputSequenceProviderC14analyzerInputsQrvg"]
     fn capture_input_sequence_provider_analyzer_inputs();
 
     #[link_name = "$s6Speech28CaptureInputSequenceProviderC14analyzerInputsQrvpQOMQ"]
     static CAPTURE_INPUT_SEQUENCE_PROVIDER_ANALYZER_INPUTS_DESCRIPTOR: u8;
 
+    // `SpeechAnalyzer.analyzeSequence(_:)` is generic over its input sequence,
+    // with requirements the mangler does not spell.
+    #[link_name = "$s6Speech0A8AnalyzerC15analyzeSequenceySo6CMTimeaSgxYaKs8SendableRzSciRzAA0B5InputV7ElementRtzlF"]
+    fn speech_analyzer_analyze_sequence();
+
+    #[link_name = "$s6Speech0A8AnalyzerC15analyzeSequenceySo6CMTimeaSgxYaKs8SendableRzSciRzAA0B5InputV7ElementRtzlFTu"]
+    static ANALYZE_SEQUENCE_ASYNC_FN: u8;
 }
 
 crate::define_swift_marker!(
-    pub(super) AnalyzerInputs =
-        opaque (&raw const CAPTURE_INPUT_SEQUENCE_PROVIDER_ANALYZER_INPUTS_DESCRIPTOR).cast(), 0
+    AnalyzerInputs =
+        opaque(&raw const CAPTURE_INPUT_SEQUENCE_PROVIDER_ANALYZER_INPUTS_DESCRIPTOR).cast(),
+    0
 );
 
-// The bodiless `swift::call` exists only when available, so its wrappers are
-// gated the same way instead of getting an unavailable variant.
-#[cfg(any(
-    all(target_os = "macos", feature = "macos_27_0"),
-    all(target_os = "ios", feature = "ios_27_0"),
-    all(target_os = "tvos", feature = "tvos_27_0"),
-    all(target_os = "visionos", feature = "visionos_27_0"),
-    all(target_os = "ios", target_abi = "macabi", feature = "maccatalyst_27_0")
-))]
 impl CaptureInputSequenceProvider {
-    #[doc(alias = "CaptureInputSequenceProvider.providerWithSession")]
     /// `priority` is the call's `TaskPriority?`, which these bindings always
     /// leave to the runtime.
-    #[api::available(
-        macos = 27.0,
-        ios = 27.0,
-        maccatalyst = 27.0,
-        tvos = 27.0,
-        visionos = 27.0
-    )]
+    #[doc(alias = "CaptureInputSequenceProvider.providerWithSession")]
     #[swift::call(
         "static Speech.CaptureInputSequenceProvider(class).providerWithSession(\
          from: __C.AVCaptureDevice(class), \
@@ -85,13 +67,6 @@ impl CaptureInputSequenceProvider {
     ) -> Result<arc::R<Self>, arc::R<ns::Error>>;
 
     #[doc(alias = "CaptureInputSequenceProvider.providerWithSession")]
-    #[api::available(
-        macos = 27.0,
-        ios = 27.0,
-        maccatalyst = 27.0,
-        tvos = 27.0,
-        visionos = 27.0
-    )]
     pub fn with_session_handler<F>(
         device: &av::CaptureDevice,
         modules: &[SpeechModule],
@@ -109,13 +84,6 @@ impl CaptureInputSequenceProvider {
 
     #[doc(alias = "CaptureInputSequenceProvider.providerWithSession")]
     #[cfg(feature = "async")]
-    #[api::available(
-        macos = 27.0,
-        ios = 27.0,
-        maccatalyst = 27.0,
-        tvos = 27.0,
-        visionos = 27.0
-    )]
     pub fn with_session(
         device: &av::CaptureDevice,
         modules: &[SpeechModule],
@@ -126,24 +94,15 @@ impl CaptureInputSequenceProvider {
             Storage::none(),
         )
     }
-}
 
-impl CaptureInputSequenceProvider {
     #[doc(alias = "CaptureInputSequenceProvider.captureSession")]
-    #[api::available(
-        macos = 27.0,
-        ios = 27.0,
-        maccatalyst = 27.0,
-        tvos = 27.0,
-        visionos = 27.0
-    )]
     #[swift::call(
         "Speech.CaptureInputSequenceProvider(class).captureSession: \
          __C.AVCaptureSession(class) { get }"
     )]
     pub fn capture_session(&self) -> arc::R<av::CaptureSession>;
 
-    pub(super) fn analyzer_inputs(&self) -> AnalyzerInputSequence {
+    fn analyzer_inputs(&self) -> AnalyzerInputSequence {
         unsafe {
             let descriptor =
                 (&raw const CAPTURE_INPUT_SEQUENCE_PROVIDER_ANALYZER_INPUTS_DESCRIPTOR).cast();
@@ -158,6 +117,41 @@ impl CaptureInputSequenceProvider {
             let value = storage.assume_init();
             let witness = abi::opaque_type_conformance(descriptor, 1);
             AnalyzerInputSequence { value, witness }
+        }
+    }
+}
+
+impl SpeechAnalyzer {
+    /// Starts consuming the provider's live analyzer-input sequence.
+    #[doc(alias = "SpeechAnalyzer.analyzeSequence")]
+    pub fn analyze_capture<F>(&self, provider: &CaptureInputSequenceProvider, callback: F)
+    where
+        F: FnOnce(Result<(), arc::R<ns::Error>>) + Send + 'static,
+    {
+        unsafe {
+            concurrency::call_async_result(
+                speech_analyzer_analyze_sequence as *const (),
+                &raw const ANALYZE_SEQUENCE_ASYNC_FN,
+                // Declaration order is drop order: the input sequence comes out
+                // of the provider, so it is destroyed before the provider is
+                // released.
+                (
+                    provider.analyzer_inputs(),
+                    arc::Retain::retained(provider),
+                    arc::Retain::retained(self),
+                ),
+                |(input, _provider, analyzer)| {
+                    // The generic call carries the input sequence's type and
+                    // its `AsyncSequence` conformance alongside the value.
+                    AsyncCallArgs::new()
+                        .swift_self(analyzer.as_ptr().cast())
+                        .arg(0, input.value.as_mut_ptr())
+                        .arg(1, input.value.metadata().cast_mut().cast())
+                        .arg(2, input.witness.cast_mut())
+                },
+                |_, _| (),
+                callback,
+            );
         }
     }
 }

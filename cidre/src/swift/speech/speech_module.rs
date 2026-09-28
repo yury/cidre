@@ -1,6 +1,8 @@
 use crate::swift::{SwiftMetadata, SwiftType, abi};
 
-use super::{DictationTranscriber, SpeechDetector, SpeechTranscriber};
+#[cfg(not(target_os = "tvos"))]
+use super::DictationTranscriber;
+use super::{SpeechDetector, SpeechTranscriber};
 
 /// An owned Swift `any SpeechModule` class existential.
 ///
@@ -53,6 +55,7 @@ impl From<&SpeechTranscriber> for SpeechModule {
     }
 }
 
+#[cfg(not(target_os = "tvos"))]
 impl From<&DictationTranscriber> for SpeechModule {
     #[inline]
     fn from(value: &DictationTranscriber) -> Self {

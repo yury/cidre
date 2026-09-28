@@ -21,10 +21,26 @@ pub(crate) mod value;
 #[cfg(test)]
 mod symbol_audit;
 
+// Each framework module is compiled only for the OS versions the framework
+// exists on, so nothing it links is newer than the deployment target. A Swift
+// symbol cannot be weakly linked from Rust the way an Objective-C class can,
+// so an unavailable variant that still names it would keep the binary from
+// launching on an older OS.
+//
+// The conditions are written out rather than made with `api::available`,
+// which stable Rust does not allow on a file module. Each pairs a platform
+// with its own version feature, since features apply to every target at
+// once; a version at or below cidre's floor is the platform alone.
+
 /// DockKit.
 #[cfg(all(
     any(target_os = "macos", all(target_os = "ios", not(target_abi = "sim"))),
-    feature = "dk"
+    feature = "dk",
+    any(
+        all(target_os = "macos", feature = "macos_14_0"),
+        all(target_os = "ios", not(target_abi = "macabi"), feature = "ios_17_0"),
+        all(target_os = "ios", target_abi = "macabi", feature = "maccatalyst_17_0"),
+    )
 ))]
 pub mod dock_kit;
 
@@ -34,25 +50,42 @@ pub mod foundation;
 
 /// MusicUnderstanding.framework.
 #[cfg(all(
-    not(target_os = "watchos"),
     feature = "music_understanding",
-    any(feature = "macos_27_0", feature = "ios_27_0")
+    any(
+        all(target_os = "macos", feature = "macos_27_0"),
+        all(target_os = "ios", not(target_abi = "macabi"), feature = "ios_27_0"),
+        all(target_os = "ios", target_abi = "macabi", feature = "maccatalyst_27_0"),
+        all(target_os = "tvos", feature = "tvos_27_0"),
+        all(target_os = "visionos", feature = "visionos_27_0"),
+        all(target_os = "watchos", feature = "watchos_27_0"),
+    )
 ))]
 pub mod music_understanding;
 
 /// Speech.framework.
 #[cfg(all(
-    not(target_os = "watchos"),
     feature = "speech",
-    any(feature = "macos_26_0", feature = "ios_26_0")
+    any(
+        all(target_os = "macos", feature = "macos_26_0"),
+        all(target_os = "ios", not(target_abi = "macabi"), feature = "ios_26_0"),
+        all(target_os = "ios", target_abi = "macabi", feature = "maccatalyst_26_0"),
+        all(target_os = "tvos", feature = "tvos_26_0"),
+        all(target_os = "visionos", feature = "visionos_26_0"),
+    )
 ))]
 pub mod speech;
 
 /// StoreKit.framework (StoreKit 2).
 #[cfg(all(
-    not(target_os = "watchos"),
     feature = "sk",
-    any(feature = "macos_15_0", feature = "ios_18_0")
+    any(
+        target_os = "macos",
+        all(target_os = "ios", not(target_abi = "macabi")),
+        all(target_os = "ios", target_abi = "macabi"),
+        all(target_os = "tvos", feature = "tvos_15_0"),
+        all(target_os = "watchos", feature = "watchos_8_0"),
+        all(target_os = "visionos", feature = "visionos_1_0"),
+    )
 ))]
 pub mod store_kit;
 

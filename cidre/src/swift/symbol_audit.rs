@@ -30,10 +30,8 @@
 //! load here (another platform's), or every binding that names it needs a
 //! newer OS than the one running the test — by a `#[cfg(feature =
 //! "macos_27_0")]` on it or on a module above it, or an
-//! `#[api::available(macos = 27.0)]`. A hand-written symbol has neither when
-//! the code using it stays compiled for older targets, so a comment before it
-//! states it the same way: `// available(macos = 27.0)`. So run it on each
-//! platform, and on the newest OS to cover everything. Set `CIDRE_AUDIT_VERBOSE=1` to list what was
+//! `#[api::available(macos = 27.0)]`. So run it on each platform, and on the
+//! newest OS to cover everything. Set `CIDRE_AUDIT_VERBOSE=1` to list what was
 //! skipped, and `CIDRE_AUDIT_OS=26.0` to audit as if running an older OS.
 
 use std::{
@@ -509,10 +507,8 @@ fn collect(
     out: &mut BTreeMap<String, Vec<Site>>,
     errors: &mut Vec<String>,
 ) {
-    let source = fs::read_to_string(file).unwrap();
-    let text = code_only(&source);
-    // Read off the source with its comments, which may state availability.
-    let requires = line_requirements(&source, base);
+    let text = code_only(&fs::read_to_string(file).unwrap());
+    let requires = line_requirements(&text, base);
     let shown = file
         .strip_prefix(env!("CARGO_MANIFEST_DIR"))
         .unwrap_or(file)

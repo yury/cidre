@@ -377,7 +377,7 @@ required-features = ["av", "mt", "dispatch"]
 
 [[example]]
 name = "dock-kit"
-required-features = ["dk", "async", "av", "cm", "dispatch"]
+required-features = ["dk", "async", "av", "cm", "dispatch", "macos_15_0"]
 
 [[example]]
 name = "cm-headphone"
@@ -389,7 +389,7 @@ required-features = ["speech", "av", "async", "cm", "dispatch", "macos_27_0"]
 
 [[example]]
 name = "sk-products"
-required-features = ["sk", "async", "macos_15_0"]
+required-features = ["sk", "async"]
 
 [package.metadata.playground]
 features = ["full"]

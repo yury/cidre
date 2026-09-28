@@ -4,16 +4,41 @@
 //! call framework and Swift runtime symbols directly. No C or Objective-C
 //! wrapper functions are used.
 
-#[cfg(feature = "av")]
+// The module as a whole is compiled for OS 26; what is newer, or missing on a
+// platform, is gated again here.
+
+/// New in OS 27.
+#[cfg(all(
+    feature = "av",
+    any(
+        all(target_os = "macos", feature = "macos_27_0"),
+        all(target_os = "ios", not(target_abi = "macabi"), feature = "ios_27_0"),
+        all(target_os = "ios", target_abi = "macabi", feature = "maccatalyst_27_0"),
+        all(target_os = "tvos", feature = "tvos_27_0"),
+        all(target_os = "visionos", feature = "visionos_27_0"),
+    )
+))]
 mod capture_input_sequence_provider;
+/// Not on tvOS.
+#[cfg(not(target_os = "tvos"))]
 mod dictation_transcriber;
 mod speech_analyzer;
 mod speech_detector;
 mod speech_module;
 mod speech_transcriber;
 
-#[cfg(feature = "av")]
+#[cfg(all(
+    feature = "av",
+    any(
+        all(target_os = "macos", feature = "macos_27_0"),
+        all(target_os = "ios", not(target_abi = "macabi"), feature = "ios_27_0"),
+        all(target_os = "ios", target_abi = "macabi", feature = "maccatalyst_27_0"),
+        all(target_os = "tvos", feature = "tvos_27_0"),
+        all(target_os = "visionos", feature = "visionos_27_0"),
+    )
+))]
 pub use capture_input_sequence_provider::CaptureInputSequenceProvider;
+#[cfg(not(target_os = "tvos"))]
 pub use dictation_transcriber::{DictationPreset, DictationTranscriber};
 pub use speech_analyzer::SpeechAnalyzer;
 pub use speech_detector::{SensitivityLevel, SpeechDetector};
@@ -62,6 +87,7 @@ mod tests {
     /// locale many times would release it once too often per call if the
     /// generated call also dropped what Swift took, and leave the original
     /// dangling; it has to stay readable throughout.
+    #[cfg(not(target_os = "tvos"))]
     #[test]
     fn a_consumed_locale_is_released_exactly_once() {
         let locale = crate::swift::foundation::Locale::with_id("en_US");
@@ -76,6 +102,7 @@ mod tests {
         assert_eq!("en_US", locale.id().to_string());
     }
 
+    #[cfg(not(target_os = "tvos"))]
     #[test]
     #[allow(unused_unsafe)]
     fn dictation_transcriber_uses_progressive_long_dictation() {
