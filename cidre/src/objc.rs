@@ -609,7 +609,11 @@ impl Id {
     /// `NSObject` class
     #[inline]
     pub fn cls() -> &'static Class<Id> {
-        unsafe { NS_OBJECT }
+        unsafe extern "C" {
+            #[link_name = "OBJC_CLASS_$_NSObject"]
+            static CLS: Class<Id>;
+        }
+        unsafe { &CLS }
     }
 
     #[inline]
@@ -813,7 +817,6 @@ unsafe extern "C-unwind" {
     pub fn objc_getClass(name: *const u8) -> Option<&'static Class<Id>>;
     pub fn class_respondsToSelector(cls: &Class<Id>, sel: &Sel) -> bool;
     pub fn objc_getProtocol(name: *const i8) -> Option<&'static Protocol>;
-    pub static NS_OBJECT: &'static crate::objc::Class<Id>;
     fn objc_exception_throw(exception: &Id) -> !;
 }
 
@@ -1227,7 +1230,7 @@ macro_rules! define_obj_type {
             #[allow(dead_code)]
             pub fn register_cls() -> &'static $crate::objc::ClassInstExtra<Self, $InnerType> {
                 let name = concat!(stringify!($CLS), "\0");
-                let cls = unsafe { $crate::objc::objc_allocateClassPair($crate::objc::NS_OBJECT, name.as_ptr(), 0) };
+                let cls = unsafe { $crate::objc::objc_allocateClassPair($crate::objc::Id::cls(), name.as_ptr(), 0) };
                 let cls = cls.unwrap();
                 $(<Self as $TraitImpl>::cls_add_methods(cls);)*
                 $(<Self as $TraitImpl>::cls_add_protocol(cls);)*
@@ -1270,7 +1273,7 @@ macro_rules! define_obj_type {
                             std::ptr::drop_in_place(ptr);
                             let sup = $crate::objc::Super {
                                 receiver: std::mem::transmute(s),
-                                super_class: $crate::objc::NS_OBJECT
+                                super_class: $crate::objc::Id::cls()
                             };
                             $crate::objc::msg_send_super_void(&sup, sel);
                         }
@@ -1333,7 +1336,7 @@ macro_rules! define_obj_type {
             #[allow(dead_code)]
             pub fn register_cls() -> &'static $crate::objc::ClassInstExtra<Self, ()> {
                 let name = concat!(stringify!($CLS), "\0");
-                let cls = unsafe { $crate::objc::objc_allocateClassPair($crate::objc::NS_OBJECT, name.as_ptr(), 0) };
+                let cls = unsafe { $crate::objc::objc_allocateClassPair($crate::objc::Id::cls(), name.as_ptr(), 0) };
                 let cls = cls.unwrap();
                 $(<Self as $TraitImpl>::cls_add_methods(cls);)*
                 $(<Self as $TraitImpl>::cls_add_protocol(cls);)*

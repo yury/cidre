@@ -25,7 +25,6 @@ id _Nullable cidre_try_catch(void (*during)(void *), void * context ) {
     }
 }
 
-Class NS_OBJECT;
 Class NS_URL_SESSION_WEB_SOCKET_MESSAGE;
 
 Class NS_ORDERED_COLLECTION_CHANGE;
@@ -78,7 +77,6 @@ static void common_initializer(void)
     if (!initialized) {
         initialized = 1;
         
-        NS_OBJECT = [NSObject class];
         NS_URL_SESSION_WEB_SOCKET_MESSAGE = [NSURLSessionWebSocketMessage class];
         
         
