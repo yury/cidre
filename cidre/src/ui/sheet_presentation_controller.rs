@@ -142,6 +142,16 @@ impl SheetPresentationController {
     #[objc::msg_send(setLargestUndimmedDetentIdentifier:)]
     #[objc::available(ios = 15.0)]
     pub fn set_largest_undimmed_detent_id(&mut self, val: Option<&DetentId>);
+
+    /// Whether scrolling down past the top of a scroll view in the sheet expands it to
+    /// a larger detent. Default is `true`; `false` suits a sheet beside live content.
+    #[objc::msg_send(prefersScrollingExpandsWhenScrolledToEdge)]
+    #[objc::available(ios = 15.0)]
+    pub fn prefers_scrolling_expands_when_scrolled_to_edge(&self) -> bool;
+
+    #[objc::msg_send(setPrefersScrollingExpandsWhenScrolledToEdge:)]
+    #[objc::available(ios = 15.0)]
+    pub fn set_prefers_scrolling_expands_when_scrolled_to_edge(&mut self, val: bool);
 }
 
 #[api::weak]
