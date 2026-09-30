@@ -393,6 +393,30 @@ impl PixelFormat {
     #[doc(alias = "kCVPixelFormatType_64RGBALE")]
     pub const _64_RGBALE: Self = Self(os::Type::from_be_bytes(*b"l64r"));
 
+    /// 48 bit RGB, 16-bit big-endian samples
+    #[doc(alias = "kCVPixelFormatType_48RGB")]
+    pub const _48_RGB: Self = Self(os::Type::from_be_bytes(*b"b48r"));
+
+    /// 32 bit AlphaGray, 16-bit big-endian samples, black is zero
+    #[doc(alias = "kCVPixelFormatType_32AlphaGray")]
+    pub const _32_ALPHA_GRAY: Self = Self(os::Type::from_be_bytes(*b"b32a"));
+
+    /// 16 bit Grayscale, 16-bit big-endian samples, black is zero
+    #[doc(alias = "kCVPixelFormatType_16Gray")]
+    pub const _16_GRAY: Self = Self(os::Type::from_be_bytes(*b"b16g"));
+
+    /// little-endian RGB101010, 2 MSB are ignored, wide-gamut (384-895)
+    #[doc(alias = "kCVPixelFormatType_30RGBLEPackedWideGamut")]
+    pub const _30_RGB_LE_PACKED_WIDE_GAMUT: Self = Self(os::Type::from_be_bytes(*b"w30r"));
+
+    /// little-endian ARGB10101010, each 10 bits in the MSBs of 16bits, wide-gamut (384-895, including alpha)
+    #[doc(alias = "kCVPixelFormatType_40ARGBLEWideGamut")]
+    pub const _40_ARGB_LE_WIDE_GAMUT: Self = Self(os::Type::from_be_bytes(*b"w40a"));
+
+    /// little-endian ARGB10101010, each 10 bits in the MSBs of 16bits, wide-gamut (384-895, including alpha). Alpha premultiplied
+    #[doc(alias = "kCVPixelFormatType_40ARGBLEWideGamutPremultiplied")]
+    pub const _40_ARGB_LE_WIDE_GAMUT_PREMULTIPLIED: Self = Self(os::Type::from_be_bytes(*b"w40m"));
+
     /// 30 bit RGB, 10-bit big-endian samples, 2 unused padding bits (at least significant end).
     #[doc(alias = "kCVPixelFormatType_30RGB")]
     pub const _30_RGB: Self = Self(os::Type::from_be_bytes(*b"R10k"));
@@ -406,6 +430,14 @@ impl PixelFormat {
     pub const _422_YP_CB_CR_8: Self = Self(os::Type::from_be_bytes(*b"2vuy"));
     #[doc(alias = "kCVPixelFormatType_422YpCbCr8")]
     pub const _2VUY: Self = Self::_422_YP_CB_CR_8;
+
+    /// Component Y'CbCr 8-bit 4:2:2, ordered Y'0 Cb Y'1 Cr
+    #[doc(alias = "kCVPixelFormatType_422YpCbCr8_yuvs")]
+    pub const _422_YP_CB_CR_8_YUVS: Self = Self(os::Type::from_be_bytes(*b"yuvs"));
+
+    /// Component Y'CbCr 8-bit 4:2:2, full range, ordered Y'0 Cb Y'1 Cr
+    #[doc(alias = "kCVPixelFormatType_422YpCbCr8FullRange")]
+    pub const _422_YP_CB_CR_8_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"yuvf"));
 
     /// Component Y'CbCrA 8-bit 4:4:4:4, ordered Cb Y' Cr A
     #[doc(alias = "kCVPixelFormatType_4444YpCbCrA8")]
@@ -442,6 +474,10 @@ impl PixelFormat {
     /// Component Y'CbCr 10-bit 4:4:4
     #[doc(alias = "kCVPixelFormatType_444YpCbCr10")]
     pub const _444_YP_CB_CR_10: Self = Self(os::Type::from_be_bytes(*b"v410"));
+
+    /// Planar Component Y'CbCr 8-bit 4:2:0. baseAddr points to a big-endian CVPlanarPixelBufferInfo_YCbCrPlanar struct
+    #[doc(alias = "kCVPixelFormatType_420YpCbCr8Planar")]
+    pub const _420_YP_CB_CR_8_PLANAR: Self = Self(os::Type::from_be_bytes(*b"y420"));
 
     /// Planar Component Y'CbCr 8-bit 4:2:0, full range.  baseAddr points to a big-endian CVPlanarPixelBufferInfo_YCbCrPlanar struct
     #[doc(alias = "kCVPixelFormatType_420YpCbCr8PlanarFullRange")]
@@ -490,6 +526,80 @@ impl PixelFormat {
     #[doc(alias = "kCVPixelFormatType_444YpCbCr10BiPlanarFullRange")]
     pub const _444_YP_CB_CR_10_BI_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"xf44"));
 
+    /// Bi-Planar Component Y'CbCr 8-bit 4:2:2, video-range (luma=\[16,235\] chroma=\[16,240\]). baseAddr points to a big-endian CVPlanarPixelBufferInfo_YCbCrBiPlanar struct
+    #[doc(alias = "kCVPixelFormatType_422YpCbCr8BiPlanarVideoRange")]
+    pub const _422_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"422v"));
+
+    /// Bi-Planar Component Y'CbCr 8-bit 4:2:2, full-range (luma=\[0,255\] chroma=\[1,255\]). baseAddr points to a big-endian CVPlanarPixelBufferInfo_YCbCrBiPlanar struct
+    #[doc(alias = "kCVPixelFormatType_422YpCbCr8BiPlanarFullRange")]
+    pub const _422_YP_CB_CR_8_BI_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"422f"));
+
+    /// Bi-Planar Component Y'CbCr 8-bit 4:4:4, video-range (luma=\[16,235\] chroma=\[16,240\]). baseAddr points to a big-endian CVPlanarPixelBufferInfo_YCbCrBiPlanar struct
+    #[doc(alias = "kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange")]
+    pub const _444_YP_CB_CR_8_BI_PLANAR_VIDEO_RANGE: Self = Self(os::Type::from_be_bytes(*b"444v"));
+
+    /// Bi-Planar Component Y'CbCr 8-bit 4:4:4, full-range (luma=\[0,255\] chroma=\[1,255\]). baseAddr points to a big-endian CVPlanarPixelBufferInfo_YCbCrBiPlanar struct
+    #[doc(alias = "kCVPixelFormatType_444YpCbCr8BiPlanarFullRange")]
+    pub const _444_YP_CB_CR_8_BI_PLANAR_FULL_RANGE: Self = Self(os::Type::from_be_bytes(*b"444f"));
+
+    /// first and second planes as per 420YpCbCr8BiPlanarVideoRange (420v), alpha 8 bits in third plane full-range. No CVPlanarPixelBufferInfo struct.
+    #[doc(alias = "kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar")]
+    pub const _420_YP_CB_CR_8_VIDEO_RANGE_8A_TRI_PLANAR: Self =
+        Self(os::Type::from_be_bytes(*b"v0a8"));
+
+    /// 2 plane YCbCr16 4:2:2, video-range (luma=\[4096,60160\] chroma=\[4096,61440\])
+    #[doc(alias = "kCVPixelFormatType_422YpCbCr16BiPlanarVideoRange")]
+    pub const _422_YP_CB_CR_16_BI_PLANAR_VIDEO_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"sv22"));
+
+    /// 2 plane YCbCr16 4:4:4, video-range (luma=\[4096,60160\] chroma=\[4096,61440\])
+    #[doc(alias = "kCVPixelFormatType_444YpCbCr16BiPlanarVideoRange")]
+    pub const _444_YP_CB_CR_16_BI_PLANAR_VIDEO_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"sv44"));
+
+    /// 3 plane video-range YCbCr16 4:4:4 with 16-bit full-range alpha (luma=\[4096,60160\] chroma=\[4096,61440\] alpha=\[0,65535\]). No CVPlanarPixelBufferInfo struct.
+    #[doc(alias = "kCVPixelFormatType_444YpCbCr16VideoRange_16A_TriPlanar")]
+    pub const _444_YP_CB_CR_16_VIDEO_RANGE_16A_TRI_PLANAR: Self =
+        Self(os::Type::from_be_bytes(*b"s4as"));
+
+    /// little-endian RGB XX-10-10-10 2 MSB zero in first plane (wide-gamut), alpha 8 bits in second plane (full-range)
+    #[doc(alias = "kCVPixelFormatType_30RGBLE_8A_BiPlanar")]
+    pub const _30_RGB_LE_8A_BI_PLANAR: Self = Self(os::Type::from_be_bytes(*b"b3a8"));
+
+    /// Bayer 14-bit Little-Endian, packed in 16-bits, ordered G R G R... alternating with B G B G...
+    #[doc(alias = "kCVPixelFormatType_14Bayer_GRBG")]
+    pub const _14_BAYER_GRBG: Self = Self(os::Type::from_be_bytes(*b"grb4"));
+
+    /// Bayer 14-bit Little-Endian, packed in 16-bits, ordered R G R G... alternating with G B G B...
+    #[doc(alias = "kCVPixelFormatType_14Bayer_RGGB")]
+    pub const _14_BAYER_RGGB: Self = Self(os::Type::from_be_bytes(*b"rgg4"));
+
+    /// Bayer 14-bit Little-Endian, packed in 16-bits, ordered B G B G... alternating with G R G R...
+    #[doc(alias = "kCVPixelFormatType_14Bayer_BGGR")]
+    pub const _14_BAYER_BGGR: Self = Self(os::Type::from_be_bytes(*b"bgg4"));
+
+    /// Bayer 14-bit Little-Endian, packed in 16-bits, ordered G B G B... alternating with R G R G...
+    #[doc(alias = "kCVPixelFormatType_14Bayer_GBRG")]
+    pub const _14_BAYER_GBRG: Self = Self(os::Type::from_be_bytes(*b"gbr4"));
+
+    /// Single plane Bayer 16-bit little-endian sensor element ("sensel") samples from full-size
+    /// decoding of ProRes RAW images; Bayer pattern (sensel ordering) and other raw conversion
+    /// information is described via buffer attachments
+    #[doc(alias = "kCVPixelFormatType_16VersatileBayer")]
+    pub const _16_VERSATILE_BAYER: Self = Self(os::Type::from_be_bytes(*b"bp16"));
+
+    /// Bayer 12-bit Little-Endian, packed 12-bits per component in 96-bits; Bayer pattern
+    /// (sensel ordering) and other raw conversion information is described via buffer attachments
+    #[doc(alias = "kCVPixelFormatType_96VersatileBayerPacked12")]
+    pub const _96_VERSATILE_BAYER_PACKED_12: Self = Self(os::Type::from_be_bytes(*b"btp2"));
+
+    /// Single plane 64-bit RGBA (16-bit little-endian samples) from downscaled decoding of
+    /// ProRes RAW images; components--which may not be co-sited with one another--are sensel
+    /// values and require raw conversion, information for which is described via buffer
+    /// attachments
+    #[doc(alias = "kCVPixelFormatType_64RGBA_DownscaledProResRAW")]
+    pub const _64_RGBA_DOWNSCALED_PRO_RES_RAW: Self = Self(os::Type::from_be_bytes(*b"bp64"));
+
     /// little-endian ARGB2101010 full-range ARGB
     #[doc(alias = "kCVPixelFormatType_ARGB2101010LEPacked")]
     pub const ARGB_2101010_LE_PACKED: Self = Self(os::Type::from_be_bytes(*b"l10r"));
@@ -497,11 +607,31 @@ impl PixelFormat {
     #[doc(alias = "kCVPixelFormatType_OneComponent8")]
     pub const ONE_COMPONENT_8: Self = Self(os::Type::from_be_bytes(*b"L008"));
 
+    /// 10 bit little-endian one component, stored as 10 MSBs of 16 bits, black is zero
+    #[doc(alias = "kCVPixelFormatType_OneComponent10")]
+    pub const ONE_COMPONENT_10: Self = Self(os::Type::from_be_bytes(*b"L010"));
+
+    /// 12 bit little-endian one component, stored as 12 MSBs of 16 bits, black is zero
+    #[doc(alias = "kCVPixelFormatType_OneComponent12")]
+    pub const ONE_COMPONENT_12: Self = Self(os::Type::from_be_bytes(*b"L012"));
+
+    /// 16 bit little-endian one component, black is zero
+    #[doc(alias = "kCVPixelFormatType_OneComponent16")]
+    pub const ONE_COMPONENT_16: Self = Self(os::Type::from_be_bytes(*b"L016"));
+
     #[doc(alias = "kCVPixelFormatType_OneComponent16Half")]
     pub const ONE_COMPONENT_H16: Self = Self(os::Type::from_be_bytes(*b"L00h"));
 
     #[doc(alias = "kCVPixelFormatType_OneComponent32Float")]
     pub const ONE_COMPONENT_F32: Self = Self(os::Type::from_be_bytes(*b"L00f"));
+
+    /// 8 bit two component, black is zero
+    #[doc(alias = "kCVPixelFormatType_TwoComponent8")]
+    pub const TWO_COMPONENT_8: Self = Self(os::Type::from_be_bytes(*b"2C08"));
+
+    /// 16 bit little-endian two component, black is zero
+    #[doc(alias = "kCVPixelFormatType_TwoComponent16")]
+    pub const TWO_COMPONENT_16: Self = Self(os::Type::from_be_bytes(*b"2C16"));
 
     /// 16 bit two component IEEE half-precision float, 16-bit little-endian samples
     #[doc(alias = "kCVPixelFormatType_TwoComponent16Half")]
@@ -518,6 +648,22 @@ impl PixelFormat {
     /// 128 bit RGBA IEEE float, 32-bit little-endian samples
     #[doc(alias = "kCVPixelFormatType_128RGBAFloat")]
     pub const _128_RGBA_FLOAT: Self = Self(os::Type::from_be_bytes(*b"RGfA"));
+
+    /// IEEE754-2008 binary16 (half float), describing the normalized shift when comparing two images. Units are 1/meters: ( pixelShift / (pixelFocalLength * baselineInMeters) )
+    #[doc(alias = "kCVPixelFormatType_DisparityFloat16")]
+    pub const DISPARITY_F16: Self = Self(os::Type::from_be_bytes(*b"hdis"));
+
+    /// IEEE754-2008 binary32 float, describing the normalized shift when comparing two images. Units are 1/meters: ( pixelShift / (pixelFocalLength * baselineInMeters) )
+    #[doc(alias = "kCVPixelFormatType_DisparityFloat32")]
+    pub const DISPARITY_F32: Self = Self(os::Type::from_be_bytes(*b"fdis"));
+
+    /// IEEE754-2008 binary16 (half float), describing the depth (distance to an object) in meters
+    #[doc(alias = "kCVPixelFormatType_DepthFloat16")]
+    pub const DEPTH_F16: Self = Self(os::Type::from_be_bytes(*b"hdep"));
+
+    /// IEEE754-2008 binary32 float, describing the depth (distance to an object) in meters
+    #[doc(alias = "kCVPixelFormatType_DepthFloat32")]
+    pub const DEPTH_F32: Self = Self(os::Type::from_be_bytes(*b"fdep"));
 
     pub fn from_cf_number(number: &cf::Number) -> Self {
         Self(number.to_i32().unwrap_or(0) as u32)
@@ -618,6 +764,19 @@ impl PixelFormat {
     #[doc(alias = "kCVPixelFormatType_Lossless_422YpCbCr10PackedBiPlanarVideoRange")]
     pub const LOSSLESS_422_YP_CB_CR_10_PACKED_BI_PLANAR_VIDEO_RANGE: Self =
         Self(os::Type::from_be_bytes(*b"&xv2"));
+
+    /// Lossless-compressed form of kCVPixelFormatType_420YpCbCr10BiPlanarFullRange. No CVPlanarPixelBufferInfo struct. Format is compressed-packed with no padding bits between pixels.
+    #[doc(alias = "kCVPixelFormatType_Lossless_420YpCbCr10PackedBiPlanarFullRange")]
+    pub const LOSSLESS_420_YP_CB_CR_10_PACKED_BI_PLANAR_FULL_RANGE: Self =
+        Self(os::Type::from_be_bytes(*b"&xf0"));
+
+    /// Lossless-compressed form of kCVPixelFormatType_30RGBLE_8A_BiPlanar. No CVPlanarPixelBufferInfo struct.
+    #[doc(alias = "kCVPixelFormatType_Lossless_30RGBLE_8A_BiPlanar")]
+    pub const LOSSLESS_30_RGB_LE_8A_BI_PLANAR: Self = Self(os::Type::from_be_bytes(*b"&b38"));
+
+    /// Lossless-compressed form of kCVPixelFormatType_30RGBLEPackedWideGamut. No CVPlanarPixelBufferInfo struct.
+    #[doc(alias = "kCVPixelFormatType_Lossless_30RGBLEPackedWideGamut")]
+    pub const LOSSLESS_30_RGB_LE_PACKED_WIDE_GAMUT: Self = Self(os::Type::from_be_bytes(*b"&w3r"));
 }
 
 /// Lossy-Compressed Pixel Formats
