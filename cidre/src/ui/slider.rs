@@ -23,6 +23,14 @@ impl Slider {
     #[objc::msg_send(setValue:animated:)]
     pub fn set_value_animated(&mut self, val: f32, animated: bool);
 
+    /// Where the track goes in `bounds`.
+    #[objc::msg_send(trackRectForBounds:)]
+    pub fn track_rect_for_bounds(&self, bounds: cg::Rect) -> cg::Rect;
+
+    /// Where the thumb goes in `bounds` for `value`, along `track`.
+    #[objc::msg_send(thumbRectForBounds:trackRect:value:)]
+    pub fn thumb_rect_for_bounds(&self, bounds: cg::Rect, track: cg::Rect, value: f32) -> cg::Rect;
+
     #[objc::msg_send(minimumValue)]
     pub fn min_value(&self) -> f32;
 
