@@ -505,6 +505,19 @@ impl Device {
     #[objc::msg_send(setCenterStageControlMode:)]
     pub fn set_center_stage_control_mode(val: CenterStageControlMode);
 
+    /// Whether Center Stage is enabled, for every device that supports it.
+    #[objc::msg_send(isCenterStageEnabled)]
+    pub fn is_center_stage_enabled() -> bool;
+
+    /// Throws an 'ns::ExceptionName::invalid_argument()' while
+    /// 'center_stage_control_mode()' is 'av::CaptureCenterStageControlMode::User'.
+    #[objc::msg_send(setCenterStageEnabled:)]
+    pub unsafe fn set_center_stage_enabled_throws(val: bool);
+
+    pub fn set_center_stage_enabled<'ear>(val: bool) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe { Self::set_center_stage_enabled_throws(val) })
+    }
+
     /// Indicates whether Center Stage is currently active on a particular av::CaptureDevice.
     ///
     /// This readonly property returns 'true' when Center Stage is currently active on
@@ -737,6 +750,23 @@ impl<'a> ConfigLockGuard<'a> {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     pub fn set_smooth_auto_focus_enabled<'ear>(&mut self, val: bool) -> ns::ExResult<'ear> {
         ns::try_catch(|| unsafe { self.set_smooth_auto_focus_enabled_throws(val) })
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[inline]
+    pub unsafe fn set_geometric_distortion_correction_enabled_throws(&mut self, val: bool) {
+        unsafe {
+            self.device
+                .set_geometric_distortion_correction_enabled_throws(val)
+        }
+    }
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    pub fn set_geometric_distortion_correction_enabled<'ear>(
+        &mut self,
+        val: bool,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe { self.set_geometric_distortion_correction_enabled_throws(val) })
     }
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
@@ -1013,6 +1043,20 @@ impl Device {
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(setFaceDrivenAutoFocusEnabled:)]
     unsafe fn set_face_driven_auto_focus_enabled_throws(&mut self, val: bool);
+
+    /// Whether the device can correct the distortion of its lens (the ultra wide and
+    /// front cameras), which it does by default where it can.
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(isGeometricDistortionCorrectionSupported)]
+    pub fn is_geometric_distortion_correction_supported(&self) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(isGeometricDistortionCorrectionEnabled)]
+    pub fn is_geometric_distortion_correction_enabled(&self) -> bool;
+
+    #[cfg(any(target_os = "tvos", target_os = "ios"))]
+    #[objc::msg_send(setGeometricDistortionCorrectionEnabled:)]
+    unsafe fn set_geometric_distortion_correction_enabled_throws(&mut self, val: bool);
 
     #[cfg(any(target_os = "tvos", target_os = "ios"))]
     #[objc::msg_send(lensPosition)]
