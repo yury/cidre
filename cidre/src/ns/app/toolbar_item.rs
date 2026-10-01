@@ -32,6 +32,10 @@ impl ToolbarItem {
     pub fn with_id(id: &ns::ToolbarItemId) -> arc::R<Self> {
         Self::alloc().init_with_item_id(id)
     }
+
+    #[objc::msg_send(itemIdentifier)]
+    pub fn item_id(&self) -> arc::R<ns::ToolbarItemId>;
+
     #[objc::msg_send(toolbar)]
     pub fn toolbar(&self) -> Option<arc::R<ns::Toolbar>>;
 

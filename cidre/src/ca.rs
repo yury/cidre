@@ -37,6 +37,21 @@ pub use layer::Layer;
 pub use layer::LayerDelegate;
 pub use layer::ToneMapMode;
 
+mod gradient_layer;
+pub use gradient_layer::GradientLayer;
+pub use gradient_layer::GradientLayerType;
+
+mod shape_layer;
+pub use shape_layer::FillRule;
+pub use shape_layer::LineCap;
+pub use shape_layer::LineJoin;
+pub use shape_layer::ShapeLayer;
+
+mod text_layer;
+pub use text_layer::AlignmentMode;
+pub use text_layer::TextLayer;
+pub use text_layer::TruncationMode;
+
 #[cfg(feature = "mtl")]
 mod metal_layer;
 #[cfg(feature = "mtl")]

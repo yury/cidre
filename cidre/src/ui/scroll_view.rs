@@ -55,6 +55,16 @@ impl ScrollView {
     #[objc::msg_send(setBounces:)]
     pub fn set_bounces(&mut self, val: bool);
 
+    /// The scrollable content's edges, for constraints that size the content.
+    #[objc::msg_send(contentLayoutGuide)]
+    #[objc::available(ios = 11.0, tvos = 11.0)]
+    pub fn content_layout_guide(&self) -> arc::R<ui::LayoutGuide>;
+
+    /// The scroll view's own frame, untouched by scrolling.
+    #[objc::msg_send(frameLayoutGuide)]
+    #[objc::available(ios = 11.0, tvos = 11.0)]
+    pub fn frame_layout_guide(&self) -> arc::R<ui::LayoutGuide>;
+
     #[objc::msg_send(alwaysBounceVertical)]
     pub fn always_bounce_vertical(&self) -> bool;
 

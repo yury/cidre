@@ -590,6 +590,11 @@ pub use split_view_controller::{
 };
 mod presentation_controller;
 pub use presentation_controller::PresentationController;
+mod popover_presentation_controller;
+pub use popover_presentation_controller::{
+    AnyPopoverPresentationControllerSrcItem, PopoverArrowDirection, PopoverPresentationController,
+    PopoverPresentationControllerSrcItem, PopoverPresentationControllerSrcItemImpl,
+};
 mod sheet_presentation_controller;
 pub use sheet_presentation_controller::DetentResolutionCtx as SheetPresentationControllerDetentResolutionCtx;
 #[cfg(feature = "blocks")]

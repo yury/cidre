@@ -22,6 +22,15 @@ impl Action {
     #[objc::available(ios = 14.0, tvos = 14.0)]
     pub fn sender(&self) -> Option<arc::R<ns::Id>>;
 
+    /// What to anchor a popover the action presents to: the element that
+    /// performed it, or `None` outside its handler.
+    #[doc(alias = "UIMenuLeaf.presentationSourceItem")]
+    #[objc::msg_send(presentationSourceItem)]
+    #[objc::available(ios = 16.0)]
+    pub fn presentation_src_item(
+        &self,
+    ) -> Option<arc::R<ui::AnyPopoverPresentationControllerSrcItem>>;
+
     #[objc::msg_send(identifier)]
     #[objc::available(ios = 13.0, tvos = 13.0)]
     pub fn id(&self) -> arc::R<ns::String>;

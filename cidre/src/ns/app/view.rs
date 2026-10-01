@@ -143,6 +143,10 @@ impl View {
     #[objc::msg_send(setNeedsLayout:)]
     pub fn set_needs_layout(&mut self, val: bool);
 
+    /// The smallest size that satisfies the view's constraints.
+    #[objc::msg_send(fittingSize)]
+    pub fn fitting_size(&self) -> ns::Size;
+
     /// Lays out the view and its descendants now, if any needs layout.
     #[objc::msg_send(layoutSubtreeIfNeeded)]
     pub fn layout_subtree_if_needed(&mut self);

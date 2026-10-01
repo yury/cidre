@@ -211,6 +211,45 @@ impl Layer {
     #[objc::msg_send(setHidden:)]
     pub fn set_hidden(&mut self, val: bool);
 
+    /// The opacity of the layer, in `0..=1`. Defaults to 1. Animatable.
+    #[objc::msg_send(opacity)]
+    pub fn opacity(&self) -> f32;
+
+    #[objc::msg_send(setOpacity:)]
+    pub fn set_opacity(&mut self, val: f32);
+
+    #[objc::msg_send(borderWidth)]
+    pub fn border_width(&self) -> cg::Float;
+
+    #[objc::msg_send(setBorderWidth:)]
+    pub fn set_border_width(&mut self, val: cg::Float);
+
+    #[objc::msg_send(borderColor)]
+    pub fn border_color(&self) -> Option<&cg::Color>;
+
+    #[objc::msg_send(setBorderColor:)]
+    pub fn set_border_color(&mut self, val: Option<&cg::Color>);
+
+    /// A layer whose alpha channel masks this layer's contents and sublayers.
+    /// The mask must have no superlayer of its own.
+    #[objc::msg_send(mask)]
+    pub fn mask(&self) -> Option<arc::R<Layer>>;
+
+    #[objc::msg_send(setMask:)]
+    pub fn set_mask(&mut self, val: Option<&Layer>);
+
+    #[objc::msg_send(superlayer)]
+    pub fn superlayer(&self) -> Option<arc::R<Layer>>;
+
+    #[objc::msg_send(sublayers)]
+    pub fn sublayers(&self) -> Option<arc::R<ns::Array<Layer>>>;
+
+    #[objc::msg_send(setSublayers:)]
+    pub fn set_sublayers(&mut self, val: Option<&ns::Array<Layer>>);
+
+    #[objc::msg_send(removeFromSuperlayer)]
+    pub fn remove_from_superlayer(&mut self);
+
     #[objc::msg_send(addSublayer:)]
     pub fn add_sublayer(&mut self, layer: &Self);
 
@@ -402,4 +441,36 @@ unsafe extern "C" {
         visionos = 2.0
     )]
     static CAToneMapModeIfSupported: &'static ToneMapMode;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{ca, cg};
+
+    #[test]
+    fn mask_and_sublayers() {
+        let mut layer = ca::Layer::new();
+        assert!(layer.mask().is_none());
+        assert!(layer.sublayers().is_none());
+
+        let mask = ca::Layer::new();
+        layer.set_mask(Some(&mask));
+        assert!(layer.mask().is_some());
+        layer.set_mask(None);
+        assert!(layer.mask().is_none());
+
+        let mut sub = ca::Layer::new();
+        layer.add_sublayer(&sub);
+        assert_eq!(layer.sublayers().unwrap().len(), 1);
+        assert!(sub.superlayer().is_some());
+        sub.remove_from_superlayer();
+        assert!(sub.superlayer().is_none());
+
+        layer.set_opacity(0.5);
+        assert_eq!(layer.opacity(), 0.5);
+        layer.set_border_width(2.0);
+        assert_eq!(layer.border_width(), 2.0);
+        layer.set_border_color(Some(&cg::Color::generic_gray(0.0, 1.0)));
+        assert!(layer.border_color().is_some());
+    }
 }

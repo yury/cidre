@@ -59,6 +59,13 @@ impl ViewController {
     #[objc::msg_send(didMoveToParentViewController:)]
     pub fn did_move_to_parent_vc(&mut self, parent: Option<&ViewController>);
 
+    /// The popover presentation controller when `modal_presentation_style` is
+    /// `Popover`; set before presenting.
+    #[objc::msg_send(popoverPresentationController)]
+    pub fn popover_presentation_controller(
+        &self,
+    ) -> Option<arc::R<ui::PopoverPresentationController>>;
+
     #[objc::msg_send(sheetPresentationController)]
     #[objc::available(ios = 15.0)]
     pub fn sheet_presentation_controller(&self) -> Option<arc::R<ui::SheetPresentationController>>;

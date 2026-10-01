@@ -24,6 +24,13 @@ impl ViewController {
     #[objc::msg_send(setView:)]
     pub fn set_view(&mut self, val: &ns::View);
 
+    /// The size a popover or sheet presenting the view controller gives it.
+    #[objc::msg_send(preferredContentSize)]
+    pub fn preferred_content_size(&self) -> ns::Size;
+
+    #[objc::msg_send(setPreferredContentSize:)]
+    pub fn set_preferred_content_size(&mut self, val: ns::Size);
+
     #[objc::msg_send(viewIfLoaded)]
     #[objc::available(macos = 14.0)]
     pub fn view_if_loaded(&self) -> Option<arc::R<ns::View>>;
@@ -104,6 +111,19 @@ impl ViewController {
     #[objc::msg_send(presentViewControllerAsSheet:)]
     #[objc::available(macos = 10.10)]
     pub fn present_vc_as_sheet(&mut self, vc: &ns::ViewController);
+
+    /// Presents `vc` in a popover anchored to `rect` of `view`; dismissing it
+    /// (`dismiss_vc`) closes the popover.
+    #[objc::msg_send(presentViewController:asPopoverRelativeToRect:ofView:preferredEdge:behavior:)]
+    #[objc::available(macos = 10.10)]
+    pub fn present_vc_as_popover(
+        &mut self,
+        vc: &ns::ViewController,
+        rect: ns::Rect,
+        view: &ns::View,
+        edge: ns::RectEdge,
+        behavior: ns::PopoverBehavior,
+    );
 
     /// Presents `vc` as a modal window (also known as an alert).
     #[objc::msg_send(presentViewControllerAsModalWindow:)]

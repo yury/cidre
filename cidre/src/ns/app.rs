@@ -36,6 +36,10 @@ pub use stack_view::UiLayoutOrientation;
 mod switch;
 pub use switch::Switch;
 
+mod popover;
+pub use popover::Popover;
+pub use popover::PopoverBehavior;
+
 mod slider;
 pub use slider::Slider;
 pub use slider::SliderType;
