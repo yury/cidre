@@ -611,7 +611,7 @@ mod tests {
     fn basics() {
         let fm = ns::FileManager::default();
         println!("{fm:?}");
-        let url = ns::Url::with_fs_path_str("/tmp/", true);
+        let url = ns::Url::with_fs_path_str("/usr/", true);
         let list = fm
             .contents_of_dir_at_url(&url, None, Default::default())
             .expect("Failed to list {url:?}");
