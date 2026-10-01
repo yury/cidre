@@ -412,6 +412,21 @@ impl View {
     #[objc::msg_send(setTranslatesAutoresizingMaskIntoConstraints:)]
     pub fn set_translates_autoresizing_mask_into_constraints(&mut self, val: bool);
 
+    /// The size closest to `target` that satisfies the view's constraints.
+    #[objc::msg_send(systemLayoutSizeFittingSize:)]
+    pub fn sys_layout_size_fitting(&self, target: cg::Size) -> cg::Size;
+
+    /// The size closest to `target` that satisfies the view's constraints, a dimension held
+    /// to `target` as firmly as its priority says: `REQUIRED` keeps it, `FITTING_SIZE_LEVEL`
+    /// lets it shrink to fit.
+    #[objc::msg_send(systemLayoutSizeFittingSize:withHorizontalFittingPriority:verticalFittingPriority:)]
+    pub fn sys_layout_size_fitting_with_priorities(
+        &self,
+        target: cg::Size,
+        horizontal: ns::LayoutPriority,
+        vertical: ns::LayoutPriority,
+    ) -> cg::Size;
+
     #[objc::msg_send(safeAreaLayoutGuide)]
     #[objc::available(ios = 11.0, tvos = 11.0)]
     pub fn safe_area_layout_guide(&self) -> arc::R<ui::LayoutGuide>;
