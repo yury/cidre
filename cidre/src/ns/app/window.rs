@@ -312,6 +312,11 @@ impl Window {
     #[objc::msg_send(close)]
     pub fn close(&self);
 
+    /// Ends `sheet`, attached to this window; its completion handler gets
+    /// `ns::ModalResponse::STOP`.
+    #[objc::msg_send(endSheet:)]
+    pub fn end_sheet(&mut self, sheet: &ns::Window);
+
     #[objc::msg_send(isReleasedWhenClosed)]
     pub fn is_released_when_closed(&self) -> bool;
 
