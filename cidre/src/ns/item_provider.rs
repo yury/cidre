@@ -43,6 +43,27 @@ impl ItemProvider {
         let mut ch = blocks::ResultCh::new2(ch);
         self.load_file_repr_for_type_id_ch_block(type_id, &mut ch)
     }
+
+    /// Loads a copy of the item as `type_id` into memory, and calls `ch` with it on a
+    /// background queue. Some providers (Photos) offer data where they offer no file.
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(loadDataRepresentationForTypeIdentifier:completionHandler:)]
+    pub fn load_data_repr_for_type_id_ch_block(
+        &self,
+        type_id: &ns::String,
+        ch: &mut blocks::ResultCh<ns::Data>,
+    ) -> arc::R<ns::Progress>;
+
+    /// Like [`Self::load_data_repr_for_type_id_ch_block`] with a closure.
+    #[cfg(feature = "blocks")]
+    pub fn load_data_repr_for_type_id(
+        &self,
+        type_id: &ns::String,
+        ch: impl FnMut(Option<&ns::Data>, Option<&ns::Error>) + 'static,
+    ) -> arc::R<ns::Progress> {
+        let mut ch = blocks::ResultCh::new2(ch);
+        self.load_data_repr_for_type_id_ch_block(type_id, &mut ch)
+    }
 }
 
 #[cfg(test)]
