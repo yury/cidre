@@ -500,4 +500,302 @@ pub enum PixelFormat {
 
     #[doc(alias = "MTLPixelFormatUnspecialized")]
     Unspecialized = 263,
+
+    // Private formats: not in the SDK headers (values from
+    // <https://gist.github.com/shinyquagsire23/81c86f4bf670aaa68b5804080ff964a0>).
+    //
+    // The `Ycbcr..._2p` ones wrap a whole bi-planar Y'CbCr IOSurface: create the texture from
+    // plane 0 only (plane 1 page-faults the GPU). Sampling returns R'G'B', converted with the
+    // surface's Y'CbCr matrix attachment (BT.601 when it has none) and its pixel format's range;
+    // no transfer function is applied. The `Rgb..._2p` ones are render targets over such a
+    // surface (see `Rgb8_420_2p`). "Verified" ones were measured on M2, M4 and A19 Pro GPUs
+    // (2026-10-04); the rest are names only.
+
+    /// Private. 8-bit 4:2:0 (`420v`, `420f`, `-8v0`, `-8f0`, `&8v0`, `&8f0`). Verified.
+    #[doc(alias = "MTLPixelFormatYCBCR8_420_2P")]
+    Ycbcr8_420_2p = 500,
+
+    /// Private. 8-bit 4:2:2, one interleaved plane.
+    #[doc(alias = "MTLPixelFormatYCBCR8_422_1P")]
+    Ycbcr8_422_1p = 501,
+
+    /// Private. 8-bit 4:2:2.
+    #[doc(alias = "MTLPixelFormatYCBCR8_422_2P")]
+    Ycbcr8_422_2p = 502,
+
+    /// Private. 8-bit 4:4:4.
+    #[doc(alias = "MTLPixelFormatYCBCR8_444_2P")]
+    Ycbcr8_444_2p = 503,
+
+    /// Private. 10-bit 4:4:4, one plane.
+    #[doc(alias = "MTLPixelFormatYCBCR10_444_1P")]
+    Ycbcr10_444_1p = 504,
+
+    /// Private. 10-bit 4:2:0 in 16-bit containers (`x420`). Verified.
+    #[doc(alias = "MTLPixelFormatYCBCR10_420_2P")]
+    Ycbcr10_420_2p = 505,
+
+    /// Private. 10-bit 4:2:2 in 16-bit containers (`x422`). Verified.
+    #[doc(alias = "MTLPixelFormatYCBCR10_422_2P")]
+    Ycbcr10_422_2p = 506,
+
+    /// Private. 10-bit 4:4:4 in 16-bit containers.
+    #[doc(alias = "MTLPixelFormatYCBCR10_444_2P")]
+    Ycbcr10_444_2p = 507,
+
+    /// Private. 10-bit 4:2:0 packed, no padding (`-xv0`, `&xv0`). Verified.
+    #[doc(alias = "MTLPixelFormatYCBCR10_420_2P_PACKED")]
+    Ycbcr10_420_2pPacked = 508,
+
+    /// Private. 10-bit 4:2:2 packed (`-xv2`, `&xv2`). Verified.
+    #[doc(alias = "MTLPixelFormatYCBCR10_422_2P_PACKED")]
+    Ycbcr10_422_2pPacked = 509,
+
+    /// Private. 10-bit 4:4:4 packed.
+    #[doc(alias = "MTLPixelFormatYCBCR10_444_2P_PACKED")]
+    Ycbcr10_444_2pPacked = 510,
+
+    /// Private. As [`Self::Ycbcr8_420_2p`], sRGB.
+    #[doc(alias = "MTLPixelFormatYCBCR8_420_2P_sRGB")]
+    Ycbcr8_420_2pSrgb = 520,
+
+    /// Private. As [`Self::Ycbcr8_422_1p`], sRGB.
+    #[doc(alias = "MTLPixelFormatYCBCR8_422_1P_sRGB")]
+    Ycbcr8_422_1pSrgb = 521,
+
+    /// Private. As [`Self::Ycbcr8_422_2p`], sRGB.
+    #[doc(alias = "MTLPixelFormatYCBCR8_422_2P_sRGB")]
+    Ycbcr8_422_2pSrgb = 522,
+
+    /// Private. As [`Self::Ycbcr8_444_2p`], sRGB.
+    #[doc(alias = "MTLPixelFormatYCBCR8_444_2P_sRGB")]
+    Ycbcr8_444_2pSrgb = 523,
+
+    /// Private. As [`Self::Ycbcr10_444_1p`], sRGB.
+    #[doc(alias = "MTLPixelFormatYCBCR10_444_1P_sRGB")]
+    Ycbcr10_444_1pSrgb = 524,
+
+    /// Private. As [`Self::Ycbcr10_420_2p`], sRGB.
+    #[doc(alias = "MTLPixelFormatYCBCR10_420_2P_sRGB")]
+    Ycbcr10_420_2pSrgb = 525,
+
+    /// Private. As [`Self::Ycbcr10_422_2p`], sRGB.
+    #[doc(alias = "MTLPixelFormatYCBCR10_422_2P_sRGB")]
+    Ycbcr10_422_2pSrgb = 526,
+
+    /// Private. As [`Self::Ycbcr10_444_2p`], sRGB.
+    #[doc(alias = "MTLPixelFormatYCBCR10_444_2P_sRGB")]
+    Ycbcr10_444_2pSrgb = 527,
+
+    /// Private. As [`Self::Ycbcr10_420_2pPacked`], sRGB.
+    #[doc(alias = "MTLPixelFormatYCBCR10_420_2P_PACKED_sRGB")]
+    Ycbcr10_420_2pPackedSrgb = 528,
+
+    /// Private. As [`Self::Ycbcr10_422_2pPacked`], sRGB.
+    #[doc(alias = "MTLPixelFormatYCBCR10_422_2P_PACKED_sRGB")]
+    Ycbcr10_422_2pPackedSrgb = 529,
+
+    /// Private. As [`Self::Ycbcr10_444_2pPacked`], sRGB.
+    #[doc(alias = "MTLPixelFormatYCBCR10_444_2P_PACKED_sRGB")]
+    Ycbcr10_444_2pPackedSrgb = 530,
+
+    /// Private. Render target over an 8-bit 4:2:0 surface: G is stored to plane 0, B and R to plane 1, raw, chroma averaged over each 2x2 block. Compute writes store nothing. Verified.
+    #[doc(alias = "MTLPixelFormatRGB8_420_2P")]
+    Rgb8_420_2p = 540,
+
+    /// Private. As [`Self::Rgb8_420_2p`], 4:2:2.
+    #[doc(alias = "MTLPixelFormatRGB8_422_2P")]
+    Rgb8_422_2p = 541,
+
+    /// Private. As [`Self::Rgb8_420_2p`], 4:4:4.
+    #[doc(alias = "MTLPixelFormatRGB8_444_2P")]
+    Rgb8_444_2p = 542,
+
+    /// Private. As [`Self::Rgb8_420_2p`], 10-bit (`x420`). Verified.
+    #[doc(alias = "MTLPixelFormatRGB10_420_2P")]
+    Rgb10_420_2p = 543,
+
+    /// Private. As [`Self::Rgb8_420_2p`], 10-bit 4:2:2 (`x422`). Verified.
+    #[doc(alias = "MTLPixelFormatRGB10_422_2P")]
+    Rgb10_422_2p = 544,
+
+    /// Private. As [`Self::Rgb8_420_2p`], 10-bit 4:4:4.
+    #[doc(alias = "MTLPixelFormatRGB10_444_2P")]
+    Rgb10_444_2p = 545,
+
+    /// Private. As [`Self::Rgb8_420_2p`], 10-bit packed (`-xv0`). Verified.
+    #[doc(alias = "MTLPixelFormatRGB10_420_2P_PACKED")]
+    Rgb10_420_2pPacked = 546,
+
+    /// Private. As [`Self::Rgb8_420_2p`], 10-bit 4:2:2 packed.
+    #[doc(alias = "MTLPixelFormatRGB10_422_2P_PACKED")]
+    Rgb10_422_2pPacked = 547,
+
+    /// Private. As [`Self::Rgb8_420_2p`], 10-bit 4:4:4 packed.
+    #[doc(alias = "MTLPixelFormatRGB10_444_2P_PACKED")]
+    Rgb10_444_2pPacked = 548,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatRGB10A8_2P_XR10")]
+    Rgb10A8_2pXr10 = 550,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatRGB10A8_2P_XR10_sRGB")]
+    Rgb10A8_2pXr10Srgb = 551,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatRGBA16Float_XR")]
+    Rgba16FloatXr = 556,
+
+    /// Private. 8-bit 4:4:4 with alpha, one plane.
+    #[doc(alias = "MTLPixelFormatYCBCRA8_444_1P")]
+    Ycbcra8_444_1p = 560,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_420_2P")]
+    Ycbcr12_420_2p = 570,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_422_2P")]
+    Ycbcr12_422_2p = 571,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_444_2P")]
+    Ycbcr12_444_2p = 572,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_420_2P_PQ")]
+    Ycbcr12_420_2pPq = 573,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_422_2P_PQ")]
+    Ycbcr12_422_2pPq = 574,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_444_2P_PQ")]
+    Ycbcr12_444_2pPq = 575,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatR10Unorm_X6")]
+    R10UNormX6 = 576,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatR10Unorm_X6_sRGB")]
+    R10UNormX6Srgb = 577,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatRG10Unorm_X12")]
+    Rg10UNormX12 = 578,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatRG10Unorm_X12_sRGB")]
+    Rg10UNormX12Srgb = 579,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_420_2P_PACKED")]
+    Ycbcr12_420_2pPacked = 580,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_422_2P_PACKED")]
+    Ycbcr12_422_2pPacked = 581,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_444_2P_PACKED")]
+    Ycbcr12_444_2pPacked = 582,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_420_2P_PACKED_PQ")]
+    Ycbcr12_420_2pPackedPq = 583,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_422_2P_PACKED_PQ")]
+    Ycbcr12_422_2pPackedPq = 584,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_444_2P_PACKED_PQ")]
+    Ycbcr12_444_2pPackedPq = 585,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatRGB10A2Unorm_sRGB")]
+    Rgb10A2UNormSrgb = 586,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatRGB10A2Unorm_PQ")]
+    Rgb10A2UNormPq = 587,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatR10Unorm_PACKED")]
+    R10UNormPacked = 588,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatRG10Unorm_PACKED")]
+    Rg10UNormPacked = 589,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR10_444_1P_XR")]
+    Ycbcr10_444_1pXr = 590,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR10_420_2P_XR")]
+    Ycbcr10_420_2pXr = 591,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR10_422_2P_XR")]
+    Ycbcr10_422_2pXr = 592,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR10_444_2P_XR")]
+    Ycbcr10_444_2pXr = 593,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR10_420_2P_PACKED_XR")]
+    Ycbcr10_420_2pPackedXr = 594,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR10_422_2P_PACKED_XR")]
+    Ycbcr10_422_2pPackedXr = 595,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR10_444_2P_PACKED_XR")]
+    Ycbcr10_444_2pPackedXr = 596,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_420_2P_XR")]
+    Ycbcr12_420_2pXr = 597,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_422_2P_XR")]
+    Ycbcr12_422_2pXr = 598,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_444_2P_XR")]
+    Ycbcr12_444_2pXr = 599,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_420_2P_PACKED_XR")]
+    Ycbcr12_420_2pPackedXr = 600,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_422_2P_PACKED_XR")]
+    Ycbcr12_422_2pPackedXr = 601,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatYCBCR12_444_2P_PACKED_XR")]
+    Ycbcr12_444_2pPackedXr = 602,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatR12Unorm_X4")]
+    R12UNormX4 = 603,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatR12Unorm_X4_PQ")]
+    R12UNormX4Pq = 604,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatRG12Unorm_X8")]
+    Rg12UNormX8 = 605,
+
+    /// Private.
+    #[doc(alias = "MTLPixelFormatR10Unorm_X6_PQ")]
+    R10UNormX6Pq = 606,
 }
