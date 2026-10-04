@@ -190,6 +190,26 @@ impl Surf {
         unsafe { IOSurfaceRemoveAllValues(self) }
     }
 
+    #[doc(alias = "IOSurfaceCopyValue")]
+    #[inline]
+    pub fn value(&self, key: &cf::String) -> Option<arc::R<cf::Type>> {
+        unsafe { IOSurfaceCopyValue(self, key) }
+    }
+
+    /// Attaches `value` under `key`, shared with every process using the surface (CoreVideo
+    /// propagates its attachments here, e.g. `IOSurfaceYCbCrMatrix`).
+    #[doc(alias = "IOSurfaceSetValue")]
+    #[inline]
+    pub fn set_value(&mut self, key: &cf::String, value: &cf::Type) {
+        unsafe { IOSurfaceSetValue(self, key, value) }
+    }
+
+    #[doc(alias = "IOSurfaceRemoveValue")]
+    #[inline]
+    pub fn remove_value(&mut self, key: &cf::String) {
+        unsafe { IOSurfaceRemoveValue(self, key) }
+    }
+
     /// A send right holding a reference to this surface, ready to travel in a
     /// message.
     ///
@@ -362,6 +382,9 @@ unsafe extern "C-unwind" {
     fn IOSurfaceGetAllocSize(buffer: &Surf) -> usize;
 
     fn IOSurfaceRemoveAllValues(buffer: &mut Surf);
+    fn IOSurfaceCopyValue(buffer: &Surf, key: &cf::String) -> Option<arc::R<cf::Type>>;
+    fn IOSurfaceSetValue(buffer: &mut Surf, key: &cf::String, value: &cf::Type);
+    fn IOSurfaceRemoveValue(buffer: &mut Surf, key: &cf::String);
 
     fn IOSurfaceGetBytesPerRow(buffer: &Surf) -> usize;
     fn IOSurfaceGetPixelFormat(buffer: &Surf) -> os::Type;
@@ -627,6 +650,24 @@ mod test {
         assert_eq!(false, surf2.is_in_use());
         let vals = surf2.all_values().unwrap();
         vals.show();
+    }
+
+    #[test]
+    fn values() {
+        let width = cf::Number::from_i32(16);
+        let properties = cf::Dictionary::with_keys_values(
+            &[io::surface::key::width(), io::surface::key::height()],
+            &[&width, &width],
+        )
+        .unwrap();
+        let mut surf = io::Surf::create(&properties).unwrap();
+        let key = cf::str!(c"IOSurfaceYCbCrMatrix");
+        assert!(surf.value(key).is_none());
+        surf.set_value(key, cf::str!(c"ITU_R_709_2"));
+        let val = surf.value(key).unwrap();
+        assert!(val.equal(cf::str!(c"ITU_R_709_2")));
+        surf.remove_value(key);
+        assert!(surf.value(key).is_none());
     }
 
     #[cfg(feature = "xpc")]
