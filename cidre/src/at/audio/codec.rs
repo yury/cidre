@@ -1148,6 +1148,14 @@ where
         unsafe { self.0.prop_vec(InstancePropId::MAGIC_COOKIE.0) }
     }
 
+    /// The encoder's priming (leading) and remainder (trailing) frames.
+    /// `AudioCodecPrimeInfo` is a typedef of `AudioConverterPrimeInfo`.
+    #[doc(alias = "kAudioCodecPropertyPrimeInfo")]
+    #[inline]
+    pub fn prime_info(&self) -> os::Result<audio::ConverterPrimeInfo> {
+        self.0.prop(InstancePropId::PRIME_INFO.0)
+    }
+
     #[inline]
     pub fn current_output_format(&self) -> os::Result<audio::StreamBasicDesc> {
         let mut value = audio::StreamBasicDesc::default();
