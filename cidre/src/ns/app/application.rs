@@ -84,6 +84,12 @@ pub trait Delegate {
     #[objc::msg_send(applicationWillTerminate:)]
     fn app_will_terminate(&mut self, n: &ns::Notification);
 
+    /// The user reopened the app (clicked its Dock icon, opened it again from the Finder).
+    /// `true` lets the app do its default (unminiaturize a window); `false`: handled here.
+    #[objc::optional]
+    #[objc::msg_send(applicationShouldHandleReopen:hasVisibleWindows:)]
+    fn app_should_handle_reopen(&mut self, app: &ns::App, has_visible_windows: bool) -> bool;
+
     #[objc::optional]
     #[objc::msg_send(applicationDidChangeScreenParameters:)]
     fn app_did_change_screen_params(&mut self, n: &ns::Notification);
