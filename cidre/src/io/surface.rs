@@ -346,6 +346,13 @@ impl Surf {
     pub unsafe fn unlock(&mut self, opts: LockOpts, seed: *mut u32) -> os::Result {
         unsafe { IOSurfaceUnlock(self, opts, seed).result() }
     }
+
+    /// The first plane's pixels: valid to read (or write) only while the surface is locked.
+    #[doc(alias = "IOSurfaceGetBaseAddress")]
+    #[inline]
+    pub fn base_address(&self) -> *mut std::ffi::c_void {
+        unsafe { IOSurfaceGetBaseAddress(self) }
+    }
 }
 
 unsafe extern "C-unwind" {
@@ -391,6 +398,7 @@ unsafe extern "C-unwind" {
 
     fn IOSurfaceLock(buffer: &mut Surf, options: LockOpts, seed: *mut u32) -> KernReturn;
     fn IOSurfaceUnlock(buffer: &mut Surf, options: LockOpts, seed: *mut u32) -> KernReturn;
+    fn IOSurfaceGetBaseAddress(buffer: &Surf) -> *mut std::ffi::c_void;
 
 }
 
