@@ -218,6 +218,53 @@ impl Layer {
     #[objc::msg_send(setOpacity:)]
     pub fn set_opacity(&mut self, val: f32);
 
+    /// Core Image filters over the layer's contents and sublayers (macOS; iOS ignores
+    /// them, but the system's private filters show up here).
+    #[objc::msg_send(filters)]
+    pub fn filters(&self) -> Option<arc::R<ns::Array<ns::Id>>>;
+
+    #[objc::msg_send(setFilters:)]
+    pub fn set_filters(&mut self, val: Option<&ns::Array<ns::Id>>);
+
+    /// Filters over what is behind the layer, within its bounds.
+    #[objc::msg_send(backgroundFilters)]
+    pub fn bg_filters(&self) -> Option<arc::R<ns::Array<ns::Id>>>;
+
+    #[objc::msg_send(setBackgroundFilters:)]
+    pub fn set_bg_filters(&mut self, val: Option<&ns::Array<ns::Id>>);
+
+    #[objc::msg_send(shadowColor)]
+    pub fn shadow_color(&self) -> Option<&cg::Color>;
+
+    #[objc::msg_send(setShadowColor:)]
+    pub fn set_shadow_color(&mut self, val: Option<&cg::Color>);
+
+    /// In `0..=1`; 0, the default, draws no shadow. Animatable.
+    #[objc::msg_send(shadowOpacity)]
+    pub fn shadow_opacity(&self) -> f32;
+
+    #[objc::msg_send(setShadowOpacity:)]
+    pub fn set_shadow_opacity(&mut self, val: f32);
+
+    #[objc::msg_send(shadowOffset)]
+    pub fn shadow_offset(&self) -> cg::Size;
+
+    #[objc::msg_send(setShadowOffset:)]
+    pub fn set_shadow_offset(&mut self, val: cg::Size);
+
+    #[objc::msg_send(shadowRadius)]
+    pub fn shadow_radius(&self) -> cg::Float;
+
+    #[objc::msg_send(setShadowRadius:)]
+    pub fn set_shadow_radius(&mut self, val: cg::Float);
+
+    /// The shadow's shape; `None` takes it from the composited contents, which costs more.
+    #[objc::msg_send(shadowPath)]
+    pub fn shadow_path(&self) -> Option<&cg::Path>;
+
+    #[objc::msg_send(setShadowPath:)]
+    pub fn set_shadow_path(&mut self, val: Option<&cg::Path>);
+
     #[objc::msg_send(borderWidth)]
     pub fn border_width(&self) -> cg::Float;
 

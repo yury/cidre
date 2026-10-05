@@ -1,4 +1,37 @@
-use crate::{arc, define_obj_type, objc, ui};
+use crate::{arc, cg, define_obj_type, objc, ui};
+
+/// Windows stack by level, higher in front; within a level the key window is in front.
+#[doc(alias = "UIWindowLevel")]
+#[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+#[repr(transparent)]
+pub struct Level(pub cg::Float);
+
+impl Level {
+    #[doc(alias = "UIWindowLevelNormal")]
+    #[inline]
+    pub fn normal() -> Self {
+        unsafe { UIWindowLevelNormal }
+    }
+
+    #[doc(alias = "UIWindowLevelAlert")]
+    #[inline]
+    pub fn alert() -> Self {
+        unsafe { UIWindowLevelAlert }
+    }
+
+    #[doc(alias = "UIWindowLevelStatusBar")]
+    #[inline]
+    pub fn status_bar() -> Self {
+        unsafe { UIWindowLevelStatusBar }
+    }
+}
+
+#[link(name = "UIKit", kind = "framework")]
+unsafe extern "C" {
+    static UIWindowLevelNormal: Level;
+    static UIWindowLevelAlert: Level;
+    static UIWindowLevelStatusBar: Level;
+}
 
 define_obj_type!(
     #[doc(alias = "UIWindow")]
@@ -25,4 +58,10 @@ impl Window {
 
     #[objc::msg_send(makeKeyAndVisible)]
     pub fn make_key_and_visible(&self);
+
+    #[objc::msg_send(windowLevel)]
+    pub fn level(&self) -> Level;
+
+    #[objc::msg_send(setWindowLevel:)]
+    pub fn set_level(&mut self, val: Level);
 }

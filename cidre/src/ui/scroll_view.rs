@@ -131,6 +131,45 @@ impl ScrollView {
     pub fn set_delegate<D: ScrollViewDelegate>(&mut self, val: Option<&D>);
 }
 
+impl ScrollView {
+    /// Whether the content scrolls.
+    #[objc::msg_send(isScrollEnabled)]
+    pub fn is_scroll_enabled(&self) -> bool;
+
+    #[objc::msg_send(setScrollEnabled:)]
+    pub fn set_scroll_enabled(&mut self, val: bool);
+
+    /// The effect where content passes under the top edge's bars.
+    #[objc::msg_send(topEdgeEffect)]
+    #[objc::available(ios = 26.0)]
+    pub fn top_edge_effect(&self) -> arc::R<ScrollEdgeEffect>;
+
+    #[objc::msg_send(leftEdgeEffect)]
+    #[objc::available(ios = 26.0)]
+    pub fn left_edge_effect(&self) -> arc::R<ScrollEdgeEffect>;
+
+    #[objc::msg_send(bottomEdgeEffect)]
+    #[objc::available(ios = 26.0)]
+    pub fn bottom_edge_effect(&self) -> arc::R<ScrollEdgeEffect>;
+
+    #[objc::msg_send(rightEdgeEffect)]
+    #[objc::available(ios = 26.0)]
+    pub fn right_edge_effect(&self) -> arc::R<ScrollEdgeEffect>;
+}
+
+define_obj_type!(
+    #[doc(alias = "UIScrollEdgeEffect")]
+    pub ScrollEdgeEffect(ns::Id)
+);
+
+impl ScrollEdgeEffect {
+    #[objc::msg_send(isHidden)]
+    pub fn is_hidden(&self) -> bool;
+
+    #[objc::msg_send(setHidden:)]
+    pub fn set_hidden(&mut self, val: bool);
+}
+
 #[objc::protocol(UIScrollViewDelegate)]
 pub trait ScrollViewDelegate: objc::Obj {
     #[objc::optional]

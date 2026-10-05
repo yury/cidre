@@ -346,6 +346,7 @@ pub use view_layout_region::ViewLayoutRegion;
 pub use view_layout_region::ViewLayoutRegionAdaptivityAxis;
 
 mod window;
+pub use window::Level as WindowLevel;
 pub use window::Window;
 
 mod window_scene_placement;
@@ -643,6 +644,7 @@ pub use collection_layout_list::{
 mod scroll_view;
 pub use scroll_view::AnyScrollViewDelegate;
 pub use scroll_view::ContentInsetAdjustmentBehavior as ScrollViewContentInsetAdjustmentBehavior;
+pub use scroll_view::ScrollEdgeEffect;
 pub use scroll_view::ScrollView;
 pub use scroll_view::ScrollViewDelegate;
 pub use scroll_view::ScrollViewDelegateImpl;

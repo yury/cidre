@@ -50,12 +50,6 @@ impl TextView {
     #[objc::msg_send(setSelectable:)]
     pub fn set_selectable(&mut self, val: bool);
 
-    #[objc::msg_send(isScrollEnabled)]
-    pub fn is_scroll_enabled(&self) -> bool;
-
-    #[objc::msg_send(setScrollEnabled:)]
-    pub fn set_scroll_enabled(&mut self, val: bool);
-
     #[objc::msg_send(textContainerInset)]
     pub fn text_container_inset(&self) -> ui::EdgeInsets;
 

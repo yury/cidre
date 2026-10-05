@@ -47,6 +47,59 @@ impl WebView {
     #[objc::msg_send(loadRequest:)]
     pub fn load_request(&mut self, request: &ns::UrlRequest) -> Option<arc::R<wk::Navigation>>;
 
+    #[objc::msg_send(loadHTMLString:baseURL:)]
+    pub fn load_html_string(
+        &mut self,
+        html: &ns::String,
+        base_url: Option<&ns::Url>,
+    ) -> Option<arc::R<wk::Navigation>>;
+
+    #[objc::msg_send(reload)]
+    pub fn reload(&mut self) -> Option<arc::R<wk::Navigation>>;
+
+    /// Whether a swipe goes back and forward in the history.
+    #[objc::msg_send(allowsBackForwardNavigationGestures)]
+    pub fn allows_back_forward_navigation_gestures(&self) -> bool;
+
+    #[objc::msg_send(setAllowsBackForwardNavigationGestures:)]
+    pub fn set_allows_back_forward_navigation_gestures(&mut self, val: bool);
+
+    /// Whether pressing a link previews its destination.
+    #[objc::msg_send(allowsLinkPreview)]
+    pub fn allows_link_preview(&self) -> bool;
+
+    #[objc::msg_send(setAllowsLinkPreview:)]
+    pub fn set_allows_link_preview(&mut self, val: bool);
+
+    /// The color shown where the page does not reach, as when it is overscrolled.
+    #[cfg(target_os = "macos")]
+    #[objc::msg_send(underPageBackgroundColor)]
+    #[objc::available(macos = 12.0)]
+    pub fn under_page_bg_color(&self) -> arc::R<ns::Color>;
+
+    /// `None` goes back to the page's own color.
+    #[cfg(target_os = "macos")]
+    #[objc::msg_send(setUnderPageBackgroundColor:)]
+    #[objc::available(macos = 12.0)]
+    pub fn set_under_page_bg_color(&mut self, val: Option<&ns::Color>);
+
+    /// The color shown where the page does not reach, as when it is overscrolled.
+    #[cfg(target_os = "ios")]
+    #[objc::msg_send(underPageBackgroundColor)]
+    #[objc::available(ios = 15.0)]
+    pub fn under_page_bg_color(&self) -> arc::R<crate::ui::Color>;
+
+    /// `None` goes back to the page's own color.
+    #[cfg(target_os = "ios")]
+    #[objc::msg_send(setUnderPageBackgroundColor:)]
+    #[objc::available(ios = 15.0)]
+    pub fn set_under_page_bg_color(&mut self, val: Option<&crate::ui::Color>);
+
+    /// The scroll view the page scrolls in.
+    #[cfg(target_os = "ios")]
+    #[objc::msg_send(scrollView)]
+    pub fn scroll_view(&self) -> arc::R<crate::ui::ScrollView>;
+
     #[objc::msg_send(setNavigationDelegate:)]
     pub fn set_nav_delegate<D: wk::NavigationDelegate>(&mut self, val: Option<&D>);
 

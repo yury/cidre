@@ -37,4 +37,9 @@ pub trait NavigationDelegate {
         navigation: Option<&wk::Navigation>,
         error: &ns::Error,
     );
+
+    /// The page's web content process ended: the view shows nothing until it loads again.
+    #[objc::optional]
+    #[objc::msg_send(webViewWebContentProcessDidTerminate:)]
+    fn web_view_web_content_process_did_terminate(&mut self, web_view: &mut wk::WebView);
 }

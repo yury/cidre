@@ -81,6 +81,14 @@ impl View {
     #[objc::msg_send(setBackgroundColor:)]
     pub fn set_background_color(&mut self, val: Option<&ui::Color>);
 
+    /// Whether the view promises to fill its bounds with opaque content, so whatever is
+    /// behind it need not be drawn.
+    #[objc::msg_send(isOpaque)]
+    pub fn is_opaque(&self) -> bool;
+
+    #[objc::msg_send(setOpaque:)]
+    pub fn set_opaque(&mut self, val: bool);
+
     #[objc::msg_send(isHidden)]
     pub fn is_hidden(&self) -> bool;
 

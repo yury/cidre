@@ -14,4 +14,20 @@ impl UserContentController {
 
     #[objc::msg_send(removeAllUserScripts)]
     pub fn remove_all_user_scripts(&mut self);
+
+    /// Pages post to `handler` with `window.webkit.messageHandlers.<name>.postMessage(body)`.
+    /// The controller keeps `handler`.
+    #[objc::msg_send(addScriptMessageHandler:name:)]
+    pub fn add_script_msg_handler<H: wk::ScriptMessageHandler>(
+        &mut self,
+        handler: &H,
+        name: &ns::String,
+    );
+
+    #[objc::msg_send(removeScriptMessageHandlerForName:)]
+    pub fn remove_script_msg_handler(&mut self, name: &ns::String);
+
+    #[objc::msg_send(removeAllScriptMessageHandlers)]
+    #[objc::available(macos = 11.0, ios = 14.0)]
+    pub fn remove_all_script_msg_handlers(&mut self);
 }

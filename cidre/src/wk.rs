@@ -26,6 +26,12 @@ pub use preferences::Preferences;
 mod user_content_controller;
 pub use user_content_controller::UserContentController;
 
+mod script_message;
+pub use script_message::AnyScriptMessageHandler;
+pub use script_message::ScriptMessage;
+pub use script_message::ScriptMessageHandler;
+pub use script_message::ScriptMessageHandlerImpl;
+
 mod user_script;
 pub use user_script::UserScript;
 pub use user_script::UserScriptInjectionTime;

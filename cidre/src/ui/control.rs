@@ -69,6 +69,11 @@ impl Control {
     #[objc::available(ios = 14.0)]
     pub fn set_shows_menu_as_primary_action(&mut self, value: bool);
 
+    /// The interaction behind the control's menu, while it has one.
+    #[objc::msg_send(contextMenuInteraction)]
+    #[objc::available(ios = 14.0)]
+    pub fn context_menu_interaction(&self) -> Option<arc::R<ui::ContextMenuInteraction>>;
+
     #[objc::msg_send(isEnabled)]
     pub fn is_enabled(&self) -> bool;
 
