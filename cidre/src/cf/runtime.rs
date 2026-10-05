@@ -155,6 +155,14 @@ impl Type {
             None
         }
     }
+
+    pub fn try_as_data(&self) -> Option<&cf::Data> {
+        if self.get_type_id() == cf::Data::type_id() {
+            Some(unsafe { std::mem::transmute(self) })
+        } else {
+            None
+        }
+    }
 }
 
 unsafe extern "C-unwind" {

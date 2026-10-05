@@ -47,6 +47,28 @@ pub fn matching(query: &cf::DictionaryOf<cf::String, cf::Type>) -> os::Result<ar
     os::result_init(|res| unsafe { SecItemCopyMatching(query, res) })
 }
 
+/// Adds an item with `attrs` (its class, attributes and a value key's value);
+/// `sec::err::DUPLICATE_ITEM` if one with the same primary key is there.
+#[doc(alias = "SecItemAdd")]
+pub fn add(attrs: &cf::DictionaryOf<cf::String, cf::Type>) -> os::Result {
+    unsafe { SecItemAdd(attrs, std::ptr::null_mut()) }.result()
+}
+
+/// Changes the items `query` matches to `attrs_to_update`'s attributes and values.
+#[doc(alias = "SecItemUpdate")]
+pub fn update(
+    query: &cf::DictionaryOf<cf::String, cf::Type>,
+    attrs_to_update: &cf::DictionaryOf<cf::String, cf::Type>,
+) -> os::Result {
+    unsafe { SecItemUpdate(query, attrs_to_update) }.result()
+}
+
+/// Removes the items `query` matches; `sec::err::ITEM_NOT_FOUND` if there are none.
+#[doc(alias = "SecItemDelete")]
+pub fn delete(query: &cf::DictionaryOf<cf::String, cf::Type>) -> os::Result {
+    unsafe { SecItemDelete(query) }.result()
+}
+
 unsafe extern "C-unwind" {
     static kSecClass: &'static cf::String;
 
@@ -54,6 +76,148 @@ unsafe extern "C-unwind" {
         query: &cf::DictionaryOf<cf::String, cf::Type>,
         result: *mut arc::R<cf::Type>,
     ) -> os::Status;
+
+    fn SecItemAdd(
+        attrs: &cf::DictionaryOf<cf::String, cf::Type>,
+        result: *mut Option<arc::R<cf::Type>>,
+    ) -> os::Status;
+
+    fn SecItemUpdate(
+        query: &cf::DictionaryOf<cf::String, cf::Type>,
+        attrs_to_update: &cf::DictionaryOf<cf::String, cf::Type>,
+    ) -> os::Status;
+
+    fn SecItemDelete(query: &cf::DictionaryOf<cf::String, cf::Type>) -> os::Status;
+}
+
+/// Item attribute keys.
+pub mod attr_keys {
+    use crate::cf;
+
+    /// When the item is readable: a value of [`super::accessible`].
+    #[doc(alias = "kSecAttrAccessible")]
+    pub const fn accessible() -> &'static cf::String {
+        unsafe { kSecAttrAccessible }
+    }
+
+    #[doc(alias = "kSecAttrAccessGroup")]
+    pub const fn access_group() -> &'static cf::String {
+        unsafe { kSecAttrAccessGroup }
+    }
+
+    /// A `cf::Boolean`: whether the item syncs through iCloud.
+    #[doc(alias = "kSecAttrSynchronizable")]
+    pub const fn synchronizable() -> &'static cf::String {
+        unsafe { kSecAttrSynchronizable }
+    }
+
+    /// A `cf::String`: the user-visible label.
+    #[doc(alias = "kSecAttrLabel")]
+    pub const fn label() -> &'static cf::String {
+        unsafe { kSecAttrLabel }
+    }
+
+    /// A `cf::String`: the item's kind, as "application password".
+    #[doc(alias = "kSecAttrDescription")]
+    pub const fn desc() -> &'static cf::String {
+        unsafe { kSecAttrDescription }
+    }
+
+    /// A `cf::String`: a password's account name. With the service, a generic
+    /// password's primary key.
+    #[doc(alias = "kSecAttrAccount")]
+    pub const fn account() -> &'static cf::String {
+        unsafe { kSecAttrAccount }
+    }
+
+    /// A `cf::String`: a generic password's service.
+    #[doc(alias = "kSecAttrService")]
+    pub const fn service() -> &'static cf::String {
+        unsafe { kSecAttrService }
+    }
+
+    /// A `cf::Data`: a generic password's app-defined attribute.
+    #[doc(alias = "kSecAttrGeneric")]
+    pub const fn generic() -> &'static cf::String {
+        unsafe { kSecAttrGeneric }
+    }
+
+    unsafe extern "C" {
+        static kSecAttrAccessible: &'static cf::String;
+        static kSecAttrAccessGroup: &'static cf::String;
+        static kSecAttrSynchronizable: &'static cf::String;
+        static kSecAttrLabel: &'static cf::String;
+        static kSecAttrDescription: &'static cf::String;
+        static kSecAttrAccount: &'static cf::String;
+        static kSecAttrService: &'static cf::String;
+        static kSecAttrGeneric: &'static cf::String;
+    }
+}
+
+/// Values of [`attr_keys::accessible`]: when an item is readable, and whether it may leave
+/// the device (the `this_device_only` ones are neither synced nor restored to another).
+pub mod accessible {
+    use crate::cf;
+
+    #[doc(alias = "kSecAttrAccessibleWhenUnlocked")]
+    pub const fn when_unlocked() -> &'static cf::String {
+        unsafe { kSecAttrAccessibleWhenUnlocked }
+    }
+
+    #[doc(alias = "kSecAttrAccessibleAfterFirstUnlock")]
+    pub const fn after_first_unlock() -> &'static cf::String {
+        unsafe { kSecAttrAccessibleAfterFirstUnlock }
+    }
+
+    #[doc(alias = "kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly")]
+    pub const fn when_passcode_set_this_device_only() -> &'static cf::String {
+        unsafe { kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly }
+    }
+
+    #[doc(alias = "kSecAttrAccessibleWhenUnlockedThisDeviceOnly")]
+    pub const fn when_unlocked_this_device_only() -> &'static cf::String {
+        unsafe { kSecAttrAccessibleWhenUnlockedThisDeviceOnly }
+    }
+
+    #[doc(alias = "kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly")]
+    pub const fn after_first_unlock_this_device_only() -> &'static cf::String {
+        unsafe { kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly }
+    }
+
+    unsafe extern "C" {
+        static kSecAttrAccessibleWhenUnlocked: &'static cf::String;
+        static kSecAttrAccessibleAfterFirstUnlock: &'static cf::String;
+        static kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly: &'static cf::String;
+        static kSecAttrAccessibleWhenUnlockedThisDeviceOnly: &'static cf::String;
+        static kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly: &'static cf::String;
+    }
+}
+
+/// Keys of an item's value.
+pub mod value_keys {
+    use crate::cf;
+
+    /// A `cf::Data`: the item's data, encrypted for passwords and keys.
+    #[doc(alias = "kSecValueData")]
+    pub const fn data() -> &'static cf::String {
+        unsafe { kSecValueData }
+    }
+
+    #[doc(alias = "kSecValueRef")]
+    pub const fn cf_ref() -> &'static cf::String {
+        unsafe { kSecValueRef }
+    }
+
+    #[doc(alias = "kSecValuePersistentRef")]
+    pub const fn persistent_ref() -> &'static cf::String {
+        unsafe { kSecValuePersistentRef }
+    }
+
+    unsafe extern "C" {
+        static kSecValueData: &'static cf::String;
+        static kSecValueRef: &'static cf::String;
+        static kSecValuePersistentRef: &'static cf::String;
+    }
 }
 
 /// Predefined search constants used to set values in a query

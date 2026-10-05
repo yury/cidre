@@ -9,12 +9,18 @@ pub use certificate::prop_keys;
 pub use certificate::prop_types;
 
 pub mod item;
+pub use item::accessible;
+pub use item::add as item_add;
+pub use item::attr_keys;
 pub use item::class;
 pub use item::class_key;
 pub use item::match_keys;
 pub use item::match_limit;
 pub use item::matching as item_matching;
+pub use item::delete as item_delete;
 pub use item::return_data;
+pub use item::update as item_update;
+pub use item::value_keys;
 
 pub mod identity;
 pub use identity::ProtocolIdentity;
