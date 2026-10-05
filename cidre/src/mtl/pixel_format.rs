@@ -510,7 +510,6 @@ pub enum PixelFormat {
     // no transfer function is applied. The `Rgb..._2p` ones are render targets over such a
     // surface (see `Rgb8_420_2p`). "Verified" ones were measured on M2, M4 and A19 Pro GPUs
     // (2026-10-04); the rest are names only.
-
     /// Private. 8-bit 4:2:0 (`420v`, `420f`, `-8v0`, `-8f0`, `&8v0`, `&8f0`). Verified.
     #[doc(alias = "MTLPixelFormatYCBCR8_420_2P")]
     Ycbcr8_420_2p = 500,

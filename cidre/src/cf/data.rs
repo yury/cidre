@@ -44,6 +44,46 @@ impl Data {
         unsafe { Self::new_in(bytes, length, None) }
     }
 
+    /// Data over `bytes` without copying them.
+    ///
+    /// # Safety
+    ///
+    /// If `length` is nonzero, `bytes` must point to at least `length`
+    /// initialized, readable bytes, which stay valid and unchanged for as long
+    /// as the returned data can access them. `length` must not be negative.
+    /// `bytes_deallocator` frees `bytes` when the data is gone and must be
+    /// appropriate for their allocation; [`cf::Allocator::null()`] leaves them
+    /// alone (borrowed storage), `None` frees them with the default allocator.
+    #[doc(alias = "CFDataCreateWithBytesNoCopy")]
+    #[inline]
+    pub unsafe fn new_no_copy_in(
+        bytes: *const u8,
+        length: cf::Index,
+        bytes_deallocator: Option<&cf::Allocator>,
+        allocator: Option<&cf::Allocator>,
+    ) -> Option<arc::R<cf::Data>> {
+        unsafe { CFDataCreateWithBytesNoCopy(allocator, bytes, length, bytes_deallocator) }
+    }
+
+    /// Data over `slice` without copying it; the slice is never freed by the data.
+    ///
+    /// # Safety
+    ///
+    /// `slice` must stay valid and unchanged for as long as the returned data
+    /// (or anything retaining it) can access it.
+    #[doc(alias = "CFDataCreateWithBytesNoCopy")]
+    #[inline]
+    pub unsafe fn from_slice_no_copy(slice: &[u8]) -> Option<arc::R<Self>> {
+        unsafe {
+            Self::new_no_copy_in(
+                slice.as_ptr(),
+                slice.len() as _,
+                cf::Allocator::null(),
+                None,
+            )
+        }
+    }
+
     #[inline]
     pub fn from_slice(slice: &[u8]) -> Option<arc::R<Self>> {
         // SAFETY: the slice is initialized and valid for its reported length.
@@ -177,6 +217,12 @@ unsafe extern "C-unwind" {
         bytes: *const u8,
         length: cf::Index,
     ) -> Option<arc::R<cf::Data>>;
+    fn CFDataCreateWithBytesNoCopy(
+        allocator: Option<&cf::Allocator>,
+        bytes: *const u8,
+        length: cf::Index,
+        bytes_deallocator: Option<&cf::Allocator>,
+    ) -> Option<arc::R<cf::Data>>;
     fn CFDataGetLength(data: &Data) -> cf::Index;
     fn CFDataCreateMutable(
         allocator: Option<&cf::Allocator>,
@@ -205,5 +251,13 @@ mod tests {
         let bytes = [1, 2, 3, 4];
         let data = cf::Data::from_slice(&bytes).unwrap();
         assert_eq!(data.as_slice(), bytes);
+    }
+
+    #[test]
+    fn borrows_slice() {
+        let bytes = [1, 2, 3, 4];
+        let data = unsafe { cf::Data::from_slice_no_copy(&bytes) }.unwrap();
+        assert_eq!(data.as_slice(), bytes);
+        assert_eq!(data.bytes_ptr(), bytes.as_ptr());
     }
 }
