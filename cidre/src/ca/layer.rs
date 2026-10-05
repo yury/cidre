@@ -199,6 +199,16 @@ impl Layer {
     #[objc::msg_send(setMasksToBounds:)]
     pub fn set_masks_to_bounds(&mut self, val: bool);
 
+    /// Whether the geometry of the layer and its sublayers is flipped vertically. Defaults
+    /// to false. Note that even when geometry is flipped, image orientation remains the same
+    /// (i.e. a CGImageRef stored in the `contents' property will display the same with both
+    /// flipped=false and flipped=true, assuming no transform on the layer).
+    #[objc::msg_send(isGeometryFlipped)]
+    pub fn is_geometry_flipped(&self) -> bool;
+
+    #[objc::msg_send(setGeometryFlipped:)]
+    pub fn set_geometry_flipped(&mut self, val: bool);
+
     #[objc::msg_send(isOpaque)]
     pub fn is_opaque(&self) -> bool;
 
