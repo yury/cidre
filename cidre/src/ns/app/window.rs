@@ -420,6 +420,12 @@ impl Window {
     #[objc::msg_send(setBackgroundColor:)]
     pub fn set_background_color(&mut self, val: Option<&ns::Color>);
 
+    #[objc::msg_send(alphaValue)]
+    pub fn alpha_value(&self) -> cg::Float;
+
+    #[objc::msg_send(setAlphaValue:)]
+    pub fn set_alpha_value(&mut self, val: cg::Float);
+
     #[objc::msg_send(canHide)]
     pub fn can_hide(&self) -> bool;
 
