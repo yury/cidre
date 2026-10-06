@@ -401,6 +401,30 @@ impl Window {
 
     #[objc::msg_send(orderFront:)]
     pub fn order_front(&mut self, sender: Option<&ns::Id>);
+
+    #[objc::msg_send(orderFrontRegardless)]
+    pub fn order_front_regardless(&mut self);
+
+    #[objc::msg_send(orderOut:)]
+    pub fn order_out(&mut self, sender: Option<&ns::Id>);
+
+    #[objc::msg_send(ignoresMouseEvents)]
+    pub fn ignores_mouse_events(&self) -> bool;
+
+    #[objc::msg_send(setIgnoresMouseEvents:)]
+    pub fn set_ignores_mouse_events(&mut self, val: bool);
+
+    #[objc::msg_send(backgroundColor)]
+    pub fn background_color(&self) -> arc::R<ns::Color>;
+
+    #[objc::msg_send(setBackgroundColor:)]
+    pub fn set_background_color(&mut self, val: Option<&ns::Color>);
+
+    #[objc::msg_send(canHide)]
+    pub fn can_hide(&self) -> bool;
+
+    #[objc::msg_send(setCanHide:)]
+    pub fn set_can_hide(&mut self, val: bool);
 }
 
 /// ns::ViewController Support
