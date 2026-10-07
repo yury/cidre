@@ -47,6 +47,7 @@ pub use input::DeviceInput;
 pub use input::Input;
 #[cfg(any(target_os = "ios", target_os = "tvos"))]
 pub use input::MetadataInput;
+pub use input::MultichannelAudioMode;
 pub use input::Port as InputPort;
 pub use input::port_notifications as input_port_notifications;
 

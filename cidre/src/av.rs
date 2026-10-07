@@ -86,6 +86,7 @@ pub use capture::SysPressureState as CaptureSysPressureState;
 
 #[cfg(any(target_os = "ios", target_os = "tvos"))]
 pub use capture::MetadataInput as CaptureMetadataInput;
+pub use capture::MultichannelAudioMode as CaptureMultichannelAudioMode;
 
 #[cfg(not(any(target_os = "visionos", target_os = "watchos")))]
 pub mod external_storage_device;
