@@ -14,6 +14,9 @@ impl Responder {
     #[objc::msg_send(interpretKeyEvents:)]
     pub fn interpret_key_events(&mut self, events: &ns::Array<ns::Event>);
 
+    #[objc::msg_send(scrollWheel:)]
+    pub fn scroll_wheel(&mut self, event: &ns::Event);
+
     /// Sends `action` to the first responder in the chain from this one
     /// that responds to it; whether one did.
     #[objc::msg_send(tryToPerform:with:)]
