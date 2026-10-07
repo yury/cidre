@@ -38,4 +38,9 @@ impl Locale {
 
     #[objc::msg_send(regionCode)]
     pub fn region_code(&self) -> Option<arc::R<ns::String>>;
+
+    /// The name of language `code` ("ru") in this locale's language: "Russian" in English,
+    /// "русский" in Russian.
+    #[objc::msg_send(localizedStringForLanguageCode:)]
+    pub fn localized_string_for_lang_code(&self, code: &ns::String) -> Option<arc::R<ns::String>>;
 }

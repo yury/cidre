@@ -43,6 +43,15 @@ impl Bundle {
         table: Option<&ns::String>,
     ) -> arc::R<ns::String>;
 
+    /// The path of resource `name` of type `ext` (a file, or a directory such as a language's
+    /// `.lproj`), if the bundle has one.
+    #[objc::msg_send(pathForResource:ofType:)]
+    pub fn path_for_resource(
+        &self,
+        name: Option<&ns::String>,
+        ext: Option<&ns::String>,
+    ) -> Option<arc::R<ns::String>>;
+
     /// The bundle's localizations that best match the user's languages, best first: the
     /// language its strings come in.
     #[objc::msg_send(preferredLocalizations)]
