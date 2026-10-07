@@ -43,6 +43,11 @@ impl Bundle {
         table: Option<&ns::String>,
     ) -> arc::R<ns::String>;
 
+    /// The bundle's localizations that best match the user's languages, best first: the
+    /// language its strings come in.
+    #[objc::msg_send(preferredLocalizations)]
+    pub fn preferred_localizations(&self) -> arc::R<ns::Array<ns::String>>;
+
     #[objc::msg_send(bundleURL)]
     pub fn bundle_url(&self) -> arc::R<ns::Url>;
 
