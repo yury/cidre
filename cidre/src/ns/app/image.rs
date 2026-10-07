@@ -42,6 +42,10 @@ impl Image {
         Self::with_sys_symbol_name(str.as_ns(), None)
     }
 
+    /// A copy of the symbol image with `cfg` applied.
+    #[objc::msg_send(imageWithSymbolConfiguration:)]
+    pub fn with_symbol_cfg(&self, cfg: &ns::ImageSymbolCfg) -> Option<arc::R<Self>>;
+
     #[objc::msg_send(size)]
     pub fn size(&self) -> ns::Size;
 
@@ -51,8 +55,16 @@ impl Image {
 
 define_obj_type!(
     #[doc(alias = "NSImageSymbolConfiguration")]
-    pub ImageSymbolCfg(ns::Id)
+    pub ImageSymbolCfg(ns::Id),
+    sym NSImageSymbolConfiguration
 );
+
+impl ImageSymbolCfg {
+    /// The symbol's layers drawn in `colors`, in order; the last one repeats for the rest.
+    #[objc::msg_send(configurationWithPaletteColors:)]
+    #[objc::available(macos = 12.0)]
+    pub fn with_palette_colors(colors: &ns::Array<ns::Color>) -> arc::R<Self>;
+}
 
 #[cfg(test)]
 mod tests {
@@ -88,6 +100,9 @@ mod tests {
     fn sys_symbols() {
         let name = ns::String::with_str("rectangle");
         let _img = ns::Image::with_sys_symbol_name(&name, None).unwrap();
-        let _img = ns::Image::with_sys_symbol_str("rectangle").unwrap();
+        let img = ns::Image::with_sys_symbol_str("rectangle").unwrap();
+        let colors = ns::Array::from_slice(&[ns::Color::sys_blue().as_ref()]);
+        let cfg = ns::ImageSymbolCfg::with_palette_colors(&colors);
+        let _img = img.with_symbol_cfg(&cfg).unwrap();
     }
 }

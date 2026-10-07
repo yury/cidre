@@ -356,6 +356,15 @@ impl Window {
     #[objc::msg_send(isMainWindow)]
     pub fn is_main_window(&self) -> bool;
 
+    #[objc::msg_send(parentWindow)]
+    pub fn parent_window(&self) -> Option<arc::R<Self>>;
+
+    #[objc::msg_send(sheetParent)]
+    pub fn sheet_parent(&self) -> Option<arc::R<Self>>;
+
+    #[objc::msg_send(attachedSheet)]
+    pub fn attached_sheet(&self) -> Option<arc::R<Self>>;
+
     #[objc::msg_send(canBecomeKeyWindow)]
     pub fn can_become_key_window(&self) -> bool;
 
@@ -484,7 +493,19 @@ pub mod notifications {
         unsafe { NSWindowDidChangeOcclusionStateNotification }
     }
 
+    #[doc(alias = "NSWindowDidBecomeKeyNotification")]
+    pub fn did_become_key() -> &'static ns::NotificationName {
+        unsafe { NSWindowDidBecomeKeyNotification }
+    }
+
+    #[doc(alias = "NSWindowDidResignKeyNotification")]
+    pub fn did_resign_key() -> &'static ns::NotificationName {
+        unsafe { NSWindowDidResignKeyNotification }
+    }
+
     unsafe extern "C" {
         static NSWindowDidChangeOcclusionStateNotification: &'static ns::NotificationName;
+        static NSWindowDidBecomeKeyNotification: &'static ns::NotificationName;
+        static NSWindowDidResignKeyNotification: &'static ns::NotificationName;
     }
 }
