@@ -702,7 +702,7 @@ impl CategoryOpts {
 
     #[doc(alias = "AVAudioSessionCategoryOptionBluetoothHighQualityRecording")]
     #[cfg(target_os = "ios")]
-    pub const BLUETOOTH_HIGHT_QUALITY_RECORDING: Self = Self(1 << 19);
+    pub const BLUETOOTH_HQ_RECORDING: Self = Self(1 << 19);
 }
 
 /// Values for AVAudioSessionInterruptionTypeKey in AVAudioSessionInterruptionNotification's
