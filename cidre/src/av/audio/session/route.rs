@@ -132,10 +132,9 @@ unsafe impl Send for DataSrcDesc {}
 unsafe impl Sync for DataSrcDesc {}
 
 impl DataSrcDesc {
-    // TODO: verify leak
     /// System-assigned ID for the data source.
     #[objc::msg_send(dataSourceID)]
-    pub fn data_src_id(&self) -> arc::R<ns::String>;
+    pub fn data_src_id(&self) -> arc::R<ns::Number>;
 
     /// Human-readable name for the data source.
     #[objc::msg_send(dataSourceName)]
