@@ -256,6 +256,7 @@ pub use view::CoordinateSpace;
 pub use view::View;
 pub use view::ViewAnimationOpts;
 pub use view::ViewAutoresizing;
+pub use view::ViewKeyframeAnimationOpts;
 
 mod spring_loaded_interaction_context;
 pub use spring_loaded_interaction_context::AnySpringLoadedInteractionContext;

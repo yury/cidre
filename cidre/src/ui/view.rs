@@ -346,26 +346,28 @@ impl View {
         duration: ns::TimeInterval,
         delay: ns::TimeInterval,
         opts: ViewAnimationOpts,
-        animations: &mut blocks::EscBlock<fn()>,
+        animations: &mut blocks::NoEscBlock<fn()>,
         completion: Option<&mut blocks::EscBlock<fn(bool)>>,
     );
 
     #[objc::msg_send(animateWithDuration:animations:completion:)]
     pub fn animate_with_duration_ch(
         duration: ns::TimeInterval,
-        animations: &mut blocks::EscBlock<fn()>,
+        animations: &mut blocks::NoEscBlock<fn()>,
         completion: Option<&mut blocks::EscBlock<fn(bool)>>,
     );
 
     #[objc::msg_send(animateWithDuration:animations:)]
     pub fn animate_with_duration_block(
         duration: ns::TimeInterval,
-        animations: &mut blocks::EscBlock<fn()>,
+        animations: &mut blocks::NoEscBlock<fn()>,
     );
 
     /// Animates the changes made in `animations` over `duration` seconds.
-    pub fn animate(duration: ns::TimeInterval, animations: impl FnMut() + 'static) {
-        let mut animations = blocks::EscBlock::new0(animations);
+    ///
+    /// `animations` runs before this returns, so it may borrow.
+    pub fn animate(duration: ns::TimeInterval, mut animations: impl FnMut()) {
+        let mut animations = unsafe { blocks::NoEscBlock::stack0(&mut animations) };
         Self::animate_with_duration_block(duration, &mut animations);
     }
 
@@ -381,7 +383,7 @@ impl View {
         damping_ratio: cg::Float,
         velocity: cg::Float,
         opts: ViewAnimationOpts,
-        animations: &mut blocks::EscBlock<fn()>,
+        animations: &mut blocks::NoEscBlock<fn()>,
         completion: Option<&mut blocks::EscBlock<fn(bool)>>,
     );
 
@@ -393,10 +395,10 @@ impl View {
         damping_ratio: cg::Float,
         velocity: cg::Float,
         opts: ViewAnimationOpts,
-        animations: impl FnMut() + 'static,
+        mut animations: impl FnMut(),
         completion: Option<impl FnMut(bool) + 'static>,
     ) {
-        let mut animations = blocks::EscBlock::new0(animations);
+        let mut animations = unsafe { blocks::NoEscBlock::stack0(&mut animations) };
         let mut completion = completion.map(blocks::EscBlock::new1);
         Self::animate_spring_ch(
             duration,
@@ -407,6 +409,114 @@ impl View {
             &mut animations,
             completion.as_deref_mut(),
         );
+    }
+
+    #[objc::msg_send(transitionWithView:duration:options:animations:completion:)]
+    pub fn transition_with_view_ch(
+        view: &View,
+        duration: ns::TimeInterval,
+        opts: ViewAnimationOpts,
+        animations: Option<&mut blocks::NoEscBlock<fn()>>,
+        completion: Option<&mut blocks::EscBlock<fn(bool)>>,
+    );
+
+    /// Runs a `TRANSITION_*` option on `view` (a flip, curl or cross dissolve) while
+    /// `animations` changes it.
+    pub fn transition_with_view(
+        view: &View,
+        duration: ns::TimeInterval,
+        opts: ViewAnimationOpts,
+        mut animations: impl FnMut(),
+        completion: Option<impl FnMut(bool) + 'static>,
+    ) {
+        let mut animations = unsafe { blocks::NoEscBlock::stack0(&mut animations) };
+        let mut completion = completion.map(blocks::EscBlock::new1);
+        Self::transition_with_view_ch(
+            view,
+            duration,
+            opts,
+            Some(&mut animations),
+            completion.as_deref_mut(),
+        );
+    }
+}
+
+/// UIViewAnimation
+#[cfg(feature = "blocks")]
+impl View {
+    #[objc::msg_send(performWithoutAnimation:)]
+    pub fn perform_without_animation_block(actions: &mut blocks::NoEscBlock<fn()>);
+
+    /// Applies the changes made in `actions` immediately, even inside an animation block.
+    pub fn perform_without_animation(mut actions: impl FnMut()) {
+        let mut actions = unsafe { blocks::NoEscBlock::stack0(&mut actions) };
+        Self::perform_without_animation_block(&mut actions);
+    }
+}
+
+define_opts!(
+    #[doc(alias = "UIViewKeyframeAnimationOptions")]
+    pub ViewKeyframeAnimationOpts(usize)
+);
+
+impl ViewKeyframeAnimationOpts {
+    pub const LAYOUT_SUBVIEWS: Self = Self(ViewAnimationOpts::LAYOUT_SUBVIEWS.0);
+    pub const ALLOW_USER_INTERACTION: Self = Self(ViewAnimationOpts::ALLOW_USER_INTERACTION.0);
+    pub const BEGIN_FROM_CURRENT_STATE: Self = Self(ViewAnimationOpts::BEGIN_FROM_CURRENT_STATE.0);
+    pub const REPEAT: Self = Self(ViewAnimationOpts::REPEAT.0);
+    pub const AUTOREVERSE: Self = Self(ViewAnimationOpts::AUTOREVERSE.0);
+    pub const OVERRIDE_INHERITED_DURATION: Self =
+        Self(ViewAnimationOpts::OVERRIDE_INHERITED_DURATION.0);
+    pub const OVERRIDE_INHERITED_OPTIONS: Self =
+        Self(ViewAnimationOpts::OVERRIDE_INHERITED_OPTIONS.0);
+
+    /// Default.
+    pub const CALCULATION_MODE_LINEAR: Self = Self(0 << 10);
+    pub const CALCULATION_MODE_DISCRETE: Self = Self(1 << 10);
+    pub const CALCULATION_MODE_PACED: Self = Self(2 << 10);
+    pub const CALCULATION_MODE_CUBIC: Self = Self(3 << 10);
+    pub const CALCULATION_MODE_CUBIC_PACED: Self = Self(4 << 10);
+}
+
+/// UIViewKeyframeAnimations
+#[cfg(feature = "blocks")]
+impl View {
+    #[objc::msg_send(animateKeyframesWithDuration:delay:options:animations:completion:)]
+    pub fn animate_keyframes_ch(
+        duration: ns::TimeInterval,
+        delay: ns::TimeInterval,
+        opts: ViewKeyframeAnimationOpts,
+        animations: &mut blocks::NoEscBlock<fn()>,
+        completion: Option<&mut blocks::EscBlock<fn(bool)>>,
+    );
+
+    /// Animates the keyframes added with [`Self::add_keyframe`] inside `animations`.
+    pub fn animate_keyframes(
+        duration: ns::TimeInterval,
+        delay: ns::TimeInterval,
+        opts: ViewKeyframeAnimationOpts,
+        mut animations: impl FnMut(),
+        completion: Option<impl FnMut(bool) + 'static>,
+    ) {
+        let mut animations = unsafe { blocks::NoEscBlock::stack0(&mut animations) };
+        let mut completion = completion.map(blocks::EscBlock::new1);
+        Self::animate_keyframes_ch(
+            duration,
+            delay,
+            opts,
+            &mut animations,
+            completion.as_deref_mut(),
+        );
+    }
+
+    #[objc::msg_send(addKeyframeWithRelativeStartTime:relativeDuration:animations:)]
+    pub fn add_keyframe_block(start: f64, duration: f64, animations: &mut blocks::NoEscBlock<fn()>);
+
+    /// Adds a keyframe inside [`Self::animate_keyframes`]. `start` and `duration` are
+    /// fractions (0 to 1) of the whole keyframe animation.
+    pub fn add_keyframe(start: f64, duration: f64, mut animations: impl FnMut()) {
+        let mut animations = unsafe { blocks::NoEscBlock::stack0(&mut animations) };
+        Self::add_keyframe_block(start, duration, &mut animations);
     }
 }
 
