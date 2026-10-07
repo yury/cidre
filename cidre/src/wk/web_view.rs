@@ -95,6 +95,30 @@ impl WebView {
     #[objc::available(ios = 15.0)]
     pub fn set_under_page_bg_color(&mut self, val: Option<&crate::ui::Color>);
 
+    /// Edge insets, in the web view's coordinates, that shrink the layout viewport: the parts
+    /// of the view covered by the client's own UI, such as a toolbar. All non-negative.
+    #[cfg(target_os = "macos")]
+    #[objc::msg_send(obscuredContentInsets)]
+    #[objc::available(macos = 26.0)]
+    pub fn obscured_content_insets(&self) -> ns::EdgeInsets;
+
+    #[cfg(target_os = "macos")]
+    #[objc::msg_send(setObscuredContentInsets:)]
+    #[objc::available(macos = 26.0)]
+    pub fn set_obscured_content_insets(&mut self, val: ns::EdgeInsets);
+
+    /// Edge insets, in the web view's coordinates, that shrink the layout viewport: the parts
+    /// of the view covered by the client's own UI, such as a navigation bar. All non-negative.
+    #[cfg(target_os = "ios")]
+    #[objc::msg_send(obscuredContentInsets)]
+    #[objc::available(ios = 26.0)]
+    pub fn obscured_content_insets(&self) -> crate::ui::EdgeInsets;
+
+    #[cfg(target_os = "ios")]
+    #[objc::msg_send(setObscuredContentInsets:)]
+    #[objc::available(ios = 26.0)]
+    pub fn set_obscured_content_insets(&mut self, val: crate::ui::EdgeInsets);
+
     /// The scroll view the page scrolls in.
     #[cfg(target_os = "ios")]
     #[objc::msg_send(scrollView)]
