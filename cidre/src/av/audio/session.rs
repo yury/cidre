@@ -581,13 +581,13 @@ impl Session {
 
     #[doc(alias = "AVAudioSessionMediaServicesWereLostNotification")]
     #[inline]
-    pub fn media_services_where_lost_notification() -> &'static ns::NotificationName {
+    pub fn media_services_were_lost_notification() -> &'static ns::NotificationName {
         unsafe { AVAudioSessionMediaServicesWereLostNotification }
     }
 
     #[doc(alias = "AVAudioSessionMediaServicesWereResetNotification")]
     #[inline]
-    pub fn media_services_where_reset_notification() -> &'static ns::NotificationName {
+    pub fn media_services_were_reset_notification() -> &'static ns::NotificationName {
         unsafe { AVAudioSessionMediaServicesWereResetNotification }
     }
 
