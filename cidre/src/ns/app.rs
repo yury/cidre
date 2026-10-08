@@ -181,7 +181,10 @@ mod layout_guide;
 pub use layout_guide::LayoutGuide;
 
 mod menu;
+pub use menu::AnyMenuDelegate;
 pub use menu::Menu;
+pub use menu::MenuDelegate;
+pub use menu::MenuDelegateImpl;
 pub use menu::MenuItemValidation;
 pub use menu::MenuItemValidationImpl;
 

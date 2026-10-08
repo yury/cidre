@@ -14,6 +14,29 @@ define_obj_type!(
     sym NSMenu
 );
 
+/// Lets an object fill a menu as it opens, and hear it open and close.
+#[objc::protocol(NSMenuDelegate)]
+pub trait MenuDelegate: objc::Obj {
+    /// The menu is about to be shown or searched: the place to rebuild its items.
+    #[objc::optional]
+    #[objc::msg_send(menuNeedsUpdate:)]
+    fn menu_needs_update(&mut self, menu: &mut ns::Menu);
+
+    #[objc::optional]
+    #[objc::msg_send(menuWillOpen:)]
+    fn menu_will_open(&mut self, menu: &mut ns::Menu);
+
+    #[objc::optional]
+    #[objc::msg_send(menuDidClose:)]
+    fn menu_did_close(&mut self, menu: &mut ns::Menu);
+}
+
+define_obj_type!(
+    pub AnyMenuDelegate(ns::Id)
+);
+
+impl MenuDelegate for AnyMenuDelegate {}
+
 impl Menu {
     #[objc::msg_send(popUpMenuPositioningItem:atLocation:inView:)]
     pub fn pop_up(
@@ -84,6 +107,14 @@ impl Menu {
 
     #[objc::msg_send(supermenu)]
     pub fn supermenu(&self) -> Option<arc::R<ns::Menu>>;
+
+    /// Weak: the caller keeps the delegate alive.
+    #[objc::msg_send(delegate)]
+    pub fn delegate(&self) -> Option<arc::R<AnyMenuDelegate>>;
+
+    /// Weak: the caller keeps the delegate alive.
+    #[objc::msg_send(setDelegate:)]
+    pub fn set_delegate<D: MenuDelegate>(&mut self, val: Option<&D>);
 }
 
 #[cfg(test)]
