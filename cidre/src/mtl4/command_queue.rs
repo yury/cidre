@@ -133,7 +133,7 @@ impl CmdQueue {
     #[objc::msg_send(signalDrawable:)]
     pub fn signal_drawable<D: mtl::Drawable>(&self, drawable: &D);
 
-    #[objc::msg_send(waitDrawable:)]
+    #[objc::msg_send(waitForDrawable:)]
     pub fn wait_drawable<D: mtl::Drawable>(&self, drawable: &D);
 
     #[objc::msg_send(addResidencySet:)]
