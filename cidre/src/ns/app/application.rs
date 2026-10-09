@@ -90,6 +90,11 @@ pub trait Delegate {
     #[objc::msg_send(applicationShouldHandleReopen:hasVisibleWindows:)]
     fn app_should_handle_reopen(&mut self, app: &ns::App, has_visible_windows: bool) -> bool;
 
+    /// `true` quits the app once its last window is closed.
+    #[objc::optional]
+    #[objc::msg_send(applicationShouldTerminateAfterLastWindowClosed:)]
+    fn app_should_terminate_after_last_window_closed(&mut self, app: &ns::App) -> bool;
+
     #[objc::optional]
     #[objc::msg_send(applicationDidChangeScreenParameters:)]
     fn app_did_change_screen_params(&mut self, n: &ns::Notification);

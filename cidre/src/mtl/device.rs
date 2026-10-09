@@ -692,6 +692,33 @@ impl Device {
         ns::if_none(|err| unsafe { self.new_compiler_err(desc, err) })
     }
 
+    #[objc::msg_send(newCounterHeapWithDescriptor:error:)]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub unsafe fn new_counter_heap_err<'ear>(
+        &self,
+        desc: &mtl4::CounterHeapDesc,
+        err: *mut Option<&'ear ns::Error>,
+    ) -> Option<arc::R<mtl4::CounterHeap>>;
+
+    /// Creates a heap of GPU counters, such as timestamps.
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn new_counter_heap<'ear>(
+        &self,
+        desc: &mtl4::CounterHeapDesc,
+    ) -> ns::Result<'ear, arc::R<mtl4::CounterHeap>> {
+        ns::if_none(|err| unsafe { self.new_counter_heap_err(desc, err) })
+    }
+
+    /// The size of an entry of a counter heap of the type once resolved.
+    #[objc::msg_send(sizeOfCounterHeapEntry:)]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn counter_heap_entry_size(&self, type_: mtl4::CounterHeapType) -> usize;
+
+    /// The frequency of the GPU timestamp in ticks per second.
+    #[objc::msg_send(queryTimestampFrequency)]
+    #[api::available(macos = 26.0, ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn query_timestamp_frequency(&self) -> u64;
+
     /// Returns an array of all the Metal device instances in the system.
     #[doc(alias = "MTLCopyAllDevices")]
     #[api::available(

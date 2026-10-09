@@ -5,6 +5,20 @@ define_opts!(
     pub VisibilityOpts(isize)
 );
 
+impl VisibilityOpts {
+    /// Doesn't flush any caches; a barrier only orders the work.
+    #[doc(alias = "MTL4VisibilityOptionNone")]
+    pub const NONE: Self = Self(0);
+
+    /// Flushes caches to the GPU (device) memory coherence point.
+    #[doc(alias = "MTL4VisibilityOptionDevice")]
+    pub const DEVICE: Self = Self(1 << 0);
+
+    /// Flushes caches so that aliased virtual addresses of a resource see the same data.
+    #[doc(alias = "MTL4VisibilityOptionResourceAlias")]
+    pub const RES_ALIAS: Self = Self(1 << 1);
+}
+
 define_obj_type!(
     #[doc(alias = "MTL4CommandEncoder")]
     pub CmdEncoder(ns::Id)
