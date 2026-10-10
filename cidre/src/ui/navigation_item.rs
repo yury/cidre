@@ -13,6 +13,15 @@ impl NavItem {
     #[objc::msg_send(setLeftBarButtonItems:)]
     pub fn set_left_bar_button_items(&mut self, val: Option<&ns::Array<ui::BarButtonItem>>);
 
+    /// The line under the title in the navigation bar.
+    #[objc::msg_send(subtitle)]
+    #[objc::available(ios = 26.0)]
+    pub fn subtitle(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(setSubtitle:)]
+    #[objc::available(ios = 26.0)]
+    pub fn set_subtitle(&mut self, val: Option<&ns::String>);
+
     /// How the navigation bar minimizes in response to scrolling; an
     /// integrated top tab bar minimizes with it.
     #[objc::msg_send(navigationBarMinimization)]
