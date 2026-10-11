@@ -163,6 +163,14 @@ impl Type {
             None
         }
     }
+
+    pub fn try_as_dictionary(&self) -> Option<&cf::Dictionary> {
+        if self.get_type_id() == cf::Dictionary::type_id() {
+            Some(unsafe { std::mem::transmute(self) })
+        } else {
+            None
+        }
+    }
 }
 
 unsafe extern "C-unwind" {
