@@ -87,6 +87,14 @@ fn build_pomace_target(name: &str, sdk: &str, deployment_targets: &DeploymentTar
         // cc passes the iOSSupport library path even when only compiling.
         build.flag("-Wno-unused-command-line-argument");
     }
+    // cc finds an SDK for the iOS-family targets itself, but leaves the Mac to the compiler's
+    // default. `/usr/bin/cc` (xcrun's shim) has one; the toolchain's clang that Xcode puts on
+    // PATH for a build phase has none, and Foundation is then not found.
+    if matches!(sdk, "macosx" | "maccatalyst") && env::var_os("SDKROOT").is_none() {
+        if let Some(root) = sdk_root(sdk) {
+            build.flag("-isysroot").flag(root.as_os_str());
+        }
+    }
 
     // The cc crate derives the clang target triple (and so the deployment target) from these
     // variables and falls back to the SDK version, so set them unless the user already did.
