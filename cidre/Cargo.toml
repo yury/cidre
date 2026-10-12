@@ -67,6 +67,7 @@ full = [
   "ui",
   "ut",
   "un",
+  "ph",
   "io_surface",
   "io_kit",
   "io_pm",
@@ -144,6 +145,7 @@ notify = []
 ui = ["ns", "ca", "blocks"]
 ut = ["ns"]
 un = ["blocks", "ns"]
+ph = ["blocks", "ns"]
 ct = ["blocks", "cf", "cg", "ns", "objc"]
 tis = ["cf"]
 mc = ["blocks", "ns"]

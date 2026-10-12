@@ -243,10 +243,10 @@ mod tests {
 
         q.set_name(Some(ns::str!(c"nice")));
 
-        let pi = ns::ProcessInfo::current();
+        let mut pi = ns::ProcessInfo::current();
 
         let _observer = ns::Observer::with_obj(
-            pi,
+            &mut *pi,
             ns::str!(c"thermalState"),
             ns::KvoOpts::INITIAL,
             |_key, _obj, _change| unsafe {

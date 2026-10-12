@@ -48,7 +48,7 @@ impl ProcessInfo {
     /// assert!(pi.active_processor_count() > 1);
     /// ```
     #[objc::msg_send(processInfo)]
-    pub fn current() -> &'static mut ProcessInfo;
+    pub fn current() -> arc::R<Self>;
 
     #[objc::msg_send(environment)]
     pub fn env(&self) -> arc::R<ns::Dictionary<ns::String, ns::String>>;

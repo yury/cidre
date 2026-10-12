@@ -43,7 +43,7 @@ impl Session {
     define_cls!(sym AVAudioSession);
 
     #[objc::msg_send(sharedInstance)]
-    pub fn shared() -> &'static mut Self;
+    pub fn shared() -> arc::R<Self>;
 
     #[objc::msg_send(availableCategories)]
     pub fn available_categories(&self) -> arc::R<ns::Array<Category>>;

@@ -1,4 +1,4 @@
-use crate::{blocks, define_cls, define_obj_type, define_opts, ns, objc, un};
+use crate::{arc, blocks, define_cls, define_obj_type, define_opts, ns, objc, un};
 
 define_opts!(
     pub AuthorizationOpts(usize)
@@ -55,7 +55,7 @@ impl Center {
     pub fn supports_content_extensions(&self) -> bool;
 
     #[objc::msg_send(currentNotificationCenter)]
-    pub fn current() -> &'static mut Self;
+    pub fn current() -> arc::R<Self>;
 }
 
 #[objc::protocol(UNUserNotificationCenterDelegate)]

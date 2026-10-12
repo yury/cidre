@@ -382,6 +382,25 @@ impl Device {
     pub fn is_continuity_camera(&self) -> bool;
 }
 
+/// AVCaptureDeviceVirtual
+#[cfg(not(target_os = "macos"))]
+impl Device {
+    /// Whether the device is a virtual device made of physical constituent devices (the dual,
+    /// dual wide and triple cameras).
+    #[objc::msg_send(isVirtualDevice)]
+    pub fn is_virtual_device(&self) -> bool;
+
+    /// The physical devices a virtual device is made of, widest first; empty for a physical
+    /// device.
+    #[objc::msg_send(constituentDevices)]
+    pub fn constituent_devices(&self) -> arc::R<ns::Array<Device>>;
+
+    /// The video zoom factors at which a virtual device switches to its next constituent
+    /// device, one less than [`Self::constituent_devices`]; empty for a physical device.
+    #[objc::msg_send(virtualDeviceSwitchOverVideoZoomFactors)]
+    pub fn virtual_device_switch_over_video_zoom_factors(&self) -> arc::R<ns::Array<ns::Number>>;
+}
+
 /// AVCaptureDeviceDeskViewCamera
 impl Device {
     /// A reference to the Desk View Camera that is associated with and derived from
@@ -1794,6 +1813,17 @@ impl Device {
 
     #[objc::msg_send(displayVideoZoomFactorMultiplier)]
     pub fn display_video_zoom_factor_multiplier(&self) -> cg::Float;
+
+    /// The lowest video zoom factor the device allows now (Center Stage, depth delivery or a
+    /// locked constituent restrict it).
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(minAvailableVideoZoomFactor)]
+    pub fn min_available_video_zoom_factor(&self) -> cg::Float;
+
+    /// The highest video zoom factor the device allows now.
+    #[cfg(not(target_os = "macos"))]
+    #[objc::msg_send(maxAvailableVideoZoomFactor)]
+    pub fn max_available_video_zoom_factor(&self) -> cg::Float;
 }
 
 /// AVCaptureDeviceVideoZoom
@@ -2248,6 +2278,11 @@ impl Format {
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(videoZoomFactorUpscaleThreshold)]
     pub fn video_zoom_factor_upscale_threshold(&self) -> cg::Float;
+
+    /// Zoom factors at which the format delivers full resolution from a crop of the sensor,
+    /// with no upscaling (a 48 MP sensor's 2x).
+    #[objc::msg_send(secondaryNativeResolutionZoomFactors)]
+    pub fn secondary_native_resolution_zoom_factors(&self) -> arc::R<ns::Array<ns::Number>>;
 }
 
 /// # Center Stage

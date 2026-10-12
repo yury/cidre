@@ -210,6 +210,10 @@ pub mod ut;
 #[cfg(feature = "un")]
 pub mod un;
 
+/// Photos
+#[cfg(feature = "ph")]
+pub mod ph;
+
 pub mod time;
 
 #[cfg(feature = "simd")]
