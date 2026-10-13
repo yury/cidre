@@ -50,4 +50,13 @@ impl Action {
     #[objc::msg_send(setAttributes:)]
     #[objc::available(ios = 13.0, tvos = 13.0)]
     pub fn set_attrs(&mut self, val: ui::MenuElementAttrs);
+
+    /// A second line under the title, smaller.
+    #[objc::msg_send(subtitle)]
+    #[objc::available(ios = 15.0, tvos = 15.0)]
+    pub fn subtitle(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(setSubtitle:)]
+    #[objc::available(ios = 15.0, tvos = 15.0)]
+    pub fn set_subtitle(&mut self, val: Option<&ns::String>);
 }
