@@ -62,6 +62,10 @@ pub use vm_types::Size as VmSize;
 
 pub mod vm_map;
 
+pub mod mach_vm;
+pub use mach_vm::Addr as MachVmAddr;
+pub use mach_vm::Size as MachVmSize;
+
 pub mod vm_statistics;
 pub use vm_statistics::VmAllocationFlags;
 
