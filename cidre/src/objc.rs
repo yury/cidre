@@ -683,12 +683,13 @@ pub struct Super {
 #[doc(hidden)]
 #[inline]
 pub unsafe fn msg_send_super_void(sup: &Super, sel: &Sel) {
-    unsafe extern "C" {
+    unsafe extern "C-unwind" {
         #[link_name = "objc_msgSendSuper"]
         fn msg_send_super();
     }
     unsafe {
-        let sig: extern "C" fn(&Super, &Sel) = std::mem::transmute(msg_send_super as *const c_void);
+        let sig: extern "C-unwind" fn(&Super, &Sel) =
+            std::mem::transmute(msg_send_super as *const c_void);
         sig(sup, sel)
     }
 }

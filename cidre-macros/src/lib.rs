@@ -1299,7 +1299,7 @@ fn gen_init_override(sel: &str, decl: &FnDecl, ty: &str) -> (String, String, Str
     let super_fn = format!(
         "
     fn super_{name}(self{rest_args}) {ret} {{
-        extern \"C\" {{
+        extern \"C-unwind\" {{
             #[link_name = \"objc_msgSendSuper\"]
             fn msg_send_super();
         }}
@@ -1312,7 +1312,7 @@ fn gen_init_override(sel: &str, decl: &FnDecl, ty: &str) -> (String, String, Str
                 receiver: std::mem::transmute::<Self, *mut objc::Id>(self),
                 super_class: <{ty}>::super_cls() as *const _ as *const objc::Class<objc::Id>,
             }};
-            let sig: extern \"C\" fn(*const objc::Super, *const std::ffi::c_void{sig_args}) {ret} =
+            let sig: extern \"C-unwind\" fn(*const objc::Super, *const std::ffi::c_void{sig_args}) {ret} =
                 std::mem::transmute(msg_send_super as *const std::ffi::c_void);
             {call}
         }}
@@ -1587,7 +1587,7 @@ fn gen_msg_send(
         let (externs, fn_ptr) = if x86_64 {
             (
                 "
-        extern \"C\" {
+        extern \"C-unwind\" {
             #[link_name = \"objc_msgSendSuper\"]
             fn msg_send_super();
             #[link_name = \"objc_msgSendSuper_stret\"]
@@ -1604,7 +1604,7 @@ fn gen_msg_send(
         } else {
             (
                 "
-        extern \"C\" {
+        extern \"C-unwind\" {
             #[link_name = \"objc_msgSendSuper\"]
             fn msg_send_super();
         }",
@@ -1628,7 +1628,7 @@ fn gen_msg_send(
                 super_class: {super_class},
             }};
             let fn_ptr = {fn_ptr};
-            let sig: extern \"C\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
+            let sig: extern \"C-unwind\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
 
             {call_args}
         }}
@@ -1642,7 +1642,7 @@ fn gen_msg_send(
     {doc_alias}
     #[inline]
     {pre} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
-        extern \"C\" {{
+        extern \"C-unwind\" {{
             #[link_name = \"objc_msgSend\"]
             fn msg_send();
             #[link_name = \"objc_msgSend_stret\"]
@@ -1659,7 +1659,7 @@ fn gen_msg_send(
             }} else {{
                 msg_send_stret as *const std::ffi::c_void
             }};
-            let sig: extern \"C\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
+            let sig: extern \"C-unwind\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
 
             {call_args}
         }}
@@ -1691,7 +1691,7 @@ fn gen_msg_send(
     {doc_alias}
     #[inline]
     {pre} {unsafe_str} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
-        extern \"C\" {{
+        extern \"C-unwind\" {{
             #[link_name = \"objc_msgSend\"]
             fn msg_send();
             #[link_name = \"objc_msgSend_stret\"]
@@ -1708,7 +1708,7 @@ fn gen_msg_send(
             }} else {{
                 msg_send_stret as *const std::ffi::c_void
             }};
-            let sig: extern \"C\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
+            let sig: extern \"C-unwind\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
 
             {call_args}
         }}
@@ -1723,14 +1723,14 @@ fn gen_msg_send(
     {doc_alias}
     #[inline]
     {pre} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
-        extern \"C\" {{
+        extern \"C-unwind\" {{
             #[link_name = \"objc_msgSend${sel}\"]
             fn msg_send();
         }}
 
         unsafe {{
             let fn_ptr = msg_send as *const std::ffi::c_void;
-            let sig: extern \"C\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
+            let sig: extern \"C-unwind\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
 
             {call_args}
         }}
@@ -1762,13 +1762,13 @@ fn gen_msg_send(
     {doc_alias}
     #[inline]
     {pre} {unsafe_str} fn {impl_fn_name}{gen}{args}{impl_ret_full} {{
-        extern \"C\" {{
+        extern \"C-unwind\" {{
             #[link_name = \"objc_msgSend${sel}\"]
             fn msg_send();
         }}
 
         let fn_ptr = msg_send as *const std::ffi::c_void;
-        let sig: extern \"C\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
+        let sig: extern \"C-unwind\" fn{fn_args} {impl_ret} = std::mem::transmute(fn_ptr);
 
         {call_args}
     }}

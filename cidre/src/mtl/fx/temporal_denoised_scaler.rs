@@ -405,6 +405,7 @@ impl TemporalDenoisedScalerBase {
                 lateout("q2") q2,
                 lateout("q3") q3,
                 clobber_abi("C"),
+                options(may_unwind),
             );
         }
 
@@ -428,6 +429,7 @@ impl TemporalDenoisedScalerBase {
                 in("q2") val.0.2,
                 in("q3") val.0.3,
                 clobber_abi("C"),
+                options(may_unwind),
             );
         }
     }
@@ -455,6 +457,7 @@ impl TemporalDenoisedScalerBase {
                 lateout("q2") q2,
                 lateout("q3") q3,
                 clobber_abi("C"),
+                options(may_unwind),
             );
         }
 
@@ -478,6 +481,7 @@ impl TemporalDenoisedScalerBase {
                 in("q2") val.0.2,
                 in("q3") val.0.3,
                 clobber_abi("C"),
+                options(may_unwind),
             );
         }
     }
