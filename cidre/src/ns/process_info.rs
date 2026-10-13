@@ -122,6 +122,34 @@ impl ProcessInfo {
     pub fn is_ios_app_on_vision(&self) -> bool;
 }
 
+pub mod notifications {
+    use crate::{api, ns};
+
+    /// Posted when [`ns::ProcessInfo::thermal_state`] changes, on a thread of the system's; the
+    /// notification's object is the process info.
+    #[doc(alias = "NSProcessInfoThermalStateDidChangeNotification")]
+    #[api::available(macos = 10.10, ios = 11.0, watchos = 4.0, tvos = 11.0)]
+    pub fn thermal_state_did_change() -> &'static ns::NotificationName {
+        unsafe { NSProcessInfoThermalStateDidChangeNotification }
+    }
+
+    /// Posted when Low Power Mode turns on or off (see
+    /// [`ns::ProcessInfo::is_low_power_mode_enabled`]).
+    #[doc(alias = "NSProcessInfoPowerStateDidChangeNotification")]
+    #[api::available(macos = 12.0, ios = 9.0, watchos = 2.0, tvos = 9.0)]
+    pub fn power_state_did_change() -> &'static ns::NotificationName {
+        unsafe { NSProcessInfoPowerStateDidChangeNotification }
+    }
+
+    #[api::weak]
+    unsafe extern "C" {
+        #[api::available(macos = 10.10, ios = 11.0, watchos = 4.0, tvos = 11.0)]
+        static NSProcessInfoThermalStateDidChangeNotification: &'static ns::NotificationName;
+        #[api::available(macos = 12.0, ios = 9.0, watchos = 2.0, tvos = 9.0)]
+        static NSProcessInfoPowerStateDidChangeNotification: &'static ns::NotificationName;
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::ns;
