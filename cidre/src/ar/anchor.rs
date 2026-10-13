@@ -21,7 +21,6 @@ impl arc::A<Anchor> {
                 in("q2") transform.0.2,
                 in("q3") transform.0.3,
                 clobber_abi("C"),
-                options(may_unwind),
             );
 
             std::mem::transmute(out)
@@ -53,7 +52,6 @@ impl arc::A<Anchor> {
                 in("q2") transform.0.2,
                 in("q3") transform.0.3,
                 clobber_abi("C"),
-                options(may_unwind),
             );
 
             std::mem::transmute(out)
@@ -120,7 +118,6 @@ impl Anchor {
                 lateout("q2") q2,
                 lateout("q3") q3,
                 clobber_abi("C"),
-                options(may_unwind),
             );
         }
         simd::f32x4x4(std::arch::aarch64::float32x4x4_t(q0, q1, q2, q3))

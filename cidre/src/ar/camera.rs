@@ -29,7 +29,6 @@ impl Camera {
                 lateout("q2") q2,
                 lateout("q3") q3,
                 clobber_abi("C"),
-                options(may_unwind),
             );
         }
 
@@ -52,7 +51,6 @@ impl Camera {
                 in("x0") self,
                 lateout("q0") q0,
                 clobber_abi("C"),
-                options(may_unwind),
             );
         }
 
@@ -114,8 +112,6 @@ impl Camera {
                 lateout("q3") q3,
 
                 clobber_abi("C"),
-
-                options(may_unwind),
             );
         }
 
@@ -155,7 +151,6 @@ impl Camera {
                 lateout("q2") q2,
                 lateout("q3") q3,
                 clobber_abi("C"),
-                options(may_unwind),
             );
         }
 
@@ -197,7 +192,6 @@ impl Camera {
                 lateout("d0") out_x,
                 lateout("d1") out_y,
                 clobber_abi("C"),
-                options(may_unwind),
             );
         }
 
@@ -242,7 +236,6 @@ impl Camera {
                 in("d7") viewport_size.height,
                 lateout("q0") plane,
                 clobber_abi("C"),
-                options(may_unwind),
             );
         }
 
@@ -281,7 +274,6 @@ impl Camera {
                 lateout("q2") q2,
                 lateout("q3") q3,
                 clobber_abi("C"),
-                options(may_unwind),
             );
         }
         simd::f32x4x4(std::arch::aarch64::float32x4x4_t(q0, q1, q2, q3))

@@ -47,7 +47,6 @@ impl DirectionalLightEstimate {
                 in("x0") self,
                 lateout("q0") q0,
                 clobber_abi("C"),
-                options(may_unwind),
             );
         }
 

@@ -25,7 +25,6 @@ impl RaycastResult {
                 lateout("q2") q2,
                 lateout("q3") q3,
                 clobber_abi("C"),
-                options(may_unwind),
             );
         }
         simd::f32x4x4(std::arch::aarch64::float32x4x4_t(q0, q1, q2, q3))
