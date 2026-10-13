@@ -50,10 +50,14 @@ pub use capture::MetadataOutput as CaptureMetadataOutput;
 pub use capture::MicMode as CaptureMicMode;
 pub use capture::MultiCamSession as CaptureMultiCamSession;
 pub use capture::Output as CaptureOutput;
+pub use capture::Photo as CapturePhoto;
+pub use capture::PhotoCaptureDelegate as CapturePhotoCaptureDelegate;
+pub use capture::PhotoCaptureDelegateImpl as CapturePhotoCaptureDelegateImpl;
 pub use capture::PhotoOutput as CapturePhotoOutput;
 pub use capture::PhotoQualityPrioritization as CapturePhotoQualityPrioritization;
 pub use capture::ReactionEffectState as CaptureReactionEffectState;
 pub use capture::ReactionType as CaptureReactionType;
+pub use capture::ResolvedPhotoSettings as CaptureResolvedPhotoSettings;
 pub use capture::Session as CaptureSession;
 pub use capture::SessionPreset as CaptureSessionPreset;
 pub use capture::Slider as CaptureSlider;
@@ -77,6 +81,12 @@ pub use capture::input_port_notifications as capture_input_port_notifications;
 pub use capture::session_err_key as capture_session_err_key;
 pub use capture::session_notifications as capture_session_notifications;
 
+#[cfg(target_os = "ios")]
+pub use capture::AspectRatio as CaptureAspectRatio;
+#[cfg(target_os = "ios")]
+pub use capture::Framing as CaptureFraming;
+#[cfg(target_os = "ios")]
+pub use capture::SmartFramingMonitor as CaptureSmartFramingMonitor;
 #[cfg(not(target_os = "macos"))]
 pub use capture::SysPressureFactors as CaptureSysPressureFactors;
 #[cfg(not(target_os = "macos"))]

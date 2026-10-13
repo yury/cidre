@@ -1,5 +1,10 @@
 use crate::{api, arc, av, define_obj_type, ns, objc};
 
+#[cfg(feature = "cm")]
+use crate::cm;
+#[cfg(feature = "cv")]
+use crate::cv;
+
 /// Constants indicating how photo quality should be prioritized against speed.
 #[doc(alias = "AVCapturePhotoQualityPrioritization")]
 #[repr(isize)]
@@ -34,6 +39,129 @@ impl PhotoOutput {
 
     #[objc::msg_send(isFastCapturePrioritizationSupported)]
     pub fn is_fast_capture_prioritization_supported(&self) -> bool;
+
+    /// The largest photos the output is prepared to deliver: one of the active format's
+    /// `supported_max_photo_dims`. Set before the session runs: changing it reconfigures the
+    /// capture pipeline.
+    #[cfg(feature = "cm")]
+    #[objc::msg_send(maxPhotoDimensions)]
+    #[api::available(ios = 16.0, macos = 13.0, maccatalyst = 16.0, tvos = 17.0)]
+    pub fn max_photo_dims(&self) -> cm::VideoDimensions;
+
+    #[cfg(feature = "cm")]
+    #[objc::msg_send(setMaxPhotoDimensions:)]
+    #[api::available(ios = 16.0, macos = 13.0, maccatalyst = 16.0, tvos = 17.0)]
+    pub fn set_max_photo_dims(&mut self, val: cm::VideoDimensions);
+
+    #[objc::msg_send(capturePhotoWithSettings:delegate:)]
+    pub unsafe fn capture_photo_throws<D: PhotoCaptureDelegate>(
+        &mut self,
+        settings: &PhotoSettings,
+        delegate: &D,
+    );
+
+    /// Takes a photo as `settings` say; `delegate` hears its progress and gets the photo (on a
+    /// queue of the output's). Settings are used once: a new instance for each photo. Throws
+    /// for settings the output cannot satisfy, or a delegate without the callbacks they need.
+    pub fn capture_photo<'ear, D: PhotoCaptureDelegate>(
+        &mut self,
+        settings: &PhotoSettings,
+        delegate: &D,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe { self.capture_photo_throws(settings, delegate) })
+    }
+}
+
+/// Hears the progress of a photo taken with [`PhotoOutput::capture_photo`], on a queue of the
+/// output's: `will_begin_capture` first, `did_finish_capture` last.
+#[objc::protocol(AVCapturePhotoCaptureDelegate)]
+pub trait PhotoCaptureDelegate: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(captureOutput:willBeginCaptureForResolvedSettings:)]
+    fn capture_output_will_begin_capture(
+        &mut self,
+        output: &PhotoOutput,
+        resolved_settings: &ResolvedPhotoSettings,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(captureOutput:willCapturePhotoForResolvedSettings:)]
+    fn capture_output_will_capture_photo(
+        &mut self,
+        output: &PhotoOutput,
+        resolved_settings: &ResolvedPhotoSettings,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(captureOutput:didCapturePhotoForResolvedSettings:)]
+    fn capture_output_did_capture_photo(
+        &mut self,
+        output: &PhotoOutput,
+        resolved_settings: &ResolvedPhotoSettings,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(captureOutput:didFinishProcessingPhoto:error:)]
+    fn capture_output_did_finish_processing_photo(
+        &mut self,
+        output: &PhotoOutput,
+        photo: &Photo,
+        error: Option<&ns::Error>,
+    );
+
+    #[objc::optional]
+    #[objc::msg_send(captureOutput:didFinishCaptureForResolvedSettings:error:)]
+    fn capture_output_did_finish_capture(
+        &mut self,
+        output: &PhotoOutput,
+        resolved_settings: &ResolvedPhotoSettings,
+        error: Option<&ns::Error>,
+    );
+}
+
+define_obj_type!(
+    /// The settings a photo was actually taken with, matched to its [`PhotoSettings`] by
+    /// `unique_id`.
+    #[doc(alias = "AVCaptureResolvedPhotoSettings")]
+    pub ResolvedPhotoSettings(ns::Id)
+);
+
+impl ResolvedPhotoSettings {
+    #[objc::msg_send(uniqueID)]
+    pub fn unique_id(&self) -> i64;
+
+    /// The photo's dimensions.
+    #[cfg(feature = "cm")]
+    #[objc::msg_send(photoDimensions)]
+    pub fn photo_dims(&self) -> cm::VideoDimensions;
+}
+
+define_obj_type!(
+    /// A photo taken with a [`PhotoOutput`].
+    #[doc(alias = "AVCapturePhoto")]
+    pub Photo(ns::Id)
+);
+
+impl Photo {
+    /// When the photo was taken (the device clock's time).
+    #[cfg(feature = "cm")]
+    #[objc::msg_send(timestamp)]
+    pub fn timestamp(&self) -> cm::Time;
+
+    /// The photo's pixels, where an uncompressed format was asked for; `None` for an encoded
+    /// one.
+    #[cfg(feature = "cv")]
+    #[objc::msg_send(pixelBuffer)]
+    pub fn pixel_buf(&self) -> Option<&cv::PixelBuf>;
+
+    #[objc::msg_send(resolvedSettings)]
+    pub fn resolved_settings(&self) -> arc::R<ResolvedPhotoSettings>;
+
+    /// The photo as a file (HEIC or JPEG, with its metadata) to write or add to the Photos
+    /// library.
+    #[objc::msg_send(fileDataRepresentation)]
+    #[api::available(ios = 11.0, macos = 10.15, maccatalyst = 14.0, tvos = 17.0)]
+    pub fn file_data_representation(&self) -> Option<arc::R<ns::Data>>;
 }
 
 define_obj_type!(
@@ -44,6 +172,22 @@ define_obj_type!(
 );
 
 impl PhotoSettings {
+    /// Settings for a processed photo in `format` (its codec, for one): `None` for the default.
+    #[objc::msg_send(photoSettingsWithFormat:)]
+    pub fn with_format(format: Option<&ns::Dictionary<ns::String, ns::Id>>) -> arc::R<Self>;
+
+    /// The largest this photo may be: one of the active format's `supported_max_photo_dims`,
+    /// no larger than the output's `max_photo_dims`. The smallest supported by default.
+    #[cfg(feature = "cm")]
+    #[objc::msg_send(maxPhotoDimensions)]
+    #[api::available(ios = 16.0, macos = 13.0, maccatalyst = 16.0, tvos = 17.0)]
+    pub fn max_photo_dims(&self) -> cm::VideoDimensions;
+
+    #[cfg(feature = "cm")]
+    #[objc::msg_send(setMaxPhotoDimensions:)]
+    #[api::available(ios = 16.0, macos = 13.0, maccatalyst = 16.0, tvos = 17.0)]
+    pub fn set_max_photo_dims(&mut self, val: cm::VideoDimensions);
+
     /// A 64-bit number that uniquely identifies this instance.
     ///
     /// When you create an instance of av::capture::PhotoSettings, a unique_id is generated automatically.
@@ -105,5 +249,12 @@ mod tests {
         assert_eq!(a.flash_mode(), av::CaptureFlashMode::Auto);
 
         assert_eq!(a.is_auto_red_eye_reduction_enabled(), false);
+
+        let c = capture::PhotoSettings::with_format(None);
+        assert_ne!(c.unique_id(), a.unique_id());
+        assert_eq!(
+            c.processed_file_type().as_deref(),
+            Some(av::FileType::jpeg())
+        );
     }
 }

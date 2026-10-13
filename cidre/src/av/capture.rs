@@ -31,6 +31,8 @@ pub use device::Format as DeviceFormat;
 pub use device::FrameRateRange;
 pub use device::MicMode;
 pub use device::Pos as DevicePos;
+pub use device::PrimaryConstituentDeviceRestrictedSwitchingBehaviorConditions;
+pub use device::PrimaryConstituentDeviceSwitchingBehavior;
 pub use device::RotationCoordinator as DeviceRotationCoordinator;
 pub use device::TorchMode;
 pub use device::Type as DeviceType;
@@ -87,9 +89,13 @@ pub mod video_preview_layer;
 pub use video_preview_layer::VideoPreviewLayer;
 
 pub mod photo_output;
+pub use photo_output::Photo;
+pub use photo_output::PhotoCaptureDelegate;
+pub use photo_output::PhotoCaptureDelegateImpl;
 pub use photo_output::PhotoOutput;
 pub use photo_output::PhotoQualityPrioritization;
 pub use photo_output::PhotoSettings;
+pub use photo_output::ResolvedPhotoSettings;
 
 pub mod audio_data_output;
 pub use audio_data_output::AudioDataOutput;
@@ -97,6 +103,15 @@ pub use audio_data_output::AudioDataOutput;
 pub use audio_data_output::AudioDataOutputSampleBufDelegate;
 #[cfg(feature = "cm")]
 pub use audio_data_output::AudioDataOutputSampleBufDelegateImpl;
+
+#[cfg(target_os = "ios")]
+pub mod smart_framing;
+#[cfg(target_os = "ios")]
+pub use smart_framing::AspectRatio;
+#[cfg(target_os = "ios")]
+pub use smart_framing::Framing;
+#[cfg(target_os = "ios")]
+pub use smart_framing::SmartFramingMonitor;
 
 #[cfg(not(target_os = "macos"))]
 pub mod system_pressure;

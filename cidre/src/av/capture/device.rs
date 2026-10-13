@@ -401,6 +401,232 @@ impl Device {
     pub fn virtual_device_switch_over_video_zoom_factors(&self) -> arc::R<ns::Array<ns::Number>>;
 }
 
+/// How a virtual device switches between its constituent devices.
+#[doc(alias = "AVCapturePrimaryConstituentDeviceSwitchingBehavior")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum PrimaryConstituentDeviceSwitchingBehavior {
+    /// A physical device, or one that cannot switch.
+    Unsupported = 0,
+    /// Switches freely: on zoom, focus distance and light.
+    Auto = 1,
+    /// Switches only on the conditions of
+    /// [`PrimaryConstituentDeviceRestrictedSwitchingBehaviorConditions`].
+    Restricted = 2,
+    /// Stays on the active primary constituent device.
+    Locked = 3,
+}
+
+crate::define_opts!(
+    /// When a [`PrimaryConstituentDeviceSwitchingBehavior::Restricted`] device may switch.
+    #[doc(alias = "AVCapturePrimaryConstituentDeviceRestrictedSwitchingBehaviorConditions")]
+    pub PrimaryConstituentDeviceRestrictedSwitchingBehaviorConditions(usize)
+);
+
+impl PrimaryConstituentDeviceRestrictedSwitchingBehaviorConditions {
+    pub const NONE: Self = Self(0);
+    pub const VIDEO_ZOOM_CHANGED: Self = Self(1 << 0);
+    pub const FOCUS_MODE_CHANGED: Self = Self(1 << 1);
+    pub const EXPOSURE_MODE_CHANGED: Self = Self(1 << 2);
+}
+
+/// AVCaptureDevicePrimaryConstituentDeviceSwitching
+impl Device {
+    /// The switching behavior set (see [`ConfigLockGuard::set_primary_constituent_device_switching_behavior`]).
+    #[objc::msg_send(primaryConstituentDeviceSwitchingBehavior)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
+    pub fn primary_constituent_device_switching_behavior(
+        &self,
+    ) -> PrimaryConstituentDeviceSwitchingBehavior;
+
+    #[objc::msg_send(primaryConstituentDeviceRestrictedSwitchingBehaviorConditions)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
+    pub fn primary_constituent_device_restricted_switching_behavior_conditions(
+        &self,
+    ) -> PrimaryConstituentDeviceRestrictedSwitchingBehaviorConditions;
+
+    /// The switching behavior in effect: the one set, or a movie file output's while recording.
+    #[objc::msg_send(activePrimaryConstituentDeviceSwitchingBehavior)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
+    pub fn active_primary_constituent_device_switching_behavior(
+        &self,
+    ) -> PrimaryConstituentDeviceSwitchingBehavior;
+
+    #[objc::msg_send(activePrimaryConstituentDeviceRestrictedSwitchingBehaviorConditions)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
+    pub fn active_primary_constituent_device_restricted_switching_behavior_conditions(
+        &self,
+    ) -> PrimaryConstituentDeviceRestrictedSwitchingBehaviorConditions;
+
+    /// The constituent device the virtual device's frames come from now. Key-value observable.
+    #[objc::msg_send(activePrimaryConstituentDevice)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
+    pub fn active_primary_constituent_device(&self) -> Option<arc::R<Device>>;
+
+    /// The constituent devices that may stand in for one with a longer focal length when its
+    /// light sensitivity or minimum focus distance limits it.
+    #[objc::msg_send(supportedFallbackPrimaryConstituentDevices)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
+    pub fn supported_fallback_primary_constituent_devices(&self) -> arc::R<ns::Array<Device>>;
+
+    /// The fallback devices allowed: all of the supported ones by default.
+    #[objc::msg_send(fallbackPrimaryConstituentDevices)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
+    pub fn fallback_primary_constituent_devices(&self) -> arc::R<ns::Array<Device>>;
+
+    #[objc::msg_send(setFallbackPrimaryConstituentDevices:)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
+    unsafe fn set_fallback_primary_constituent_devices_throws(&mut self, val: &ns::Array<Device>);
+
+    #[objc::msg_send(setPrimaryConstituentDeviceSwitchingBehavior:restrictedSwitchingBehaviorConditions:)]
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
+    unsafe fn set_primary_constituent_device_switching_behavior_throws(
+        &mut self,
+        behavior: PrimaryConstituentDeviceSwitchingBehavior,
+        conditions: PrimaryConstituentDeviceRestrictedSwitchingBehaviorConditions,
+    );
+
+    /// Whether [`ConfigLockGuard::set_primary_constituent_device_switching_behavior_locked_with_device`]
+    /// is supported.
+    #[objc::msg_send(isPrimaryConstituentDeviceSwitchingBehaviorLockedWithDeviceSupported)]
+    #[api::available(macos = 27.0, ios = 27.0, maccatalyst = 27.0, tvos = 27.0)]
+    pub fn is_primary_constituent_device_switching_behavior_locked_with_device_supported(
+        &self,
+    ) -> bool;
+
+    #[objc::msg_send(setPrimaryConstituentDeviceSwitchingBehaviorLockedWithDevice:)]
+    #[api::available(macos = 27.0, ios = 27.0, maccatalyst = 27.0, tvos = 27.0)]
+    unsafe fn set_primary_constituent_device_switching_behavior_locked_with_device_throws(
+        &mut self,
+        device: &Device,
+    );
+}
+
+/// AVCaptureDevicePrimaryConstituentDeviceSwitching
+impl<'a> ConfigLockGuard<'a> {
+    /// Sets how the virtual device switches between its constituent devices; `conditions` must
+    /// be [`PrimaryConstituentDeviceRestrictedSwitchingBehaviorConditions::NONE`] unless
+    /// `behavior` is [`PrimaryConstituentDeviceSwitchingBehavior::Restricted`]. Throws if the
+    /// device cannot switch.
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
+    pub fn set_primary_constituent_device_switching_behavior<'ear>(
+        &mut self,
+        behavior: PrimaryConstituentDeviceSwitchingBehavior,
+        conditions: PrimaryConstituentDeviceRestrictedSwitchingBehaviorConditions,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.device
+                .set_primary_constituent_device_switching_behavior_throws(behavior, conditions)
+        })
+    }
+
+    /// Allows only `devices` (of the supported fallback devices) as fallbacks. Throws for any
+    /// other device.
+    #[api::available(macos = 12.0, ios = 15.0, maccatalyst = 15.0, tvos = 17.0)]
+    pub fn set_fallback_primary_constituent_devices<'ear>(
+        &mut self,
+        devices: &ns::Array<Device>,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.device
+                .set_fallback_primary_constituent_devices_throws(devices)
+        })
+    }
+
+    /// Locks the virtual device on its constituent `device`, which becomes the active primary
+    /// constituent device; [`PrimaryConstituentDeviceSwitchingBehavior::Auto`] unlocks it.
+    /// Throws where locking is not supported (see
+    /// [`Device::is_primary_constituent_device_switching_behavior_locked_with_device_supported`]).
+    #[api::available(macos = 27.0, ios = 27.0, maccatalyst = 27.0, tvos = 27.0)]
+    pub fn set_primary_constituent_device_switching_behavior_locked_with_device<'ear>(
+        &mut self,
+        device: &Device,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.device
+                .set_primary_constituent_device_switching_behavior_locked_with_device_throws(device)
+        })
+    }
+}
+
+/// AVCaptureDeviceDynamicAspectRatio, AVCaptureDeviceSmartFraming
+#[cfg(target_os = "ios")]
+impl Device {
+    /// The aspect ratio the device outputs now: the first of its active format's
+    /// [`Format::supported_dynamic_aspect_ratios`]; `None` where it has none. Key-value
+    /// observable.
+    #[objc::msg_send(dynamicAspectRatio)]
+    #[api::available(ios = 26.0)]
+    pub fn dynamic_aspect_ratio(&self) -> Option<arc::R<av::CaptureAspectRatio>>;
+
+    /// The output buffers' dimensions at the dynamic aspect ratio; zeros where the format has
+    /// none. Key-value observable.
+    #[cfg(feature = "cm")]
+    #[objc::msg_send(dynamicDimensions)]
+    #[api::available(ios = 26.0)]
+    pub fn dynamic_dims(&self) -> cm::VideoDimensions;
+
+    #[cfg(all(feature = "blocks", feature = "cm"))]
+    #[objc::msg_send(setDynamicAspectRatio:completionHandler:)]
+    #[api::available(ios = 26.0)]
+    unsafe fn set_dynamic_aspect_ratio_ch_throws(
+        &mut self,
+        val: &av::CaptureAspectRatio,
+        ch: Option<&mut blocks::EscBlock<fn(sync_time: cm::Time, error: Option<&ns::Error>)>>,
+    );
+
+    /// The device's smart framing monitor, where an ultra wide camera that supports dynamic
+    /// aspect ratios has one.
+    #[objc::msg_send(smartFramingMonitor)]
+    #[api::available(ios = 26.0)]
+    pub fn smart_framing_monitor(&self) -> Option<arc::R<av::CaptureSmartFramingMonitor>>;
+
+    /// The focal length of the device's lens in 35 mm film terms.
+    #[objc::msg_send(nominalFocalLengthIn35mmFilm)]
+    #[api::available(ios = 26.0)]
+    pub fn nominal_focal_length_in_35mm_film(&self) -> f32;
+}
+
+/// AVCaptureDeviceDynamicAspectRatio
+#[cfg(all(target_os = "ios", feature = "blocks", feature = "cm"))]
+impl<'a> ConfigLockGuard<'a> {
+    /// Sets the aspect ratio the device outputs, one of its active format's
+    /// [`Format::supported_dynamic_aspect_ratios`] (throws otherwise); `ch` gets the device
+    /// clock's time of the first buffer with it, or why it was not set.
+    #[api::available(ios = 26.0)]
+    pub fn set_dynamic_aspect_ratio<'ear>(
+        &mut self,
+        val: &av::CaptureAspectRatio,
+        ch: Option<&mut blocks::EscBlock<fn(sync_time: cm::Time, error: Option<&ns::Error>)>>,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe { self.device.set_dynamic_aspect_ratio_ch_throws(val, ch) })
+    }
+}
+
+/// AVCaptureDeviceFormatDynamicAspectRatio, AVCaptureDeviceFormatSmartFraming
+#[cfg(target_os = "ios")]
+impl Format {
+    /// The aspect ratios the device can switch between on this format.
+    #[objc::msg_send(supportedDynamicAspectRatios)]
+    #[api::available(ios = 26.0)]
+    pub fn supported_dynamic_aspect_ratios(&self) -> arc::R<ns::Array<av::CaptureAspectRatio>>;
+
+    /// Whether the device's smart framing monitor makes recommendations on this format.
+    #[objc::msg_send(isSmartFramingSupported)]
+    #[api::available(ios = 26.0)]
+    pub fn is_smart_framing_supported(&self) -> bool;
+}
+
+/// AVCaptureDeviceSystemPressure
+#[cfg(not(target_os = "macos"))]
+impl Device {
+    /// How hard the system works to run the device (thermal state, peak power, depth module
+    /// temperature). Key-value observable: a frame rate lowered at `fair` or `serious` keeps it
+    /// from reaching `shutdown`.
+    #[objc::msg_send(systemPressureState)]
+    pub fn sys_pressure_state(&self) -> arc::R<av::CaptureSysPressureState>;
+}
+
 /// AVCaptureDeviceDeskViewCamera
 impl Device {
     /// A reference to the Desk View Camera that is associated with and derived from
@@ -2278,6 +2504,18 @@ impl Format {
     #[cfg(not(target_os = "macos"))]
     #[objc::msg_send(videoZoomFactorUpscaleThreshold)]
     pub fn video_zoom_factor_upscale_threshold(&self) -> cg::Float;
+
+    /// The photo dimensions a [`crate::av::CapturePhotoOutput`] can deliver on this format,
+    /// as `ns::Value`s of `cm::VideoDimensions` (see `ns::Value::cm_video_dimensions_value`).
+    #[objc::msg_send(supportedMaxPhotoDimensions)]
+    #[api::available(ios = 16.0, macos = 13.0, maccatalyst = 16.0, tvos = 17.0)]
+    pub fn supported_max_photo_dims(&self) -> arc::R<ns::Array<ns::Value>>;
+
+    /// The zoom range the system recommends for a slider over this format; `None` where it
+    /// recommends none.
+    #[objc::msg_send(systemRecommendedVideoZoomRange)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn sys_recommended_video_zoom_range(&self) -> Option<arc::R<ZoomRange>>;
 
     /// Zoom factors at which the format delivers full resolution from a crop of the sensor,
     /// with no upscaling (a 48 MP sensor's 2x).
