@@ -99,6 +99,9 @@ pub use rotation_gesture_recognizer::RotationGestureRecognizer;
 mod label;
 pub use label::Label;
 
+mod image_view;
+pub use image_view::ImageView;
+
 mod control;
 pub use control::Control;
 pub use control::ControlContentHorizontalAlignment;

@@ -103,6 +103,12 @@ impl View {
     #[objc::msg_send(setAlpha:)]
     pub fn set_alpha(&mut self, val: cg::Float);
 
+    #[objc::msg_send(tintColor)]
+    pub fn tint_color(&self) -> arc::R<ui::Color>;
+
+    #[objc::msg_send(setTintColor:)]
+    pub fn set_tint_color(&mut self, val: Option<&ui::Color>);
+
     #[objc::msg_send(isUserInteractionEnabled)]
     pub fn is_user_interaction_enabled(&self) -> bool;
 
