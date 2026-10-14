@@ -276,6 +276,26 @@ impl Output<UninitializedState> {
         Ok(Self(unit))
     }
 
+    /// The output unit that plays to the system's default output device, and follows it when
+    /// the user picks another.
+    #[cfg(target_os = "macos")]
+    pub fn new_default() -> os::Result<Self> {
+        let desc = audio::ComponentDesc {
+            type_: au::Type::OUTPUT.0,
+            sub_type: au::SubType::DEFAULT_OUTPUT.0,
+            manufacturer: au::Manufacturer::APPLE.0,
+            flags: 0,
+            flags_mask: 0,
+        };
+
+        let comp = desc
+            .into_iter()
+            .next()
+            .ok_or(au::component_err::UNSUPPORTED_TYPE)?;
+        let unit = comp.open_unit()?;
+        Ok(Self(unit))
+    }
+
     #[doc(alias = "AudioUnitInitialize")]
     pub fn allocate_resources(self) -> os::Result<Output<InitializedState>> {
         Ok(Output(self.0.initialize()?))
