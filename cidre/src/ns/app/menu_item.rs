@@ -112,6 +112,13 @@ impl MenuItem {
     #[objc::msg_send(setToolTip:)]
     pub fn set_tool_tip(&mut self, val: Option<&ns::String>);
 
+    /// A second line under the title.
+    #[objc::msg_send(subtitle)]
+    pub fn subtitle(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(setSubtitle:)]
+    pub fn set_subtitle(&mut self, val: Option<&ns::String>);
+
     #[objc::msg_send(isHighlighted)]
     pub fn is_highlighted(&self) -> bool;
 }
