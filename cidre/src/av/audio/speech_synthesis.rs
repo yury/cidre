@@ -2,7 +2,7 @@
 use crate::blocks;
 use crate::{
     arc,
-    av::AuthorizationStatus,
+    av::{self, AuthorizationStatus},
     define_obj_type, define_opts, ns,
     objc::{self, Obj},
 };
@@ -104,11 +104,40 @@ impl Voice {
     #[objc::msg_send(audioFileSettings)]
     pub fn audio_file_settings(&self) -> Option<arc::R<ns::Dictionary<ns::String, ns::Id>>>;
 
+    #[objc::msg_send(voiceTraits)]
+    pub fn traits(&self) -> VoiceTraits;
+
     #[objc::msg_send(voiceWithLanguage:)]
     pub fn with_lang(lang_code: Option<&ns::String>) -> Option<arc::R<Self>>;
 
     #[objc::msg_send(voiceWithIdentifier:)]
     pub fn with_id(identifier: &ns::String) -> Option<arc::R<Self>>;
+
+    /// The identifier of the Alex voice.
+    #[doc(alias = "AVSpeechSynthesisVoiceIdentifierAlex")]
+    #[inline]
+    pub fn id_alex() -> &'static ns::String {
+        unsafe { AVSpeechSynthesisVoiceIdentifierAlex }
+    }
+}
+
+impl ns::AttrStringKey {
+    /// An attribute key with an IPA pronunciation string for the range it covers.
+    #[doc(alias = "AVSpeechSynthesisIPANotationAttribute")]
+    #[inline]
+    pub fn speech_synthesis_ipa_notation() -> &'static Self {
+        unsafe { AVSpeechSynthesisIPANotationAttribute }
+    }
+}
+
+impl ns::NotificationName {
+    /// Posted when the voices available change: one is downloaded, deleted, or a personal voice
+    /// is made.
+    #[doc(alias = "AVSpeechSynthesisAvailableVoicesDidChangeNotification")]
+    #[inline]
+    pub fn speech_synthesis_available_voices_did_change() -> &'static Self {
+        unsafe { AVSpeechSynthesisAvailableVoicesDidChangeNotification }
+    }
 }
 
 define_obj_type!(
@@ -194,13 +223,13 @@ impl Utterance {
     pub fn pre_utterance_delay(&self) -> ns::TimeInterval;
 
     #[objc::msg_send(setPreUtteranceDelay:)]
-    pub fn set_pre_utterance_delay(&self, val: ns::TimeInterval);
+    pub fn set_pre_utterance_delay(&mut self, val: ns::TimeInterval);
 
     #[objc::msg_send(postUtteranceDelay)]
     pub fn post_utterance_delay(&self) -> ns::TimeInterval;
 
     #[objc::msg_send(setPostUtteranceDelay:)]
-    pub fn set_post_utterance_delay(&self, val: ns::TimeInterval);
+    pub fn set_post_utterance_delay(&mut self, val: ns::TimeInterval);
 }
 
 #[objc::protocol(AVSpeechSynthesizerDelegate)]
@@ -222,7 +251,7 @@ pub trait Delegate: Obj {
     );
 
     #[objc::optional]
-    #[objc::msg_send(speechSynthesizer:didFinishSpeechUtterance:)]
+    #[objc::msg_send(speechSynthesizer:didPauseSpeechUtterance:)]
     fn speech_synthesizer_did_pause_speech_utterance(
         &mut self,
         synthesizer: &Synthesizer,
@@ -289,6 +318,85 @@ impl Synthesizer {
         ns::try_catch(|| unsafe { self.speak_utterance_throws(utterance) })
     }
 
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(writeUtterance:toBufferCallback:)]
+    pub unsafe fn write_utterance_block_throws(
+        &mut self,
+        utterance: &Utterance,
+        buffer_callback: &mut BufCallback,
+    );
+
+    /// Synthesizes `utterance` into audio buffers instead of playing it. `buffer_callback` gets
+    /// the buffers (`av::AudioPcmBuf`s in the voice's format, 22.05 kHz mono f32 for the system
+    /// voices) on the main queue whichever thread writes, and a last one with no frames when the
+    /// utterance is done. They come faster than real time.
+    ///
+    /// Writing the same [`av::SpeechUtterance`] that is already enqueued or is speaking raises
+    /// an exception.
+    #[cfg(feature = "blocks")]
+    pub fn write_utterance_block<'ear>(
+        &mut self,
+        utterance: &Utterance,
+        buffer_callback: &mut BufCallback,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe { self.write_utterance_block_throws(utterance, buffer_callback) })
+    }
+
+    /// See [`Self::write_utterance_block`].
+    #[cfg(feature = "blocks")]
+    pub fn write_utterance<'ear>(
+        &mut self,
+        utterance: &Utterance,
+        buffer_callback: impl FnMut(&av::AudioBuf) + Send + 'static,
+    ) -> ns::ExResult<'ear> {
+        let mut buffer_callback = BufCallback::new1(buffer_callback);
+        self.write_utterance_block(utterance, &mut buffer_callback)
+    }
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(writeUtterance:toBufferCallback:toMarkerCallback:)]
+    pub unsafe fn write_utterance_with_markers_block_throws(
+        &mut self,
+        utterance: &Utterance,
+        buffer_callback: &mut BufCallback,
+        marker_callback: &mut MarkerCallback,
+    );
+
+    /// As [`Self::write_utterance_block`], with the utterance's markers (words, sentences,
+    /// bookmarks) given to `marker_callback` as they are synthesized.
+    #[cfg(feature = "blocks")]
+    pub fn write_utterance_with_markers_block<'ear>(
+        &mut self,
+        utterance: &Utterance,
+        buffer_callback: &mut BufCallback,
+        marker_callback: &mut MarkerCallback,
+    ) -> ns::ExResult<'ear> {
+        ns::try_catch(|| unsafe {
+            self.write_utterance_with_markers_block_throws(
+                utterance,
+                buffer_callback,
+                marker_callback,
+            )
+        })
+    }
+
+    /// See [`Self::write_utterance_with_markers_block`].
+    #[cfg(feature = "blocks")]
+    pub fn write_utterance_with_markers<'ear>(
+        &mut self,
+        utterance: &Utterance,
+        buffer_callback: impl FnMut(&av::AudioBuf) + Send + 'static,
+        marker_callback: impl FnMut(&ns::Array<Marker>) + Send + 'static,
+    ) -> ns::ExResult<'ear> {
+        let mut buffer_callback = BufCallback::new1(buffer_callback);
+        let mut marker_callback = MarkerCallback::new1(marker_callback);
+        self.write_utterance_with_markers_block(
+            utterance,
+            &mut buffer_callback,
+            &mut marker_callback,
+        )
+    }
+
     #[objc::msg_send(stopSpeakingAtBoundary:)]
     pub fn _stop_speaking_at_boundary(&mut self, boundery: SpeechBoundery) -> bool;
 
@@ -322,6 +430,14 @@ impl Synthesizer {
         }
     }
     #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+    #[objc::msg_send(outputChannels)]
+    pub fn output_channels(&self) -> Option<arc::R<ns::Array<av::audio::session::ChannelDesc>>>;
+
+    #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
+    #[objc::msg_send(setOutputChannels:)]
+    pub fn set_output_channels(&mut self, val: Option<&ns::Array<av::audio::session::ChannelDesc>>);
+
+    #[cfg(any(target_os = "ios", target_os = "watchos", target_os = "tvos"))]
     #[objc::msg_send(usesApplicationAudioSession)]
     pub fn uses_app_audio_session(&self) -> bool;
 
@@ -342,28 +458,137 @@ impl Synthesizer {
 
     #[cfg(feature = "blocks")]
     #[objc::msg_send(requestPersonalVoiceAuthorizationWithCompletionHandler:)]
-    fn request_personal_voice_authorization_ch(
+    pub fn request_personal_voice_authorization_ch_block(
         block: &mut blocks::SendBlock<fn(AuthorizationStatus)>,
     );
+
+    /// Asks the user to let the app use their personal voices; `handler` gets the answer on a
+    /// queue of the synthesizer's.
+    #[cfg(feature = "blocks")]
+    pub fn request_personal_voice_authorization_ch(
+        handler: impl FnMut(AuthorizationStatus) + Send + 'static,
+    ) {
+        let mut block = blocks::SendBlock::new1(handler);
+        Self::request_personal_voice_authorization_ch_block(&mut block);
+    }
 
     #[cfg(all(feature = "async", feature = "blocks"))]
     pub async fn request_personal_voice_authorization() -> AuthorizationStatus {
         let (future, mut block) = blocks::comp1();
-        Self::request_personal_voice_authorization_ch(&mut block);
+        Self::request_personal_voice_authorization_ch_block(&mut block);
         future.await
     }
 }
 
+#[doc(alias = "AVSpeechSynthesizerBufferCallback")]
+#[cfg(feature = "blocks")]
+pub type BufCallback = blocks::SendBlock<fn(&av::AudioBuf)>;
+
+#[doc(alias = "AVSpeechSynthesizerMarkerCallback")]
+#[cfg(feature = "blocks")]
+pub type MarkerCallback = blocks::SendBlock<fn(&ns::Array<Marker>)>;
+
 define_obj_type!(
     #[doc(alias = "AVSpeechSynthesisMarker")]
-    pub Marker(ns::Id)
+    pub Marker(ns::Id),
+    sym AVSpeechSynthesisMarker
 );
+
+impl arc::A<Marker> {
+    #[objc::msg_send(initWithMarkerType:forTextRange:atByteSampleOffset:)]
+    pub fn init_with_mark(
+        self,
+        mark: MarkerMark,
+        text_range: ns::Range,
+        byte_sample_offset: usize,
+    ) -> arc::R<Marker>;
+
+    #[objc::msg_send(initWithWordRange:atByteSampleOffset:)]
+    pub fn init_with_word_range(
+        self,
+        range: ns::Range,
+        byte_sample_offset: isize,
+    ) -> arc::R<Marker>;
+
+    #[objc::msg_send(initWithSentenceRange:atByteSampleOffset:)]
+    pub fn init_with_sentence_range(
+        self,
+        range: ns::Range,
+        byte_sample_offset: isize,
+    ) -> arc::R<Marker>;
+
+    #[objc::msg_send(initWithParagraphRange:atByteSampleOffset:)]
+    pub fn init_with_paragraph_range(
+        self,
+        range: ns::Range,
+        byte_sample_offset: isize,
+    ) -> arc::R<Marker>;
+
+    #[objc::msg_send(initWithPhonemeString:atByteSampleOffset:)]
+    pub fn init_with_phoneme(
+        self,
+        phoneme: &ns::String,
+        byte_sample_offset: isize,
+    ) -> arc::R<Marker>;
+
+    #[objc::msg_send(initWithBookmarkName:atByteSampleOffset:)]
+    pub fn init_with_bookmark_name(
+        self,
+        name: &ns::String,
+        byte_sample_offset: isize,
+    ) -> arc::R<Marker>;
+}
+
+impl Marker {
+    #[inline]
+    pub fn with_mark(
+        mark: MarkerMark,
+        text_range: ns::Range,
+        byte_sample_offset: usize,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_mark(mark, text_range, byte_sample_offset)
+    }
+
+    #[objc::msg_send(mark)]
+    pub fn mark(&self) -> MarkerMark;
+
+    #[objc::msg_send(setMark:)]
+    pub fn set_mark(&mut self, val: MarkerMark);
+
+    /// The byte offset into the audio buffer.
+    #[objc::msg_send(byteSampleOffset)]
+    pub fn byte_sample_offset(&self) -> usize;
+
+    #[objc::msg_send(setByteSampleOffset:)]
+    pub fn set_byte_sample_offset(&mut self, val: usize);
+
+    /// The location and length of the request's text.
+    #[objc::msg_send(textRange)]
+    pub fn text_range(&self) -> ns::Range;
+
+    #[objc::msg_send(setTextRange:)]
+    pub fn set_text_range(&mut self, val: ns::Range);
+
+    #[objc::msg_send(bookmarkName)]
+    pub fn bookmark_name(&self) -> arc::R<ns::String>;
+
+    #[objc::msg_send(setBookmarkName:)]
+    pub fn set_bookmark_name(&mut self, val: &ns::String);
+
+    #[objc::msg_send(phoneme)]
+    pub fn phoneme(&self) -> arc::R<ns::String>;
+
+    #[objc::msg_send(setPhoneme:)]
+    pub fn set_phoneme(&mut self, val: &ns::String);
+}
 
 unsafe extern "C" {
     static AVSpeechUtteranceMinimumSpeechRate: f32;
     static AVSpeechUtteranceMaximumSpeechRate: f32;
     static AVSpeechUtteranceDefaultSpeechRate: f32;
-
+    static AVSpeechSynthesisVoiceIdentifierAlex: &'static ns::String;
+    static AVSpeechSynthesisIPANotationAttribute: &'static ns::AttrStringKey;
+    static AVSpeechSynthesisAvailableVoicesDidChangeNotification: &'static ns::NotificationName;
 }
 
 #[cfg(test)]
@@ -404,6 +629,43 @@ mod tests {
             res,
             av::SpeechSynthesizer::personal_voice_authorization_status()
         );
+    }
+
+    #[test]
+    fn write_utterance() {
+        let voice = av::SpeechSynthesisVoice::with_lang(Some(ns::str!(c"en-US"))).unwrap();
+        assert!(
+            !voice
+                .traits()
+                .contains(av::SpeechSynthesisVoiceTraits::IS_PERSONAL_VOICE)
+        );
+        let mut ut = av::SpeechUtterance::with_string(ns::str!(c"Hello, world"));
+        ut.set_voice(Some(&voice));
+        ut.set_post_utterance_delay(0.0);
+
+        // The buffers come on the main queue, which a test's thread never runs.
+        let mut synth = av::SpeechSynthesizer::new();
+        synth
+            .write_utterance_with_markers(&ut, |_buf| {}, |_markers| {})
+            .unwrap();
+    }
+
+    #[test]
+    fn marker() {
+        let range = ns::Range::new(0, 5);
+        let mut m =
+            av::SpeechSynthesisMarker::with_mark(av::SpeechSynthesisMarkerMark::Word, range, 128);
+        assert_eq!(m.mark(), av::SpeechSynthesisMarkerMark::Word);
+        assert_eq!(m.text_range(), range);
+        assert_eq!(m.byte_sample_offset(), 128);
+        m.set_mark(av::SpeechSynthesisMarkerMark::Sentence);
+        m.set_byte_sample_offset(256);
+        assert_eq!(m.mark(), av::SpeechSynthesisMarkerMark::Sentence);
+        assert_eq!(m.byte_sample_offset(), 256);
+
+        let name = ns::str!(c"intro");
+        let m = av::SpeechSynthesisMarker::alloc().init_with_bookmark_name(name, 64);
+        assert_eq!(&m.bookmark_name(), name);
     }
 
     #[test]

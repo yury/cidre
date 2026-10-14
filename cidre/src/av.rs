@@ -256,6 +256,7 @@ pub use audio::SpeechSynthesisMarkerMark;
 pub use audio::SpeechSynthesisVoice;
 pub use audio::SpeechSynthesisVoiceGender;
 pub use audio::SpeechSynthesisVoiceQuality;
+pub use audio::SpeechSynthesisVoiceTraits;
 pub use audio::SpeechSynthesizer;
 pub use audio::SpeechSynthesizerDelegate;
 pub use audio::SpeechSynthesizerDelegateImpl;
