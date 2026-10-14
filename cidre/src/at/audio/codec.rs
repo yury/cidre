@@ -673,6 +673,14 @@ impl<S: State<Codec>> Drop for CodecRef<S> {
 }
 
 impl CodecRef<InitializedState> {
+    /// Flushes all the data in the codec and clears its input buffer; the formats and the
+    /// magic cookie are kept.
+    #[doc(alias = "AudioCodecReset")]
+    #[inline]
+    pub fn reset(&mut self) -> os::Result {
+        self.0.reset()
+    }
+
     /// This call will move the codec from the initialized state back to the
     /// uninitialized state. The codec will release any resources it allocated
     /// or claimed in AudioCodecInitialize.
