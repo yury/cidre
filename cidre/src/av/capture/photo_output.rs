@@ -7,6 +7,7 @@ use crate::cv;
 
 /// Constants indicating how photo quality should be prioritized against speed.
 #[doc(alias = "AVCapturePhotoQualityPrioritization")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(isize)]
 pub enum PhotoQualityPrioritization {
     /// Indicates that speed of photo delivery is most important, even at the expense of quality.
@@ -39,6 +40,34 @@ impl PhotoOutput {
 
     #[objc::msg_send(isFastCapturePrioritizationSupported)]
     pub fn is_fast_capture_prioritization_supported(&self) -> bool;
+
+    /// The codecs a processed photo may be compressed with (see [`PhotoSettings::with_format`]):
+    /// none until the output is in a session with a video source.
+    #[objc::msg_send(availablePhotoCodecTypes)]
+    pub fn available_photo_codec_types(&self) -> arc::R<ns::Array<av::VideoCodec>>;
+
+    /// Whether a photo may be taken with zero shutter lag in the session's configuration now:
+    /// on by default where it is (for apps linked on or after iOS 17), at a cost in memory.
+    #[objc::msg_send(isZeroShutterLagSupported)]
+    #[api::available(ios = 17.0, macos = 14.0, maccatalyst = 17.0, tvos = 17.0)]
+    pub fn is_zero_shutter_lag_supported(&self) -> bool;
+
+    #[objc::msg_send(isZeroShutterLagEnabled)]
+    #[api::available(ios = 17.0, macos = 14.0, maccatalyst = 17.0, tvos = 17.0)]
+    pub fn is_zero_shutter_lag_enabled(&self) -> bool;
+
+    /// Set where [`Self::is_zero_shutter_lag_supported`] only (it throws otherwise), before the
+    /// session runs or inside a configuration: changing it rebuilds the capture pipeline.
+    #[objc::msg_send(setZeroShutterLagEnabled:)]
+    #[api::available(ios = 17.0, macos = 14.0, maccatalyst = 17.0, tvos = 17.0)]
+    pub fn set_zero_shutter_lag_enabled(&mut self, val: bool);
+
+    /// Whether a photo's shutter sound may be suppressed (see
+    /// [`PhotoSettings::set_shutter_sound_suppression_enabled`]): on iOS, not in jurisdictions
+    /// that require the sound; elsewhere never.
+    #[objc::msg_send(isShutterSoundSuppressionSupported)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn is_shutter_sound_suppression_supported(&self) -> bool;
 
     /// The largest photos the output is prepared to deliver: one of the active format's
     /// `supported_max_photo_dims`. Set before the session runs: changing it reconfigures the
@@ -220,6 +249,26 @@ impl PhotoSettings {
 
     #[objc::msg_send(setAutoRedEyeReductionEnabled:)]
     pub fn set_auto_red_eye_reduction_enabled(&mut self, val: bool);
+
+    /// Quality against speed for this photo: no higher than the output's
+    /// `max_photo_quality_prioritization`. Balanced by default.
+    #[objc::msg_send(photoQualityPrioritization)]
+    #[api::available(macos = 13.0, ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
+    pub fn photo_quality_prioritization(&self) -> PhotoQualityPrioritization;
+
+    #[objc::msg_send(setPhotoQualityPrioritization:)]
+    #[api::available(macos = 13.0, ios = 13.0, maccatalyst = 14.0, tvos = 17.0)]
+    pub fn set_photo_quality_prioritization(&mut self, val: PhotoQualityPrioritization);
+
+    #[objc::msg_send(isShutterSoundSuppressionEnabled)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn is_shutter_sound_suppression_enabled(&self) -> bool;
+
+    /// No shutter sound for this photo; the capture throws where the output's
+    /// `is_shutter_sound_suppression_supported` is `false`.
+    #[objc::msg_send(setShutterSoundSuppressionEnabled:)]
+    #[api::available(macos = 15.0, ios = 18.0, maccatalyst = 18.0, tvos = 18.0)]
+    pub fn set_shutter_sound_suppression_enabled(&mut self, val: bool);
 }
 
 unsafe extern "C" {
@@ -249,6 +298,20 @@ mod tests {
         assert_eq!(a.flash_mode(), av::CaptureFlashMode::Auto);
 
         assert_eq!(a.is_auto_red_eye_reduction_enabled(), false);
+
+        assert_eq!(
+            a.photo_quality_prioritization(),
+            capture::PhotoQualityPrioritization::Balanced
+        );
+        a.set_photo_quality_prioritization(capture::PhotoQualityPrioritization::Speed);
+        assert_eq!(
+            a.photo_quality_prioritization(),
+            capture::PhotoQualityPrioritization::Speed
+        );
+        assert!(!a.is_shutter_sound_suppression_enabled());
+
+        let output = capture::PhotoOutput::new();
+        assert!(output.available_photo_codec_types().is_empty());
 
         let c = capture::PhotoSettings::with_format(None);
         assert_ne!(c.unique_id(), a.unique_id());
