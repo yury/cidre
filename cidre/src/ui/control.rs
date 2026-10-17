@@ -92,6 +92,10 @@ impl Control {
     #[objc::msg_send(state)]
     pub fn state(&self) -> ControlState;
 
+    /// Whether a touch is following the control now.
+    #[objc::msg_send(isTracking)]
+    pub fn is_tracking(&self) -> bool;
+
     /// Target/action: `action` is sent to `target` (or up the responder chain when `None`).
     #[objc::msg_send(addTarget:action:forControlEvents:)]
     pub fn add_target_action_for_events(

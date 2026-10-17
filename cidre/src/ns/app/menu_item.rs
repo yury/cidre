@@ -28,6 +28,11 @@ impl MenuItem {
     #[objc::msg_send(separatorItem)]
     pub fn separator_item() -> arc::R<Self>;
 
+    /// A header over the items after it, up to the next separator or header.
+    #[objc::msg_send(sectionHeaderWithTitle:)]
+    #[objc::available(macos = 14.0)]
+    pub fn section_header_with_title(title: &ns::String) -> arc::R<Self>;
+
     #[objc::msg_send(isSeparatorItem)]
     pub fn is_separator_item(&self) -> bool;
 
