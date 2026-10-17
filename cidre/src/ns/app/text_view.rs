@@ -15,4 +15,13 @@ impl TextView {
         string: &ns::String,
         replacement_range: ns::Range,
     );
+
+    /// `NSTextInputClient`: the screen rect of the first line of `range`'s characters; with
+    /// `actual_range`, the part of `range` it covers.
+    #[objc::msg_send(firstRectForCharacterRange:actualRange:)]
+    pub fn first_rect_for_char_range(
+        &self,
+        range: ns::Range,
+        actual_range: *mut ns::Range,
+    ) -> ns::Rect;
 }
