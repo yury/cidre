@@ -56,6 +56,7 @@ pub use stepper::Stepper;
 
 mod text_view;
 pub use text_view::TextView;
+pub use text_view::notifications as text_view_notifications;
 
 mod font_descriptor;
 pub use font_descriptor::FontDesc;

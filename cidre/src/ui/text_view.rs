@@ -71,4 +71,25 @@ impl TextView {
 
     #[objc::msg_send(scrollRangeToVisible:)]
     pub fn scroll_range_to_visible(&mut self, range: ns::Range);
+
+    /// The keyboard's return key: a `UIReturnKeyType` (7 is Send).
+    #[objc::msg_send(returnKeyType)]
+    pub fn return_key_type(&self) -> ns::Integer;
+
+    #[objc::msg_send(setReturnKeyType:)]
+    pub fn set_return_key_type(&mut self, val: ns::Integer);
+}
+
+pub mod notifications {
+    use crate::ns;
+
+    /// Posted as the text view's text changes; the object is the text view.
+    #[doc(alias = "UITextViewTextDidChangeNotification")]
+    pub fn text_did_change() -> &'static ns::NotificationName {
+        unsafe { UITextViewTextDidChangeNotification }
+    }
+
+    unsafe extern "C" {
+        static UITextViewTextDidChangeNotification: &'static ns::NotificationName;
+    }
 }

@@ -1,4 +1,4 @@
-use crate::{arc, cf, define_obj_type, ns, objc};
+use crate::{arc, cf, cg, define_obj_type, ns, objc};
 
 define_obj_type!(
     #[doc(alias = "NSImage")]
@@ -64,6 +64,10 @@ impl ImageSymbolCfg {
     #[objc::msg_send(configurationWithPaletteColors:)]
     #[objc::available(macos = 12.0)]
     pub fn with_palette_colors(colors: &ns::Array<ns::Color>) -> arc::R<Self>;
+
+    /// The symbol at `point_size`, in `weight` (an `NSFontWeight`: 0 regular, 0.3 semibold).
+    #[objc::msg_send(configurationWithPointSize:weight:)]
+    pub fn with_point_size_weight(point_size: cg::Float, weight: cg::Float) -> arc::R<Self>;
 }
 
 #[cfg(test)]
