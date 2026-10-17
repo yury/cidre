@@ -77,6 +77,12 @@ impl View {
     #[objc::msg_send(isHiddenOrHasHiddenAncestor)]
     pub fn is_hidden_or_has_hidden_ancestor(&self) -> bool;
 
+    #[objc::msg_send(focusRingType)]
+    pub fn focus_ring_type(&self) -> FocusRingType;
+
+    #[objc::msg_send(setFocusRingType:)]
+    pub fn set_focus_ring_type(&mut self, val: FocusRingType);
+
     #[objc::msg_send(addSubview:)]
     pub fn add_subview(&mut self, subview: &ns::View);
 
@@ -378,4 +384,13 @@ pub mod notifications {
         static NSViewBoundsDidChangeNotification: &'static NotificationName;
         static NSViewDidUpdateTrackingAreasNotification: &'static NotificationName;
     }
+}
+
+#[doc(alias = "NSFocusRingType")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+#[repr(usize)]
+pub enum FocusRingType {
+    Default = 0,
+    None = 1,
+    Exterior = 2,
 }

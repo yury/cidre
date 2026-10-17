@@ -117,6 +117,7 @@ pub use color::ColorSysEffect;
 
 mod control;
 pub use control::Control;
+pub use control::notifications as control_notifications;
 
 mod diffable_data_source;
 pub use diffable_data_source::CollectionViewDiffableDataSrc;
@@ -325,6 +326,7 @@ pub use view_controller::ViewControllerTransitionOpts;
 
 mod view;
 pub use view::AutoresizingMaskOpts;
+pub use view::FocusRingType;
 pub use view::View;
 pub use view::notifications as view_notifications;
 

@@ -186,3 +186,17 @@ impl Control {
     #[objc::msg_send(setAlignment:)]
     pub fn set_alignment(&mut self, val: ns::TextAlignment);
 }
+
+pub mod notifications {
+    use crate::ns;
+
+    /// Posted by a control as its field editor's text changes; the object is the control.
+    #[doc(alias = "NSControlTextDidChangeNotification")]
+    pub fn text_did_change() -> &'static ns::NotificationName {
+        unsafe { NSControlTextDidChangeNotification }
+    }
+
+    unsafe extern "C" {
+        static NSControlTextDidChangeNotification: &'static ns::NotificationName;
+    }
+}
