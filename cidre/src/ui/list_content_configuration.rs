@@ -19,6 +19,15 @@ impl ListContentCfg {
     #[objc::available(ios = 14.0)]
     pub fn value_cell() -> arc::R<Self>;
 
+    /// A plain list's section header.
+    #[objc::msg_send(headerConfiguration)]
+    #[objc::available(ios = 14.0)]
+    pub fn header() -> arc::R<Self>;
+
+    #[objc::msg_send(groupedHeaderConfiguration)]
+    #[objc::available(ios = 14.0)]
+    pub fn grouped_header() -> arc::R<Self>;
+
     #[objc::msg_send(setText:)]
     pub fn set_text(&mut self, val: Option<&ns::String>);
 

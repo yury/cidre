@@ -644,6 +644,7 @@ pub use collection_view_compositional_layout::RectAlignment;
 mod collection_layout_list;
 pub use collection_layout_list::{
     Appearance as CollectionLayoutListAppearance, CollectionLayoutListCfg,
+    HeaderMode as CollectionLayoutListHeaderMode,
 };
 
 mod scroll_view;
