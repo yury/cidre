@@ -351,6 +351,9 @@ pub use toolbar_item_group::ToolbarItemGroup;
 pub use toolbar_item_group::ToolbarItemGroupControlRepresentation;
 pub use toolbar_item_group::ToolbarItemGroupSelectionMode;
 
+pub mod tracking_separator_toolbar_item;
+pub use tracking_separator_toolbar_item::TrackingSeparatorToolbarItem;
+
 mod status_bar;
 pub use status_bar::StatusBar;
 
