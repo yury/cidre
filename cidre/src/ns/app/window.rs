@@ -78,6 +78,18 @@ impl CollectionBehavior {
     pub const CAN_JOIN_ALL_APPLICATIONS: Self = Self(1 << 18);
 }
 
+#[doc(alias = "NSWindowButton")]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
+#[repr(usize)]
+pub enum WindowButton {
+    Close,
+    Miniaturize,
+    Zoom,
+    Toolbar,
+    DocumentIcon,
+    DocumentVersions,
+}
+
 #[doc(alias = "NSWindowTitleVisibility")]
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 #[repr(isize)]
@@ -195,6 +207,10 @@ impl Window {
 
     #[objc::msg_send(setTitleVisibility:)]
     pub fn set_title_visibility(&mut self, val: ns::WindowTitleVisibility);
+
+    /// The title bar's close, miniaturize or zoom button, `None` where the style has none.
+    #[objc::msg_send(standardWindowButton:)]
+    pub fn standard_window_button(&self, button: WindowButton) -> Option<arc::R<ns::Button>>;
 
     #[objc::msg_send(titlebarAppearsTransparent)]
     pub fn titlebar_appears_transparent(&self) -> bool;

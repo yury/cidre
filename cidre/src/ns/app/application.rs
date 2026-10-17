@@ -122,6 +122,10 @@ impl App {
     #[objc::msg_send(sharedApplication)]
     pub fn shared() -> arc::R<Self>;
 
+    /// The event being handled, as the app took it from the queue.
+    #[objc::msg_send(currentEvent)]
+    pub fn current_event(&self) -> Option<arc::R<ns::Event>>;
+
     #[objc::msg_send(setDelegate:)]
     pub fn set_delegate<D: Delegate>(&mut self, delegate: Option<&D>);
 

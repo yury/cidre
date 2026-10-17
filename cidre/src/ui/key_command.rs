@@ -62,6 +62,12 @@ impl KeyCmd {
         unsafe { UIKeyInputRightArrow }
     }
 
+    #[doc(alias = "UIKeyInputEscape")]
+    #[api::available(ios = 7.0)]
+    pub fn input_escape() -> &'static ns::String {
+        unsafe { UIKeyInputEscape }
+    }
+
     #[objc::msg_send(modifierFlags)]
     pub fn mod_flags(&self) -> ui::KeyModFlags;
 
@@ -85,4 +91,6 @@ unsafe extern "C" {
     static UIKeyInputLeftArrow: &'static ns::String;
     #[api::available(ios = 7.0)]
     static UIKeyInputRightArrow: &'static ns::String;
+    #[api::available(ios = 7.0)]
+    static UIKeyInputEscape: &'static ns::String;
 }

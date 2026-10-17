@@ -369,6 +369,7 @@ pub use window::TitleVisibility as WindowTitleVisibility;
 pub use window::TitlebarSeparatorStyle;
 pub use window::ToolbarStyle as WindowToolbarStyle;
 pub use window::Window;
+pub use window::WindowButton;
 pub use window::WindowDelegate;
 pub use window::WindowDelegateImpl;
 pub use window::WindowLevel;
