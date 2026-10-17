@@ -69,6 +69,17 @@ impl TextView {
     #[objc::msg_send(setAutocorrectionType:)]
     pub fn set_autocorrection_type(&mut self, val: ns::Integer);
 
+    /// The selection, the caret where it is empty, in UTF-16 units.
+    #[objc::msg_send(selectedRange)]
+    pub fn selected_range(&self) -> ns::Range;
+
+    #[objc::msg_send(setSelectedRange:)]
+    pub fn set_selected_range(&mut self, val: ns::Range);
+
+    /// `UIKeyInput`: inserts `text` over the selection, as typing it would.
+    #[objc::msg_send(insertText:)]
+    pub fn insert_text(&mut self, text: &ns::String);
+
     #[objc::msg_send(scrollRangeToVisible:)]
     pub fn scroll_range_to_visible(&mut self, range: ns::Range);
 

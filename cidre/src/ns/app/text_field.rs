@@ -166,7 +166,18 @@ impl TextField {
 }
 
 #[objc::protocol(NSTextFieldDelegate)]
-pub trait TextFieldDelegate {}
+pub trait TextFieldDelegate: objc::Obj {
+    /// `NSControlTextEditingDelegate`: the field editor is to do `cmd` (`moveUp:`,
+    /// `insertNewline:`, `cancelOperation:`, ...); `true` if the delegate did it instead.
+    #[objc::optional]
+    #[objc::msg_send(control:textView:doCommandBySelector:)]
+    fn control_text_view_do_cmd(
+        &mut self,
+        control: &ns::Control,
+        text_view: &ns::TextView,
+        cmd: &objc::Sel,
+    ) -> bool;
+}
 
 define_obj_type!(
     pub AnyTextFieldDelegate(ns::Id)

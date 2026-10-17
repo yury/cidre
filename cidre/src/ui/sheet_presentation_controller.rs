@@ -152,6 +152,25 @@ impl SheetPresentationController {
     #[objc::msg_send(setPrefersScrollingExpandsWhenScrolledToEdge:)]
     #[objc::available(ios = 15.0)]
     pub fn set_prefers_scrolling_expands_when_scrolled_to_edge(&mut self, val: bool);
+
+    /// Has custom detents resolved again: call it when what a resolver reads changed.
+    #[objc::msg_send(invalidateDetents)]
+    #[objc::available(ios = 16.0)]
+    pub fn invalidate_detents(&mut self);
+
+    /// Animates the changes to the sheet made in `changes`: its detents, selected one, ...
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(animateChanges:)]
+    #[objc::available(ios = 15.0)]
+    pub fn animate_changes_block(&mut self, changes: &mut blocks::NoEscBlock<fn()>);
+
+    #[cfg(feature = "blocks")]
+    #[objc::available(ios = 15.0)]
+    #[allow(unused_unsafe)]
+    pub fn animate_changes(&mut self, mut changes: impl FnMut()) {
+        let mut block = unsafe { blocks::NoEscBlock::stack0(&mut changes) };
+        unsafe { self.animate_changes_block(&mut block) }
+    }
 }
 
 #[api::weak]

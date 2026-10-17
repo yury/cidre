@@ -1,4 +1,4 @@
-use crate::{define_obj_type, ns};
+use crate::{arc, define_obj_type, ns, objc};
 
 /// Center is 1 and right is 2, as on iOS, everywhere but on Intel Macs, where
 /// they are the other way round (`TARGET_ABI_USES_IOS_VALUES`).
@@ -23,3 +23,18 @@ define_obj_type!(
     #[doc(alias = "NSText")]
     pub Text(ns::View)
 );
+
+impl Text {
+    #[objc::msg_send(string)]
+    pub fn string(&self) -> arc::R<ns::String>;
+
+    #[objc::msg_send(setString:)]
+    pub fn set_string(&mut self, val: &ns::String);
+
+    /// The selection, the caret where it is empty, in UTF-16 units.
+    #[objc::msg_send(selectedRange)]
+    pub fn selected_range(&self) -> ns::Range;
+
+    #[objc::msg_send(setSelectedRange:)]
+    pub fn set_selected_range(&mut self, val: ns::Range);
+}
