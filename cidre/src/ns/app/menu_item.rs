@@ -57,6 +57,13 @@ impl MenuItem {
     #[objc::msg_send(setTitle:)]
     pub fn set_title(&mut self, val: &ns::String);
 
+    #[objc::msg_send(attributedTitle)]
+    pub fn attr_title(&self) -> Option<arc::R<ns::AttrString>>;
+
+    /// The title as drawn, with its own font and color; set, it wins over `title`.
+    #[objc::msg_send(setAttributedTitle:)]
+    pub fn set_attr_title(&mut self, val: Option<&ns::AttrString>);
+
     #[objc::msg_send(keyEquivalent)]
     pub fn key_equivalent(&self) -> arc::R<ns::String>;
 
