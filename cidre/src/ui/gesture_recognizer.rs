@@ -44,6 +44,10 @@ impl GestureRecognizer {
     #[objc::msg_send(state)]
     pub fn state(&self) -> GestureRecognizerState;
 
+    /// For subclasses (`UIGestureRecognizerSubclass.h`): moves the recognizer on.
+    #[objc::msg_send(setState:)]
+    pub fn set_state(&mut self, val: GestureRecognizerState);
+
     #[objc::msg_send(delegate)]
     pub fn delegate(&self) -> Option<arc::R<AnyGestureRecognizerDelegate>>;
 
