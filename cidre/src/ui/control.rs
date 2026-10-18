@@ -65,9 +65,18 @@ impl Control {
     #[objc::msg_send(setContentHorizontalAlignment:)]
     pub fn set_content_horizontal_alignment(&mut self, val: ControlContentHorizontalAlignment);
 
+    #[objc::msg_send(showsMenuAsPrimaryAction)]
+    #[objc::available(ios = 14.0)]
+    pub fn shows_menu_as_primary_action(&self) -> bool;
+
     #[objc::msg_send(setShowsMenuAsPrimaryAction:)]
     #[objc::available(ios = 14.0)]
     pub fn set_shows_menu_as_primary_action(&mut self, value: bool);
+
+    /// Does what a tap would: the primary action, or the menu where it is the primary action.
+    #[objc::msg_send(performPrimaryAction)]
+    #[objc::available(ios = 17.4)]
+    pub fn perform_primary_action(&mut self);
 
     /// The interaction behind the control's menu, while it has one.
     #[objc::msg_send(contextMenuInteraction)]
