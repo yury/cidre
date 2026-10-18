@@ -1,5 +1,18 @@
 use crate::{arc, define_obj_type, ns, objc};
 
+/// Whether a menu item's image shows while its menu is open.
+#[doc(alias = "NSMenuItemImageVisibility")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
+#[repr(isize)]
+pub enum MenuItemImageVisibility {
+    /// AppKit chooses, as the system is configured.
+    #[default]
+    Automatic = 0,
+    /// Always shown, though AppKit may still hide it in some cases.
+    Visible = 1,
+    Hidden = 2,
+}
+
 define_obj_type!(
     #[doc(alias = "NSMenuItem")]
     pub MenuItem(ns::Id),
@@ -78,6 +91,16 @@ impl MenuItem {
 
     #[objc::msg_send(image)]
     pub fn image(&self) -> Option<arc::R<ns::Image>>;
+
+    #[objc::msg_send(preferredImageVisibility)]
+    #[objc::available(macos = 27.0)]
+    pub fn preferred_image_visibility(&self) -> MenuItemImageVisibility;
+
+    /// Whether the item's image shows: Automatic (the default) leaves it to the system's
+    /// settings, which may hide it.
+    #[objc::msg_send(setPreferredImageVisibility:)]
+    #[objc::available(macos = 27.0)]
+    pub fn set_preferred_image_visibility(&mut self, val: MenuItemImageVisibility);
 
     #[objc::msg_send(setImage:)]
     pub fn set_image(&mut self, val: Option<&ns::Image>);

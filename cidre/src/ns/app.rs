@@ -191,6 +191,7 @@ pub use menu::MenuItemValidationImpl;
 
 mod menu_item;
 pub use menu_item::MenuItem;
+pub use menu_item::MenuItemImageVisibility;
 
 mod panel;
 pub use panel::Panel;
