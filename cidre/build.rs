@@ -66,7 +66,50 @@ fn has_feature(name: &str) -> bool {
     env::var_os(format!("CARGO_FEATURE_{}", name.to_uppercase())).is_some()
 }
 
-fn build_pomace_target(name: &str, sdk: &str, deployment_targets: &DeploymentTargets) {
+/// The cc crate derives the clang target triple (and so the deployment target) from these
+/// variables and falls back to the SDK version, so set them unless the user already did. Called
+/// once before the targets are built in parallel: the value depends only on the SDK, and setting
+/// the environment while other threads run would be a data race.
+fn set_deployment_target(sdk: &str, deployment_targets: &DeploymentTargets) {
+    let (var, version) = match sdk {
+        "macosx" => (
+            "MACOSX_DEPLOYMENT_TARGET",
+            Some(deployment_targets.macos.unwrap_or(MACOS_FLOOR)),
+        ),
+        // Mac Catalyst uses the iOS deployment target
+        "maccatalyst" => (
+            "IPHONEOS_DEPLOYMENT_TARGET",
+            Some(deployment_targets.ios.unwrap_or(MACCATALYST_FLOOR)),
+        ),
+        "iphoneos" | "iphonesimulator" => (
+            "IPHONEOS_DEPLOYMENT_TARGET",
+            Some(deployment_targets.ios.unwrap_or(IOS_FLOOR)),
+        ),
+        "appletvos" | "appletvsimulator" => ("TVOS_DEPLOYMENT_TARGET", deployment_targets.tvos),
+        "watchos" | "watchsimulator" => ("WATCHOS_DEPLOYMENT_TARGET", deployment_targets.watchos),
+        _ => ("XROS_DEPLOYMENT_TARGET", deployment_targets.visionos),
+    };
+    if let Some(v) = version {
+        if env::var_os(var).is_none() {
+            // SAFETY: called before any build thread is spawned; only cc reads it afterwards.
+            unsafe { env::set_var(var, v.to_string()) };
+        }
+    }
+}
+
+/// Prints the link directives for the built targets in the order of `targets` (sorted), so the
+/// static libraries are linked in the same order on every build.
+fn link_pomace_targets(targets: &[&str]) {
+    let out_dir = env::var("OUT_DIR").unwrap();
+    println!("cargo:rustc-link-search=native={out_dir}");
+    for name in targets {
+        if has_feature(name) {
+            println!("cargo:rustc-link-lib=static={name}");
+        }
+    }
+}
+
+fn build_pomace_target(name: &str, sdk: &str) {
     if !has_feature(name) {
         return;
     }
@@ -96,33 +139,9 @@ fn build_pomace_target(name: &str, sdk: &str, deployment_targets: &DeploymentTar
         }
     }
 
-    // The cc crate derives the clang target triple (and so the deployment target) from these
-    // variables and falls back to the SDK version, so set them unless the user already did.
-    let (var, version) = match sdk {
-        "macosx" => (
-            "MACOSX_DEPLOYMENT_TARGET",
-            Some(deployment_targets.macos.unwrap_or(MACOS_FLOOR)),
-        ),
-        // Mac Catalyst uses the iOS deployment target
-        "maccatalyst" => (
-            "IPHONEOS_DEPLOYMENT_TARGET",
-            Some(deployment_targets.ios.unwrap_or(MACCATALYST_FLOOR)),
-        ),
-        "iphoneos" | "iphonesimulator" => (
-            "IPHONEOS_DEPLOYMENT_TARGET",
-            Some(deployment_targets.ios.unwrap_or(IOS_FLOOR)),
-        ),
-        "appletvos" | "appletvsimulator" => ("TVOS_DEPLOYMENT_TARGET", deployment_targets.tvos),
-        "watchos" | "watchsimulator" => ("WATCHOS_DEPLOYMENT_TARGET", deployment_targets.watchos),
-        _ => ("XROS_DEPLOYMENT_TARGET", deployment_targets.visionos),
-    };
-    if let Some(v) = version {
-        if env::var_os(var).is_none() {
-            // SAFETY: build scripts are single-threaded here; only cc reads it afterwards.
-            unsafe { env::set_var(var, v.to_string()) };
-        }
-    }
-
+    // Link directives are printed by `main` in a fixed order once every target is built (see
+    // `link_pomace_targets`), so the link line does not depend on which thread finishes first.
+    build.cargo_metadata(false);
     build.compile(name);
 }
 
@@ -400,14 +419,16 @@ fn main() {
 
     println!("cargo:rerun-if-changed=./pomace/");
 
-    let targets = collect_targets(sdk);
-    let deployment_targets = &deployment_targets;
+    let mut targets = collect_targets(sdk);
+    targets.sort_unstable();
+    set_deployment_target(sdk, &deployment_targets);
 
     thread::scope(|scope| {
-        for target in targets {
+        for &target in &targets {
             scope.spawn(move || {
-                build_pomace_target(target, sdk, deployment_targets);
+                build_pomace_target(target, sdk);
             });
         }
     });
+    link_pomace_targets(&targets);
 }
