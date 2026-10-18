@@ -233,6 +233,14 @@ pub use drag_preview_target::DragPreviewTarget;
 mod focus;
 pub use focus::FocusUpdateCtx;
 
+mod edit_menu_interaction;
+pub use edit_menu_interaction::AnyEditMenuInteractionDelegate;
+pub use edit_menu_interaction::EditMenuArrowDirection;
+pub use edit_menu_interaction::EditMenuCfg;
+pub use edit_menu_interaction::EditMenuInteraction;
+pub use edit_menu_interaction::EditMenuInteractionDelegate;
+pub use edit_menu_interaction::EditMenuInteractionDelegateImpl;
+
 mod drop_interaction;
 pub use drop_interaction::AnyDropInteractionDelegate;
 pub use drop_interaction::DropInteraction;
