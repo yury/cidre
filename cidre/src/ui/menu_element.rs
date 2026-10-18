@@ -1,4 +1,4 @@
-use crate::{define_obj_type, define_opts, ns};
+use crate::{arc, define_obj_type, define_opts, ns, objc};
 
 #[doc(alias = "UIMenuElementState")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -26,3 +26,17 @@ define_obj_type!(
     #[doc(alias = "UIMenuElement")]
     pub MenuElement(ns::Id)
 );
+
+impl MenuElement {
+    #[objc::msg_send(title)]
+    pub fn title(&self) -> arc::R<ns::String>;
+
+    /// Shown under the title; for a menu, under its title where the menu shows one.
+    #[objc::msg_send(subtitle)]
+    #[objc::available(ios = 15.0)]
+    pub fn subtitle(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(setSubtitle:)]
+    #[objc::available(ios = 15.0)]
+    pub fn set_subtitle(&mut self, val: Option<&ns::String>);
+}
