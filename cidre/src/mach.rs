@@ -69,11 +69,15 @@ pub use mach_vm::Size as MachVmSize;
 pub mod vm_statistics;
 pub use vm_statistics::VmAllocationFlags;
 
+pub mod host;
+pub use host::VmStatistics64;
+
 pub mod task;
 
 pub mod task_info;
 pub use task_info::TaskBasicInfo;
 pub use task_info::TaskFlavor;
+pub use task_info::TaskVmInfo;
 
 pub mod time_value;
 pub use time_value::TimeValue;
