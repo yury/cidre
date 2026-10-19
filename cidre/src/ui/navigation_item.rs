@@ -1,5 +1,19 @@
 use crate::{arc, define_obj_type, ns, objc, ui};
 
+#[doc(alias = "UINavigationItemLargeTitleDisplayMode")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum NavItemLargeTitleDisplayMode {
+    /// Inherits the large title display from the previous item in the navigation stack.
+    Automatic = 0,
+    /// Always displays a large title, when the navigation bar prefers large titles.
+    Always = 1,
+    /// Never displays a large title.
+    Never = 2,
+    /// The title in the bar inline, with no room kept for a large one.
+    Inline = 3,
+}
+
 define_obj_type!(
     #[doc(alias = "UINavigationItem")]
     pub NavItem(ns::Id),
@@ -7,6 +21,14 @@ define_obj_type!(
 );
 
 impl NavItem {
+    #[objc::msg_send(largeTitleDisplayMode)]
+    #[objc::available(ios = 11.0)]
+    pub fn large_title_display_mode(&self) -> NavItemLargeTitleDisplayMode;
+
+    #[objc::msg_send(setLargeTitleDisplayMode:)]
+    #[objc::available(ios = 11.0)]
+    pub fn set_large_title_display_mode(&mut self, val: NavItemLargeTitleDisplayMode);
+
     #[objc::msg_send(setRightBarButtonItems:)]
     pub fn set_right_bar_button_items(&mut self, val: Option<&ns::Array<ui::BarButtonItem>>);
 

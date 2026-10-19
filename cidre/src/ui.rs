@@ -623,6 +623,7 @@ pub use bar_button_item::BarButtonItem;
 pub use bar_button_item::Style as BarButtonItemStyle;
 mod navigation_item;
 pub use navigation_item::NavItem;
+pub use navigation_item::NavItemLargeTitleDisplayMode;
 
 mod bar_minimization;
 pub use bar_minimization::BarMinimization;
