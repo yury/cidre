@@ -32,3 +32,9 @@ impl CellAccessoryOutlineDisclosure {
     #[objc::available(ios = 14.0, tvos = 14.0)]
     pub fn set_style(&mut self, val: CellAccessoryOutlineDisclosureStyle);
 }
+
+define_obj_type!(
+    #[doc(alias = "UICellAccessoryDisclosureIndicator")]
+    pub CellAccessoryDisclosureIndicator(CellAccessory),
+    sym UICellAccessoryDisclosureIndicator
+);

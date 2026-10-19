@@ -286,6 +286,7 @@ pub use collection_view_list_cell::CollectionViewListCell;
 
 mod cell_accessory;
 pub use cell_accessory::CellAccessory;
+pub use cell_accessory::CellAccessoryDisclosureIndicator;
 pub use cell_accessory::CellAccessoryOutlineDisclosure;
 pub use cell_accessory::CellAccessoryOutlineDisclosureStyle;
 
