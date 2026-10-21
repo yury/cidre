@@ -57,7 +57,7 @@ impl Screen {
 impl Screen {
     #[objc::msg_send(maximumFramesPerSecond)]
     #[objc::available(macos = 12.0)]
-    fn max_fps(&self) -> ns::Integer;
+    pub fn max_fps(&self) -> ns::Integer;
 
     #[objc::msg_send(minimumRefreshInterval)]
     #[objc::available(macos = 12.0)]
