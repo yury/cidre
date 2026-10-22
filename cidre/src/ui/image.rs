@@ -7,6 +7,10 @@ define_obj_type!(
 );
 
 impl Image {
+    /// An image from the main bundle's asset catalog or resources.
+    #[objc::msg_send(imageNamed:)]
+    pub fn with_name(name: &ns::String) -> Option<arc::R<Self>>;
+
     #[objc::msg_send(systemImageNamed:)]
     #[objc::available(ios = 13.0)]
     pub fn with_sys_name(name: &ns::String) -> Option<arc::R<Self>>;
