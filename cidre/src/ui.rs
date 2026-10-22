@@ -650,6 +650,7 @@ pub use collection_view_compositional_layout::CollectionLayoutSectionOrthogonalS
 pub use collection_view_compositional_layout::CollectionLayoutSectionProvider;
 pub use collection_view_compositional_layout::CollectionLayoutSize;
 pub use collection_view_compositional_layout::CollectionViewCompositionalLayout;
+pub use collection_view_compositional_layout::ContentInsetsRef;
 pub use collection_view_compositional_layout::RectAlignment;
 mod collection_layout_list;
 pub use collection_layout_list::{

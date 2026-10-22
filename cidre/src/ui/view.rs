@@ -320,7 +320,13 @@ impl View {
     #[objc::msg_send(layoutMargins)]
     pub fn layout_margins(&self) -> ui::EdgeInsets;
 
-    // pub fn directional_layout_margins(&self) -> ...
+    #[objc::msg_send(directionalLayoutMargins)]
+    #[objc::available(ios = 11.0, tvos = 11.0)]
+    pub fn directional_layout_margins(&self) -> ui::DirectionalEdgeInsets;
+
+    #[objc::msg_send(setDirectionalLayoutMargins:)]
+    #[objc::available(ios = 11.0, tvos = 11.0)]
+    pub fn set_directional_layout_margins(&mut self, val: ui::DirectionalEdgeInsets);
 
     #[objc::msg_send(preservesSuperviewLayoutMargins)]
     pub fn preserves_superview_layout_margins(&self) -> bool;

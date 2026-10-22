@@ -78,3 +78,13 @@ impl ui::CollectionViewCompositionalLayout {
     #[objc::available(ios = 14.0)]
     pub fn with_list_cfg(cfg: &CollectionLayoutListCfg) -> arc::R<Self>;
 }
+
+impl ui::CollectionLayoutSection {
+    /// A list section laid out as `cfg` says, in `env` (from a section provider).
+    #[objc::msg_send(sectionWithListConfiguration:layoutEnvironment:)]
+    #[objc::available(ios = 14.0)]
+    pub fn with_list_cfg(
+        cfg: &CollectionLayoutListCfg,
+        env: &ui::CollectionLayoutEnvironment,
+    ) -> arc::R<Self>;
+}

@@ -103,6 +103,19 @@ pub enum CollectionLayoutSectionOrthogonalScrollingBehavior {
     GroupPagingCentered = 5,
 }
 
+/// What a section's content insets are measured from.
+#[doc(alias = "UIContentInsetsReference")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum ContentInsetsRef {
+    Automatic = 0,
+    None = 1,
+    SafeArea = 2,
+    LayoutMargins = 3,
+    /// The readable content guide: a column of comfortable width for text.
+    ReadableContent = 4,
+}
+
 #[doc(alias = "NSRectAlignment")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(isize)]
@@ -234,6 +247,14 @@ impl CollectionLayoutSection {
 
     #[objc::msg_send(setInterGroupSpacing:)]
     pub fn set_inter_group_spacing(&mut self, val: cg::Float);
+
+    #[objc::msg_send(contentInsetsReference)]
+    #[objc::available(ios = 14.0, tvos = 14.0)]
+    pub fn content_insets_ref(&self) -> ContentInsetsRef;
+
+    #[objc::msg_send(setContentInsetsReference:)]
+    #[objc::available(ios = 14.0, tvos = 14.0)]
+    pub fn set_content_insets_ref(&mut self, val: ContentInsetsRef);
 
     #[objc::msg_send(orthogonalScrollingBehavior)]
     pub fn orthogonal_scrolling_behavior(
