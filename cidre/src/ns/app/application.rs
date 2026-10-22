@@ -182,6 +182,65 @@ impl App {
 
     #[objc::msg_send(setHelpMenu:)]
     pub fn set_help_menu(&mut self, val: Option<&ns::Menu>);
+
+    #[objc::msg_send(orderFrontStandardAboutPanel:)]
+    pub fn order_front_standard_about_panel(&mut self, sender: Option<&ns::Id>);
+
+    #[objc::msg_send(orderFrontStandardAboutPanelWithOptions:)]
+    pub fn order_front_standard_about_panel_with_opts(
+        &mut self,
+        opts: &ns::Dictionary<AboutPanelOptKey, ns::Id>,
+    );
+}
+
+define_obj_type!(
+    #[doc(alias = "NSAboutPanelOptionKey")]
+    pub AboutPanelOptKey(ns::String)
+);
+
+impl AboutPanelOptKey {
+    /// An ns::AttrString shown below the version.
+    #[doc(alias = "NSAboutPanelOptionCredits")]
+    #[inline]
+    pub fn credits() -> &'static Self {
+        unsafe { NSAboutPanelOptionCredits }
+    }
+
+    /// An ns::String, CFBundleName by default.
+    #[doc(alias = "NSAboutPanelOptionApplicationName")]
+    #[inline]
+    pub fn app_name() -> &'static Self {
+        unsafe { NSAboutPanelOptionApplicationName }
+    }
+
+    /// An ns::Image, the app's icon by default.
+    #[doc(alias = "NSAboutPanelOptionApplicationIcon")]
+    #[inline]
+    pub fn app_icon() -> &'static Self {
+        unsafe { NSAboutPanelOptionApplicationIcon }
+    }
+
+    /// An ns::String shown in parentheses, CFBundleVersion by default.
+    #[doc(alias = "NSAboutPanelOptionVersion")]
+    #[inline]
+    pub fn version() -> &'static Self {
+        unsafe { NSAboutPanelOptionVersion }
+    }
+
+    /// An ns::String, CFBundleShortVersionString by default.
+    #[doc(alias = "NSAboutPanelOptionApplicationVersion")]
+    #[inline]
+    pub fn app_version() -> &'static Self {
+        unsafe { NSAboutPanelOptionApplicationVersion }
+    }
+}
+
+unsafe extern "C" {
+    static NSAboutPanelOptionCredits: &'static AboutPanelOptKey;
+    static NSAboutPanelOptionApplicationName: &'static AboutPanelOptKey;
+    static NSAboutPanelOptionApplicationIcon: &'static AboutPanelOptKey;
+    static NSAboutPanelOptionVersion: &'static AboutPanelOptKey;
+    static NSAboutPanelOptionApplicationVersion: &'static AboutPanelOptKey;
 }
 
 pub mod notifications {

@@ -14,6 +14,7 @@ mod animation_context;
 pub use animation_context::AnimationCtx;
 
 mod application;
+pub use application::AboutPanelOptKey;
 pub use application::App;
 pub use application::Delegate as AppDelegate;
 pub use application::DelegateImpl as AppDelegateImpl;
