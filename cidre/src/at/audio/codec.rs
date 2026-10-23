@@ -619,6 +619,21 @@ impl CodecRef<UninitializedState> {
         comp.open_codec()
     }
 
+    pub fn new_apple_opus_decoder() -> os::Result<Self> {
+        let desc = audio::ComponentDesc {
+            type_: audio::DECODER_COMPONENT_TYPE,
+            sub_type: audio::Format::OPUS.0,
+            manufacturer: audio::unit::Manufacturer::APPLE.0,
+            ..Default::default()
+        };
+
+        let comp = desc
+            .into_iter()
+            .next()
+            .ok_or(audio::unit::component_err::UNSUPPORTED_TYPE)?;
+        comp.open_codec()
+    }
+
     pub fn initialize(
         self,
         input_format: &audio::StreamBasicDesc,
@@ -774,6 +789,32 @@ impl CodecRef<InitializedState> {
         }
 
         Ok((data_len, unsafe { status.assume_init() }))
+    }
+
+    /// A decoder's linear PCM: up to `frames` frames into `data`. Returns the bytes and frames
+    /// written.
+    #[doc(alias = "AudioCodecProduceOutputPackets")]
+    #[inline]
+    pub fn produce_pcm(
+        &mut self,
+        data: &mut [u8],
+        frames: u32,
+    ) -> os::Result<(u32, u32, ProduceOutputPacketStatus)> {
+        let mut data_len: u32 = data.len() as _;
+        let mut frames_n = frames;
+        let mut status = ProduceOutputPacketStatus::Failure;
+        unsafe {
+            AudioCodecProduceOutputPackets(
+                &mut self.0,
+                data.as_mut_ptr(),
+                &mut data_len,
+                &mut frames_n,
+                std::ptr::null_mut(),
+                &mut status,
+            )
+            .result()?;
+        }
+        Ok((data_len, frames_n, status))
     }
 
     #[doc(alias = "AudioCodecProduceOutputPackets")]
