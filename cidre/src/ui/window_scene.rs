@@ -6,7 +6,8 @@ use crate::ca;
 
 define_obj_type!(
     #[doc(alias = "UIWindowScene")]
-    pub WindowScene(ui::Scene)
+    pub WindowScene(ui::Scene),
+    sym UIWindowScene
 );
 
 impl WindowScene {

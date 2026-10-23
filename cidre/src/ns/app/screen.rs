@@ -35,6 +35,10 @@ impl Screen {
     #[objc::msg_send(localizedName)]
     pub fn localized_name(&self) -> arc::R<ns::String>;
 
+    /// Backing store pixels per point: 2.0 on a Retina display.
+    #[objc::msg_send(backingScaleFactor)]
+    pub fn backing_scale_factor(&self) -> cg::Float;
+
     /// Indicates the obscured distance from each edge of the screen
     #[objc::msg_send(safeAreaInsets)]
     #[objc::available(macos = 12.0)]
