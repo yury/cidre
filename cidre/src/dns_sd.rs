@@ -1,4 +1,4 @@
-use std::ffi::c_void;
+use std::ffi::{CStr, c_char, c_void};
 
 use crate::{define_opts, os};
 
@@ -37,7 +37,64 @@ impl Service {
     pub fn deallocate(self) {
         unsafe { DNSServiceRefDeallocate(&self) }
     }
+
+    /// Starts a query for `hostname`'s addresses (`protocol`: IPv4, IPv6 or both), on the
+    /// interface `iface_index` only (its own DNS servers, whatever the default route is), or
+    /// on any with 0. Each answer comes to `callback` from [`Service::process_result`].
+    ///
+    /// # Safety
+    ///
+    /// `context` must stay valid for every `callback` call; the query is ended with
+    /// [`Service::release`].
+    #[doc(alias = "DNSServiceGetAddrInfo")]
+    pub unsafe fn get_addr_info(
+        flags: ServiceFlags,
+        iface_index: u32,
+        protocol: ServiceProtocol,
+        hostname: &CStr,
+        callback: GetAddrInfoReply,
+        context: *mut c_void,
+    ) -> os::Result<&'static mut Service> {
+        let mut service: *mut Service = std::ptr::null_mut();
+        unsafe {
+            DNSServiceGetAddrInfo(
+                &mut service,
+                flags,
+                iface_index,
+                protocol,
+                hostname.as_ptr(),
+                callback,
+                context,
+            )
+            .result()?;
+            Ok(&mut *service)
+        }
+    }
+
+    /// Ends a query started by [`Service::get_addr_info`] and frees it.
+    ///
+    /// # Safety
+    ///
+    /// No use of `self` after.
+    #[doc(alias = "DNSServiceRefDeallocate")]
+    pub unsafe fn release(&mut self) {
+        unsafe { DNSServiceRefDeallocate(self) }
+    }
 }
+
+/// An answer to [`Service::get_addr_info`]: `address` is a `sockaddr` (`sockaddr_in` or
+/// `sockaddr_in6`), valid during the call only.
+#[doc(alias = "DNSServiceGetAddrInfoReply")]
+pub type GetAddrInfoReply = extern "C" fn(
+    service: &Service,
+    flags: ServiceFlags,
+    iface_index: u32,
+    error: ServiceErrorType,
+    hostname: *const c_char,
+    address: *const c_void,
+    ttl: u32,
+    context: *mut c_void,
+);
 
 #[derive(Debug, Eq, PartialEq)]
 #[repr(i32)]
@@ -51,7 +108,29 @@ pub enum ServiceAaaaPolicyName {
 
 define_opts!(pub ServiceFlags(u32));
 
+impl ServiceFlags {
+    /// More answers are queued: the reply callback will be called again at once.
+    #[doc(alias = "kDNSServiceFlagsMoreComing")]
+    pub const MORE_COMING: Self = Self(0x1);
+
+    /// The answer was added (otherwise removed).
+    #[doc(alias = "kDNSServiceFlagsAdd")]
+    pub const ADD: Self = Self(0x2);
+
+    /// A query that gets no answer ends with `kDNSServiceErr_Timeout` after a while.
+    #[doc(alias = "kDNSServiceFlagsTimeout")]
+    pub const TIMEOUT: Self = Self(0x10000);
+}
+
 define_opts!(pub ServiceProtocol(u32));
+
+impl ServiceProtocol {
+    #[doc(alias = "kDNSServiceProtocol_IPv4")]
+    pub const IPV4: Self = Self(0x01);
+
+    #[doc(alias = "kDNSServiceProtocol_IPv6")]
+    pub const IPV6: Self = Self(0x02);
+}
 
 #[doc(alias = "DNSServiceErrorType")]
 pub type ServiceErrorType = os::Status;
@@ -173,6 +252,15 @@ pub mod err {
 }
 
 unsafe extern "C-unwind" {
+    fn DNSServiceGetAddrInfo(
+        service: *mut *mut Service,
+        flags: ServiceFlags,
+        iface_index: u32,
+        protocol: ServiceProtocol,
+        hostname: *const c_char,
+        callback: GetAddrInfoReply,
+        context: *mut c_void,
+    ) -> ServiceErrorType;
     fn DNSServiceRefSockFD(service: &Service) -> Sock;
     fn DNSServiceProcessResult(service: &Service) -> ServiceErrorType;
     fn DNSServiceRefDeallocate(service: &Service);
