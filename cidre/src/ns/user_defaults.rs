@@ -91,6 +91,14 @@ impl UserDefaults {
         self.set_f64_for_key(val, key);
     }
 
+    #[objc::msg_send(setBool:forKey:)]
+    pub fn set_bool_for_key(&mut self, val: bool, key: &ns::String);
+
+    #[inline]
+    pub fn set_bool(&mut self, key: &ns::String, val: bool) {
+        self.set_bool_for_key(val, key);
+    }
+
     #[objc::msg_send(setURL:forKey:)]
     pub fn set_url_for_key(&mut self, val: &ns::Url, key: &ns::String);
 
