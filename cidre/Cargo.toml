@@ -64,6 +64,7 @@ full = [
   "speech",
   "sk",
   "music_understanding",
+  "widget_kit",
   "ui",
   "ut",
   "un",
@@ -134,6 +135,7 @@ sn = ["av", "blocks", "cm", "dispatch", "ns"]
 foundation = ["swift"]
 speech = ["swift", "ns", "foundation"]
 sk = ["swift", "ns", "foundation"]
+widget_kit = ["swift"]
 music_understanding = ["swift", "ns", "av", "cm"]
 sec = ["cf", "dispatch", "ns"]
 vn = ["blocks", "cm", "cv", "ns"]

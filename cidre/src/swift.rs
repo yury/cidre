@@ -89,6 +89,17 @@ pub mod speech;
 ))]
 pub mod store_kit;
 
+/// WidgetKit.framework.
+#[cfg(all(
+    feature = "widget_kit",
+    any(
+        all(target_os = "macos", feature = "macos_26_0"),
+        all(target_os = "ios", not(target_abi = "macabi"), feature = "ios_18_0"),
+        all(target_os = "watchos", feature = "watchos_26_0"),
+    )
+))]
+pub mod widget_kit;
+
 pub use array::{Array, ArrayIter};
 pub use dictionary::Dictionary;
 pub use duration::Duration;
