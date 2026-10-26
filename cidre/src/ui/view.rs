@@ -65,6 +65,19 @@ impl ViewAutoresizing {
     pub const FLEX_BOTTOM_MARGIN: Self = Self(1 << 5);
 }
 
+/// How a view's content is laid out in its bounds.
+#[doc(alias = "UIViewContentMode")]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[repr(isize)]
+#[non_exhaustive]
+pub enum ContentMode {
+    ScaleToFill = 0,
+    ScaleAspectFit = 1,
+    ScaleAspectFill = 2,
+    Redraw = 3,
+    Center = 4,
+}
+
 define_obj_type!(
     #[doc(alias = "UIView")]
     pub View(ns::Id), sym UIView
@@ -108,6 +121,12 @@ impl View {
 
     #[objc::msg_send(setTintColor:)]
     pub fn set_tint_color(&mut self, val: Option<&ui::Color>);
+
+    #[objc::msg_send(contentMode)]
+    pub fn content_mode(&self) -> ContentMode;
+
+    #[objc::msg_send(setContentMode:)]
+    pub fn set_content_mode(&mut self, val: ContentMode);
 
     #[objc::msg_send(isUserInteractionEnabled)]
     pub fn is_user_interaction_enabled(&self) -> bool;
@@ -564,6 +583,12 @@ impl View {
     #[objc::msg_send(layoutMarginsGuide)]
     #[objc::available(ios = 9.0, tvos = 9.0)]
     pub fn layout_margins_guide(&self) -> arc::R<ui::LayoutGuide>;
+
+    /// Follows the keyboard: its top is the keyboard's top, or the safe area's bottom with
+    /// the keyboard away.
+    #[objc::msg_send(keyboardLayoutGuide)]
+    #[objc::available(ios = 15.0)]
+    pub fn keyboard_layout_guide(&self) -> arc::R<ui::LayoutGuide>;
 
     #[objc::msg_send(layoutGuideForLayoutRegion:)]
     #[objc::available(ios = 26.0, tvos = 26.0, visionos = 26.0)]

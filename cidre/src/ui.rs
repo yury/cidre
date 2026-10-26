@@ -114,7 +114,25 @@ pub use button::Button;
 pub use button::ButtonType;
 
 mod text_field;
+pub use text_field::AnyTextFieldDelegate;
 pub use text_field::TextField;
+pub use text_field::TextFieldDelegate;
+pub use text_field::TextFieldDelegateImpl;
+
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+mod search_text_field;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use search_text_field::AnySearchTextFieldDelegate;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use search_text_field::SearchSuggestionItem;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use search_text_field::SearchTextField;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use search_text_field::SearchTextFieldDelegate;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use search_text_field::SearchTextFieldDelegateImpl;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use search_text_field::SearchToken;
 
 mod alert_controller;
 
@@ -264,6 +282,7 @@ pub use targeted_preview::TargetedPreview;
 
 mod view;
 pub use view::AnyCoordinateSpace;
+pub use view::ContentMode as ViewContentMode;
 pub use view::CoordinateSpace;
 pub use view::View;
 pub use view::ViewAnimationOpts;
@@ -621,6 +640,7 @@ pub use sheet_presentation_controller::{
 mod bar_button_item;
 pub use bar_button_item::BarButtonItem;
 pub use bar_button_item::Style as BarButtonItemStyle;
+pub use bar_button_item::SysItem as BarButtonSysItem;
 mod navigation_item;
 pub use navigation_item::NavItem;
 pub use navigation_item::NavItemLargeTitleDisplayMode;
@@ -665,6 +685,7 @@ pub use scroll_view::ScrollEdgeEffect;
 pub use scroll_view::ScrollView;
 pub use scroll_view::ScrollViewDelegate;
 pub use scroll_view::ScrollViewDelegateImpl;
+pub use scroll_view::ScrollViewKeyboardDismissMode;
 
 mod menu_element;
 pub use menu_element::MenuElement;

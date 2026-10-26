@@ -177,6 +177,20 @@ pub trait TextFieldDelegate: objc::Obj {
         text_view: &ns::TextView,
         cmd: &objc::Sel,
     ) -> bool;
+
+    /// `NSControlTextEditingDelegate`: the text was edited; the notification's object is the
+    /// control.
+    #[objc::optional]
+    #[objc::msg_send(controlTextDidChange:)]
+    fn control_text_did_change(&mut self, notification: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(controlTextDidBeginEditing:)]
+    fn control_text_did_begin_editing(&mut self, notification: &ns::Notification);
+
+    #[objc::optional]
+    #[objc::msg_send(controlTextDidEndEditing:)]
+    fn control_text_did_end_editing(&mut self, notification: &ns::Notification);
 }
 
 define_obj_type!(

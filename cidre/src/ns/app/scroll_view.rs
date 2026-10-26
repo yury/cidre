@@ -12,6 +12,16 @@ pub enum ScrollElasticity {
     Allowed = 2,
 }
 
+#[doc(alias = "NSBorderType")]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[repr(usize)]
+pub enum BorderType {
+    None = 0,
+    Line = 1,
+    Bezel = 2,
+    Groove = 3,
+}
+
 define_obj_type!(
     #[doc(alias = "NSScrollView")]
     pub ScrollView(ns::View),
@@ -35,6 +45,12 @@ impl ScrollView {
 
     #[objc::msg_send(documentView)]
     pub fn document_view(&self) -> Option<arc::R<ns::View>>;
+
+    #[objc::msg_send(borderType)]
+    pub fn border_type(&self) -> ns::BorderType;
+
+    #[objc::msg_send(setBorderType:)]
+    pub fn set_border_type(&mut self, val: ns::BorderType);
 
     #[objc::msg_send(setHasVerticalScroller:)]
     pub fn set_has_vertical_scroller(&mut self, val: bool);

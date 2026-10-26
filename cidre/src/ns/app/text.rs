@@ -37,4 +37,16 @@ impl Text {
 
     #[objc::msg_send(setSelectedRange:)]
     pub fn set_selected_range(&mut self, val: ns::Range);
+
+    #[objc::msg_send(font)]
+    pub fn font(&self) -> Option<arc::R<ns::Font>>;
+
+    #[objc::msg_send(setFont:)]
+    pub fn set_font(&mut self, val: Option<&ns::Font>);
+
+    #[objc::msg_send(isRichText)]
+    pub fn is_rich_text(&self) -> bool;
+
+    #[objc::msg_send(setRichText:)]
+    pub fn set_rich_text(&mut self, val: bool);
 }

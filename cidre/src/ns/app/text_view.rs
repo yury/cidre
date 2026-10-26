@@ -7,6 +7,23 @@ define_obj_type!(
 );
 
 impl TextView {
+    /// A text view sized to its scroll view and growing down with its text, in a scroll view
+    /// with a vertical scroller: its document view.
+    #[objc::msg_send(scrollableTextView)]
+    pub fn scrollable_text_view() -> arc::R<ns::ScrollView>;
+
+    #[objc::msg_send(textContainerInset)]
+    pub fn text_container_inset(&self) -> ns::Size;
+
+    #[objc::msg_send(setTextContainerInset:)]
+    pub fn set_text_container_inset(&mut self, val: ns::Size);
+
+    #[objc::msg_send(allowsUndo)]
+    pub fn allows_undo(&self) -> bool;
+
+    #[objc::msg_send(setAllowsUndo:)]
+    pub fn set_allows_undo(&mut self, val: bool);
+
     /// `NSTextInputClient`: inserts `string` over `replacement_range` (the selection where its
     /// location is `ns::NOT_FOUND`), as typing it would: undoable, the delegate told.
     #[objc::msg_send(insertText:replacementRange:)]

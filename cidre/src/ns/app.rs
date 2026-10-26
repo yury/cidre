@@ -386,6 +386,7 @@ pub use workspace::Workspace;
 pub use workspace::WorkspaceOpenCfg;
 
 mod scroll_view;
+pub use scroll_view::BorderType;
 pub use scroll_view::ScrollElasticity;
 pub use scroll_view::ScrollView;
 mod table_column;
@@ -402,6 +403,13 @@ pub use visual_effect_view::{
     BlendingMode as VisualEffectBlendingMode, Material as VisualEffectMaterial,
     State as VisualEffectState, VisualEffectView,
 };
+mod token_field;
+pub use token_field::AnyTokenFieldDelegate;
+pub use token_field::TokenField;
+pub use token_field::TokenFieldDelegate;
+pub use token_field::TokenFieldDelegateImpl;
+pub use token_field::TokenStyle;
+
 mod secure_text_field;
 pub use secure_text_field::SecureTextField;
 

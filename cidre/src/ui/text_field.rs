@@ -70,7 +70,71 @@ impl TextField {
     /// `UITextAutocorrectionType`: 1 no.
     #[objc::msg_send(setAutocorrectionType:)]
     pub fn set_autocorrection_type(&mut self, val: ns::Integer);
+
+    #[objc::msg_send(textColor)]
+    pub fn text_color(&self) -> Option<arc::R<ui::Color>>;
+
+    #[objc::msg_send(setTextColor:)]
+    pub fn set_text_color(&mut self, val: Option<&ui::Color>);
+
+    #[objc::msg_send(isEditing)]
+    pub fn is_editing(&self) -> bool;
+
+    /// `UIReturnKeyType`: 0 default, 1 go, 4 next, 6 search, 9 done.
+    #[objc::msg_send(returnKeyType)]
+    pub fn return_key_type(&self) -> ns::Integer;
+
+    #[objc::msg_send(setReturnKeyType:)]
+    pub fn set_return_key_type(&mut self, val: ns::Integer);
+
+    #[objc::msg_send(leftView)]
+    pub fn left_view(&self) -> Option<arc::R<ui::View>>;
+
+    #[objc::msg_send(setLeftView:)]
+    pub fn set_left_view(&mut self, val: Option<&ui::View>);
+
+    /// `UITextFieldViewMode`: 0 never, 1 while editing, 2 unless editing, 3 always.
+    #[objc::msg_send(setLeftViewMode:)]
+    pub fn set_left_view_mode(&mut self, val: ns::Integer);
+
+    #[objc::msg_send(delegate)]
+    pub fn delegate(&self) -> Option<arc::R<AnyTextFieldDelegate>>;
+
+    #[objc::msg_send(setDelegate:)]
+    pub fn set_delegate<D: TextFieldDelegate>(&mut self, val: Option<&D>);
 }
+
+#[objc::protocol(UITextFieldDelegate)]
+pub trait TextFieldDelegate: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(textFieldDidBeginEditing:)]
+    fn text_field_did_begin_editing(&mut self, text_field: &mut TextField);
+
+    #[objc::optional]
+    #[objc::msg_send(textFieldDidEndEditing:)]
+    fn text_field_did_end_editing(&mut self, text_field: &mut TextField);
+
+    /// Whether the text in `range` (UTF-16 units) is to be replaced with `string`.
+    #[objc::optional]
+    #[objc::msg_send(textField:shouldChangeCharactersInRange:replacementString:)]
+    fn text_field_should_change_chars_in_range(
+        &mut self,
+        text_field: &mut TextField,
+        range: ns::Range,
+        string: &ns::String,
+    ) -> bool;
+
+    /// Return was pressed; `false` keeps the field as it is.
+    #[objc::optional]
+    #[objc::msg_send(textFieldShouldReturn:)]
+    fn text_field_should_return(&mut self, text_field: &mut TextField) -> bool;
+}
+
+define_obj_type!(
+    pub AnyTextFieldDelegate(ns::Id)
+);
+
+impl TextFieldDelegate for AnyTextFieldDelegate {}
 
 // UIView (UITextField), declared in UITextField.h.
 impl ui::View {

@@ -13,6 +13,38 @@ pub enum Style {
     Prominent = 2,
 }
 
+/// A bar button the system draws and names: Done a checkmark, Cancel a cross.
+#[doc(alias = "UIBarButtonSystemItem")]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[repr(isize)]
+#[non_exhaustive]
+pub enum SysItem {
+    Done = 0,
+    Cancel = 1,
+    Edit = 2,
+    Save = 3,
+    Add = 4,
+    FlexibleSpace = 5,
+    FixedSpace = 6,
+    Compose = 7,
+    Reply = 8,
+    Action = 9,
+    Organize = 10,
+    Bookmarks = 11,
+    Search = 12,
+    Refresh = 13,
+    Stop = 14,
+    Camera = 15,
+    Trash = 16,
+    Play = 17,
+    Pause = 18,
+    Rewind = 19,
+    FastForward = 20,
+    Undo = 21,
+    Redo = 22,
+    Close = 24,
+}
+
 define_obj_type!(
     #[doc(alias = "UIBarButtonItem")]
     pub BarButtonItem(ns::Id),
@@ -45,6 +77,28 @@ impl BarButtonItem {
     pub fn with_custom_view(view: &ui::View) -> arc::R<Self> {
         Self::alloc().init_with_custom_view(view)
     }
+
+    /// The system's item running `action`, whose title and image are ignored.
+    #[objc::init(initWithBarButtonSystemItem:primaryAction:)]
+    #[objc::available(ios = 14.0)]
+    pub fn init_with_sys_item_primary_action(
+        self,
+        item: SysItem,
+        action: Option<&ui::Action>,
+    ) -> arc::R<BarButtonItem>;
+
+    pub fn with_sys_item_primary_action(
+        item: SysItem,
+        action: Option<&ui::Action>,
+    ) -> arc::R<Self> {
+        Self::alloc().init_with_sys_item_primary_action(item, action)
+    }
+
+    #[objc::msg_send(style)]
+    pub fn style(&self) -> Style;
+
+    #[objc::msg_send(setStyle:)]
+    pub fn set_style(&mut self, val: Style);
 
     #[objc::init(initWithImage:menu:)]
     #[objc::available(ios = 14.0, tvos = 14.0)]

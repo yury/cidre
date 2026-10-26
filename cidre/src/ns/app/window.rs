@@ -163,6 +163,10 @@ impl Window {
     #[objc::msg_send(makeFirstResponder:)]
     pub fn make_first_responder(&mut self, responder: Option<&ns::Responder>) -> bool;
 
+    /// `rect` in the window's coordinates, in the screen's.
+    #[objc::msg_send(convertRectToScreen:)]
+    pub fn convert_rect_to_screen(&self, rect: ns::Rect) -> ns::Rect;
+
     #[objc::msg_send(contentLayoutRect)]
     #[objc::available(macos = 10.10)]
     pub fn content_layout_rect(&self) -> ns::Rect;

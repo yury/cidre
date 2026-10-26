@@ -1,5 +1,14 @@
 use crate::{arc, cg, define_obj_type, ns, objc, ui};
 
+#[doc(alias = "UIScrollViewKeyboardDismissMode")]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[repr(isize)]
+pub enum ScrollViewKeyboardDismissMode {
+    None = 0,
+    OnDrag = 1,
+    Interactive = 2,
+}
+
 define_obj_type!(
     #[doc(alias = "UIScrollView")]
     pub ScrollView(ui::View),
@@ -138,6 +147,14 @@ impl ScrollView {
 
     #[objc::msg_send(setScrollEnabled:)]
     pub fn set_scroll_enabled(&mut self, val: bool);
+
+    #[objc::msg_send(keyboardDismissMode)]
+    #[objc::available(ios = 7.0)]
+    pub fn kb_dismiss_mode(&self) -> ScrollViewKeyboardDismissMode;
+
+    #[objc::msg_send(setKeyboardDismissMode:)]
+    #[objc::available(ios = 7.0)]
+    pub fn set_kb_dismiss_mode(&mut self, val: ScrollViewKeyboardDismissMode);
 
     /// The effect where content passes under the top edge's bars.
     #[objc::msg_send(topEdgeEffect)]

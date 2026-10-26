@@ -11,6 +11,9 @@ impl Image {
     #[objc::msg_send(imageNamed:)]
     pub fn with_name(name: &ns::String) -> Option<arc::R<Self>>;
 
+    #[objc::msg_send(imageWithCGImage:)]
+    pub fn with_cg_image(image: &crate::cg::Image) -> arc::R<Self>;
+
     #[objc::msg_send(systemImageNamed:)]
     #[objc::available(ios = 13.0)]
     pub fn with_sys_name(name: &ns::String) -> Option<arc::R<Self>>;
