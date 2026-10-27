@@ -87,6 +87,7 @@ impl BarButtonItem {
         action: Option<&ui::Action>,
     ) -> arc::R<BarButtonItem>;
 
+    #[objc::available(ios = 14.0)]
     pub fn with_sys_item_primary_action(
         item: SysItem,
         action: Option<&ui::Action>,

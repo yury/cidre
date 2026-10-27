@@ -1,4 +1,4 @@
-#[cfg(feature = "blocks")]
+#[cfg(all(feature = "blocks", target_os = "ios"))]
 use crate::{arc, blocks, ui};
 use crate::{define_obj_type, ns, objc};
 
