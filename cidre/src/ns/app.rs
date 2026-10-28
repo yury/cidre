@@ -279,6 +279,9 @@ pub use split_view::SplitViewDelegateImpl;
 mod text_field_cell;
 pub use text_field_cell::TextFieldBezelStyle;
 
+mod search_field;
+pub use search_field::SearchField;
+
 mod text_field;
 pub use text_field::TextField;
 pub use text_field::TextFieldDelegate;
@@ -310,6 +313,15 @@ pub use table_view::TableViewRowSizeStyle;
 pub use table_view::TableViewSelectionHighlightStyle;
 pub use table_view::TableViewStyle;
 pub use table_view::notifications as table_view_notifications;
+
+#[cfg(feature = "blocks")]
+mod table_view_row_action;
+#[cfg(feature = "blocks")]
+pub use table_view_row_action::TableViewRowAction;
+#[cfg(feature = "blocks")]
+pub use table_view_row_action::TableViewRowActionHandler;
+#[cfg(feature = "blocks")]
+pub use table_view_row_action::TableViewRowActionStyle;
 
 mod titlebar_accessory_view_controller;
 pub use titlebar_accessory_view_controller::TitlebarAccessoryViewController;

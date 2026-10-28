@@ -21,4 +21,11 @@ impl Responder {
     /// that responds to it; whether one did.
     #[objc::msg_send(tryToPerform:with:)]
     pub fn try_to_perform_with(&mut self, action: &objc::Sel, obj: Option<&ns::Id>) -> bool;
+
+    /// The contextual menu: a right-click or a Control-click shows it.
+    #[objc::msg_send(menu)]
+    pub fn menu(&self) -> Option<arc::R<ns::Menu>>;
+
+    #[objc::msg_send(setMenu:)]
+    pub fn set_menu(&mut self, val: Option<&ns::Menu>);
 }

@@ -790,7 +790,7 @@ pub trait TableViewDelegate: objc::Obj {
         new_column: ns::Integer,
     ) -> bool;
 
-    /// The returned array contains `NSTableViewRowAction` instances.
+    /// The returned array contains `NSTableViewRowAction` instances; an empty one for none.
     #[objc::optional]
     #[objc::msg_send(tableView:rowActionsForRow:edge:)]
     fn table_view_row_actions_for_row(
