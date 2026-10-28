@@ -42,3 +42,8 @@ define_obj_type!(
     #[doc(alias = "UICollectionViewLayoutAttributes")]
     pub CollectionViewLayoutAttrs(ns::Id)
 );
+
+impl CollectionViewLayoutAttrs {
+    #[objc::msg_send(frame)]
+    pub fn frame(&self) -> cg::Rect;
+}

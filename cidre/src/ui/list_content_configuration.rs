@@ -138,6 +138,13 @@ impl ListContentImageProps {
 
     #[objc::msg_send(setCornerRadius:)]
     pub fn set_corner_radius(&mut self, val: cg::Float);
+
+    /// The space the image takes whatever its size, so texts line up across rows.
+    #[objc::msg_send(reservedLayoutSize)]
+    pub fn reserved_layout_size(&self) -> cg::Size;
+
+    #[objc::msg_send(setReservedLayoutSize:)]
+    pub fn set_reserved_layout_size(&mut self, val: cg::Size);
 }
 
 define_obj_type!(

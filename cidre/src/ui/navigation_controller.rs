@@ -17,8 +17,8 @@ impl NavController {
     #[objc::msg_send(pushViewController:animated:)]
     pub fn push_vc(&mut self, vc: &ui::ViewController, animated: bool);
 
-    #[objc::msg_send(popViewControllerAnimated)]
-    pub fn pop_vc(&mut self) -> Option<arc::R<ui::ViewController>>;
+    #[objc::msg_send(popViewControllerAnimated:)]
+    pub fn pop_vc(&mut self, animated: bool) -> Option<arc::R<ui::ViewController>>;
 
     #[objc::msg_send(popToViewController:animated:)]
     pub fn pop_to_vc(

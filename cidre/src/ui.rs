@@ -644,6 +644,23 @@ pub use bar_button_item::SysItem as BarButtonSysItem;
 mod navigation_item;
 pub use navigation_item::NavItem;
 pub use navigation_item::NavItemLargeTitleDisplayMode;
+pub use navigation_item::NavItemSearchBarPlacement;
+
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+mod search_controller;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use search_controller::{
+    AnySearchBarDelegate, AnySearchResultsUpdating, SearchBar, SearchBarDelegate,
+    SearchBarDelegateImpl, SearchController, SearchResultsUpdating, SearchResultsUpdatingImpl,
+};
+
+#[cfg(all(feature = "blocks", not(any(target_os = "tvos", target_os = "watchos"))))]
+mod contextual_action;
+#[cfg(all(feature = "blocks", not(any(target_os = "tvos", target_os = "watchos"))))]
+pub use contextual_action::{
+    ContextualAction, ContextualActionHandler, ContextualActionStyle, SwipeActionsCfg,
+    SwipeActionsCfgProvider,
+};
 
 mod bar_minimization;
 pub use bar_minimization::BarMinimization;

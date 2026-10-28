@@ -178,6 +178,11 @@ impl ViewController {
 
     #[objc::msg_send(viewDidLayoutSubviews)]
     pub fn view_did_layout_subviews(&mut self);
+
+    /// In `viewWillDisappear:` and after: whether it leaves because it is taken off its
+    /// parent, as a navigation controller pops it.
+    #[objc::msg_send(isMovingFromParentViewController)]
+    pub fn is_moving_from_parent(&self) -> bool;
 }
 
 /// Scene accessories
