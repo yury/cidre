@@ -1230,7 +1230,7 @@ macro_rules! define_obj_type {
                         unsafe {
                             std::ptr::drop_in_place(ptr);
                             let sup = $crate::objc::Super {
-                                receiver: std::mem::transmute(s),
+                                receiver: s as *mut $NewType as *mut $crate::objc::Id,
                                 super_class: $crate::objc::Id::cls()
                             };
                             $crate::objc::msg_send_super_void(&sup, sel);

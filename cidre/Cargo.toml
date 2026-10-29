@@ -69,6 +69,7 @@ full = [
   "ut",
   "un",
   "ph",
+  "cx",
   "io_surface",
   "io_kit",
   "io_pm",
@@ -148,6 +149,7 @@ ui = ["ns", "ca", "blocks"]
 ut = ["ns"]
 un = ["blocks", "ns"]
 ph = ["blocks", "ns"]
+cx = ["dispatch", "ns"]
 ct = ["blocks", "cf", "cg", "ns", "objc"]
 tis = ["cf"]
 mc = ["blocks", "ns"]
