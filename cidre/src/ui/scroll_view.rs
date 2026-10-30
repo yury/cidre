@@ -197,6 +197,16 @@ pub trait ScrollViewDelegate: objc::Obj {
     #[objc::msg_send(scrollViewWillBeginDragging:)]
     fn scroll_view_will_begin_dragging(&mut self, scroll_view: &mut ui::ScrollView);
 
+    /// `target_content_offset` is where the scroll will come to rest; the delegate may change it.
+    #[objc::optional]
+    #[objc::msg_send(scrollViewWillEndDragging:withVelocity:targetContentOffset:)]
+    fn scroll_view_will_end_dragging(
+        &mut self,
+        scroll_view: &mut ui::ScrollView,
+        velocity: cg::Point,
+        target_content_offset: &mut cg::Point,
+    );
+
     #[objc::optional]
     #[objc::msg_send(scrollViewDidEndDragging:willDecelerate:)]
     fn scroll_view_did_end_dragging_will_decelerate(
