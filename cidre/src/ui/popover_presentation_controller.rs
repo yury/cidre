@@ -27,12 +27,35 @@ impl PopoverPresentationControllerSrcItem for AnyPopoverPresentationControllerSr
 impl PopoverPresentationControllerSrcItem for ui::View {}
 impl PopoverPresentationControllerSrcItem for ui::BarButtonItem {}
 
+#[objc::protocol(UIPopoverPresentationControllerDelegate)]
+pub trait PopoverPresentationControllerDelegate:
+    ui::AdaptivePresentationControllerDelegate
+{
+    #[objc::optional]
+    #[objc::msg_send(popoverPresentationController:willRepositionPopoverToRect:inView:)]
+    fn will_reposition_popover(
+        &mut self,
+        controller: &PopoverPresentationController,
+        rect: &mut cg::Rect,
+        view: *mut *mut ui::View,
+    );
+}
+
 define_obj_type!(
     #[doc(alias = "UIPopoverPresentationController")]
     pub PopoverPresentationController(ui::PresentationController)
 );
 
 impl PopoverPresentationController {
+    #[objc::msg_send(setDelegate:)]
+    pub fn set_delegate<D: PopoverPresentationControllerDelegate>(&mut self, val: Option<&D>);
+
+    #[objc::msg_send(setPassthroughViews:)]
+    pub fn set_passthrough_views(&mut self, val: Option<&ns::Array<ui::View>>);
+
+    #[objc::msg_send(setPopoverLayoutMargins:)]
+    pub fn set_layout_margins(&mut self, val: ui::EdgeInsets);
+
     #[objc::msg_send(permittedArrowDirections)]
     pub fn permitted_arrow_directions(&self) -> PopoverArrowDirection;
 

@@ -631,10 +631,14 @@ pub use split_view_controller::{
     SplitViewController, Style as SplitViewControllerStyle,
 };
 mod presentation_controller;
-pub use presentation_controller::PresentationController;
+pub use presentation_controller::{
+    AdaptivePresentationControllerDelegate, AdaptivePresentationControllerDelegateImpl,
+    PresentationController,
+};
 mod popover_presentation_controller;
 pub use popover_presentation_controller::{
     AnyPopoverPresentationControllerSrcItem, PopoverArrowDirection, PopoverPresentationController,
+    PopoverPresentationControllerDelegate, PopoverPresentationControllerDelegateImpl,
     PopoverPresentationControllerSrcItem, PopoverPresentationControllerSrcItemImpl,
 };
 mod sheet_presentation_controller;
