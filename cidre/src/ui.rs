@@ -149,6 +149,9 @@ pub use document_picker_view_controller::DocumentPickerViewController;
 mod navigation_bar;
 pub use navigation_bar::NavBar;
 
+mod bar_button_item_group;
+pub use bar_button_item_group::BarButtonItemGroup;
+
 mod responder;
 pub use responder::Responder;
 pub use responder::ResponderStandardEditActions;
