@@ -8,7 +8,7 @@ define_obj_type!(
 
 impl BarButtonItemGroup {
     #[objc::init(initWithBarButtonItems:representativeItem:)]
-    #[objc::available(ios = 9.0)]
+    #[objc::available(ios = 9.0, tvos = 9.0)]
     pub fn init_with_items_representative_item(
         self,
         items: &ns::Array<ui::BarButtonItem>,
