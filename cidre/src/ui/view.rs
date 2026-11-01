@@ -84,6 +84,14 @@ define_obj_type!(
 );
 
 impl View {
+    #[objc::msg_send(cornerConfiguration)]
+    #[objc::available(ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn corner_cfg(&self) -> arc::R<ui::CornerCfg>;
+
+    #[objc::msg_send(setCornerConfiguration:)]
+    #[objc::available(ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn set_corner_cfg(&mut self, val: &ui::CornerCfg);
+
     #[cfg(feature = "ca")]
     #[objc::msg_send(layer)]
     pub fn layer(&self) -> arc::R<ca::Layer>;
