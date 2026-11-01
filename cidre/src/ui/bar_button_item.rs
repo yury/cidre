@@ -197,6 +197,11 @@ impl BarButtonItem {
     #[objc::msg_send(setWidth:)]
     pub fn set_width(&mut self, val: cg::Float);
 
+    /// Remove the standard padding around the item.
+    #[objc::msg_send(setPaddingRemoved:)]
+    #[objc::available(ios = 27.0, tvos = 27.0, visionos = 27.0)]
+    pub fn set_padding_removed(&mut self, val: bool);
+
     #[objc::msg_send(customView)]
     pub fn custom_view(&self) -> Option<arc::R<ui::View>>;
 

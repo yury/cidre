@@ -149,6 +149,11 @@ pub use document_picker_view_controller::DocumentPickerViewController;
 mod navigation_bar;
 pub use navigation_bar::NavBar;
 
+#[cfg(not(target_os = "watchos"))]
+mod visual_effect_view;
+#[cfg(not(target_os = "watchos"))]
+pub use visual_effect_view::VisualEffectView;
+
 mod bar_button_item_group;
 pub use bar_button_item_group::BarButtonItemGroup;
 
