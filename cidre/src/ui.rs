@@ -119,6 +119,9 @@ pub use text_field::TextField;
 pub use text_field::TextFieldDelegate;
 pub use text_field::TextFieldDelegateImpl;
 
+mod text_input;
+pub use text_input::KeyInput;
+
 #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 mod search_text_field;
 #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
