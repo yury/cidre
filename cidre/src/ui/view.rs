@@ -588,6 +588,10 @@ impl View {
     #[objc::available(ios = 11.0, tvos = 11.0)]
     pub fn safe_area_layout_guide(&self) -> arc::R<ui::LayoutGuide>;
 
+    #[objc::msg_send(readableContentGuide)]
+    #[objc::available(ios = 9.0, tvos = 9.0)]
+    pub fn readable_content_guide(&self) -> arc::R<ui::LayoutGuide>;
+
     #[objc::msg_send(layoutMarginsGuide)]
     #[objc::available(ios = 9.0, tvos = 9.0)]
     pub fn layout_margins_guide(&self) -> arc::R<ui::LayoutGuide>;

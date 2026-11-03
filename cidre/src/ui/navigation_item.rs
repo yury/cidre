@@ -38,6 +38,9 @@ define_obj_type!(
 );
 
 impl NavItem {
+    #[objc::msg_send(setTitleView:)]
+    pub fn set_title_view(&mut self, view: Option<&ui::View>);
+
     #[objc::msg_send(largeTitleDisplayMode)]
     #[objc::available(ios = 11.0)]
     pub fn large_title_display_mode(&self) -> NavItemLargeTitleDisplayMode;
