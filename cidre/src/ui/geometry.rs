@@ -1,4 +1,4 @@
-use crate::{cg, define_opts};
+use crate::{cg, define_opts, objc};
 
 define_opts!(
     /// The edges of a rectangle.
@@ -97,4 +97,9 @@ impl DirectionalEdgeInsets {
 pub struct Offset {
     pub horizontal: cg::Float,
     pub vertical: cg::Float,
+}
+
+impl crate::ns::Value {
+    #[objc::msg_send(CGRectValue)]
+    pub fn cg_rect_value(&self) -> cg::Rect;
 }

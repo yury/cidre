@@ -23,6 +23,15 @@ define_obj_type!(
 );
 
 impl ViewController {
+    #[objc::msg_send(presentationController)]
+    pub fn presentation_controller(&self) -> Option<arc::R<ui::PresentationController>>;
+
+    #[objc::msg_send(setTransitioningDelegate:)]
+    pub fn set_transitioning_delegate<D: ui::ViewControllerTransitioningDelegate>(
+        &mut self,
+        val: Option<&D>,
+    );
+
     #[objc::msg_send(parentViewController)]
     pub fn parent_vc(&self) -> Option<arc::R<ViewController>>;
 

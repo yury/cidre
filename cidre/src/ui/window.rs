@@ -40,6 +40,9 @@ define_obj_type!(
 );
 
 impl Window {
+    #[objc::msg_send(convertRect:fromWindow:)]
+    pub fn convert_rect_from_window(&self, rect: cg::Rect, window: Option<&Window>) -> cg::Rect;
+
     #[objc::init(initWithWindowScene:)]
     pub fn init_with_window_scene(self, scene: &ui::WindowScene) -> arc::R<Window>;
 
@@ -64,4 +67,22 @@ impl Window {
 
     #[objc::msg_send(setWindowLevel:)]
     pub fn set_level(&mut self, val: Level);
+}
+
+pub mod keyboard_notifications {
+    use crate::ns;
+    pub fn will_change_frame() -> &'static ns::NotificationName {
+        unsafe { UIKeyboardWillChangeFrameNotification }
+    }
+    pub fn frame_end_user_info_key() -> &'static ns::String {
+        unsafe { UIKeyboardFrameEndUserInfoKey }
+    }
+    pub fn animation_duration_user_info_key() -> &'static ns::String {
+        unsafe { UIKeyboardAnimationDurationUserInfoKey }
+    }
+    unsafe extern "C" {
+        static UIKeyboardWillChangeFrameNotification: &'static ns::NotificationName;
+        static UIKeyboardFrameEndUserInfoKey: &'static ns::String;
+        static UIKeyboardAnimationDurationUserInfoKey: &'static ns::String;
+    }
 }

@@ -392,6 +392,7 @@ pub use view_layout_region::ViewLayoutRegionAdaptivityAxis;
 mod window;
 pub use window::Level as WindowLevel;
 pub use window::Window;
+pub use window::keyboard_notifications;
 
 mod window_scene_placement;
 pub use window_scene_placement::WindowScenePlacement;
@@ -632,6 +633,10 @@ pub use split_view_controller::{
     DisplayMode as SplitViewControllerDisplayMode,
     DisplayModeButtonVisibility as SplitViewControllerDisplayModeButtonVisibility,
     SplitViewController, Style as SplitViewControllerStyle,
+};
+mod view_controller_transitioning;
+pub use view_controller_transitioning::{
+    ViewControllerTransitioningDelegate, ViewControllerTransitioningDelegateImpl,
 };
 mod presentation_controller;
 pub use presentation_controller::{
