@@ -71,6 +71,14 @@ impl Window {
 
 pub mod keyboard_notifications {
     use crate::ns;
+    #[doc(alias = "UIKeyboardWillShowNotification")]
+    pub fn will_show() -> &'static ns::NotificationName {
+        unsafe { UIKeyboardWillShowNotification }
+    }
+    #[doc(alias = "UIKeyboardWillHideNotification")]
+    pub fn will_hide() -> &'static ns::NotificationName {
+        unsafe { UIKeyboardWillHideNotification }
+    }
     pub fn will_change_frame() -> &'static ns::NotificationName {
         unsafe { UIKeyboardWillChangeFrameNotification }
     }
@@ -81,6 +89,8 @@ pub mod keyboard_notifications {
         unsafe { UIKeyboardAnimationDurationUserInfoKey }
     }
     unsafe extern "C" {
+        static UIKeyboardWillShowNotification: &'static ns::NotificationName;
+        static UIKeyboardWillHideNotification: &'static ns::NotificationName;
         static UIKeyboardWillChangeFrameNotification: &'static ns::NotificationName;
         static UIKeyboardFrameEndUserInfoKey: &'static ns::String;
         static UIKeyboardAnimationDurationUserInfoKey: &'static ns::String;
