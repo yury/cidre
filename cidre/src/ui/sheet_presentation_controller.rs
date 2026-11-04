@@ -118,6 +118,15 @@ impl SheetPresentationController {
     #[objc::available(ios = 27.0)]
     pub fn set_preferred_placement(&mut self, val: Placement);
 
+    /// Use page-sheet sizing instead of centering a form at preferredContentSize.
+    #[objc::msg_send(prefersPageSizing)]
+    #[objc::available(ios = 17.0)]
+    pub fn prefers_page_sizing(&self) -> bool;
+
+    #[objc::msg_send(setPrefersPageSizing:)]
+    #[objc::available(ios = 17.0)]
+    pub fn set_prefers_page_sizing(&mut self, val: bool);
+
     #[objc::msg_send(setPrefersEdgeAttachedInCompactHeight:)]
     #[objc::available(ios = 15.0)]
     pub fn set_prefers_edge_attached_in_compact_height(&mut self, val: bool);

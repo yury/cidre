@@ -1,4 +1,16 @@
-use crate::{arc, cg, define_obj_type, objc, ui};
+use crate::{arc, cg, define_obj_type, ns, objc, ui};
+
+#[objc::protocol(UICollectionViewDelegateFlowLayout)]
+pub trait CollectionViewDelegateFlowLayout: ui::CollectionViewDelegate {
+    #[objc::optional]
+    #[objc::msg_send(collectionView:layout:sizeForItemAtIndexPath:)]
+    fn collection_view_layout_size_for_item_at_index_path(
+        &mut self,
+        view: &ui::CollectionView,
+        layout: &ui::CollectionViewLayout,
+        index_path: &ns::IndexPath,
+    ) -> cg::Size;
+}
 
 define_obj_type!(
     #[doc(alias = "UICollectionViewFlowLayout")]

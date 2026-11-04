@@ -335,7 +335,10 @@ pub use collection_view_layout::CollectionViewScrollDir;
 pub use collection_view_layout::element_kind as collection_view_element_kind;
 
 mod collection_view_flow_layout;
-pub use collection_view_flow_layout::CollectionViewFlowLayout;
+pub use collection_view_flow_layout::{
+    CollectionViewDelegateFlowLayout, CollectionViewDelegateFlowLayoutImpl,
+    CollectionViewFlowLayout,
+};
 
 mod collection_view_transition_layout;
 pub use collection_view_transition_layout::CollectionViewTransitionLayout;
