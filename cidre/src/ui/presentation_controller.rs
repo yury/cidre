@@ -45,6 +45,15 @@ impl PresentationController {
     #[objc::msg_send(presentationTransitionWillBegin)]
     pub fn presentation_transition_will_begin(&mut self);
 
+    #[objc::msg_send(presentationTransitionDidEnd:)]
+    pub fn presentation_transition_did_end(&mut self, completed: bool);
+
+    #[objc::msg_send(dismissalTransitionWillBegin)]
+    pub fn dismissal_transition_will_begin(&mut self);
+
+    #[objc::msg_send(dismissalTransitionDidEnd:)]
+    pub fn dismissal_transition_did_end(&mut self, completed: bool);
+
     #[objc::msg_send(preferredContentSizeDidChangeForChildContentContainer:)]
     pub fn preferred_content_size_did_change(&mut self, container: &ns::Id);
 
