@@ -69,6 +69,15 @@ impl Detent {
     #[objc::available(ios = 16.0)]
     pub fn id(&self) -> arc::R<DetentId>;
 
+    /// The system background effect for this detent; `None` uses the default.
+    #[objc::msg_send(backgroundEffect)]
+    #[objc::available(ios = 26.1)]
+    pub fn bg_effect(&self) -> Option<arc::R<ui::VisualEffect>>;
+
+    #[objc::msg_send(setBackgroundEffect:)]
+    #[objc::available(ios = 26.1)]
+    pub fn set_bg_effect(&mut self, effect: Option<&ui::VisualEffect>);
+
     /// A detent `resolver` sizes, of `id`.
     #[cfg(feature = "blocks")]
     #[objc::msg_send(customDetentWithIdentifier:resolver:)]
