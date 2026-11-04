@@ -10,6 +10,11 @@ define_obj_type!(
 );
 
 impl Screen {
+    /// The screen coordinate space, including its current rotation.
+    #[objc::msg_send(coordinateSpace)]
+    #[objc::available(ios = 8.0)]
+    pub fn coordinate_space(&self) -> arc::R<ui::AnyCoordinateSpace>;
+
     #[objc::msg_send(bounds)]
     pub fn bounds(&self) -> cg::Rect;
 
