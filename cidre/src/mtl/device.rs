@@ -461,8 +461,14 @@ impl Device {
     #[api::available(macos = 10.15, ios = 13.0)]
     pub fn supports_family(&self, val: GpuFamily) -> bool;
 
-    #[objc::available(macos = 11.0, ios = 16.4, tvos = 16.4, maccatalyst = 16.4)]
     #[objc::msg_send(supportsBCTextureCompression)]
+    #[objc::available(
+        macos = 11.0,
+        ios = 16.4,
+        tvos = 16.4,
+        maccatalyst = 16.4,
+        visionos = 1.0
+    )]
     pub fn supports_bc_texture_compression(&self) -> bool;
 
     /// Returns the minimum alignment required for offset and rowBytes when creating a linear texture.
