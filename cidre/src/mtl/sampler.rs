@@ -43,7 +43,8 @@ pub enum BorderColor {
 
 define_obj_type!(
     #[doc(alias = "MTLSamplerDescriptor")]
-    pub Desc(ns::Id)
+    pub Desc(ns::Id),
+    sym MTLSamplerDescriptor
 );
 
 impl Desc {

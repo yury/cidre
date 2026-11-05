@@ -149,6 +149,9 @@ impl Device {
     #[objc::msg_send(newTextureWithDescriptor:)]
     pub fn new_texture(&self, descriptor: &mtl::TextureDesc) -> Option<arc::R<mtl::Texture>>;
 
+    #[objc::msg_send(newSamplerStateWithDescriptor:)]
+    pub fn new_sampler_state(&self, desc: &mtl::SamplerDesc) -> Option<arc::R<mtl::SamplerState>>;
+
     #[cfg(feature = "io_surface")]
     #[objc::msg_send(newTextureWithDescriptor:iosurface:plane:)]
     pub fn new_texture_with_surf(
@@ -457,6 +460,10 @@ impl Device {
     #[objc::msg_send(supportsFamily:)]
     #[api::available(macos = 10.15, ios = 13.0)]
     pub fn supports_family(&self, val: GpuFamily) -> bool;
+
+    #[objc::available(macos = 11.0, ios = 16.4, tvos = 16.4, maccatalyst = 16.4)]
+    #[objc::msg_send(supportsBCTextureCompression)]
+    pub fn supports_bc_texture_compression(&self) -> bool;
 
     /// Returns the minimum alignment required for offset and rowBytes when creating a linear texture.
     /// An error is thrown for queries with invalid pixel formats (depth, stencil, or compressed formats).

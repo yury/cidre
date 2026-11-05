@@ -337,6 +337,10 @@ pub enum PixelFormat {
     #[doc(alias = "MTLPixelFormatBC3_RGBA_sRGB")]
     Bc3RgbaSrgb = 135,
 
+    /// Two-channel unsigned normalized BC5 block compression.
+    #[doc(alias = "MTLPixelFormatBC5_RGUnorm")]
+    Bc5RgUNorm = 142,
+
     /// Compressed format with four floating-point components.
     #[doc(alias = "MTLPixelFormatBC6H_RGBFloat")]
     Bc6HRgbFloat = 150,
@@ -353,6 +357,14 @@ pub enum PixelFormat {
     /// with conversion between sRGB and linear space.
     #[doc(alias = "MTLPixelFormatBC7_RGBAUnorm_sRGB")]
     Bc7RgbaUNormSrgb = 153,
+
+    /// Three-channel ETC2 RGB8 block compression.
+    #[doc(alias = "MTLPixelFormatETC2_RGB8")]
+    Etc2Rgb8 = 180,
+
+    /// Three-channel ETC2 RGB8 block compression with sRGB conversion.
+    #[doc(alias = "MTLPixelFormatETC2_RGB8_sRGB")]
+    Etc2Rgb8Srgb = 181,
 
     /// ASTC-compressed format with low-dynamic-range content,
     /// conversion between sRGB and linear space, a block width of 4, and a block height of 4.

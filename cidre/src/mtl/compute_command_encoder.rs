@@ -93,6 +93,9 @@ impl ComputeCmdEncoder {
     #[objc::msg_send(setTexture:atIndex:)]
     pub fn set_texture_at(&mut self, val: Option<&mtl::Texture>, index: usize);
 
+    #[objc::msg_send(setSamplerState:atIndex:)]
+    pub fn set_sampler_state_at(&mut self, val: Option<&mtl::SamplerState>, index: usize);
+
     #[objc::msg_send(setTextures:withRange:)]
     pub fn set_textures_with_range(&mut self, textures: *const &mtl::Texture, range: ns::Range);
 
