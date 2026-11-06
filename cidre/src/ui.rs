@@ -318,6 +318,7 @@ mod cell_accessory;
 pub use cell_accessory::CellAccessory;
 pub use cell_accessory::CellAccessoryCheckmark;
 pub use cell_accessory::CellAccessoryDelete;
+pub use cell_accessory::CellAccessoryDetail;
 pub use cell_accessory::CellAccessoryDisclosureIndicator;
 pub use cell_accessory::CellAccessoryDisplayedState;
 pub use cell_accessory::CellAccessoryOutlineDisclosure;

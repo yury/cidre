@@ -69,3 +69,16 @@ define_obj_type!(
     pub CellAccessoryDelete(CellAccessory),
     sym UICellAccessoryDelete
 );
+
+define_obj_type!(
+    #[doc(alias = "UICellAccessoryDetail")]
+    pub CellAccessoryDetail(CellAccessory),
+    sym UICellAccessoryDetail
+);
+
+impl CellAccessoryDetail {
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(setActionHandler:)]
+    #[objc::available(ios = 14.0, tvos = 14.0)]
+    pub fn set_action_handler(&mut self, val: Option<&mut crate::blocks::EscBlock<fn()>>);
+}
