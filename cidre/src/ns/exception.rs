@@ -143,7 +143,8 @@ unsafe extern "C" {
 
 define_obj_type!(
     #[doc(alias = "NSException")]
-    pub Exception(ns::Id)
+    pub Exception(ns::Id),
+    sym NSException
 );
 
 impl Exception {
@@ -159,6 +160,14 @@ impl Exception {
 
     #[objc::msg_send(userInfo)]
     pub fn user_info(&self) -> Option<arc::R<ns::Dictionary<ns::Id, ns::Id>>>;
+
+    /// The return addresses captured when the exception was first thrown.
+    #[objc::msg_send(callStackReturnAddresses)]
+    pub fn call_stack_return_addresses(&self) -> arc::R<ns::Array<ns::Number>>;
+
+    /// Symbolic descriptions of the original throw stack.
+    #[objc::msg_send(callStackSymbols)]
+    pub fn call_stack_symbols(&self) -> arc::R<ns::Array<ns::String>>;
 }
 
 impl std::fmt::Display for Exception {

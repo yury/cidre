@@ -625,7 +625,10 @@ pub struct Sel {
 }
 
 pub mod autorelease_pool;
+mod exception;
 pub mod ns;
+pub use exception::{ExceptionPreprocessor, set_exception_preprocessor};
+
 #[cfg(test)]
 mod selector_audit;
 pub use autorelease_pool::AutoreleasePoolPage;
