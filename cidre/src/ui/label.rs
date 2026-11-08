@@ -39,6 +39,10 @@ impl Label {
     #[objc::msg_send(setNumberOfLines:)]
     pub fn set_number_of_lines(&mut self, val: ns::Integer);
 
+    /// Updates the font when the user changes their preferred content size.
+    #[objc::msg_send(setAdjustsFontForContentSizeCategory:)]
+    pub fn set_adjusts_font_for_content_size_category(&mut self, val: bool);
+
     #[objc::msg_send(adjustsFontSizeToFitWidth)]
     pub fn adjusts_font_size_to_fit_width(&self) -> bool;
 
