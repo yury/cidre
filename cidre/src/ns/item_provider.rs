@@ -10,7 +10,19 @@ define_obj_type!(
     sym NSItemProvider
 );
 
+/// An object whose representations can be offered by an item provider.
+#[objc::protocol(NSItemProviderWriting)]
+pub trait ItemProviderWriting: objc::Obj {}
+
 impl ItemProvider {
+    #[objc::init(initWithObject:)]
+    fn init_with_obj<W: ItemProviderWriting>(self, object: &W) -> arc::R<ItemProvider>;
+
+    #[objc::available(macos = 10.13, ios = 11.0, tvos = 11.0, watchos = 4.0)]
+    pub fn with_obj<W: ItemProviderWriting>(object: &W) -> arc::R<Self> {
+        Self::alloc().init_with_obj(object)
+    }
+
     /// The type identifiers the provider can load, the richest first.
     #[objc::msg_send(registeredTypeIdentifiers)]
     pub fn registered_type_ids(&self) -> arc::R<ns::Array<ns::String>>;

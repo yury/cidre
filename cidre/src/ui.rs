@@ -139,6 +139,11 @@ pub use search_text_field::SearchToken;
 
 mod alert_controller;
 
+#[cfg(feature = "lp")]
+mod document_properties;
+#[cfg(feature = "lp")]
+pub use document_properties::DocumentProps;
+
 mod document_picker_view_controller;
 pub use alert_controller::AlertAction;
 pub use alert_controller::AlertActionStyle;
@@ -478,6 +483,11 @@ mod color;
 pub use color::Color;
 pub use color::ColorProminence;
 
+#[cfg(not(target_os = "watchos"))]
+mod graphics_image_renderer;
+#[cfg(not(target_os = "watchos"))]
+pub use graphics_image_renderer::{GraphicsImageRenderer, GraphicsImageRendererCtx};
+
 mod image;
 pub use image::Image;
 
@@ -670,6 +680,9 @@ pub use bar_button_item::Style as BarButtonItemStyle;
 pub use bar_button_item::SysItem as BarButtonSysItem;
 mod navigation_item;
 pub use navigation_item::NavItem;
+#[cfg(feature = "blocks")]
+pub use navigation_item::NavItemTitleMenuProvider;
+pub use navigation_item::{NavItemRenameDelegate, NavItemRenameDelegateImpl};
 pub use navigation_item::NavItemLargeTitleDisplayMode;
 pub use navigation_item::NavItemSearchBarPlacement;
 

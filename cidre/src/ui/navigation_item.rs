@@ -37,7 +37,39 @@ define_obj_type!(
     sym UINavigationItem
 );
 
+#[objc::protocol(UINavigationItemRenameDelegate)]
+pub trait NavItemRenameDelegate: objc::Obj {
+    #[objc::msg_send(navigationItem:didEndRenamingWithTitle:)]
+    fn nav_item_did_end_renaming(&mut self, item: &mut NavItem, title: &ns::String);
+
+    #[objc::optional]
+    #[objc::msg_send(navigationItemShouldBeginRenaming:)]
+    fn nav_item_should_begin_renaming(&mut self, item: &NavItem) -> bool;
+
+    #[objc::optional]
+    #[objc::msg_send(navigationItem:shouldEndRenamingWithTitle:)]
+    fn nav_item_should_end_renaming(&mut self, item: &NavItem, title: &ns::String) -> bool;
+}
+
+#[cfg(feature = "blocks")]
+pub type NavItemTitleMenuProvider =
+    crate::blocks::EscBlock<fn(&ns::Array<ui::MenuElement>) -> Option<arc::Rar<ui::Menu>>>;
+
 impl NavItem {
+    #[objc::msg_send(setRenameDelegate:)]
+    #[objc::available(ios = 16.0)]
+    pub fn set_rename_delegate<D: NavItemRenameDelegate>(&mut self, val: Option<&D>);
+
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(setTitleMenuProvider:)]
+    #[objc::available(ios = 16.0)]
+    pub fn set_title_menu_provider(&mut self, val: Option<&mut NavItemTitleMenuProvider>);
+
+    #[cfg(feature = "lp")]
+    #[objc::msg_send(setDocumentProperties:)]
+    #[objc::available(ios = 16.0)]
+    pub fn set_document_props(&mut self, val: Option<&ui::DocumentProps>);
+
     #[objc::msg_send(setTitleView:)]
     pub fn set_title_view(&mut self, view: Option<&ui::View>);
 

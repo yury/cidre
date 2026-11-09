@@ -6,7 +6,15 @@ define_obj_type!(
     sym UIImage
 );
 
+impl ns::ItemProviderWriting for Image {}
+
 impl Image {
+    #[objc::msg_send(size)]
+    pub fn size(&self) -> crate::cg::Size;
+
+    #[objc::msg_send(drawInRect:)]
+    pub fn draw_in_rect(&self, rect: crate::cg::Rect);
+
     /// An image from the main bundle's asset catalog or resources.
     #[objc::msg_send(imageNamed:)]
     pub fn with_name(name: &ns::String) -> Option<arc::R<Self>>;

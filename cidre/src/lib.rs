@@ -143,6 +143,10 @@ pub mod ml;
 #[cfg(feature = "ns")]
 pub mod ns;
 
+/// Link Presentation
+#[cfg(feature = "lp")]
+pub mod lp;
+
 /// Natural Language
 #[cfg(feature = "nl")]
 pub mod nl;
