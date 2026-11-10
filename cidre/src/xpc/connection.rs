@@ -248,7 +248,6 @@ impl Connection {
     }
 }
 
-#[link(name = "System", kind = "dylib")]
 unsafe extern "C-unwind" {
     fn xpc_connection_create(
         name: *const c_char,
@@ -368,7 +367,6 @@ impl<'a> From<&'a xpc::Object> for Event<'a> {
     }
 }
 
-#[link(name = "System", kind = "dylib")]
 unsafe extern "C-unwind" {
     static _xpc_error_connection_interrupted: xpc::Error;
     static _xpc_error_connection_invalid: xpc::Error;

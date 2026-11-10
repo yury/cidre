@@ -26,7 +26,6 @@ impl Level {
     }
 }
 
-#[link(name = "UIKit", kind = "framework")]
 unsafe extern "C" {
     static UIWindowLevelNormal: Level;
     static UIWindowLevelAlert: Level;

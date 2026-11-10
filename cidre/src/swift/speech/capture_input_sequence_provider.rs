@@ -25,7 +25,6 @@ struct AnalyzerInputSequence {
 
 unsafe impl Send for AnalyzerInputSequence {}
 
-#[link(name = "Speech", kind = "framework")]
 unsafe extern "C" {
     // `analyzerInputs` is an opaque `some AsyncSequence`, whose getter and
     // descriptor the mangler does not spell.

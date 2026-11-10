@@ -22,7 +22,6 @@ impl Drop for AutoreleasePoolPage {
     }
 }
 
-#[link(name = "objc", kind = "dylib")]
 unsafe extern "C" {
     fn objc_autoreleasePoolPush() -> AutoreleasePoolPage;
     fn objc_autoreleasePoolPop(ctx: *const c_void);

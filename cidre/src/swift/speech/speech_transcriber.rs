@@ -32,7 +32,6 @@ impl Default for TranscriberPreset {
     }
 }
 
-#[link(name = "Speech", kind = "framework")]
 #[link(name = "swiftFoundation")]
 unsafe extern "C" {
     #[link_name = "$s6Speech0A11TranscriberC7resultsQrvg"]

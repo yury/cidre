@@ -33,7 +33,6 @@ impl Group {
     }
 }
 
-#[link(name = "System", kind = "dylib")]
 unsafe extern "C-unwind" {
     fn dispatch_group_create() -> arc::R<Group>;
     fn dispatch_group_wait(group: &Group, timeout: Time) -> isize;

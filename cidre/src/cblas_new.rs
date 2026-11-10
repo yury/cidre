@@ -29,7 +29,6 @@ pub mod cblas {
 
 pub mod catlas {
 
-    #[link(name = "Accelerate", kind = "framework")]
     unsafe extern "C-unwind" {
         #[link_name = "catlas_saxpby"]
         #[doc(alias = "catlas_saxpby")]

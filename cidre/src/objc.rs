@@ -1438,7 +1438,6 @@ pub fn throw(obj: &Id) -> ! {
     unsafe { objc_exception_throw(obj) }
 }
 
-#[link(name = "ns", kind = "static")]
 unsafe extern "C-unwind" {
     fn cidre_try_catch<'ar>(
         during: extern "C" fn(ctx: *mut c_void),

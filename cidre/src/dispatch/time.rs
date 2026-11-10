@@ -68,7 +68,6 @@ impl WallTime {
     }
 }
 
-#[link(name = "System", kind = "dylib")]
 unsafe extern "C-unwind" {
     fn dispatch_time(when: Time, delta: i64) -> Time;
     fn dispatch_walltime(when: *const TimeSpec, delta: i64) -> WallTime;

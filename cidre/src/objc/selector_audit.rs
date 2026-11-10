@@ -28,7 +28,6 @@ struct MethodDesc {
     types: *const c_char,
 }
 
-#[link(name = "objc")]
 unsafe extern "C" {
     fn objc_copyClassList(count: *mut u32) -> *mut &'static Class<Id>;
     fn class_getSuperclass(cls: &Class<Id>) -> Option<&'static Class<Id>>;

@@ -73,7 +73,6 @@ impl Default for DictationPreset {
     }
 }
 
-#[link(name = "Speech", kind = "framework")]
 unsafe extern "C" {
     #[link_name = "$s6Speech20DictationTranscriberC7resultsQrvg"]
     fn dictation_transcriber_results();

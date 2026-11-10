@@ -57,7 +57,6 @@ impl Semaphore {
     }
 }
 
-#[link(name = "System", kind = "dylib")]
 unsafe extern "C-unwind" {
     fn dispatch_semaphore_create(value: isize) -> arc::R<Semaphore>;
     fn dispatch_semaphore_wait(sema: &Semaphore, timeout: dispatch::Time) -> isize;

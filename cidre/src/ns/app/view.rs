@@ -378,7 +378,6 @@ pub mod notifications {
         unsafe { NSViewDidUpdateTrackingAreasNotification }
     }
 
-    #[link(name = "AppKit", kind = "framework")]
     unsafe extern "C" {
         static NSViewFrameDidChangeNotification: &'static NotificationName;
         static NSViewBoundsDidChangeNotification: &'static NotificationName;

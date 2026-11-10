@@ -12,7 +12,6 @@ crate::define_swift!(#[swift::struct("StoreKit.Product")] pub(crate) ProductValu
 // threads, and with it the wrapper and any array of them.
 crate::impl_swift_sendable!(ProductValue);
 
-#[link(name = "StoreKit", kind = "framework")]
 unsafe extern "C" {
     /// `static func products<Identifiers: Collection>(for: Identifiers) async
     /// throws -> [Product] where Identifiers.Element == String`
@@ -23,7 +22,6 @@ unsafe extern "C" {
     static PRODUCT_PRODUCTS_FOR_ASYNC_FN: u8;
 }
 
-#[link(name = "swiftCore")]
 unsafe extern "C" {
     /// The conformance descriptor of `Array<Element>: Collection`, which the
     /// generic call above is instantiated through for `[String]`.

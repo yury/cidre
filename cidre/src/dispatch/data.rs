@@ -172,7 +172,6 @@ impl From<Box<[u8]>> for arc::R<Data> {
     }
 }
 
-#[link(name = "System", kind = "dylib")]
 unsafe extern "C-unwind" {
     static _dispatch_data_empty: Data;
 

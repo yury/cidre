@@ -19,7 +19,6 @@ impl Endpoint {
     }
 }
 
-#[link(name = "System", kind = "dylib")]
 unsafe extern "C-unwind" {
     fn xpc_endpoint_create(connection: &xpc::Connection) -> arc::R<Endpoint>;
 }

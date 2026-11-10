@@ -87,7 +87,6 @@ impl WorkItem {
     }
 }
 
-#[link(name = "System", kind = "dylib")]
 unsafe extern "C-unwind" {
     fn dispatch_block_create<'a>(
         flags: dispatch::BlockFlags,

@@ -124,6 +124,3 @@ impl Executable {
         Self::alloc().init_with_core_ml_package_at_url(core_ml_package_url, compilation_descriptor)
     }
 }
-
-#[link(name = "mpsg", kind = "static")]
-unsafe extern "C" {}

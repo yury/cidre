@@ -87,6 +87,3 @@ impl TensorData {
     #[objc::msg_send(mpsndarray)]
     pub fn mps_nd_array(&self) -> arc::R<mps::NdArray>;
 }
-
-#[link(name = "mpsg", kind = "static")]
-unsafe extern "C" {}

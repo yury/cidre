@@ -13,6 +13,9 @@ pub use animation::AnimatablePropContainer;
 mod animation_context;
 pub use animation_context::AnimationCtx;
 
+mod appearance;
+pub use appearance::{Appearance, AppearanceName};
+
 mod application;
 pub use application::AboutPanelOptKey;
 pub use application::App;

@@ -321,7 +321,6 @@ pub fn main(handler: extern "C-unwind" fn(&mut Connection)) -> ! {
     unsafe { xpc_main(handler) }
 }
 
-#[link(name = "System", kind = "dylib")]
 unsafe extern "C-unwind" {
     static _xpc_type_null: Type;
     static _xpc_type_bool: Type;
@@ -656,7 +655,6 @@ impl Shmem {
     }
 }
 
-#[link(name = "System", kind = "dylib")]
 unsafe extern "C-unwind" {
     static _xpc_bool_true: Bool;
     static _xpc_bool_false: Bool;
@@ -815,7 +813,6 @@ impl<'a> Iterator for Iter<'a> {
     }
 }
 
-#[link(name = "System", kind = "dylib")]
 unsafe extern "C-unwind" {
     fn xpc_array_create(objects: *const c_void, count: usize) -> arc::R<Array>;
     fn xpc_array_get_count(xarray: &Array) -> usize;
@@ -1070,7 +1067,6 @@ impl Dictionary {
     }
 }
 
-#[link(name = "System", kind = "dylib")]
 unsafe extern "C-unwind" {
     fn xpc_dictionary_create(
         keys: *const *const c_char,

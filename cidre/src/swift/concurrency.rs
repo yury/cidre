@@ -1905,7 +1905,6 @@ mod notification_sequence {
         }
     }
 
-    #[link(name = "Foundation", kind = "framework")]
     unsafe extern "C" {
         #[link_name = "$sSo20NSNotificationCenterC10FoundationE13NotificationsCMa"]
         fn notifications_metadata();
