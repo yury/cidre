@@ -37,6 +37,8 @@ define_obj_type!(
     sym NSSplitViewItem
 );
 
+impl ns::KvObserverRegistration for SplitViewItem {}
+
 impl SplitViewItem {
     #[objc::msg_send(splitViewItemWithViewController:)]
     pub fn with_vc(vc: &ns::ViewController) -> arc::R<Self>;
