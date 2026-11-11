@@ -413,6 +413,9 @@ pub use table_column::TableColumnResizingOpts;
 mod background_extension_view;
 pub use background_extension_view::BackgroundExtensionView;
 
+mod glass_effect_view;
+pub use glass_effect_view::{GlassEffectContainerView, GlassEffectView, GlassEffectViewStyle};
+
 mod visual_effect_view;
 pub use visual_effect_view::{
     BlendingMode as VisualEffectBlendingMode, Material as VisualEffectMaterial,
