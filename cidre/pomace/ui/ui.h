@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 Class UI_DEFERRED_MENU_ELEMENT_PROVIDER;
 Class UI_TAB_ACCESSORY;
 Class UI_GLASS_EFFECT;
+Class UI_GLASS_CONTAINER_EFFECT;
 Class UI_CORNER_RADIUS;
 Class UI_CORNER_CONFIGURATION;
 Class UI_VIEW_LAYOUT_REGION;
@@ -67,6 +68,7 @@ static void ui_initializer(void)
         UI_DEFERRED_MENU_ELEMENT_PROVIDER = NSClassFromString(@"UIDeferredMenuElementProvider");
         UI_TAB_ACCESSORY = NSClassFromString(@"UITabAccessory");
         UI_GLASS_EFFECT = NSClassFromString(@"UIGlassEffect");
+        UI_GLASS_CONTAINER_EFFECT = NSClassFromString(@"UIGlassContainerEffect");
         UI_CORNER_RADIUS = NSClassFromString(@"UICornerRadius");
         UI_CORNER_CONFIGURATION = NSClassFromString(@"UICornerConfiguration");
         UI_VIEW_LAYOUT_REGION = NSClassFromString(@"UIViewLayoutRegion");

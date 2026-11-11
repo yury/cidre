@@ -1,4 +1,4 @@
-use crate::{api, arc, define_obj_type, objc, ui};
+use crate::{api, arc, cg, define_obj_type, objc, ui};
 
 #[doc(alias = "UIGlassEffectStyle")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -43,4 +43,37 @@ impl GlassEffect {
 
 unsafe extern "C" {
     static UI_GLASS_EFFECT: &'static objc::Class<GlassEffect>;
+}
+
+define_obj_type!(
+    /// Renders descendant glass elements together behind its content view.
+    #[doc(alias = "UIGlassContainerEffect")]
+    pub GlassContainerEffect(ui::VisualEffect)
+);
+
+impl GlassContainerEffect {
+    #[api::available(ios = 26.0, tvos = 26.0)]
+    crate::define_cls!(UI_GLASS_CONTAINER_EFFECT);
+
+    #[objc::init(init)]
+    #[objc::available(ios = 26.0, tvos = 26.0)]
+    pub fn init(self) -> arc::R<GlassContainerEffect>;
+
+    #[api::available(ios = 26.0, tvos = 26.0)]
+    pub fn new() -> arc::R<Self> {
+        Self::alloc().init()
+    }
+
+    /// Distance at which neighboring glass elements begin to merge.
+    #[objc::msg_send(spacing)]
+    #[objc::available(ios = 26.0, tvos = 26.0)]
+    pub fn spacing(&self) -> cg::Float;
+
+    #[objc::msg_send(setSpacing:)]
+    #[objc::available(ios = 26.0, tvos = 26.0)]
+    pub fn set_spacing(&mut self, val: cg::Float);
+}
+
+unsafe extern "C" {
+    static UI_GLASS_CONTAINER_EFFECT: &'static objc::Class<GlassContainerEffect>;
 }

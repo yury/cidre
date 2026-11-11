@@ -388,6 +388,7 @@ mod visual_effect;
 pub use visual_effect::VisualEffect;
 
 mod glass_effect;
+pub use glass_effect::GlassContainerEffect;
 pub use glass_effect::GlassEffect;
 pub use glass_effect::GlassEffectStyle;
 
