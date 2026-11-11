@@ -54,6 +54,10 @@ pub mod cf;
 #[cfg(feature = "cg")]
 pub mod cg;
 
+/// ColorSync display identity
+#[cfg(all(target_os = "macos", feature = "color_sync"))]
+pub mod color_sync;
+
 /// Core Image
 #[cfg(feature = "ci")]
 pub mod ci;

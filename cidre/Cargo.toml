@@ -124,6 +124,7 @@ cmio = ["cm"]
 cv = ["cf", "cg"]
 ci = ["cf", "ns"]
 cg = ["cf"] # optional io, dispatch, blocks
+color_sync = ["cf", "cg"]
 iio = ["cg", "blocks"]
 objc = []
 ns = ["objc", "cg"]
