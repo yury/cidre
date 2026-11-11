@@ -55,8 +55,8 @@ impl GlassContainerEffect {
     #[api::available(ios = 26.0, tvos = 26.0)]
     crate::define_cls!(UI_GLASS_CONTAINER_EFFECT);
 
+    // NSObject's inherited initializer is available whenever allocation succeeds.
     #[objc::init(init)]
-    #[objc::available(ios = 26.0, tvos = 26.0)]
     pub fn init(self) -> arc::R<GlassContainerEffect>;
 
     #[api::available(ios = 26.0, tvos = 26.0)]

@@ -17,8 +17,8 @@ impl GlassEffectView {
     #[api::available(macos = 26.0)]
     crate::define_cls!(NS_GLASS_EFFECT_VIEW);
 
+    // NSView's inherited initializer is available whenever allocation succeeds.
     #[objc::init(initWithFrame:)]
-    #[objc::available(macos = 26.0)]
     pub fn init_with_frame(self, frame: ns::Rect) -> arc::R<GlassEffectView>;
 
     #[api::available(macos = 26.0)]
@@ -69,8 +69,8 @@ impl GlassEffectContainerView {
     #[api::available(macos = 26.0)]
     crate::define_cls!(NS_GLASS_EFFECT_CONTAINER_VIEW);
 
+    // NSView's inherited initializer is available whenever allocation succeeds.
     #[objc::init(initWithFrame:)]
-    #[objc::available(macos = 26.0)]
     pub fn init_with_frame(self, frame: ns::Rect) -> arc::R<GlassEffectContainerView>;
 
     #[api::available(macos = 26.0)]
