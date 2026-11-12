@@ -16,4 +16,12 @@ impl VisualEffectView {
 
     #[objc::msg_send(contentView)]
     pub fn content_view(&self) -> arc::R<ui::View>;
+
+    #[objc::msg_send(effect)]
+    pub fn effect(&self) -> Option<arc::R<ui::VisualEffect>>;
+
+    /// Animate changes to this property to materialize or dematerialize glass.
+    /// Keep the effect view's alpha at one; animate content separately.
+    #[objc::msg_send(setEffect:)]
+    pub fn set_effect(&mut self, val: Option<&ui::VisualEffect>);
 }
