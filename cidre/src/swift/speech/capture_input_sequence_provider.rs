@@ -25,7 +25,7 @@ struct AnalyzerInputSequence {
 
 unsafe impl Send for AnalyzerInputSequence {}
 
-unsafe extern "C" {
+unsafe extern "custom" {
     // `analyzerInputs` is an opaque `some AsyncSequence`, whose getter and
     // descriptor the mangler does not spell.
     #[link_name = "$s6Speech28CaptureInputSequenceProviderC14analyzerInputsQrvg"]

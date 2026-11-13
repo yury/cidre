@@ -10,9 +10,6 @@ use std::{
 
 use crate::{arc, define_opts, ns, objc};
 
-#[cfg(feature = "custom-allocator")]
-use crate::cf;
-
 // block attributes
 
 #[derive(Debug)]
@@ -468,47 +465,51 @@ impl<'a, Closure: 'a + Sized> Layout2Mut<'a, Closure> {
             Flags::RETAINED_NEEDS_FREE
         };
 
-        #[cfg(not(feature = "custom-allocator"))]
-        {
-            // we assume allocator is malloc. So it is safe
-            // to allocate with Box::new and leak
-            // so _Block_release will be able to free mem
-            let block = Box::new(Self {
+        let block = Box::new_in(
+            Self {
                 isa: unsafe { &_NSConcreteMallocBlock },
                 flags,
                 reserved: 0,
                 invoke,
                 descriptor: &Self::DESCRIPTOR_2,
                 closure: mem::ManuallyDrop::new(closure),
-            });
-            Box::leak(block)
-        }
-        #[cfg(feature = "custom-allocator")]
-        {
-            // We can't use Box::new since global allocator could be changed.
-            // We use cf::Allocator to allocate block
-            // so _Block_release will be able to free mem
-            //
-            // Another option is to use _Block_copy from stacked block but
-            // it is another few function calls
-            let block = Self {
-                isa: unsafe { &_NSConcreteMallocBlock },
-                flags,
-                reserved: 0,
-                invoke,
-                descriptor: &Self::DESCRIPTOR_2,
-                closure: mem::ManuallyDrop::new(closure),
-            };
-
-            let layout = std::alloc::Layout::new::<Self>();
-
-            unsafe {
-                let ptr = cf::Allocator::allocate_size(layout.size());
-                *(ptr as *mut Self) = block;
-                std::mem::transmute(ptr)
-            }
-        }
+            },
+            BlockAllocator,
+        );
+        // Ownership passes to _Block_release; Rust must not free the box.
+        let (ptr, _) = Box::into_raw_with_allocator(block);
+        unsafe { &mut *ptr }
     }
+}
+
+/// Malloc-family storage for allocations whose ownership passes to Blocks.
+struct BlockAllocator;
+
+// SAFETY: posix_memalign honors alignment and returns independent allocations
+// compatible with free, which is also how _Block_release disposes of storage.
+unsafe impl std::alloc::Allocator for BlockAllocator {
+    fn allocate(
+        &self,
+        layout: std::alloc::Layout,
+    ) -> Result<NonNull<[u8]>, std::alloc::AllocError> {
+        let mut ptr = std::ptr::null_mut();
+        let align = layout.align().max(std::mem::size_of::<*mut c_void>());
+        let result = unsafe { posix_memalign(&mut ptr, align, layout.size().max(1)) };
+        if result != 0 {
+            return Err(std::alloc::AllocError);
+        }
+        let ptr = NonNull::new(ptr.cast::<u8>()).ok_or(std::alloc::AllocError)?;
+        Ok(NonNull::slice_from_raw_parts(ptr, layout.size()))
+    }
+
+    unsafe fn deallocate(&self, ptr: NonNull<u8>, _layout: std::alloc::Layout) {
+        unsafe { free(ptr.as_ptr().cast()) }
+    }
+}
+
+unsafe extern "C" {
+    fn posix_memalign(ptr: *mut *mut c_void, align: usize, size: usize) -> i32;
+    fn free(ptr: *mut c_void);
 }
 
 #[link(name = "System", kind = "dylib")]

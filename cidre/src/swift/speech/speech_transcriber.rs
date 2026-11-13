@@ -33,7 +33,7 @@ impl Default for TranscriberPreset {
 }
 
 #[link(name = "swiftFoundation")]
-unsafe extern "C" {
+unsafe extern "custom" {
     #[link_name = "$s6Speech0A11TranscriberC7resultsQrvg"]
     fn speech_transcriber_results();
 
@@ -377,7 +377,7 @@ macro_rules! results_task_next {
 
 /// Fills the async context from the Rust task, then starts iterating.
 #[unsafe(naked)]
-unsafe extern "C" fn results_task_entry() {
+unsafe extern "custom" fn results_task_entry() {
     core::arch::naked_asm!(
         swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
         "str x20, [x22, #24]",
@@ -413,7 +413,7 @@ unsafe extern "C" fn results_task_entry() {
 /// Resumed once per element, with any thrown error in `x20`. Hops to a plain
 /// frame before calling back into Rust.
 #[unsafe(naked)]
-unsafe extern "C" fn results_task_resume() {
+unsafe extern "custom" fn results_task_resume() {
     core::arch::naked_asm!(
         swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
         swift_async_load_parent!(),
@@ -441,7 +441,7 @@ unsafe extern "C" fn results_task_resume() {
 /// Delivers one element to Rust, then either asks for the next one or returns
 /// to whoever created the task.
 #[unsafe(naked)]
-unsafe extern "C" fn results_task_process() {
+unsafe extern "custom" fn results_task_process() {
     core::arch::naked_asm!(
         swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
         "ldr x0, [x22, #24]",

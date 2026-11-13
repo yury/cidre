@@ -1,4 +1,4 @@
-// run with `cargo r --features="custom-allocator" --example sc-record`
+// run with `cargo r --example sc-record`
 
 use mimalloc::MiMalloc;
 

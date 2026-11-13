@@ -3,7 +3,7 @@ name = "cargo-box"
 version = "0.1.0"
 edition = "2024"
 
-rust-version = "1.85"
+rust-version = "1.100.0"
 
 description = "iOS/macOS runner"
 license = "MIT"
@@ -16,3 +16,6 @@ cargo_toml = "1.0"
 dotenv = "0.15"
 
 cidre = { path = "../cidre", default-features = false, features = ["ns", "cg", "cf", "sec", "dispatch", "macos_13_0"] }
+
+[lints.cargo]
+unused_dependencies = "warn"

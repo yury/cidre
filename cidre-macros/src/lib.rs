@@ -823,7 +823,7 @@ fn parse_impl_header(header: &[TokenTree]) -> ImplHeader {
 /// `<S: Obj, I: Obj, 'a>` -> `<S, I, 'a>`
 fn generic_param_names(generics: &str) -> String {
     let inner = generics.trim();
-    let inner = inner.strip_prefix('<').unwrap_or(inner);
+    let inner = inner.trim_prefix('<');
     let inner = inner.strip_suffix('>').unwrap_or(inner);
     let stream: TokenStream = inner.parse().unwrap_or_default();
     let names: Vec<String> = split_top_level_args(stream)

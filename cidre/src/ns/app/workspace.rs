@@ -1,5 +1,6 @@
 use crate::{arc, define_cls, define_obj_type, mach::CpuType, ns, objc};
 
+#[cfg(feature = "blocks")]
 use crate::blocks;
 
 #[doc(alias = "NSWorkspaceDesktopImageOptionKey")]

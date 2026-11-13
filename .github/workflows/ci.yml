@@ -61,6 +61,20 @@ jobs:
     - name: Build
       run: ./build.sh
 
+    - name: Test tooling
+      run: |
+        cargo test -p cidre-macros
+        cargo test --manifest-path cargo-box/Cargo.toml
+
+    - name: Test Blocks allocator ownership
+      run: cargo test -p cidre --test blocks_allocator
+
+    - name: Check reduced AppKit features
+      run: |
+        cargo check -p cidre --lib --no-default-features --features app
+        cargo check -p cidre --lib --no-default-features --features app,ca
+        cargo check -p cidre --lib --no-default-features --features app,blocks,ca
+
     - name: Test ns
       run: 'RUST_BACKTRACE=1 cargo t --features="macos_14_0" ns::'
 

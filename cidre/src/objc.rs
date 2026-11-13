@@ -1231,6 +1231,8 @@ macro_rules! define_obj_type {
                     extern "C" fn impl_dealloc(s: &mut $NewType, sel: &$crate::objc::Sel) {
                         let ptr = s.inner_mut() as *mut _;
                         unsafe {
+                            // Payloads may be Copy; running their (empty) drop glue is intentional.
+                            #[allow(dropping_copy_types)]
                             std::ptr::drop_in_place(ptr);
                             let sup = $crate::objc::Super {
                                 receiver: s as *mut $NewType as *mut $crate::objc::Id,

@@ -38,12 +38,18 @@ use super::{
 pub(crate) const ENQUEUED_DISCARDING_TASK_FLAGS: usize = 0x15 | (1 << 12) | (1 << 14) | (1 << 15);
 
 #[link(name = "swift_Concurrency")]
-unsafe extern "C" {
-    /// Only ever referenced as a `sym` operand, so the signature is unused.
+unsafe extern "custom" {
+    // Swift register conventions: these symbols are called only from assembly.
     pub(crate) fn swift_task_alloc();
     pub(crate) fn swift_task_dealloc();
     pub(crate) fn swift_task_switch();
+    pub(crate) fn swift_continuation_await();
+    #[link_name = "$sScI4next9isolation7ElementQzSgScA_pSgYi_tYa7FailureQzYKFTj"]
+    pub(crate) fn async_iterator_next();
+}
 
+#[link(name = "swift_Concurrency")]
+unsafe extern "C" {
     /// Returns the new task and the address of its initial context, which is
     /// two words and so comes back in registers under C's convention as it
     /// does under Swift's.
@@ -67,9 +73,6 @@ unsafe extern "C" {
     /// point. One pointer argument, so `SWIFT_CC(swift)` is C here too.
     fn swift_task_cancel(task: *mut ());
 
-    /// `SWIFT_CC(swiftasync)`, and only ever referenced as a `sym` operand.
-    pub(crate) fn swift_continuation_await();
-
     #[link_name = "$sScPMa"]
     pub(crate) fn task_priority_metadata();
 
@@ -81,9 +84,6 @@ unsafe extern "C" {
 
     #[link_name = "$sSci13AsyncIteratorSci_ScITn"]
     pub(crate) static ASYNC_ITERATOR_CONFORMANCE: u8;
-
-    #[link_name = "$sScI4next9isolation7ElementQzSgScA_pSgYi_tYa7FailureQzYKFTj"]
-    pub(crate) fn async_iterator_next();
 
     #[link_name = "$sScI4next9isolation7ElementQzSgScA_pSgYi_tYa7FailureQzYKFTjTu"]
     pub(crate) static ASYNC_ITERATOR_NEXT_ASYNC_FN: u8;
@@ -765,7 +765,7 @@ swift_async_task_descriptor!(
 
 /// Allocates the element buffer once for the whole iteration, then waits.
 #[unsafe(naked)]
-unsafe extern "C" fn pulled_iter_task_entry() {
+unsafe extern "custom" fn pulled_iter_task_entry() {
     core::arch::naked_asm!(
         swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
         "str x20, [x22, #24]",
@@ -797,7 +797,7 @@ unsafe extern "C" fn pulled_iter_task_entry() {
 /// continuation's own synchronization turns that into a fall-through rather
 /// than a suspension, which is the whole reason this cannot race.
 #[unsafe(naked)]
-unsafe extern "C" fn pulled_iter_task_wait() {
+unsafe extern "custom" fn pulled_iter_task_wait() {
     core::arch::naked_asm!(
         swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
         "add x9, x22, #80",
@@ -830,7 +830,7 @@ unsafe extern "C" fn pulled_iter_task_wait() {
 
 /// Resumed once Rust wants an element, with the continuation context in `x22`.
 #[unsafe(naked)]
-unsafe extern "C" fn pulled_iter_task_requested() {
+unsafe extern "custom" fn pulled_iter_task_requested() {
     core::arch::naked_asm!(
         swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
         swift_async_load_parent!(),
@@ -856,7 +856,7 @@ unsafe extern "C" fn pulled_iter_task_requested() {
 /// — the macOS 15 runtime holds the job's autorelease pool token in `x21`, so
 /// zeroing it here made the pool pop after the job fault.
 #[unsafe(naked)]
-unsafe extern "C" fn pulled_iter_task_fetch() {
+unsafe extern "custom" fn pulled_iter_task_fetch() {
     core::arch::naked_asm!(
         swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
         "ldr x0, [x22, #24]",
@@ -884,7 +884,7 @@ unsafe extern "C" fn pulled_iter_task_fetch() {
 
 /// Resumed with the element written into the result buffer.
 #[unsafe(naked)]
-unsafe extern "C" fn pulled_iter_task_resumed() {
+unsafe extern "custom" fn pulled_iter_task_resumed() {
     core::arch::naked_asm!(
         swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
         swift_async_load_parent!(),
@@ -905,7 +905,7 @@ unsafe extern "C" fn pulled_iter_task_resumed() {
 
 /// Hands the element to Rust, then waits for the next request or winds up.
 #[unsafe(naked)]
-unsafe extern "C" fn pulled_iter_task_deliver() {
+unsafe extern "custom" fn pulled_iter_task_deliver() {
     core::arch::naked_asm!(
         swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
         "ldr x0, [x22, #24]",
@@ -926,7 +926,7 @@ unsafe extern "C" fn pulled_iter_task_deliver() {
 /// Frees the element buffer and the Rust task, then returns to whoever created
 /// the task.
 #[unsafe(naked)]
-unsafe extern "C" fn pulled_iter_task_finish() {
+unsafe extern "custom" fn pulled_iter_task_finish() {
     core::arch::naked_asm!(
         swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
         "ldr x0, [x22, #24]",
@@ -1779,7 +1779,7 @@ swift_async_task_descriptor!(
 /// Loads the call's arguments out of the task, allocates the callee's context,
 /// and tail-calls it.
 #[unsafe(naked)]
-unsafe extern "C" fn async_call_entry() {
+unsafe extern "custom" fn async_call_entry() {
     core::arch::naked_asm!(
         swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
         // The task is our context; keep it and our own async context where the
@@ -1823,7 +1823,7 @@ unsafe extern "C" fn async_call_entry() {
 /// Resumed with the result in `x0` and any thrown error in `x20`. Records both
 /// in the task, then hops to a plain frame before running Rust.
 #[unsafe(naked)]
-unsafe extern "C" fn async_call_resume() {
+unsafe extern "custom" fn async_call_resume() {
     core::arch::naked_asm!(
         swift_async_prologue!(frame: "48", fp: "32", ctx: "24"),
         swift_async_load_parent!(),
@@ -1856,7 +1856,7 @@ unsafe extern "C" fn async_call_resume() {
 
 /// Runs the Rust completion, then returns to whoever created the task.
 #[unsafe(naked)]
-unsafe extern "C" fn async_call_finish() {
+unsafe extern "custom" fn async_call_finish() {
     core::arch::naked_asm!(
         swift_async_prologue!(frame: "32", fp: "16", ctx: "8"),
         "ldr x0, [x22, #24]",

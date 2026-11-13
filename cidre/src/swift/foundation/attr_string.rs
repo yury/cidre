@@ -1,6 +1,6 @@
 use crate::swift::{self, abi, value::Storage};
 
-unsafe extern "C" {
+unsafe extern "custom" {
     /// `String(_characters:)`, declared in Foundation's extension of `String`,
     /// which the mangler does not spell.
     #[link_name = "$sSS10FoundationE11_charactersSSAA16AttributedStringV13CharacterViewV_tcfC"]

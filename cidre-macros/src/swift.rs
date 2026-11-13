@@ -206,7 +206,7 @@ fn classify_ret(ty: &str) -> Class {
 /// directions: a returned container is the word the call gives back, and one
 /// passed as an argument is the word the wrapper is already holding.
 fn container_class(ty: &str) -> Option<Class> {
-    let bare = ty.strip_prefix("swift::").unwrap_or(ty);
+    let bare = ty.trim_prefix("swift::");
     ["Array", "Set", "Dictionary"]
         .iter()
         .any(|container| bare.starts_with(&format!("{container}<")))
@@ -246,7 +246,7 @@ fn is_throwing(ty: &str) -> bool {
 fn classify_arg(ty: &str) -> Class {
     let ty = normalize(ty);
     let borrowed = ty.starts_with('&');
-    let bare = ty.strip_prefix('&').unwrap_or(&ty).trim();
+    let bare = ty.trim_prefix('&').trim();
     let bare = normalize(bare);
     if last_segment(&bare) == "String" {
         // A borrowed argument stays the caller's; one taken by value is
@@ -532,7 +532,7 @@ pub fn gen_metadata_accessor(args: TokenStream) -> TokenStream {
 
     format!(
         "{{
-            unsafe extern \"C\" {{
+            unsafe extern \"custom\" {{
                 #[link_name = \"{symbol}\"]
                 fn __swift_metadata_accessor();
             }}
@@ -631,7 +631,7 @@ pub fn gen_symbol(args: TokenStream) -> TokenStream {
 
     format!(
         "{{
-            unsafe extern \"C\" {{
+            unsafe extern \"custom\" {{
                 #[link_name = \"{symbol}\"]
                 fn __swift_symbol();
             }}
@@ -657,7 +657,7 @@ pub fn gen_async_symbols(args: TokenStream) -> TokenStream {
 
     format!(
         "{{
-            unsafe extern \"C\" {{
+            unsafe extern \"custom\" {{
                 #[link_name = \"{symbol}\"]
                 fn __swift_symbol();
                 #[link_name = \"{symbol}Tu\"]
@@ -1374,7 +1374,7 @@ where
     __F: FnOnce({ret_source}) + Send + 'static,
 {{
     #[allow(non_snake_case)]
-    unsafe extern \"C\" {{
+    unsafe extern \"custom\" {{
         #[link_name = \"{link_name}\"]
         fn __swift_callee();
 
@@ -1403,7 +1403,7 @@ where
 #[inline]
 {vis_and_qualifiers} fn {name}{args_source} -> impl core::future::Future<Output = {ret_source}> {{
     #[allow(non_snake_case)]
-    unsafe extern \"C\" {{
+    unsafe extern \"custom\" {{
         #[link_name = \"{link_name}\"]
         fn __swift_callee();
 
@@ -1656,7 +1656,7 @@ fn gen_thunk_call(
 #[inline]
 {vis_and_qualifiers} fn {name}{generics}{args_source} {ret_clause} {{
     #[allow(non_snake_case)]
-    unsafe extern \"C\" {{
+    unsafe extern \"custom\" {{
         #[link_name = \"{link_name}\"]
         fn __swift_callee();
     }}

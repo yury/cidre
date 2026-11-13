@@ -364,6 +364,70 @@ impl Allocator {
     }
 }
 
+/// Rust collections can borrow a Core Foundation allocator:
+/// ```
+/// use cidre::cf;
+/// let allocator = cf::Allocator::system_default().unwrap();
+/// let mut values = Vec::new_in(allocator);
+/// values.extend([1u32, 2, 3]);
+/// let value = Box::new_in(42u32, allocator);
+/// assert_eq!(values[1], 2);
+/// assert_eq!(*value, 42);
+/// ```
+///
+/// This implementation adds alignment and bookkeeping to native allocations.
+/// Its pointers must be released through Rust's `Allocator::deallocate`, not
+/// passed directly to `CFAllocatorDeallocate` or a native ownership-taking API.
+// SAFETY: allocations retain their native provenance and remain valid while
+// the borrowed CF allocator lives. The header is outside the user allocation;
+// deallocation passes the original pointer to the same native allocator.
+unsafe impl std::alloc::Allocator for Allocator {
+    fn allocate(
+        &self,
+        layout: std::alloc::Layout,
+    ) -> Result<std::ptr::NonNull<[u8]>, std::alloc::AllocError> {
+        use std::{alloc::AllocError, ptr::NonNull};
+        if layout.size() == 0 {
+            // A non-null, aligned pointer is sufficient for a zero-sized block.
+            let ptr = unsafe { NonNull::new_unchecked(layout.align() as *mut u8) };
+            return Ok(NonNull::slice_from_raw_parts(ptr, 0));
+        }
+        let header = std::mem::size_of::<*mut c_void>();
+        let size = layout
+            .size()
+            .checked_add(header)
+            .and_then(|n| n.checked_add(layout.align() - 1))
+            .filter(|&n| n <= isize::MAX as usize)
+            .ok_or(AllocError)?;
+        let base = NonNull::new(unsafe { self.allocate(size as Index, OptionFlags::NONE) })
+            .ok_or(AllocError)?;
+        unsafe {
+            let start = base.as_ptr().cast::<u8>().add(header);
+            let ptr = start.add(start.align_offset(layout.align()));
+            ptr.sub(header)
+                .cast::<*mut c_void>()
+                .write_unaligned(base.as_ptr());
+            Ok(NonNull::slice_from_raw_parts(
+                NonNull::new_unchecked(ptr),
+                layout.size(),
+            ))
+        }
+    }
+
+    unsafe fn deallocate(&self, ptr: std::ptr::NonNull<u8>, layout: std::alloc::Layout) {
+        if layout.size() != 0 {
+            unsafe {
+                let base = ptr
+                    .as_ptr()
+                    .sub(std::mem::size_of::<*mut c_void>())
+                    .cast::<*mut c_void>()
+                    .read_unaligned();
+                self.deallocate(base);
+            }
+        }
+    }
+}
+
 unsafe extern "C-unwind" {
     fn CFCopyTypeIDDescription(type_id: TypeId) -> Option<arc::R<String>>;
 
@@ -443,6 +507,50 @@ mod tests {
     use std::ffi::c_void;
 
     use crate::{arc, cf};
+
+    #[test]
+    fn rust_allocator_zero_failure_and_growth() {
+        use std::{
+            alloc::{Allocator as _, Layout},
+            ptr::NonNull,
+        };
+        let null = cf::Allocator::null().unwrap();
+        let zero = Layout::from_size_align(0, 4096).unwrap();
+        let p = std::alloc::Allocator::allocate(null, zero).unwrap();
+        assert_eq!(p.len(), 0);
+        assert_eq!((p.as_ptr() as *mut u8).addr() % 4096, 0);
+        unsafe { std::alloc::Allocator::deallocate(null, p.cast(), zero) };
+        let layout = Layout::from_size_align(32, 256).unwrap();
+        assert!(std::alloc::Allocator::allocate(null, layout).is_err());
+        let allocator = cf::Allocator::system_default().unwrap();
+        let p = allocator.allocate_zeroed(layout).unwrap();
+        let p: NonNull<u8> = p.cast();
+        unsafe {
+            assert!(
+                std::slice::from_raw_parts(p.as_ptr(), 32)
+                    .iter()
+                    .all(|&b| b == 0)
+            );
+            p.as_ptr().write_bytes(7, 32);
+            let huge = Layout::from_size_align(isize::MAX as usize - 255, 256).unwrap();
+            assert!(allocator.grow(p, layout, huge).is_err());
+            assert_eq!(p.as_ptr().read(), 7);
+            let larger = Layout::from_size_align(128, 256).unwrap();
+            let grown = allocator
+                .grow_zeroed(p, layout, larger)
+                .unwrap()
+                .cast::<u8>();
+            let bytes = std::slice::from_raw_parts(grown.as_ptr(), 128);
+            assert!(bytes[..32].iter().all(|&b| b == 7));
+            assert!(bytes[32..].iter().all(|&b| b == 0));
+            let shrunk = allocator
+                .shrink(grown, larger, layout)
+                .unwrap()
+                .cast::<u8>();
+            assert_eq!(shrunk.as_ptr().read(), 7);
+            std::alloc::Allocator::deallocate(allocator, shrunk, layout);
+        }
+    }
 
     #[test]
     fn custom_allocator_with_padding() {
@@ -535,5 +643,16 @@ mod tests {
         bigger[0] = 1;
         assert_eq!(bigger[PADDING as usize], 10);
         unsafe { alloc.deallocate(mem) };
+
+        #[repr(align(4096))]
+        struct Aligned(u64);
+        let boxed = Box::new_in(Aligned(42), alloc.as_ref());
+        assert_eq!((&*boxed as *const Aligned).addr() % 4096, 0);
+        assert_eq!(boxed.0, 42);
+        drop(boxed);
+        let mut values = Vec::new_in(alloc.as_ref());
+        values.extend(0..1024u64);
+        values.shrink_to_fit();
+        assert_eq!(values.iter().sum::<u64>(), (0..1024u64).sum());
     }
 }

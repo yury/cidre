@@ -65,12 +65,10 @@ fn load_box_env() {
     _ = dotenv::from_filename(".box.local");
 }
 
+mod artifact;
+
 mod runner {
-    use std::{
-        env,
-        path::{Path, PathBuf},
-        process,
-    };
+    use std::{env, path::PathBuf, process};
 
     use clap::Parser;
 
@@ -94,137 +92,29 @@ mod runner {
 
     pub(crate) fn run(args: Args) {
         assert!(args.args.len() > 2);
-        let binary = &args.args[2];
-        let path = Path::new(binary);
-
-        let err = "can't parse filename";
-
-        let Some(name) = path.file_name() else {
-            panic!("{err}");
-        };
-
-        let Some(name) = name.to_str() else {
-            panic!("{err}");
-        };
-
-        let mut name = name.to_string();
-
-        let Some(parent) = path.parent() else {
-            panic!("{err}");
-        };
-
-        let Some(folder) = parent.file_name() else {
-            panic!("{err}");
-        };
-
-        let Some(folder) = folder.to_str() else {
-            panic!("{err}");
-        };
-        let mut is_example = false;
-        let mut is_dep = false;
-        let mut is_binary = false;
-        let parent = match folder {
-            "examples" => {
-                // target/[optional-tripple/]profile|/examples/example
-                is_example = true;
-                parent.parent()
-            }
-            "deps" => {
-                // [fullpath/]target/[optional-tripple/]profile|/deps/test-or-bench
-                is_dep = true;
-                parent.parent()
-            }
-            "debug" => {
-                // target/[optional-tripple/]profile|/binary
-                // binary
-                is_binary = true;
-                Some(parent)
-            }
-            "release" => {
-                // target/[optional-tripple/]profile|/binary
-                // binary
-                is_binary = true;
-                Some(parent)
-            }
-            _ => panic!("{err}"),
-        };
-
-        let Some(parent) = parent else {
-            panic!("{err}");
-        };
-        let Some(folder) = parent.file_name() else {
-            panic!("{err}");
-        };
-        let Some(folder) = folder.to_str() else {
-            panic!("{err}");
-        };
-
-        let config = match folder {
-            "debug" => "Debug",
-            "release" => "Release",
-            _ => panic!("{err}"),
-        };
-
-        let Some(mut parent) = parent.parent() else {
-            panic!("{err}");
-        };
-        let Some(folder) = parent.file_name() else {
-            panic!("{err}");
-        };
-
-        let Some(folder) = folder.to_str() else {
-            panic!("{err}");
-        };
-
-        let sdk = match folder {
-            "target" | "aarch64-apple-darwin" | "x86_64-apple-darwin" => "macos",
-            "aarch64-apple-ios" => "iphoneos",
-            "x86_64-apple-ios" | "aarch64-apple-ios-sim" => "iphonesimulator",
-            "aarch64-apple-tvos" => "appletvos",
-            "aarch64-apple-tvos-sim" => "appletvsimulator",
-            "arm64_32-apple-watchos" => "watchos",
-            "aarch64-apple-watchos" => "watchos",
-            "aarch64-apple-watchos-sim" => "watchsimulator",
-            "aarch64-apple-visionos" => "xros",
-            "aarch64-apple-visionos-sim" => "xrsimulator",
-            _ => panic!("{err}"),
-        };
-
+        let binary = std::path::absolute(&args.args[2]).unwrap();
+        let metadata = crate::artifact::metadata();
+        let artifact = crate::artifact::Artifact::resolve(&binary, &metadata)
+            .unwrap_or_else(|e| panic!("cargo box: {e}"));
+        let name = artifact.name;
+        let is_example = artifact.kind == crate::artifact::Kind::Example;
+        let is_dep = artifact.kind == crate::artifact::Kind::Dep;
+        let is_binary = artifact.kind == crate::artifact::Kind::Binary;
+        let config = artifact.config;
+        let sdk = artifact.sdk;
         let platform = match sdk {
             "macos" => "macOS",
             "iphoneos" => "iOS",
-            "tvos" => "tvOS",
+            "appletvos" => "tvOS",
             "watchos" => "watchOS",
             "xros" => "visionOS",
-            "iphoneosimulator" => "iOS Simulator",
+            "iphonesimulator" => "iOS Simulator",
             "appletvsimulator" => "tvOS Simulator",
             "watchsimulator" => "watchOS Simulator",
             "xrsimulator" => "visionOS Simulator",
-            x => panic!("unknown platform {x}"),
+            _ => unreachable!(),
         };
-
-        if folder != "target" {
-            parent = parent.parent().unwrap();
-        }
-
-        let Some(folder) = parent.file_name() else {
-            panic!("{err}");
-        };
-
-        if folder == "target" {
-            parent = parent.parent().unwrap();
-        }
-
-        if !parent.as_os_str().is_empty() {
-            env::set_current_dir(parent).unwrap();
-        }
-
-        if is_dep {
-            // /Users/yury/Projects/cidre/target/aarch64-apple-ios/release/deps/uuid-3968b503a26aa57f
-            if let Some((name_part, _hash)) = name.rsplit_once('-') {
-                name = name_part.to_string();
-            }
-        }
+        env::set_current_dir(&metadata.workspace_root).unwrap();
 
         let mut proj_args = xcode::ProjArgs::default();
 
@@ -255,7 +145,7 @@ mod runner {
 
         if xcode_proj.replace_binary {
             // TODO: if is_binary, try replace with BOX_BIN_PATH instead of copy
-            std::fs::copy(binary, &project).unwrap();
+            std::fs::copy(&binary, &project).unwrap();
         }
 
         xcode::build(&xcode_proj, platform, config, &target);
@@ -272,12 +162,13 @@ mod runner {
 
         if sdk == "macos" {
             target.push(format!("Contents/MacOS/{name}"));
-            process::Command::new(&target)
+            let status = process::Command::new(&target)
                 .args(&args.args[3..])
                 .stdout(process::Stdio::inherit()) // Inherit stdout from parent
                 .stderr(process::Stdio::inherit()) // Inherit stderr from parent
                 .status()
                 .unwrap();
+            process::exit(status.code().unwrap_or(1));
         } else {
             let device_id = std::env::var("DEVICE_ID").unwrap();
 
@@ -290,13 +181,7 @@ mod runner {
                 let mut results = project.clone();
                 results.pop();
                 results.push("criterion");
-                device_ctl::bench_app(
-                    &device_id,
-                    &xcode_proj.bundle_id,
-                    &name,
-                    app_args,
-                    &results,
-                );
+                device_ctl::bench_app(&device_id, &xcode_proj.bundle_id, &name, app_args, &results);
             } else {
                 device_ctl::run_app(&device_id, &xcode_proj.bundle_id, &args.args[3..]);
             }
@@ -387,10 +272,12 @@ mod teams {
 
 mod cargo {
     use cargo_toml::{Manifest, Workspace};
-    use std::{env, path::PathBuf};
+    use std::path::PathBuf;
 
     pub(crate) fn manifests() -> Option<(PathBuf, Vec<Manifest>, Option<Workspace>)> {
-        let mut path = root()?.join("Cargo.toml");
+        let mut path = crate::artifact::metadata()
+            .workspace_root
+            .join("Cargo.toml");
         if let Ok(mut res) = Manifest::from_path(&path) {
             path.pop();
             res.complete_from_path(&path).unwrap();
@@ -413,25 +300,6 @@ mod cargo {
         } else {
             None
         }
-    }
-
-    fn root() -> Option<PathBuf> {
-        let cwd = env::current_dir().unwrap();
-        let mut cwd_clone = cwd.clone();
-        cwd_clone.push("target");
-        if cwd_clone.exists() {
-            // we are good
-            return Some(cwd);
-        }
-        cwd_clone.pop(); // target
-        cwd_clone.pop(); // ..
-        cwd_clone.push("target");
-        if cwd_clone.exists() {
-            // we are good
-            cwd_clone.pop();
-            return Some(cwd_clone);
-        }
-        None
     }
 }
 
@@ -802,11 +670,12 @@ mod device_ctl {
         }
 
         fn wait(mut self) -> String {
+            let path = std::mem::DropGuard::new(self.json_output_path, |path| {
+                let _ = fs::remove_file(path);
+            });
             self.child.wait().unwrap();
             // devicectl writes nothing when it dies early.
-            let buf = fs::read_to_string(&self.json_output_path).unwrap_or_default();
-            let _ = fs::remove_file(&self.json_output_path);
-            buf
+            fs::read_to_string(&*path).unwrap_or_default()
         }
     }
 
@@ -932,7 +801,11 @@ mod device_ctl {
         list.result
             .processes
             .iter()
-            .filter(|p| p.executable.as_deref().is_some_and(|e| e.ends_with(&suffix)))
+            .filter(|p| {
+                p.executable
+                    .as_deref()
+                    .is_some_and(|e| e.ends_with(&suffix))
+            })
             .map(|p| p.pid)
             .collect()
     }
@@ -1226,6 +1099,9 @@ mod tests {
     #[test]
     fn bundle_id_component() {
         assert_eq!(super::xcode::bundle_id_component("cf_string"), "cf-string");
-        assert_eq!(super::xcode::bundle_id_component("am-device-list"), "am-device-list");
+        assert_eq!(
+            super::xcode::bundle_id_component("am-device-list"),
+            "am-device-list"
+        );
     }
 }

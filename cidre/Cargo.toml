@@ -2,7 +2,7 @@
 name = "cidre"
 version = "0.30.1"
 edition = "2024"
-rust-version = "1.88"
+rust-version = "1.100.0"
 license = "MIT"
 description = "Bindings for Apple frameworks"
 repository = "https://github.com/yury/cidre.git"
@@ -173,6 +173,7 @@ wc = ["ns"]
 wk = ["blocks", "ns", "ui"]
 gc = ["ns"]
 xpc = ["ns", "blocks", "dispatch"]
+# Kept for compatibility; Blocks always allocate independently of the global allocator.
 custom-allocator = []
 half = ["dep:half"]
 swift = []
@@ -375,7 +376,7 @@ required-features = ["am"]
 
 [[example]]
 name = "sc-record"
-required-features = ["custom-allocator"]
+required-features = ["sc", "vt", "blocks"]
 
 [[example]]
 name = "av-audio-engine"
@@ -418,3 +419,6 @@ targets = [
 [[example]]
 name = "music-understanding"
 required-features = ["music_understanding", "av", "async", "cm", "dispatch", "macos_27_0"]
+
+[lints.cargo]
+unused_dependencies = "warn"

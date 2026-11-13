@@ -12,7 +12,7 @@ crate::define_swift!(#[swift::struct("StoreKit.Product")] pub(crate) ProductValu
 // threads, and with it the wrapper and any array of them.
 crate::impl_swift_sendable!(ProductValue);
 
-unsafe extern "C" {
+unsafe extern "custom" {
     /// `static func products<Identifiers: Collection>(for: Identifiers) async
     /// throws -> [Product] where Identifiers.Element == String`
     #[link_name = "$s8StoreKit7ProductV8products3forSayACGx_tYaKSlRzSS7ElementRtzlFZ"]

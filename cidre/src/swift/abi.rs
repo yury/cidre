@@ -28,6 +28,16 @@ pub struct ValueLayout {
 }
 
 #[link(name = "swiftCore")]
+unsafe extern "custom" {
+    #[link_name = "$sSDyq_Sgxcig"]
+    fn swift_dictionary_subscript();
+    #[link_name = "$sSayxSicig"]
+    fn swift_array_get();
+    #[link_name = "$ss15ContiguousArrayVyxSicig"]
+    fn swift_contiguous_array_get();
+}
+
+#[link(name = "swiftCore")]
 unsafe extern "C" {
     /// Declared `C_CC` in the runtime, so it needs no assembly shim.
     fn swift_retain(object: *const ()) -> *const ();
@@ -84,9 +94,6 @@ unsafe extern "C" {
         hashable: *const (),
     ) -> *mut ();
 
-    #[link_name = "$sSDyq_Sgxcig"]
-    fn swift_dictionary_subscript();
-
     /// Declared `C_CC` in the runtime, so it needs no assembly shim.
     fn swift_arrayInitWithCopy(
         dst: *mut (),
@@ -125,9 +132,6 @@ unsafe extern "C" {
     #[link_name = "$sSa5countSivg"]
     fn swift_array_count(array: *const (), element: *const TypeMetadata) -> isize;
 
-    #[link_name = "$sSayxSicig"]
-    fn swift_array_get();
-
     #[link_name = "$sSaMa"]
     fn swift_array_metadata(request: usize, element: *const TypeMetadata) -> MetadataResponse;
 
@@ -151,9 +155,6 @@ unsafe extern "C" {
 
     #[link_name = "$ss15ContiguousArrayV5countSivg"]
     fn swift_contiguous_array_count(array: *const (), element: *const TypeMetadata) -> isize;
-
-    #[link_name = "$ss15ContiguousArrayVyxSicig"]
-    fn swift_contiguous_array_get();
 
     #[link_name = "$sSbN"]
     static SWIFT_BOOL_METADATA: u8;

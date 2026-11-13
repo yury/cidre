@@ -1,4 +1,7 @@
-use crate::{arc, ca, cg, define_obj_type, ns, objc};
+use crate::{arc, cg, define_obj_type, ns, objc};
+
+#[cfg(feature = "ca")]
+use crate::ca;
 
 define_obj_type!(
     pub Screen(ns::Id),
@@ -82,6 +85,7 @@ impl Screen {
 }
 
 /// NSDisplayLink
+#[cfg(feature = "ca")]
 impl Screen {
     #[objc::msg_send(displayLinkWithTarget:selector:)]
     #[objc::available(macos = 14.0)]
