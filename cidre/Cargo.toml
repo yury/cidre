@@ -297,8 +297,8 @@ cc = "1"
 [dependencies]
 
 parking_lot = { optional = true, version = "0.12" }
-# cidre-macros = { version = "0.14.0", path = "../cidre-macros" }
-cidre-macros = { version = "0.14.0" }
+cidre-macros = { version = "0.14.0", path = "../cidre-macros" }
+# cidre-macros = { version = "0.14.0" }
 half = { optional = true, version = "2.6" }
 
 [target.'cfg(target_os = "macos")'.dependencies]
