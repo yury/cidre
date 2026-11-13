@@ -436,3 +436,6 @@ unsafe extern "C" {}
 
 #[link(name = "app", kind = "static")]
 unsafe extern "C" {}
+
+mod tracking_area;
+pub use tracking_area::{TrackingArea, TrackingAreaOpts};

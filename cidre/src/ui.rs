@@ -81,6 +81,9 @@ pub use gesture_recognizer::GestureRecognizerDelegate;
 pub use gesture_recognizer::GestureRecognizerDelegateImpl;
 pub use gesture_recognizer::GestureRecognizerState;
 
+mod hover_gesture_recognizer;
+pub use hover_gesture_recognizer::HoverGestureRecognizer;
+
 mod pan_gesture_recognizer;
 pub use pan_gesture_recognizer::PanGestureRecognizer;
 

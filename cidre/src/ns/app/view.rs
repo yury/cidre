@@ -36,6 +36,16 @@ define_obj_type!(
 );
 
 impl View {
+    #[objc::msg_send(addTrackingArea:)]
+    pub fn add_tracking_area(&mut self, area: &ns::TrackingArea);
+
+    #[objc::msg_send(removeTrackingArea:)]
+    pub fn remove_tracking_area(&mut self, area: &ns::TrackingArea);
+
+    #[objc::msg_send(trackingAreas)]
+    pub fn tracking_areas(&self) -> arc::R<ns::Array<ns::TrackingArea>>;
+
+
     #[objc::init(initWithFrame:)]
     pub fn init_with_frame(self, frame: ns::Rect) -> arc::R<View>;
 
