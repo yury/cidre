@@ -45,6 +45,8 @@ impl View {
     #[objc::msg_send(trackingAreas)]
     pub fn tracking_areas(&self) -> arc::R<ns::Array<ns::TrackingArea>>;
 
+    #[objc::msg_send(visibleRect)]
+    pub fn visible_rect(&self) -> ns::Rect;
 
     #[objc::init(initWithFrame:)]
     pub fn init_with_frame(self, frame: ns::Rect) -> arc::R<View>;
