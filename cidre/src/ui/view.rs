@@ -84,6 +84,15 @@ define_obj_type!(
 );
 
 impl View {
+    /// Overrides the interface style for this view and its descendants.
+    #[objc::msg_send(overrideUserInterfaceStyle)]
+    #[objc::available(ios = 13.0, tvos = 13.0)]
+    pub fn override_ui_style(&self) -> ui::Style;
+
+    #[objc::msg_send(setOverrideUserInterfaceStyle:)]
+    #[objc::available(ios = 13.0, tvos = 13.0)]
+    pub fn set_override_ui_style(&mut self, val: ui::Style);
+
     #[objc::msg_send(cornerConfiguration)]
     #[objc::available(ios = 26.0, tvos = 26.0, visionos = 26.0)]
     pub fn corner_cfg(&self) -> arc::R<ui::CornerCfg>;
