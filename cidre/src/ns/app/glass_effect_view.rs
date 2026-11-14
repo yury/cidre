@@ -42,6 +42,15 @@ impl GlassEffectView {
     #[objc::available(macos = 26.0)]
     pub fn set_corner_radius(&mut self, val: cg::Float);
 
+    /// The color used to tint the background and glass effect toward.
+    #[objc::msg_send(tintColor)]
+    #[objc::available(macos = 26.0)]
+    pub fn tint_color(&self) -> Option<arc::R<ns::Color>>;
+
+    #[objc::msg_send(setTintColor:)]
+    #[objc::available(macos = 26.0)]
+    pub fn set_tint_color(&mut self, val: Option<&ns::Color>);
+
     #[objc::msg_send(style)]
     #[objc::available(macos = 26.0)]
     pub fn style(&self) -> GlassEffectViewStyle;
