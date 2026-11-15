@@ -23,6 +23,18 @@ define_obj_type!(
 );
 
 impl ViewController {
+    #[objc::msg_send(contentUnavailableConfiguration)]
+    #[objc::available(ios = 17.0, tvos = 17.0)]
+    pub fn content_unavailable_cfg(&self) -> Option<arc::R<ui::AnyContentConfiguration>>;
+
+    #[objc::msg_send(setContentUnavailableConfiguration:)]
+    #[objc::available(ios = 17.0, tvos = 17.0)]
+    pub fn set_content_unavailable_cfg<C: ui::ContentConfiguration>(&mut self, val: Option<&C>);
+
+    #[objc::msg_send(setNeedsUpdateContentUnavailableConfiguration)]
+    #[objc::available(ios = 17.0, tvos = 17.0)]
+    pub fn set_needs_update_content_unavailable_cfg(&self);
+
     #[objc::msg_send(presentationController)]
     pub fn presentation_controller(&self) -> Option<arc::R<ui::PresentationController>>;
 
@@ -119,6 +131,14 @@ impl ViewController {
 
     #[objc::msg_send(setPreferredTransition:)]
     pub fn set_preferred_transition(&mut self, val: Option<&ui::ViewControllerTransition>);
+
+    #[objc::msg_send(traitOverrides)]
+    #[objc::available(ios = 17.0, tvos = 17.0)]
+    pub fn trait_overrides(&self) -> arc::R<ui::TraitOverrides>;
+
+    #[objc::msg_send(updateTraitsIfNeeded)]
+    #[objc::available(ios = 17.0, tvos = 17.0)]
+    pub fn update_traits_if_needed(&self);
 
     #[objc::msg_send(traitCollection)]
     pub fn trait_collection(&self) -> arc::R<ui::TraitCollection>;

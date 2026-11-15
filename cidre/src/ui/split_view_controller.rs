@@ -34,6 +34,13 @@ impl SplitViewController {
     #[objc::available(ios = 14.0)]
     pub fn set_vc_for_column(&mut self, vc: Option<&ui::ViewController>, column: Column);
 
+    #[objc::msg_send(viewControllerForColumn:)]
+    #[objc::available(ios = 14.0)]
+    pub fn vc_for_column(&self, column: Column) -> Option<arc::R<ui::ViewController>>;
+
+    #[objc::msg_send(primaryColumnWidth)]
+    pub fn primary_column_width(&self) -> cg::Float;
+
     #[objc::msg_send(isCollapsed)]
     pub fn is_collapsed(&self) -> bool;
 
@@ -155,6 +162,32 @@ pub enum DisplayMode {
 
 #[objc::protocol(UISplitViewControllerDelegate)]
 pub trait Delegate: objc::Obj {
+    #[objc::optional]
+    #[objc::msg_send(splitViewController:willShowColumn:)]
+    fn will_show_column(&mut self, controller: &mut SplitViewController, column: Column);
+
+    #[objc::optional]
+    #[objc::msg_send(splitViewController:willHideColumn:)]
+    fn will_hide_column(&mut self, controller: &mut SplitViewController, column: Column);
+
+    /// iOS/tvOS/visionOS 26 callback. System-driven column presentations; programmatic show_column does not send this.
+    #[objc::optional]
+    #[objc::msg_send(splitViewController:didShowColumn:)]
+    fn did_show_column(&mut self, controller: &mut SplitViewController, column: Column);
+
+    /// iOS/tvOS/visionOS 26 callback. System-driven column dismissals; programmatic hide_column does not send this.
+    #[objc::optional]
+    #[objc::msg_send(splitViewController:didHideColumn:)]
+    fn did_hide_column(&mut self, controller: &mut SplitViewController, column: Column);
+
+    #[objc::optional]
+    #[objc::msg_send(splitViewControllerInteractivePresentationGestureWillBegin:)]
+    fn interactive_presentation_gesture_will_begin(&mut self, controller: &mut SplitViewController);
+
+    #[objc::optional]
+    #[objc::msg_send(splitViewControllerInteractivePresentationGestureDidEnd:)]
+    fn interactive_presentation_gesture_did_end(&mut self, controller: &mut SplitViewController);
+
     #[objc::optional]
     #[objc::msg_send(splitViewController:topColumnForCollapsingToProposedTopColumn:)]
     fn top_column_for_collapsing(

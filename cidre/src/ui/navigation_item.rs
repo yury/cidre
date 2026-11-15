@@ -81,6 +81,68 @@ impl NavItem {
     #[objc::available(ios = 11.0)]
     pub fn set_large_title_display_mode(&mut self, val: NavItemLargeTitleDisplayMode);
 
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+    #[objc::msg_send(leadingItemGroups)]
+    #[objc::available(ios = 16.0)]
+    pub fn leading_item_groups(&self) -> arc::R<ns::Array<ui::BarButtonItemGroup>>;
+
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+    #[objc::msg_send(setLeadingItemGroups:)]
+    #[objc::available(ios = 16.0)]
+    pub fn set_leading_item_groups(&mut self, val: &ns::Array<ui::BarButtonItemGroup>);
+
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+    #[objc::msg_send(centerItemGroups)]
+    #[objc::available(ios = 16.0)]
+    pub fn center_item_groups(&self) -> arc::R<ns::Array<ui::BarButtonItemGroup>>;
+
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+    #[objc::msg_send(setCenterItemGroups:)]
+    #[objc::available(ios = 16.0)]
+    pub fn set_center_item_groups(&mut self, val: &ns::Array<ui::BarButtonItemGroup>);
+
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+    #[objc::msg_send(trailingItemGroups)]
+    #[objc::available(ios = 16.0)]
+    pub fn trailing_item_groups(&self) -> arc::R<ns::Array<ui::BarButtonItemGroup>>;
+
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+    #[objc::msg_send(setTrailingItemGroups:)]
+    #[objc::available(ios = 16.0)]
+    pub fn set_trailing_item_groups(&mut self, val: &ns::Array<ui::BarButtonItemGroup>);
+
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+    #[objc::msg_send(pinnedTrailingGroup)]
+    #[objc::available(ios = 16.0)]
+    pub fn pinned_trailing_group(&self) -> Option<arc::R<ui::BarButtonItemGroup>>;
+
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+    #[objc::msg_send(setPinnedTrailingGroup:)]
+    #[objc::available(ios = 16.0)]
+    pub fn set_pinned_trailing_group(&mut self, val: Option<&ui::BarButtonItemGroup>);
+
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+    #[objc::msg_send(customizationIdentifier)]
+    #[objc::available(ios = 16.0)]
+    pub fn customization_id(&self) -> Option<arc::R<ns::String>>;
+
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+    #[objc::msg_send(setCustomizationIdentifier:)]
+    #[objc::available(ios = 16.0)]
+    pub fn set_customization_id(&mut self, val: Option<&ns::String>);
+
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+    #[objc::msg_send(setAdditionalOverflowItems:)]
+    #[objc::available(ios = 16.0)]
+    pub fn set_additional_overflow_items(&mut self, val: Option<&ui::DeferredMenuElement>);
+
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+    #[objc::msg_send(overflowPresentationSource)]
+    #[objc::available(ios = 16.0)]
+    pub fn overflow_presentation_src(
+        &self,
+    ) -> Option<arc::R<ui::AnyPopoverPresentationControllerSrcItem>>;
+
     #[objc::msg_send(setRightBarButtonItems:)]
     pub fn set_right_bar_button_items(&mut self, val: Option<&ns::Array<ui::BarButtonItem>>);
 

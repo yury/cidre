@@ -9,6 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+Class UI_CONTENT_UNAVAILABLE_CONFIGURATION;
 Class UI_DEFERRED_MENU_ELEMENT_PROVIDER;
 Class UI_TAB_ACCESSORY;
 Class UI_GLASS_EFFECT;
@@ -55,6 +56,7 @@ static void ui_initializer(void)
     static int initialized = 0;
     if (!initialized) {
         initialized = 1;
+        UI_CONTENT_UNAVAILABLE_CONFIGURATION = NSClassFromString(@"UIContentUnavailableConfiguration");
         UI_HINGE_INTERACTION = NSClassFromString(@"UIHingeInteraction");
         UI_SCENE_ACCESSORY = NSClassFromString(@"UISceneAccessory");
         UI_ARRANGEMENT_VIEW_CONTROLLER = NSClassFromString(@"UIArrangementViewController");

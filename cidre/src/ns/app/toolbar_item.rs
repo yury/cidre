@@ -147,6 +147,14 @@ impl ToolbarItem {
     #[objc::available(macos = 15.0)]
     pub fn set_hidden(&mut self, val: bool);
 
+    #[objc::msg_send(badge)]
+    #[objc::available(macos = 26.0)]
+    pub fn badge(&self) -> Option<arc::R<ns::ItemBadge>>;
+
+    #[objc::msg_send(setBadge:)]
+    #[objc::available(macos = 26.0)]
+    pub fn set_badge(&mut self, val: Option<&ns::ItemBadge>);
+
     #[objc::msg_send(visibilityPriority)]
     pub fn visibility_priority(&self) -> ns::ToolbarItemVisibilityPriority;
 
@@ -227,13 +235,17 @@ unsafe extern "C" {
     static NSToolbarShowFontsItemIdentifier: &'static ns::ToolbarItemId;
     static NSToolbarPrintItemIdentifier: &'static ns::ToolbarItemId;
     static NSToolbarToggleSidebarItemIdentifier: &'static ns::ToolbarItemId;
+
     #[api::available(macos = 14.0)]
     static NSToolbarToggleInspectorItemIdentifier: &'static ns::ToolbarItemId;
     static NSToolbarCloudSharingItemIdentifier: &'static ns::ToolbarItemId;
+
     #[api::available(macos = 15.2)]
     static NSToolbarWritingToolsItemIdentifier: &'static ns::ToolbarItemId;
+
     #[api::available(macos = 11.0)]
     static NSToolbarSidebarTrackingSeparatorItemIdentifier: &'static ns::ToolbarItemId;
+
     #[api::available(macos = 14.0)]
     static NSToolbarInspectorTrackingSeparatorItemIdentifier: &'static ns::ToolbarItemId;
 }

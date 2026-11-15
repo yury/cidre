@@ -268,6 +268,12 @@ pub use sound::Sound;
 mod split_view_controller;
 pub use split_view_controller::SplitViewController;
 
+mod split_view_item_accessory_view_controller;
+pub use split_view_item_accessory_view_controller::SplitViewItemAccessoryViewController;
+mod scroll_edge_effect;
+pub use scroll_edge_effect::ScrollEdgeEffectStyle;
+mod item_badge;
+pub use item_badge::ItemBadge;
 mod split_view_item;
 pub use split_view_item::SplitViewItem;
 pub use split_view_item::SplitViewItemBehavior;

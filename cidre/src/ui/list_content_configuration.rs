@@ -6,6 +6,8 @@ define_obj_type!(
     sym UIListContentConfiguration
 );
 
+impl ui::ContentConfiguration for ListContentCfg {}
+
 impl ListContentCfg {
     #[objc::msg_send(cellConfiguration)]
     #[objc::available(ios = 14.0)]

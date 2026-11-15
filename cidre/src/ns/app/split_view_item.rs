@@ -52,6 +52,37 @@ impl SplitViewItem {
     #[objc::msg_send(inspectorWithViewController:)]
     pub fn inspector_with_vc(vc: &ns::ViewController) -> arc::R<Self>;
 
+    #[objc::msg_send(topAlignedAccessoryViewControllers)]
+    #[objc::available(macos = 26.0)]
+    pub fn top_aligned_accessory_vcs(
+        &self,
+    ) -> arc::R<ns::Array<ns::SplitViewItemAccessoryViewController>>;
+
+    #[objc::msg_send(bottomAlignedAccessoryViewControllers)]
+    #[objc::available(macos = 26.0)]
+    pub fn bottom_aligned_accessory_vcs(
+        &self,
+    ) -> arc::R<ns::Array<ns::SplitViewItemAccessoryViewController>>;
+
+    #[objc::msg_send(addTopAlignedAccessoryViewController:)]
+    #[objc::available(macos = 26.0)]
+    pub fn add_top_aligned_accessory_vc(&mut self, val: &ns::SplitViewItemAccessoryViewController);
+
+    #[objc::msg_send(addBottomAlignedAccessoryViewController:)]
+    #[objc::available(macos = 26.0)]
+    pub fn add_bottom_aligned_accessory_vc(
+        &mut self,
+        val: &ns::SplitViewItemAccessoryViewController,
+    );
+
+    #[objc::msg_send(removeTopAlignedAccessoryViewControllerAtIndex:)]
+    #[objc::available(macos = 26.0)]
+    pub fn remove_top_aligned_accessory_vc_at(&mut self, index: ns::Integer);
+
+    #[objc::msg_send(removeBottomAlignedAccessoryViewControllerAtIndex:)]
+    #[objc::available(macos = 26.0)]
+    pub fn remove_bottom_aligned_accessory_vc_at(&mut self, index: ns::Integer);
+
     #[objc::msg_send(behavior)]
     pub fn behavior(&self) -> SplitViewItemBehavior;
 

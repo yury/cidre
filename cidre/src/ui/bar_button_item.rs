@@ -210,6 +210,19 @@ impl BarButtonItem {
 
     /// Set the primary action on this item, updating the title, image, and target/action
     /// of the item to match the action.
+    #[objc::msg_send(identifier)]
+    #[objc::available(ios = 26.0)]
+    pub fn id(&self) -> Option<arc::R<ns::String>>;
+
+    #[objc::msg_send(setIdentifier:)]
+    #[objc::available(ios = 26.0)]
+    pub fn set_id(&mut self, val: Option<&ns::String>);
+
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+    #[objc::msg_send(creatingFixedGroup)]
+    #[objc::available(ios = 16.0)]
+    pub fn creating_fixed_group(&self) -> arc::R<ui::BarButtonItemGroup>;
+
     #[objc::msg_send(primaryAction)]
     #[objc::available(ios = 14.0, tvos = 14.0)]
     pub fn primary_action(&self) -> Option<arc::R<ui::Action>>;

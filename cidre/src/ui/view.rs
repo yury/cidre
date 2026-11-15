@@ -12,22 +12,31 @@ define_opts!(
 impl ViewAnimationOpts {
     /// Animate contents (applies to transitions only).
     pub const LAYOUT_SUBVIEWS: Self = Self(1 << 0);
+
     /// Turn on user interaction while animating.
     pub const ALLOW_USER_INTERACTION: Self = Self(1 << 1);
+
     /// Start all views from current value, not initial value.
     pub const BEGIN_FROM_CURRENT_STATE: Self = Self(1 << 2);
+
     /// Repeat animation indefinitely.
     pub const REPEAT: Self = Self(1 << 3);
+
     /// If repeat, run animation back and forth.
     pub const AUTOREVERSE: Self = Self(1 << 4);
+
     /// Ignore nested duration.
     pub const OVERRIDE_INHERITED_DURATION: Self = Self(1 << 5);
+
     /// Ignore nested curve.
     pub const OVERRIDE_INHERITED_CURVE: Self = Self(1 << 6);
+
     /// Animate contents (applies to transitions only).
     pub const ALLOW_ANIMATED_CONTENT: Self = Self(1 << 7);
+
     /// Flip to/from hidden state instead of adding/removing.
     pub const SHOW_HIDE_TRANSITION_VIEWS: Self = Self(1 << 8);
+
     /// Do not inherit any options or animation type.
     pub const OVERRIDE_INHERITED_OPTIONS: Self = Self(1 << 9);
 
@@ -278,6 +287,14 @@ impl View {
     pub fn window(&self) -> Option<arc::R<ui::Window>>;
 
     /// UITraitEnvironment
+    #[objc::msg_send(traitOverrides)]
+    #[objc::available(ios = 17.0, tvos = 17.0)]
+    pub fn trait_overrides(&self) -> arc::R<ui::TraitOverrides>;
+
+    #[objc::msg_send(updateTraitsIfNeeded)]
+    #[objc::available(ios = 17.0, tvos = 17.0)]
+    pub fn update_traits_if_needed(&self);
+
     #[objc::msg_send(traitCollection)]
     pub fn trait_collection(&self) -> arc::R<ui::TraitCollection>;
 

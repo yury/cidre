@@ -577,7 +577,7 @@ mod screen_mode;
 pub use screen_mode::ScreenMode;
 
 mod trait_collection;
-pub use trait_collection::TraitCollection;
+pub use trait_collection::{MutableTraits, TraitCollection, TraitOverrides};
 
 mod window_scene;
 pub use window_scene::SceneSizeRestrictions;
@@ -655,6 +655,10 @@ pub use split_view_controller::{
     DisplayModeButtonVisibility as SplitViewControllerDisplayModeButtonVisibility,
     SplitViewController, Style as SplitViewControllerStyle,
 };
+mod view_controller_transition_coordinator;
+#[cfg(feature = "blocks")]
+pub use view_controller_transition_coordinator::TransitionCoordinatorBlock;
+pub use view_controller_transition_coordinator::{TransitionCoordinator, TransitionCoordinatorCtx};
 mod view_controller_transitioning;
 pub use view_controller_transitioning::{
     ViewControllerTransitioningDelegate, ViewControllerTransitioningDelegateImpl,
@@ -684,11 +688,11 @@ pub use bar_button_item::Style as BarButtonItemStyle;
 pub use bar_button_item::SysItem as BarButtonSysItem;
 mod navigation_item;
 pub use navigation_item::NavItem;
+pub use navigation_item::NavItemLargeTitleDisplayMode;
+pub use navigation_item::NavItemSearchBarPlacement;
 #[cfg(feature = "blocks")]
 pub use navigation_item::NavItemTitleMenuProvider;
 pub use navigation_item::{NavItemRenameDelegate, NavItemRenameDelegateImpl};
-pub use navigation_item::NavItemLargeTitleDisplayMode;
-pub use navigation_item::NavItemSearchBarPlacement;
 
 #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 mod search_controller;
@@ -698,9 +702,15 @@ pub use search_controller::{
     SearchBarDelegateImpl, SearchController, SearchResultsUpdating, SearchResultsUpdatingImpl,
 };
 
-#[cfg(all(feature = "blocks", not(any(target_os = "tvos", target_os = "watchos"))))]
+#[cfg(all(
+    feature = "blocks",
+    not(any(target_os = "tvos", target_os = "watchos"))
+))]
 mod contextual_action;
-#[cfg(all(feature = "blocks", not(any(target_os = "tvos", target_os = "watchos"))))]
+#[cfg(all(
+    feature = "blocks",
+    not(any(target_os = "tvos", target_os = "watchos"))
+))]
 pub use contextual_action::{
     ContextualAction, ContextualActionHandler, ContextualActionStyle, SwipeActionsCfg,
     SwipeActionsCfgProvider,
@@ -712,6 +722,16 @@ pub use bar_minimization::BarMinimizationBehavior;
 pub use bar_minimization::BarMinimizationRestorationBehavior;
 pub use bar_minimization::BarMinimizationSafeAreaAdjustment;
 
+mod content_configuration;
+pub use content_configuration::{
+    AnyContentConfiguration, ContentConfiguration, ContentConfigurationImpl,
+};
+mod configuration_state;
+pub use configuration_state::AnyConfigurationState;
+mod content_unavailable_configuration;
+pub use content_unavailable_configuration::{ContentUnavailableAlignment, ContentUnavailableCfg};
+mod content_unavailable_text_properties;
+pub use content_unavailable_text_properties::ContentUnavailableTextProps;
 mod list_content_configuration;
 pub use list_content_configuration::BgCfg;
 pub use list_content_configuration::ListContentCfg;
