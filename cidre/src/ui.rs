@@ -679,6 +679,8 @@ pub use sheet_presentation_controller::DetentResolutionCtx as SheetPresentationC
 #[cfg(feature = "blocks")]
 pub use sheet_presentation_controller::DetentResolver as SheetPresentationControllerDetentResolver;
 pub use sheet_presentation_controller::{
+    Delegate as SheetPresentationControllerDelegate,
+    DelegateImpl as SheetPresentationControllerDelegateImpl,
     Detent as SheetPresentationControllerDetent, DetentId as SheetPresentationControllerDetentId,
     Placement as SheetPresentationControllerPlacement, SheetPresentationController,
 };

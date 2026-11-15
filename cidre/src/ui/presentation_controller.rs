@@ -9,6 +9,11 @@ pub trait AdaptivePresentationControllerDelegate: objc::Obj {
         controller: &ui::PresentationController,
         traits: &ui::TraitCollection,
     ) -> ui::ModalPresentationStyle;
+
+    /// The user dismissed the presented controller.
+    #[objc::optional]
+    #[objc::msg_send(presentationControllerDidDismiss:)]
+    fn did_dismiss(&mut self, controller: &PresentationController);
 }
 
 define_obj_type!(

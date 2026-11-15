@@ -104,12 +104,25 @@ impl Detent {
     pub fn resolved_value_in_ctx(&self, ctx: &DetentResolutionCtx) -> crate::cg::Float;
 }
 
+#[objc::protocol(UISheetPresentationControllerDelegate)]
+pub trait Delegate: ui::AdaptivePresentationControllerDelegate {
+    /// The selected detent changed in response to user interaction.
+    /// Programmatic changes do not call this method.
+    #[objc::optional]
+    #[objc::msg_send(sheetPresentationControllerDidChangeSelectedDetentIdentifier:)]
+    fn did_change_selected_detent_id(&mut self, controller: &SheetPresentationController);
+}
+
 define_obj_type!(
     #[doc(alias = "UISheetPresentationController")]
     pub SheetPresentationController(ui::PresentationController)
 );
 
 impl SheetPresentationController {
+    #[objc::msg_send(setDelegate:)]
+    #[objc::available(ios = 15.0)]
+    pub fn set_delegate<D: Delegate>(&mut self, val: Option<&D>);
+
     #[objc::msg_send(setSourceView:)]
     #[objc::available(ios = 15.0)]
     pub fn set_src_view(&mut self, val: Option<&ui::View>);
