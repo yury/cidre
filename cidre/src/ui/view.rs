@@ -286,7 +286,6 @@ impl View {
     #[objc::msg_send(window)]
     pub fn window(&self) -> Option<arc::R<ui::Window>>;
 
-    /// UITraitEnvironment
     #[objc::msg_send(traitOverrides)]
     #[objc::available(ios = 17.0, tvos = 17.0)]
     pub fn trait_overrides(&self) -> arc::R<ui::TraitOverrides>;
@@ -295,6 +294,7 @@ impl View {
     #[objc::available(ios = 17.0, tvos = 17.0)]
     pub fn update_traits_if_needed(&self);
 
+    /// UITraitEnvironment
     #[objc::msg_send(traitCollection)]
     pub fn trait_collection(&self) -> arc::R<ui::TraitCollection>;
 

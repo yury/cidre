@@ -208,8 +208,6 @@ impl BarButtonItem {
     #[objc::msg_send(setCustomView:)]
     pub fn set_custom_view(&mut self, val: Option<&ui::View>);
 
-    /// Set the primary action on this item, updating the title, image, and target/action
-    /// of the item to match the action.
     #[objc::msg_send(identifier)]
     #[objc::available(ios = 26.0)]
     pub fn id(&self) -> Option<arc::R<ns::String>>;
@@ -223,6 +221,8 @@ impl BarButtonItem {
     #[objc::available(ios = 16.0)]
     pub fn creating_fixed_group(&self) -> arc::R<ui::BarButtonItemGroup>;
 
+    /// Set the primary action on this item, updating the title, image, and target/action
+    /// of the item to match the action.
     #[objc::msg_send(primaryAction)]
     #[objc::available(ios = 14.0, tvos = 14.0)]
     pub fn primary_action(&self) -> Option<arc::R<ui::Action>>;
