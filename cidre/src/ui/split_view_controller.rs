@@ -71,6 +71,10 @@ impl SplitViewController {
     #[objc::msg_send(setMinimumPrimaryColumnWidth:)]
     pub fn set_min_primary_column_width(&mut self, val: cg::Float);
 
+    #[objc::msg_send(setMinimumSecondaryColumnWidth:)]
+    #[objc::available(ios = 26.0, tvos = 26.0, visionos = 26.0)]
+    pub fn set_min_secondary_column_width(&mut self, val: cg::Float);
+
     #[objc::msg_send(setPreferredSupplementaryColumnWidth:)]
     #[objc::available(ios = 14.0)]
     pub fn set_preferred_supplementary_column_width(&mut self, val: cg::Float);
