@@ -87,6 +87,14 @@ impl ButtonCfg {
     #[objc::msg_send(setShowsActivityIndicator:)]
     pub fn set_shows_activity_indicator(&mut self, val: bool);
 
+    #[objc::available(ios = 16.0)]
+    #[objc::msg_send(indicator)]
+    pub fn indicator(&self) -> Indicator;
+
+    #[objc::available(ios = 16.0)]
+    #[objc::msg_send(setIndicator:)]
+    pub fn set_indicator(&mut self, val: Indicator);
+
     #[objc::available(ios = 15.0, tvos = 15.0)]
     #[objc::msg_send(setTitlePadding:)]
     pub fn set_title_padding(&mut self, val: cg::Float);
@@ -146,4 +154,13 @@ pub enum CornerStyle {
     Medium,
     Large,
     Capsule,
+}
+
+#[doc(alias = "UIButtonConfigurationIndicator")]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[repr(isize)]
+pub enum Indicator {
+    Automatic = 0,
+    None = 1,
+    Popup = 2,
 }

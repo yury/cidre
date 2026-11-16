@@ -625,8 +625,8 @@ unsafe extern "C" {}
 
 mod button_configuration;
 pub use button_configuration::{
-    ButtonCfg, CornerStyle as ButtonCfgCornerStyle, Size as ButtonCfgSize,
-    TitleAlignment as ButtonCfgTitleAlignment,
+    ButtonCfg, CornerStyle as ButtonCfgCornerStyle, Indicator as ButtonCfgIndicator,
+    Size as ButtonCfgSize, TitleAlignment as ButtonCfgTitleAlignment,
 };
 #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
 mod scene_accessory;
