@@ -83,6 +83,25 @@ impl Control {
     #[objc::available(ios = 14.0)]
     pub fn context_menu_interaction(&self) -> Option<arc::R<ui::ContextMenuInteraction>>;
 
+    /// Menu lifecycle callbacks. Subclasses must call the superclass implementation.
+    #[objc::msg_send(contextMenuInteraction:willDisplayMenuForConfiguration:animator:)]
+    #[objc::available(ios = 14.0, tvos = 17.0)]
+    pub fn context_menu_interaction_will_display_menu(
+        &mut self,
+        interaction: &ui::ContextMenuInteraction,
+        configuration: &ui::ContextMenuCfg,
+        animator: Option<&ui::AnyContextMenuInteractionAnimating>,
+    );
+
+    #[objc::msg_send(contextMenuInteraction:willEndForConfiguration:animator:)]
+    #[objc::available(ios = 14.0, tvos = 17.0)]
+    pub fn context_menu_interaction_will_end(
+        &mut self,
+        interaction: &ui::ContextMenuInteraction,
+        configuration: &ui::ContextMenuCfg,
+        animator: Option<&ui::AnyContextMenuInteractionAnimating>,
+    );
+
     #[objc::msg_send(isEnabled)]
     pub fn is_enabled(&self) -> bool;
 

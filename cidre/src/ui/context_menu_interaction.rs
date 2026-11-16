@@ -1,4 +1,4 @@
-#[cfg(all(feature = "blocks", target_os = "ios"))]
+#[cfg(feature = "blocks")]
 use crate::{arc, blocks, ui};
 use crate::{define_obj_type, ns, objc};
 
@@ -8,6 +8,11 @@ define_obj_type!(
 );
 
 impl ContextMenuInteraction {
+    /// Dismisses the currently presented menu, if any.
+    #[objc::msg_send(dismissMenu)]
+    #[objc::available(ios = 13.0)]
+    pub fn dismiss_menu(&mut self);
+
     /// Replaces the menu on screen, if any, with the one `block` returns for it, in place.
     #[cfg(feature = "blocks")]
     #[objc::msg_send(updateVisibleMenuWithBlock:)]
@@ -33,7 +38,11 @@ impl ContextMenuInteraction {
 }
 
 #[objc::protocol(UIContextMenuInteractionAnimating)]
-pub trait ContextMenuInteractionAnimating: objc::Obj {}
+pub trait ContextMenuInteractionAnimating: objc::Obj {
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(addCompletion:)]
+    fn add_completion(&self, completion: &mut blocks::EscBlock<fn()>);
+}
 
 define_obj_type!(
     pub AnyContextMenuInteractionAnimating(ns::Id)
