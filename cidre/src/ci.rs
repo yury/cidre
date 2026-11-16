@@ -1,3 +1,6 @@
+mod filter;
+pub use filter::Filter;
+
 mod context;
 pub use context::Context;
 pub use context::ContextOpt;

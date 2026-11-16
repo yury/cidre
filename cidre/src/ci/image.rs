@@ -13,6 +13,9 @@ define_obj_type!(
 );
 
 impl Image {
+    #[objc::msg_send(extent)]
+    pub fn extent(&self) -> cg::Rect;
+
     #[cfg(feature = "mtl")]
     #[objc::init(initWithMTLTexture:options:)]
     pub fn init_with_mlt_texture_options(

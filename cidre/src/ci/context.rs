@@ -39,6 +39,22 @@ define_obj_type!(
 );
 
 impl Context {
+    /// Renders a region into a bitmap.
+    ///
+    /// # Safety
+    /// `data` must address at least `row_bytes * floor(bounds.size.height)` writable bytes,
+    /// with a row stride large enough for `bounds.size.width` pixels in `format`.
+    #[objc::msg_send(render:toBitmap:rowBytes:bounds:format:colorSpace:)]
+    pub unsafe fn render_to_bitmap(
+        &self,
+        image: &ci::Image,
+        data: *mut std::ffi::c_void,
+        row_bytes: isize,
+        bounds: cg::Rect,
+        format: ci::Format,
+        color_space: Option<&cg::ColorSpace>,
+    );
+
     #[objc::init(initWithOptions:)]
     pub fn init_with_opts(
         self,
