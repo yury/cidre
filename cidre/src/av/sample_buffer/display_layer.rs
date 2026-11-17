@@ -3,7 +3,7 @@ use crate::{arc, av, ca, define_obj_type, objc};
 define_obj_type!(
     #[doc(alias = "AVSampleBufferDisplayLayer")]
     pub DisplayLayer(ca::Layer),
-    AV_DISPLAY_LAYER
+    sym AVSampleBufferDisplayLayer
 );
 
 #[cfg(feature = "cm")]
@@ -45,6 +45,3 @@ impl DisplayLayer {
     pub fn sample_buf_renderer(&self) -> arc::R<av::SampleBufVideoRenderer>;
 }
 
-unsafe extern "C" {
-    static AV_DISPLAY_LAYER: &'static objc::Class<DisplayLayer>;
-}
