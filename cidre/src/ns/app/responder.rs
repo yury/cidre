@@ -9,6 +9,10 @@ impl Responder {
     #[objc::msg_send(nextResponder)]
     pub fn next_responder(&self) -> Option<arc::R<ns::Responder>>;
 
+    #[objc::msg_send(setNextResponder:)]
+    pub fn set_next_responder(&mut self, responder: Option<&ns::Responder>);
+
+
     /// Turns key events into commands (`insertText:`, `cancelOperation:`, ...)
     /// sent through `doCommandBySelector:`, up the responder chain.
     #[objc::msg_send(interpretKeyEvents:)]
