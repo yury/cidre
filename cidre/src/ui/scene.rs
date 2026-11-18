@@ -27,6 +27,19 @@ pub trait SceneDelegate: objc::Obj {
     );
 
     #[objc::optional]
+    #[objc::msg_send(scene:willContinueUserActivityWithType:)]
+    fn scene_will_continue_user_activity(&mut self, scene: &mut Scene, activity_type: &ns::String);
+
+    #[objc::optional]
+    #[objc::msg_send(scene:didFailToContinueUserActivityWithType:error:)]
+    fn scene_failed_to_continue_user_activity(
+        &mut self,
+        scene: &mut Scene,
+        activity_type: &ns::String,
+        error: &ns::Error,
+    );
+
+    #[objc::optional]
     #[objc::msg_send(scene:continueUserActivity:)]
     fn scene_continue_user_activity(&mut self, scene: &mut ui::Scene, activity: &ns::UserActivity);
 
