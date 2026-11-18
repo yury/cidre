@@ -30,6 +30,18 @@ pub trait Delegate {
     #[objc::msg_send(applicationSupportsSecureRestorableState:)]
     fn app_supports_secure_restorable_state(&mut self, app: &ns::App) -> bool;
 
+    #[cfg(feature = "blocks")]
+    #[objc::optional]
+    #[objc::msg_send(application:continueUserActivity:restorationHandler:)]
+    fn app_continue_user_activity(
+        &mut self,
+        app: &ns::App,
+        activity: &ns::UserActivity,
+        restoration_handler: &mut crate::blocks::EscBlock<
+            fn(&ns::Array<ns::AnyUserActivityRestoring>),
+        >,
+    ) -> bool;
+
     // Notifications
 
     #[objc::optional]

@@ -155,7 +155,7 @@ impl UserActivity {
 
     /// Set to true if this user activity should be eligible to be handed off to another device
     #[objc::msg_send(setEligibleForHandoff:)]
-    fn set_eligible_for_handoff(&mut self, val: bool);
+    pub fn set_eligible_for_handoff(&mut self, val: bool);
 
     #[objc::msg_send(isEligibleForSearch)]
     fn is_eligible_for_search(&self) -> bool;

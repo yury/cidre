@@ -232,6 +232,7 @@ pub fn protocol(args: TokenStream, ts: TokenStream) -> TokenStream {
         alias_tokens.append(&mut pre_tokens);
         pre_tokens = alias_tokens;
     }
+    let mut cfg_attrs = String::new();
     let mut is_optional = false;
     let mut skip = false;
     let mut sel = String::new();
@@ -348,7 +349,7 @@ pub fn protocol(args: TokenStream, ts: TokenStream) -> TokenStream {
                                     "
                         )
                     } else {
-                        fn_names.push((fn_name.clone(), gen_rar_version));
+                        fn_names.push((fn_name.clone(), gen_rar_version, cfg_attrs.clone()));
                         if gen_rar_version {
                             let ret = ret.replacen("arc :: R <", "arc :: Rar <", 1);
                             format!(
@@ -368,7 +369,7 @@ pub fn protocol(args: TokenStream, ts: TokenStream) -> TokenStream {
                     };
 
                     if !skip {
-                        impl_trait_functions.push(impl_fn);
+                        impl_trait_functions.push(format!("{cfg_attrs}{impl_fn}"));
                     }
 
                     if !is_optional && !skip {
@@ -377,9 +378,10 @@ pub fn protocol(args: TokenStream, ts: TokenStream) -> TokenStream {
     fn sel_{fn_name}() -> &'static objc::Sel {{ {register_sel} }}
         "
                         );
-                        impl_trait_functions.push(impl_sel);
+                        impl_trait_functions.push(format!("{cfg_attrs}{impl_sel}"));
                     }
 
+                    cfg_attrs.clear();
                     is_optional = false;
                     sel.clear();
                     fn_name.clear();
@@ -396,6 +398,11 @@ pub fn protocol(args: TokenStream, ts: TokenStream) -> TokenStream {
                     let TokenTree::Group(g) = iter.next().unwrap() else {
                         panic!("not a group");
                     };
+                    if matches!(g.stream().into_iter().next(), Some(TokenTree::Ident(i)) if i.to_string() == "cfg")
+                    {
+                        cfg_attrs.push_str(&format!("#{g}\n"));
+                        continue;
+                    }
                     match Attr::from_stream(g.stream()) {
                         Some(Attr::Optional) => {
                             has_optionals = true;
@@ -451,18 +458,19 @@ pub fn protocol(args: TokenStream, ts: TokenStream) -> TokenStream {
     original_trait
 }
 
-fn add_methods_fn(fns: &[(String, bool)]) -> String {
+fn add_methods_fn(fns: &[(String, bool, String)]) -> String {
     let mut res = "
     fn cls_add_methods<O: objc::Obj>(cls: &objc::Class<O>) {
         let cls: &objc::Class<objc::Id> = unsafe { std::mem::transmute(cls) };
         "
     .to_string();
-    for (f, ar) in fns {
+    for (f, ar, cfg) in fns {
         let suffix = if *ar { "_ar" } else { "" };
         let add = format!(
             "
-        let sel = Self::sel_{f}();
+        {cfg}
         unsafe {{
+            let sel = Self::sel_{f}();
             let imp: extern \"C\" fn() = std::mem::transmute(Self::impl_{f}{suffix} as *const u8);
             objc::class_addMethod(cls, sel, imp, std::ptr::null());
         }}
@@ -662,17 +670,27 @@ pub fn add_methods(_args: TokenStream, tr_impl: TokenStream) -> TokenStream {
 fn add_trait_impl_methods(header: Vec<TokenTree>, body: Group) -> TokenStream {
     let mut fns = vec![];
     let mut iter = body.stream().into_iter();
+    let mut cfg_attrs = String::new();
     while let Some(tt) = iter.next() {
         match tt {
+            TokenTree::Punct(p) if p.as_char() == '#' => {
+                let Some(TokenTree::Group(g)) = iter.next() else {
+                    continue;
+                };
+                if matches!(g.stream().into_iter().next(), Some(TokenTree::Ident(i)) if i.to_string() == "cfg")
+                {
+                    cfg_attrs.push_str(&format!("#{g}\n"));
+                }
+            }
             TokenTree::Ident(i) if i.to_string().eq("fn") => {
                 let Some(TokenTree::Ident(f)) = iter.next() else {
                     panic!("expected function name");
                 };
                 let f = f.to_string().replacen("impl_", "", 1);
                 if let Some(f) = f.strip_suffix("_ar") {
-                    fns.push((f.to_string(), true));
+                    fns.push((f.to_string(), true, std::mem::take(&mut cfg_attrs)));
                 } else {
-                    fns.push((f, false));
+                    fns.push((f, false, std::mem::take(&mut cfg_attrs)));
                 }
             }
             _ => continue,

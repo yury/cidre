@@ -16,6 +16,11 @@ pub use animation_context::AnimationCtx;
 mod appearance;
 pub use appearance::{Appearance, AppearanceName};
 
+mod user_activity;
+pub use user_activity::{
+    AnyUserActivityRestoring, UserActivityRestoring, UserActivityRestoringImpl,
+};
+
 mod application;
 pub use application::AboutPanelOptKey;
 pub use application::App;
