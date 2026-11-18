@@ -68,6 +68,13 @@ impl ViewController {
     #[objc::msg_send(setAdditionalSafeAreaInsets:)]
     pub fn set_additional_safe_area_insets(&mut self, val: ui::EdgeInsets);
 
+    /// Forwards appearance to a child installed by a custom container.
+    #[objc::msg_send(beginAppearanceTransition:animated:)]
+    pub fn begin_appearance_transition(&mut self, appearing: bool, animated: bool);
+
+    #[objc::msg_send(endAppearanceTransition)]
+    pub fn end_appearance_transition(&mut self);
+
     #[objc::msg_send(addChildViewController:)]
     pub fn add_child_vc(&mut self, child: &ViewController);
 
