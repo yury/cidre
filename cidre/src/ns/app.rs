@@ -308,6 +308,9 @@ mod text;
 pub use text::Text;
 pub use text::TextAlignment;
 
+mod table_row_view;
+pub use table_row_view::TableRowView;
+
 pub mod table_view;
 pub use table_view::AnyTableViewDataSrc;
 pub use table_view::AnyTableViewDelegate;
