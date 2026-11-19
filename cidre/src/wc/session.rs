@@ -125,7 +125,12 @@ pub trait Delegate: objc::Obj {
 
     #[objc::optional]
     #[objc::msg_send(session:didReceiveMessageData:replyHandler:)]
-    fn session_did_receive_message_data(&mut self, session: &Session, data: &ns::Data, reply: &mut blocks::EscBlock<fn(*const ns::Data)>);
+    fn session_did_receive_message_data(
+        &mut self,
+        session: &Session,
+        data: &ns::Data,
+        reply: &mut blocks::EscBlock<fn(*const ns::Data)>,
+    );
 
     #[objc::optional]
     #[objc::msg_send(sessionWatchStateDidChange:)]
