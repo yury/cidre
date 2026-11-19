@@ -1,6 +1,6 @@
 mod session;
 pub use session::ActivationState as SessionActivationState;
-pub use session::Session;
+pub use session::{AnyDelegate as AnySessionDelegate, Delegate as SessionDelegate, DelegateImpl as SessionDelegateImpl, Session};
 
 mod error;
 pub use error::Code as ErrorCode;

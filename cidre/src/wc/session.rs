@@ -25,8 +25,11 @@ impl Session {
     #[objc::msg_send(delegate)]
     pub fn delegate(&self) -> Option<arc::R<AnyDelegate>>;
 
-    #[objc::msg_send(set_delegate:)]
+    #[objc::msg_send(setDelegate:)]
     pub fn set_delegate<D: Delegate>(&mut self, val: Option<&D>);
+
+    #[objc::msg_send(activateSession)]
+    pub fn activate(&self);
 
     #[objc::msg_send(activationState)]
     pub fn activation_state(&self) -> ActivationState;
@@ -115,6 +118,14 @@ pub trait Delegate: objc::Obj {
 
     #[objc::msg_send(sessionDidDeactivate:)]
     fn session_did_deactivate(&mut self, session: &Session);
+
+    #[objc::optional]
+    #[objc::msg_send(sessionReachabilityDidChange:)]
+    fn session_reachability_did_change(&mut self, session: &Session);
+
+    #[objc::optional]
+    #[objc::msg_send(session:didReceiveMessageData:replyHandler:)]
+    fn session_did_receive_message_data(&mut self, session: &Session, data: &ns::Data, reply: &mut blocks::EscBlock<fn(*const ns::Data)>);
 
     #[objc::optional]
     #[objc::msg_send(sessionWatchStateDidChange:)]
