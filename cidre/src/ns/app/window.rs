@@ -256,6 +256,14 @@ impl Window {
     #[objc::msg_send(setFrame:display:animate:)]
     pub fn set_frame_display_animate(&mut self, val: ns::Rect, display: bool, animate: bool);
 
+    /// Restores a window frame stored in the application's defaults.
+    #[objc::msg_send(setFrameUsingName:)]
+    pub fn set_frame_using_name(&mut self, name: &ns::String) -> bool;
+
+    /// Names the frame AppKit saves automatically. Returns false if the name is unavailable.
+    #[objc::msg_send(setFrameAutosaveName:)]
+    pub fn set_frame_autosave_name(&mut self, name: &ns::String) -> bool;
+
     #[objc::msg_send(display)]
     pub fn display(&mut self);
 
