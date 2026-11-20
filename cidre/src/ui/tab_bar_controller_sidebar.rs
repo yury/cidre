@@ -72,6 +72,15 @@ impl TabBarControllerSidebar {
 #[objc::protocol(UITabBarControllerSidebarDelegate)]
 pub trait Delegate: objc::Obj {
     #[objc::optional]
+    #[objc::msg_send(tabBarController:sidebar:itemForRequest:)]
+    fn item_for_request(
+        &mut self,
+        controller: &mut ui::TabBarController,
+        sidebar: &mut TabBarControllerSidebar,
+        request: &ui::TabSidebarItemRequest,
+    ) -> arc::R<ui::TabSidebarItem>;
+
+    #[objc::optional]
     #[objc::msg_send(tabBarController:sidebar:contextMenuConfigurationForTab:)]
     fn context_menu_for_tab(
         &mut self,

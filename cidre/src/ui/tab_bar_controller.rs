@@ -204,6 +204,14 @@ impl TabBarController {
 #[objc::protocol(UITabBarControllerDelegate)]
 pub trait TabBarControllerDelegate: objc::Obj {
     #[objc::optional]
+    #[objc::msg_send(tabBarControllerWillBeginEditing:)]
+    fn tab_bar_controller_will_begin_editing(&mut self, controller: &mut TabBarController);
+
+    #[objc::optional]
+    #[objc::msg_send(tabBarControllerDidEndEditing:)]
+    fn tab_bar_controller_did_end_editing(&mut self, controller: &mut TabBarController);
+
+    #[objc::optional]
     #[objc::msg_send(tabBarController:shouldSelectViewController:)]
     fn tab_bar_controller_should_select_vc(
         &mut self,

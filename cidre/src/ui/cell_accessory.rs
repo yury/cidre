@@ -82,3 +82,27 @@ impl CellAccessoryDetail {
     #[objc::available(ios = 14.0, tvos = 14.0)]
     pub fn set_action_handler(&mut self, val: Option<&mut crate::blocks::EscBlock<fn()>>);
 }
+
+#[doc(alias = "UICellAccessoryPlacement")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum CellAccessoryPlacement {
+    Leading = 0,
+    Trailing = 1,
+}
+
+define_obj_type!(
+    #[doc(alias = "UICellAccessoryCustomView")]
+    pub CellAccessoryCustomView(CellAccessory),
+    sym UICellAccessoryCustomView
+);
+
+impl CellAccessoryCustomView {
+    #[objc::init(initWithCustomView:placement:)]
+    #[objc::available(ios = 14.0, tvos = 14.0)]
+    pub fn init_with_custom_view_placement(
+        self,
+        view: &ui::View,
+        placement: CellAccessoryPlacement,
+    ) -> arc::R<CellAccessoryCustomView>;
+}

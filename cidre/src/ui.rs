@@ -325,6 +325,8 @@ pub use collection_view_list_cell::CollectionViewListCell;
 mod cell_accessory;
 pub use cell_accessory::CellAccessory;
 pub use cell_accessory::CellAccessoryCheckmark;
+pub use cell_accessory::CellAccessoryCustomView;
+pub use cell_accessory::CellAccessoryPlacement;
 pub use cell_accessory::CellAccessoryDelete;
 pub use cell_accessory::CellAccessoryDetail;
 pub use cell_accessory::CellAccessoryDisclosureIndicator;
@@ -467,6 +469,9 @@ pub use tab_bar_controller::TabBarControllerDelegate;
 pub use tab_bar_controller::TabBarControllerDelegateImpl;
 pub use tab_bar_controller::TabBarControllerMode;
 pub use tab_bar_controller::TabBarMinimizeBehavior;
+
+mod tab_sidebar_item;
+pub use tab_sidebar_item::{TabSidebarItem, TabSidebarItemRequest};
 
 mod tab_bar_controller_sidebar;
 pub use tab_bar_controller_sidebar::Animating as TabBarControllerSidebarAnimating;
