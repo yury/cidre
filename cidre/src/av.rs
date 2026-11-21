@@ -285,6 +285,8 @@ mod time;
 mod kit;
 #[cfg(feature = "av_kit")]
 pub use kit::AudioSessionRouteSelection;
+#[cfg(all(feature = "av_kit", target_os = "macos", feature = "app"))]
+pub use kit::PlayerView;
 #[cfg(all(feature = "av_kit", target_os = "ios"))]
 pub use kit::CaptureDeviceDescriptor;
 #[cfg(all(feature = "av_kit", target_os = "ios"))]

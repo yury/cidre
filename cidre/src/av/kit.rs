@@ -1,3 +1,8 @@
+#[cfg(all(target_os = "macos", feature = "app"))]
+mod player_view;
+#[cfg(all(target_os = "macos", feature = "app"))]
+pub use player_view::PlayerView;
+
 mod types;
 pub use types::VideoFrameAnalysisType;
 
