@@ -28,6 +28,13 @@ define_obj_type!(
     pub ToneMapMode(ns::String)
 );
 
+impl ContentsGravity {
+    #[doc(alias = "kCAGravityResizeAspectFill")]
+    pub fn resize_aspect_fill() -> &'static Self {
+        unsafe { kCAGravityResizeAspectFill }
+    }
+}
+
 impl ToneMapMode {
     /// Let the OS decide whether to tone map.
     #[api::available(
@@ -472,6 +479,7 @@ impl LayerDelegate for AnyLayerDelegate {}
 
 #[api::weak]
 unsafe extern "C" {
+    static kCAGravityResizeAspectFill: &'static ContentsGravity;
     #[api::available(
         macos = 15.0,
         maccatalyst = 18.0,
