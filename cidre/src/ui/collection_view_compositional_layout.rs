@@ -256,6 +256,10 @@ impl CollectionLayoutSection {
     #[objc::available(ios = 14.0, tvos = 14.0)]
     pub fn set_content_insets_ref(&mut self, val: ContentInsetsRef);
 
+    #[objc::msg_send(setSupplementaryContentInsetsReference:)]
+    #[objc::available(ios = 16.0, tvos = 16.0)]
+    pub fn set_supplementary_content_insets_ref(&mut self, val: ContentInsetsRef);
+
     #[objc::msg_send(orthogonalScrollingBehavior)]
     pub fn orthogonal_scrolling_behavior(
         &self,
