@@ -260,9 +260,15 @@ impl PlayerViewController {
 
 #[objc::protocol(AVPlayerViewControllerDelegate)]
 pub trait PlayerViewControllerDelegate: objc::Obj {
-    // #[objc::optional]
-    // #[objc::msg_send(playerViewController:willBeginFullScreenPresentationWithAnimationCoordinator:)]
-    // pub fn pv_controller()
+    #[cfg(any(target_os = "ios", target_os = "visionos"))]
+    #[objc::optional]
+    #[objc::msg_send(playerViewController:willEndFullScreenPresentationWithAnimationCoordinator:)]
+    fn player_will_end_full_screen(
+        &mut self,
+        player: &mut PlayerViewController,
+        coordinator: &ui::TransitionCoordinator,
+    );
+
 }
 
 define_obj_type!(

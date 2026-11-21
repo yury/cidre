@@ -59,6 +59,12 @@ impl CellAccessory {
 }
 
 define_obj_type!(
+    #[doc(alias = "UICellAccessoryMultiselect")]
+    pub CellAccessoryMultiselect(CellAccessory),
+    sym UICellAccessoryMultiselect
+);
+
+define_obj_type!(
     #[doc(alias = "UICellAccessoryCheckmark")]
     pub CellAccessoryCheckmark(CellAccessory),
     sym UICellAccessoryCheckmark
