@@ -93,7 +93,7 @@ pub use collection_view_layout::CollectionViewLayout;
 pub use collection_view_layout::CollectionViewLayoutAttrs;
 
 mod collection_view_flow_layout;
-pub use collection_view_flow_layout::CollectionViewScrollDir;
+pub use collection_view_flow_layout::{CollectionViewFlowLayout, CollectionViewScrollDir};
 pub use collection_view_flow_layout::element_kind as collection_view_element_kind;
 
 mod collection_view_transition_layout;
