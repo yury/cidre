@@ -1,4 +1,5 @@
 mod _type;
+mod item_provider;
 pub use _type::Type;
 pub mod core_types;
 

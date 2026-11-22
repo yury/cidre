@@ -25,6 +25,20 @@ impl DragOp {
     pub const EVERY: Self = Self(usize::MAX);
 }
 
+#[doc(alias = "NSDraggingContext")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[repr(isize)]
+pub enum DraggingContext {
+    OutsideApplication,
+    WithinApplication,
+}
+
+#[objc::protocol(NSDraggingSource)]
+pub trait DraggingSrc: objc::Obj {
+    #[objc::msg_send(draggingSession:sourceOperationMaskForDraggingContext:)]
+    fn source_op_mask(&self, session: &ns::DraggingSession, context: DraggingContext) -> DragOp;
+}
+
 /// A drag under way, as a destination sees it.
 #[objc::protocol(NSDraggingInfo)]
 pub trait DraggingInfo: objc::Obj {

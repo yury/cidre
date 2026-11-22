@@ -36,6 +36,15 @@ define_obj_type!(
 );
 
 impl View {
+    #[objc::msg_send(beginDraggingSessionWithItems:gesture:source:)]
+    #[objc::available(macos = 27.0)]
+    pub fn begin_dragging_session_with_gesture<S: ns::DraggingSrc>(
+        &self,
+        items: &ns::Array<ns::DraggingItem>,
+        gesture: &ns::GestureRecognizer,
+        source: &S,
+    ) -> Option<arc::R<ns::DraggingSession>>;
+
     #[objc::msg_send(addTrackingArea:)]
     pub fn add_tracking_area(&mut self, area: &ns::TrackingArea);
 

@@ -389,3 +389,8 @@ pub mod reading_option_key {
         static NSPasteboardURLReadingContentsConformToTypesKey: &'static PasteboardReadingOptionKey;
     }
 }
+
+#[objc::protocol(NSPasteboardWriting)]
+pub trait PasteboardWriting: objc::Obj {}
+
+impl PasteboardWriting for ns::Url {}

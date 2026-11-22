@@ -37,7 +37,7 @@ pub use progress::Progress;
 
 mod item_provider;
 pub use item_provider::ItemProvider;
-pub use item_provider::ItemProviderWriting;
+pub use item_provider::{ItemProviderRepresentationVisibility, ItemProviderWriting};
 
 pub mod objc_runtime;
 pub use objc_runtime::ComparisonResult;

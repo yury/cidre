@@ -19,6 +19,15 @@ define_obj_type!(
 );
 
 impl Pasteboard {
+    #[cfg(not(any(target_os = "watchos", target_os = "tvos")))]
+    #[objc::msg_send(setItemProviders:localOnly:expirationDate:)]
+    pub fn set_item_providers(
+        &mut self,
+        items: &ns::Array<ns::ItemProvider>,
+        local_only: bool,
+        expiration: Option<&ns::Date>,
+    );
+
     #[objc::msg_send(generalPasteboard)]
     pub fn general() -> arc::R<Self>;
 

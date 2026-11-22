@@ -221,6 +221,12 @@ pub use dragging::DragOp;
 pub use dragging::DraggingDst;
 pub use dragging::DraggingDstImpl;
 pub use dragging::DraggingInfo;
+pub use dragging::{DraggingContext, DraggingSrc, DraggingSrcImpl};
+mod dragging_item;
+pub use dragging_item::DraggingItem;
+mod dragging_session;
+pub use dragging_session::DraggingSession;
+pub use pasteboard::PasteboardWriting;
 
 mod haptic_feedback;
 pub use haptic_feedback::AnyHapticFeedbackPerformer;
@@ -228,6 +234,9 @@ pub use haptic_feedback::HapticFeedbackManager;
 pub use haptic_feedback::HapticFeedbackPattern;
 pub use haptic_feedback::HapticFeedbackPerformanceTime;
 pub use haptic_feedback::HapticFeedbackPerformer;
+
+mod sharing_service;
+pub use sharing_service::SharingServicePicker;
 
 mod pasteboard;
 pub use pasteboard::Pasteboard;

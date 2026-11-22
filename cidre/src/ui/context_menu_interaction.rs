@@ -7,7 +7,29 @@ define_obj_type!(
     pub ContextMenuInteraction(ns::Id)
 );
 
+impl crate::ui::Interaction for ContextMenuInteraction {}
+
+#[objc::protocol(UIContextMenuInteractionDelegate)]
+pub trait ContextMenuInteractionDelegate: objc::Obj {
+    #[objc::msg_send(contextMenuInteraction:configurationForMenuAtLocation:)]
+    fn cfg_at_location(
+        &mut self,
+        interaction: &ContextMenuInteraction,
+        location: crate::cg::Point,
+    ) -> Option<crate::arc::R<crate::ui::ContextMenuCfg>>;
+}
+
 impl ContextMenuInteraction {
+    #[cfg(target_os = "ios")]
+    crate::define_cls!(sym UIContextMenuInteraction);
+
+    #[cfg(target_os = "ios")]
+    #[objc::init(initWithDelegate:)]
+    pub fn init_with_delegate<D: ContextMenuInteractionDelegate>(
+        self,
+        delegate: &D,
+    ) -> crate::arc::R<ContextMenuInteraction>;
+
     /// Dismisses the currently presented menu, if any.
     #[objc::msg_send(dismissMenu)]
     #[objc::available(ios = 13.0)]

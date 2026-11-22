@@ -243,12 +243,25 @@ pub use context_menu_configuration::ActionProvider as ContextMenuActionProvider;
 pub use context_menu_configuration::ContentPreviewProvider as ContextMenuContentPreviewProvider;
 pub use context_menu_configuration::ContextMenuCfg;
 
+#[cfg(target_os = "ios")]
+mod activity;
+#[cfg(target_os = "ios")]
+pub use activity::Activity;
+#[cfg(target_os = "ios")]
+mod activity_view_controller;
+#[cfg(target_os = "ios")]
+pub use activity_view_controller::ActivityViewController;
+#[cfg(target_os = "ios")]
+pub use drag_interaction::{DragInteraction, DragInteractionDelegate, DragInteractionDelegateImpl};
 mod context_menu_interaction;
 pub use context_menu_interaction::AnyContextMenuInteractionAnimating;
 pub use context_menu_interaction::AnyContextMenuInteractionCommitAnimating;
 pub use context_menu_interaction::ContextMenuInteraction;
 pub use context_menu_interaction::ContextMenuInteractionAnimating;
 pub use context_menu_interaction::ContextMenuInteractionCommitAnimating;
+pub use context_menu_interaction::{
+    ContextMenuInteractionDelegate, ContextMenuInteractionDelegateImpl,
+};
 
 mod drag_item;
 pub use drag_item::DragItem;

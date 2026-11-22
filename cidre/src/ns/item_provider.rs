@@ -14,6 +14,18 @@ define_obj_type!(
 #[objc::protocol(NSItemProviderWriting)]
 pub trait ItemProviderWriting: objc::Obj {}
 
+#[doc(alias = "NSItemProviderRepresentationVisibility")]
+#[repr(isize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub enum ItemProviderRepresentationVisibility {
+    All = 0,
+    #[cfg(not(target_os = "macos"))]
+    Team = 1,
+    #[cfg(target_os = "macos")]
+    Group = 2,
+    OwnProcess = 3,
+}
+
 impl ItemProvider {
     #[objc::init(initWithObject:)]
     fn init_with_obj<W: ItemProviderWriting>(self, object: &W) -> arc::R<ItemProvider>;
