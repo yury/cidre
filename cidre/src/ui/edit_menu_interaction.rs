@@ -1,4 +1,4 @@
-use crate::{arc, cg, define_obj_type, ns, objc, ui};
+use crate::{api, arc, cg, define_obj_type, ns, objc, ui};
 
 #[doc(alias = "UIEditMenuArrowDirection")]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
@@ -16,11 +16,13 @@ define_obj_type!(
     /// Where and which edit menu to show: its id, and the point (in the interaction's view) it
     /// comes from.
     #[doc(alias = "UIEditMenuConfiguration")]
-    pub EditMenuCfg(ns::Id),
-    sym UIEditMenuConfiguration
+    pub EditMenuCfg(ns::Id)
 );
 
 impl EditMenuCfg {
+    #[api::available(ios = 16.0)]
+    crate::define_cls!(UI_EDIT_MENU_CONFIGURATION);
+
     #[objc::msg_send(configurationWithIdentifier:sourcePoint:)]
     #[objc::available(ios = 16.0)]
     pub fn with_id_src_point(id: Option<&ns::Id>, src_point: cg::Point) -> arc::R<Self>;
@@ -42,21 +44,21 @@ define_obj_type!(
     /// Shows a menu at a point of its view, as text editing does: a bar of actions with touch, a
     /// menu with a pointer. The delegate builds the menu.
     #[doc(alias = "UIEditMenuInteraction")]
-    pub EditMenuInteraction(ns::Id),
-    sym UIEditMenuInteraction
+    pub EditMenuInteraction(ns::Id)
 );
 
 impl ui::Interaction for EditMenuInteraction {}
 
-impl arc::A<EditMenuInteraction> {
-    #[objc::msg_send(initWithDelegate:)]
+impl EditMenuInteraction {
+    #[api::available(ios = 16.0)]
+    crate::define_cls!(UI_EDIT_MENU_INTERACTION);
+
+    #[objc::init(initWithDelegate:)]
     pub fn init_with_delegate<D: EditMenuInteractionDelegate>(
         self,
         delegate: Option<&D>,
     ) -> arc::R<EditMenuInteraction>;
-}
 
-impl EditMenuInteraction {
     /// The interaction, `delegate` held weakly.
     #[objc::available(ios = 16.0)]
     pub fn with_delegate<D: EditMenuInteractionDelegate>(delegate: Option<&D>) -> arc::R<Self> {
@@ -129,17 +131,37 @@ define_obj_type!(
 
 impl EditMenuInteractionDelegate for AnyEditMenuInteractionDelegate {}
 
+unsafe extern "C" {
+    static UI_EDIT_MENU_CONFIGURATION: &'static objc::Class<EditMenuCfg>;
+    static UI_EDIT_MENU_INTERACTION: &'static objc::Class<EditMenuInteraction>;
+}
+
 #[cfg(test)]
 mod tests {
     use crate::{cg, ui};
 
     #[test]
     fn basics() {
-        let cfg = ui::EditMenuCfg::with_id_src_point(None, cg::Point::new(10.0, 20.0));
-        assert_eq!(cfg.src_point(), cg::Point::new(10.0, 20.0));
-        assert!(cfg.id().is_none());
         let interaction =
             ui::EditMenuInteraction::with_delegate::<ui::AnyEditMenuInteractionDelegate>(None);
+        let point = cg::Point::new(10.0, 20.0);
+        #[cfg(feature = "ios_16_0")]
+        let cfg = ui::EditMenuCfg::with_id_src_point(None, point);
+
+        #[cfg(not(feature = "ios_16_0"))]
+        let (interaction, cfg) = {
+            assert_eq!(interaction.is_some(), ui::EditMenuCfg::cls().is_some());
+            let Some(interaction) = interaction else {
+                return;
+            };
+            // Both classes were introduced in iOS 16 and are present on this runtime.
+            (interaction, unsafe {
+                ui::EditMenuCfg::with_id_src_point(None, point)
+            })
+        };
+
+        assert_eq!(cfg.src_point(), point);
+        assert!(cfg.id().is_some());
         assert!(interaction.delegate().is_none());
     }
 }

@@ -48,6 +48,8 @@ Class UI_SPLIT_ARRANGEMENT;
 Class UI_OVERLAY_ARRANGEMENT_VIEW_PROPERTIES;
 Class UI_OVERLAY_ARRANGEMENT;
 
+Class UI_EDIT_MENU_CONFIGURATION;
+Class UI_EDIT_MENU_INTERACTION;
 Class UI_HINGE_INTERACTION;
 
 __attribute__((constructor))
@@ -57,6 +59,8 @@ static void ui_initializer(void)
     if (!initialized) {
         initialized = 1;
         UI_CONTENT_UNAVAILABLE_CONFIGURATION = NSClassFromString(@"UIContentUnavailableConfiguration");
+        UI_EDIT_MENU_CONFIGURATION = NSClassFromString(@"UIEditMenuConfiguration");
+        UI_EDIT_MENU_INTERACTION = NSClassFromString(@"UIEditMenuInteraction");
         UI_HINGE_INTERACTION = NSClassFromString(@"UIHingeInteraction");
         UI_SCENE_ACCESSORY = NSClassFromString(@"UISceneAccessory");
         UI_ARRANGEMENT_VIEW_CONTROLLER = NSClassFromString(@"UIArrangementViewController");
