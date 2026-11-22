@@ -20,6 +20,12 @@ define_obj_type!(
 );
 
 impl MenuItem {
+    #[objc::msg_send(representedObject)]
+    pub fn represented_obj(&self) -> Option<arc::R<ns::Id>>;
+
+    #[objc::msg_send(setRepresentedObject:)]
+    pub fn set_represented_obj(&mut self, val: Option<&ns::Id>);
+
     #[objc::init(initWithTitle:action:keyEquivalent:)]
     pub fn init_with_title_action_key_equivalent(
         self,

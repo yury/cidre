@@ -104,7 +104,7 @@ impl SpeechTranscriber {
         tvos = 26.0,
         visionos = 26.0
     )]
-    pub fn results<F>(&self, callback: F)
+    pub fn results<F>(&self, mut callback: F)
     where
         F: FnMut(Result<Option<std::string::String>, arc::R<ns::Error>>) + Send + 'static,
     {
@@ -121,7 +121,7 @@ impl SpeechTranscriber {
                     "Speech.SpeechTranscriber(class).Result(struct).text: \
                      Foundation.AttributedString(struct) { get }"
                 ),
-                callback,
+                move |r| callback(r.map(|v| v.map(|(text, _)| text))),
             );
         }
     }
@@ -137,19 +137,8 @@ impl Drop for ResultsOwner {
     }
 }
 
-struct ResultsSequence {
-    _value: AnyValue,
-    _witness: *const (),
-}
-
-unsafe impl Send for ResultsSequence {}
-
 pub(super) struct ResultsTask {
-    // Declaration order is drop order: the iterator borrows the sequence, and
-    // the sequence borrows the object, so each must be destroyed before the
-    // thing that keeps it alive.
     iterator: AnyValue,
-    _sequence: ResultsSequence,
     _owner: ResultsOwner,
     iterator_witness: *const (),
     result: DynamicStorage,
@@ -157,7 +146,8 @@ pub(super) struct ResultsTask {
     text_getter: *const (),
     error: Storage<SwiftError>,
     failed: bool,
-    callback: Box<dyn FnMut(Result<Option<std::string::String>, arc::R<ns::Error>>) + Send>,
+    callback:
+        Box<dyn FnMut(Result<Option<(std::string::String, *const ())>, arc::R<ns::Error>>) + Send>,
 }
 
 unsafe impl Send for ResultsTask {}
@@ -175,14 +165,17 @@ impl ResultsTask {
         text_getter: *const (),
         callback: F,
     ) where
-        F: FnMut(Result<Option<std::string::String>, arc::R<ns::Error>>) + Send + 'static,
+        F: FnMut(Result<Option<(std::string::String, *const ())>, arc::R<ns::Error>>)
+            + Send
+            + 'static,
     {
         unsafe {
             let sequence_metadata = abi::opaque_type_metadata(descriptor, 0);
             let sequence_witness = abi::opaque_type_conformance(descriptor, 1);
             let mut sequence_storage = DynamicStorage::new(sequence_metadata);
             abi::call::object_to_value(results_getter, object, sequence_storage.as_mut_ptr());
-            let mut sequence_value = sequence_storage.assume_init();
+            // makeAsyncIterator consumes the initialized sequence (@in Self).
+            // Only its backing allocation is ours to release after the call.
 
             let type_len = iterator_type_end.offset_from(iterator_type_start) as usize;
             let iterator_type = core::slice::from_raw_parts(iterator_type_start, type_len);
@@ -195,7 +188,7 @@ impl ResultsTask {
             let mut iterator_storage = DynamicStorage::new(iterator_metadata);
             concurrency::call_make_async_iterator(
                 async_sequence_make_iterator as *const (),
-                sequence_value.as_mut_ptr(),
+                sequence_storage.as_mut_ptr(),
                 sequence_metadata,
                 sequence_witness,
                 iterator_storage.as_mut_ptr(),
@@ -214,10 +207,6 @@ impl ResultsTask {
 
             let task = Box::new(Self {
                 iterator,
-                _sequence: ResultsSequence {
-                    _value: sequence_value,
-                    _witness: sequence_witness,
-                },
                 _owner: ResultsOwner(abi::object_retain(object)),
                 iterator_witness,
                 result: DynamicStorage::new(result_metadata),
@@ -293,9 +282,8 @@ extern "C" fn cidre_speech_transcriber_results_process(task: *mut ResultsTask) -
             metadata: task.payload_metadata,
         };
         let value = speech_result_text(payload.value.cast_const(), text_getter);
+        (task.callback)(Ok(Some((value, payload.value.cast_const()))));
         drop(payload);
-
-        (task.callback)(Ok(Some(value)));
         true
     })) {
         Ok(keep_going) => {

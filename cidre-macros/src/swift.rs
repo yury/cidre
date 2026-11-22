@@ -1303,6 +1303,7 @@ fn gen_async_call(
     let output = match &ret_class {
         Class::Void => "|_, _| ()".to_string(),
         Class::ClassRef(_) => "|_, __result| crate::arc::R::from_raw(__result.cast())".to_string(),
+        Class::OptClassRef(_) => "|_, __result| (!__result.is_null()).then(|| crate::arc::R::from_raw(__result.cast()))".to_string(),
         Class::Indirect(ty) => {
             let slot = out_slot.expect("an indirect return owns its buffer");
             let take: Vec<String> = (0..owned.len())

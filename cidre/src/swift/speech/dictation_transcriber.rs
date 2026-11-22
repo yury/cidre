@@ -129,9 +129,41 @@ impl DictationTranscriber {
         tvos = 26.0,
         visionos = 26.0
     )]
-    pub fn results<F>(&self, callback: F)
+    pub fn results<F>(&self, mut callback: F)
     where
         F: FnMut(Result<Option<std::string::String>, arc::R<ns::Error>>) + Send + 'static,
+    {
+        self.result_values(move |r| callback(r.map(|v| v.map(|(text, _)| text))))
+    }
+
+    /// The time range is on the analyzed file's media timeline.
+    #[cfg(feature = "cm")]
+    #[api::available(macos = 26.0, ios = 26.0, maccatalyst = 26.0, visionos = 26.0)]
+    pub fn timed_results<F>(&self, mut callback: F)
+    where
+        F: FnMut(Result<Option<(String, crate::cm::TimeRange)>, arc::R<ns::Error>>)
+            + Send
+            + 'static,
+    {
+        self.result_values(move |result| {
+            let timed = result.map(|item| item.map(|(text, payload)| {
+                let mut range = std::mem::MaybeUninit::<crate::cm::TimeRange>::uninit();
+                // The iterator retains this result through the callback. Swift returns
+                // the 48-byte CMTimeRange indirectly into the caller's buffer.
+                let range = unsafe {
+                    let getter = swift::symbol!("Speech.DictationTranscriber(class).Result(struct).range: __C.CMTimeRange { get }");
+                    swift::abi::call::value_to_value(getter, payload, range.as_mut_ptr().cast());
+                    range.assume_init()
+                };
+                (text, range)
+            }));
+            callback(timed)
+        })
+    }
+
+    fn result_values<F>(&self, callback: F)
+    where
+        F: FnMut(Result<Option<(String, *const ())>, arc::R<ns::Error>>) + Send + 'static,
     {
         unsafe {
             ResultsTask::start(

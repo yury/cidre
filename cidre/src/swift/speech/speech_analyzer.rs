@@ -30,3 +30,22 @@ impl SpeechAnalyzer {
         options: Storage<Optional<AnalyzerOptions>>,
     ) -> arc::R<Self>;
 }
+
+#[cfg(feature = "av")]
+impl SpeechAnalyzer {
+    #[crate::api::available(
+        macos = 26.0,
+        ios = 26.0,
+        maccatalyst = 26.0,
+        tvos = 26.0,
+        visionos = 26.0
+    )]
+    #[swift::call(
+        "Speech.SpeechAnalyzer(class).start(inputAudioFile: __C.AVAudioFile(class), finishAfterFile: Bool) async throws"
+    )]
+    pub fn start_file(
+        &self,
+        file: arc::R<crate::av::AudioFile>,
+        finish_after_file: bool,
+    ) -> Result<(), arc::R<crate::ns::Error>>;
+}

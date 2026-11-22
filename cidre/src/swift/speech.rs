@@ -22,6 +22,8 @@ mod capture_input_sequence_provider;
 /// Not on tvOS.
 #[cfg(not(target_os = "tvos"))]
 mod dictation_transcriber;
+mod asset_inventory;
+pub use asset_inventory::{AssetInventory,AssetInstallationRequest};
 mod speech_analyzer;
 mod speech_detector;
 mod speech_module;
