@@ -47,6 +47,9 @@ impl ItemProvider {
     #[objc::msg_send(suggestedName)]
     pub fn suggested_name(&self) -> Option<arc::R<ns::String>>;
 
+    #[objc::msg_send(setSuggestedName:)]
+    pub fn set_suggested_name(&mut self, name: Option<&ns::String>);
+
     /// Writes a copy of the item as `type_id` to a temporary file, and calls `ch` with its URL
     /// on a background queue. The file is deleted once `ch` returns: open or copy it there.
     #[cfg(feature = "blocks")]

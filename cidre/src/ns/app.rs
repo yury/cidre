@@ -235,6 +235,8 @@ pub use haptic_feedback::HapticFeedbackPattern;
 pub use haptic_feedback::HapticFeedbackPerformanceTime;
 pub use haptic_feedback::HapticFeedbackPerformer;
 
+mod preview_representing_activity_item;
+pub use preview_representing_activity_item::PreviewRepresentingActivityItem;
 mod sharing_service;
 pub use sharing_service::SharingServicePicker;
 

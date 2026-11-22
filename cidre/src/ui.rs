@@ -248,6 +248,10 @@ mod activity;
 #[cfg(target_os = "ios")]
 pub use activity::Activity;
 #[cfg(target_os = "ios")]
+mod activity_items_configuration;
+#[cfg(target_os = "ios")]
+pub use activity_items_configuration::{ActivityItemsCfg, title_key as activity_items_metadata_title_key};
+#[cfg(target_os = "ios")]
 mod activity_view_controller;
 #[cfg(target_os = "ios")]
 pub use activity_view_controller::ActivityViewController;

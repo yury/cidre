@@ -9,6 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+Class NS_PREVIEW_REPRESENTING_ACTIVITY_ITEM;
 Class NS_ITEM_BADGE;
 Class NS_SCROLL_EDGE_EFFECT_STYLE;
 Class NS_SPLIT_VIEW_ITEM_ACCESSORY_VIEW_CONTROLLER;
@@ -23,6 +24,7 @@ static void app_initializer(void)
     static int initialized = 0;
     if (!initialized) {
         initialized = 1;
+        NS_PREVIEW_REPRESENTING_ACTIVITY_ITEM = NSClassFromString(@"NSPreviewRepresentingActivityItem");
         NS_ITEM_BADGE = NSClassFromString(@"NSItemBadge");
         NS_SCROLL_EDGE_EFFECT_STYLE = NSClassFromString(@"NSScrollEdgeEffectStyle");
         NS_SPLIT_VIEW_ITEM_ACCESSORY_VIEW_CONTROLLER = NSClassFromString(@"NSSplitViewItemAccessoryViewController");
