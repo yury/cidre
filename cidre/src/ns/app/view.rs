@@ -306,6 +306,14 @@ impl View {
     #[objc::available(macos = 11.0)]
     pub fn safe_area_insets(&self) -> ns::EdgeInsets;
 
+    #[objc::msg_send(additionalSafeAreaInsets)]
+    #[objc::available(macos = 11.0)]
+    pub fn additional_safe_area_insets(&self) -> ns::EdgeInsets;
+
+    #[objc::msg_send(setAdditionalSafeAreaInsets:)]
+    #[objc::available(macos = 11.0)]
+    pub fn set_additional_safe_area_insets(&mut self, val: ns::EdgeInsets);
+
     /// The frame minus the safe area insets.
     #[objc::msg_send(safeAreaRect)]
     #[objc::available(macos = 11.0)]
