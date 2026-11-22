@@ -28,7 +28,23 @@ define_obj_type!(
     sym UICollectionLayoutListConfiguration
 );
 
+#[cfg(all(
+    feature = "blocks",
+    not(any(target_os = "tvos", target_os = "watchos"))
+))]
+pub type ItemSeparatorHandler = crate::blocks::EscBlock<
+    fn(&ns::IndexPath, &ui::ListSeparatorCfg) -> arc::Rar<ui::ListSeparatorCfg>,
+>;
+
 impl CollectionLayoutListCfg {
+    #[cfg(all(
+        feature = "blocks",
+        not(any(target_os = "tvos", target_os = "watchos"))
+    ))]
+    #[objc::msg_send(setItemSeparatorHandler:)]
+    #[objc::available(ios = 14.5)]
+    pub fn set_item_separator_handler(&mut self, val: Option<&mut ItemSeparatorHandler>);
+
     #[objc::init(initWithAppearance:)]
     #[objc::available(ios = 14.0)]
     pub fn init_with_appearance(self, val: Appearance) -> arc::R<CollectionLayoutListCfg>;

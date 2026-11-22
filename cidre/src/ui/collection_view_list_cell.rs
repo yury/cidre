@@ -7,6 +7,11 @@ define_obj_type!(
 );
 
 impl CollectionViewListCell {
+    #[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+    #[objc::msg_send(separatorLayoutGuide)]
+    #[objc::available(ios = 14.0)]
+    pub fn separator_layout_guide(&self) -> arc::R<ui::LayoutGuide>;
+
     /// The amount of indentation applied to the cell's content and accessories, in levels.
     #[objc::msg_send(indentationLevel)]
     #[objc::available(ios = 14.0, tvos = 14.0)]

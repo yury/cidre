@@ -761,6 +761,12 @@ pub use collection_view_compositional_layout::CollectionLayoutSize;
 pub use collection_view_compositional_layout::CollectionViewCompositionalLayout;
 pub use collection_view_compositional_layout::ContentInsetsRef;
 pub use collection_view_compositional_layout::RectAlignment;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+mod list_separator_configuration;
+#[cfg(not(any(target_os = "tvos", target_os = "watchos")))]
+pub use list_separator_configuration::{ListSeparatorCfg, ListSeparatorVisibility};
+#[cfg(all(feature = "blocks", not(any(target_os = "tvos", target_os = "watchos"))))]
+pub use collection_layout_list::ItemSeparatorHandler;
 mod collection_layout_list;
 pub use collection_layout_list::{
     Appearance as CollectionLayoutListAppearance, CollectionLayoutListCfg,
