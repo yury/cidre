@@ -462,8 +462,8 @@ pub fn rar_claim_value<T: objc::Obj>(obj: Option<&T>) -> Option<R<T>> {
 #[cfg(feature = "objc")]
 #[inline(always)]
 pub fn rar_retain_option<T: objc::Obj>(id: Option<Rar<T>>) -> Option<R<T>> {
-    // Preserve nil before the non-null objc_retain binding is called.
-    id.map(rar_retain)
+    // since we can't insert marker right before actual `objc_msgSend` we fallback to retain
+    unsafe { std::mem::transmute(objc::objc_retain(std::mem::transmute(id))) }
 }
 
 #[cfg(feature = "objc")]
