@@ -707,7 +707,7 @@ static OBJC_IMAGE_INFO: [u32; 2] = [0, 0x40];
 
 #[link(name = "objc", kind = "dylib")]
 unsafe extern "C-unwind" {
-    pub fn objc_retain<'a>(obj: &Id) -> &'a Id;
+    pub fn objc_retain<'a>(obj: *const Id) -> Option<&'a Id>;
     fn objc_release(obj: *mut Id);
 
     // fn objc_msgSend();
