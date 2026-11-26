@@ -28,6 +28,15 @@ impl Button {
     #[objc::available(ios = 14.0)]
     pub fn set_menu(&mut self, menu: Option<&ui::Menu>);
 
+    /// The pointer's lift or highlight over it, on an iPad with a pointer.
+    #[objc::msg_send(isPointerInteractionEnabled)]
+    #[objc::available(ios = 13.4)]
+    pub fn is_pointer_interaction_enabled(&self) -> bool;
+
+    #[objc::msg_send(setPointerInteractionEnabled:)]
+    #[objc::available(ios = 13.4)]
+    pub fn set_pointer_interaction_enabled(&mut self, val: bool);
+
     /// A pop-up button: the menu's actions are a single selection, the selected one's title
     /// is the button's, and picking one performs it. Needs `shows_menu_as_primary_action`.
     #[objc::msg_send(changesSelectionAsPrimaryAction)]

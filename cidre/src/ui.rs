@@ -754,7 +754,9 @@ pub use content_configuration::{
 mod configuration_state;
 pub use configuration_state::AnyConfigurationState;
 mod content_unavailable_configuration;
-pub use content_unavailable_configuration::{ContentUnavailableAlignment, ContentUnavailableCfg};
+pub use content_unavailable_configuration::{
+    ContentUnavailableAlignment, ContentUnavailableButtonProps, ContentUnavailableCfg,
+};
 mod content_unavailable_text_properties;
 pub use content_unavailable_text_properties::ContentUnavailableTextProps;
 mod list_content_configuration;

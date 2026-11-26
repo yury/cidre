@@ -26,6 +26,19 @@ impl SearchBar {
 
     #[objc::msg_send(setDelegate:)]
     pub fn set_delegate<D: SearchBarDelegate>(&mut self, val: Option<&D>);
+
+    /// The scope bar's segments, under the field while it searches.
+    #[objc::msg_send(scopeButtonTitles)]
+    pub fn scope_button_titles(&self) -> Option<arc::R<ns::Array<ns::String>>>;
+
+    #[objc::msg_send(setScopeButtonTitles:)]
+    pub fn set_scope_button_titles(&mut self, val: Option<&ns::Array<ns::String>>);
+
+    #[objc::msg_send(selectedScopeButtonIndex)]
+    pub fn selected_scope_button_index(&self) -> ns::Integer;
+
+    #[objc::msg_send(setSelectedScopeButtonIndex:)]
+    pub fn set_selected_scope_button_index(&mut self, val: ns::Integer);
 }
 
 #[objc::protocol(UISearchBarDelegate)]
@@ -42,6 +55,14 @@ pub trait SearchBarDelegate: objc::Obj {
     #[objc::optional]
     #[objc::msg_send(searchBarCancelButtonClicked:)]
     fn search_bar_cancel_button_clicked(&mut self, search_bar: &mut SearchBar);
+
+    #[objc::optional]
+    #[objc::msg_send(searchBar:selectedScopeButtonIndexDidChange:)]
+    fn search_bar_selected_scope_button_index_did_change(
+        &mut self,
+        search_bar: &mut SearchBar,
+        selected_scope: ns::Integer,
+    );
 }
 
 define_obj_type!(

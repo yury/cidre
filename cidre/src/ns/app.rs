@@ -390,6 +390,9 @@ pub use toolbar_item::ToolbarItemVisibilityPriority;
 pub mod menu_toolbar_item;
 pub use menu_toolbar_item::MenuToolbarItem;
 
+pub mod search_toolbar_item;
+pub use search_toolbar_item::SearchToolbarItem;
+
 pub mod toolbar_item_group;
 pub use toolbar_item_group::ToolbarItemGroup;
 pub use toolbar_item_group::ToolbarItemGroupControlRepresentation;
