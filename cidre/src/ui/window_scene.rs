@@ -1,3 +1,5 @@
+#[cfg(feature = "blocks")]
+use crate::blocks;
 use crate::{api, arc, cg, define_obj_type, ns, objc, ui};
 
 #[cfg(feature = "ca")]
@@ -63,6 +65,57 @@ impl WindowScene {
 
     #[objc::msg_send(isFullScreen)]
     pub fn is_full_screen(&self) -> bool;
+
+    /// Asks the system to change the scene's geometry, such as its interface orientation.
+    #[cfg(feature = "blocks")]
+    #[objc::msg_send(requestGeometryUpdateWithPreferences:errorHandler:)]
+    pub fn request_geometry_update_block(
+        &self,
+        preferences: &WindowSceneGeometryPreferences,
+        error_handler: Option<&mut blocks::ErrCh>,
+    );
+
+    /// Asks the system to change the scene's geometry, such as its interface orientation.
+    #[cfg(feature = "blocks")]
+    pub fn request_geometry_update(
+        &self,
+        preferences: &WindowSceneGeometryPreferences,
+        error_handler: impl FnMut(Option<&ns::Error>) + 'static,
+    ) {
+        let mut block = blocks::ErrCh::new1(error_handler);
+        self.request_geometry_update_block(preferences, Some(&mut block));
+    }
+}
+
+define_obj_type!(
+    #[doc(alias = "UIWindowSceneGeometryPreferences")]
+    pub WindowSceneGeometryPreferences(ns::Id)
+);
+
+define_obj_type!(
+    #[doc(alias = "UIWindowSceneGeometryPreferencesIOS")]
+    pub WindowSceneGeometryPreferencesIos(WindowSceneGeometryPreferences),
+    sym UIWindowSceneGeometryPreferencesIOS
+);
+
+impl arc::A<WindowSceneGeometryPreferencesIos> {
+    #[objc::msg_send(initWithInterfaceOrientations:)]
+    pub fn init_with_interface_orientations(
+        self,
+        val: ui::OrientationMask,
+    ) -> arc::R<WindowSceneGeometryPreferencesIos>;
+}
+
+impl WindowSceneGeometryPreferencesIos {
+    pub fn with_interface_orientations(val: ui::OrientationMask) -> arc::R<Self> {
+        Self::alloc().init_with_interface_orientations(val)
+    }
+
+    #[objc::msg_send(interfaceOrientations)]
+    pub fn interface_orientations(&self) -> ui::OrientationMask;
+
+    #[objc::msg_send(setInterfaceOrientations:)]
+    pub fn set_interface_orientations(&mut self, val: ui::OrientationMask);
 }
 
 #[objc::protocol(UIWindowSceneDelegate)]

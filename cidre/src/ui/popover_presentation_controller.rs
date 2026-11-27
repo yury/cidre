@@ -53,6 +53,9 @@ impl PopoverPresentationController {
     #[objc::msg_send(setPassthroughViews:)]
     pub fn set_passthrough_views(&mut self, val: Option<&ns::Array<ui::View>>);
 
+    #[objc::msg_send(popoverLayoutMargins)]
+    pub fn layout_margins(&self) -> ui::EdgeInsets;
+
     #[objc::msg_send(setPopoverLayoutMargins:)]
     pub fn set_layout_margins(&mut self, val: ui::EdgeInsets);
 
