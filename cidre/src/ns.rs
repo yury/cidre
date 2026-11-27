@@ -28,6 +28,10 @@ mod date_formatter;
 pub use date_formatter::DateFormatter;
 pub use date_formatter::DateFormatterStyle;
 
+mod number_formatter;
+pub use number_formatter::NumberFormatter;
+pub use number_formatter::NumberFormatterStyle;
+
 mod iso_8601_date_formatter;
 pub use iso_8601_date_formatter::Iso8601DateFormatOpts;
 pub use iso_8601_date_formatter::Iso8601DateFormatter;
