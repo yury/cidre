@@ -169,6 +169,22 @@ impl ViewController {
     #[objc::available(ios = 16.0)]
     pub fn set_needs_update_of_supported_interface_orientations(&mut self);
 
+    #[objc::msg_send(prefersStatusBarHidden)]
+    pub fn prefers_status_bar_hidden(&self) -> bool;
+
+    /// Asks the system to re-read `prefersStatusBarHidden` and `preferredStatusBarStyle`.
+    #[objc::msg_send(setNeedsStatusBarAppearanceUpdate)]
+    pub fn set_needs_status_bar_appearance_update(&mut self);
+
+    #[objc::msg_send(prefersHomeIndicatorAutoHidden)]
+    #[objc::available(ios = 11.0)]
+    pub fn prefers_home_indicator_auto_hidden(&self) -> bool;
+
+    /// Asks the system to re-read `prefersHomeIndicatorAutoHidden`.
+    #[objc::msg_send(setNeedsUpdateOfHomeIndicatorAutoHidden)]
+    #[objc::available(ios = 11.0)]
+    pub fn set_needs_update_of_home_indicator_auto_hidden(&mut self);
+
     #[cfg(feature = "blocks")]
     #[objc::msg_send(presentViewController:animated:completion:)]
     pub fn present_vc_ch(
