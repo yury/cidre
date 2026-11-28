@@ -185,6 +185,13 @@ impl BarButtonItem {
     #[objc::msg_send(setEnabled:)]
     pub fn set_enabled(&mut self, val: bool);
 
+    /// Whether the item shows its selected state, as a toggle that is on.
+    #[objc::msg_send(isSelected)]
+    pub fn is_selected(&self) -> bool;
+
+    #[objc::msg_send(setSelected:)]
+    pub fn set_selected(&mut self, val: bool);
+
     #[objc::msg_send(tag)]
     pub fn tag(&self) -> ns::Integer;
 
